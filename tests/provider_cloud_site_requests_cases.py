@@ -15,7 +15,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 from playwright.sync_api import expect
 from release_cases import db
-from staff_cases import OWNER
+from owner_browser_forms import refuse_owner_action
 
 
 CAPTURES = tuple('Cloud-Client-Website-' + state + '-' + size + '.png'
@@ -31,7 +31,7 @@ def run_browser(env, browser, owner, client, other, profile):
     soup, token, form_data, provider = (env[k] for k in
                                       ('soup', 'token', 'form_data', 'provider_server'))
     admin = base + '/existing/admin/index.php'
-    settings = admin + '?view=provider-settings'
+    settings = admin + '?view=provider-settings&section=website'
     portal = base + '/existing/portal/index.php'
     intake = portal + '?cloud_websites=1'
     services = portal + '?services=1'
@@ -57,17 +57,31 @@ def run_browser(env, browser, owner, client, other, profile):
             raise RuntimeError('Expected cloud request page was unavailable.')
         return response
 
-    def form(session, url, action, request_id=None):
-        response = get(session, url)
+    def request_form(response, action, request_id=None):
         root = soup(response)
         if request_id:
-            root = root.select_one('[data-cloud-website-request="' + request_id + '"]')
-            if root is None:
-                raise RuntimeError('Expected cloud request history was unavailable.')
+            cards = root.select('[data-cloud-website-request="' + request_id + '"]')
+            if len(cards) != 1:
+                raise RuntimeError('Expected one exact cloud request history card.')
+            root = cards[0]
         found = root.select('form[data-cloud-website-form="' + action + '"]')
         if len(found) != 1:
             raise RuntimeError('Expected one cloud request form.')
-        return form_data(found[0])
+        return found[0]
+
+    def form(session, url, action, request_id=None):
+        node = request_form(get(session, url), action, request_id)
+        fields = form_data(node)
+        if session is owner and (node.select('[name=current_password],[name=owner_password]')
+                                 or not fields.get('csrf')):
+            raise AssertionError('Owner action must use the current session and a nonempty CSRF token.')
+        return fields
+
+    def refuse(action, changes, request_id=None):
+        def exact_form(response, expected_action):
+            return request_form(response, expected_action, request_id)
+        return refuse_owner_action({**env, 'check': check, 'form_for': exact_form},
+                                   owner, settings, action, changes)
 
     def post(session, url, fields, **changes):
         return session.post(url, data={**fields, **changes}, timeout=45)
@@ -106,9 +120,9 @@ def run_browser(env, browser, owner, client, other, profile):
             time.sleep(delay)
         original = db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
         calls = provider.calls
-        response = post(owner, settings, {'csrf': token(get(owner, settings)), 'action': action,
-                        'profile_id': profile['id'], 'revision': str(profile['revision']),
-                        'current_password': OWNER})
+        refresh_url = admin + '?view=provider-settings&section=' + ('cloud' if operation == 'cloudservers.list' else 'services')
+        response = post(owner, refresh_url, {'csrf': token(get(owner, refresh_url)), 'action': action,
+                        'profile_id': profile['id'], 'revision': str(profile['revision'])})
         after = db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
         latest_result = db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.profile_id=? AND f.operation=? ORDER BY f.seq DESC LIMIT 1',
                            [profile['id'], operation])
@@ -190,13 +204,15 @@ def run_browser(env, browser, owner, client, other, profile):
               'Website requests are not available yet' in before_get.text
               and soup(before_get).select_one('[data-cloud-website-form]') is None and provider.calls == calls)
         setup = form(owner, settings, 'provider_inventory_cloud_request_prepare')
-        for label, fields in [('CSRF', {'csrf': 'invalid', 'current_password': OWNER}),
-                              ('password', {'current_password': 'wrong'})]:
-            post(owner, settings, setup, **fields)
-            check('preparation refuses invalid ' + label,
-                  not db('SELECT value FROM ci_settings WHERE name="provider_cloud_site_request_schema_version"')
-                  and provider.calls == calls)
-        post(owner, settings, setup, current_password=OWNER)
+        post(owner, settings, setup, csrf='invalid')
+        check('preparation refuses invalid CSRF',
+              not db('SELECT value FROM ci_settings WHERE name="provider_cloud_site_request_schema_version"')
+              and provider.calls == calls)
+        refuse('provider_inventory_cloud_request_prepare', {})
+        check('preparation requires current owner authority',
+              not db('SELECT value FROM ci_settings WHERE name="provider_cloud_site_request_schema_version"')
+              and provider.calls == calls)
+        post(owner, settings, setup)
         check('owner explicitly prepares intake without provider calls',
               db('SELECT value FROM ci_settings WHERE name="provider_cloud_site_request_schema_version"') == [{'value': '1'}]
               and rows() == [] and provider.calls == calls and provider.posts == posts)
@@ -240,9 +256,9 @@ def run_browser(env, browser, owner, client, other, profile):
         decline_id = decline['request_id']
         decline_fields = form(owner, settings, 'provider_inventory_cloud_request_decline', decline_id)
         before = state()
-        post(owner, settings, decline_fields, note='Choose another domain.', confirm='1', current_password='wrong')
-        check('owner decline requires actual password without writing history', state() == before)
-        post(owner, settings, decline_fields, note='Choose another domain.', confirm='1', current_password=OWNER)
+        refuse('provider_inventory_cloud_request_decline', {'note': 'Choose another domain.', 'confirm': '1'}, decline_id)
+        check('owner decline requires current owner authority without writing history', state() == before)
+        post(owner, settings, decline_fields, note='Choose another domain.', confirm='1')
         check('owner decline reaches original client without creation',
               rows()[-1]['kind'] == 'decline' and 'Choose another domain.' in history(client, decline_id).text
               and 'Declined' in history(client, decline_id).text and provider.calls == before['calls'])
@@ -282,16 +298,20 @@ def run_browser(env, browser, owner, client, other, profile):
         dispatch = form(owner, settings, 'provider_inventory_cloud_request_dispatch', request_id)
         before = state()
         for label, delta in [('CSRF', {'csrf': 'invalid'}), ('review', {'reviewed': '0'}),
-                             ('context', {'dispatch_context': 'a' * 64}), ('password', {'current_password': 'wrong'})]:
-            response = post(owner, settings, {**dispatch, 'reviewed': '1', 'current_password': OWNER}, **delta)
+                             ('context', {'dispatch_context': 'a' * 64})]:
+            post(owner, settings, {**dispatch, 'reviewed': '1'}, **delta)
             check('owner dispatch refuses invalid ' + label + ' before provider send', state() == before)
+        refuse('provider_inventory_cloud_request_dispatch', {'reviewed': '1'}, request_id)
+        check('owner dispatch requires current owner authority before provider send', state() == before)
+        response = post(owner, settings, dispatch, reviewed='0')
         retry_form = soup(response).select_one('[data-cloud-website-request="' + request_id + '"] [data-cloud-website-form="provider_inventory_cloud_request_dispatch"]')
-        check('owner password failure retains exact reviewed IDs and blanks password and consent',
-              retry_form is not None and all(form_data(retry_form).get(k) == dispatch[k] for k in
+        check('owner review failure retains exact reviewed IDs without reprompt and clears consent',
+              state() == before and retry_form is not None and all(form_data(retry_form).get(k) == dispatch[k] for k in
                                             ('request_id', 'expected_event', 'dispatch_id', 'grant_id', 'dispatch_context'))
-              and retry_form.select_one('[name=current_password]').get('value', '') == ''
+              and not retry_form.select('[name=current_password],[name=owner_password]')
+              and bool(form_data(retry_form).get('csrf'))
               and retry_form.select_one('[name=reviewed]').get('checked') is None)
-        result = post(owner, settings, dispatch, reviewed='1', current_password=OWNER)
+        result = post(owner, settings, dispatch, reviewed='1')
         grant_id = dispatch['grant_id']
         ledger_rows = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['cloudsite:' + grant_id])
         check('owner approval sends exactly one documented requested website',
@@ -305,7 +325,7 @@ def run_browser(env, browser, owner, client, other, profile):
               db('SELECT * FROM ci_provider_package_links ORDER BY id') == before['links']
               and db('SELECT * FROM ci_provider_cloud_confirmations ORDER BY id') == before['confirmations']
               and 'Accepted by 20i; confirmation needed' in history(client, request_id).text)
-        before = state(); post(owner, settings, dispatch, reviewed='1', current_password=OWNER)
+        before = state(); post(owner, settings, dispatch, reviewed='1')
         check('owner exact dispatch replay cannot send or create another event', state() == before)
         capture(client, intake, '[data-cloud-website-request="' + request_id + '"]', 'Accepted')
 
@@ -323,14 +343,16 @@ def run_browser(env, browser, owner, client, other, profile):
             fault_state = state()
             owner_fault = owner.get(settings, timeout=40)
             client_fault = get(client, intake)
+            owner_notice = soup(owner_fault).select_one('#cloud-website-requests .notice')
             check('lost dispatch history blocks both request pages without inventing empty state',
                   owner_fault.status_code == 200
-                  and soup(owner_fault).select_one('[data-cloud-history-unavailable]') is not None
+                  and owner_notice is not None
+                  and 'Request history needs review before more actions are available.' in owner_notice.get_text()
                   and 'Website request history is temporarily unavailable.' in client_fault.text
                   and soup(owner_fault).select_one('[data-cloud-website-form]') is None
                   and soup(client_fault).select_one('[data-cloud-website-form]') is None)
-            post(owner, settings, fault_prepare, current_password=OWNER)
-            post(owner, settings, dispatch, reviewed='1', current_password=OWNER)
+            post(owner, settings, fault_prepare)
+            post(owner, settings, dispatch, reviewed='1')
             check('preparation and dispatch cannot replace lost established history', state() == fault_state)
         finally:
             db('INSERT INTO ci_provider_cloud_site_request_events (' + ','.join(columns) + ') VALUES (?,?,?,?,?,?,?)',
@@ -351,14 +373,16 @@ def run_browser(env, browser, owner, client, other, profile):
               exact is not None and '#' + str(package_id) in exact.text and accepted['domain'] in exact.text)
         confirm = form_data(exact)
         check('confirmation form carries exact grant not client request identity', confirm['request_id'] == grant_id)
+        check('exact package confirmation retains CSRF without another owner password',
+              bool(confirm.get('csrf')) and not exact.select('[name=current_password],[name=owner_password]'))
         before = state()
-        post(owner, confirmation_url, confirm, reviewed='1', current_password=OWNER)
+        post(owner, confirmation_url, confirm, reviewed='1')
         assigned = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? AND package_id=?', [profile['id'], package_id])
         check('actual owner confirmation links exact returned package to original client',
               len(assigned) == 1 and assigned[0]['client_id'] == cid
               and len(db('SELECT * FROM ci_provider_cloud_confirmations ORDER BY id')) == len(before['confirmations']) + 1
               and provider.calls == before['calls'] and provider.posts == before['posts'])
-        before = state(); post(owner, confirmation_url, confirm, reviewed='1', current_password=OWNER)
+        before = state(); post(owner, confirmation_url, confirm, reviewed='1')
         check('exact package confirmation replay retains all event and ledger history', state() == before)
         client_card = history(client, request_id)
         check('client sees assigned confirmation without internal approval fields',

@@ -12,6 +12,8 @@ from urllib.parse import urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db
+from installed_owner_authority import revoked_owner
+from owner_browser_forms import assert_no_owner_reprompt, refuse_owner_action
 from staff_cases import OWNER
 
 
@@ -30,7 +32,7 @@ def run_browser(env, browser):
         checks.append({'name': name, 'passed': bool(condition)})
         env['check'](name, condition)
 
-    url = base + '/existing/admin/index.php?view=provider-settings'
+    url = base + '/existing/admin/index.php?view=provider-settings&section=advanced'
     route = '/reseller/*/passwordResetEmail'
     table = 'provider_password_reset_template_events'
     owner = requests.Session()
@@ -74,16 +76,16 @@ def run_browser(env, browser):
     check('cold GET has explicit preparation and no storage or provider side effect',
           response.status_code == 200 and soup(response).select_one('[data-reset-template-prepare]') is not None
           and not db('SHOW TABLES LIKE "ci_provider_password_reset_template_events"') and snapshot() == before)
-    for label, fields in [('CSRF', {'csrf': 'invalid', 'current_password': OWNER}),
-                          ('password', {'current_password': 'wrong'})]:
-        before = snapshot(); response = post_form('prepare', **fields)
-        check('preparation refuses ' + label + ' without writes', response.status_code == 200 and bool(soup(response).select('.notice.error')) and snapshot() == before)
-    response = post_form('prepare', current_password=OWNER)
+    before = snapshot(); response = post_form('prepare', csrf='invalid')
+    check('preparation refuses CSRF without writes', response.status_code == 200 and bool(soup(response).select('.notice.error')) and snapshot() == before)
+    refuse_owner_action({**env, 'check': check}, owner, url, 'provider_reset_template_prepare', {})
+    check('preparation requires current owner authority without writes', snapshot() == before)
+    response = post_form('prepare')
     check('explicit owner preparation has no provider call', response.status_code == 200 and soup(response).select_one('[data-reset-template-refresh]') is not None and provider.calls == calls)
     before_text = '\nPRIVATE_TEMPLATE_HTTP_BEFORE\r\n</textarea><script>window.templateLeak=1</script> & "quoted" — {{reset_url}}\t'
     desired = '\nPRIVATE_TEMPLATE_HTTP_AFTER\n<strong>Opaque email source</strong> & "quoted" — {{reset_url}}\t'
     provider.reset_template = before_text; provider.reset_template_mode = 'success'; provider.reset_template_write_mode = 'accepted'
-    response = post_form('refresh', current_password=OWNER)
+    response = post_form('refresh')
     check('first real GET returns an editor without write intent', response.status_code == 200 and provider.calls == calls + 1 and provider.get_paths[-1] == route and provider.posts == posts)
     edit = form(response, 'edit'); draft = form_data(edit); draft['content'] = desired
     before = snapshot(); response = owner.post(url, data=draft, timeout=25)
@@ -94,20 +96,32 @@ def run_browser(env, browser):
           and not rendered.select('script,strong') and snapshot() == before
           and base64.b64decode(approved['content_base64']).decode() == desired)
     original = {k: approved[k] for k in ('request_id', 'profile_id', 'revision', 'observation_id', 'review_sha256', 'content_base64')}
-    for label, overrides in [('CSRF', {'csrf': 'invalid', 'current_password': OWNER, 'reviewed': '1'}),
-                              ('password', {'current_password': 'wrong', 'reviewed': '1'}),
-                              ('consent', {'current_password': OWNER})]:
+    for label, overrides in [('CSRF', {'csrf': 'invalid', 'reviewed': '1'}),
+                              ('consent', {})]:
         data = dict(approved); data.update(overrides); before = snapshot()
         response = owner.post(url, data=data, timeout=25)
         retry = form_data(form(response, 'review'))
-        check('failed ' + label + ' preserves original approved bytes and clears secrets',
+        check('failed ' + label + ' preserves original approved bytes and clears consent without reprompt',
               response.status_code == 200 and bool(soup(response).select('.notice.error'))
               and all(retry.get(k) == v for k, v in original.items())
-              and not retry.get('current_password') and 'reviewed' not in retry and snapshot() == before)
+              and not form(response, 'review').select('[name=current_password],[name=owner_password]')
+              and bool(retry.get('csrf')) and 'reviewed' not in retry and snapshot() == before)
+    # The final approval exists only in the actual POST review response. Submit
+    # those sealed bytes under the same exact-retention role fixture used for GET forms.
+    check('captured approval retains CSRF and current-session authorization',
+          approved.get('action') == 'provider_reset_template_change' and bool(approved.get('csrf'))
+          and not review.select('[name=current_password],[name=owner_password]'))
+    before = snapshot()
+    with revoked_owner(env['WEB'] / 'existing', env['php']):
+        denied = owner.post(url, data={**approved, 'reviewed': '1'}, timeout=25, allow_redirects=False)
+        check('saving refuses the same signed-in owner after permission revocation',
+              denied.status_code == 403 or (denied.status_code == 200
+              and 'Your account does not have access to this action.' in denied.text))
+    check('save refusal retains every database record schema private byte and owner profile', snapshot() == before)
     for label, overrides in [('proof', {'review_sha256': '0' * 64}),
                               ('scope', {'revision': str(int(approved['revision']) + 1)}),
                               ('text', {'content_base64': base64.b64encode((desired + ' changed').encode()).decode()})]:
-        data = dict(approved); data.update({'current_password': OWNER, 'reviewed': '1', **overrides}); before = snapshot()
+        data = dict(approved); data.update({'reviewed': '1', **overrides}); before = snapshot()
         response = owner.post(url, data=data, timeout=25)
         check('altered ' + label + ' does not render a replacement approval or send',
               response.status_code == 200 and soup(response).select_one('[data-reset-template-review]') is None
@@ -127,6 +141,7 @@ def run_browser(env, browser):
         check('actual editor preserves leading newline and treats opaque markup as text',
               textarea.input_value() == before_text.replace('\r\n', '\n') and page.evaluate('typeof window.templateLeak') == 'undefined')
         textarea.fill(desired)
+        assert_no_owner_reprompt(check, section.locator('[data-reset-template-edit]'), 'template review')
         with page.expect_response(lambda r: r.request.method == 'POST' and 'provider-settings' in r.url) as response_info:
             section.locator('[data-reset-template-edit] button').click()
         review_response = response_info.value
@@ -151,8 +166,8 @@ def run_browser(env, browser):
         # The sealed final form must preserve those reviewed bytes exactly.
         sent_text = base64.b64decode(captured['content_base64']).decode()
         check('final form seals exactly the browser-submitted reviewed text', sent_text == desired.replace('\n', '\r\n'))
-        captured.update({'current_password': OWNER, 'reviewed': '1'})
-        review_locator.locator('[name=reviewed]').check(); review_locator.locator('[name=current_password]').fill(OWNER)
+        captured.update({'reviewed': '1'})
+        review_locator.locator('[name=reviewed]').check(); assert_no_owner_reprompt(check, review_locator.locator('form'), 'template save')
         review_locator.locator('button').click()
         # The save follows POST-redirect-GET, so the workspace details renders collapsed; open it as the owner would.
         page.locator('#password-reset-template > summary').click()
@@ -167,11 +182,11 @@ def run_browser(env, browser):
     finally:
         context.close()
 
-    cool(); response = post_form('verify', current_password=OWNER)
+    cool(); response = post_form('verify')
     check('separate different GET retains unresolved history with no resend',
           response.status_code == 200 and '20i reports a different template' in response.text
           and soup(response).select_one('[data-reset-template-edit]') is None and provider.posts == posts + [{'path': route, 'body': {'content': sent_text}}])
-    provider.reset_template = sent_text; cool(); response = post_form('verify', current_password=OWNER)
+    provider.reset_template = sent_text; cool(); response = post_form('verify')
     check('separate exact GET reports stored text without an email-delivery claim',
           response.status_code == 200 and 'Requested template reported by 20i' in response.text
           and 'does not confirm how the email renders or whether an email was delivered' in response.text

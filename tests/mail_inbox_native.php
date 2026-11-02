@@ -1,6 +1,8 @@
 <?php
 /** Disposable MySQL fixture; injected DNS/transport here, actual TLS in the separate receiving suite. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 use CajunWebPro\Foundation\MailReceiving\ReceivingFailure;
@@ -44,7 +46,7 @@ try {
     staff_seed_owner(1);
     foreach([2=>['mail.read'],3=>['mail.send'],4=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,$user===4?'owner':'administrator',json_encode($permissions)]);
     save_setting('mail_accounts_schema_version','1');mi_actor();$id=mi_create();mi_grant($id);
-    mi_deny('Inbox storage setup requires current owner password',fn()=>mail_inbox_migrate('wrong'));
+    mi_deny('Revoked owner refuses: Inbox storage setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>mail_inbox_migrate('wrong')));
     mi_actor(2);mi_deny('Reader cannot enable inbox storage',fn()=>mail_inbox_migrate($password));mi_actor();
     mi_deny('Inbox reads require explicit storage setup',fn()=>mi_read($id));
     mi_ok('Setup audit failure preserves unready state',mi_audit_failure(fn()=>mail_inbox_migrate($password),'inbox_setup')&&!mail_inbox_ready());

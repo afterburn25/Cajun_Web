@@ -1,0 +1,101 @@
+{
+  "predecessor": "a96c671a8d5a21ecaa87be33aafc7065c063dccc",
+  "scope": "Only reviewed MySQL event-ID collation, anonymous private-route denial and exact regression/installer receipt changes. Original source recipe remains immutable. No SQL schema, business permissions or production operations.",
+  "records": [
+    {
+      "path": "docs/TICKETS_COMBINED_SOURCE.json",
+      "before": "365513e6316c470d8d91325601310d237ffc918a815a6ac831c8a682debfcdb4",
+      "after": "8b85e54a78267ad0dfc6c17162a46aefe2bae698ac008136ffd3a1cea4c78c5f",
+      "edits": [
+        [
+          2841,
+          2923,
+          "      \"after\": \"c53962d322b82eed59c33ed8122f00c232307aad3080f6a877907e9509207192\"\n"
+        ],
+        [
+          6461,
+          6543,
+          "      \"after\": \"d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a\"\n"
+        ],
+        [
+          7052,
+          7134,
+          "      \"after\": \"8092cfdaa8cc0c424db9212c110cca65a7cbb113a8cbf2b6dfe41fbb01a197f6\"\n"
+        ],
+        [
+          7706,
+          7905,
+          "  \"scope\": \"Support tickets, retained public/private history, current-session setup, current authorized staff/client flows; development source only. No deployment or completed native/browser claim.\",\n  \"runtime_corrections\": {\n    \"predecessor\": \"a96c671a8d5a21ecaa87be33aafc7065c063dccc\",\n    \"scope\": \"Explicit ASCII-binary event identity for opening/event notification union; deliberate private403 before missing-client or foreign-ticket rendering; strict HTTP denial/status and exact ID regressions. No database schema, permission or real customer changes.\"\n  }\n"
+        ]
+      ],
+      "previous_output": "99bb3e8c2c54fb116e1d18b82c47ddcb185f7e2f3bd3faafa56a680c3149442e"
+    },
+    {
+      "path": "site/app/support/ticket_notifications.php",
+      "before": "7f84e346a4a3ad8576de442c20a4167bbfc4259ee6dad6ab7f93e2a92fb74f5e",
+      "after": "c53962d322b82eed59c33ed8122f00c232307aad3080f6a877907e9509207192",
+      "edits": [
+        [
+          3100,
+          3474,
+          "        $opening='SELECT t.id AS ticket_id,CONVERT(JSON_UNQUOTE(JSON_EXTRACT(t.initial_json,\\'$.opening.id\\')) USING ascii) COLLATE ascii_bin AS event_id,t.created_epoch AS epoch,'.($staff?0:1).' AS sequence'.$join.' WHERE '.$scope.' AND COALESCE(r.revision,'.$zero.')<'.($staff?0:1).' AND '.($staff?'(t.created_staff_id IS NULL OR t.created_staff_id<>?)':'t.created_staff_id IS NOT NULL');if($staff)$args[]=$id;\n"
+        ]
+      ]
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "before": "56ebede383e9650512c9d946f43df7d62fc2761a5d21ae2706d76ee2c25469e0",
+      "after": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a",
+      "edits": [
+        [
+          42675,
+          42787,
+          "    'app/support/ticket_notifications.php'=>'c53962d322b82eed59c33ed8122f00c232307aad3080f6a877907e9509207192',\n"
+        ],
+        [
+          451536,
+          451642,
+          "    'portal/controllers/tickets.php'=>'8092cfdaa8cc0c424db9212c110cca65a7cbb113a8cbf2b6dfe41fbb01a197f6',\n"
+        ]
+      ],
+      "previous_output": "03b20f968ece92c3f57995465ccc47984f645993e8ed71a54253e1879a9f8f41"
+    },
+    {
+      "path": "site/portal/controllers/tickets.php",
+      "before": "1ff5e9d69e5602f1e4e81fb61da51d6a12040e33f01adebbc063ada9169bab81",
+      "after": "8092cfdaa8cc0c424db9212c110cca65a7cbb113a8cbf2b6dfe41fbb01a197f6",
+      "edits": [
+        [
+          2489,
+          2976,
+          "function support_tickets_portal_render(?array $client,string $error):never {\n    header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');\n    if($client===null)fail_page('Sign in to view support tickets.',403);\n    $ctx=support_current();$support=$ctx?$ctx['session']['id']:null;\n    try{support_tickets_locked(function()use($client,$support):void {\n        support_tickets_portal_identity((int)$client['id'],$support);\n        if(!array_key_exists('ticket_new',$_GET)&&array_key_exists('ticket',$_GET)){\n            $row=support_tickets_row(support_tickets_form_id($_GET,'ticket'));\n            if((int)$row['client_id']!==(int)$client['id'])throw new RuntimeException('Ticket unavailable.');\n        }\n    });}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;fail_page('Support tickets are unavailable for this session.',403);}\n"
+        ]
+      ],
+      "previous_output": "bfefa6fd3b4db0f5fef6bcea085af056b5d182bb5a2b5426751381a7676c4b4c"
+    },
+    {
+      "path": "tests/support_ticket_screen_native_cases.php",
+      "before": "fc6ca6ed24dba527a10122ef0d2e1331c84bbb14afacaf5328836ff8df68d660",
+      "after": "1cef4d5cb532777f9e20d365041aeeefc39dde9fffa89814cbcb2d66f7bc6612",
+      "edits": [
+        [
+          4523,
+          5422,
+          "tn_staff(2);$before=workspace_activity_summary('admin');tn_ok('Ticket-only staff bell works without project administration',$before['count']===count(support_tickets_notification_page('admin','',100)['items'])&&!staff_can('clients.manage'));tn_change(500,503,'reply',['body'=>'Visible studio response']);tn_client();$updated=support_tickets_notification_page('client','',100);$ticketUpdates=array_values(array_filter($updated['items'],fn($event)=>$event['ticket_id']===tn_id(500)));tn_ok('Client activity links public reply by exact ticket event and public sequence',$ticketUpdates[0]['event_id']===tn_id(503)&&$ticketUpdates[0]['sequence']===2&&$ticketUpdates[0]['kind']==='reply'&&count($ticketUpdates)===2);tn_ok('Mixed opening and event identifiers retain exact ASCII binary identity',array_column($ticketUpdates,'event_id')===[tn_id(503),tn_id(10500)]&&count(array_filter(array_column($updated['items'],'event_id'),static fn($id)=>!preg_match('/^[a-f0-9]{32}$/D',$id)))===0);tn_ok('Opening ticket detail does not clear its notification',support_tickets_client_get(tn_id(500),1)['read']['unread']===2&&support_tickets_notification_page('client','',100)===$updated);\n"
+        ]
+      ]
+    },
+    {
+      "path": "tests/ticket_cases.py",
+      "before": "28916820558b9c77ccc2050f9a01661a40336c6f344445ba35dccaea325f46b5",
+      "after": "8f6403347dac6d3372b0162aecca7ce03601f9d1468c8959567823c903cbdb54",
+      "edits": [
+        [
+          7261,
+          7436,
+          "        check('Foreign or anonymous visitor receives an intentional private ticket denial', r.status_code==403 and r.headers.get('Cache-Control')=='no-store, private' and r.headers.get('Referrer-Policy')=='no-referrer' and subject not in soup(r).get_text() and soup(r).select_one('[value=client_tickets_reply]') is None)\n    with requests.Session() as anonymous:\n        for route in ['?tickets=1','?ticket_new=1']:\n            denied=anonymous.get(portal+route)\n            check('Anonymous ticket route fails closed without a server error '+route, denied.status_code==403 and 'Sign in to view support tickets.' in denied.text and denied.headers.get('Cache-Control')=='no-store, private' and soup(denied).select_one('[name=body]') is None)\n    check('Denied anonymous and foreign ticket reads preserve exact records', snapshot()==saved)\n"
+        ]
+      ]
+    }
+  ]
+}

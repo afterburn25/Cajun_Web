@@ -9,6 +9,7 @@ from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from owner_browser_forms import refuse_owner_action
 
 OWNER = 'Synthetic licensing HTTP passphrase 2026'
 CLIENT = 'Synthetic licensing client passphrase 2026'
@@ -76,11 +77,15 @@ def run_browser(env, browser):
 
     capture(owner, 'Licensing-Legacy-Setup', page_url, 'form:has(input[name=action][value=studio_license_setup])')
     for label, changes, reason in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),
-                                    ('password', {'current_password': 'wrong'}, 'Your current password is not correct.')]:
-        response = submit(owner, page_url, 'studio_license_setup', {'current_password': OWNER, **changes})
-        evidence('setup rejects ' + label, response, [reason])
+                                    ('owner permission', {}, None)]:
+        if label == 'owner permission':
+            response = refuse_owner_action(env, owner, page_url, 'studio_license_setup', {}, installed_root=dest)
+            check('Licensing setup refuses withdrawn owner authority before migration', response.status_code == 403)
+        else:
+            response = submit(owner, page_url, 'studio_license_setup', changes)
+            evidence('setup rejects ' + label, response, [reason])
         check('Licensing setup denied ' + label + ' preserves all original rows and audit', state() == initial)
-    response = submit(owner, page_url, 'studio_license_setup', {'current_password': OWNER}); evidence('setup upgrades populated legacy storage', response)
+    response = submit(owner, page_url, 'studio_license_setup', {}); evidence('setup upgrades populated legacy storage', response)
     after = state()
     check('Licensing actual owner setup records exact old invoice boundary and preserves every old license domain bundle',
           {r['name']: r['value'] for r in after['settings']}['license_invoice_cutover'] == '900'
@@ -146,16 +151,21 @@ def run_browser(env, browser):
 
     original_invoices = db('SELECT * FROM licweb_studio_invoices ORDER BY id')
     original_snapshots = db('SELECT * FROM licweb_catalog_invoice_snapshots ORDER BY id')
-    review = {'invoice_id': '900', 'license_id': '1', 'confirm': '1', 'evidence': 'Owner checked exact original synthetic purchase record', 'current_password': OWNER}
+    review = {'invoice_id': '900', 'license_id': '1', 'confirm': '1', 'evidence': 'Owner checked exact original synthetic purchase record'}
     cases = [('CSRF', owner, {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),
-             ('password', owner, {'current_password': 'wrong'}, 'Your current password is not correct.'),
+             ('owner permission', owner, {}, None),
              ('confirmation', owner, {'confirm': '0'}, 'Confirm the exact invoice decision and record its evidence (10–200 characters).'),
              ('foreign license', owner, {'license_id': '3'}, 'Choose an unlinked ordinary license for this exact client and product.'),
              ('master license', owner, {'license_id': str(master['id'])}, 'Choose an unlinked ordinary license for this exact client and product.'),
              ('nonowner', staff, {}, 'Your account does not have access to this action.')]
     for label, session, changes, reason in cases:
-        before = state(); response = raw_post(session, 'studio_license_legacy_review', address=admin + '?view=dashboard' if label == 'nonowner' else page_url, **{**review, **changes})
-        evidence('legacy review rejects ' + label, response, [reason])
+        before = state()
+        if label == 'owner permission':
+            response = refuse_owner_action(env, owner, page_url, 'studio_license_legacy_review', review, installed_root=dest)
+            check('Licensing legacy invoice review refuses withdrawn owner authority', response.status_code == 403)
+        else:
+            response = raw_post(session, 'studio_license_legacy_review', address=admin + '?view=dashboard' if label == 'nonowner' else page_url, **{**review, **changes})
+            evidence('legacy review rejects ' + label, response, [reason])
         check('Licensing legacy review denied ' + label + ' preserves all original license history', state() == before)
     capture(owner, 'Licensing-Owner-Invoice-Review', page_url, 'form:has(input[name=action][value=studio_license_legacy_review])')
     before = state(); response = submit(owner, page_url, 'studio_license_legacy_review', review); evidence('owner explicitly links original revoked license', response)
@@ -172,11 +182,11 @@ def run_browser(env, browser):
 
     # Use actual support setup and grant. No borrowed client cookie establishes support authority.
     support = admin + '?view=support'
-    response = submit(owner, support, 'support_migrate', {'owner_password': OWNER, 'confirm': '1'})
+    response = submit(owner, support, 'support_migrate', {'confirm': '1'})
     evidence('isolated support preparation', response)
-    check('Licensing support setup is explicitly ready before opening a session', 'Support access is ready.' in response.text
+    check('Licensing support setup is explicitly ready before opening a session', 'Owner account review is ready. Staff support access remains restricted until approved.' in response.text
           and db("SELECT name,value FROM licweb_settings WHERE name IN ('support_schema_version','support_policy_confirmed') ORDER BY name") == [{'name': 'support_policy_confirmed', 'value': '1'}, {'name': 'support_schema_version', 'value': '1'}])
-    response = chosen_form(owner, support, 'support_policy', 'client_id', 1, {'allowed': '1', 'owner_password': OWNER})
+    response = chosen_form(owner, support, 'support_policy', 'client_id', 1, {'allowed': '1'})
     evidence('isolated support permission', response)
     check('Licensing support grant is saved for only the selected client', db('SELECT client_id,allowed FROM licweb_support_clients') == [{'client_id': 1, 'allowed': 1}])
     response = chosen_form(owner, support, 'support_start', 'client_id', 1, {})

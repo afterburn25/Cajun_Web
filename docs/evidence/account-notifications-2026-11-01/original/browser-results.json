@@ -1,0 +1,175 @@
+{
+  "passed": false,
+  "source_sha": "fc14b84170407a0c30616fd278bab79a20657a24",
+  "scope": "Actual isolated customer/admin/support HTTP, database and Chromium credential lifecycle; no real user or external provider",
+  "checks": [
+    {
+      "name": "Anonymous account page asks for login without customer information",
+      "passed": true
+    },
+    {
+      "name": "Private account pages are noncacheable and nonindexable",
+      "passed": true
+    },
+    {
+      "name": "Anonymous password POST cannot mutate account or audit",
+      "passed": true
+    },
+    {
+      "name": "Conflicting or malformed account request is refused account[]=1",
+      "passed": true
+    },
+    {
+      "name": "Conflicting or malformed account request is refused account=2",
+      "passed": true
+    },
+    {
+      "name": "Conflicting or malformed account request is refused account=1&software=1",
+      "passed": true
+    },
+    {
+      "name": "Conflicting or malformed account request is refused account=1&finance=1",
+      "passed": true
+    },
+    {
+      "name": "Conflicting or malformed account request is refused account=1&job=1",
+      "passed": true
+    },
+    {
+      "name": "Private account entry denies direct request app/clients/account_security.php",
+      "passed": true
+    },
+    {
+      "name": "Private account entry denies direct request portal/views/account.php",
+      "passed": true
+    },
+    {
+      "name": "Combined owner session enables notification storage without another password",
+      "passed": true
+    },
+    {
+      "name": "Real project message creates the combined private notification",
+      "passed": true
+    },
+    {
+      "name": "Actual account login alice@example.invalid",
+      "passed": true
+    },
+    {
+      "name": "Actual account login alice@example.invalid",
+      "passed": true
+    },
+    {
+      "name": "Actual account login bob@example.invalid",
+      "passed": true
+    },
+    {
+      "name": "Customer workspace links to account settings",
+      "passed": true
+    },
+    {
+      "name": "Same customer workspace retains both notification and account navigation",
+      "passed": true
+    },
+    {
+      "name": "Notification center works alongside account settings",
+      "passed": true
+    },
+    {
+      "name": "Wrong current password preserves all account and project records",
+      "passed": true
+    },
+    {
+      "name": "Failed form never echoes any password",
+      "passed": true
+    },
+    {
+      "name": "Mismatched confirmation preserves credentials and audit",
+      "passed": true
+    },
+    {
+      "name": "Forged CSRF cannot change credentials",
+      "passed": true
+    },
+    {
+      "name": "Authenticated password change succeeds and stays on account page",
+      "passed": true
+    },
+    {
+      "name": "Submitted target ID cannot modify another customer",
+      "passed": true
+    },
+    {
+      "name": "Credentials rotate and unused invitations are revoked",
+      "passed": true
+    },
+    {
+      "name": "HTTP session cookie and CSRF rotate",
+      "passed": true
+    },
+    {
+      "name": "Other previously signed-in browser loses account access",
+      "passed": true
+    },
+    {
+      "name": "Password rotation revokes the old session from private notifications",
+      "passed": true
+    },
+    {
+      "name": "Updated current session retains its own private notification",
+      "passed": true
+    },
+    {
+      "name": "Credential change does not mutate feed state or delivery history",
+      "passed": true
+    },
+    {
+      "name": "Old form token cannot perform another credential change",
+      "passed": true
+    },
+    {
+      "name": "Old password no longer signs in",
+      "passed": true
+    },
+    {
+      "name": "Administrator sign-in is not treated as customer authentication",
+      "passed": true
+    },
+    {
+      "name": "Admin-only forged customer target is refused",
+      "passed": true
+    },
+    {
+      "name": "Actual owner review session opens",
+      "passed": true
+    },
+    {
+      "name": "Actual support review cannot view customer password form",
+      "passed": true
+    },
+    {
+      "name": "Actual support review cannot change customer credentials",
+      "passed": true
+    },
+    {
+      "name": "Actual owner navigation retains named same-origin destinations",
+      "passed": true
+    },
+    {
+      "name": "20i workspace remains visible in expanded Hosting and Domains",
+      "passed": true
+    },
+    {
+      "name": "Actual 20i navigation opens the protected workspace",
+      "passed": false
+    },
+    {
+      "name": "AssertionError: Actual 20i navigation opens the protected workspace",
+      "passed": false
+    },
+    {
+      "name": "No unexpected PHP or application diagnostics",
+      "passed": true
+    }
+  ]
+}

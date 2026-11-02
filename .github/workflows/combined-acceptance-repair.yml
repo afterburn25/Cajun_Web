@@ -1,0 +1,190 @@
+name: Combined acceptance repair validation
+on:
+  push:
+    branches: [chatgpt/combined-acceptance-repair-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: combined-acceptance-repair-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/combined-acceptance-repair-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply reviewed corrections to exact predecessor files
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          git merge-base --is-ancestor 4c4ebae721baf26e3b0340aadaec618bc9d6c0da HEAD
+          python3 tools/integration/combined_acceptance_repair.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          path=Path('.github/workflows/1261-main-reconcile.yml')
+          committed=path.read_bytes()
+          if not Path('docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json').exists():
+              old=subprocess.check_output(['git','show','2f11bc1fa202020880ead9abc1ee72d19205cac5:'+str(path)])
+              path.write_bytes(old)
+          subprocess.run(['python3','tools/integration/combined_remaining_fixtures.py'],check=True)
+          if path.read_bytes()!=committed:raise SystemExit('Reviewed workflow differs from the already committed version')
+          PY
+          python3 tools/integration/combined_native_round2.py
+          python3 tools/build.py --refresh
+          python3 tests/combined_repair_provenance.py
+          php tests/current_staff_permission_contract.php
+          git diff --exit-code -- .github/workflows
+          git diff --check
+      - name: Record ordinary expanded source on the isolated branch only
+        id: record
+        env:
+          GH_SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git diff --exit-code -- .github/workflows
+          git add -- site tests docs tools/acceptance-contract.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Preserve staff authority and reconcile remaining combined native fixtures'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/combined-acceptance-repair-20261031'
+          expected=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=expected:raise SystemExit('Correction branch advanced; refuse to overwrite concurrent work')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:
+              auth=base64.b64encode(('x-access-token:'+os.environ['GH_SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Recorded exact source:',head)
+          PY
+      - name: Preserve tracked source and identity
+        if: always()
+        run: |
+          mkdir -p qa/repair-source
+          git archive --format=tar.gz HEAD > qa/repair-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/repair-source/identity.txt
+          git status --porcelain > qa/repair-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: combined-repair-source-${{ github.sha }}
+          path: qa/repair-source/
+          if-no-files-found: error
+          retention-days: 14
+  portable:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain source identities historical assertions and all portable policies
+        run: |
+          mkdir -p qa/repair-portable
+          python3 tests/combined_runtime_repair.py
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          python3 tests/combined_repair_provenance.py > qa/repair-portable/source.json
+          python3 tests/acceptance_artifacts_test.py --report qa/repair-portable/helpers.json
+          python3 tools/integration/portable_checks.py --root . --out qa/repair-portable
+          php tests/master_portal_policy.php
+          php tests/current_owner_authority_contract.php > qa/repair-portable/authority.json
+          php tests/current_staff_permission_contract.php > qa/repair-portable/staff-authority.json
+          php tests/checkout_authority_contract.php > qa/repair-portable/checkout.json
+          php tests/provider_workspace_focus.php > qa/repair-portable/focus.json
+          php tests/backups/run.php > qa/repair-portable/backups.log
+          php tests/backups/prune_atomicity.php > qa/repair-portable/prune.json
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
+          python3 tests/build_guards.py > qa/repair-portable/build-guards.log
+          python3 tools/check_docs.py > qa/repair-portable/docs.log
+          git diff --exit-code
+      - name: Preserve all evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: combined-repair-portable-${{ needs.assemble.outputs.sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        database: [mysql,mariadb]
+        shard: [0,1,2]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306','43319:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_IMAGE: cwp-consolidation-php:8.4
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare isolated native runtime and explicitly named disposable databases
+        run: |
+          docker build -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");$p->exec("CREATE DATABASE cwp_checkout_test");$p->exec("GRANT ALL ON cwp_checkout_test.* TO ". $p->quote("cwp_test")."@".$p->quote("%"));exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Execute every selected complete suite and preserve failures honestly
+        run: python3 tests/consolidation_native.py --shard ${{ matrix.shard }}
+      - name: Preserve named results and diagnostics without private fixture data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: combined-repair-native-${{ matrix.database }}-${{ matrix.shard }}-${{ needs.assemble.outputs.sha }}
+          path: qa/consolidation-native/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [assemble,portable,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Exact corrected source passed portable and all63 native suites per database. This is not full installed Apache/browser acceptance or a production release. No main merge, deployment, payment, provider operation or replacement ZIP was performed.' >> "$GITHUB_STEP_SUMMARY"

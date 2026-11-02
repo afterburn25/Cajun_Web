@@ -8,13 +8,15 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ('BASE', 'QA', 'check', 'provider_server'))
     soup, token, submit = (env[k] for k in ('soup', 'token', 'submit'))
     admin = base + '/existing/admin/index.php'; portal = base + '/existing/portal/index.php'
-    url = admin + '?view=provider-settings'; staff_url = admin + '?view=staff'
+    url = admin + '?view=provider-settings&section=advanced&stackcp_page=1&stackcp_access_page=1'; staff_url = admin + '?view=staff'
+    inventory_url = admin + '?view=provider-settings&section=services'
     secret = 'SYNTHETIC_STACKCP_AUTH_CLIENT_KEY'; identity = 'stack-user:24001'; package = 2401
     db('DELETE FROM ci_rate_limits')
     inherited = {name: db('SELECT * FROM ci_' + name + ' ORDER BY ' + ('seq' if name == 'provider_refreshes' else 'id'))
@@ -37,16 +39,16 @@ def run_browser(env, browser):
           and baseline['last_login'] is not None and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original['id']]) == [original_staff])
     email = 'stackcp-setup-owner@example.invalid'
     check('StackCP dedicated owner and package start absent', not db('SELECT id FROM ci_users WHERE email=?', [email]) and not db('SELECT id FROM ci_provider_package_links WHERE package_id=?', [package]))
-    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'StackCP setup owner', 'email': email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
+    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'StackCP setup owner', 'email': email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     actor = db('SELECT id FROM ci_users WHERE email=?', [email])[0]['id']
-    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', actor, {'owner_password': OWNER})
+    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', actor, {})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
     activated = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
     check('StackCP dedicated owner is activated without changing existing authority', activated.status_code == 200 and urlparse(activated.url).query == 'view=login'
           and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [actor]) == [{'role': 'owner', 'enabled': 1}]
           and db('SELECT * FROM ci_users WHERE id=?', [original['id']]) == [baseline] and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original['id']]) == [original_staff])
-    setup.close(); activation.close()
+    activation.close()
     owner = requests.Session(); submit(owner, admin + '?view=login', 'login', {'email': email, 'password': OWNER})
     member = requests.Session(); submit(member, admin + '?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})
     client = requests.Session(); submit(client, portal, 'login', {'email': 'alice@example.invalid', 'password': 'Synthetic client passphrase 2026'})
@@ -54,32 +56,37 @@ def run_browser(env, browser):
     client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
     diagnostics = []
 
-    def evidence(label, response, expected_error=None):
+    def evidence(label, response, expected_error=None, *, expected_status=200):
         errors = [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]
         item = {'step': label, 'status': response.status_code, 'redirect_statuses': [r.status_code for r in response.history],
                 'expected_error_present': expected_error is None or any(expected_error in n for n in errors),
                 'sensitive_values_absent': secret not in response.text and OWNER not in response.text,
                 'provider_calls': provider.calls}
         diagnostics.append(item); (qa / 'stackcp-prerequisites-response-diagnostics.json').write_text(json.dumps(diagnostics, indent=2))
-        check('StackCP ' + label + ' returns safe expected response', response.status_code == 200 and item['expected_error_present'] and item['sensitive_values_absent'])
+        check('StackCP ' + label + ' returns safe expected response', response.status_code == expected_status and item['expected_error_present'] and item['sensitive_values_absent'])
 
     def post(action, **fields):
         response = owner.get(url); candidates = [f for f in soup(response).select('form') if f.select_one('input[name=action][value="' + action + '"]')]
         chosen = next((f for f in candidates if not f.select_one('input[name=package_id]') or f.select_one('input[name=package_id]').get('value') == str(package)), None)
         check('StackCP real form exists for ' + action, chosen is not None)
         data = {n['name']: n.get('value', '') for n in chosen.select('input[name]')}
-        data.update({'current_password': OWNER, **fields})
+        data.update(fields)
         if 'review_sha256[]' in fields:
             data.pop('review_sha256', None)
         return owner.post(url, data=data)
 
     prefix = 'provider_inventory_stackcp_'; calls = provider.calls
     before = owner.get(url)
-    check('StackCP GET offers explicit preparation without creating tables or sessions', before.status_code == 200 and prefix + 'auth_prepare' in before.text
+    check('StackCP focused GET offers explicit preparation without unrelated provider workspaces, tables or sessions', before.status_code == 200 and prefix + 'auth_prepare' in before.text
+          and 'id="force-ssl-changes"' not in before.text and 'id="directory-listing-changes"' not in before.text
           and not db('SHOW TABLES LIKE "ci_provider_stackcp_auth"') and provider.calls == calls)
     check('StackCP administrator and support context are refused', member.get(url).status_code == 403 and owner.get(url + '&support=fixture').status_code == 403)
-    for label, fields, reason in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'), ('password', {'current_password': 'wrong'}, 'current password')]:
-        response = post(prefix + 'auth_prepare', **fields); evidence('prepare invalid ' + label, response, reason)
+    for label, fields, reason in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'), ('revoked owner', {}, None)]:
+        if label == 'revoked owner':
+            response = refuse_owner_action(env, setup, url, prefix + 'auth_prepare', {})
+            evidence('prepare invalid ' + label, response, expected_status=403)
+        else:
+            response = post(prefix + 'auth_prepare', **fields); evidence('prepare invalid ' + label, response, reason)
         check('StackCP invalid preparation writes no family or provider request ' + label, not db('SHOW TABLES LIKE "ci_provider_stackcp_auth"') and provider.calls == calls)
     response = post(prefix + 'auth_prepare'); evidence('local authentication preparation', response)
     check('StackCP preparation creates an empty auth family only', db('SHOW TABLES LIKE "ci_provider_stackcp_auth"') and not db('SELECT * FROM ci_provider_stackcp_auth') and not db('SHOW TABLES LIKE "ci_provider_stackcp_assignments"') and provider.calls == calls)
@@ -93,11 +100,12 @@ def run_browser(env, browser):
     check('StackCP assignment preparation does not create drafts', db('SHOW TABLES LIKE "ci_provider_stackcp_assignments"') and not db('SELECT * FROM ci_provider_stackcp_assignments') and provider.calls == calls)
     provider.mode = 'success'; provider.packages += [{'id': package, 'typeRef': 12, 'name': 'stackcp-setup.synthetic.invalid', 'names': ['stackcp-setup.synthetic.invalid'], 'enabled': True, 'created': '2000-01-01T00:00:00Z'}]
     latest = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']; time.sleep(max(0, int(latest or 0) + 31 - time.time()))
-    page = owner.get(url); response = owner.post(url, data={'action': 'provider_inventory_refresh', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision']), 'current_password': OWNER})
+    page = owner.get(inventory_url); response = owner.post(inventory_url, data={'action': 'provider_inventory_refresh', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision'])})
     check('StackCP fixture makes one ordinary hosting-list read only', response.status_code == 200 and provider.calls == calls + 1 and provider.get_paths[-1] == '/package')
-    page = owner.get(url); response = owner.post(url, data={'action': 'provider_inventory_link', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision']), 'package_id': str(package), 'client_id': str(client_id), 'current_password': OWNER})
+    page = owner.get(inventory_url); response = owner.post(inventory_url, data={'action': 'provider_inventory_link', 'csrf': token(page), 'profile_id': profile['id'], 'revision': str(profile['revision']), 'package_id': str(package), 'client_id': str(client_id)})
     links = db('SELECT * FROM ci_provider_package_links WHERE profile_id=? ORDER BY package_id', [profile['id']]); link = next(r for r in links if r['package_id'] == package)
-    page_number = [r['package_id'] for r in links].index(package) // 20 + 1; url += '&stackcp_page=' + str(page_number); calls = provider.calls
+    page_number = [r['package_id'] for r in links].index(package) // 20 + 1
+    url = admin + '?view=provider-settings&section=advanced&stackcp_page=' + str(page_number) + '&stackcp_access_page=' + str(page_number); calls = provider.calls
     response = post(prefix + 'assignment_save', stack_identity=identity, acknowledged='1'); evidence('save unverified local draft', response)
     draft_rows = db('SELECT * FROM ci_provider_stackcp_assignments ORDER BY ordinal')
     check('StackCP local draft binds exact client package and auth without provider verification', len(draft_rows) == 1 and json.loads(draft_rows[0]['document_json'])['state'] == 'unverified'
@@ -120,7 +128,7 @@ def run_browser(env, browser):
     before_form = captured.select_one('input[name=review_sha256]')['value']
     response = post(prefix + 'auth_disable'); evidence('disable local key', response)
     # Disabled setup deliberately removes the save form; submit the captured old form directly to verify the server fence.
-    page = owner.get(url); response = owner.post(url, data={'action': prefix + 'assignment_save', 'csrf': token(page), 'profile_id': profile['id'], 'package_id': str(package), 'link_id': link['id'], 'review_sha256': before_form, 'stack_identity': identity, 'acknowledged': '1', 'current_password': OWNER})
+    page = owner.get(url); response = owner.post(url, data={'action': prefix + 'assignment_save', 'csrf': token(page), 'profile_id': profile['id'], 'package_id': str(package), 'link_id': link['id'], 'review_sha256': before_form, 'stack_identity': identity, 'acknowledged': '1'})
     evidence('stale captured draft refusal', response, 'authority changed')
     selected_page = owner.get(url); selected = next(n for n in soup(selected_page).select('[data-stackcp-assignment]') if n.select_one('h3').get_text(strip=True) == 'Package ' + str(package))
     check('StackCP disabled configuration leaves exact selected draft historical and performs no request', selected_page.status_code == 200 and db('SELECT * FROM ci_provider_stackcp_assignments ORDER BY ordinal') == draft_rows and provider.calls == calls and selected.select_one('strong').get_text(strip=True) == 'Local assignment needs owner review')
@@ -140,4 +148,4 @@ def run_browser(env, browser):
           and db('SELECT * FROM ci_provider_profiles WHERE id=?', [profile['id']]) == [profile]
           and db('SELECT * FROM ci_users WHERE id=?', [original['id']]) == [baseline] and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original['id']]) == [original_staff])
     (qa / 'stackcp-prerequisites-history-preservation.json').write_text(json.dumps({'actor_id': actor, 'retained': retained, 'inherited_sha256': {k: hashlib.sha256(json.dumps(v, sort_keys=True, separators=(',', ':')).encode()).hexdigest() for k, v in (inherited | optional_history).items()}, 'reads': reads}, indent=2))
-    owner.close(); member.close(); client.close()
+    setup.close(); owner.close(); member.close(); client.close()

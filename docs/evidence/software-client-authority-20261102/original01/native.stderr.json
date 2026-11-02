@@ -1,0 +1,6 @@
+{
+  "encoding": "utf-8",
+  "content": "FAIL: AssertionError: Waiting authority worker diagnostics: CWP [3B04EEA5] RuntimeException code=0 in software_subscription_enroll.php:24\nCWP [059696ED] PDOException code=23000 in database.php:13\n\n",
+  "sha256": "e160b5a8b8be78b030959a24aabdabf610f185585be6df63aba6762f2c56b0e3",
+  "note": "Exact original diagnostic bytes represented losslessly; the original raw log remains in the retained scratch trial."
+}

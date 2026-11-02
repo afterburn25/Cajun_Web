@@ -1,0 +1,21 @@
+{
+  "command": [
+    "tests/finance_replacement_receipts_native.php",
+    "fep_fadjrcpt_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 400.633,
+  "stderr_bytes": 2481,
+  "report_passed": false,
+  "check_count": 232,
+  "failed_checks": [
+    "partial_first-after_retirement-normal refuses create when remaining receipts changed",
+    "paid_later-after_retirement-normal refuses create when remaining receipts changed",
+    "partial_later-after_retirement-normal refuses create when remaining receipts changed",
+    "paid_first-after_retirement-normal refuses create when remaining receipts changed",
+    "partial_later-during_readback-normal retires or visibly retains the obsolete candidate",
+    "partial_later-during_readback-normal retains actual owner receipts",
+    "partial_later-during_readback-normal retains candidate identity and predecessor history"
+  ]
+}

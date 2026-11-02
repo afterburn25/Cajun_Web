@@ -1,0 +1,263 @@
+name: Proposals on combined application acceptance
+on:
+  push:
+    branches: [chatgpt/proposals-combined-20261031]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: proposals-combined-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/proposals-combined-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reconcile exact proposal source with current combined runtime
+        run: |
+          git merge-base --is-ancestor 3930ad96504006c5adcd511f9061da2fc8dec180 HEAD
+          python3 tools/integration/proposals_combined_apply.py
+          mkdir -p qa/combined-proposals
+          php tests/proposals_staff_lock.php > qa/combined-proposals/staff-lock.json
+          php tests/proposal_version_binding.php > qa/combined-proposals/decision-model.json
+          php tests/proposals_schema_policy.php > qa/combined-proposals/schema-policy.json
+          php tests/proposals/run.php > qa/combined-proposals/foundation.log
+          python3 tests/combined_repair_provenance.py > qa/combined-proposals/provenance.json
+          python3 tests/acceptance_artifacts_test.py --report qa/combined-proposals/helpers.json
+      - name: Record the resolved integration preserving both source histories
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git diff --exit-code -- .github/workflows
+          git add -- site tests docs tools/build.py
+          python3 - <<'PY'
+          import os,base64,subprocess
+          branch='refs/heads/chatgpt/proposals-combined-20261031'
+          expected=os.environ['EXPECTED_HEAD'];incoming='052c42fee5c2e3eb79ee8fa3fcf0bd9350be3aab'
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:raise SystemExit('Unexpected checkout head')
+          tree=subprocess.check_output(['git','write-tree'],text=True).strip()
+          args=['git','commit-tree',tree,'-p',head]
+          if subprocess.run(['git','merge-base','--is-ancestor',incoming,head]).returncode:args+=['-p',incoming]
+          oldtree=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()
+          if tree!=oldtree or len(args)>5:
+              head=subprocess.check_output(args+['-m','Integrate reviewed proposals with current licensing portal 20i and backups'],text=True).strip()
+              subprocess.run(['git','reset','--hard',head],check=True)
+          subprocess.run(['python3','tests/combined_runtime_repair.py'],check=True)
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=expected:raise SystemExit('Integration branch moved; refusing concurrent overwrite')
+          if head!=expected:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Resolved combined source:',head)
+          PY
+      - name: Preserve exact candidate source without publishing release packages
+        if: always()
+        run: |
+          mkdir -p qa/combined-proposals
+          git archive --format=tar.gz HEAD > qa/combined-proposals/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/combined-proposals/identity.txt
+          git status --porcelain > qa/combined-proposals/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: proposals-combined-source-${{ github.sha }}
+          path: qa/combined-proposals/
+          if-no-files-found: error
+          retention-days: 14
+  portable:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain source identities historical assertions and portable policies
+        run: |
+          mkdir -p qa/repair-portable
+          python3 tests/combined_runtime_repair.py
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          python3 tests/combined_repair_provenance.py > qa/repair-portable/source.json
+          python3 tests/acceptance_artifacts_test.py --report qa/repair-portable/helpers.json
+          python3 tools/integration/portable_checks.py --root . --out qa/repair-portable
+          php tests/proposals_staff_lock.php > qa/repair-portable/proposals-staff.json
+          php tests/master_portal_policy.php
+          php tests/current_owner_authority_contract.php > qa/repair-portable/authority.json
+          php tests/current_staff_permission_contract.php > qa/repair-portable/staff-authority.json
+          php tests/checkout_authority_contract.php > qa/repair-portable/checkout.json
+          php tests/provider_workspace_focus.php > qa/repair-portable/focus.json
+          php tests/backups/run.php > qa/repair-portable/backups.log
+          php tests/backups/prune_atomicity.php > qa/repair-portable/prune.json
+          python3 tests/sandbox_workflow_contract.py
+          python3 tests/anet_sandbox_runtime_contract.py
+          python3 tests/build_guards.py > qa/repair-portable/build-guards.log
+          python3 tools/check_docs.py > qa/repair-portable/docs.log
+          git diff --exit-code
+      - name: Preserve evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: proposals-combined-portable-${{ needs.source.outputs.sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        database: [mysql,mariadb]
+        shard: [0,1,2]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306','43319:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_IMAGE: cwp-consolidation-php:8.4
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and disposable databases
+        run: |
+          docker build -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");$p->exec("CREATE DATABASE cwp_checkout_test");$p->exec("GRANT ALL ON cwp_checkout_test.* TO ". $p->quote("cwp_test")."@".$p->quote("%"));exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Execute all retained complete suites and preserve failures honestly
+        run: python3 tests/consolidation_native.py --shard ${{ matrix.shard }}
+      - name: Preserve named results without private fixture data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: proposals-combined-native-${{ matrix.database }}-${{ matrix.shard }}-${{ needs.source.outputs.sha }}
+          path: qa/consolidation-native/
+          if-no-files-found: error
+          retention-days: 14
+  installed:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare disposable runtime database and browser
+        run: |
+          docker build -t cwp-proposal-review - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-proposal-review php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/proposal-bin" qa/proposal-binding
+          cat > "$RUNNER_TEMP/proposal-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run --rm -i --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-proposal-review php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/proposal-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/proposal-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/proposal-bin" >> "$GITHUB_PATH"
+          python3 -m venv "$RUNNER_TEMP/proposal-venv"
+          "$RUNNER_TEMP/proposal-venv/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/proposal-venv/bin/python" -m playwright install --with-deps chromium
+      - name: Exercise proposal SQL lifecycle and exact state retention
+        run: |
+          php tests/proposal_binding_seed.php config
+          php tests/proposals_native.php > qa/proposal-binding/native.stdout.log 2> qa/proposal-binding/native.stderr.log
+          test ! -s qa/proposal-binding/native.stderr.log
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path('qa/proposal-version-native.json');r=json.loads(p.read_text())
+          assert r['passed'] is True and len(r['checks'])>=92 and all(c['passed'] is True for c in r['checks'])
+          r['source_sha']=os.environ['CWP_SOURCE_SHA'];p.write_text(json.dumps(r,indent=2)+'\n')
+          print('Actual database checks passed',len(r['checks']))
+          PY
+      - name: Test actual stale browser tab followed by fresh approval
+        run: |
+          "$RUNNER_TEMP/proposal-venv/bin/python" tests/proposal_binding_browser.py
+          git diff --exit-code
+      - name: Preserve reports and synthetic browser captures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: proposals-combined-installed-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: |
+            qa/proposal-binding/
+            qa/proposal-version-native.json
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,portable,native,installed]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Combined source passed retained portable policies, all63 legacy SQL suites per engine and new proposal SQL/two-tab browser checks on both engines. Full Apache/updater/remaining-feature acceptance and a new-version release are still separate. No main merge, live deployment, provider operation or customer charge.' >> "$GITHUB_STEP_SUMMARY"

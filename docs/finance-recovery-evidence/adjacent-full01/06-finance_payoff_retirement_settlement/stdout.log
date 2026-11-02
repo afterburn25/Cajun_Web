@@ -1,0 +1,333 @@
+{
+    "passed": true,
+    "count": 41,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "normal creates exact initial subscription",
+            "passed": true
+        },
+        {
+            "name": "normal verified installment 1 commits",
+            "passed": true
+        },
+        {
+            "name": "normal verified installment 2 commits",
+            "passed": true
+        },
+        {
+            "name": "normal verified installment 3 commits",
+            "passed": true
+        },
+        {
+            "name": "normal cancellation outcome does not erase verified final payment",
+            "passed": true
+        },
+        {
+            "name": "normal retains exactly three verified transaction mappings",
+            "passed": true
+        },
+        {
+            "name": "normal preserves license and domain rights",
+            "passed": true
+        },
+        {
+            "name": "normal delayed duplicate cannot reopen paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout creates exact initial subscription",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout verified installment 1 commits",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout verified installment 2 commits",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout verified installment 3 commits",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout cancellation outcome does not erase verified final payment",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout retains exactly three verified transaction mappings",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout preserves license and domain rights",
+            "passed": true
+        },
+        {
+            "name": "cancel_timeout delayed duplicate cannot reopen paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply creates exact initial subscription",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply verified installment 1 commits",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply verified installment 2 commits",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply verified installment 3 commits",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply cancellation outcome does not erase verified final payment",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply retains exactly three verified transaction mappings",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply preserves license and domain rights",
+            "passed": true
+        },
+        {
+            "name": "lost_cancel_reply delayed duplicate cannot reopen paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "already_expired creates exact initial subscription",
+            "passed": true
+        },
+        {
+            "name": "already_expired verified installment 1 commits",
+            "passed": true
+        },
+        {
+            "name": "already_expired verified installment 2 commits",
+            "passed": true
+        },
+        {
+            "name": "already_expired verified installment 3 commits",
+            "passed": true
+        },
+        {
+            "name": "already_expired cancellation outcome does not erase verified final payment",
+            "passed": true
+        },
+        {
+            "name": "already_expired retains exactly three verified transaction mappings",
+            "passed": true
+        },
+        {
+            "name": "already_expired preserves license and domain rights",
+            "passed": true
+        },
+        {
+            "name": "already_expired delayed duplicate cannot reopen paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount creates exact initial subscription",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount verified installment 1 commits",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount verified installment 2 commits",
+            "passed": true
+        },
+        {
+            "name": "wrong amount cannot record a payment or trigger retirement",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount verified installment 3 commits",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount cancellation outcome does not erase verified final payment",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount retains exactly three verified transaction mappings",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount preserves license and domain rights",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount delayed duplicate cannot reopen paid-off billing",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "scenario": "normal",
+            "state": "paid_off",
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "cancel_timeout",
+            "state": "review",
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "lost_cancel_reply",
+            "state": "review",
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "already_expired",
+            "state": "paid_off",
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "scenario": "wrong_amount",
+            "state": "paid_off",
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "scope": "Actual recurring settlement, native ledger and payment mappings, final payoff and retirement. Synthetic verified gateway responses, transport and future-period invoice fixtures; no real provider or webhook signatures."
+}

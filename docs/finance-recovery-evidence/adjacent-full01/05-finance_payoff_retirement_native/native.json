@@ -1,0 +1,31 @@
+{
+    "passed": true,
+    "count": 5,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "revoked_owner valid initial enrollment remains available",
+            "passed": true
+        },
+        {
+            "name": "revoked owner exits through actual login redirect",
+            "passed": true
+        },
+        {
+            "name": "revoked owner makes no provider request",
+            "passed": true
+        },
+        {
+            "name": "revoked owner preserves subscription and payments",
+            "passed": true
+        },
+        {
+            "name": "revoked owner preserves permanent financing payoff",
+            "passed": true
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "scope": "Separate native PHP process; actual disabled-owner session check and login redirect. Synthetic agreement, historical receipts and provider setup. No real gateway or HTTP browser."
+}

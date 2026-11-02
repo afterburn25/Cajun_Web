@@ -23,6 +23,8 @@ final readonly class RecurringBillingTerms
         'title', 'terms', 'currency', 'amount_cents', 'cadence', 'anchor', 'alignment',
         'timezone', 'due_after_days', 'collection'];
     private const SOURCE_FIELDS = ['id', 'revision', 'sha256'];
+    private const CHECKOUT_FIELDS = ['request_id', 'request_input_sha256', 'publication_id',
+        'publication_sha256', 'review_sha256', 'consent_sha256', 'accepted_at'];
 
     private function __construct(
         private string $bytes,
@@ -32,8 +34,10 @@ final readonly class RecurringBillingTerms
 
     public static function fromArray(mixed $data): self
     {
-        self::keys($data, self::FIELDS);
-        if ($data['format'] !== 1) {
+        $checkout = is_array($data) && ($data['format'] ?? null) === 2;
+        $fields = $checkout ? [...self::FIELDS, 'checkout_origin'] : self::FIELDS;
+        self::keys($data, $fields);
+        if (!in_array($data['format'], [1, 2], true)) {
             throw new InvalidArgumentException('Unsupported recurring billing terms format.');
         }
         self::hex($data['id'], 32);
@@ -56,19 +60,40 @@ final readonly class RecurringBillingTerms
         if (!is_string($data['timezone']) || !in_array($data['timezone'], DateTimeZone::listIdentifiers(DateTimeZone::ALL), true)) {
             throw new InvalidArgumentException('Choose an explicit supported billing timezone.');
         }
+        $origin = $checkout ? self::checkoutOrigin($data) : null;
         $canonical = [];
-        foreach (self::FIELDS as $field) {
+        foreach ($fields as $field) {
             $canonical[$field] = $data[$field];
         }
         $canonical['source_subscription'] = [];
         foreach (self::SOURCE_FIELDS as $field) {
             $canonical['source_subscription'][$field] = $source[$field];
         }
+        if ($checkout) $canonical['checkout_origin'] = $origin;
         $bytes = json_encode($canonical, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         if (strlen($bytes) > self::MAX_BYTES) {
             throw new InvalidArgumentException('Recurring billing terms are too large.');
         }
         return new self($bytes, $calendar, new DateTimeZone($data['timezone']));
+    }
+
+    /** Structural binding only. The application validates these facts against retained consent. */
+    private static function checkoutOrigin(array $data): array
+    {
+        $origin = $data['checkout_origin'];
+        self::keys($origin, self::CHECKOUT_FIELDS);
+        foreach (['request_id', 'publication_id'] as $field) self::hex($origin[$field], 32);
+        foreach (['request_input_sha256', 'publication_sha256', 'review_sha256', 'consent_sha256'] as $field) self::hex($origin[$field], 64);
+        self::integer($origin['accepted_at'], 0, self::MAX_EPOCH);
+        $date = (new DateTimeImmutable('@'.$origin['accepted_at']))->setTimezone(new DateTimeZone($data['timezone']))->format('Y-m-d');
+        if ($data['source_subscription']['revision'] !== 2 || $data['amount_cents'] < 1
+            || !in_array($data['cadence'], ['monthly', 'annually'], true)
+            || $data['due_after_days'] !== 0 || $data['anchor'] !== $date) {
+            throw new InvalidArgumentException('Checkout billing must retain the accepted local date and exact initial subscription prefix.');
+        }
+        $canonical = [];
+        foreach (self::CHECKOUT_FIELDS as $field) $canonical[$field] = $origin[$field];
+        return $canonical;
     }
 
     public static function fromJson(mixed $bytes): self

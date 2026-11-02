@@ -1,3 +1,203 @@
+## 2026-11-02 — PR317 financing acceptance correction
+
+The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.
+
+This fixture follow-up adds one fresh rate-limit window before the first financing validation request. Two focused runs proved that repair, then exposed stale support-ready and paid-off workspace text expectations (234/235 and 259/260 passing checks respectively). The support fallback now requires the exact current owner-review message, absence of the setup form and both stored readiness settings. The two payoff text literals now follow the retained permanent-unlock requirement; domain-removal refusal, domain replacement and all other policy assertions remain intact. One finite repair row contains three exact inverses, preserving all seventy check sites, fourteen probes and eleven previous repairs. Final-source verification passed 56 filesystem cases, 12 shallow-history checks and all 2,763 maintained helpers. Following independent pre-execution review, the third focused journey passed all 65 native seed checks, 274 maintained HTTP/browser checks and fourteen original financing validation probes. Its separate exhausted-window control still returned ten HTTP 200 responses then two HTTP 429 responses, and the actual mobile capture was directly inspected. Source stayed unchanged and owned services stopped. Publication requires final independent source/runtime review, followed by full corrected hosted acceptance, final integration clearance, normal merge and exact-main verification; those hosted and merge gates are not implied by the focused result. See the current [handoff](SESSION_HANDOFF.md) for exact scope, retained failures and next action.
+
+## 2026-11-02 — PR317 full acceptance correction
+
+The current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.
+
+## Unreleased — current integration continuation (2026-11-01)
+
+- Combine reviewed account/notification security, current software-customer authority, finance recovery and narrowed metadata queries on the existing integration candidate.
+- Repair the inherited finance replacement fixture using actual synthetic gateway, dispatch and observation boundaries; preserve all original assertions and application guards.
+- Preserve standalone source proofs through bounded combined-source comparison adapters. Full hosted application/update acceptance and release publication remain pending; version and previous downloads are unchanged.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+Unreleased fixture-only correction: duplicate and restore FK relationships using their observed original DELETE/UPDATE action spelling, including safe NO ACTION handling. Keep identical-occurrence and negative-rule assertions intact. Application queries, workflow bodies and timeouts are unchanged. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Unreleased component: scope the two service-plan/recurring foreign-key metadata inputs before joining, while preserving full constraint identity and every existing validation. Add portable native cases after existing assertions, retain a separate local cross-schema supplement, and correct its CI port-forwarding identity assumption. No cache, permission change, assertion removal or timeout increase is included. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## Unreleased — honor committed notification email settings
+
+- Refresh notification delivery settings after the account mutex is acquired so a committed owner pause or outbound disable preserves pending items without starting a send.
+- Read the current owner email-queue choice inside event emission while retaining the private portal/feed projection and replay behavior.
+- Retain the original 65 native assertions and add 24 real cross-process settings checks; corrected local acceptance is 89/89. This is pending final review, corrected hosted acceptance and delivery through main. [Evidence](docs/NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Combine published acceptance correction `84e1f4c6` and Account/Notifications fixture `ebcbbb56` with both histories retained. Compose the shared navigation assertion with all five owner destinations, the separate exact-route assertion and browser diagnostics; preserve both original inverse-proof chains. Add a read-only workflow that admits the immutable integrated commit and retains every existing focused matrix command and report gate. Legacy source builders and the protected full-application workflow are unchanged.
+
+Local source admission and automated team review pass; primary full acceptance has started separately. These changes are awaiting hosted combined acceptance, main integration and release delivery. Successful branch publication supersedes earlier write-unverified notes; the prior connection error remains unexplained. [Source and verification record](docs/ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Record the interrupted local runner, retained database snapshots, original StackCP recreation failure, and logical restoration of 4,051 completed synthetic fixture tables. The resumed original StackCP commands pass 103 and 49 checks respectively at this checkpoint. This documentation/evidence update changes no product code or acceptance assertion. GitHub accepted one exact reviewed diagnostic blob; candidate publication, full acceptance, main integration and release remain pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](docs/CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — reconcile acceptance with current admin sessions and 20i workspaces
+
+Correct the actual owner navigation destination assertions and execute the real licensing support-refusal branch across all protected routes. Update installed provider, domain, hosting, scheduling and licensing browser fixtures to capture forms in their current workspaces and test withdrawn owner authority instead of removed repeated-password fields. Preserve initial authentication, CSRF, consent, client isolation, revisions, replay fences, provider budgets, data retention and the unchanged full browser journey. Historical support-upgrade success checks now inspect current owner-review output and durable migration state. Application bytes and published releases are unchanged. [Evidence and acceptance status](docs/CONTINUATION_2026_11_01.md).
+
+## 2026-10-29 — keep software orchestration evidence inside its sealed partition
+
+PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](docs/CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-29 — preserve acceptance command order after software-suite repair
+
+PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](docs/CODEX_PR266_APPLICATION_40820683270.md).
+
+## Unreleased — receipts during recurring financing enrollment
+
+- Validate all remaining installment balances before scheduling replacement payments.
+- Recheck initial and replacement enrollment after provider I/O; retain and verify cancellation of obsolete known subscriptions.
+- Preserve pending cancellation through lifecycle replays, settlements and verified reversals, with safe owner and scheduler retries.
+
+## Unreleased — replacement billing after financing payoff
+
+- Avoid replacement creation after verified payoff and retain any known replacement created while payoff commits.
+- Verify cancellation of that replacement and preserve uncertain results for reconciliation without reversing permanent payoff.
+- Keep ordinary unpaid owner reconciliation available through a correctly scoped payoff-read transaction.
+
+## Unreleased — retire automatic financing billing after payoff
+
+- Recheck payoff after in-flight initial enrollment and retain the returned subscription before cancellation.
+- Verify terminal gateway retirement after manual or recurring payoff; preserve uncertain outcomes for owner/scheduler reconciliation.
+- Keep committed payments, permanent license unlock and independent domain/rights controls intact.
+
+## Unreleased — prevent financing enrollment after recorded payoff
+
+- Recheck signed initial and installment ledger evidence for both initial enrollment callers under the reservation mutex.
+- Refuse stale projected payoff, existing installment payments and changed customer/schedule state before ARB creation.
+- Keep sandbox no-fulfillment enrollment bound to its exact current charge/attempt and preserve permanent payoff.
+
+## Unreleased — financing access requires its own verified initial payment
+
+- Share exact signed-agreement and ledger verification between enrollment, the portal and core license synchronization.
+- Reject another agreement/customer invoice, changed amount/currency and status-only payment evidence before activation.
+- Preserve the permanent payoff early return and independent owner/domain/rights restrictions.
+
+## Unreleased — verified financing initial-payment enrollment
+
+- Allow signed remaining installments after the exact down-payment invoice is fully paid in the retained ledger.
+- Recheck current client, agreement, schedule and payment at reservation; reject altered, reversed, duplicate and paid-off enrollment.
+- Use ledger evidence in the portal and hide paid-off payment/enrollment controls.
+
+## Unreleased — product-bound software validation
+
+- Require new software entitlements to identify their exact product during public validation, closing cross-product key reuse on an otherwise valid licensed domain.
+- Preserve the legacy website-license request contract for keys without a software-entitlement row.
+- Add native compatibility coverage and installed HTTP regression evidence; refresh the generated installer inventory.
+
+## Unreleased — finance mail sender upgrade warning
+
+- Call the retained mail-draft account reader directly when building finance-agreement sender choices.
+- Eliminate the populated Apache upgrade warning and preserve the existing no-send behavior.
+- Add a source contract that rejects the former undefined variable-function spelling.
+
+## Unreleased — support-denial acceptance attribution
+
+- Verify forged support-context software mutations produce exactly one attributed denial without weakening private-view or download 403 boundaries.
+
+## Unreleased — licensing integration acceptance repairs
+
+- Scope multi-license installation controls and domain-move acceptance to the intended license without hiding valid trial/temporary redeployment controls.
+- Allocate provider-settings CI database ports dynamically.
+- Prepare retained payment schema explicitly before current recurring upgrade fixtures.
+
+## Unreleased — software lifecycle acceptance continuation
+
+- Exercise the explicit reasoned software suspend/resume controls in installed acceptance.
+- Assert legacy website deactivation cannot mutate a software entitlement.
+- No shipping lifecycle behavior changed.
+
+## Unreleased — PR266 integration refresh
+
+- Normal-merged Devin's exact licensing head `cb916c07` after installed acceptance exposed the missing direct software-commerce readiness import in delivery retries.
+- Prefer invoice/unit-bound entitlements when rendering a purchased software asset shared by multiple eligible licenses.
+- Refreshed the exact combined installer inventory; no main merge, release, live payment or deployment.
+
+## Unreleased — owner software administration routing
+
+- Route all existing `software_*` owner forms through the studio administration controller instead of the generic unknown-action fallback.
+- Require owner-only `staff.manage` permission for the complete software administration prefix and retain action-specific password/transaction checks.
+- Load software-commerce readiness before lifecycle and whole-license deactivate/reactivate checks; add a fast routing contract and PR policy execution.
+- Run the existing full Application and Software focused installed acceptance suites for PRs targeting the licensing feature branch; include dispatcher/permission changes in the focused trigger.
+- Run source-integrity, fast and full candidate package verification for the licensing integration PR without treating unchanged VERSION `1.25.0` as a completed next-version upgrade.
+- Run the remaining software syntax, native commerce, amount, CSP, reversal, subscription-lifecycle and webhook contract gates on the exact licensing integration candidate.
+- Load the canonical client-workspace readiness/support boundary in the installed software browser fixture before exercising sandbox payment settings.
+
+## Unreleased — customer domain cooldown event ordering
+
+- Prevent a replace/deactivate/add sequence within one database-second from bypassing the configured customer domain-move cooldown.
+- Use serialized audit IDs to distinguish replacement-internal deactivation from a later standalone deactivation while retaining timestamp-based expiry, same-domain recovery and owner overrides.
+- Add 12 native service regressions and a PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 focused workflow.
+
+## Unreleased — refresh current PR266 financing portal behavior
+
+- Merge feature head `726fc7db` into the separate integration lane without changing Devin's branch.
+- Resolve missing or foreign customer financing agreements before layout output so the intended HTTP 404 is retained without a headers-already-sent warning.
+- Require installed tenant-isolation acceptance to observe the private 404, no-store cache policy and no-referrer policy; regenerate the combined installer inventory and require fresh exact-head acceptance.
+
+## Unreleased — recover interrupted financing setup
+
+- Record audited pending markers before financed-license, finance-agreement and finance-gateway DDL, then safely resume only recognized empty partial setups.
+- Keep unmarked or populated partial storage fail-closed and clear each marker only with its verified schema-version commit.
+- Add native and source-contract regressions for interruption after the first table creation in all three setup layers.
+
+## Unreleased — canonical customer software ZIP members
+
+- Reject drive-qualified, dot-segment, empty-segment, control-character, Windows-reserved/trailing-dot and case-colliding software archive members before publication, in addition to traversal, nested ZIP and special-file checks.
+- Add native regressions for portable canonical member names and case-insensitive extraction collisions.
+
+## Unreleased — preserve owner control after financing payoff
+
+- Keep permanent payoff limited to financing-based suspension; an explicit owner deactivation remains authoritative and validation never silently reactivates it.
+- Retain the same paid-off plan, key, domain history and no-resale policy while allowing deliberate owner reactivation.
+- Add native and installed-browser regressions for the owner-deactivate/reactivate boundary after payoff.
+
+## Unreleased — delayed financing lifecycle events
+
+- Add 40 native SQL regressions covering the webhook corrections, transaction rollback, serialized second-session delivery and unchanged licensing/ledger data across the existing PHP/database matrix.
+- Preserve cancellation, reversal recovery and replacement reservations against delayed subscription events.
+- Keep confirmed suspension and its catch-up option when a delayed payment-failure event arrives.
+- Add 45 actual-service lifecycle regressions to the focused PHP 8.2/8.4 CI lane.
+
+## Unreleased — optional financing webhook isolation
+
+- Keep software captures usable before optional financing storage is prepared.
+- Route unrelated software refunds/voids without requiring financing production activation; preserve the finance gate for matched transactions.
+- Add actual-service isolated regression coverage and a focused PHP 8.2/8.4 workflow. Full integration/release acceptance remains pending.
+
+## Unreleased — financing reconciliation authorization
+
+- Reauthenticate owner-initiated one-time, subscription and replacement reconciliation inside their serialized commit transactions.
+- Require current owner credentials before recurring reconciliation may clear review.
+- Add native service-boundary rejection cases for stale credentials.
+
+## Unreleased — financed billing replacement corrections
+
+- Allow caught-up replacement enrollment after the original agreement start while retaining exact future remaining periods.
+- Require verified permanent retirement of the prior ARB before replacement billing, preserving its terminal state in history.
+- Align installed acceptance with the current outstanding-installment link and preserve Devin’s fixture class fix.
+
+## Unreleased — PR266 integration acceptance corrections
+
+- Preserve Devin’s separate-project financing fixture repair and verify independent paid/unpaid project access through installed endpoints.
+- Replace the document-roots native CI fixed host database port with its assigned mapping, retaining the complete runtime/database matrix.
+- Add narrowly filtered financing acceptance for companion PRs targeting the licensing feature branch.
+
 ## Unreleased — CI queue hygiene
 
 - Fixed development-check workflow concurrency: per-`github.sha` groups (which made `cancel-in-progress` a no-op) replaced with per-PR/per-branch groups; superseded dev runs now cancel automatically while `main` pushes serialize.
@@ -625,6 +825,8 @@ Add explicit owner enablement, a native client search form and private history t
 Parent `e37517fa` merges tested hosting confirmation with newer main. Four native database/PHP combinations and independent exact Windows package verification pass. Parent `4d059a5b` browser evidence passes 1,737 checks; actual screenshots exposed an accepted-order sentence incorrectly saying setup was pending after activation. Correct the sentence and add owner/client browser regression coverage while retaining the pre-activation assertion. New current-head packaged acceptance, review and release remain pending. Published 1.24.0 is unchanged.
 
 # Changelog
+
+- Security: retain all 128 random bits in newly generated website/software license keys; previously issued four-group keys remain accepted.
 
 ## Unreleased — verified confirmation and current-main integration
 

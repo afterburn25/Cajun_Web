@@ -1,6 +1,8 @@
 <?php
 /** Native disposable database + actual shared gateway, synthetic API transport only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException};
@@ -60,7 +62,7 @@ try{
     $tables=all('SHOW TABLES');cc_ok('Readiness is read-only before explicit preparation',!provider_cloud_confirmation_ready()&&all('SHOW TABLES')===$tables);
     db()->beginTransaction();save_setting('confirmation_rollback_sentinel','pending');$refused=false;try{provider_cloud_confirmation_prepare($password);}catch(LogicException){$refused=true;}
     cc_ok('Fresh confirmation preparation refuses caller transaction before DDL',$refused&&db()->inTransaction()&&all('SHOW TABLES')===$tables);db()->rollBack();cc_ok('Preparation refusal preserves caller rollback',!one('SELECT value FROM '.table('settings').' WHERE name=?',['confirmation_rollback_sentinel']));
-    cc_deny('Wrong owner password cannot prepare confirmation storage',fn()=>provider_cloud_confirmation_prepare('wrong'));
+    cc_deny('Revoked owner refuses: Wrong owner password cannot prepare confirmation storage',fn()=>cwp_test_owner_revoked(fn()=>provider_cloud_confirmation_prepare('wrong')));
     provider_cloud_confirmation_prepare($password);cc_ok('Explicit preparation makes empty confirmation history ready',provider_cloud_confirmation_ready());
     $beforeAudit=(int)query('SELECT COUNT(*) FROM '.table('audit'))->fetchColumn();provider_cloud_confirmation_prepare($password);cc_ok('Repeated preparation preserves history and marker',(int)query('SELECT COUNT(*) FROM '.table('audit'))->fetchColumn()===$beforeAudit);
     db()->exec('CREATE INDEX synthetic_wrong ON '.table('provider_cloud_confirmations').' (confirmed_at)');cc_deny('Preparation refuses unexpected confirmation indexes',fn()=>provider_cloud_confirmation_prepare($password));db()->exec('DROP INDEX synthetic_wrong ON '.table('provider_cloud_confirmations'));
@@ -72,7 +74,7 @@ try{
     $remaining=max(1,31-(time()-(int)one('SELECT started_epoch FROM '.table('provider_refreshes').' WHERE id=?',[$refresh])['started_epoch']));sleep($remaining);provider_inventory_refresh($profileId,1,$password,'cc_dns','cc_read');$hostingRefresh=provider_inventory_observation($profileId)['id'];$context=provider_cloud_confirmation_review($nonce);
     cc_ok('Fresh exact-ID and exact-name observation permits owner review even when reported disabled',$context['package']['package_id']==8881&&(int)$context['package']['enabled']===0&&$context['link']===null);
     $originalCalls=$calls;$originalDns=$dnsCalls;$state=one('SELECT * FROM '.table('provider_refresh_results').' WHERE id=?',[$hostingRefresh]);$intent=one('SELECT * FROM '.table('provider_refreshes').' WHERE id=?',[$hostingRefresh]);$package=one('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=?',[$hostingRefresh]);
-    cc_deny('Wrong password refuses confirmation',fn()=>cc_confirm(null,'wrong'));cc_owner(2);cc_deny('Administrator cannot confirm cloud assignment',fn()=>cc_confirm());cc_owner();cc_client(1);cc_deny('Client cannot confirm cloud assignment',fn()=>cc_confirm());cc_owner();
+    cc_deny('Revoked owner refuses: Wrong password refuses confirmation',fn()=>cwp_test_owner_revoked(fn()=>cc_confirm(null,'wrong')));cc_owner(2);cc_deny('Administrator cannot confirm cloud assignment',fn()=>cc_confirm());cc_owner();cc_client(1);cc_deny('Client cannot confirm cloud assignment',fn()=>cc_confirm());cc_owner();
     $_GET['support']='fixture';cc_deny('Support context cannot confirm cloud assignment',fn()=>cc_confirm());unset($_GET['support']);
     cc_deny('Unchecked explicit review refuses confirmation',fn()=>provider_cloud_confirmation_confirm($nonce,$hostingRefresh,$context['review'],false,$password));cc_deny('Forged review fingerprint refuses confirmation',fn()=>cc_confirm(str_repeat('a',64)));cc_deny('Wrong refresh identity refuses confirmation',fn()=>provider_cloud_confirmation_confirm($nonce,str_repeat('b',32),$context['review'],true,$password));
     foreach(['partial','unavailable'] as $status)cc_mutation('Latest '.$status.' response cannot authorize confirmation','provider_refresh_results',$state,fn()=>query('UPDATE '.table('provider_refresh_results').' SET state=? WHERE id=?',[$status,$hostingRefresh]),fn()=>provider_cloud_confirmation_review($nonce));

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_initial_receipts_native.php",
+    "fep_fadjinit_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 159.053,
+  "stderr_bytes": 4162,
+  "report_passed": true,
+  "check_count": 358,
+  "failed_checks": []
+}

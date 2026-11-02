@@ -1,0 +1,1382 @@
+{
+  "base": "110c30da71ac16fef5194dc95390980bab85504b",
+  "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+  "native": {
+    "before2-8.2-mariadb": {
+      "passed": false,
+      "count": 220,
+      "failed": 28,
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "source_sha256": "89101ddc2446f20d655f8e1b5dda02f1d4ffe0c43044fae20d219daf2d44ad6e",
+      "function_sha256": {
+        "license_finance_charge_mark": "bb8fe0d82d47a71af92156489cb58a0559257aea6f0114d35509013936e2f5ad",
+        "license_finance_charge_record_paid": "ad1cba6c517f25c0b53d665d57fb8f223a45e56080e83f7efd0d52a57fff60f4",
+        "license_finance_charge_run": "492e09ccca1667c7aa6d942e8bc021165d96083ab1d89b7e0d2afe904a3dcce7"
+      },
+      "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+      },
+      "scope": "Canonical charge/attempt SQL, real mutex/transaction and delayed result snapshots. Synthetic owner, ledger-boundary sentinel and checkout preparation/provider/subscription boundaries. Actual sandbox checkout plus mark sees a separate SQL writer replace its attempt or state; no ledger settlement, license access, HTTP or provider claim.",
+      "full_report_sha256": "ff54b57053e1c62df5a9593b2573fdaae89008d26fd9681a5729ad13cb654b44",
+      "new_checks": [
+        {
+          "name": "mark_declined_same reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_declined_new_key reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_declined_conflicting_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_declined_missing_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_declined_terminal reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_uncertain_same reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_uncertain_new_key reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_uncertain_conflicting_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_uncertain_missing_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_uncertain_terminal reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_review_same reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_review_new_key reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_review_conflicting_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_review_missing_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_review_terminal reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_sandbox_test_same reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_sandbox_test_new_key reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_sandbox_test_conflicting_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_sandbox_test_missing_transaction reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "mark_sandbox_test_terminal reports whether mark applied",
+          "passed": false
+        },
+        {
+          "name": "sandbox same expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox same subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox same exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox same mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement expected orchestration result",
+          "passed": false
+        },
+        {
+          "name": "sandbox replacement subscription creation admission",
+          "passed": false
+        },
+        {
+          "name": "sandbox replacement exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded expected orchestration result",
+          "passed": false
+        },
+        {
+          "name": "sandbox refunded subscription creation admission",
+          "passed": false
+        },
+        {
+          "name": "sandbox refunded exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided expected orchestration result",
+          "passed": false
+        },
+        {
+          "name": "sandbox voided subscription creation admission",
+          "passed": false
+        },
+        {
+          "name": "sandbox voided exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid expected orchestration result",
+          "passed": false
+        },
+        {
+          "name": "sandbox paid subscription creation admission",
+          "passed": false
+        },
+        {
+          "name": "sandbox paid exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid mutex and transaction released",
+          "passed": true
+        }
+      ]
+    },
+    "after-8.2-mariadb": {
+      "passed": true,
+      "count": 220,
+      "failed": 0,
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "function_sha256": {
+        "license_finance_charge_mark": "be92e973ff6d593a1880652502489c2a7b8edaf1c1524e8575ab15106a3ded14",
+        "license_finance_charge_record_paid": "ad1cba6c517f25c0b53d665d57fb8f223a45e56080e83f7efd0d52a57fff60f4",
+        "license_finance_charge_run": "8310c5e0ac8fab168740495583b786a6ce82e36effa10ed56de654b844d9e5f9"
+      },
+      "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+      },
+      "scope": "Canonical charge/attempt SQL, real mutex/transaction and delayed result snapshots. Synthetic owner, ledger-boundary sentinel and checkout preparation/provider/subscription boundaries. Actual sandbox checkout plus mark sees a separate SQL writer replace its attempt or state; no ledger settlement, license access, HTTP or provider claim.",
+      "full_report_sha256": "2631bd635a64eb7ea12525c9edbbcc203eedba8364e361e5a5dd6ecbf2910c36",
+      "new_checks": [
+        {
+          "name": "mark_declined_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "sandbox same expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox same subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox same exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox same mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid mutex and transaction released",
+          "passed": true
+        }
+      ]
+    },
+    "after-8.2-mysql": {
+      "passed": true,
+      "count": 220,
+      "failed": 0,
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "function_sha256": {
+        "license_finance_charge_mark": "be92e973ff6d593a1880652502489c2a7b8edaf1c1524e8575ab15106a3ded14",
+        "license_finance_charge_record_paid": "ad1cba6c517f25c0b53d665d57fb8f223a45e56080e83f7efd0d52a57fff60f4",
+        "license_finance_charge_run": "8310c5e0ac8fab168740495583b786a6ce82e36effa10ed56de654b844d9e5f9"
+      },
+      "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+      },
+      "scope": "Canonical charge/attempt SQL, real mutex/transaction and delayed result snapshots. Synthetic owner, ledger-boundary sentinel and checkout preparation/provider/subscription boundaries. Actual sandbox checkout plus mark sees a separate SQL writer replace its attempt or state; no ledger settlement, license access, HTTP or provider claim.",
+      "full_report_sha256": "5793c7e1574e19378cbe002cba61b5d61732cbfc6ca7f578122e137f24431c8f",
+      "new_checks": [
+        {
+          "name": "mark_declined_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "sandbox same expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox same subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox same exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox same mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid mutex and transaction released",
+          "passed": true
+        }
+      ]
+    },
+    "after-8.4-mariadb": {
+      "passed": true,
+      "count": 220,
+      "failed": 0,
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "function_sha256": {
+        "license_finance_charge_mark": "be92e973ff6d593a1880652502489c2a7b8edaf1c1524e8575ab15106a3ded14",
+        "license_finance_charge_record_paid": "ad1cba6c517f25c0b53d665d57fb8f223a45e56080e83f7efd0d52a57fff60f4",
+        "license_finance_charge_run": "8310c5e0ac8fab168740495583b786a6ce82e36effa10ed56de654b844d9e5f9"
+      },
+      "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+      },
+      "scope": "Canonical charge/attempt SQL, real mutex/transaction and delayed result snapshots. Synthetic owner, ledger-boundary sentinel and checkout preparation/provider/subscription boundaries. Actual sandbox checkout plus mark sees a separate SQL writer replace its attempt or state; no ledger settlement, license access, HTTP or provider claim.",
+      "full_report_sha256": "a624fe2234659ea922cd01bf5159499cf5502bb3dd88f78abf4980b8d42c3b70",
+      "new_checks": [
+        {
+          "name": "mark_declined_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "sandbox same expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox same subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox same exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox same mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid mutex and transaction released",
+          "passed": true
+        }
+      ]
+    },
+    "after-8.4-mysql": {
+      "passed": true,
+      "count": 220,
+      "failed": 0,
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "function_sha256": {
+        "license_finance_charge_mark": "be92e973ff6d593a1880652502489c2a7b8edaf1c1524e8575ab15106a3ded14",
+        "license_finance_charge_record_paid": "ad1cba6c517f25c0b53d665d57fb8f223a45e56080e83f7efd0d52a57fff60f4",
+        "license_finance_charge_run": "8310c5e0ac8fab168740495583b786a6ce82e36effa10ed56de654b844d9e5f9"
+      },
+      "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+      },
+      "scope": "Canonical charge/attempt SQL, real mutex/transaction and delayed result snapshots. Synthetic owner, ledger-boundary sentinel and checkout preparation/provider/subscription boundaries. Actual sandbox checkout plus mark sees a separate SQL writer replace its attempt or state; no ledger settlement, license access, HTTP or provider claim.",
+      "full_report_sha256": "08c45e78121ae62c86af53a263db44262f007019feedb491a41d26925896e3af",
+      "new_checks": [
+        {
+          "name": "mark_declined_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_declined_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_uncertain_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_review_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_same reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_new_key reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_conflicting_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_missing_transaction reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "mark_sandbox_test_terminal reports whether mark applied",
+          "passed": true
+        },
+        {
+          "name": "sandbox same expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox same subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox same exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox same mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox replacement mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox refunded mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox voided mutex and transaction released",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid expected orchestration result",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid subscription creation admission",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid exact stale rows or accepted mark",
+          "passed": true
+        },
+        {
+          "name": "sandbox paid mutex and transaction released",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "bindings": {
+    "before2-8.2": {
+      "passed": false,
+      "count": 26,
+      "failed": 2,
+      "checks": [
+        {
+          "name": "declined expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "declined binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unapproved expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unapproved binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "sandbox expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "sandbox binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "production expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "production binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "processing owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "processing passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "uncertain owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "uncertain passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "review owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "review passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 0",
+          "passed": false
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 0",
+          "passed": false
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 0",
+          "passed": true
+        }
+      ],
+      "php": "8.2.35",
+      "source_sha256": "89101ddc2446f20d655f8e1b5dda02f1d4ffe0c43044fae20d219daf2d44ad6e",
+      "scope": "Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim."
+    },
+    "before2-8.4": {
+      "passed": false,
+      "count": 26,
+      "failed": 2,
+      "checks": [
+        {
+          "name": "declined expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "declined binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unapproved expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unapproved binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "sandbox expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "sandbox binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "production expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "production binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "processing owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "processing passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "uncertain owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "uncertain passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "review owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "review passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 0",
+          "passed": false
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 0",
+          "passed": false
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 0",
+          "passed": true
+        }
+      ],
+      "php": "8.4.25",
+      "source_sha256": "89101ddc2446f20d655f8e1b5dda02f1d4ffe0c43044fae20d219daf2d44ad6e",
+      "scope": "Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim."
+    },
+    "after-8.2": {
+      "passed": true,
+      "count": 26,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "declined expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "declined binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unapproved expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unapproved binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "sandbox expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "sandbox binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "production expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "production binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "processing owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "processing passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "uncertain owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "uncertain passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "review owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "review passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 0",
+          "passed": true
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 0",
+          "passed": true
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 0",
+          "passed": true
+        }
+      ],
+      "php": "8.2.35",
+      "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "scope": "Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim."
+    },
+    "after-8.4": {
+      "passed": true,
+      "count": 26,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "declined expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "declined binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unapproved expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unapproved binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "unconfirmed binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "sandbox expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "sandbox binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "production expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "production binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_before_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id expected orchestration outcome",
+          "passed": true
+        },
+        {
+          "name": "transport_after_id binds exactly one mutation to original attempt",
+          "passed": true
+        },
+        {
+          "name": "processing owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "processing passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "uncertain owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "uncertain passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "review owner reconciliation completes",
+          "passed": true
+        },
+        {
+          "name": "review passes original attempt and commit-time owner credential",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 1",
+          "passed": true
+        },
+        {
+          "name": "Sandbox continuation reflects mark admission 0",
+          "passed": true
+        },
+        {
+          "name": "Sandbox subscription boundary follows mark admission 0",
+          "passed": true
+        },
+        {
+          "name": "Sandbox mark keeps original attempt 0",
+          "passed": true
+        }
+      ],
+      "php": "8.4.25",
+      "source_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "scope": "Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim."
+    }
+  },
+  "sources": {
+    "site/app/billing/finance_charge.php": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+    "tests/finance_charge_response_native.php": "fc033f1970ada2277fb2cf7e36b12dd6982ee137ace2d9816a269df59f779374",
+    "tests/finance_charge_attempt_bindings.php": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff"
+  },
+  "scope": "Native canonical charge/attempt tables, actual checkout/mark/mutex/transaction and separate SQL writer. Synthetic preparation/provider/profile-creation boundaries, owner and ledger sentinel. No actual payment, gateway subscription, settlement, license access or installed acceptance.",
+  "unchanged_functions": [
+    "license_finance_offer_for_invoice",
+    "license_finance_charge_prepare",
+    "license_finance_charge_record_paid",
+    "license_finance_charge_reconcile",
+    "license_finance_charge_webhook_review"
+  ]
+}

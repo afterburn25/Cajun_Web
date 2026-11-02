@@ -35,5 +35,5 @@ function provider_password_reset_template_admin_action(string $action):void {
         provider_password_reset_template_recover_finished(posted('request_id',32),posted('recovery_digest',64),$password);
         flash('Saved request history restored. Check the current template separately to confirm what 20i reports.');
     }else throw new InvalidArgumentException('Unknown password-reset template action.');
-    redirect(admin_url('provider-settings').'#password-reset-template');
+    redirect(admin_url('provider-settings',['section'=>'advanced']).'#password-reset-template');
 }

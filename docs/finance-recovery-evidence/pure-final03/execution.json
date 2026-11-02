@@ -1,0 +1,7 @@
+{
+  "stage": "Canonical inventory wrapper import",
+  "exit_code": 1,
+  "cause": "Authoring wrapper omitted tools from Python module search path, so generated() could not import check_mail_vendor.",
+  "correction": "Runner added tools to sys.path and reran unchanged builder successfully in pure-final04.",
+  "scope": "No application test ran in this phase; no builder, assertion or runtime source was changed."
+}

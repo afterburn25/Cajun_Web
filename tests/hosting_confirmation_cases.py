@@ -3,6 +3,7 @@ import json
 import time
 from release_cases import db
 from staff_cases import OWNER
+from owner_browser_forms import assert_no_owner_reprompt, refuse_owner_action
 
 
 def run_browser(env, browser, owner, client, foreign, pending, unknown, capture):
@@ -21,10 +22,13 @@ def run_browser(env, browser, owner, client, foreign, pending, unknown, capture)
             time.sleep(remaining)
 
     fields = form_data(form_for(owner.get(pending['owner']), action))
-    data = {**fields, 'confirm': '1', 'current_password': OWNER}
+    data = {**fields, 'confirm': '1'}
     before, calls, posts = history(), provider.calls, len(provider.posts)
-    for delta, label in [({'csrf': 'bad'}, 'CSRF'), ({'confirm': ''}, 'confirmation'), ({'current_password': 'wrong'}, 'password'), ({'approval_hash': 'f'*64}, 'original approval'), ({'dispatch_id': 'f'*32}, 'original attempt')]:
-        response = owner.post(pending['owner'], data={**data, **delta})
+    for delta, label in [({'csrf': 'bad'}, 'CSRF'), ({'confirm': ''}, 'confirmation'), ({}, 'owner authority'), ({'approval_hash': 'f'*64}, 'original approval'), ({'dispatch_id': 'f'*32}, 'original attempt')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, pending['owner'], action, {'confirm': '1'})
+        else:
+            response = owner.post(pending['owner'], data={**data, **delta})
         check('Actual status read refuses '+label, history()==before and provider.calls==calls and len(provider.posts)==posts and OWNER not in response.text)
     client_csrf = form_data(form_for(client.get(pending['client']), 'service_agreements_order_cancel'))['csrf']
     client.post(pending['client'], data={**data, 'action': 'service_agreements_order_confirm_fulfillment', 'csrf': client_csrf})
@@ -46,7 +50,7 @@ def run_browser(env, browser, owner, client, foreign, pending, unknown, capture)
     context=browser.new_context(viewport={'width':1440,'height':1000})
     context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(pending['owner'])
     form=page.locator('form').filter(has=page.locator('[name=action][value='+action+']'))
-    form.locator('[name=confirm]').check();form.locator('[name=current_password]').fill(OWNER)
+    form.locator('[name=confirm]').check();assert_no_owner_reprompt(check,form,'Check hosting status')
     calls=provider.calls
     with page.expect_navigation():
         form.get_by_role('button',name='Check hosting status',exact=True).click()

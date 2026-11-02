@@ -95,7 +95,7 @@ function reviews_save_report(int $leadId,int $revision,mixed $summary,mixed $fin
 }
 function reviews_deliver(int $leadId,int $revision,mixed $when,mixed $channel,mixed $reference,#[\SensitiveParameter] string $password): void {
     reviews_locked($leadId,$revision,function(array $actor,array $lead,array $row) use ($when,$channel,$reference,$password): void {
-        if (!password_verify($password,$actor['password_hash'])) throw new InvalidArgumentException('Your current password is not correct.');
+        if (!admin_session_matches($actor)) throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
         $report=reviews_report((int)$row['id']);
         if (!$report || $row['stage']!=='report-drafted') throw new InvalidArgumentException('Confirm the saved report as drafted before recording delivery.');
         $channel=reviews_text($channel,'the delivery channel',30);

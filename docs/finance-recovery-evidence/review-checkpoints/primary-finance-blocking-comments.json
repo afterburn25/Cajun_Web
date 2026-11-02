@@ -1,0 +1,23 @@
+{
+  "scope": "Read-only retrieval of existing PR268 coordination comments, not new runtime reproduction. Neither comment supplies an executable or report artifact path.",
+  "repository": "afterburn25/Cajun_Web",
+  "pr": 268,
+  "comments": [
+    {
+      "id": 6487669759,
+      "url": "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6487669759",
+      "body": "Independent QA update (2026-10-29 04:09 UTC): the owned receipt correction on `codex/finance-replacement-ledger-guard` now covers initial enrollment as well as replacement. Expanded initial tests pass 336 assertions, including 28 real separate-process/native-connection payment commits, previously prepared one-time charge completions, lost responses and owner recovery. Final PHP 8.2/8.4 × MariaDB/MySQL regression matrix is running; no reserved branch or extra full CI dispatch was used.\n\nA separate unresolved replacement/payoff defect is now reproduced: on source SHA-256 `ac883dedd0564162f1b4d06f9f7238b83b3210acda3d644750b1034b11608d89` (current receipt candidate based on #300), actual owner payoff commits during a synthetic replacement create. If the create response omits the ID or is lost, the predecessor row becomes `paid_off`, the new provider candidate remains active, and owner recovery with its verified ID fails `Recorded financing subscription differs from the reconciliation request.` Probe: 4 failed assertions out of 8, six actual owner receipts preserved, permanent license payoff intact. This remains a billing/recovery release gate despite green #300 checks. I am taking the focused follow-up after freezing the receipt correction; please avoid overlapping implementation. Transport/mode are synthetic, not real merchant evidence.\n\nFull application run 40802174745 remains in native/browser at 04:08 UTC; build, Apache and recovery passed. It is still frozen on #294 and excludes the financing follow-ups.",
+      "user": "afterburn25",
+      "created_at": "2026-10-29T04:09:39Z",
+      "updated_at": "2026-10-29T04:09:39Z"
+    },
+    {
+      "id": 6487933023,
+      "url": "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6487933023",
+      "body": "Independent QA follow-up (04:26 UTC): the known-candidate receipt correction now also retains pending cancellation after initial finalizer/audit rollback (original 4/22 failures, corrected 22/22), exposes pending cancellations in the owner recovery list (actual native selection SQL 2/3 failures -> 3/3 pass), and fixes the misleading suspended-result portal message. Final core source SHA-256 is `e3b05ecaaec95653ae8a9b63e68e11eb1769d11b9db6e37e451d6e7b0450b8e1`; the expanded 358-assertion initial suite passes both PHP 8.2 database lanes, and the final matrix is continuing. No PR/head push until the focused candidate is frozen.\n\nThe previously separate post-enrollment receipt audit is now reproduced too: after successful enrollment returns, actual owner receipts for a partial first period, a fully paid later period or a partial later period leave the provider's full 1,000-cent recurring amount active when only 500 or zero cents remains on that period. Probe: 6 failed assertions out of 30, six actual owner ledger commits preserved, license/domain/rights unchanged, no invented payoff or second create. Three cases use the genuine returned `pending_first_payment` state; three repeat with an explicitly synthetic historical `active` projection. Provider transport/mode and future invoice timing remain synthetic. This is a separate release blocker from payment arriving during creation/readback.\n\nI will handle the unknown replacement/payoff recovery and this post-enrollment overlap through focused follow-ups after freezing the current receipt correction. Please avoid overlapping development on those two scopes. Main/#266/#268 remain exactly unchanged on remote recheck.",
+      "user": "afterburn25",
+      "created_at": "2026-10-29T04:27:18Z",
+      "updated_at": "2026-10-29T04:27:18Z"
+    }
+  ]
+}

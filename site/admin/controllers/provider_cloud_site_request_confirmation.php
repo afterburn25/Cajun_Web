@@ -24,5 +24,5 @@ function provider_cloud_site_request_confirmation_render():void {
             echo '<form method="post" data-cloud-confirmation-prepare>';admin_action('provider_inventory_cloud_confirmation_prepare');admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<button class="btn">Prepare confirmation history</button></form>';
         }else require CWP_CODE_ROOT.'/admin/views/provider_cloud_confirmation.php';
     }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="notice">'.esc($e->getMessage()).'</p>';}
-    echo '<a class="btn outline" href="'.esc(admin_url('provider-settings').'#cloud-website-requests').'">Back to client website requests</a></section>';
+    echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'website']).'#cloud-website-requests').'">Back to client website requests</a></section>';
 }

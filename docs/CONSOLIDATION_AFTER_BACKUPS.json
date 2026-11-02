@@ -1,0 +1,648 @@
+{
+  "schema": 1,
+  "main": "1c44ca120e7768998fafa720b3e1c4c85990c330",
+  "application": "bff7e8a01e218eb54a98a5f71b1e580d07aaec37",
+  "reviewed_tree_without_driver": "92753e50135adb6341ef258a31cfd626214fa6c2",
+  "scope": "Source integration; full runtime and installed acceptance still required. No live action or replacement of delivered 1.26.1 ZIPs.",
+  "owner_authority_assertions": 106,
+  "fixture_files": [
+    {
+      "path": "tests/activity_native.php",
+      "before": "1f0e112e92260cbb6f29579018dbfeda55cff00716e3bfc103a42d87c09e2770",
+      "after": "1767f6aab5e24919ae6e46146c8559dac53c0689737620a7701f19dcf8824b41",
+      "assertions": 1,
+      "old_assertions": [
+        "a_deny('Setup reauthenticates owner',fn()=>activity_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/appointments_native.php",
+      "before": "b646a1d6ad06fa314948010e1cf9e14ca469810d6e86b5f03b7e23eba93cb30b",
+      "after": "d506b2e897c9a547ebf9b26d928ce56e1db949a84ea04e3b136eaf8f558fbb9e",
+      "assertions": 3,
+      "old_assertions": [
+        "a_deny('Owner setup checks current password',fn()=>appointments_migrate('wrong'))",
+        "a_deny('Availability changes require current owner password',fn()=>appointments_configure(1,a_config(),'wrong'))",
+        "a_deny('Confirm needs current password',fn()=>appointments_mutate($lead,1,'confirm',null,null,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/attempts_native.php",
+      "before": "8957ed090f238b014661f5a6b3889a490a42052d7b3245d536aa421fe6273551",
+      "after": "247f239cd32789ae3c018b6e0f79cd7baad6da233a8649bfca798588b660991d",
+      "assertions": 2,
+      "old_assertions": [
+        "trial_deny('Trial migration requires current owner password',fn()=>attempts_migrate('wrong'))",
+        "trial_deny('Trial refuses wrong owner reauthentication',fn()=>attempts_submit($request,1,$key,'SyntheticNonceOnly','wrong','trial_transport'))"
+      ]
+    },
+    {
+      "path": "tests/catalog_native.php",
+      "before": "568f5b456b7d96ea02fef27ce1c108e7dcf2d82526c05cff123755c31089437f",
+      "after": "ac12b402df3e2b297314670fdd77091e49f70dafb44dbc70c1f3ece46aa7ce13",
+      "assertions": 1,
+      "old_assertions": [
+        "cat_deny('Catalog setup requires correct owner password',fn()=>catalog_migrate('bad'))"
+      ]
+    },
+    {
+      "path": "tests/delivery_native.php",
+      "before": "2479802286c180372f84c3c2f5e6955502e8a999c22f3459b5cb0881835452f3",
+      "after": "62fa41642dcfc620183f072f8dc320b54024834c4ab3c997d0e72a57c47e2d08",
+      "assertions": 2,
+      "old_assertions": [
+        "d_deny('Setup requires owner reauthentication',fn()=>delivery_migrate('wrong'))",
+        "d_deny('Publish requires current password',fn()=>delivery_publish($id,delivery_review_hash($row),'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/directory_listing_controls_recovery_native.php",
+      "before": "b59cc7611469cf2525edce761065ea6363ba3204c8ba77028731da7263dd795e",
+      "after": "c80d4871e9f1dab2708c0f1c98835c8e76ff2822895f58b2e5ffa97708e897c1",
+      "assertions": 1,
+      "old_assertions": [
+        "dc_deny('Recovery requires the current owner password',fn()=>provider_directory_indexing_controls_recover_finished($terminalId,$reviewHash,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/domain_contracts_native.php",
+      "before": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd",
+      "after": "8a5f691a77699a487d858f54f596b121063fd10fa888be79c64609184dd64850",
+      "assertions": 2,
+      "old_assertions": [
+        "reg_deny('Preparation checks current password',fn()=>domain_contracts_prepare('wrong'))",
+        "reg_deny('Wrong password refuses before DNS or intent',fn()=>domain_contracts_refresh($link['id'],1,1,$read['id'],'wrong','dc_resolve','dc_read'))"
+      ]
+    },
+    {
+      "path": "tests/domain_expiry_native.php",
+      "before": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
+      "after": "31692b8d8622eb152c41d6de04ccce35ba8acc5af491d237d1c59f025f32a545",
+      "assertions": 2,
+      "old_assertions": [
+        "exreg_deny('Preparation checks current password',fn()=>domain_expiry_prepare('wrong'))",
+        "exreg_deny('Wrong password refuses before DNS or intent',fn()=>domain_expiry_refresh($link['id'],1,1,$read['id'],'wrong','ex_resolve','ex_read'))"
+      ]
+    },
+    {
+      "path": "tests/domain_registration_drafts_native.php",
+      "before": "561fd6eb996983a956d74ae28384b606d017ea1682502a6eb5c253c4c2286529",
+      "after": "9d69464bc2741fdf4551a28e762d0d3ecb3675b558a59b3a53ea2bbd5a024806",
+      "assertions": 1,
+      "old_assertions": [
+        "rg_deny('Wrong owner password cannot create key or tables',fn()=>domain_registration_drafts_prepare('wrong'),'Your current password is not correct.')"
+      ]
+    },
+    {
+      "path": "tests/domain_renewal_agreements_native.php",
+      "before": "082099238c12b910b252900e263e06a6d68ff8081fd724fc47fd92d57644165a",
+      "after": "d35a1624a0de5b3cbc99c3026c280c13267c3efd697a55e954f88910942d297a",
+      "assertions": 1,
+      "old_assertions": [
+        "qa_deny('Preparation checks current owner password',fn()=>domain_renewal_agreements_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/domain_renewal_dispatch_native.php",
+      "before": "92ce3a2039d099f9108984a8409834cc653178d9e81bc5033c5b0c54f868acb3",
+      "after": "6ec7a7a00d3525496dbf5dfc488e2f445bd5b0f53d80adb2a7c6b174554f8b16",
+      "assertions": 2,
+      "old_assertions": [
+        "dr_deny('Dispatch preparation requires current password',fn()=>domain_renewal_dispatch_prepare('wrong'))",
+        "dr_deny('Wrong current owner password cannot approve dispatch',fn()=>domain_renewal_dispatch_send(dr_id(),$allocation['row']['id'],$review,array_fill_keys(['eligible_years','privacy_scope','provider_cost','balance_charge'],true),'wrong','dr_dns','dr_perform'))"
+      ]
+    },
+    {
+      "path": "tests/domain_renewals_native.php",
+      "before": "ed0ae6017c76afef74b0f81e6e76ef3a0f506de853f69961a68a5a974837f83a",
+      "after": "ca0d627de65d8681521333c2872de49ecab8e3c0e1161ed00744dd3b4c347ae4",
+      "assertions": 2,
+      "old_assertions": [
+        "reg_deny('Renewal preparation checks current password',fn()=>domain_renewals_prepare('wrong'))",
+        "reg_deny('Owner review requires current password',fn()=>domain_renewals_change($request,0,bin2hex(random_bytes(16)),'reviewed','Review',null,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/force_ssl_controls_recovery_native.php",
+      "before": "e4a2fe2ee29c6b52b3eb94e7c991285045101744f2ef25932079632059f3c39f",
+      "after": "622d41a3470bdd352bf513cb522189fd0ab23b177095245f0bf45a4a5e5e2457",
+      "assertions": 1,
+      "old_assertions": [
+        "fc_deny('Recovery requires the current owner password',fn()=>provider_force_ssl_controls_recover_finished($terminalId,$reviewHash,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/hosting_delete_retry_native.php",
+      "before": "f24533333fff01695a3c362694859277f14271fb88e7006b626f9c2e134e1e2d",
+      "after": "1348a92bfc797a164a167cd54dafdf9ecbc3b921764bce1d455139afccb8b182",
+      "assertions": 1,
+      "old_assertions": [
+        "hr_deny('Deletion retry requires the current owner password',fn()=>hosting_operations_retry_deprovision($id,1,$revision,hr_id(103),$profileId,1,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/hosting_fulfillment_native_cases.php",
+      "before": "f507a65438b1c8181f7bd8b73e1772f8cf9b8420670db5ef6d921ded604023fc",
+      "after": "25752325be124ac6201bee35d151ddfda6ca5f00fe3873a87f4112ca825e42c2",
+      "assertions": 2,
+      "old_assertions": [
+        "rb_deny('Fulfillment preparation requires current owner password',fn()=>hosting_fulfillment_migrate('wrong'))",
+        "rb_deny('Fulfillment requires current owner password',fn()=>hosting_fulfillment_execute($o->data()['id'],1,$o->revision(),$o->fingerprint(),$c['link']['binding_sha256'],$c['request'],$c['review'],'wrong',static fn()=>'8.8.8.8','hf_perform'))"
+      ]
+    },
+    {
+      "path": "tests/hosting_operations_native.php",
+      "before": "53d5ce4c0e6effa1cc44cad750f0b7887bac21b84bcec846b54a65abcc630321",
+      "after": "b422aa2df165cf2e71b0a394fd840b41f49e5cb10de767556a7b891c457215bb",
+      "assertions": 2,
+      "old_assertions": [
+        "ho_deny('Operation setup requires current owner password',fn()=>hosting_operations_migrate('wrong'))",
+        "ho_deny('Claim requires current password',fn()=>hosting_operations_claim($id,1,0,ho_id(100),'hosting.provision',[],$profileId,1,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/hosting_reconciliation_native.php",
+      "before": "7b9fa2f6a1c6ede7edac0fbf087d8ce688531150b66574d79070477d9dae2df4",
+      "after": "89a10ecff43c126da6736ea8d6394657db9bcb0a378894719ed28897198ffc48",
+      "assertions": 1,
+      "old_assertions": [
+        "hr_deny('Reconciliation setup requires the owner password',fn()=>hosting_reconciliation_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/hosting_records_native.php",
+      "before": "af2f050ef2a9d77b779b24dde16daafad10f99295887316452aa4589bb6592b3",
+      "after": "5f8a8f762a6f8b28d0617e7f321a3ddab6b99908eaf5d5c62719fac24c3a94e2",
+      "assertions": 2,
+      "old_assertions": [
+        "hr_deny('Setup requires current password',fn()=>hosting_records_migrate('wrong'))",
+        "hr_deny('Create requires current password',fn()=>hosting_records_create($id,1,$package,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/hosting_retry_native.php",
+      "before": "0477762d6267a74ff5db25c05fc16f39053ba0204cd90d9116b48844aea0fd33",
+      "after": "8170eea987037deac3bdb64dd5f9dbaa6a4cf8e6af4f92051296cfedb6356a3e",
+      "assertions": 1,
+      "old_assertions": [
+        "hr_deny('Retry requires current owner password',fn()=>hosting_operations_retry_provision($id,1,$revision,hr_id(101),'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/ledger_native.php",
+      "before": "34248dcaf27995aef5f6edd42186bbd7d4e78e474043e659796a34d203f69f63",
+      "after": "a05b9b2678db9fc66b8bcd81b81b803d229ac2bae589d6b21b6494508b604044",
+      "assertions": 2,
+      "old_assertions": [
+        "l_deny('Migration requires owner password',fn()=>ledger_migrate('wrong'))",
+        "l_deny('Correction requires current owner password',fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/mail_accounts_native.php",
+      "before": "7f87d98ea70ee3ab086beabaa4671cc9409fe6ee06fa3afa797c0d81d40c8fa3",
+      "after": "8c8221cd3362bd2095e5f7a8f6876b6dd1444a5ade388a7f938d5e1d5225fa8a",
+      "assertions": 2,
+      "old_assertions": [
+        "ma_deny('Account setup requires current owner password',fn()=>mail_accounts_migrate('wrong'))",
+        "ma_deny('Account save reauthenticates owner',fn()=>mail_accounts_save('',0,ma_input(),true,ma_secrets(),'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/mail_connections_native.php",
+      "before": "72cc795d9607b7d0709af7714e3c953a77917cbe072765289c475d15c6f4e954",
+      "after": "6a04907b1f702e040ceeb6668fa7113433a30d83e18b28b0969fc73b142b441b",
+      "assertions": 2,
+      "old_assertions": [
+        "mc_deny('Connection setup requires current owner password',fn()=>mail_connections_migrate('wrong'))",
+        "mc_deny('Wrong current password prevents DNS and transport',fn()=>mail_connections_check($id,1,'imap','wrong','mc_resolve','mc_transport'))"
+      ]
+    },
+    {
+      "path": "tests/mail_inbox_native.php",
+      "before": "706253ed1f2984e72875adb92ee021cb5d8ea21f42659eb1a1d5894b457ce52e",
+      "after": "10b8ac792f276171412eee1400446287d2bb420487550fa04f4ffb1b45104390",
+      "assertions": 1,
+      "old_assertions": [
+        "mi_deny('Inbox storage setup requires current owner password',fn()=>mail_inbox_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/mail_message_native.php",
+      "before": "1c583aa212ecbeb501bd2e9954dd0b6691478c1410e0a33d19c2232d64fb72a9",
+      "after": "5e91d83565b22af2794bb267f47ad6cff03e1265c3396f77bc1c4b080f42e36a",
+      "assertions": 1,
+      "old_assertions": [
+        "mm_deny('Message storage setup requires current owner password',fn()=>mail_messages_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/mail_templates_native.php",
+      "before": "1fb8a9c2d5294565e1daf5185f7e24f5a57fd2bbd24dfae3bb81a98310012e6b",
+      "after": "306aa90656d1954888ab7920afd00aa4c12680183790cf6057a3927fa9a3f3a0",
+      "assertions": 1,
+      "old_assertions": [
+        "t_deny('Owner setup requires current password',fn()=>mail_templates_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/notifications_native.php",
+      "before": "0c8eca22b71203f72759509bfae968015de689ea410d248b9ea6de828c9a5c30",
+      "after": "1254dc66cb1cc454d628ee11121d9a027205d25866685ed62ad57e5b68b09072",
+      "assertions": 3,
+      "old_assertions": [
+        "n_deny('Migration requires owner reauthentication',fn()=>notifications_migrate('wrong'))",
+        "n_deny('Configuration refuses wrong password',fn()=>notifications_configure(0,1,$webhook,true,'wrong'))",
+        "n_deny('Verification requires owner password',fn()=>notifications_verify($id,1,'wrong','n_transport'))"
+      ]
+    },
+    {
+      "path": "tests/payments_native.php",
+      "before": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
+      "after": "e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19",
+      "assertions": 2,
+      "old_assertions": [
+        "pay_deny('Payment migration requires owner reauthentication',fn()=>payments_migrate('wrong'))",
+        "pay_deny('Credential save requires current owner password',fn()=>payments_save('sandbox',0,$creds,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_catalog_import_native.php",
+      "before": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "after": "a40b72b039000ff442129b501212d34ccf75f8135ea0e26161dd28298487edf8",
+      "assertions": 2,
+      "old_assertions": [
+        "pim_deny('Import setup requires current owner password',fn()=>provider_catalog_import_prepare('wrong'))",
+        "pim_deny('Wrong owner password cannot create a draft',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month','wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_cloud_assignment_native.php",
+      "before": "88619f5c6332e490a659c1f97f11c762cfc3d28ffe5e9fa3888c101cfc752d47",
+      "after": "1d1bbe7d9c8617def2d11ef05a8fe27dc4e7b6fee35deb0911926d0a624f330f",
+      "assertions": 1,
+      "old_assertions": [
+        "ca_deny('Wrong owner password cannot prepare',fn()=>provider_cloud_assignment_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_cloud_confirmation_native.php",
+      "before": "f3526aadb0fdf3b5f98a8d6d72603799ce567d53a7811c81b567e5a04408f6a8",
+      "after": "bd7b27096f53fef8673e2e1a9740d1841b8af800c63bb79a55a69961e25a1aa7",
+      "assertions": 2,
+      "old_assertions": [
+        "cc_deny('Wrong owner password cannot prepare confirmation storage',fn()=>provider_cloud_confirmation_prepare('wrong'))",
+        "cc_deny('Wrong password refuses confirmation',fn()=>cc_confirm(null,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_cloud_providers_native.php",
+      "before": "eaac3503a91bb90e3864aaf7e10e3bc05887c1eecdd26867198e958561d765d9",
+      "after": "f8f61cef41961559579df4973040d1f6dad5428b387d0d267c0f61cf0e1cd7dd",
+      "assertions": 2,
+      "old_assertions": [
+        "cp_deny('Wrong preparation password refuses',fn()=>provider_cloud_providers_prepare('wrong'))",
+        "cp_deny('Wrong refresh password refuses before DNS',fn()=>provider_inventory_refresh_attempt($profile,1,'wrong','cp_dns','cp_read',InventoryRead::CLOUD_PROVIDERS_LIST))"
+      ]
+    },
+    {
+      "path": "tests/provider_cloud_site_requests_native.php",
+      "before": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
+      "after": "23837d2606bb2a38ad45f513a7fb3aabefcf07f052182ba19fab731f8c17e9a8",
+      "assertions": 2,
+      "old_assertions": [
+        "cwri_deny('Wrong owner password cannot enable client website requests',fn()=>provider_cloud_site_requests_prepare('wrong'))",
+        "cwri_deny('Wrong current owner password refuses dispatch',fn()=>provider_cloud_site_requests_dispatch(...[...$args,true,'wrong','cwri_dns','cwri_perform']))"
+      ]
+    },
+    {
+      "path": "tests/provider_cloud_sites_native.php",
+      "before": "78ee309d63819f7e977d11995b91228f4efc4da78aad92e17983acd5bf084bb5",
+      "after": "12e13af3f4aaadfcbe757308293721cda4796d28af1abca99ff9614cc563d476",
+      "assertions": 1,
+      "old_assertions": [
+        "cw_deny('Wrong password refuses cloud request',fn()=>cw_create('wrong.example','',null,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_directory_listing_controls_native.php",
+      "before": "4cfc7f4eaf62a1aa7fcafc9b9fe7c1eb011543e84d8d8cdbd75c28a61bac37a5",
+      "after": "9ce8a0d60b6429b7cea3e9cec4e2303c695c48dfc6373afe09f921d13b07fa2d",
+      "assertions": 2,
+      "old_assertions": [
+        "dc_deny('Wrong owner preparation password refuses',fn()=>provider_directory_indexing_controls_prepare('wrong'))",
+        "dc_deny('Wrong change password refuses before DNS',fn()=>provider_directory_indexing_controls_change(bin2hex(random_bytes(16)),$link['id'],$anchor,$binding->sha256,true,true,'wrong','dc_dns','dc_perform'))"
+      ]
+    },
+    {
+      "path": "tests/provider_directory_listing_native.php",
+      "before": "b7f617f9fc713fdb07ceaced59781f54b63e1d54af18e5ee7536250d8aa51322",
+      "after": "339f4c91ccdedd261ec5ad5b713c043693cccd6a2efa6eb07e577856d4bdd72b",
+      "assertions": 2,
+      "old_assertions": [
+        "di_deny('Wrong preparation password refuses',fn()=>provider_directory_indexing_prepare('wrong'))",
+        "di_deny('Wrong owner password refuses before DNS',fn()=>provider_directory_indexing_refresh($link['id'],$binding,'wrong','di_dns','di_read'))"
+      ]
+    },
+    {
+      "path": "tests/provider_document_roots_native.php",
+      "before": "80282d115b7de7ef00f4feca45c3c7d2aa9fa5cace7deb8a5c96ac168d2c91b7",
+      "after": "6fefa2f7fe158cd1db1a89da88fe0bb341192f46b7347fa10d29d800a8ba227e",
+      "assertions": 2,
+      "old_assertions": [
+        "dr_deny('Wrong preparation password refuses',fn()=>provider_document_roots_prepare('wrong'))",
+        "dr_deny('Wrong owner password refuses before DNS',fn()=>provider_document_roots_refresh($link['id'],$binding,'wrong','dr_dns','dr_read'))"
+      ]
+    },
+    {
+      "path": "tests/provider_force_ssl_controls_native.php",
+      "before": "1058984c98e9116e5ef79cd7c9d40e4f639e393777a57af310f3874c382cbe64",
+      "after": "01436abf741bf9870562665e9cab48df948c0a705b2ca3909893d6775aa5ba0b",
+      "assertions": 2,
+      "old_assertions": [
+        "fc_deny('Wrong owner preparation password refuses',fn()=>provider_force_ssl_controls_prepare('wrong'))",
+        "fc_deny('Wrong change password refuses before DNS',fn()=>provider_force_ssl_controls_change(bin2hex(random_bytes(16)),$link['id'],$anchor,$binding->sha256,true,true,'wrong','fc_dns','fc_perform'))"
+      ]
+    },
+    {
+      "path": "tests/provider_forwarding_native.php",
+      "before": "324b2e969a574782df441a9185588b7340d7f15a1cb94fabf8c146b10ebb6bc6",
+      "after": "2cc138c51e2b0313493e629c15eb6cd2ed1a4b206949ad6fa1caa42fd3075bb8",
+      "assertions": 2,
+      "old_assertions": [
+        "mb_deny('Preparation requires current owner password',fn()=>provider_forwarding_prepare('wrong'))",
+        "mb_deny('Owner review requires password',fn()=>provider_forwarding_change($id,$id,mb_id(),'review','Review',null,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_inventory_native.php",
+      "before": "387cb09bee54d83bd42a912f66a2695c7740b523abf169730e12be3b7f055974",
+      "after": "a094ecd07033653a9f48a698ac595325e1b084b467b3237f6ea88706ce341047",
+      "assertions": 7,
+      "old_assertions": [
+        "pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'))",
+        "pi_deny('Link without password refused',fn()=>provider_inventory_link($id,101,1,1,'wrong'))",
+        "pi_deny('Unlink requires owner password',fn()=>provider_inventory_unlink($link['id'],'wrong'))",
+        "pi_deny('Domain link without password refused',fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,'wrong'))",
+        "pi_deny('Domain unlink requires owner password',fn()=>provider_inventory_domain_unlink($dlink['id'],'wrong'))",
+        "pi_deny('Re-approval requires the owner password',fn()=>provider_inventory_relink($link['id'],5,'wrong'))",
+        "pi_deny('Cloud refresh requires current owner password',fn()=>provider_inventory_refresh($id,6,'wrong','pi_resolve','pi_read',InventoryRead::CLOUD_SERVERS_LIST))"
+      ]
+    },
+    {
+      "path": "tests/provider_inventory_upgrade_native.php",
+      "before": "5c10a11a8b17ec2de49dffadcd3927d33ac66ced180b1c280e7c0cb936da2d9c",
+      "after": "e98fa71e01bef9d56e7de51243d66ccb1f39a76ca9a80b13d134aced07b43940",
+      "assertions": 3,
+      "old_assertions": [
+        "pu_deny('Populated v1 preparation requires current owner password',fn()=>provider_inventory_migrate('wrong'))",
+        "pu_deny('Populated v3 migration rejects wrong current password',fn()=>provider_inventory_migrate('wrong'))",
+        "pu_deny('Populated v4 upgrade requires current owner password',fn()=>provider_inventory_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_mailboxes_native.php",
+      "before": "999434e2cc6bc1ab88af30ec24e3ee7b8a00bfb1576ea620c409e4cadd72d0a9",
+      "after": "bb013ba82dbba0381482e408e5e2f181b4c9bdcf9ed74555a99116c2be743219",
+      "assertions": 1,
+      "old_assertions": [
+        "mb_deny('Preparation requires current owner password',fn()=>provider_mailbox_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_operations_execute_native.php",
+      "before": "e922d5960dd888211c43a018e4e06714a5b307ba3cb2fca735d6cc428a340a5e",
+      "after": "2eaf94ef943e6c08288c7f8810a51dd5a19912f0360412f19fdd7ecb1afc9c83",
+      "assertions": 2,
+      "old_assertions": [
+        "pe_deny('Execution requires owner password',fn()=>pe_exec($profile,1,$deadGrant,'k1','wrong'))",
+        "pe_deny('Reconcile requires the owner password',fn()=>pe_reconcile($profile,$rev,'idem-rec-gone','wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_operations_native.php",
+      "before": "e448fd3b9dda3822a62bf8528a8005e10359e5dfd894dbfcb60482d2fb374de9",
+      "after": "d76be2d4f194a54a182fb6849eda2b1312a945496860b745966c4163ea442241",
+      "assertions": 3,
+      "old_assertions": [
+        "po_deny('Operation storage requires owner password',fn()=>provider_operations_migrate('wrong'))",
+        "po_deny('Grant requires owner password',fn()=>provider_operation_grant($profile,'packages.update',$scope,'wrong'))",
+        "po_deny('Revoke requires owner password',fn()=>provider_operation_revoke($grantId2,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_package_force_ssl_native.php",
+      "before": "f4562337a5248a6f61a7ae38b32f50004e34e565115c96c3bdae4a84fff844e8",
+      "after": "7f77d53f2814684b78b76e45438372c8965edd591990916cfb286ceb493fb34a",
+      "assertions": 2,
+      "old_assertions": [
+        "fs_deny('Wrong preparation password refuses',fn()=>provider_force_ssl_prepare('wrong'))",
+        "fs_deny('Wrong owner password refuses before DNS',fn()=>provider_force_ssl_refresh($link['id'],$binding,'wrong','fs_dns','fs_read'))"
+      ]
+    },
+    {
+      "path": "tests/provider_package_php_native.php",
+      "before": "75f7c1349ca341bcaad4e671f993203ee7ddaf524cb10e65ce5cc4acbbc6f625",
+      "after": "e0e8c2e02baedf46090039168a2daab9a94168436547d94465ef48dd054623df",
+      "assertions": 2,
+      "old_assertions": [
+        "pp_deny('Wrong preparation password refuses',fn()=>provider_php_prepare('wrong'))",
+        "pp_deny('Wrong owner password refuses before DNS',fn()=>provider_php_refresh($link['id'],$binding,'wrong','pp_dns','pp_read'))"
+      ]
+    },
+    {
+      "path": "tests/provider_package_wordpress_installed_native.php",
+      "before": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
+      "after": "53f159d3e61c5a49bf8f415a2b3a749ea37b7ccd03a35333d7e07af30d72c2be",
+      "assertions": 2,
+      "old_assertions": [
+        "wi_deny('Wrong preparation password refuses',fn()=>provider_wp_installed_prepare('wrong'))",
+        "wi_deny('Wrong owner password refuses before DNS',fn()=>provider_wp_installed_refresh($link['id'],$binding,'wrong','wi_dns','wi_read'))"
+      ]
+    },
+    {
+      "path": "tests/provider_password_reset_template_native.php",
+      "before": "08407087ea1c32bfa82c0ab721d309f9c79837db83c809ae1acb3301c6c9429a",
+      "after": "e5a0e61a7b45a55502fc87249019caca0fa01153d21de8762bd909cc51fe7180",
+      "assertions": 2,
+      "old_assertions": [
+        "prtn_deny('Wrong preparation password refuses',fn()=>provider_password_reset_template_prepare('wrong'))",
+        "prtn_deny('Wrong recovery password refuses',fn()=>provider_password_reset_template_recover_finished($third,$item['recovery_digest'],'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_registrar_native.php",
+      "before": "e8da34fb48029f9852cdc8839b78a5eec6ec8c632285582607ec44d9c01346c9",
+      "after": "e06861a2ef52c0e600a83bf0fb1a6776a588ffba94a5290223b61204dc2ea95b",
+      "assertions": 2,
+      "old_assertions": [
+        "reg_deny('Prepare requires current owner password',fn()=>provider_registrar_prepare('wrong'))",
+        "reg_deny('Assignment refuses wrong password',fn()=>provider_registrar_link($id,701,1,1,$read['id'],'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_registration_periods_native.php",
+      "before": "78d57eaf345521abb8e7d8296c0cf1c3b754ca68596e72b1c1bd717974718621",
+      "after": "6074ce383af53459fa29d9ce39551a9b2cbd9bf2e650689fe1d1562e794e5e6b",
+      "assertions": 1,
+      "old_assertions": [
+        "pr_deny('Preparation rejects incorrect owner password',fn()=>provider_registration_period_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/provider_schedule_native.php",
+      "before": "2146f99e94dbbae67982dde3cbff9ce525d33a2051859a8905725e50b07c0711",
+      "after": "e36a5958dae24174f61742d250c04f47e62c5d89413553f0755cd35acfe87324",
+      "assertions": 2,
+      "old_assertions": [
+        "ps_deny('Preparation rejects wrong password',fn()=>provider_schedule_prepare('wrong'))",
+        "ps_deny('Recovery requires current owner password',fn()=>provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/recurring_billing_checkout_native.php",
+      "before": "99e5b7c4806455fd2ea478d248c4c035f004544c373ce97d1ed7937a153487a1",
+      "after": "ee1eb08da93dbd864c8beedf080bad57fe5aba2839ef7f7844c6723d947bd4f1",
+      "assertions": 1,
+      "old_assertions": [
+        "rcn_bad('Wrong owner password cannot begin extension',fn()=>recurring_billing_checkout_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/recurring_billing_native.php",
+      "before": "4204d04d486bae2692c61f943096fab7090e4ed3f180358428873bef3257f8a9",
+      "after": "f2b811ba24274cf9421521c7e7f580b95aa9e8fa55033dfc48d2c2ff42f6810a",
+      "assertions": 1,
+      "old_assertions": [
+        "rb_deny('Setup rejects wrong owner password',fn()=>recurring_billing_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/reviews_native.php",
+      "before": "c95375d71273a8539338050fe943214cb6868a40e44f5f7d46756ce744474743",
+      "after": "0698aac6fc04affe02e53ce725bb5c5aa8dd2943d62272e5ed55bb564ae8795d",
+      "assertions": 2,
+      "old_assertions": [
+        "r_deny('Setup needs owner current password',fn()=>reviews_migrate('wrong'))",
+        "r_deny('Delivery needs current password',fn()=>reviews_deliver($lead,7,$now,'email','Synthetic mail reference','wrong'))"
+      ]
+    },
+    {
+      "path": "tests/service_observations_native.php",
+      "before": "36deeba1485d59149de859d64aa4b8e2f3419cde711d4dd3377e6904d885e711",
+      "after": "a5e5f6eab9c716069ce49f70cc513df778b5003489e55db4b1c9c11cc88f87d2",
+      "assertions": 1,
+      "old_assertions": [
+        "reg_deny('Preparation checks current owner password',fn()=>service_observations_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/service_orders_native_cases.php",
+      "before": "584bb1ea96e68ad54ed9a406adf7afcc1fafc0134064feb0ba74a83a4c963a0a",
+      "after": "5e11e336c3d27708f794e1a9acc7cd3ebbc3f1ce6b1d958351d4a039e51ebbc7",
+      "assertions": 2,
+      "old_assertions": [
+        "rb_deny('Order setup rejects incorrect owner password',fn()=>service_orders_migrate('wrong'))",
+        "rb_deny('Manual policy requires current owner password',fn()=>service_orders_change(rb_id(9100),1,1,rb_id(9112),'allow_manual',$policy,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/service_plans_checkout_native.php",
+      "before": "fec99594a17f40fe8d9cdce991b2af6af3a4ef07f87c17d45bc20521de86c1b7",
+      "after": "b7f038f2c69c2434771221a032bdf2c8cb8625495500f25b403f58d87d0ea4e8",
+      "assertions": 1,
+      "old_assertions": [
+        "scn_bad('Wrong owner password cannot begin extension',fn()=>service_plans_checkout_migrate('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/service_plans_native.php",
+      "before": "5819be698fe542aff9ad8931f49c3c4b1322684b63045d6fcefa810fb09eda76",
+      "after": "3a79fa80e93606efae2adafd70dfe678c1857f6db37f8be707d8396853fd5ae4",
+      "assertions": 2,
+      "old_assertions": [
+        "sn_deny('Plan setup needs the current owner password',fn()=>service_plans_migrate('wrong'))",
+        "sn_deny('Draft creation requires the current password',fn()=>service_plans_create(sn_id(1),$terms,'wrong'))"
+      ]
+    },
+    {
+      "path": "tests/stackcp_access_native.php",
+      "before": "2866393cbe2b9c8a875e40c13f075fb95553439828152cefee08db93ba7a2288",
+      "after": "e16e554d2824b4d8323b295d5441fefbd31a8ccf8b86b6dcba20e383432fc9c5",
+      "assertions": 1,
+      "old_assertions": [
+        "san_deny('Preparation requires current password',fn()=>provider_stackcp_access_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/stackcp_prerequisites_native.php",
+      "before": "25929fd61ee05fcf894028c107c6f39e42ced7fee36575f2e4b2e149b79b532c",
+      "after": "bb56209a82726f52046481b73aa3fdd04581cae7f30adabea40343927a53caeb",
+      "assertions": 1,
+      "old_assertions": [
+        "sc_deny('Preparation reauthenticates owner',fn()=>provider_stackcp_auth_prepare('wrong'))"
+      ]
+    },
+    {
+      "path": "tests/support_native.php",
+      "before": "dd62a1fb086cfd5cf81d424877e370c3a85c03eba2d0132af7aa3a8ae00eb8b1",
+      "after": "efe28f17d0f2f6a1523d1ce2464f46a96abe9b306aebdeef1a412fee711bef8f",
+      "assertions": 1,
+      "old_assertions": [
+        "support_denied('Support migration requires owner current password',fn()=>support_migrate('wrong'))"
+      ]
+    }
+  ],
+  "pin_updates": [
+    {
+      "path": "tools/acceptance-contract.json",
+      "fixture": "tests/domain_contracts_native.php",
+      "before": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd",
+      "after": "8a5f691a77699a487d858f54f596b121063fd10fa888be79c64609184dd64850",
+      "occurrences": 1
+    },
+    {
+      "path": "tools/acceptance-contract.json",
+      "fixture": "tests/domain_expiry_native.php",
+      "before": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
+      "after": "31692b8d8622eb152c41d6de04ccce35ba8acc5af491d237d1c59f025f32a545",
+      "occurrences": 1
+    },
+    {
+      "path": "tools/acceptance-contract.json",
+      "fixture": "tests/payments_native.php",
+      "before": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
+      "after": "e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19",
+      "occurrences": 1
+    },
+    {
+      "path": "tools/acceptance-contract.json",
+      "fixture": "tests/provider_catalog_import_native.php",
+      "before": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "after": "a40b72b039000ff442129b501212d34ccf75f8135ea0e26161dd28298487edf8",
+      "occurrences": 1
+    },
+    {
+      "path": "tools/acceptance-contract.json",
+      "fixture": "tests/provider_cloud_site_requests_native.php",
+      "before": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
+      "after": "23837d2606bb2a38ad45f513a7fb3aabefcf07f052182ba19fab731f8c17e9a8",
+      "occurrences": 1
+    },
+    {
+      "path": "tools/acceptance-contract.json",
+      "fixture": "tests/provider_package_wordpress_installed_native.php",
+      "before": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
+      "after": "53f159d3e61c5a49bf8f415a2b3a749ea37b7ccd03a35333d7e07af30d72c2be",
+      "occurrences": 1
+    }
+  ],
+  "remaining_groups": [
+    "company contacts and accounts",
+    "tickets and notifications",
+    "email workspace",
+    "advanced StackCP delegation",
+    "versioned proposals",
+    "payment-link privacy"
+  ]
+}

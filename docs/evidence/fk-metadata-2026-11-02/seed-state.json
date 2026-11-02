@@ -1,0 +1,15 @@
+{
+    "phase": "seeded",
+    "source_cadence": "monthly",
+    "invoice_cents": 2500,
+    "invoice_period": 0,
+    "order_phase": "accepted",
+    "commercial_basis": "verified-payment",
+    "catalog_ready": true,
+    "hosting_link_exists": false,
+    "fulfillment_prepared": false,
+    "table_count": 94,
+    "client_count": 1,
+    "order_count": 1,
+    "catalog_count": 1
+}

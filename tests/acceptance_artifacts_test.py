@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import re
+import shlex
 from pathlib import Path
 import shutil
 import subprocess
@@ -167,12 +168,128 @@ def valid_port_context(workflow):
     return True
 
 
+def orchestration_evidence_checks(tmp, ctx):
+    # Execute the workflow's actual reporting command against copied public source,
+    # then exercise the real partition sealer. No application or provider runs.
+    workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
+    commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
+    check('Exactly one build orchestration report command exists', len(commands) == 1)
+    command = commands[0]
+    shell = shutil.which('bash')
+    check('Bash is available for the actual workflow reporting regression', shell is not None)
+    script = 'python3() { ' + shlex.quote(Path(sys.executable).as_posix()) + ' "$@"; }; set -o pipefail; ' + command
+    for failing in (False, True):
+        root = tmp / ('orchestration-failure' if failing else 'orchestration-success')
+        for name in ('browser_acceptance.py', 'provider_schedule_cases.py', 'browser_suite_orchestration_contract.py'):
+            blob(root / 'tests' / name, (ROOT / 'tests' / name).read_bytes())
+        if failing:
+            with (root / 'tests/provider_schedule_cases.py').open('a') as stream:
+                stream.write('\n# software_commerce_cases must not be owned here\n')
+        before = b'Preserved synthetic build transcript\n'
+        blob(root / 'qa/build-results.txt', before)
+        result = subprocess.run([shell, '-c', script], cwd=root, capture_output=True, timeout=60)
+        check('Workflow preserves orchestration exit status ' + str(failing), (result.returncode != 0) == failing)
+        steps = outcomes('build'); steps['build'] = 'failure' if failing else 'success'
+        out = tmp / ('orchestration-sealed-failure' if failing else 'orchestration-sealed-success')
+        digest = a.seal(root, ctx, out, 'build', steps, '')
+        envelope = a.verify_bundle(out, 'partition', ctx, digest)
+        with zipfile.ZipFile(out / 'partition.zip') as archive:
+            transcript = archive.read('qa/build-results.txt')
+        check('Sealed build retains original transcript and exact guard output ' + str(failing),
+              transcript == before + result.stdout and set(envelope['files']) == {'qa/build-results.txt'})
+        report = json.loads(transcript[len(before):])
+        check('Sealed build truthfully records guard result and step outcome ' + str(failing),
+              report['passed'] is (not failing) and report['count'] == 6 and envelope['steps'] == steps)
+    forbidden = tmp / 'orchestration-forbidden'
+    blob(forbidden / 'qa/browser-suite-orchestration-contract.json', result.stdout)
+    deny('Standalone orchestration report still cannot cross the build boundary',
+         lambda: a.seal(forbidden, ctx, tmp / 'orchestration-forbidden-seal', 'build', outcomes('build'), ''))
+
+
+def software_authority_report_checks(tmp):
+    """Package retained SQL evidence as test data; never rerun or invent SQL results."""
+    name = 'software-commerce-native-authority.json'
+    registry = a.load(ROOT / 'tools/acceptance-reports.json')
+    for mode, count, digest in [
+        ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
+        ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
+    ]:
+        current = registry[mode]
+        check('Software authority named report is required exactly once in ' + mode,
+              current.count(name) == 1 and len(current) == len(set(current)))
+        retained = [item for item in current if item != name]
+        check('Software authority inventory retains every original ordered ' + mode + ' report',
+              len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
+    body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
+    report = json.loads(body)
+    check('Authority packaging fixture retains the exact recorded194 passing SQL assertions',
+          hashlib.sha256(body).hexdigest() == 'c82bfe0ca921c4728a83c57fd03ccd7f0a59622bbedbcb96f558cc32ca4e484b'
+          and report['passed'] is True and report['original_checks_passed'] == 272
+          and len(report['checks']) == len({item['name'] for item in report['checks']}) == 194
+          and all(item['passed'] is True for item in report['checks']))
+    ctx = context(); ctx['reports_sha256'] = a.digest(ROOT / 'tools/acceptance-reports.json')
+    expected = {'browser': ['http-results.json', name],
+                'final': ['http-results.json', 'structure-results.json', 'apache-results.json', name]}
+    check('Authority protocol fixture uses only actual required report names',
+          all(set(expected[mode]) <= set(registry[mode]) for mode in expected))
+    input_sha = '7' * 64
+    for scenario in ('complete', 'missing', 'failed assertion', 'failed summary', 'renamed', 'extra', 'malformed assertion', 'browser failure'):
+        case = tmp / scenario.replace(' ', '-'); incoming = case / 'incoming'; bindings = {}
+        data = copy.deepcopy(report)
+        if scenario == 'failed assertion': data['checks'][0]['passed'] = False
+        if scenario == 'failed summary': data['passed'] = False
+        if scenario == 'malformed assertion': data['checks'][0]['passed'] = 'true'
+        for index, lane in enumerate(a.LANES):
+            root = case / lane; root.mkdir(parents=True)
+            if lane == 'build': packages(root, ctx)
+            elif lane == 'native-browser':
+                named(root / 'qa/http-results.json', scenario != 'browser failure')
+                if scenario != 'missing':
+                    filename = name.upper() if scenario == 'renamed' else name
+                    blob(root / 'qa' / filename, body if scenario not in ('failed assertion', 'failed summary', 'malformed assertion') else json.dumps(data).encode())
+                if scenario == 'extra': named(root / 'qa/software-commerce-native-unreviewed.json')
+            elif lane == 'recovery': named(root / 'qa/structure-results.json')
+            else: named(root / 'qa/apache-results.json')
+            sealed = a.seal(root, ctx, incoming / lane, lane, outcomes(lane), input_sha)
+            bindings[lane] = {'result': 'success', 'artifact_id': str(index + 1), 'sha256': sealed,
+                             **({'input_sha256': input_sha} if lane == 'build' else {}),
+                             **({'checkpoint_id': '9', 'checkpoint_digest': '6' * 64} if lane == 'native-browser' else {})}
+        for checkpoint in (False, True):
+            mode = 'checkpoint' if checkpoint else 'full'; current_bindings = copy.deepcopy(bindings)
+            if checkpoint:
+                for lane in ('recovery', 'apache'): current_bindings[lane] = {'result': 'skipped', 'artifact_id': '', 'sha256': ''}
+            target = case / mode
+            result = a.aggregate(target, ctx, incoming, current_bindings, expected, checkpoint)
+            check('Authority report ' + scenario + ' retains strict ' + mode + ' acceptance',
+                  result['complete'] is (scenario == 'complete') and result['full_partition_checks_passed'] is (scenario == 'complete' and not checkpoint))
+            if scenario == 'complete':
+                facts = result['reports'][name]
+                check('Authority ' + mode + ' preserves all194 named outcomes and exact evidence bytes',
+                      facts['passed'] and facts['executions'] == facts['unique_names'] == 194
+                      and facts['sha256'] == hashlib.sha256(body).hexdigest() and (target / 'qa' / name).read_bytes() == body)
+            elif scenario in ('missing', 'renamed'):
+                check('Authority ' + scenario + ' is explicitly missing from ' + mode,
+                      'Missing reports: ' + name in result['errors'])
+            elif scenario == 'extra':
+                check('Authority filename does not admit an unreviewed sibling in ' + mode,
+                      'Unexpected reports: software-commerce-native-unreviewed.json' in result['errors'])
+            elif scenario in ('failed assertion', 'failed summary', 'browser failure'):
+                failed = 'http-results.json' if scenario == 'browser failure' else name
+                check('Authority ' + scenario + ' remains a named failure in ' + mode,
+                      'One or more named reports failed' in result['errors'] and not result['reports'][failed]['passed'])
+            else:
+                check('Malformed authority outcome is rejected in ' + mode,
+                      any(error.startswith('Report/package validation: Malformed named result') for error in result['errors']))
+
+
 def run(tmp):
     def remove_partition(path):
         resolved=path.resolve();require_parent=tmp.resolve()
         assert resolved.is_relative_to(require_parent) and resolved.name=='native-browser'
         shutil.rmtree(resolved)
     ctx = context(); source = tmp / 'source'; fixtures(source, ctx)
+    software_authority_report_checks(tmp / 'software-authority-report')
+    orchestration_evidence_checks(tmp, ctx)
     # Exercise the actual entry points and GitHub output file, including the
     # numeric suffix used by both immutable artifact-manifest outputs.
     cli_root=tmp/'cli-source';fixtures(cli_root,ctx);job_output=tmp/'github-output'
@@ -350,11 +467,59 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
+    from provider_browser_fixture_provenance import validate as validate_provider_fixtures, projected_validation, source as fixture_predecessor_source
+    for outcome in validate_provider_fixtures(ROOT):check(outcome['name'],outcome['passed'])
+    from standalone_repair_provenance import validate as validate_standalone_repairs
+    for outcome in projected_validation(ROOT,validate_standalone_repairs,('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)):check(outcome['name'],outcome['passed'])
+    from combined_repair_provenance import validate as validate_repairs
+    for outcome in projected_validation(ROOT,validate_repairs,('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json','docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')):check(outcome['name'],outcome['passed'])
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    recurring_path='tests/recurring_billing_cases.py'
+    check('Recurring browser correction retains its original live source binding',
+          hashlib.sha256(fixture_predecessor_source(ROOT,recurring_path)).hexdigest()
+          ==contract['release_acceptance_corrections']['source_sha256'][recurring_path])
     from cloud_site_requests_wiring import predecessor_bytes
+    software_apache_appendix="""                software=session.get(url+'/portal/index.php?software=1')
+                check(label+suffix+' anonymous My Software route resolves safely at installed base path',
+                      software.status_code==200 and 'Software & Licenses' not in software.text
+                      and ('Sign in' in software.text or 'Client Portal' in software.text))
+                download=session.get(url+'/api/software-download.php?id=1&license=1')
+                check(label+suffix+' anonymous software download endpoint resolves and denies access',
+                      download.status_code==403)
+                validation=session.post(url+'/api/validate.php',json={'license_key':'short','domain':'example.com'})
+                check(label+suffix+' software validation endpoint resolves with bounded input error',
+                      validation.status_code==400 and validation.json()=={'authorized':False,'error':'Invalid license key format'})
+                webhook=session.get(url+'/api/software-webhook.php')
+                check(label+suffix+' software webhook endpoint resolves and requires POST',
+                      webhook.status_code==405)
+                for internal in ['app/licenses/software_products.php','app/licenses/software_grants.php',
+                                 'app/billing/software_orders.php','database/migrations/software_commerce_migrate.php']:
+                    protected=session.get(url+'/'+internal)
+                    check(label+suffix+' software internal route protected '+internal,
+                          protected.status_code in [403,404] and '<?php' not in protected.text)
+"""
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         from backups_acceptance_wiring import predecessor_browser
         retained=predecessor_browser(ROOT,contract).encode() if path=='tests/browser_acceptance.py' else predecessor_bytes(ROOT,path,contract)
+        from communication_browser_fixture_provenance import PATHS as communication_paths, predecessor as communication_predecessor
+        if path in communication_paths:
+            retained=communication_predecessor(ROOT,path,retained)
+        from core_browser_fixture_provenance import PATHS as core_browser_paths, predecessor as core_browser_predecessor
+        if path in core_browser_paths:
+            retained=core_browser_predecessor(ROOT,path,retained)
+        if path in ('tests/structure_helpers.py','tests/staff_cases.py'):
+            from browser_owner_fixture_provenance import predecessor as browser_owner_predecessor
+            retained=browser_owner_predecessor(ROOT,path,retained)
+        if path=='tests/stackcp_access_read_snapshot_native.php':
+            from standalone_repair_provenance import predecessor as standalone_predecessor
+            retained=standalone_predecessor(ROOT,path,retained)
+        if path=='tests/apache_acceptance.py':
+            from combined_repair_provenance import predecessor as repaired_predecessor
+            retained=repaired_predecessor(ROOT,path,retained)
+            appendix=software_apache_appendix.encode()
+            check('Software Apache acceptance appendix is exact and additive',
+                  retained.count(appendix)==1)
+            retained=retained.replace(appendix,b'',1)
         check('Original test source retained '+path, hashlib.sha256(retained).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
@@ -369,6 +534,20 @@ def run(tmp):
         for path,expected_hash in ext['source_sha256'].items():
             check('Backup fixture identity '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
         contract={**contract,'native_commands':native_commands}
+    software_native=contract['software_commerce_native_command']
+    software_additions=software_native['additions']
+    software_position=native_commands.index(software_native['additions_after'])+1
+    check('Software commerce native acceptance command is additive and ordered',
+          software_additions==['"$PHP_BINARY" tests/software_commerce_native.php']
+          and native_commands[software_position:software_position+1]==software_additions
+          and native_commands.count(software_additions[0])==1)
+    retained_native=[command for command in native_commands if command not in software_additions]
+    check('Software commerce native acceptance preserves the exact160-command predecessor recipe',
+          len(retained_native)==software_native['predecessor_count']==160
+          and hashlib.sha256(json.dumps(retained_native,separators=(',',':')).encode()).hexdigest()
+              ==software_native['predecessor_sha256'])
+    native_commands=retained_native
+    contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}
@@ -381,7 +560,10 @@ def run(tmp):
     native_commands=[command for command in native_commands if command not in import_commands]
     check('Import additions preserve the exact149 predecessor commands',len(native_commands)==import_contract['predecessor_native_count']==149 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==import_contract['predecessor_native_sha256'])
     for path,expected_hash in import_contract['source_sha256'].items():
-        check('Import fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        retained=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+        if path in core_browser_paths:
+            retained=core_browser_predecessor(ROOT,path,retained)
+        check('Import fixture source retained '+path,hashlib.sha256(retained).hexdigest()==expected_hash)
     access_snapshot=contract['stackcp_access_snapshot_native_command_baseline'];access_snapshot_command='"$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php'
     check('All149 native commands equal the exact current selected-runtime recipe',len(native_commands)==149 and native_commands==[command for command in contract['native_commands'] if command not in import_commands])
     access_snapshot_position=native_commands.index(access_snapshot['additions_after'])+1

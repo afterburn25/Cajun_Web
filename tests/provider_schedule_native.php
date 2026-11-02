@@ -1,6 +1,8 @@
 <?php
 /** Real PDO/storage/locks with the real typed reader over synthetic transport. No provider API. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -71,7 +73,7 @@ try{
     staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     ps_actor();provider_settings_migrate($password);$profile=provider_settings_save('',0,'Scheduled provider fixture',true,$secret,$password);provider_inventory_migrate($password);
     ps_ok('Schedule GET state does not create storage',!provider_schedule_context()['ready']&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['psch_provider_schedule_events']));
-    ps_deny('Preparation rejects wrong password',fn()=>provider_schedule_prepare('wrong'));ps_actor(2);ps_deny('Administrator cannot prepare schedule',fn()=>provider_schedule_prepare($password));ps_actor();
+    ps_deny('Revoked owner refuses: Preparation rejects wrong password',fn()=>cwp_test_owner_revoked(fn()=>provider_schedule_prepare('wrong')));ps_actor(2);ps_deny('Administrator cannot prepare schedule',fn()=>provider_schedule_prepare($password));ps_actor();
     db()->beginTransaction();ps_deny('Preparation refuses inherited transaction before DDL',fn()=>provider_schedule_prepare($password));ps_ok('Preparation leaves inherited transaction open',db()->inTransaction());db()->rollBack();
     provider_schedule_prepare($password);$ctx=ps_ctx();ps_ok('Preparation is disabled and makes no request',$ctx['ready']&&$ctx['state']['paused']&&$ctx['state']['approval']===null&&$dns===0&&$calls===0);
     $before=ps_capture();provider_schedule_prepare($password);ps_ok('Repeated preparation preserves original journal and audit',ps_capture()===$before);
@@ -96,7 +98,7 @@ try{
     ps_reset();provider_schedule_disable(ps_ctx()['last']['sequence'],$password);ps_ok('Owner disabling retains history and prevents background calls',ps_run()==='disabled'&&$dns===0&&ps_count('provider_schedule_events')===3);
     ps_reset();$worker=ps_worker('worker');ps_ok('Independent worker commits intent before DNS',trim((string)fgets($worker[1][1]))==='resolving'&&ps_count('provider_refreshes')===1);ps_ok('Concurrent second invocation cannot claim work',ps_run()==='busy'&&$dns===0&&$calls===0);
     provider_schedule_disable(ps_ctx()['last']['sequence'],$password);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);ps_ok('Disable during DNS revokes before credential transport',ps_finish($worker)==='access_changed:0'&&ps_count('provider_refresh_results')===1&&ps_count('provider_observation_packages')===0&&ps_ctx()['state']['paused']);
-    ps_reset();$receipt=ps_expired();$ctx=ps_ctx();ps_ok('Expired lease alone does not replay work',ps_run()==='needs_recovery'&&$dns===0&&$calls===0);ps_deny('Recovery requires current owner password',fn()=>provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],'wrong'));
+    ps_reset();$receipt=ps_expired();$ctx=ps_ctx();ps_ok('Expired lease alone does not replay work',ps_run()==='needs_recovery'&&$dns===0&&$calls===0);ps_deny('Revoked owner refuses: Recovery requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],'wrong')));
     ps_actor(3);ps_ok('Another current owner can review interruption and retain its original actor',provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],$password)==='refused'&&ps_ctx()['state']['paused']&&ps_ctx()['state']['pending']===null&&ps_count('provider_refresh_results')===1&&provider_schedule_context()['history'][0]['recovered']&&ps_ctx()['last']['actor']===3);ps_actor();
     ps_ok('Recovered attempt cannot automatically restart',ps_run()==='disabled'&&$calls===0);
     provider_schedule_configure(ps_ctx()['last']['sequence'],$profile,1,900,true,$password);ps_ok('Fresh owner approval after reviewed recovery permits one new attempt',ps_run()==='complete'&&ps_count('provider_refresh_results')===2);

@@ -1,4 +1,16 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+The isolated FK metadata worker preserved c2f and local 15b81, changed only the shared native helper, and completed the approved 172-check supplement in fresh fkrule_ tables on owned 33316. The server is stopped; prior namespaces and all other workers’ runtimes are untouched. Root owns publication, matrix monitoring and outer composition. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+The FK metadata component is isolated on review/fk-metadata-scope-20261102 from exact primary84. Its shipping change is limited to two metadata calls/comments and canonical inventory refresh. Root owns publication/composition; the local runtime on 33316 is stopped, original 33314 is preserved, and no other worker source or runtime was changed. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 # Current coordination - Devin sole-owner execution
+
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+The primary continuation publishes reviewed `77cdbc92` and its documentation/checkpoint to the existing PR #317 lane after checking the remote head. The frozen `5b478528` acceptance runtime remains separate and runs unchanged commands against restored synthetic fixtures. The Account/Notifications lane retains its own `fc14b841`-based fixture correction and 54/54 local browser evidence for separate review/publication before combination. No full acceptance, main merge, release or live operation is recorded here. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
 
 ## 2026-10-19 — bounded reset email template lane
 

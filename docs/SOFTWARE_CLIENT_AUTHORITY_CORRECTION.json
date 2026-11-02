@@ -1,0 +1,143 @@
+{
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "parent_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "shipping": [
+    "site/app/billing/software_charge_guard.php",
+    "site/app/billing/software_client.php",
+    "site/app/billing/software_orders.php",
+    "site/app/billing/software_subscription_cancel.php",
+    "site/app/billing/software_subscription_enroll.php",
+    "site/install/inventory.generated.php"
+  ],
+  "verifier_sha256": "d9c2884c25a67dbf417434093c1a69d1d49b81a24df4704336f47c9757bad0d3",
+  "files": {
+    ".github/workflows/software-commerce-native-fast.yml": {
+      "before_sha256": "86d1e0b486632b7616a96ed36ac2c202fb7a0a0a26987a2c8541fd2109e61f26",
+      "after_sha256": "a63ac4633a5d0f661af92a4b28db94934e675b8dcd06513b19413d31e626e408",
+      "edits": [
+        [
+          "      - feature/software-license-commerce-20261025\n    paths:\n      - 'tests/software_commerce_native.php'\n      - 'tests/software_domain_lifecycle_concurrency.php'\n      - 'site/app/billing/software_*.php'\n      - 'site/app/billing/authorize_net_*.php'\n",
+          "      - feature/software-license-commerce-20261025\n    paths:\n      - 'tests/software_commerce_native.php'\n      - 'tests/software_commerce_authority*.php'\n      - 'tests/software_domain_lifecycle_concurrency.php'\n      - 'site/app/billing/software_*.php'\n      - 'site/app/billing/authorize_net_*.php'\n"
+        ],
+        [
+          "      - main\n      - feature/software-license-commerce-20261025\n      - 'codex/**'\n    paths:\n      - 'tests/software_commerce_native.php'\n      - 'tests/software_domain_lifecycle_concurrency.php'\n      - 'site/app/billing/software_*.php'\n      - 'site/app/billing/authorize_net_*.php'\n",
+          "      - main\n      - feature/software-license-commerce-20261025\n      - 'codex/**'\n      - 'chatgpt/**'\n    paths:\n      - 'tests/software_commerce_native.php'\n      - 'tests/software_commerce_authority*.php'\n      - 'tests/software_domain_lifecycle_concurrency.php'\n      - 'site/app/billing/software_*.php'\n      - 'site/app/billing/authorize_net_*.php'\n"
+        ]
+      ]
+    },
+    "site/app/billing/software_charge_guard.php": {
+      "before_sha256": "71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0",
+      "after_sha256": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a",
+      "edits": [
+        [
+          "    if(db()->inTransaction())throw new LogicException('Charge preparation requires its own transaction.');\n    db()->beginTransaction();\n    try{\n        $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,$clientId]);\n        if(!$order)throw new InvalidArgumentException('Order does not belong to this customer.');\n        if($order['billing_term']!=='once')throw new RuntimeException('Recurring plans must use subscription checkout, not a single-payment charge.');\n",
+          "    if(db()->inTransaction())throw new LogicException('Charge preparation requires its own transaction.');\n    db()->beginTransaction();\n    try{\n        software_current_client($clientId);\n        $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,$clientId]);\n        if(!$order)throw new InvalidArgumentException('Order does not belong to this customer.');\n        if($order['billing_term']!=='once')throw new RuntimeException('Recurring plans must use subscription checkout, not a single-payment charge.');\n"
+        ]
+      ]
+    },
+    "site/app/billing/software_orders.php": {
+      "before_sha256": "f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf",
+      "after_sha256": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397",
+      "edits": [
+        [
+          "require_once CWP_CODE_ROOT.'/app/billing/catalog.php';\nrequire_once CWP_CODE_ROOT.'/app/licenses/software_products.php';\nrequire_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';\n\nfunction software_order_offer(array $product):bool {\n    $legacySku=preg_match('/^(SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)($product['sku']??''))===1;\n",
+          "require_once CWP_CODE_ROOT.'/app/billing/catalog.php';\nrequire_once CWP_CODE_ROOT.'/app/licenses/software_products.php';\nrequire_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';\nrequire_once CWP_CODE_ROOT.'/app/billing/software_client.php';\n\nfunction software_order_offer(array $product):bool {\n    $legacySku=preg_match('/^(SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)($product['sku']??''))===1;\n"
+        ],
+        [
+          "        db()->beginTransaction();\n    }else throw new LogicException('Software checkout must own the transaction.');\n    try{\n        $account=one('SELECT id,name FROM '.table('studio_clients').' WHERE id=? AND active=1 FOR UPDATE',[$clientId]);\n        if(!$account)throw new RuntimeException('Customer account no longer active.');\n        if($policyRevision!==null&&$policyRevision<0)throw new InvalidArgumentException('Invalid software policy revision.');\n        $hash=hash('sha256',json_encode([$clientId,$productId,$revision,$quantity,$domain,$subscribe,$policyRevision],JSON_THROW_ON_ERROR));\n        $previous=one('SELECT * FROM '.table('software_orders').' WHERE request_key=? FOR UPDATE',[$key]);\n",
+          "        db()->beginTransaction();\n    }else throw new LogicException('Software checkout must own the transaction.');\n    try{\n        $account=software_current_client($clientId);\n        if($policyRevision!==null&&$policyRevision<0)throw new InvalidArgumentException('Invalid software policy revision.');\n        $hash=hash('sha256',json_encode([$clientId,$productId,$revision,$quantity,$domain,$subscribe,$policyRevision],JSON_THROW_ON_ERROR));\n        $previous=one('SELECT * FROM '.table('software_orders').' WHERE request_key=? FOR UPDATE',[$key]);\n"
+        ]
+      ]
+    },
+    "site/app/billing/software_subscription_cancel.php": {
+      "before_sha256": "cf76198fd005b9c281aef7fe375dc5a07085f7fb468e521fe1a7f3eb26d9b5d5",
+      "after_sha256": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f",
+      "edits": [
+        [
+          "    software_anet_settings();\n    db()->beginTransaction();\n    try{\n        $sub=one('SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE',\n            [$invoice,(int)$client['id'],(int)$client['id']]);\n        if(!$sub)throw new RuntimeException('This subscription does not belong to you.');\n",
+          "    software_anet_settings();\n    db()->beginTransaction();\n    try{\n        software_current_client((int)$client['id']);\n        $sub=one('SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE',\n            [$invoice,(int)$client['id'],(int)$client['id']]);\n        if(!$sub)throw new RuntimeException('This subscription does not belong to you.');\n"
+        ]
+      ]
+    },
+    "site/app/billing/software_subscription_enroll.php": {
+      "before_sha256": "b85fa4d80084874385cd5a100cc71d9dc298b945d15f7ba400f1214bd026f07f",
+      "after_sha256": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+      "edits": [
+        [
+          "    if(db()->inTransaction())throw new LogicException('Subscription enrollment must own its transaction.');\n    db()->beginTransaction();\n    try{\n        $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,(int)$client['id']]);\n        if(!$order||!in_array($order['billing_term'],['month','year'],true))\n            throw new RuntimeException('Only your approved monthly or annual software order can create a subscription.');\n",
+          "    if(db()->inTransaction())throw new LogicException('Subscription enrollment must own its transaction.');\n    db()->beginTransaction();\n    try{\n        software_current_client((int)$client['id']);\n        $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,(int)$client['id']]);\n        if(!$order||!in_array($order['billing_term'],['month','year'],true))\n            throw new RuntimeException('Only your approved monthly or annual software order can create a subscription.');\n"
+        ]
+      ]
+    },
+    "site/install/inventory.generated.php": {
+      "before_sha256": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a",
+      "after_sha256": "1e8dc8d47f401036c815003e2a6b2fb9fee64a25352eee8d0ce6a16c7dc2201c",
+      "edits": [
+        [
+          "    'app/billing/recurring_billing_invoices.php'=>'a49fa4f6bfdc00fd6afad867b2a3867f622a759217ce40bf0a0616a31ad6dbc0',\n    'app/billing/recurring_billing_views.php'=>'4bd998c237856ec0f70724f2296d406701602744d83a50c27872770610924c55',\n    'app/billing/software_charge.php'=>'6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c',\n    'app/billing/software_charge_guard.php'=>'71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0',\n    'app/billing/software_orders.php'=>'f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf',\n    'app/billing/software_payment_review.php'=>'cefeae82a989caaaf17212aa6c40bcc714bf2ef6ae81818761dbc4fac0c7d41c',\n    'app/billing/software_subscription_cancel.php'=>'cf76198fd005b9c281aef7fe375dc5a07085f7fb468e521fe1a7f3eb26d9b5d5',\n    'app/billing/software_subscription_enroll.php'=>'b85fa4d80084874385cd5a100cc71d9dc298b945d15f7ba400f1214bd026f07f',\n    'app/billing/software_subscription_settle.php'=>'072fb05aeb15189eee3f9e5d546a04c3fd172517265a056f68bbccbf12e04246',\n    'app/billing/software_subscriptions.php'=>'c7f559a7a483e3621aa313de1b5d7d3e283a204e506ed19098a9e1afd59b1627',\n    'app/clients/accounts.php'=>'03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e',\n",
+          "    'app/billing/recurring_billing_invoices.php'=>'a49fa4f6bfdc00fd6afad867b2a3867f622a759217ce40bf0a0616a31ad6dbc0',\n    'app/billing/recurring_billing_views.php'=>'4bd998c237856ec0f70724f2296d406701602744d83a50c27872770610924c55',\n    'app/billing/software_charge.php'=>'6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c',\n    'app/billing/software_charge_guard.php'=>'41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a',\n    'app/billing/software_client.php'=>'bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7',\n    'app/billing/software_orders.php'=>'d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397',\n    'app/billing/software_payment_review.php'=>'cefeae82a989caaaf17212aa6c40bcc714bf2ef6ae81818761dbc4fac0c7d41c',\n    'app/billing/software_subscription_cancel.php'=>'74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f',\n    'app/billing/software_subscription_enroll.php'=>'b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025',\n    'app/billing/software_subscription_settle.php'=>'072fb05aeb15189eee3f9e5d546a04c3fd172517265a056f68bbccbf12e04246',\n    'app/billing/software_subscriptions.php'=>'c7f559a7a483e3621aa313de1b5d7d3e283a204e506ed19098a9e1afd59b1627',\n    'app/clients/accounts.php'=>'03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e',\n"
+        ]
+      ]
+    },
+    "tests/provider_browser_fixture_provenance.py": {
+      "before_sha256": "5aacf4e03e1d28039b94e56e06fd8bdcc0524ea0ef8e66d39693a77e1bf94446",
+      "after_sha256": "57dc13e390af46559d8a5405503e3f5ab5f80ea7664a18cc2569a7034e5201bb",
+      "edits": [
+        [
+          "\n\ndef receipt(root):\n    return validate_receipt(json.loads((root / RECEIPT).read_text()), (root / VERIFIER).read_bytes())\n\n\ndef restore(data, path, value):\n",
+          "\n\ndef receipt(root):\n    from software_authority_provenance import predecessor_bytes\n    verifier = predecessor_bytes(root, VERIFIER, (root / VERIFIER).read_bytes())\n    return validate_receipt(json.loads((root / RECEIPT).read_text()), verifier)\n\n\ndef restore(data, path, value):\n"
+        ],
+        [
+          "            require(not relative.is_absolute() and '..' not in relative.parts\n                    and relative.as_posix() == path, 'Unsafe historical receipt path')\n            value = (root / path).read_bytes()\n            if path in PATHS:\n                value = restore(data, path, value)\n            target = historical / path\n",
+          "            require(not relative.is_absolute() and '..' not in relative.parts\n                    and relative.as_posix() == path, 'Unsafe historical receipt path')\n            value = (root / path).read_bytes()\n            if path == 'tests/software_commerce_native.php':\n                from software_authority_provenance import predecessor_bytes\n                value = predecessor_bytes(root, path, value)\n            if path in PATHS:\n                value = restore(data, path, value)\n            target = historical / path\n"
+        ],
+        [
+          "\ndef validate(root):\n    \"\"\"Check every current source, inverse, and focused negative receipt cases.\"\"\"\n    data = receipt(root)\n    verifier = (root / VERIFIER).read_bytes()\n    checks = []\n\n    def passed(name):\n",
+          "\ndef validate(root):\n    \"\"\"Check every current source, inverse, and focused negative receipt cases.\"\"\"\n    from software_authority_provenance import validate as validate_software_authority, predecessor_bytes\n    software_checks = validate_software_authority(root)\n    data = receipt(root)\n    verifier = predecessor_bytes(root, VERIFIER, (root / VERIFIER).read_bytes())\n    checks = []\n\n    def passed(name):\n"
+        ],
+        [
+          "            changed['files'][path]['edits'][0] = [old, old]\n        refuses('Provider browser receipt refuses changed ' + case,\n                lambda: validate_receipt(changed, verifier))\n    return checks\n\n\nif __name__ == '__main__':\n",
+          "            changed['files'][path]['edits'][0] = [old, old]\n        refuses('Provider browser receipt refuses changed ' + case,\n                lambda: validate_receipt(changed, verifier))\n    return checks + software_checks\n\n\nif __name__ == '__main__':\n"
+        ]
+      ]
+    },
+    "tests/software_commerce_native.php": {
+      "before_sha256": "f0e4276cee60eb90ccff49eea2d7a674a72e5a0c5ce436bf7f94d33f47f8a56f",
+      "after_sha256": "e416abbf2c10a12260ad42a9752c0148a2cf15e4b868d3d1b310d62f9d16ef99",
+      "edits": [
+        [
+          "    $hash=hash('sha256','synthetic software order');\n    $buyer=['id'=>1,'name'=>'Synthetic Buyer'];\n    $otherBuyer=['id'=>2,'name'=>'Other Buyer'];\n\n    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',\n        ['SOFTWARE-RECONCILE','Charge reconciliation test','software','published','once','USD',4200,0,null,'','Synthetic charge reconciliation','','Terms',0,1,$now,$now]);\n",
+          "    $hash=hash('sha256','synthetic software order');\n    $buyer=['id'=>1,'name'=>'Synthetic Buyer'];\n    $otherBuyer=['id'=>2,'name'=>'Other Buyer'];\n    // Customer entrypoints require their real current session, alongside the owner fixture.\n    $_SESSION['client_id']=1;$_SESSION['client_auth']=str_repeat('b',32);\n    $_SESSION['client_last']=$_SESSION['client_login']=time();\n\n    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',\n        ['SOFTWARE-RECONCILE','Charge reconciliation test','software','published','once','USD',4200,0,null,'','Synthetic charge reconciliation','','Terms',0,1,$now,$now]);\n"
+        ],
+        [
+          "        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$ambInvoice])->fetchColumn()===0,\n        'Ambiguous paid upgrade leaves both original trials untouched and mints no paid key');\n\n    swdenied(fn()=>software_order_place($otherBuyer,$product,1,1,'other.example.com',\n        hash('sha256','missing dependency order'),false,1),\n        'Customer without required software dependency cannot create the order');\n    $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false,1);\n    $ordered=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);\n    $orderedPolicy=software_order_policy_snapshot($ordered);\n",
+          "        &&(int)query('SELECT COUNT(*) FROM '.table('software_entitlements').' WHERE invoice_id=?',[$ambInvoice])->fetchColumn()===0,\n        'Ambiguous paid upgrade leaves both original trials untouched and mints no paid key');\n\n    $_SESSION['client_id']=2;$_SESSION['client_auth']=str_repeat('c',32);\n    swdenied(fn()=>software_order_place($otherBuyer,$product,1,1,'other.example.com',\n        hash('sha256','missing dependency order'),false,1),\n        'Customer without required software dependency cannot create the order');\n    $_SESSION['client_id']=1;$_SESSION['client_auth']=str_repeat('b',32);\n    $invoice=software_order_place($buyer,$product,1,2,'new.example.com',$hash,false,1);\n    $ordered=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=?',[$invoice]);\n    $orderedPolicy=software_order_policy_snapshot($ordered);\n"
+        ],
+        [
+          "        'Recurring reversal review state is persisted');\n    require __DIR__.'/software_domain_lifecycle_concurrency.php';\n    software_domain_lifecycle_concurrency_checks(1,'SOFTWARE-TEST',1,'swok');\n    echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;\n}catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}\n",
+          "        'Recurring reversal review state is persisted');\n    require __DIR__.'/software_domain_lifecycle_concurrency.php';\n    software_domain_lifecycle_concurrency_checks(1,'SOFTWARE-TEST',1,'swok');\n    require __DIR__.'/software_commerce_authority.php';\n    software_commerce_authority_checks('swok');\n    echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;\n}catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}\n"
+        ]
+      ]
+    },
+    "tests/tickets_integration_contract.py": {
+      "before_sha256": "318992e307c192108e6de7ceb975ed2df719d6e9358d4bdda574c6a4305552df",
+      "after_sha256": "b4f29e2dc63c887f81ac04810c2508afffae3e23350e488d2c02cbec4854bd2e",
+      "edits": [
+        [
+          "\"\"\"Verify every support-ticket shipping change while preserving the prior proposal source layer.\"\"\"\nfrom pathlib import Path\nimport hashlib,json,subprocess\nBASE='cb2838df5336c0acca8274ce65c3cb614b8d4195'\nSOURCE='9b1d45b1a830fcce287c93227e011c93df15aaaf'\nAREAS=['site','foundation','tools/structure','tools/build.py','VERSION','START-HERE.txt']\n",
+          "\"\"\"Verify every support-ticket shipping change while preserving the prior proposal source layer.\"\"\"\nfrom pathlib import Path\nimport hashlib,json,subprocess\nfrom software_authority_provenance import source_revision, predecessor_bytes\nBASE='cb2838df5336c0acca8274ce65c3cb614b8d4195'\nSOURCE='9b1d45b1a830fcce287c93227e011c93df15aaaf'\nAREAS=['site','foundation','tools/structure','tools/build.py','VERSION','START-HERE.txt']\n"
+        ],
+        [
+          "    receipt=json.loads((root/'docs/TICKETS_COMBINED_SOURCE.json').read_text())\n    if receipt['base']!=BASE or receipt['ticket_source']!=SOURCE:raise AssertionError('Unknown ticket source identities')\n    paths=receipt['shipping']\n    changed=set(subprocess.check_output(['git','diff','--name-only',BASE,'HEAD','--',*AREAS],cwd=root,text=True).splitlines())\n    if changed!=set(paths):raise AssertionError('Unreviewed ticket shipping difference: '+repr(changed.symmetric_difference(paths)))\n    for path,row in paths.items():\n        p=Path(path)\n        if p.is_absolute() or '..' in p.parts:raise AssertionError('Unsafe ticket receipt path')\n        target=root/p\n        if target.is_symlink() or hashlib.sha256(target.read_bytes()).hexdigest()!=row['after']:raise AssertionError('Changed ticket output: '+path)\n        old=subprocess.run(['git','show',BASE+':'+path],cwd=root,capture_output=True)\n        if row['before'] is None:\n            if old.returncode==0:raise AssertionError('Unexpected ticket addition: '+path)\n",
+          "    receipt=json.loads((root/'docs/TICKETS_COMBINED_SOURCE.json').read_text())\n    if receipt['base']!=BASE or receipt['ticket_source']!=SOURCE:raise AssertionError('Unknown ticket source identities')\n    paths=receipt['shipping']\n    revision=source_revision(root)\n    changed=set(subprocess.check_output(['git','diff','--name-only',BASE,revision,'--',*AREAS],cwd=root,text=True).splitlines())\n    if changed!=set(paths):raise AssertionError('Unreviewed ticket shipping difference: '+repr(changed.symmetric_difference(paths)))\n    for path,row in paths.items():\n        p=Path(path)\n        if p.is_absolute() or '..' in p.parts:raise AssertionError('Unsafe ticket receipt path')\n        target=root/p\n        if target.is_symlink() or hashlib.sha256(predecessor_bytes(root,path,target.read_bytes())).hexdigest()!=row['after']:raise AssertionError('Changed ticket output: '+path)\n        old=subprocess.run(['git','show',BASE+':'+path],cwd=root,capture_output=True)\n        if row['before'] is None:\n            if old.returncode==0:raise AssertionError('Unexpected ticket addition: '+path)\n"
+        ]
+      ]
+    }
+  },
+  "additions": {
+    "site/app/billing/software_client.php": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7",
+    "tests/software_commerce_authority.php": "6eb139ba00638fea501c9a0a86670bf58f9888ef0e1ee0f66519a00eb6e7f6e7",
+    "tests/software_commerce_authority_boundaries.php": "53c23873ac815634ba3d93d70065fec0f66fe5c805d36944ba914baebd3af057",
+    "tests/software_commerce_authority_worker.php": "f68f4a9a62cbcf6df16d2aa5e3cd7ebaad1e9faf366e58bfbde636a6c22c26da"
+  }
+}

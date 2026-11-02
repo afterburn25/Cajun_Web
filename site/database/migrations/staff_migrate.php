@@ -4,7 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function staff_migrate(int $ownerId,#[\SensitiveParameter] string $password): void {
     staff_locked(function() use($ownerId,$password): void {
         $actor=require_admin();
-        if (!password_verify($password,$actor['password_hash'])) throw new InvalidArgumentException('Your current password is not correct.');
+        if (!admin_session_matches($actor)) throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
         if (staff_ready()&&!staff_can('staff.manage',$actor)) throw new RuntimeException('Only an owner can verify administrator access.');
         $chosen=one('SELECT id,password_hash FROM '.table('users').' WHERE id=?',[$ownerId]);
         if (!$chosen||$chosen['password_hash']==='') throw new InvalidArgumentException('Choose an existing administrator as the initial owner.');

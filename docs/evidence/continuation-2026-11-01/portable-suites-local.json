@@ -1,0 +1,226 @@
+{
+  "passed": true,
+  "suites": [
+    {
+      "suite": "admin_session_no_reentry",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 33,
+      "scope": "Actual PHP session/role/CSRF/field code; database reads modeled; no native SQL or production actions"
+    },
+    {
+      "suite": "provider_workspace_policy",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 43,
+      "scope": "Pure local routing and SQL-fragment/parameter generation; actual database execution not tested"
+    },
+    {
+      "suite": "owner_update_session_policy",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 17,
+      "scope": "Actual updater authorization function and actual admin-session functions with modeled database rows; source checks for initial login/form/CSRF/backup guards. Not a real HTTP/SQL update."
+    },
+    {
+      "suite": "support_open_form_policy",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 5,
+      "scope": "Shared form rendering with synthetic access-policy doubles; no SQL or HTTP"
+    },
+    {
+      "suite": "provider_package_types",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 109,
+      "scope": "Pure synthetic catalog projection, fixed request validation and draft document; no network, database, browser or provider acceptance."
+    },
+    {
+      "suite": "provider_catalog_import",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 48,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "hosting_catalog_document",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 119,
+      "scope": "Pure synthetic publication/request behavior using existing exact service-plan, mapping and package-type validators; no SQL, login, provider, browser or fulfillment execution."
+    },
+    {
+      "suite": "hosting_checkout_document",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 130,
+      "scope": "Pure synthetic documents and exact unchanged billing calendar only; no native authority, SQL, invoice, payment, provider, HTTP or checkout acceptance."
+    },
+    {
+      "suite": "hosting_catalog_plan_setup_document",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 58,
+      "scope": "Pure imported-plan review, copied terms and explicit provider mapping; no SQL or provider execution"
+    },
+    {
+      "suite": "hosting_catalog_variants_document",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 57,
+      "scope": "actual closed variant documents and existing setup functions; no SQL/provider execution"
+    },
+    {
+      "suite": "hosting_catalog_billing",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 71,
+      "scope": "Actual pure query parser and extracted read-class/entrypoint with modeled SQL, readiness, source and publication boundaries. No native SQL, provider, browser or invoice execution."
+    },
+    {
+      "suite": "hosting_catalog_comparison",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 52,
+      "scope": "Actual renderer and pure policy validation; Actual asset and URL helpers; escaping/money helpers modeled. No SQL, HTTP, browser or visual acceptance."
+    },
+    {
+      "suite": "hosting_catalog_login",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 55,
+      "scope": "Real closed destination and portal login action branch with modeled authentication, CSRF and redirect; no SQL, session regeneration, HTTP/browser or checkout acceptance."
+    },
+    {
+      "suite": "hosting_checkout_views",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 58,
+      "scope": "Modeled render/form/policy, no browser/HTTP/database"
+    },
+    {
+      "suite": "hosting_catalog_plan_setup_views",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 69,
+      "scope": "Actual source parsers, controller, page and HTML rendering with modeled current authority, SQL and setup coordinator; no database, HTTP, browser or provider execution."
+    },
+    {
+      "suite": "hosting_catalog_variants_contract",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 59,
+      "scope": "actual extracted service/resolver/readiness with modeled transactions; no SQL/provider/runtime acceptance"
+    },
+    {
+      "suite": "hosting_checkout_purchases_guards",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 44,
+      "scope": "Actual source functions; modeled SQL and authority, no native database or HTTP"
+    },
+    {
+      "suite": "software_license_policy",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 19,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "license_financing_policy",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 30,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "license_paid_off_guard",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 24,
+      "scope": "Actual license_deactivate with an in-memory transaction/query double; not SQL or upgrade acceptance"
+    },
+    {
+      "suite": "software_commerce_contract",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 39,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "software_admin_routing_contract",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 8,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "software_production_gate_contract",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 6,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "software_payment_reversal_contract",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 6,
+      "scope": "portable PHP; synthetic inputs, no SQL/provider execution"
+    },
+    {
+      "suite": "finance_subscription_lifecycle",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 52,
+      "scope": "Actual lifecycle service with strict in-memory database doubles; not native SQL, gateway, or installed acceptance"
+    },
+    {
+      "suite": "finance_enrollment_sandbox_boundary",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 6,
+      "scope": "Exact sandbox exception function with synthetic mode and unavailable-ledger boundaries; no production setting or gateway is changed."
+    },
+    {
+      "suite": "finance_charge_attempt_bindings",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 26,
+      "scope": "Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim."
+    },
+    {
+      "suite": "finance_replacement_outcomes",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 100,
+      "scope": "Exact orchestration function bodies extracted without edits and executed with synthetic gateway/state doubles. No real PDO, HTTP, credentials or provider operations. Verifies uncertainty fences and positive finalization, not actual gateway transactions or native database persistence."
+    },
+    {
+      "suite": "finance_initial_enrollment_handler",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 22,
+      "scope": "Exact client handler with synthetic admission, reservation and provider boundaries; native companion verifies real SQL and ledger admission. No gateway/HTTP claim."
+    },
+    {
+      "suite": "finance_reconcile_snapshot",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 112,
+      "scope": "Exact owner orchestration with strict synthetic database and gateway dependencies; deterministic concurrency injection at the readback boundary. No native SQL, real gateway, HTTP or license-access claim."
+    },
+    {
+      "suite": "finance_webhook_isolation",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 10,
+      "scope": "Actual PHP services with isolated read-only database doubles; no native SQL or real gateway evidence"
+    }
+  ],
+  "known_not_run": [
+    "This portable report does not replace the separate SQL and installed-browser jobs.",
+    "Provider API transactions, payments, deployment and customer data changes are not attempted."
+  ]
+}

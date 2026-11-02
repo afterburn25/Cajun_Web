@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def upgrade():
     dest=WEB/'catalog-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.3.0',dest)
@@ -39,7 +40,7 @@ def run_http(env):
     ADMIN=BASE+'/existing/admin/index.php';CATALOG=ADMIN+'?view=catalog';PACKAGES=BASE+'/existing/index.php?page=packages'
     db('DELETE FROM ci_rate_limits');upgrade()
     check('Fresh setup initializes empty catalog',db("SELECT value FROM fresh_settings WHERE name='catalog_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_catalog_products'))
-    r=submit(admin,CATALOG,'catalog_migrate',{'owner_password':'wrong','confirm':'1'});check('HTTP catalog setup reauthenticates owner','current password is not correct' in r.text)
+    refuse_owner_action(globals(),admin,CATALOG,'catalog_migrate',{'confirm':'1'})
     r=submit(admin,CATALOG,'catalog_migrate',{'owner_password':OWNER,'confirm':'1','csrf':'bad'});check('HTTP catalog setup rejects bad CSRF','session expired' in r.text.lower())
     r=submit(admin,CATALOG,'catalog_migrate',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables catalog','Service catalog enabled' in r.text)
     original=db('SELECT * FROM ci_studio_invoices')

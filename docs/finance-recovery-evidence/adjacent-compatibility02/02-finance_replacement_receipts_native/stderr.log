@@ -1,0 +1,16 @@
+CWP [E78ED0B3] RuntimeException code=0 in financing_offers.php:261
+CWP [ACB90F94] RuntimeException code=0 in financing_offers.php:261
+CWP [6C36CF56] RuntimeException code=0 in financing_offers.php:261
+CWP [AEBBD39D] RuntimeException code=0 in financing_offers.php:261
+CWP [A0D32E29] RuntimeException code=0 in financing_offers.php:261
+CWP [ADEF2D05] RuntimeException code=0 in financing_offers.php:261
+CWP [A2E94A16] RuntimeException code=0 in financing_offers.php:261
+CWP [23689547] RuntimeException code=0 in financing_offers.php:261
+CWP finance native PDO {"time":"2026-11-02T02:43:15+00:00","case":"paid_later-reservation-normal","sqlstate":"HY000","driver_code":2006,"query_sha256":null,"trace":[{"function":"prepare","file":"database.php","line":13},{"function":"query","file":"accounts.php","line":41},{"function":"staff_locked","file":"finance_replacement_payoff_boundaries.php(72) : eval()'d code","line":15},{"function":"FinancePayoffRetirement\\license_finance_subscription_replacement_retire","file":"finance_replacement_payoff_boundaries.php(72) : eval()'d code","line":31},{"function":"FinancePayoffRetirement\\license_financing_sync_by_invoice","file":"finance_replacement_payoff_boundaries.php(72) : eval()'d code","line":27},{"function":"FinancePayoffRetirement\\ledger_receive","file":"finance_replacement_receipts_native.php","line":89},{"function":"{closure}","file":"finance_replacement_receipts_native.php","line":94}]}
+CWP [EC1BE0DD] PDOException code=HY000 in database.php:13
+PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 2006 MySQL server has gone away in /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php:13
+Stack trace:
+#0 /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php(13): PDO->prepare()
+#1 /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/tests/finance_replacement_receipts_native.php(168): query()
+#2 {main}
+  thrown in /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php on line 13

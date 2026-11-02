@@ -1,0 +1,24 @@
+{
+  "source84_run": 41363630471,
+  "local_execution_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "reports": [
+    {
+      "report": "service-plans-native-results.json",
+      "original_checks": 138,
+      "new_total_checks": 219,
+      "new_portable_checks": 81,
+      "complete_original_check_order_and_results_equal": true,
+      "hosted_source84_report_sha256": "61f2aaf4ffd47d3926273d1e94595332f04a58d1db19db471ccffca56c2851c8",
+      "local_report_sha256": "7495f0dd4482348e7439f77d48054005a4a225b9ccf07c8369a027764af7cf6e"
+    },
+    {
+      "report": "recurring-billing-native-results.json",
+      "original_checks": 640,
+      "new_total_checks": 721,
+      "new_portable_checks": 81,
+      "complete_original_check_order_and_results_equal": true,
+      "hosted_source84_report_sha256": "ac5233da2de7a42987316d354e0b252e2c2ef75f691443a275deb85e5aa5c05e",
+      "local_report_sha256": "9741f86091c0048832b4ed540d6da7749bb2fd31bfca853ebbcc74ee978b815f"
+    }
+  ]
+}

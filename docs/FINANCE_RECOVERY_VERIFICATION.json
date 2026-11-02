@@ -1,0 +1,966 @@
+{
+  "parent_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "parent_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
+  "scope": "Bounded standalone finance correction. Actual native PDO/current application function bodies, controlled separate PHP commits, synthetic provider/settings/curl boundaries only. Loopback disposable SQL is the only network contact. No real merchant/payment/provider/mail operation, no hosted-CI claim, no main/release approval.",
+  "final_current_source": {
+    "manifest": "finance-recovery-evidence/implementation-frozen05/manifest.json",
+    "sha256": "2c50b9c02296d0ea220b049fcc79ea705ab7ca3c3e34d6a5c1f9c2f7e4fa76ea",
+    "main": {
+      "phase": "final-native05",
+      "frozen_manifest_sha256": "2c50b9c02296d0ea220b049fcc79ea705ab7ca3c3e34d6a5c1f9c2f7e4fa76ea",
+      "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+      "prefix": "fep_finfinal5_",
+      "command": [
+        "/usr/bin/php8.3",
+        "/tmp/cwp-finance-recovery-frozen05-runtime-8cc2b4f257ab/tests/finance_replacement_payoff_native.php",
+        "fep_finfinal5_",
+        "/tmp/cwp-finance-recovery-frozen05-runtime-8cc2b4f257ab"
+      ],
+      "uid": 65534,
+      "port": 33319,
+      "datadir": "/tmp/cwp-finance-recovery-frozen05-8cc2b4f257ab/data/",
+      "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+      "elapsed_seconds": 357.384,
+      "exit_code": 0,
+      "stderr_bytes": 5036,
+      "source_sha256": {
+        "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+        "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+        "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+        "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+        "site/app/billing/finance_subscription.php": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+        "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+        "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+        "site/app/licenses/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+        "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+        "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+        "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+        "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+        "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+        "site/install/inventory.generated.php": "fd1cf9632156326746db7ba05fb25756f0ae53d79909aef66804d56ad7427579",
+        "tests/finance_initial_receipts_boundaries.php": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+        "tests/finance_initial_receipts_native.php": "6d05dc5f3a09b2e8dcd7afcfbd47f805533d4b576cc52543c1cf7fb2581140d4",
+        "tests/finance_payoff_retirement_boundaries.php": "567eaaed4b7723ddeaf8c52443395a58377729a3605e24d134ea937713a22b8b",
+        "tests/finance_payoff_retirement_native.php": "622a08903c74e2ee471bbef15ccfb896d960ddf2115f41e7f770439d58824cec",
+        "tests/finance_reconcile_snapshot.php": "6205354b5252cee7387eff560a14b049163ee8838efa17a3c051d9094aba8daa",
+        "tests/finance_replacement_outcomes.php": "5b2146f3b6c3da735176af82e97bd1a5a599c734cd605ff7e014f1c1d3d4c913",
+        "tests/finance_replacement_payoff_authority_cases.php": "49863331b3b8c12a37ed0eb55b2775dd77679f211516699291d5470e89c8c1e2",
+        "tests/finance_replacement_payoff_authority_native.php": "600f8a4fbcbc2afab788dadba386f0b18b29c9b7bac33c45b0a5b2556f267617",
+        "tests/finance_replacement_payoff_boundaries.php": "3e33ec5d79aeb3af7446c97a1b33075e9432cba6068e58824275d88f847e691d",
+        "tests/finance_replacement_payoff_gateway_cases.php": "427217bc891eee36eba5d3d54c5b05069bd2fe4e1a5ba7dfd0b852d98f038ec1",
+        "tests/finance_replacement_payoff_initial_admission.php": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07",
+        "tests/finance_replacement_payoff_native.php": "dfef81e60bb68b25e2f9584ecbbd7d4ad53eb2bb699159a40203ff88f0a9c7c9",
+        "tests/finance_replacement_payoff_recovery_boundaries.php": "50f1233955582fcf8e21d1dcb2b94890f67e23605c031f3e0a2294bc3541220d",
+        "tests/finance_replacement_payoff_recovery_cases.php": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740",
+        "tests/finance_replacement_payoff_recovery_safety.php": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2",
+        "tests/finance_replacement_pending_native.php": "4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240",
+        "tests/finance_replacement_receipts_native.php": "fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a",
+        "tests/license_finance_reconcile_native.php": "afd2870bf217c7994e749c1361c11a6fa6aaff2b5d07b64eac70ec1eb2ed9b11"
+      },
+      "report_passed": true,
+      "check_count": 413,
+      "failed_checks": [],
+      "scope": "Actual native SQL and separate PHP receipt processes; synthetic gateway transport/mode and future invoice timing only. No real merchant, provider, customer or network operation."
+    },
+    "initial": {
+      "phase": "initial-compatibility03",
+      "frozen_manifest_sha256": "2c50b9c02296d0ea220b049fcc79ea705ab7ca3c3e34d6a5c1f9c2f7e4fa76ea",
+      "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+      "prefix": "fep_finitial5_",
+      "command": [
+        "/usr/bin/php8.3",
+        "/tmp/cwp-finance-recovery-frozen05-runtime-8cc2b4f257ab/tests/finance_initial_receipts_native.php",
+        "fep_finitial5_",
+        "/tmp/cwp-finance-recovery-frozen05-runtime-8cc2b4f257ab"
+      ],
+      "uid": 65534,
+      "port": 33319,
+      "datadir": "/tmp/cwp-finance-recovery-frozen05-8cc2b4f257ab/data/",
+      "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+      "elapsed_seconds": 84.716,
+      "exit_code": 0,
+      "stderr_bytes": 4162,
+      "source_sha256": {
+        "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+        "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+        "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+        "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+        "site/app/billing/finance_subscription.php": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+        "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+        "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+        "site/app/licenses/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+        "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+        "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+        "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+        "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+        "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+        "site/install/inventory.generated.php": "fd1cf9632156326746db7ba05fb25756f0ae53d79909aef66804d56ad7427579",
+        "tests/finance_initial_receipts_boundaries.php": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+        "tests/finance_initial_receipts_native.php": "6d05dc5f3a09b2e8dcd7afcfbd47f805533d4b576cc52543c1cf7fb2581140d4",
+        "tests/finance_payoff_retirement_boundaries.php": "567eaaed4b7723ddeaf8c52443395a58377729a3605e24d134ea937713a22b8b",
+        "tests/finance_payoff_retirement_native.php": "622a08903c74e2ee471bbef15ccfb896d960ddf2115f41e7f770439d58824cec",
+        "tests/finance_reconcile_snapshot.php": "6205354b5252cee7387eff560a14b049163ee8838efa17a3c051d9094aba8daa",
+        "tests/finance_replacement_outcomes.php": "5b2146f3b6c3da735176af82e97bd1a5a599c734cd605ff7e014f1c1d3d4c913",
+        "tests/finance_replacement_payoff_authority_cases.php": "49863331b3b8c12a37ed0eb55b2775dd77679f211516699291d5470e89c8c1e2",
+        "tests/finance_replacement_payoff_authority_native.php": "600f8a4fbcbc2afab788dadba386f0b18b29c9b7bac33c45b0a5b2556f267617",
+        "tests/finance_replacement_payoff_boundaries.php": "3e33ec5d79aeb3af7446c97a1b33075e9432cba6068e58824275d88f847e691d",
+        "tests/finance_replacement_payoff_gateway_cases.php": "427217bc891eee36eba5d3d54c5b05069bd2fe4e1a5ba7dfd0b852d98f038ec1",
+        "tests/finance_replacement_payoff_initial_admission.php": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07",
+        "tests/finance_replacement_payoff_native.php": "dfef81e60bb68b25e2f9584ecbbd7d4ad53eb2bb699159a40203ff88f0a9c7c9",
+        "tests/finance_replacement_payoff_recovery_boundaries.php": "50f1233955582fcf8e21d1dcb2b94890f67e23605c031f3e0a2294bc3541220d",
+        "tests/finance_replacement_payoff_recovery_cases.php": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740",
+        "tests/finance_replacement_payoff_recovery_safety.php": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2",
+        "tests/finance_replacement_pending_native.php": "4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240",
+        "tests/finance_replacement_receipts_native.php": "fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a",
+        "tests/license_finance_reconcile_native.php": "afd2870bf217c7994e749c1361c11a6fa6aaff2b5d07b64eac70ec1eb2ed9b11"
+      },
+      "report_passed": true,
+      "check_count": 358,
+      "failed_checks": [],
+      "scope": "Actual native SQL and separate PHP receipt processes; synthetic gateway transport/mode and future invoice timing only. No real merchant, provider, customer or network operation."
+    },
+    "independent_witness": {
+      "before": "finance-recovery-evidence/finance-initial-unresolved-native03",
+      "before_count": 11,
+      "before_failed": 2,
+      "after": "finance-recovery-evidence/finance-initial-unresolved-native04",
+      "after_count": 11,
+      "after_failed": 0,
+      "application_change": "Only exact reviewed two-line initial admission guard; witness and original boundary unchanged."
+    },
+    "pure": {
+      "results": [
+        {
+          "path": "tests/license_finance_source_contract.php",
+          "source_sha256": "eab797ada4a051236e950d01b884451f0f246ef100ccfff4f9c018d7912541bb",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 54,
+          "report_passed": null
+        },
+        {
+          "path": "tests/license_finance_replacement_contract.php",
+          "source_sha256": "0a4e540ddc50e807dc387101088ddd22ab718caeac52b46bd57a956d91696278",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 9,
+          "report_passed": null
+        },
+        {
+          "path": "tests/finance_subscription_lifecycle.php",
+          "source_sha256": "5dfbc58f2340483d43e5a89ebaf9ba365507e06e8fd5c4526c9880ebc0013534",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 52,
+          "report_passed": true
+        },
+        {
+          "path": "tests/finance_charge_attempt_bindings.php",
+          "source_sha256": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 26,
+          "report_passed": true
+        },
+        {
+          "path": "tests/finance_initial_enrollment_handler.php",
+          "source_sha256": "a739420f11b75bf9b419388cd4f8137800b1cb267ac18b36e4367b4f8393bd27",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 22,
+          "report_passed": true
+        },
+        {
+          "path": "tests/finance_enrollment_sandbox_boundary.php",
+          "source_sha256": "3501501ee50314803b95aa1733499591ec42d6c140e68a6949365b5bd6b5a0fe",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 6,
+          "report_passed": true
+        },
+        {
+          "path": "tests/finance_replacement_outcomes.php",
+          "source_sha256": "5b2146f3b6c3da735176af82e97bd1a5a599c734cd605ff7e014f1c1d3d4c913",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 100,
+          "report_passed": true
+        },
+        {
+          "path": "tests/finance_reconcile_snapshot.php",
+          "source_sha256": "6205354b5252cee7387eff560a14b049163ee8838efa17a3c051d9094aba8daa",
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "check_count": 112,
+          "report_passed": true
+        }
+      ],
+      "lint": [
+        {
+          "path": "site/admin/views/studio/licenses.php",
+          "sha256": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/billing/finance_authorize_net.php",
+          "sha256": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/billing/finance_charge.php",
+          "sha256": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/billing/finance_recovery.php",
+          "sha256": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "sha256": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/billing/ledger.php",
+          "sha256": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/licenses/finance_installments.php",
+          "sha256": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/licenses/financing.php",
+          "sha256": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+          "exit_code": 0
+        },
+        {
+          "path": "site/app/licenses/service.php",
+          "sha256": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+          "exit_code": 0
+        },
+        {
+          "path": "site/database/migrations/license_finance_gateway_migrate.php",
+          "sha256": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+          "exit_code": 0
+        },
+        {
+          "path": "site/database/migrations/license_finance_recovery_migrate.php",
+          "sha256": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+          "exit_code": 0
+        },
+        {
+          "path": "site/database/schema/license_finance_recovery_schema.php",
+          "sha256": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+          "exit_code": 0
+        },
+        {
+          "path": "site/install/inventory.generated.php",
+          "sha256": "fd1cf9632156326746db7ba05fb25756f0ae53d79909aef66804d56ad7427579",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_initial_receipts_boundaries.php",
+          "sha256": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_initial_receipts_native.php",
+          "sha256": "6d05dc5f3a09b2e8dcd7afcfbd47f805533d4b576cc52543c1cf7fb2581140d4",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_payoff_retirement_boundaries.php",
+          "sha256": "567eaaed4b7723ddeaf8c52443395a58377729a3605e24d134ea937713a22b8b",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_payoff_retirement_native.php",
+          "sha256": "622a08903c74e2ee471bbef15ccfb896d960ddf2115f41e7f770439d58824cec",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_reconcile_snapshot.php",
+          "sha256": "6205354b5252cee7387eff560a14b049163ee8838efa17a3c051d9094aba8daa",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_outcomes.php",
+          "sha256": "5b2146f3b6c3da735176af82e97bd1a5a599c734cd605ff7e014f1c1d3d4c913",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_authority_cases.php",
+          "sha256": "49863331b3b8c12a37ed0eb55b2775dd77679f211516699291d5470e89c8c1e2",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_authority_native.php",
+          "sha256": "600f8a4fbcbc2afab788dadba386f0b18b29c9b7bac33c45b0a5b2556f267617",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_boundaries.php",
+          "sha256": "3e33ec5d79aeb3af7446c97a1b33075e9432cba6068e58824275d88f847e691d",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_gateway_cases.php",
+          "sha256": "427217bc891eee36eba5d3d54c5b05069bd2fe4e1a5ba7dfd0b852d98f038ec1",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_initial_admission.php",
+          "sha256": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_native.php",
+          "sha256": "dfef81e60bb68b25e2f9584ecbbd7d4ad53eb2bb699159a40203ff88f0a9c7c9",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_boundaries.php",
+          "sha256": "50f1233955582fcf8e21d1dcb2b94890f67e23605c031f3e0a2294bc3541220d",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_cases.php",
+          "sha256": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_safety.php",
+          "sha256": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_pending_native.php",
+          "sha256": "4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/finance_replacement_receipts_native.php",
+          "sha256": "fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a",
+          "exit_code": 0
+        },
+        {
+          "path": "tests/license_finance_reconcile_native.php",
+          "sha256": "afd2870bf217c7994e749c1361c11a6fa6aaff2b5d07b64eac70ec1eb2ed9b11",
+          "exit_code": 0
+        }
+      ],
+      "frozen_manifest_sha256": "2c50b9c02296d0ea220b049fcc79ea705ab7ca3c3e34d6a5c1f9c2f7e4fa76ea",
+      "scope": "Eight retained source/pure gates and31 changed PHP syntax checks on exact frozen05. No SQL or transport."
+    }
+  },
+  "assertion_retention": {
+    "exact84_core": {
+      "original": 138,
+      "added_reproduction": 79,
+      "original_passed": 138,
+      "added_failed": 20,
+      "final_first217_name_order_equal": true
+    },
+    "authority": {
+      "original_extended_count": 25,
+      "original_failed": 11,
+      "current_driver_count": 25
+    },
+    "frozen04_prefix": {
+      "checks": 387,
+      "final_first387_name_order_equal": true
+    },
+    "new_initial_admission": {
+      "checks": 26,
+      "callers": [
+        "opaque",
+        "profile"
+      ],
+      "unresolved": [
+        "processing",
+        "uncertain",
+        "review"
+      ],
+      "positive_control": "declined",
+      "legacy_known_candidate": "current recovery retains and retires it without resolving the earlier uncertain charge"
+    },
+    "initial_receipts": {
+      "runtime_checks": 358,
+      "unchanged_assertion_call_sites": 13,
+      "historical_result_entries": 4,
+      "explicit_entry_scope": true
+    },
+    "payoff_fixture": {
+      "checks": 292,
+      "original_eight_failures_retained": true,
+      "only_input_change": "Synthetic settings paused for first two manual receipts, enabled for final payoff; all original assertions retained.",
+      "separate_enabled_repeated_receipt_checks": 12
+    }
+  },
+  "prior_source_compatibility": {
+    "source": "frozen04",
+    "counts": [
+      292,
+      232,
+      25
+    ],
+    "locations": [
+      "finance-recovery-evidence/adjacent-compatibility02/01-finance_payoff_retirement_native",
+      "finance-recovery-evidence/adjacent-resumed03/01-finance_replacement_receipts_native",
+      "finance-recovery-evidence/adjacent-resumed03/02-finance_replacement_pending_native"
+    ],
+    "final_difference": "Exact reviewed two-line initial admission guard in finance_subscription.php only; all other captured application bytes equal. Predecessor projection is source comparison only, never runtime execution. Current413/358 and independent11 cover corrected initial admission/result retention."
+  },
+  "diagnostics": {
+    "current_main": {
+      "path": "final-native05/native.stderr.log",
+      "sha256": "59a42d4a234e2aee552f8cb2228149edf3c6f20926c0aef6a5438fece4774814",
+      "bytes": 5036,
+      "lines": 73,
+      "exact_expected_patterns": {
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:29": 1,
+        "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:13": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:21": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:16": 1,
+        "CWP [id] RuntimeException code=0 in financing_offers.php:261": 67
+      },
+      "unexpected_lines": 0,
+      "explanation": "67 explicitly unprepared seed payment links plus the original six readback/cancellation negative controls. Additional FinanceRecovery fault exceptions remain in case JSON, not dropped."
+    },
+    "current_initial": {
+      "path": "initial-compatibility03/native.stderr.log",
+      "sha256": "3ab0df3bec543296e55b73bb9cec913690fdadb1b753b349ea6725f01ce7afde",
+      "bytes": 4162,
+      "lines": 56,
+      "exact_expected_patterns": {
+        "CWP [id] RuntimeException code=0 in financing_offers.php:261": 36,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:37": 2,
+        "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 2,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php(65) : eval()'d code:13": 2,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:26": 2,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:29": 2,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php(65) : eval()'d code:16": 2,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:8": 4,
+        "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:21": 4
+      },
+      "unexpected_lines": 0,
+      "explanation": "36 seed payment-link diagnostics; two each readback timeout, wrong contract, cancel error, cancel timeout, lost cancel reply and nonterminal result; four finalization-audit failures and four lost-create replies from the retained caller controls."
+    },
+    "prior_receipts": {
+      "path": "adjacent-resumed03/01-finance_replacement_receipts_native/stderr.log",
+      "sha256": "4ad285eb5434c2263f6a4132d318766aecd93c617da728ce036ca04ccb9ee85e",
+      "bytes": 2423,
+      "lines": 34,
+      "exact_expected_patterns": {
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:29": 1,
+        "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:13": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:21": 1,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:16": 1,
+        "CWP [id] RuntimeException code=0 in financing_offers.php:261": 28
+      },
+      "unexpected_lines": 0,
+      "explanation": "28 deliberately unprepared seed links and six original replacement readback/cancellation fault controls; frozen04 compatibility only."
+    },
+    "prior_pending": {
+      "path": "adjacent-resumed03/02-finance_replacement_pending_native/stderr.log",
+      "sha256": "fbb8f8d2f06d04e41e11eee739a83398f59d8f0f0bb76cc9ec8f92f8d050696c",
+      "bytes": 221,
+      "lines": 3,
+      "exact_expected_patterns": {
+        "CWP [id] RuntimeException code=0 in financing_offers.php:261": 2,
+        "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1
+      },
+      "unexpected_lines": 0,
+      "explanation": "Two unprepared seed links and one retained cancellation-timeout control; frozen04 compatibility only."
+    },
+    "prior_payoff": {
+      "source": "adjacent-compatibility02/01-finance_payoff_retirement_native/stderr.log",
+      "sha256": "08709cb125f67c804508b963809ec2d770d042e3c6b7c2f097d2f349741fe09c",
+      "bytes": 3782,
+      "line_count": 50,
+      "exact_expected_patterns": {
+        "CWP [id] RuntimeException code=0 in financing_offers.php:261": 32,
+        "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php:22": 3,
+        "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php:25": 3,
+        "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php(61) : eval()'d code:13": 4,
+        "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php(61) : eval()'d code:16": 3,
+        "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 3,
+        "CWP [id] RuntimeException code=0 in accounts.php:34": 1,
+        "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php(61) : eval()'d code:28": 1
+      },
+      "classification": {
+        "preparation": 32,
+        "cancel_timeout": 3,
+        "lost_cancel_reply": 3,
+        "cancel_error": 3,
+        "wrong_signed_ownership": 1,
+        "nonterminal_readback": 3,
+        "wrong_contract_readback": 3,
+        "owner_role_denial": 1,
+        "post_readback_snapshot_change": 1
+      },
+      "unexpected_lines": 0,
+      "scope": "Synthetic negative controls are expected diagnostics, not an empty stderr claim. The unchanged native292 assertions passed."
+    },
+    "unclassified_original_hy000": {
+      "source": "finance-recovery-evidence/adjacent-full01/01-finance_replacement_receipts_native",
+      "state": "Unresolved and not reproduced by isolated232 run. Original generic logger had no numeric driver code. Another-prefix DDL is an unproved hypothesis, not an attribution.",
+      "read_only_context": "finance-recovery-evidence/adjacent-hy000-context01.json"
+    },
+    "distinct_server_exit": {
+      "source": "finance-recovery-evidence/compatibility-server-exit01",
+      "observed": "mariadbd signal11 in metadata join / temporary schema-table cleanup; PDO numeric2006 then2002",
+      "limits": "Engine root cause unknown; sampled OOM/oom_kill counters0. This does not diagnose the original genericHY000.",
+      "recovery": "Same owned33313 datadir/options restarted; only incomplete232/25 rerun from immutable frozen04 source. No application retry or timeout change."
+    }
+  },
+  "historical_and_intermediate": [
+    {
+      "phase": "original01",
+      "interpretation": "Fresh exact84 reproduction: all original138 pass,20 of79 added checks fail.",
+      "execution_sha256": "36d129f00bfe9d9f5457fafad00f54ccd1f239a6bd78fab100fc886ee543500c",
+      "exit_code": 1,
+      "elapsed_seconds": 101.607,
+      "stderr_bytes": 2088,
+      "report_passed": false,
+      "check_count": 217,
+      "failed_checks": [
+        "FIN-01 missing_create_id with committed payoff retains a visible unresolved successor obligation",
+        "FIN-01 missing_create_id with committed payoff owner recovers the existing successor using its original contract",
+        "FIN-01 missing_create_id with committed payoff verifies the required successor terminal state",
+        "FIN-01 missing_create_id with committed payoff retains predecessor identity and terminal history",
+        "FIN-01 lost_create_reply with committed payoff retains a visible unresolved successor obligation",
+        "FIN-01 lost_create_reply with committed payoff owner recovers the existing successor using its original contract",
+        "FIN-01 lost_create_reply with committed payoff verifies the required successor terminal state",
+        "FIN-01 lost_create_reply with committed payoff retains predecessor identity and terminal history",
+        "FIN-02 returned pending partial_next retains or completes exact automatic-contract retirement",
+        "FIN-02 returned pending partial_next stops collecting the original full amount",
+        "FIN-02 returned pending paid_later retains or completes exact automatic-contract retirement",
+        "FIN-02 returned pending paid_later stops collecting the original full amount",
+        "FIN-02 returned pending partial_later retains or completes exact automatic-contract retirement",
+        "FIN-02 returned pending partial_later stops collecting the original full amount",
+        "FIN-02 established active partial_next retains or completes exact automatic-contract retirement",
+        "FIN-02 established active partial_next stops collecting the original full amount",
+        "FIN-02 established active paid_later retains or completes exact automatic-contract retirement",
+        "FIN-02 established active paid_later stops collecting the original full amount",
+        "FIN-02 established active partial_later retains or completes exact automatic-contract retirement",
+        "FIN-02 established active partial_later stops collecting the original full amount"
+      ]
+    },
+    {
+      "phase": "fin01-first",
+      "interpretation": "Intermediate FIN01-only correction; remaining FIN02 failures retained.",
+      "execution_sha256": "c8dc6b4251511ef450d9730ca64e7f002610d82168cbdf86ee34199fd5d1507a",
+      "exit_code": 1,
+      "elapsed_seconds": 144.526,
+      "stderr_bytes": 2088,
+      "report_passed": false,
+      "check_count": 217,
+      "failed_checks": [
+        "FIN-02 returned pending partial_next retains or completes exact automatic-contract retirement",
+        "FIN-02 returned pending partial_next stops collecting the original full amount",
+        "FIN-02 returned pending paid_later retains or completes exact automatic-contract retirement",
+        "FIN-02 returned pending paid_later stops collecting the original full amount",
+        "FIN-02 returned pending partial_later retains or completes exact automatic-contract retirement",
+        "FIN-02 returned pending partial_later stops collecting the original full amount",
+        "FIN-02 established active partial_next retains or completes exact automatic-contract retirement",
+        "FIN-02 established active partial_next stops collecting the original full amount",
+        "FIN-02 established active paid_later retains or completes exact automatic-contract retirement",
+        "FIN-02 established active paid_later stops collecting the original full amount",
+        "FIN-02 established active partial_later retains or completes exact automatic-contract retirement",
+        "FIN-02 established active partial_later stops collecting the original full amount"
+      ]
+    },
+    {
+      "phase": "combined-first",
+      "interpretation": "Intermediate217 pass, before later admission review findings.",
+      "execution_sha256": "195a52fd7bfc4fbc7b91c4b9bc669dcfc3a85e2f58b779d04dfa0ad8e1fe09ec",
+      "exit_code": 0,
+      "elapsed_seconds": 130.482,
+      "stderr_bytes": 2088,
+      "report_passed": true,
+      "check_count": 217,
+      "failed_checks": []
+    },
+    {
+      "phase": "safety-first",
+      "interpretation": "Intermediate304 with2 fixture setup/snapshot failures; preserved.",
+      "execution_sha256": "36b57763d3e0c41abae1718bad6f6f6691c6611e0636fcc557f2fa05ebb3ff07",
+      "exit_code": 1,
+      "elapsed_seconds": 490.389,
+      "stderr_bytes": 3295,
+      "report_passed": false,
+      "check_count": 304,
+      "failed_checks": [
+        "FIN-01 recovery retains original reservation and committed accounting",
+        "fixture exception: TypeError realpath(): Argument #1 ($path) must be of type string, null given"
+      ]
+    },
+    {
+      "phase": "safety-second",
+      "interpretation": "Intermediate372 pass on accumulated33311; not final source.",
+      "execution_sha256": "8ba6bdfbf67b547044db663daf5ee6ed70d2bd87d37e0f87f4e229e8e9925bb1",
+      "exit_code": 0,
+      "elapsed_seconds": 607.091,
+      "stderr_bytes": 4299,
+      "report_passed": true,
+      "check_count": 372,
+      "failed_checks": []
+    },
+    {
+      "phase": "original-auth01",
+      "interpretation": "Exact84 initial22-case authority baseline;9fail.",
+      "execution_sha256": "dee478552a6b3f680e5d514ce99ed8105c0b5d5fa5a9557537b692f34e0c3511",
+      "exit_code": 1,
+      "elapsed_seconds": 6.668,
+      "stderr_bytes": 536,
+      "check_count": 22
+    },
+    {
+      "phase": "original-auth02",
+      "interpretation": "Exact84 extended25-case authority baseline including zero-down;11fail.",
+      "execution_sha256": "cc90bafe48c4fd7b46534817a3c33d364e53f53551e1f4c0c9d3c4ad4a758a40",
+      "exit_code": 1,
+      "elapsed_seconds": 8.547,
+      "stderr_bytes": 536,
+      "check_count": 25
+    },
+    {
+      "phase": "fixed-auth01",
+      "interpretation": "Intermediate authority correction exposed4 projection-side effects before preflight authority check.",
+      "execution_sha256": "3df3a70a9373880a3d6dd9dc5d23043516e56968e90642380c2f9f8625950f64",
+      "exit_code": 1,
+      "elapsed_seconds": 7.328,
+      "stderr_bytes": 536,
+      "check_count": 22
+    },
+    {
+      "phase": "fixed-auth02",
+      "interpretation": "Intermediate22-case authority probe passes; current driver contains extended25.",
+      "execution_sha256": "7098a4289a8096acefd676dfc58cb69b202adb02e8a6aa91bcf980c2f7b1f607",
+      "exit_code": 0,
+      "elapsed_seconds": 9.42,
+      "stderr_bytes": 536,
+      "check_count": 22
+    },
+    {
+      "phase": "final-native01",
+      "interpretation": "Invalid added migration-negative fixture: real redirect exited without JSON; never accepted as pass.",
+      "execution_sha256": "99393c6541442051c4756dcba67a98667a65d5d41f08b70859b3b187da0ef3e7",
+      "exit_code": 0,
+      "elapsed_seconds": 326.775,
+      "stderr_bytes": 3495,
+      "report_passed": null,
+      "check_count": 0,
+      "failed_checks": []
+    },
+    {
+      "phase": "final-native02",
+      "interpretation": "Intermediate375 pass; before bounded initial/caller compatibility adjustments.",
+      "execution_sha256": "508be80a762ab8f6cb38d354b65cc0ac37c55ad1b693b087d00874cfc8b7eb53",
+      "exit_code": 0,
+      "elapsed_seconds": 443.205,
+      "stderr_bytes": 4299,
+      "report_passed": true,
+      "check_count": 375,
+      "failed_checks": []
+    },
+    {
+      "phase": "final-native03",
+      "interpretation": "Intermediate375 pass on fresh33315; before caller review return/numeric diagnostic wrapper.",
+      "execution_sha256": "777b30ba5e6b34d1120ba11cd2f80448484bcbeaec2910ca09d523825835ade5",
+      "exit_code": 0,
+      "elapsed_seconds": 379.35,
+      "stderr_bytes": 4299,
+      "report_passed": true,
+      "check_count": 375,
+      "failed_checks": []
+    },
+    {
+      "phase": "final-native04",
+      "interpretation": "Frozen04 checkpoint387 pass including12 enabled repeated-receipt cases.",
+      "execution_sha256": "90edbc18ddc524642e253096982a647e67bf34c6be21051eb2ca4d1ebe2c2f71",
+      "exit_code": 0,
+      "elapsed_seconds": 512.907,
+      "stderr_bytes": 4433,
+      "report_passed": true,
+      "check_count": 387,
+      "failed_checks": []
+    },
+    {
+      "phase": "adjacent-initial01",
+      "interpretation": "One failure exposed old initial fixture assumption; bounded initial change and its later confirmed unresolved-attempt risk are retained separately.",
+      "execution_sha256": "81d6d0be9b18e4d72243bfd2c69ff9e90b7a14ba9f9bfd6824c7bf016a16fb4e",
+      "results": [
+        {
+          "command": [
+            "tests/finance_initial_receipts_native.php",
+            "fep_fadjirisk_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 1,
+          "elapsed_seconds": 9.865,
+          "stderr_bytes": 201,
+          "report_passed": false,
+          "check_count": 17,
+          "failed_checks": [
+            "fixture exception: RuntimeException A separate financing collection has an unresolved outcome. Reconcile it before automatic enrollment."
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "adjacent-full01",
+      "interpretation": "Original compatibility results retained, including four caller-review mismatches, one unresolved genericHY000, and eight payoff timing-assumption failures.",
+      "execution_sha256": "e16740241aeb1b201ba977e86b5fe5004bcb0f3690cb447e8ce61aa0641049d2",
+      "results": [
+        {
+          "command": [
+            "tests/finance_replacement_receipts_native.php",
+            "fep_fadjrcpt_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 1,
+          "elapsed_seconds": 400.633,
+          "stderr_bytes": 2481,
+          "report_passed": false,
+          "check_count": 232,
+          "failed_checks": [
+            "partial_first-after_retirement-normal refuses create when remaining receipts changed",
+            "paid_later-after_retirement-normal refuses create when remaining receipts changed",
+            "partial_later-after_retirement-normal refuses create when remaining receipts changed",
+            "paid_first-after_retirement-normal refuses create when remaining receipts changed",
+            "partial_later-during_readback-normal retires or visibly retains the obsolete candidate",
+            "partial_later-during_readback-normal retains actual owner receipts",
+            "partial_later-during_readback-normal retains candidate identity and predecessor history"
+          ]
+        },
+        {
+          "command": [
+            "tests/finance_replacement_pending_native.php",
+            "fep_fadjpend_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 12.089,
+          "stderr_bytes": 221,
+          "report_passed": true,
+          "check_count": 25,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_initial_receipts_native.php",
+            "fep_fadjinit_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 159.053,
+          "stderr_bytes": 4162,
+          "report_passed": true,
+          "check_count": 358,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_payoff_retirement_native.php",
+            "fep_fadjret_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 1,
+          "elapsed_seconds": 217.741,
+          "stderr_bytes": 4522,
+          "report_passed": false,
+          "check_count": 292,
+          "failed_checks": [
+            "manual-cancel_timeout verified retirement or retained review",
+            "manual-cancel_timeout cancels only nonterminal verified identity",
+            "manual-lost_cancel_reply verified retirement or retained review",
+            "manual-cancel_error verified retirement or retained review",
+            "manual-cancel_error cancels only nonterminal verified identity",
+            "manual-still_active verified retirement or retained review",
+            "manual-still_active cancels only nonterminal verified identity",
+            "manual-wrong_readback verified retirement or retained review"
+          ]
+        },
+        {
+          "command": [
+            "tests/finance_payoff_retirement_native.php",
+            "fep_fadjown_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab",
+            "owner_exit"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 2.45,
+          "stderr_bytes": 67,
+          "report_passed": true,
+          "check_count": 5,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_payoff_retirement_settlement.php",
+            "fep_fadjset_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 36.279,
+          "stderr_bytes": 507,
+          "report_passed": true,
+          "check_count": 41,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_initial_enrollment_native.php",
+            "fie_fadjinit_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 52.881,
+          "stderr_bytes": 3618,
+          "report_passed": true,
+          "check_count": 207,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_enrollment_payoff_native.php",
+            "fep_fadjenr_",
+            "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 79.363,
+          "stderr_bytes": 2546,
+          "report_passed": true,
+          "check_count": 240,
+          "failed_checks": []
+        }
+      ]
+    },
+    {
+      "phase": "adjacent-receipts02",
+      "interpretation": "Frozen03 isolated232 pass; original genericHY000 did not reproduce, cause remains unclassified.",
+      "execution_sha256": "4b27961b564393abc7c7040427d17357a7ed050446248ac64a537fcf16a3cafd",
+      "results": [
+        {
+          "command": [
+            "tests/finance_replacement_receipts_native.php",
+            "fep_freplay_",
+            "/tmp/cwp-finance-receipt-replay-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 295.525,
+          "stderr_bytes": 2423,
+          "report_passed": true,
+          "check_count": 232,
+          "failed_checks": []
+        }
+      ]
+    },
+    {
+      "phase": "adjacent-compatibility02",
+      "interpretation": "Frozen04 payoff292 passed, then owned MariaDB signal11 interrupted232/25; incomplete commands are failures, not passes.",
+      "execution_sha256": "ece9121bbd87472e1334a9c85cbcb455883d393faf264866f6ef23f1e05b46f8",
+      "results": [
+        {
+          "command": [
+            "tests/finance_payoff_retirement_native.php",
+            "fep_fcompatret_",
+            "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 326.275,
+          "stderr_bytes": 3782,
+          "report_passed": true,
+          "check_count": 292,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_replacement_receipts_native.php",
+            "fep_fcompatrcpt_",
+            "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 255,
+          "elapsed_seconds": 122.291,
+          "stderr_bytes": 2032,
+          "report_passed": null,
+          "check_count": 0,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_replacement_pending_native.php",
+            "fep_fcompatpend_",
+            "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 255,
+          "elapsed_seconds": 0.151,
+          "stderr_bytes": 602,
+          "report_passed": null,
+          "check_count": 0,
+          "failed_checks": []
+        }
+      ]
+    },
+    {
+      "phase": "adjacent-resumed03",
+      "interpretation": "Frozen04 remaining232/25 pass after owned server restart; no repeat of already-passed292.",
+      "execution_sha256": "7e2a34baf8d480570c93854f0fd160d4365a24ae26d1ecf2253ba1f2c72c4fd0",
+      "results": [
+        {
+          "command": [
+            "tests/finance_replacement_receipts_native.php",
+            "fep_fretryrcpt_",
+            "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 638.975,
+          "stderr_bytes": 2423,
+          "report_passed": true,
+          "check_count": 232,
+          "failed_checks": []
+        },
+        {
+          "command": [
+            "tests/finance_replacement_pending_native.php",
+            "fep_fretrypend_",
+            "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+          ],
+          "exit_code": 0,
+          "elapsed_seconds": 18.545,
+          "stderr_bytes": 221,
+          "report_passed": true,
+          "check_count": 25,
+          "failed_checks": []
+        }
+      ]
+    },
+    {
+      "phase": "pure-final03",
+      "interpretation": "Authoring import-wrapper error before any test; tools module path fixed, builder unchanged.",
+      "execution_sha256": "2eb9a48957c32fdb4011e648498e6be4249391ce60893cce57169e1f89d77e31",
+      "exit_code": 1
+    }
+  ],
+  "preserved_limits": [
+    "No recoverable source for historical454-check successor correction; unavailable old4/8 and6/30 raw probes were not reused or rerun.",
+    "Legacy ambiguous replacement rows without an original reserved contract require explicit manual reconciliation; migration invents no contract.",
+    "Original account identity is provable for new recovery-backed subscriptions; this does not reconstruct missing historical OBS03 provenance.",
+    "Retained external collections require explicit verified accounting disposition; no automatic credit/refund/clear action is fabricated.",
+    "This standalone exact84 proof excludes software and notification corrections; final composition needs its own reviewed proof."
+  ],
+  "source_admission": {
+    "module": "tests/finance_recovery_provenance.py",
+    "receipt": "docs/FINANCE_RECOVERY_SOURCE.json",
+    "method": "All changed/added paths and hashes, exact parent blob inverses, canonical current inventory, original assertions, source-bound evidence, retained historical builders/workflows and actual-file mode negatives. Final source gate execution receipt is retained outside the self-referential proof after freeze."
+  }
+}

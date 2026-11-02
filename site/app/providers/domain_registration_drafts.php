@@ -13,7 +13,7 @@ function registration_drafts_owner(#[SensitiveParameter] ?string $password=null)
     registration_drafts_no_support();if(!staff_ready())throw new RuntimeException('Enable administrator access first.');
     $actor=staff_require('staff.manage');$profile=staff_profile($actor);
     if(!$profile||$profile['role']!=='owner')throw new RuntimeException('An active owner must review registration drafts.');
-    if($password!==null&&!password_verify($password,$actor['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');return $actor;
+    if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');return $actor;
 }
 function registration_drafts_client(int $id):array {
     registration_drafts_no_support();$client=studio_client();

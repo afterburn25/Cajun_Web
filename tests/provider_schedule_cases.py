@@ -9,6 +9,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 
 def schedule_projection_privacy(markup, approval):
@@ -75,7 +76,8 @@ def run_browser(env, browser):
     check, soup, form_data, form_for, submit = (env[k] for k in ['check', 'soup', 'form_data', 'form_for', 'submit'])
     base, qa, provider = env['BASE'], env['QA'], env['provider_server']
     admin = base+'/existing/admin/index.php'
-    url = admin+'?view=provider-settings'
+    url = admin+'?view=provider-settings&section=services'
+    connection_url = admin+'?view=provider-settings&section=connection'
     owner = requests.Session()
     submit(owner, admin+'?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
     db('DELETE FROM ci_rate_limits')
@@ -83,16 +85,18 @@ def run_browser(env, browser):
     prefix = 'provider_inventory_schedule_'
     response = owner.get(url)
     check('Schedule HTTP GET does not create storage or call provider', soup(response).select_one('[data-schedule-prepare]') is not None and not db('SHOW TABLES LIKE "ci_provider_schedule_events"') and provider.calls == calls)
-    for changes, label in [({'csrf': 'bad', 'current_password': OWNER}, 'CSRF'), ({'current_password': 'wrong'}, 'owner password')]:
-        rejected = submit(owner, url, prefix+'prepare', changes)
+    for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({}, 'owner permission')]:
+        rejected = (refuse_owner_action(env, owner, url, prefix+'prepare', {}) if label == 'owner permission'
+                    else submit(owner, url, prefix+'prepare', changes))
         check('Schedule preparation rejects '+label, not db('SHOW TABLES LIKE "ci_provider_schedule_events"') and provider.calls == calls and OWNER not in rejected.text)
-    submit(owner, url, prefix+'prepare', {'current_password': OWNER})
+    submit(owner, url, prefix+'prepare', {})
     check('Schedule preparation remains disabled without network', len(db('SELECT * FROM ci_provider_schedule_events')) == 1 and 'disabled' in soup(owner.get(url)).select_one('[data-schedule-status]').text and provider.calls == calls)
     fields = form_data(form_for(owner.get(url), prefix+'enable'))
-    valid = {'current_password': OWNER, 'schedule_interval': '900', 'schedule_reviewed': '1'}
-    for delta, label in [({'current_password': 'wrong'}, 'password'), ({'csrf': 'bad'}, 'CSRF'), ({'schedule_reviewed': '0'}, 'explicit approval'), ({'revision': '0'}, 'profile version'), ({'schedule_interval': '30'}, 'unsafe frequency'), ({'schedule_interval': [], 'schedule_interval[]': '900'}, 'malformed fields')]:
-        rejected = owner.post(url, data={**fields, **valid, **delta})
-        check('Schedule approval refuses '+label, rejected.status_code == 200 and len(db('SELECT * FROM ci_provider_schedule_events')) == 1 and provider.calls == calls and OWNER not in rejected.text)
+    valid = {'schedule_interval': '900', 'schedule_reviewed': '1'}
+    for delta, label in [({}, 'owner permission'), ({'csrf': 'bad'}, 'CSRF'), ({'schedule_reviewed': '0'}, 'explicit approval'), ({'revision': '0'}, 'profile version'), ({'schedule_interval': '30'}, 'unsafe frequency'), ({'schedule_interval': [], 'schedule_interval[]': '900'}, 'malformed fields')]:
+        rejected = (refuse_owner_action(env, owner, url, prefix+'enable', valid) if label == 'owner permission'
+                    else owner.post(url, data={**fields, **valid, **delta}))
+        check('Schedule approval refuses '+label, rejected.status_code == (403 if label == 'owner permission' else 200) and len(db('SELECT * FROM ci_provider_schedule_events')) == 1 and provider.calls == calls and OWNER not in rejected.text)
     member = requests.Session()
     submit(member, admin+'?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})
     check('Administrator has no schedule authority', member.get(url).status_code == 403)
@@ -133,13 +137,13 @@ def run_browser(env, browser):
         provider.packages.append({'id': 910, 'typeRef': 1, 'name': 'scheduled.example', 'names': ['scheduled.example'], 'enabled': True, 'created': '2024-01-02T03:04:05Z'})
     links = {name: db('SELECT * FROM ci_'+name+' ORDER BY id') for name in ['provider_package_links', 'provider_domain_links', 'provider_cloud_links']}
     form = page.locator('[data-schedule-run]')
-    form.locator('[name=current_password]').fill(OWNER)
+    assert_no_owner_reprompt(check, form, 'Run approved scheduled inventory refresh')
     form.get_by_role('button', name='Run if due', exact=True).click()
     page.wait_for_load_state('load')
     expect(page.locator('[data-provider-schedule]')).to_contain_text('Refresh complete')
     check('Chromium scheduled run uses exactly one fixed authenticated GET', provider.calls == calls+1 and provider.get_paths[-1] == '/package' and provider.posts == posts)
     check('Scheduled observation preserves all explicit client assignments', all(db('SELECT * FROM ci_'+name+' ORDER BY id') == rows for name, rows in links.items()))
-    submit(owner, url, prefix+'run', {'current_password': OWNER})
+    submit(owner, url, prefix+'run', {})
     check('Actual duplicate run before due time makes no request', provider.calls == calls+1 and len(db('SELECT * FROM ci_provider_schedule_events WHERE kind="start"')) == 1)
     page.locator('[data-provider-schedule]').screenshot(path=str(qa/'Provider-Schedule-Owner-Desktop.png'))
     page.set_viewport_size({'width': 320, 'height': 740})
@@ -153,7 +157,7 @@ def run_browser(env, browser):
     provider.mode = 'authentication'
     # The backoff begins at the retained finish event; the redirected page can take time to render.
     failure_requested_epoch = int(time.time())
-    failed = submit(owner, url, prefix+'run', {'current_password': OWNER})
+    failed = submit(owner, url, prefix+'run', {})
     failure_response_epoch = int(time.time())
     last = db('SELECT document_json FROM ci_provider_schedule_events ORDER BY sequence DESC LIMIT 1')[0]
     document = json.loads(last['document_json'])
@@ -167,16 +171,16 @@ def run_browser(env, browser):
 
     submit(owner, url, prefix+'enable', valid)
     stale_run = form_data(form_for(owner.get(url), prefix+'run'))
-    edit = form_data(form_for(owner.get(url), 'provider_settings_save'))
-    owner.post(url, data={**edit, 'label': 'Schedule revoked connection revision', 'general_key': '', 'enabled': '1', 'current_password': OWNER})
-    rejected = owner.post(url, data={**stale_run, 'current_password': OWNER})
+    edit = form_data(form_for(owner.get(connection_url), 'provider_settings_save'))
+    owner.post(connection_url, data={**edit, 'label': 'Schedule revoked connection revision', 'general_key': '', 'enabled': '1'})
+    rejected = owner.post(url, data=stale_run)
     check('Saved connection revision invalidates scheduling before remote call', provider.calls == calls+2 and 'approve the schedule again' in rejected.text and soup(rejected).select_one('[data-schedule-run]') is None)
     page.reload()
     expect(page.locator('[data-schedule-status]')).to_contain_text('approval required')
     page.locator('[data-provider-schedule]').screenshot(path=str(qa/'Provider-Schedule-Revoked-Mobile.png'))
-    response = submit(owner, url, prefix+'disable', {'current_password': OWNER})
+    response = submit(owner, url, prefix+'disable', {})
     check('Owner can disable stale approval while retaining history', 'Scheduled refreshes are disabled' in response.text and len(db('SELECT * FROM ci_provider_schedule_events WHERE kind="finish"')) == 2 and provider.calls == calls+2)
-    check('All scheduling password inputs are cleared', all(n.get('value', '') == '' for n in soup(response).select('[data-provider-schedule] input[type=password]')))
+    check('Scheduling uses current owner authority without repeated password inputs', not soup(response).select('[data-provider-schedule] input[name=current_password], [data-provider-schedule] input[name=owner_password]'))
     # Invoke the actual installed CLI entry. The test-only connector also refuses any unexpected CLI DNS.
     command = [env['php'], '-d', 'auto_prepend_file='+str(env['ROOT']/'tests/mail_inbox_http_connector.php'), str(env['WEB']/'existing/app/jobs/run.php')]
     cli = subprocess.run(command, capture_output=True, text=True, timeout=35)

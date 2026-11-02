@@ -1,0 +1,65 @@
+{
+  "review_type": "Independent root review of proof code authored by another agent",
+  "application_checkpoint": "01cd1e25fc6458087a5259d1e4e760abfa5b0cb0",
+  "application_tree": "36424379fe767dd6e07dca65088cbe7d1d567c1b",
+  "review_checkout": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_software_proof_review",
+  "proof_sha256": {
+    "tests/software_authority_provenance.py": "d9c2884c25a67dbf417434093c1a69d1d49b81a24df4704336f47c9757bad0d3",
+    "docs/SOFTWARE_CLIENT_AUTHORITY_CORRECTION.json": "0c454ab8c77449c59868ddefbc6a1eeca20dbf8fd84cb96ab0005c1141caa192",
+    "tests/tickets_integration_contract.py": "b4f29e2dc63c887f81ac04810c2508afffae3e23350e488d2c02cbec4854bd2e",
+    "tests/provider_browser_fixture_provenance.py": "57dc13e390af46559d8a5405503e3f5ab5f80ea7664a18cc2569a7034e5201bb"
+  },
+  "checks": [
+    {
+      "name": "Actual standalone proof admits the unchanged native-tested correction and exact adapters",
+      "passed": true
+    },
+    {
+      "name": "All877 historical test/tool/workflow/JSON files remain exact",
+      "passed": true
+    },
+    {
+      "name": "Actual altered application file is refused",
+      "passed": true,
+      "actual_refusal": "Current SW authority bytes changed: site/app/billing/software_orders.php"
+    },
+    {
+      "name": "Actual altered native regression is refused",
+      "passed": true,
+      "actual_refusal": "SW authority added source changed: tests/software_commerce_authority.php"
+    },
+    {
+      "name": "Actual untracked shipping addition is refused",
+      "passed": true,
+      "actual_refusal": "Untracked SW authority shipping source: ['site/app/billing/unreviewed_authority.php']"
+    },
+    {
+      "name": "Actual changed generated inventory is refused",
+      "passed": true,
+      "actual_refusal": "Current SW authority bytes changed: site/install/inventory.generated.php"
+    },
+    {
+      "name": "Coupled actual source and receipt output-hash rewrite is refused",
+      "passed": true,
+      "actual_refusal": "SW authority output identity changed: site/app/billing/software_orders.php"
+    },
+    {
+      "name": "Actual unreviewed builder addition is refused",
+      "passed": true,
+      "actual_refusal": "Unreviewed SW authority guard, fixture, builder or workflow difference"
+    },
+    {
+      "name": "Actual changed historical provider receipt is refused",
+      "passed": true,
+      "actual_refusal": "Historical SW authority input changed: docs/PROVIDER_BROWSER_FIXTURE_REPAIRS_20261101.json"
+    }
+  ],
+  "passed": true,
+  "seconds": 2.445,
+  "scope": "Actual disposable worktree mutations and current proof execution; application/test bytes and the reusable466 native result are unchanged. This is source admission review, not another native, hosted, HTTP or release run.",
+  "approved_followup_tree": "ded900bd0cc662ca9fc9d6ea4ecfe93023b8dc66",
+  "followup_paths_reviewed": 43,
+  "accepted_application_test_inventory_workflow_paths_unchanged": 11,
+  "retained_evidence_checksums_verified": 75,
+  "decision": "Approved bounded proof/code/docs/evidence follow-up; source-admission blockers resolved. Hosted and combined integration remain gates."
+}

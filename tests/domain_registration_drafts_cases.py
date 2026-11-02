@@ -7,6 +7,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 
 def run_browser(env, browser):
@@ -83,9 +84,9 @@ def run_browser(env, browser):
     owner_email = 'registration-draft-owner@example.invalid'
     staff_url = admin+'?view=staff'
     check('Private draft dedicated owner starts absent', not db('SELECT id FROM ci_users WHERE email=?', [owner_email]))
-    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Registration draft owner', 'email': owner_email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
+    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Registration draft owner', 'email': owner_email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     owner_id = db('SELECT id FROM ci_users WHERE email=?', [owner_email])[0]['id']
-    invited = chosen_form(setup, staff_url, 'staff_invite', 'id', owner_id, {'owner_password': OWNER})
+    invited = chosen_form(setup, staff_url, 'staff_invite', 'id', owner_id, {})
     invitation = soup(invited).select_one('[data-staff-invite]')['href']
     code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = session(); page = activation.get(invitation)
@@ -119,16 +120,18 @@ def run_browser(env, browser):
                 page = context.new_page(); page.goto(owner_url, wait_until='domcontentloaded'); page.evaluate('document.fonts.ready')
                 setup_selector = 'form:has(input[name=action][value=registration_drafts_prepare])'
                 expect(page.locator(setup_selector)).to_be_visible()
+                assert_no_owner_reprompt(check, page.locator(setup_selector), 'Private draft setup '+device)
                 buttons_fit(page, setup_selector, 'Private draft setup '+device)
             finally:
                 context.close()
         setup_form = captured(owner, owner_url, 'registration_drafts_prepare')
         for label, fields, message in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),
-                                       ('owner password', {'owner_password': 'wrong'}, 'Your current password is not correct.')]:
-            denied = owner.post(owner_url, data={**setup_form, 'owner_password': OWNER, **fields})
-            check('Private draft setup refuses invalid '+label+' without tables', denied.status_code == 200
+                                       ('owner permission', {}, 'Your account does not have access to this section.')]:
+            denied = (refuse_owner_action(env, setup, owner_url, 'registration_drafts_prepare', {}) if label == 'owner permission'
+                      else owner.post(owner_url, data={**setup_form, **fields}))
+            check('Private draft setup refuses invalid '+label+' without tables', denied.status_code == (403 if label == 'owner permission' else 200)
                   and message in denied.text and absent() and provider.calls == calls)
-        response = submit(owner, owner_url, 'registration_drafts_prepare', {'owner_password': OWNER})
+        response = submit(owner, owner_url, 'registration_drafts_prepare', {})
         check('Private draft owner explicitly prepares local empty family', response.status_code == 200 and not absent() and drafts() == [] and provider.calls == calls)
         check('Private draft delegated owner and support access are refused', member.get(owner_url).status_code == 403 and owner.get(owner_url+'&support=fixture').status_code == 403)
         values = {'domain': 'private-draft.example.com', 'requested_years': '2', 'privacy_service': '0',
@@ -163,7 +166,7 @@ def run_browser(env, browser):
               and html.select_one('select[name=privacy_service] option[selected]')['value'] == '0'
               and html.select_one('input[name=command_id]')['value'] == stale['command_id'])
         owner_target = owner_url+'&draft='+rid
-        response = submit(owner, owner_target, 'registration_drafts_owner_save', {**values, 'contact_name': 'Owner revised private registrant', 'owner_password': OWNER})
+        response = submit(owner, owner_target, 'registration_drafts_owner_save', {**values, 'contact_name': 'Owner revised private registrant'})
         check('Private draft real owner edit requires new client submission', response.status_code == 200 and drafts()[0]['state'] == 'draft' and drafts()[0]['revision'] == 3)
         submit(client, target, 'registration_drafts_client_withdraw', {'confirm': '1'})
         submit(client, target, 'registration_drafts_client_save', {**values, 'contact_name': 'Withdrawn private registrant'})

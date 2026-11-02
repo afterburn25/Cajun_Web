@@ -1,0 +1,1595 @@
+{
+    "passed": true,
+    "count": 140,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "processing_to_refunded expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_to_refunded correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_to_refunded retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_to_refunded actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_to_refunded competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_to_voided expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_to_voided correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_to_voided retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_to_voided actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_to_voided competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_to_declined expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_to_declined correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_to_declined retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_to_declined actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_to_declined competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_to_sandbox_test expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_to_sandbox_test correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_to_sandbox_test retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_to_sandbox_test actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_to_sandbox_test competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_to_paid expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_to_paid correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_to_paid retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_to_paid actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_to_paid competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_new_attempt expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_new_attempt correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_new_attempt retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_new_attempt actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_new_attempt competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_unchanged expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_unchanged correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_unchanged retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_unchanged actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_unchanged competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "processing_historical_capture expected routing result",
+            "passed": true
+        },
+        {
+            "name": "processing_historical_capture correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "processing_historical_capture retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "processing_historical_capture actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "processing_historical_capture competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_refunded expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_refunded correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_refunded retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_refunded actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_refunded competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_voided expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_voided correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_voided retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_voided actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_voided competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_declined expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_declined correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_declined retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_declined actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_declined competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_sandbox_test expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_sandbox_test correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_sandbox_test retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_sandbox_test actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_sandbox_test competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_paid expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_paid correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_paid retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_paid actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_to_paid competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_new_attempt expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_new_attempt correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_new_attempt retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_new_attempt actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_new_attempt competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_unchanged expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_unchanged correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_unchanged retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_unchanged actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_unchanged competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "uncertain_historical_capture expected routing result",
+            "passed": true
+        },
+        {
+            "name": "uncertain_historical_capture correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "uncertain_historical_capture retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "uncertain_historical_capture actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "uncertain_historical_capture competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_to_refunded expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_to_refunded correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_to_refunded retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_to_refunded actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_to_refunded competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_to_voided expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_to_voided correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_to_voided retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_to_voided actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_to_voided competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_to_declined expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_to_declined correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_to_declined retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_to_declined actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_to_declined competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_to_sandbox_test expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_to_sandbox_test correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_to_sandbox_test retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_to_sandbox_test actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_to_sandbox_test competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_to_paid expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_to_paid correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_to_paid retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_to_paid actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_to_paid competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_new_attempt expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_new_attempt correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_new_attempt retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_new_attempt actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_new_attempt competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_unchanged expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_unchanged correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_unchanged retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_unchanged actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_unchanged competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "review_historical_capture expected routing result",
+            "passed": true
+        },
+        {
+            "name": "review_historical_capture correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "review_historical_capture retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "review_historical_capture actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "review_historical_capture competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "new_attempt_current_capture expected routing result",
+            "passed": true
+        },
+        {
+            "name": "new_attempt_current_capture correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "new_attempt_current_capture retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "new_attempt_current_capture actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "new_attempt_current_capture competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "already_paid expected routing result",
+            "passed": true
+        },
+        {
+            "name": "already_paid correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "already_paid retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "already_paid actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "already_paid competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount expected routing result",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "wrong_amount competing writer used separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "conflicting_transaction expected routing result",
+            "passed": true
+        },
+        {
+            "name": "conflicting_transaction correct exact charge row",
+            "passed": true
+        },
+        {
+            "name": "conflicting_transaction retained parent and attempt rows unchanged",
+            "passed": true
+        },
+        {
+            "name": "conflicting_transaction actual mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "conflicting_transaction competing writer used separate committed SQL connection",
+            "passed": true
+        }
+    ],
+    "results": [
+        {
+            "case": "processing_to_refunded",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 1,
+                "request_id": 100,
+                "invoice_id": 100,
+                "offer_id": "f6803fe4ce5d58cbcd92bbc66fb2a974",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "ca6bf12abb0da58b04f835f67c40e332c1e314845a2f284e745aabc9614ef46a",
+                "transaction_id": "660000100",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 1,
+                "request_id": 100,
+                "invoice_id": 100,
+                "offer_id": "f6803fe4ce5d58cbcd92bbc66fb2a974",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "ca6bf12abb0da58b04f835f67c40e332c1e314845a2f284e745aabc9614ef46a",
+                "transaction_id": "660000100",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 39,
+                "committed": true
+            }
+        },
+        {
+            "case": "processing_to_voided",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 2,
+                "request_id": 101,
+                "invoice_id": 101,
+                "offer_id": "c41f480eb5f5010a8d84c89b710b02d8",
+                "amount_cents": 1250,
+                "status": "voided",
+                "request_key": "33f9a39346d3aaf2c80031e8b8a205d6bdbd547d195080637704f9a4bf9d8667",
+                "transaction_id": "660000101",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 2,
+                "request_id": 101,
+                "invoice_id": 101,
+                "offer_id": "c41f480eb5f5010a8d84c89b710b02d8",
+                "amount_cents": 1250,
+                "status": "voided",
+                "request_key": "33f9a39346d3aaf2c80031e8b8a205d6bdbd547d195080637704f9a4bf9d8667",
+                "transaction_id": "660000101",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 40,
+                "committed": true
+            }
+        },
+        {
+            "case": "processing_to_declined",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 3,
+                "request_id": 102,
+                "invoice_id": 102,
+                "offer_id": "6488a838daf549d66a6d0406b759dc95",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "67e95681f8237948353d55fdc0d6c6c11123fd8a8d2883c380e8185afa7246eb",
+                "transaction_id": "660000102",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 3,
+                "request_id": 102,
+                "invoice_id": 102,
+                "offer_id": "6488a838daf549d66a6d0406b759dc95",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "67e95681f8237948353d55fdc0d6c6c11123fd8a8d2883c380e8185afa7246eb",
+                "transaction_id": "660000102",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 41,
+                "committed": true
+            }
+        },
+        {
+            "case": "processing_to_sandbox_test",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 4,
+                "request_id": 103,
+                "invoice_id": 103,
+                "offer_id": "9b48a81f1b8b7e61a88dcafc16df93bb",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "12c352b6378780942eeb9d8ccdd5619fe6088da026013f146daf135b63629359",
+                "transaction_id": "660000103",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 4,
+                "request_id": 103,
+                "invoice_id": 103,
+                "offer_id": "9b48a81f1b8b7e61a88dcafc16df93bb",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "12c352b6378780942eeb9d8ccdd5619fe6088da026013f146daf135b63629359",
+                "transaction_id": "660000103",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 42,
+                "committed": true
+            }
+        },
+        {
+            "case": "processing_to_paid",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 5,
+                "request_id": 104,
+                "invoice_id": 104,
+                "offer_id": "9fe3e6d95866966ffc62c2f680951f50",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "a581d7eaaa8023c4fea447d75f3fd3dfea801aa7e199f690c617736869d8db87",
+                "transaction_id": "660000104",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 5,
+                "request_id": 104,
+                "invoice_id": 104,
+                "offer_id": "9fe3e6d95866966ffc62c2f680951f50",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "a581d7eaaa8023c4fea447d75f3fd3dfea801aa7e199f690c617736869d8db87",
+                "transaction_id": "660000104",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 43,
+                "committed": true
+            }
+        },
+        {
+            "case": "processing_new_attempt",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 6,
+                "request_id": 105,
+                "invoice_id": 105,
+                "offer_id": "498d637ae17d744b5b31af0a2dd6fbb1",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c0c2ad76f8579a4cd86a9e8ef0664db9642ad8188e2ae38b64fb636fd15a4c48",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 6,
+                "request_id": 105,
+                "invoice_id": 105,
+                "offer_id": "498d637ae17d744b5b31af0a2dd6fbb1",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c0c2ad76f8579a4cd86a9e8ef0664db9642ad8188e2ae38b64fb636fd15a4c48",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 44,
+                "committed": true
+            }
+        },
+        {
+            "case": "processing_unchanged",
+            "result": "finance_payment_review",
+            "error": null,
+            "before": {
+                "id": 7,
+                "request_id": 106,
+                "invoice_id": 106,
+                "offer_id": "a4e4b32e46e52e8bde4fb2fa2ab7b7bf",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "90926624df4f2dcdd60e48f59d1835a29c665a8fa8c38701af2386531a2c9933",
+                "transaction_id": "660000106",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 7,
+                "request_id": 106,
+                "invoice_id": 106,
+                "offer_id": "a4e4b32e46e52e8bde4fb2fa2ab7b7bf",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "90926624df4f2dcdd60e48f59d1835a29c665a8fa8c38701af2386531a2c9933",
+                "transaction_id": "660000106",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:30"
+            },
+            "writer": null
+        },
+        {
+            "case": "processing_historical_capture",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 8,
+                "request_id": 107,
+                "invoice_id": 107,
+                "offer_id": "6e793f366c4e76c9f36ebed70081cd3f",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c6e1792f0418937f66b93be964faf34ef531ef680db202125a3aea3c5f3cbf46",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 8,
+                "request_id": 107,
+                "invoice_id": 107,
+                "offer_id": "6e793f366c4e76c9f36ebed70081cd3f",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c6e1792f0418937f66b93be964faf34ef531ef680db202125a3aea3c5f3cbf46",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "uncertain_to_refunded",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 9,
+                "request_id": 108,
+                "invoice_id": 108,
+                "offer_id": "37938cfd3aa7b9920253bcc08b2a6a7b",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "9401753eaeea291ae37657dd403dbe9770e417e50d311656f78b13893b6f98d1",
+                "transaction_id": "660000108",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 9,
+                "request_id": 108,
+                "invoice_id": 108,
+                "offer_id": "37938cfd3aa7b9920253bcc08b2a6a7b",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "9401753eaeea291ae37657dd403dbe9770e417e50d311656f78b13893b6f98d1",
+                "transaction_id": "660000108",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 45,
+                "committed": true
+            }
+        },
+        {
+            "case": "uncertain_to_voided",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 10,
+                "request_id": 109,
+                "invoice_id": 109,
+                "offer_id": "e86d62049a38e36f328f27b39319991c",
+                "amount_cents": 1250,
+                "status": "voided",
+                "request_key": "0983dacde6f58a8033bcebebe31513aa193b23e31b72f18fabf91a427ad555cb",
+                "transaction_id": "660000109",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 10,
+                "request_id": 109,
+                "invoice_id": 109,
+                "offer_id": "e86d62049a38e36f328f27b39319991c",
+                "amount_cents": 1250,
+                "status": "voided",
+                "request_key": "0983dacde6f58a8033bcebebe31513aa193b23e31b72f18fabf91a427ad555cb",
+                "transaction_id": "660000109",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 46,
+                "committed": true
+            }
+        },
+        {
+            "case": "uncertain_to_declined",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 11,
+                "request_id": 110,
+                "invoice_id": 110,
+                "offer_id": "d7bc8c25eb95f3be74b5ee20b5674c86",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "d52bc74817811200fc692e5fd7ba22d364a4a7d30bc46cf8a31b48663cacbc67",
+                "transaction_id": "660000110",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 11,
+                "request_id": 110,
+                "invoice_id": 110,
+                "offer_id": "d7bc8c25eb95f3be74b5ee20b5674c86",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "d52bc74817811200fc692e5fd7ba22d364a4a7d30bc46cf8a31b48663cacbc67",
+                "transaction_id": "660000110",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 47,
+                "committed": true
+            }
+        },
+        {
+            "case": "uncertain_to_sandbox_test",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 12,
+                "request_id": 111,
+                "invoice_id": 111,
+                "offer_id": "a2371ae1ad0c787bed56f3a1e1d69833",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "f3e5051dfce94def40afb704ce99a75e05d0e9860f2522e2a90a3b5b9ee2e9b8",
+                "transaction_id": "660000111",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 12,
+                "request_id": 111,
+                "invoice_id": 111,
+                "offer_id": "a2371ae1ad0c787bed56f3a1e1d69833",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "f3e5051dfce94def40afb704ce99a75e05d0e9860f2522e2a90a3b5b9ee2e9b8",
+                "transaction_id": "660000111",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 48,
+                "committed": true
+            }
+        },
+        {
+            "case": "uncertain_to_paid",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 13,
+                "request_id": 112,
+                "invoice_id": 112,
+                "offer_id": "0c14279dbfd066bcd0c0c454e62f7610",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "9098ffdf9215a992e011eafa6954360a2d55dc464dcc4f4f186ed119788af396",
+                "transaction_id": "660000112",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 13,
+                "request_id": 112,
+                "invoice_id": 112,
+                "offer_id": "0c14279dbfd066bcd0c0c454e62f7610",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "9098ffdf9215a992e011eafa6954360a2d55dc464dcc4f4f186ed119788af396",
+                "transaction_id": "660000112",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 49,
+                "committed": true
+            }
+        },
+        {
+            "case": "uncertain_new_attempt",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 14,
+                "request_id": 113,
+                "invoice_id": 113,
+                "offer_id": "e5c048da6eec5835cfe916a6ad45b82f",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "71820102117a41093b239838128bb01acd28a6059a195b307b6e3cbc2f929f81",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 14,
+                "request_id": 113,
+                "invoice_id": 113,
+                "offer_id": "e5c048da6eec5835cfe916a6ad45b82f",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "71820102117a41093b239838128bb01acd28a6059a195b307b6e3cbc2f929f81",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 50,
+                "committed": true
+            }
+        },
+        {
+            "case": "uncertain_unchanged",
+            "result": "finance_payment_review",
+            "error": null,
+            "before": {
+                "id": 15,
+                "request_id": 114,
+                "invoice_id": 114,
+                "offer_id": "b9b55d0e16c8a9052f7bba5671651e63",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "842ff15e059b8f708548feb6d8678b9bebcbfa2ecaa4dc46e2513c07a01fba2d",
+                "transaction_id": "660000114",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 15,
+                "request_id": 114,
+                "invoice_id": 114,
+                "offer_id": "b9b55d0e16c8a9052f7bba5671651e63",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "842ff15e059b8f708548feb6d8678b9bebcbfa2ecaa4dc46e2513c07a01fba2d",
+                "transaction_id": "660000114",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:30"
+            },
+            "writer": null
+        },
+        {
+            "case": "uncertain_historical_capture",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 16,
+                "request_id": 115,
+                "invoice_id": 115,
+                "offer_id": "e7f9e7b239ad1041c459e4511be65f1f",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "efc31a3c30e83e96e2a01ad3424fec6208b723816627cff98d8d49850b4e4e94",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 16,
+                "request_id": 115,
+                "invoice_id": 115,
+                "offer_id": "e7f9e7b239ad1041c459e4511be65f1f",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "efc31a3c30e83e96e2a01ad3424fec6208b723816627cff98d8d49850b4e4e94",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "review_to_refunded",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 17,
+                "request_id": 116,
+                "invoice_id": 116,
+                "offer_id": "3953844cc1dfc510f0093f4aa6562710",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "964ae0b7fcf9249edf180fdfcedef3bdaf34a9f5bd111d2ac94a027da19b24ba",
+                "transaction_id": "660000116",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 17,
+                "request_id": 116,
+                "invoice_id": 116,
+                "offer_id": "3953844cc1dfc510f0093f4aa6562710",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "964ae0b7fcf9249edf180fdfcedef3bdaf34a9f5bd111d2ac94a027da19b24ba",
+                "transaction_id": "660000116",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 51,
+                "committed": true
+            }
+        },
+        {
+            "case": "review_to_voided",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 18,
+                "request_id": 117,
+                "invoice_id": 117,
+                "offer_id": "c062c9d348e28706bdecf8b9074ed367",
+                "amount_cents": 1250,
+                "status": "voided",
+                "request_key": "fab5f9fd5f12b4dd1a93cc9aa7bbae7360c7c3847b869ef25afc76d6cad103e3",
+                "transaction_id": "660000117",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 18,
+                "request_id": 117,
+                "invoice_id": 117,
+                "offer_id": "c062c9d348e28706bdecf8b9074ed367",
+                "amount_cents": 1250,
+                "status": "voided",
+                "request_key": "fab5f9fd5f12b4dd1a93cc9aa7bbae7360c7c3847b869ef25afc76d6cad103e3",
+                "transaction_id": "660000117",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 52,
+                "committed": true
+            }
+        },
+        {
+            "case": "review_to_declined",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 19,
+                "request_id": 118,
+                "invoice_id": 118,
+                "offer_id": "aab614f86752abc3765f17e6bc99c479",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "6c60f2daf01878c15c1bd26fe40e1541e6061ecf88a93568dbbbbd097de806e4",
+                "transaction_id": "660000118",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 19,
+                "request_id": 118,
+                "invoice_id": 118,
+                "offer_id": "aab614f86752abc3765f17e6bc99c479",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "6c60f2daf01878c15c1bd26fe40e1541e6061ecf88a93568dbbbbd097de806e4",
+                "transaction_id": "660000118",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 53,
+                "committed": true
+            }
+        },
+        {
+            "case": "review_to_sandbox_test",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 20,
+                "request_id": 119,
+                "invoice_id": 119,
+                "offer_id": "d90b9e23ce952732f8f9ec5df7c8544f",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "c6096211c6c31c73cf1a3977123a43c6dc55c7bc593a03bd731b85c016fd0e05",
+                "transaction_id": "660000119",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 20,
+                "request_id": 119,
+                "invoice_id": 119,
+                "offer_id": "d90b9e23ce952732f8f9ec5df7c8544f",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "c6096211c6c31c73cf1a3977123a43c6dc55c7bc593a03bd731b85c016fd0e05",
+                "transaction_id": "660000119",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 54,
+                "committed": true
+            }
+        },
+        {
+            "case": "review_to_paid",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 21,
+                "request_id": 120,
+                "invoice_id": 120,
+                "offer_id": "f69b1c4f7f207edccae32018f0d30d9e",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "814808918303864c4038bd931411edef07e91dc5d570d5ace04f8e6b7c747bfa",
+                "transaction_id": "660000120",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 21,
+                "request_id": 120,
+                "invoice_id": 120,
+                "offer_id": "f69b1c4f7f207edccae32018f0d30d9e",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "814808918303864c4038bd931411edef07e91dc5d570d5ace04f8e6b7c747bfa",
+                "transaction_id": "660000120",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 55,
+                "committed": true
+            }
+        },
+        {
+            "case": "review_new_attempt",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 22,
+                "request_id": 121,
+                "invoice_id": 121,
+                "offer_id": "219c7e937d2c4b04821d4c024273ed06",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "12219a9359f90419e01be191a54f0c90362e6f2811f0a223b8ccb6db929fdd7f",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 22,
+                "request_id": 121,
+                "invoice_id": 121,
+                "offer_id": "219c7e937d2c4b04821d4c024273ed06",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "12219a9359f90419e01be191a54f0c90362e6f2811f0a223b8ccb6db929fdd7f",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 56,
+                "committed": true
+            }
+        },
+        {
+            "case": "review_unchanged",
+            "result": "finance_payment_review",
+            "error": null,
+            "before": {
+                "id": 23,
+                "request_id": 122,
+                "invoice_id": 122,
+                "offer_id": "addfa5efd390689bc73d8b9d7cc836a4",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "b2cb81a40bf1a07448d414dc04c1ddd572116df6ca822cb066dc7da79c5652a2",
+                "transaction_id": "660000122",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 23,
+                "request_id": 122,
+                "invoice_id": 122,
+                "offer_id": "addfa5efd390689bc73d8b9d7cc836a4",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "b2cb81a40bf1a07448d414dc04c1ddd572116df6ca822cb066dc7da79c5652a2",
+                "transaction_id": "660000122",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:30"
+            },
+            "writer": null
+        },
+        {
+            "case": "review_historical_capture",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 24,
+                "request_id": 123,
+                "invoice_id": 123,
+                "offer_id": "b62918f5152f8250b88b5cd557654c98",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "dc067f654f30536e6e3c0ebbf6c4a8c4a147374448eef00cfbefb9e65d42757a",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 24,
+                "request_id": 123,
+                "invoice_id": 123,
+                "offer_id": "b62918f5152f8250b88b5cd557654c98",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "dc067f654f30536e6e3c0ebbf6c4a8c4a147374448eef00cfbefb9e65d42757a",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "new_attempt_current_capture",
+            "result": "finance_payment_review",
+            "error": null,
+            "before": {
+                "id": 25,
+                "request_id": 124,
+                "invoice_id": 124,
+                "offer_id": "727a07efff095e207185aba654a3afbe",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c10a249284764f129cdf022cf2b8ae6c583c935f724a3007626a09bdb03711b7",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 25,
+                "request_id": 124,
+                "invoice_id": 124,
+                "offer_id": "727a07efff095e207185aba654a3afbe",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "c10a249284764f129cdf022cf2b8ae6c583c935f724a3007626a09bdb03711b7",
+                "transaction_id": "660000124",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:30"
+            },
+            "writer": null
+        },
+        {
+            "case": "already_paid",
+            "result": "finance_payment_replay",
+            "error": null,
+            "before": {
+                "id": 26,
+                "request_id": 125,
+                "invoice_id": 125,
+                "offer_id": "3f7acc75fbd9c2b3a72c9e2379e99958",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "1329f54820f856bc53d5f0effbe9090f8a83dafa8e25a78c104329491ca64bc0",
+                "transaction_id": "660000125",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 26,
+                "request_id": 125,
+                "invoice_id": 125,
+                "offer_id": "3f7acc75fbd9c2b3a72c9e2379e99958",
+                "amount_cents": 1250,
+                "status": "paid",
+                "request_key": "1329f54820f856bc53d5f0effbe9090f8a83dafa8e25a78c104329491ca64bc0",
+                "transaction_id": "660000125",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "wrong_amount",
+            "result": "finance_payment_mismatch",
+            "error": null,
+            "before": {
+                "id": 27,
+                "request_id": 126,
+                "invoice_id": 126,
+                "offer_id": "d9cf0841e93e4ccd68cd941890ca6ba3",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "f08da1152ff8556e82a5f6d2d6ab88e67a631baf2cbf8df3378a2b65c114b8de",
+                "transaction_id": "660000126",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 27,
+                "request_id": 126,
+                "invoice_id": 126,
+                "offer_id": "d9cf0841e93e4ccd68cd941890ca6ba3",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "f08da1152ff8556e82a5f6d2d6ab88e67a631baf2cbf8df3378a2b65c114b8de",
+                "transaction_id": "660000126",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "conflicting_transaction",
+            "result": null,
+            "error": "Financing charge retains a different gateway transaction.",
+            "before": {
+                "id": 28,
+                "request_id": 127,
+                "invoice_id": 127,
+                "offer_id": "0fa76216a6cd304cbb123b584e502b42",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "cd08b05fd5ddd0d2b0fb97a60d81c32fff60db7d3ad94f2b92206f42109506df",
+                "transaction_id": "990000001",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after": {
+                "id": 28,
+                "request_id": 127,
+                "invoice_id": 127,
+                "offer_id": "0fa76216a6cd304cbb123b584e502b42",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "cd08b05fd5ddd0d2b0fb97a60d81c32fff60db7d3ad94f2b92206f42109506df",
+                "transaction_id": "990000001",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 57,
+                "committed": true
+            }
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "prefix": "fc_fin_snap_",
+    "source_sha256": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "function_sha256": {
+        "license_finance_charge_webhook_review": "d4921eb2e1db54dda4d4a62e2a94c7cf8106b1ccac856146af09b653e4474e73"
+    },
+    "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+    },
+    "contract_sha256": "1f54b01aeb7df7e991c472953e90bef42e27c047a895db198b92c6c2faa01bbc",
+    "schema_sha256": {
+        "license_finance_charges": "bd11ebfa4886cc7ae61fed3b6d1a0576d829e9dc665d6f4906df700e5e4eeab9",
+        "license_finance_charge_attempts": "cc3c234cda7531026c20312fb840b122965b767cf22385a8144ae9ed4b298bef"
+    },
+    "scope": "Actual canonical charge\/attempt DDL, PDO\/InnoDB, account mutex, transactions, exact invoice\/amount validator and separate-process competing commits. Synthetic parent records and gateway transaction details; no provider contact, installed HTTP or license-access claim."
+}

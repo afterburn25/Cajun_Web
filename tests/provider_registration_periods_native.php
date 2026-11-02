@@ -1,6 +1,8 @@
 <?php
 /** Real PDO/transactions and real typed reader over synthetic transport; never a live provider. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';require __DIR__.'/../site/includes/layout/admin.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -45,7 +47,7 @@ try{
     foreach([1,2] as $i)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Client '.$i,'periodclient'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     pr_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'Registration fixture',true,$secret,$password);provider_inventory_migrate($password);
     pr_ok('Fresh GET has no period migration or network',!pr_ready()&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['rper_provider_registration_period_reads'])&&$dns===0);
-    pr_deny('Unprepared refresh is refused before DNS',fn()=>pr_run());pr_deny('Preparation rejects incorrect owner password',fn()=>provider_registration_period_prepare('wrong'));
+    pr_deny('Unprepared refresh is refused before DNS',fn()=>pr_run());pr_deny('Revoked owner refuses: Preparation rejects incorrect owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_registration_period_prepare('wrong')));
     pr_actor(2);pr_deny('Administrator cannot prepare or read periods',fn()=>provider_registration_period_prepare($password));pr_actor();$_GET['support']='fixture';pr_deny('Support session cannot prepare periods',fn()=>provider_registration_period_prepare($password));$_GET=[];
     db()->beginTransaction();query('INSERT INTO '.table('settings').' (name,value) VALUES (?,?)',['period_caller_probe','uncommitted']);pr_deny('Preparation rejects inherited transaction before DDL',fn()=>provider_registration_period_prepare($password));pr_ok('Caller transaction stays open',db()->inTransaction());db()->rollBack();pr_ok('Caller rollback retains no probe or period table',!one('SELECT name FROM '.table('settings').' WHERE name=?',['period_caller_probe'])&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['rper_provider_registration_period_reads']));
     pr_ok('Interrupted preparation leaves only resumable empty tables',pr_fault('registration_period_prepared',fn()=>provider_registration_period_prepare($password))&&!pr_ready());

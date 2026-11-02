@@ -1,6 +1,8 @@
 <?php
 /** Extends the existing disposable MariaDB/MySQL recurring fixture; never a production seed. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 require_once __DIR__.'/../site/app/hosting/order_views.php';
 require_once __DIR__.'/../site/includes/layout/plans.php';
 require_once __DIR__.'/../site/includes/layout/service_orders.php';
@@ -28,7 +30,7 @@ function so_assess(ServiceOrderDocument $doc,?int $at=null):array {return recurr
 try{
     rb_staff();$beforeSchema=service_plans_json(all('SELECT * FROM '.table('studio_invoices').' ORDER BY id'));
     rb_ok('Order storage is not prepared by a read',!service_orders_ready());
-    rb_deny('Order setup rejects incorrect owner password',fn()=>service_orders_migrate('wrong'));
+    rb_deny('Revoked owner refuses: Order setup rejects incorrect owner password',fn()=>cwp_test_owner_revoked(fn()=>service_orders_migrate('wrong')));
     rb_staff(2);rb_deny('Financial administrator cannot prepare hosting orders',fn()=>service_orders_migrate($password));rb_staff();
     service_orders_migrate($password);rb_ok('Owner prepares additive empty order storage',service_orders_ready()&&rb_count('service_orders')===0);
     service_orders_migrate($password);rb_ok('Order preparation preserves existing invoices',$beforeSchema===service_plans_json(all('SELECT * FROM '.table('studio_invoices').' ORDER BY id')));
@@ -66,7 +68,7 @@ try{
     ledger_reverse($receipt,'Synthetic mistaken hosting payment',hash('sha256','hosting-reversal-9100'),ledger_review_hash(ledger_invoice($invoice)),$password);
     rb_ok('Receipt reversal immediately removes commercial readiness',!so_assess($accepted)['eligible']);
     $policy=['reason'=>'Synthetic private manual arrangement','expires_at'=>time()+3600];
-    rb_deny('Manual policy requires current owner password',fn()=>service_orders_change(rb_id(9100),1,1,rb_id(9112),'allow_manual',$policy,'wrong'));
+    rb_deny('Revoked owner refuses: Manual policy requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>service_orders_change(rb_id(9100),1,1,rb_id(9112),'allow_manual',$policy,'wrong')));
     rb_deny('Manual policy cannot exceed one day',fn()=>service_orders_change(rb_id(9100),1,1,rb_id(9112),'allow_manual',array_replace($policy,['expires_at'=>time()+90000]),$password));
     $paymentsBefore=service_plans_json(all('SELECT * FROM '.table('invoice_payments').' ORDER BY id'));
     $manual=service_orders_change(rb_id(9100),1,1,rb_id(9112),'allow_manual',$policy,$password);$a=so_assess($manual);

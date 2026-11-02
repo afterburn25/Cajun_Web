@@ -1,0 +1,19 @@
+{
+  "path": "initial-compatibility03/native.stderr.log",
+  "sha256": "3ab0df3bec543296e55b73bb9cec913690fdadb1b753b349ea6725f01ce7afde",
+  "bytes": 4162,
+  "lines": 56,
+  "exact_expected_patterns": {
+    "CWP [id] RuntimeException code=0 in financing_offers.php:261": 36,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:37": 2,
+    "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 2,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php(65) : eval()'d code:13": 2,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:26": 2,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:29": 2,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php(65) : eval()'d code:16": 2,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:8": 4,
+    "CWP [id] RuntimeException code=0 in finance_initial_receipts_boundaries.php:21": 4
+  },
+  "unexpected_lines": 0,
+  "explanation": "36 seed payment-link diagnostics; two each readback timeout, wrong contract, cancel error, cancel timeout, lost cancel reply and nonterminal result; four finalization-audit failures and four lost-create replies from the retained caller controls."
+}

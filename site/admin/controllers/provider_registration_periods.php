@@ -11,5 +11,5 @@ function provider_registration_period_admin_action(string $action):never {
         $result=provider_registration_period_refresh(posted('period_profile',32),(int)$revision,$password);
         flash(match($result['state']){'complete'=>'The observed registration period options were saved.','partial'=>'Some registration period entries could not be validated. The partial observation was saved.',default=>'Registration period options are unavailable from this attempt. The history is retained.'},$result['state']==='complete'?'success':'error');
     }else throw new InvalidArgumentException('Unknown registration period action.');
-    redirect(admin_url('provider-settings').'#registration-periods');
+    redirect(admin_url('provider-settings',['section'=>'domains']).'#registration-periods');
 }

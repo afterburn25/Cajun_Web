@@ -7,6 +7,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 
 def run_browser(env, browser):
@@ -27,9 +28,9 @@ def run_browser(env, browser):
     inbox_connections, provider_calls = inbox_server.connections, provider_server.calls
     check('Fresh install has ready empty submission tables', db("SELECT value FROM fresh_settings WHERE name='mail_submissions_schema_version'") == [{'value': '1'}] and all(not db('SELECT * FROM fresh_' + t) for t in ['mail_submissions', 'mail_submission_dispatches', 'mail_submission_results']))
     snapshot, jobs = db('SELECT * FROM ci_settings'), db('SELECT * FROM ci_studio_jobs')
-    for changes in [{'csrf': 'invalid', 'current_password': OWNER}, {'current_password': 'wrong'}]:
-        r = submit(owner, library, 'mail_submissions_setup', changes)
-        check('Submission setup requires CSRF and current password ' + str(list(changes)), not db("SELECT value FROM ci_settings WHERE name='mail_submissions_schema_version'") and ('session expired' in r.text.lower() or 'current password' in r.text))
+    r = submit(owner, library, 'mail_submissions_setup', {'csrf': 'invalid'})
+    check('Submission setup rejects invalid CSRF', not db("SELECT value FROM ci_settings WHERE name='mail_submissions_schema_version'") and 'session expired' in r.text.lower())
+    refuse_owner_action(env, owner, library, 'mail_submissions_setup', {})
     r = submit(owner, library, 'mail_submissions_setup', {'current_password': OWNER})
     check('Owner prepares additive submission storage preserving prior records', 'Email submission storage is ready' in r.text and db('SELECT * FROM ci_studio_jobs') == jobs and all(s in db('SELECT * FROM ci_settings') for s in snapshot))
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?', ['[]', uid])

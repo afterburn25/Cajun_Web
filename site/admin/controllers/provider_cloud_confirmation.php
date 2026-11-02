@@ -10,5 +10,5 @@ function provider_cloud_confirmation_admin_action(string $action):void {
         provider_cloud_confirmation_confirm(posted('request_id',32),posted('refresh_id',32),posted('review',64),posted('reviewed',1)==='1',$password);
         flash('Allocated package observed and assigned to the original client. Website health, current server location and billing activation are not verified.');
     }else throw new InvalidArgumentException('Unknown cloud confirmation action.');
-    redirect(admin_url('provider-settings'));
+    redirect(admin_url('provider-settings',['section'=>'cloud']));
 }

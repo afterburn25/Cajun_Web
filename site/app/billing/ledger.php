@@ -48,15 +48,21 @@ function ledger_receive(int $invoice,int $amount,string $method,string $referenc
         $paid=$balance['paid_cents']+$amount;$full=$paid===(int)$i['amount_cents'];
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',[$full?'paid':'issued',$full?'Payment history entry '.$id:'',$full?gmdate('Y-m-d H:i:s'):null,$invoice]);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
+        require_once CWP_CODE_ROOT.'/app/billing/finance_recovery.php';
+        license_finance_recovery_receipt($invoice,(int)$id,(int)$actor['id']);
         return $id;
     }));
     $fresh=one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$invoice]);
     if($fresh&&$fresh['status']==='paid'){try{license_fulfill_invoice($invoice);}catch(Throwable){/* Fulfilment failure must not roll back the recorded receipt. Admin can retry from the license page. */}}
+    try{
+        require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+        license_financing_sync_by_invoice($invoice);
+    }catch(Throwable $financeError){report_error($financeError);/* Payment remains authoritative even if license projection needs owner review. */}
     return (int)$id;
 }
 function ledger_reverse(int $entry,string $reason,string $key,string $review,#[\SensitiveParameter] string $password): int {
     ledger_key($key,$review);$reason=trim($reason);if(strlen($reason)<10||strlen($reason)>500)throw new InvalidArgumentException('Explain the recording correction (10–500 characters).');
-    return staff_locked(fn()=>staff_transaction(function() use($entry,$reason,$key,$review,$password): int {
+    $id=staff_locked(fn()=>staff_transaction(function() use($entry,$reason,$key,$review,$password): int {
         $actor=payments_owner($password);ledger_require();$hash=hash('sha256',json_encode([$entry,$reason,$review],JSON_THROW_ON_ERROR));
         $old=one('SELECT * FROM '.table('invoice_payments').' WHERE request_key=?',[$key]);
         if($old){if((int)$old['actor_id']!==(int)$actor['id']||$old['kind']!=='reversal'||!hash_equals($old['request_hash'],$hash))throw new RuntimeException('This correction request was already used with different details.');return (int)$old['id'];}
@@ -70,6 +76,14 @@ function ledger_reverse(int $entry,string $reason,string $key,string $review,#[\
         query('UPDATE '.table('studio_invoices')." SET status='issued',paid_note='',paid_at=NULL WHERE id=?",[$i['id']]);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$i['id']]);return $id;
     }));
+    try{
+        $corrected=one('SELECT invoice_id FROM '.table('invoice_payments').' WHERE id=?',[$id]);
+        if($corrected){
+            require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+            license_financing_sync_by_invoice((int)$corrected['invoice_id']);
+        }
+    }catch(Throwable $financeError){report_error($financeError);}
+    return (int)$id;
 }
 /** Ownership is checked against both the current project and the immutable entry when printing. */
 function ledger_client_invoice(int $id): array {

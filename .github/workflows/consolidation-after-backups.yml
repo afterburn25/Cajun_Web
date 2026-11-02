@@ -1,0 +1,140 @@
+name: Combined application and backup consolidation
+on:
+  push:
+    branches: [chatgpt/1261-main-reconcile-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: combined-backups-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/1261-main-reconcile-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify committed consolidation without rewriting branches
+        id: record
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git merge-base --is-ancestor 771556e701103a3db9f757da05da9b2357a4247b HEAD
+          git merge-base --is-ancestor 1c44ca120e7768998fafa720b3e1c4c85990c330 HEAD
+          git merge-base --is-ancestor 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Preserve tracked source for independent inspection
+        run: |
+          mkdir -p qa/consolidation-source
+          git archive --format=tar.gz HEAD > qa/consolidation-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/consolidation-source/identity.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: combined-source-${{ steps.record.outputs.sha }}
+          path: qa/consolidation-source/
+          if-no-files-found: error
+          retention-days: 14
+  portable:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain all historical assertions and canonical source
+        run: |
+          mkdir -p qa/consolidation-portable
+          python3 tools/build.py --refresh
+          git diff --exit-code
+          python3 tests/acceptance_artifacts_test.py --report qa/consolidation-portable/helpers.json
+          python3 tools/integration/portable_checks.py --root . --out qa/consolidation-portable
+          php tests/master_portal_policy.php
+          php tests/current_owner_authority_contract.php > qa/consolidation-portable/authority.json
+          php tests/checkout_authority_contract.php > qa/consolidation-portable/checkout-authority.json
+          php tests/backups/run.php > qa/consolidation-portable/backups.log
+          php tests/backups/prune_atomicity.php > qa/consolidation-portable/prune.json
+          python3 tests/build_guards.py > qa/consolidation-portable/build-guards.log
+          python3 tools/check_docs.py > qa/consolidation-portable/docs.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: combined-portable-${{ needs.assemble.outputs.sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        database: [mysql,mariadb]
+        shard: [0,1,2]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306','43319:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_IMAGE: cwp-consolidation-php:8.4
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.sha }}
+          persist-credentials: false
+      - name: Prepare isolated native runtime and strictly named disposable databases
+        run: |
+          docker build -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");$p->exec("CREATE DATABASE cwp_checkout_test");$p->exec("GRANT ALL ON cwp_checkout_test.* TO ". $p->quote("cwp_test")."@".$p->quote("%"));exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Run complete existing suites and collect failures without calling them successes
+        run: python3 tests/consolidation_native.py --shard ${{ matrix.shard }}
+      - name: Preserve all named results and diagnostics, not private database bytes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: combined-native-${{ matrix.database }}-${{ matrix.shard }}-${{ needs.assemble.outputs.sha }}
+          path: qa/consolidation-native/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [assemble,portable,native]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'The exact combined baseline passed portable and63 full native suites per database. This is not deployment or approval of unintegrated feature groups. Full installed/upgrade/combined-release checks remain separate.' >> "$GITHUB_STEP_SUMMARY"

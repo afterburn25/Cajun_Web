@@ -1,6 +1,7 @@
 <?php
 /** Disposable native database checks for local notice storage; no external mail operation. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/app/mail/notices.php';
 $private=__DIR__.'/../test-runtime/notice-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
@@ -82,7 +83,7 @@ try {
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Notice staff '.$i,'notice'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>['mail.read'],3=>['mail.send'],4=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,$user===4?'owner':'administrator',json_encode($permissions)]);
     save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
-    nt_deny('Setup requires current owner password',fn()=>mail_notices_migrate('wrong'));
+    nt_deny('Setup refuses revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>mail_notices_migrate('')));
     nt_actor(2);nt_deny('Mail reader cannot prepare storage',fn()=>mail_notices_migrate($password));nt_actor();
     nt_deny('Count refuses unprepared storage',fn()=>mail_notices_count());
     nt_ok('Strict setup audit rolls back readiness',nt_audit_failure(fn()=>mail_notices_migrate($password),'notice_setup')&&!mail_notices_ready());

@@ -1,0 +1,9 @@
+{
+  "started_at_utc": "2026-11-02T03:26:15.811904+00:00",
+  "completed_at_utc": "2026-11-02T03:26:21.877015+00:00",
+  "exit_code": 0,
+  "report_sha256": "811477ac78be3b2ca16ad5b2d0aaf24376afa6993415032e27c7a3144b16e4fe",
+  "helper_sha256": "431cf8674c71201d8fbb6a16be63b6f3a9663c8001df9d3bd85ede2215e88085",
+  "wrapper_sha256": "bbd8cabe9aff8f1fb82edab76ddf7d3cf997794a00257d094405f7e4d1b3e713",
+  "original_evidence_overwritten": false
+}

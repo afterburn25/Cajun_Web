@@ -1,0 +1,37 @@
+{
+  "checked_at_utc": "2026-11-02T03:28:33.607513+00:00",
+  "php_lint": {
+    "path": "tests/foreign_key_metadata_native_cases.php",
+    "passed": true
+  },
+  "documentation_check": {
+    "passed": true,
+    "required_documents": 12,
+    "markdown_files": 346,
+    "local_links": 2118,
+    "heading_links": 41
+  },
+  "git_diff_check": {
+    "passed": true
+  },
+  "local_native": {
+    "passed": true,
+    "named_checks": 172,
+    "false_entries": 0,
+    "stderr_bytes": 0,
+    "helper_sha256": "431cf8674c71201d8fbb6a16be63b6f3a9663c8001df9d3bd85ede2215e88085"
+  },
+  "assertion_calls_preserved": {
+    "assertion_and_comparison_call_count": 34,
+    "all_call_bytes_and_order_unchanged": true,
+    "calls_sha256": "dd62f22aaf530911983ee789c91a701c2e28aef5f4fc18ef4814099ac776f437"
+  },
+  "browser_or_full_native_replayed": false,
+  "mysql_current_source_matrix": "Pending publication and maintained CI",
+  "validation_kind": "Self-checks plus separately retained independent helper review",
+  "initial_staged_evidence_diff_check": {
+    "passed": false,
+    "reason": "A raw unified diff contains single-space context lines, which the repository whitespace check flags when added as a text artifact",
+    "correction": "Store the exact same raw diff losslessly in a JSON string; raw patch SHA256 is unchanged"
+  }
+}

@@ -1,0 +1,146 @@
+{
+    "passed": true,
+    "scope": "Actual PHP session/role/CSRF/field code; database reads modeled; no native SQL or production actions",
+    "checks": [
+        {
+            "name": "Valid current owner session matches exact actor",
+            "passed": true
+        },
+        {
+            "name": "Owner boundary accepts no repeated password",
+            "passed": true
+        },
+        {
+            "name": "Legacy password argument is not an alternate authentication mechanism",
+            "passed": true
+        },
+        {
+            "name": "Different actor is denied",
+            "passed": true
+        },
+        {
+            "name": "Captured obsolete actor version is denied",
+            "passed": true
+        },
+        {
+            "name": "Actor missing version is denied",
+            "passed": true
+        },
+        {
+            "name": "Empty actor version is denied",
+            "passed": true
+        },
+        {
+            "name": "Anonymous session is denied",
+            "passed": true
+        },
+        {
+            "name": "Anonymous owner action is denied",
+            "passed": true
+        },
+        {
+            "name": "Idle session is denied",
+            "passed": true
+        },
+        {
+            "name": "Absolute-expired session is denied",
+            "passed": true
+        },
+        {
+            "name": "Credential rotation revokes captured session",
+            "passed": true
+        },
+        {
+            "name": "Deleted administrator is denied",
+            "passed": true
+        },
+        {
+            "name": "Disabled administrator is denied",
+            "passed": true
+        },
+        {
+            "name": "Ordinary administrator cannot become owner by omitting password",
+            "passed": true
+        },
+        {
+            "name": "Malformed permission profile is denied",
+            "passed": true
+        },
+        {
+            "name": "Support context cannot reuse owner session",
+            "passed": true
+        },
+        {
+            "name": "Owner boundary refuses support context",
+            "passed": true
+        },
+        {
+            "name": "Explicit support query is denied even when empty",
+            "passed": true
+        },
+        {
+            "name": "Missing CSRF remains denied",
+            "passed": true
+        },
+        {
+            "name": "Wrong CSRF remains denied",
+            "passed": true
+        },
+        {
+            "name": "Current CSRF remains accepted",
+            "passed": true
+        },
+        {
+            "name": "Repeated input is absent from markup: current_password",
+            "passed": true
+        },
+        {
+            "name": "Repeated input is absent from markup: owner_password",
+            "passed": true
+        },
+        {
+            "name": "Real sign-in/new credential field remains: password",
+            "passed": true
+        },
+        {
+            "name": "Real sign-in/new credential field remains: new_password",
+            "passed": true
+        },
+        {
+            "name": "Real sign-in/new credential field remains: confirm_password",
+            "passed": true
+        },
+        {
+            "name": "Real sign-in/new credential field remains: general_key",
+            "passed": true
+        },
+        {
+            "name": "Real sign-in/new credential field remains: smtp_password",
+            "passed": true
+        },
+        {
+            "name": "Real sign-in/new credential field remains: auth_client_key",
+            "passed": true
+        },
+        {
+            "name": "Action fields retain CSRF",
+            "passed": true
+        },
+        {
+            "name": "Only deliberate customer credential change renders a current-password field",
+            "passed": true
+        },
+        {
+            "name": "Customer credential exception is bound to its own action and CSRF",
+            "passed": true
+        },
+        {
+            "name": "No current-password exception is granted to administrator pages",
+            "passed": true
+        },
+        {
+            "name": "Password verification is limited to actual login and customer credential changes",
+            "passed": true
+        }
+    ]
+}

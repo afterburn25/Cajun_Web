@@ -1,0 +1,53 @@
+<?php
+/** Authorize.net JSON API client, server secrets kept outside the repository. */
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+function software_anet_production_enabled():bool{
+    return defined('CWP_SOFTWARE_PRODUCTION_PAYMENTS')
+        && CWP_SOFTWARE_PRODUCTION_PAYMENTS===true
+        && setting('software_gateway_production_reviewed')==='1';
+}
+function software_anet_settings():array{
+    require_once CWP_CODE_ROOT.'/app/billing/payments.php';
+    if(!payments_ready())throw new RuntimeException('Prepare the existing payment gateway settings first.');
+    $mode=(string)setting('software_gateway_mode');
+    if(!in_array($mode,['sandbox','production'],true))throw new RuntimeException('Software checkout is disabled.');
+    if($mode==='production'&&!software_anet_production_enabled()){
+        throw new RuntimeException('Production checkout is locked until explicit code-level and owner-reviewed activation.');
+    }
+    $record=one('SELECT credentials,validation FROM '.table('payment_gateways').' WHERE environment=?',[$mode]);
+    if(!$record||!is_string($record['credentials'])||$record['credentials']===''){
+        throw new RuntimeException('Save gateway credentials in the existing payment settings.');
+    }
+    $secrets=payments_unseal($mode,$record['credentials']);
+    if($secrets['api_login_id']===''||$secrets['transaction_key']===''){
+        throw new RuntimeException('Gateway configuration is incomplete.');
+    }
+    return ['mode'=>$mode,'login'=>$secrets['api_login_id'],'key'=>$secrets['transaction_key'],
+        'client_key'=>$secrets['public_client_key']];
+}
+function software_anet_execute(string $method,array $request):array{
+    $methods=['createTransactionRequest','getTransactionDetailsRequest','ARBCreateSubscriptionRequest',
+        'ARBGetSubscriptionRequest','ARBCancelSubscriptionRequest','createCustomerProfileRequest'];
+    if(!in_array($method,$methods,true))throw new InvalidArgumentException('Unsupported gateway method.');
+    $cfg=software_anet_settings();
+    if(!function_exists('curl_init'))throw new RuntimeException('cURL is required.');
+    $url=$cfg['mode']==='sandbox'?'https://apitest.authorize.net/xml/v1/request.api':
+        'https://api.authorize.net/xml/v1/request.api';
+    $payload=json_encode([$method=>['merchantAuthentication'=>[
+        'name'=>$cfg['login'],'transactionKey'=>$cfg['key']]]+$request],JSON_THROW_ON_ERROR);
+    $ch=curl_init($url);
+    if(!$ch)throw new RuntimeException('Gateway transport unavailable.');
+    try{
+        curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>$payload,CURLOPT_RETURNTRANSFER=>true,
+            CURLOPT_HTTPHEADER=>['Content-Type: application/json'],CURLOPT_TIMEOUT=>20,CURLOPT_CONNECTTIMEOUT=>8,
+            CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_FOLLOWLOCATION=>false]);
+        $body=curl_exec($ch);$status=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);
+        if($status!==200||!is_string($body)){
+            throw new RuntimeException('Payment outcome unknown. Reconcile at the gateway before another attempt.');
+        }
+        $reply=json_decode(ltrim($body,"\xEF\xBB\xBF"),true,32,JSON_THROW_ON_ERROR);
+        if(!is_array($reply))throw new RuntimeException('Unrecognized gateway response.');
+        return $reply;
+    }finally{curl_close($ch);}
+}

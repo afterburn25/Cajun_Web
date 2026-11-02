@@ -41,7 +41,7 @@ function hosting_fulfillment_view(string $orderId,int $client):array {
         $ready=hosting_fulfillment_setup_ready();$profileCurrent=false;
         try{[, $profile]=provider_checks_authority($binding['profile_id'],$binding['profile_revision']);$profileCurrent=hash_equals($binding['credential_sha256'],hash('sha256',$profile['credentials']));}
         catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}
-        $view=['ready'=>$ready,'confirmation_ready'=>provider_inventory_ready(),'order'=>$order,'link_hash'=>$link['binding_sha256'],'account_id'=>$link['account_id'],'profile_current'=>$profileCurrent,'package'=>$binding['package'],'reseller_id'=>$binding['request']['params']['resellerId'],'eligible'=>service_orders_assess($order,time())['eligible'],'mode'=>'prepare','hosting_revision'=>$journal->revision(),'dispatch'=>null];
+        $view=['ready'=>$ready,'confirmation_ready'=>provider_inventory_ready(),'order'=>$order,'link_hash'=>$link['binding_sha256'],'account_id'=>$link['account_id'],'profile_current'=>$profileCurrent,'package'=>$binding['package'],'reseller_id'=>$binding['request']['params']['resellerId'],'eligible'=>service_orders_assess($order,time())['eligible'],'mode'=>'prepare','hosting_revision'=>$journal->revision(),'dispatch'=>null,'assignment'=>null];
         if(!$ready)return $view;
         hosting_fulfillment_require();hosting_fulfillment_history($order,$link);$journal=hosting_operations_validate(hosting_records_row($link['account_id'],$client));
         $view['hosting_revision']=$journal->revision();$account=$journal->account();
@@ -68,6 +68,32 @@ function hosting_fulfillment_view(string $orderId,int $client):array {
                 // A candidate shown for review is verified again, with its original fingerprint, on POST.
                 if($p['status']==='accepted_pending'&&is_string($p['external_id'])&&preg_match('/\A[1-9][0-9]{0,17}\z/',$p['external_id']))$view['dispatch']['package_id']=$p['external_id'];
             }
+        }
+        // Navigation only: confirmation and explicit client assignment are separate records.
+        if($view['mode']==='active' && ($view['dispatch']['outcome']??null)==='accepted_pending'
+            && ($view['dispatch']['confirmation']['reason']??null)==='confirmed'
+            && $account->providerRef()===$view['dispatch']['package_id']){
+            $packageId=$view['dispatch']['package_id'];
+            $clientRow=one('SELECT id,name,active FROM '.table('studio_clients').' WHERE id=?',[$client]);
+            $assignment=['client_id'=>$client,'client_name'=>$clientRow['name']??('Client #'.$client),'package_id'=>$packageId,'state'=>'inventory_unavailable','observed_at'=>null,'url'=>admin_url('provider-settings').'#provider-inventory'];
+            if($view['confirmation_ready']){
+                $linked=one('SELECT client_id,profile_revision,key_fingerprint FROM '.table('provider_package_links').' WHERE profile_id=? AND package_id=?',[$binding['profile_id'],$packageId]);
+                $observation=provider_inventory_observation($binding['profile_id']);
+                $observed=$observation!==null && one('SELECT id FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$packageId])!==null;
+                $assignment['observed_at']=$observation['started_at']??null;
+                if($profileCurrent && $observed)$assignment['url']=admin_url('provider-settings').'#provider-package-'.$packageId;
+                $assignment['state']=match(true){
+                    $linked!==null && (int)$linked['client_id']!==$client=>'different_client',
+                    !$profileCurrent=>'connection_changed',
+                    $observation===null || (int)$observation['profile_revision']!==(int)$profile['revision']=>'refresh_required',
+                    !$observed=>'not_observed',
+                    $linked===null=>'unlinked',
+                    !provider_inventory_link_context_matches($linked,$profile,$observation)=>'stale',
+                    default=>'linked',
+                };
+            }
+            if(!$clientRow || (int)$clientRow['active']!==1)$assignment['state']='client_unavailable';
+            $view['assignment']=$assignment;
         }
         return $view;
     });

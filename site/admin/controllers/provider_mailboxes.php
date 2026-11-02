@@ -14,5 +14,5 @@ function provider_mailbox_admin_action(string $action):never {
     }elseif($action==='provider_inventory_mailbox_create'){
         provider_mailbox_submit(null,$password);flash('Your mailbox request is recorded below. Check its result before trying again.');
     }else throw new InvalidArgumentException('Unknown mailbox action.');
-    redirect(admin_url('provider-settings').'#mailbox-management');
+    redirect(admin_url('provider-settings',['section'=>'domains']).'#mailbox-management');
 }

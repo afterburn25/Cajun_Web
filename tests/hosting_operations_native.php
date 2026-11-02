@@ -1,6 +1,8 @@
 <?php
 /** Disposable native MariaDB fixtures. Synthetic journals are not provider evidence. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -81,7 +83,7 @@ try {
     ho_deny('Operation setup requires prepared provider storage',fn()=>hosting_operations_migrate($password));provider_settings_migrate($password);
     $profileId=provider_settings_save('',0,'Synthetic provider',true,'synthetic-local-only-key',$password);
     $keyBytes=file_get_contents($private.'/provider-master.key');$credential=provider_settings_load($profileId)['credentials'];
-    ho_deny('Operation setup requires current owner password',fn()=>hosting_operations_migrate('wrong'));
+    ho_deny('Revoked owner refuses: Operation setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>hosting_operations_migrate('wrong')));
     ho_actor(2);ho_deny('Administrator cannot prepare operation storage',fn()=>hosting_operations_migrate($password));ho_actor();
     save_setting('hosting_operations_schema_version','future');ho_deny('Future operation schema is preserved and refused',fn()=>hosting_operations_migrate($password));query('DELETE FROM '.table('settings').' WHERE name=?',['hosting_operations_schema_version']);
     foreach(hosting_operations_schema('hoci_') as $sql)db()->exec($sql);
@@ -93,7 +95,7 @@ try {
     ho_ok('Operation setup audit failure rolls back readiness',ho_audit_failure(fn()=>hosting_operations_migrate($password))&&!hosting_operations_ready());hosting_operations_migrate($password);hosting_operations_migrate($password);
     ho_ok('Operation setup creates empty ready storage',hosting_operations_ready()&&!all('SELECT * FROM '.table('hosting_dispatches'))&&!all('SELECT * FROM '.table('hosting_operation_results'))&&!all('SELECT * FROM '.table('hosting_resources')));
     $id=ho_id(1);hosting_records_create($id,1,$package,$password);$before=ho_all();
-    ho_deny('Claim requires current password',fn()=>hosting_operations_claim($id,1,0,ho_id(100),'hosting.provision',[],$profileId,1,'wrong'));
+    ho_deny('Revoked owner refuses: Claim requires current password',fn()=>cwp_test_owner_revoked(fn()=>hosting_operations_claim($id,1,0,ho_id(100),'hosting.provision',[],$profileId,1,'wrong')));
     ho_deny('Claim refuses wrong client',fn()=>hosting_operations_claim($id,2,0,ho_id(100),'hosting.provision',[],$profileId,1,$password));
     ho_deny('Claim refuses stale provider revision',fn()=>hosting_operations_claim($id,1,0,ho_id(100),'hosting.provision',[],$profileId,2,$password));
     ho_deny('Claim refuses unknown operation',fn()=>ho_claim($id,100,'hosting.rebuild'));

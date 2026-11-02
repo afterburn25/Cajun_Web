@@ -1,6 +1,8 @@
 <?php
 /** Native catalog and invoice acceptance against disposable InnoDB fixtures only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='catalogci_';
@@ -18,7 +20,7 @@ try{
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[1,'Catalog project','Existing project','Existing milestones',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
     $before=one('SELECT * FROM '.table('studio_clients'));
     cat_ok('Catalog public fallback before migration',catalog_public()===[]);
-    cat_deny('Catalog setup requires correct owner password',fn()=>catalog_migrate('bad'));
+    cat_deny('Revoked owner refuses: Catalog setup requires correct owner password',fn()=>cwp_test_owner_revoked(fn()=>catalog_migrate('bad')));
     db()->exec(catalog_schema('catalogci_')['catalog_products']);db()->exec('ALTER TABLE '.table('catalog_products').' MODIFY amount_cents VARCHAR(12) NULL');
     cat_deny('Incompatible catalog schema rejected without replacement',fn()=>catalog_migrate($password));
     cat_ok('Incompatible existing column retained',one('SHOW COLUMNS FROM '.table('catalog_products')." LIKE 'amount_cents'")['Type']==='varchar(12)');

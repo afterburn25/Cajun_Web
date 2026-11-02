@@ -1,0 +1,61 @@
+name: Published v1.25 to candidate diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: published-125-to-candidate-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  CWP_TEST_DATABASE: cwp_test
+  CWP_SOURCE_SHA: ${{ github.sha }}
+jobs:
+  upgrade-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports: ['3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Refuse same-version certification
+        run: |
+          test "$(tr -d '\r\n' < VERSION)" != "1.25.0" || {
+            echo "Assign the next release version before running published v1.25 upgrade acceptance."
+            exit 1
+          }
+      - name: Install release diagnostic runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-zip php8.3-curl php8.3-mbstring
+          printf 'CWP_TEST_PORT=%s\n' "${{ job.services.mariadb.ports[3306] }}" >> "$GITHUB_ENV"
+      - name: Build and bind published v1.25 baseline to exact candidate
+        run: python3 tests/release_next_from_125.py
+      - name: Verify source remains unchanged
+        if: always()
+        run: git diff --exit-code HEAD
+      - name: Upload bounded diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-125-to-candidate-${{ github.run_id }}-${{ github.sha }}
+          path: qa/release-next-from-125-results.json
+          retention-days: 14
+          if-no-files-found: warn

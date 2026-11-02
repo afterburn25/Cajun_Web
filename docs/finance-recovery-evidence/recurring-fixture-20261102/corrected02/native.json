@@ -1,0 +1,2599 @@
+{
+    "passed": true,
+    "scope": "Synthetic MariaDB native recurring consent\/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.",
+    "php": "8.3.6",
+    "checks": [
+        {
+            "name": "Existing installation requires explicit recurring setup",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Setup rejects wrong owner password",
+            "passed": true
+        },
+        {
+            "name": "Financial administrator cannot run owner setup",
+            "passed": true
+        },
+        {
+            "name": "Owner setup creates empty recurring storage",
+            "passed": true
+        },
+        {
+            "name": "Repeated setup preserves empty storage",
+            "passed": true
+        },
+        {
+            "name": "Unexpected storage index refuses adoption",
+            "passed": true
+        },
+        {
+            "name": "Staff offer pins exact retained active service terms",
+            "passed": true
+        },
+        {
+            "name": "Exact offer retry is unchanged",
+            "passed": true
+        },
+        {
+            "name": "Changed offer identity refuses",
+            "passed": true
+        },
+        {
+            "name": "Overlapping undecided offer refuses",
+            "passed": true
+        },
+        {
+            "name": "Partial staff permission refuses 3",
+            "passed": true
+        },
+        {
+            "name": "Partial staff permission refuses 4",
+            "passed": true
+        },
+        {
+            "name": "Both financial and client permissions allow staff read",
+            "passed": true
+        },
+        {
+            "name": "Staff cannot manufacture client acceptance",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot read agreement",
+            "passed": true
+        },
+        {
+            "name": "Client decision requires explicit confirmation",
+            "passed": true
+        },
+        {
+            "name": "Support parameter cannot consent",
+            "passed": true
+        },
+        {
+            "name": "Consent must bind the exact presented terms",
+            "passed": true
+        },
+        {
+            "name": "Actual client acceptance is retained",
+            "passed": true
+        },
+        {
+            "name": "Exact decision retry does not append again",
+            "passed": true
+        },
+        {
+            "name": "Conflicting decision identity refuses",
+            "passed": true
+        },
+        {
+            "name": "Revoked client session refuses replay",
+            "passed": true
+        },
+        {
+            "name": "Expired client idle session refuses read",
+            "passed": true
+        },
+        {
+            "name": "Expired absolute client session refuses read",
+            "passed": true
+        },
+        {
+            "name": "Audit failure rolls back activation",
+            "passed": true
+        },
+        {
+            "name": "Future activation preserves client consent",
+            "passed": true
+        },
+        {
+            "name": "Future unstarted period cannot be invoiced",
+            "passed": true
+        },
+        {
+            "name": "Stale lifecycle revision refuses",
+            "passed": true
+        },
+        {
+            "name": "Actual client end overrides later planned resume",
+            "passed": true
+        },
+        {
+            "name": "Replacement cannot overlap original end boundary",
+            "passed": true
+        },
+        {
+            "name": "Replacement keeps prior history and new consent requirement",
+            "passed": true
+        },
+        {
+            "name": "Withdrawing an intermediate offer cannot bypass earlier end cutoff",
+            "passed": true
+        },
+        {
+            "name": "Historical event corruption refuses newer agreement reads",
+            "passed": true
+        },
+        {
+            "name": "Missing generation anchor refuses",
+            "passed": true
+        },
+        {
+            "name": "Synthetic historical active agreement passes native integrity",
+            "passed": true
+        },
+        {
+            "name": "Invoice audit failure rolls back invoice and permanent obligation",
+            "passed": true
+        },
+        {
+            "name": "Invoice mapping failure rolls back inserted invoice",
+            "passed": true
+        },
+        {
+            "name": "Eligible period creates exact existing-ledger invoice",
+            "passed": true
+        },
+        {
+            "name": "Identical invoice request returns original without duplication",
+            "passed": true
+        },
+        {
+            "name": "Different request cannot duplicate invoiced period",
+            "passed": true
+        },
+        {
+            "name": "Conflicting request ID cannot select another period",
+            "passed": true
+        },
+        {
+            "name": "Changed invoice amount refuses current ledger use",
+            "passed": true
+        },
+        {
+            "name": "Corrupt invoice binding refuses replay",
+            "passed": true
+        },
+        {
+            "name": "Paused source refuses new invoices",
+            "passed": true
+        },
+        {
+            "name": "Paused source does not invalidate an existing obligation",
+            "passed": true
+        },
+        {
+            "name": "Current authorized exact retry preserves existing invoice after source pause",
+            "passed": true
+        },
+        {
+            "name": "Resumed intact source permits its next agreed invoice",
+            "passed": true
+        },
+        {
+            "name": "Concurrent distinct requests create exactly one period invoice",
+            "passed": true
+        },
+        {
+            "name": "Inactive client blocks invoice replay",
+            "passed": true
+        },
+        {
+            "name": "Staff can inspect inactive client retained agreement",
+            "passed": true
+        },
+        {
+            "name": "Revoked staff permissions refuse saved agreement",
+            "passed": true
+        },
+        {
+            "name": "Populated repeated migration preserves agreements and invoices",
+            "passed": true
+        },
+        {
+            "name": "Unknown version refuses setup",
+            "passed": true
+        },
+        {
+            "name": "Offer cannot reprice the agreed service",
+            "passed": true
+        },
+        {
+            "name": "Offer cannot change subscribed cadence",
+            "passed": true
+        },
+        {
+            "name": "Offer cannot use another client project",
+            "passed": true
+        },
+        {
+            "name": "Offer cannot use another clients subscription",
+            "passed": true
+        },
+        {
+            "name": "Staff support parameter refuses invoices",
+            "passed": true
+        },
+        {
+            "name": "Active support context refuses staff reads",
+            "passed": true
+        },
+        {
+            "name": "Expired staff session refuses invoice replay",
+            "passed": true
+        },
+        {
+            "name": "Changed project owner refuses recurring agreement reads",
+            "passed": true
+        },
+        {
+            "name": "Changed project owner refuses existing invoice balance",
+            "passed": true
+        },
+        {
+            "name": "Ambiguous retained client consent attribution refuses invoice balance",
+            "passed": true
+        },
+        {
+            "name": "Missing permanent mapping refuses recurring invoice balance",
+            "passed": true
+        },
+        {
+            "name": "Lost mapping plus changed reference cannot bypass retained recurring origin",
+            "passed": true
+        },
+        {
+            "name": "Lost mapping plus changed reference refuses a new manual receipt",
+            "passed": true
+        },
+        {
+            "name": "Lost mapping plus changed reference refuses a new payment request",
+            "passed": true
+        },
+        {
+            "name": "Restoring lost binding restores original invoice and audit exactly",
+            "passed": true
+        },
+        {
+            "name": "Missing version marker cannot bypass retained recurring mapping",
+            "passed": true
+        },
+        {
+            "name": "Missing version marker refuses recurring manual receipt",
+            "passed": true
+        },
+        {
+            "name": "Missing version marker refuses recurring payment request",
+            "passed": true
+        },
+        {
+            "name": "Missing marker and mapping still consult independent recurring origin",
+            "passed": true
+        },
+        {
+            "name": "Version marker restoration retains original recurring invoice and history",
+            "passed": true
+        },
+        {
+            "name": "Retained issuance origin prevents another request duplicating a lost period",
+            "passed": true
+        },
+        {
+            "name": "Lost period refusal retains original invoice and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing independent issuance origin refuses intact invoice mapping",
+            "passed": true
+        },
+        {
+            "name": "Ambiguous duplicate issuance origin refuses invoice use",
+            "passed": true
+        },
+        {
+            "name": "Origin history restoration preserves original agreement invoice and audit",
+            "passed": true
+        },
+        {
+            "name": "Oversized retained agreement refuses before parsing",
+            "passed": true
+        },
+        {
+            "name": "Corrupt current source refuses historical invoice use",
+            "passed": true
+        },
+        {
+            "name": "Negative invoice period refuses",
+            "passed": true
+        },
+        {
+            "name": "Unrepresentable invoice period refuses",
+            "passed": true
+        },
+        {
+            "name": "Future invoice period refuses",
+            "passed": true
+        },
+        {
+            "name": "Canonical command input survives reverse argument order",
+            "passed": true
+        },
+        {
+            "name": "Canonical reordered action retry remains a no-op",
+            "passed": true
+        },
+        {
+            "name": "Later lifecycle does not invalidate originally issued invoice prefix",
+            "passed": true
+        },
+        {
+            "name": "Original invoice request replays after later lifecycle",
+            "passed": true
+        },
+        {
+            "name": "Cancelled source refuses new invoice",
+            "passed": true
+        },
+        {
+            "name": "Cancelled source refuses resuming billing",
+            "passed": true
+        },
+        {
+            "name": "Cancelled source retains invoice history",
+            "passed": true
+        },
+        {
+            "name": "Staff can end billing after the source is cancelled",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses populated unrecognized recurring storage",
+            "passed": true
+        },
+        {
+            "name": "Refused adoption preserves all existing rows",
+            "passed": true
+        },
+        {
+            "name": "Rehashed snapshot cannot invent another due date",
+            "passed": true
+        },
+        {
+            "name": "Missing prerequisite refuses recurring invoice use: invoice_ledger_schema_version",
+            "passed": true
+        },
+        {
+            "name": "Missing prerequisite refuses recurring invoice use: service_plans_schema_version",
+            "passed": true
+        },
+        {
+            "name": "Missing prerequisite refuses recurring invoice use: payments_schema_version",
+            "passed": true
+        },
+        {
+            "name": "Zero-price agreed period cannot create an invoice",
+            "passed": true
+        },
+        {
+            "name": "Zero-price refusal creates no debt or fabricated receipt",
+            "passed": true
+        },
+        {
+            "name": "UI staff overview lists both real project owners",
+            "passed": true
+        },
+        {
+            "name": "UI project shows validated source and billing history",
+            "passed": true
+        },
+        {
+            "name": "UI retains original obligation after source cancellation and future end",
+            "passed": true
+        },
+        {
+            "name": "UI selected period keeps original dates amount and due rule",
+            "passed": true
+        },
+        {
+            "name": "UI derives partial payments from existing ledger rather than eligibility",
+            "passed": true
+        },
+        {
+            "name": "UI rejects schedule bound to a different project",
+            "passed": true
+        },
+        {
+            "name": "UI rejects source bound to a different project owner",
+            "passed": true
+        },
+        {
+            "name": "UI requires both current staff permissions 3",
+            "passed": true
+        },
+        {
+            "name": "UI requires both current staff permissions 4",
+            "passed": true
+        },
+        {
+            "name": "UI staff support link cannot inspect recurring terms",
+            "passed": true
+        },
+        {
+            "name": "UI reads preserve original session activity timestamp",
+            "passed": true
+        },
+        {
+            "name": "UI actual client overview isolates project ownership",
+            "passed": true
+        },
+        {
+            "name": "UI actual client sees original invoice and partial balance",
+            "passed": true
+        },
+        {
+            "name": "UI actual client cannot select another client identity",
+            "passed": true
+        },
+        {
+            "name": "UI foreign client cannot read another project",
+            "passed": true
+        },
+        {
+            "name": "UI expired client cannot inspect saved terms",
+            "passed": true
+        },
+        {
+            "name": "UI support cannot consent or read through client context",
+            "passed": true
+        },
+        {
+            "name": "UI listing validates predecessor history outside displayed agreement",
+            "passed": true
+        },
+        {
+            "name": "UI refuses unknown schema rather than showing empty records",
+            "passed": true
+        },
+        {
+            "name": "UI refuses populated unregistered records",
+            "passed": true
+        },
+        {
+            "name": "UI preview checks exact retained source and creates no database records",
+            "passed": true
+        },
+        {
+            "name": "UI stale source preview cannot silently refresh review tokens",
+            "passed": true
+        },
+        {
+            "name": "UI failed source draft retains original revision and request identity",
+            "passed": true
+        },
+        {
+            "name": "UI POST requires exact project in its route",
+            "passed": true
+        },
+        {
+            "name": "UI publication requires explicit confirmation",
+            "passed": true
+        },
+        {
+            "name": "UI history uses bounded non-overlapping pages after validating all decisions",
+            "passed": true
+        },
+        {
+            "name": "UI first history page refuses corruption in an older undisplayed page",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_sources disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_sources refuses native UI projection before storage queries",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_sources requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_sources refuses current agreement read",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_sources refuses recurring invoice payment projection",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_sources cannot reclassify an invoice by changing its reference",
+            "passed": true
+        },
+        {
+            "name": "Restored recurring_billing_sources retains exact consent invoices and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_schedules disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_schedules refuses native UI projection before storage queries",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_schedules requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_schedules refuses current agreement read",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_schedules refuses recurring invoice payment projection",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_schedules cannot reclassify an invoice by changing its reference",
+            "passed": true
+        },
+        {
+            "name": "Restored recurring_billing_schedules retains exact consent invoices and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_events disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_events refuses native UI projection before storage queries",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_events requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_events refuses current agreement read",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_events refuses recurring invoice payment projection",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_events cannot reclassify an invoice by changing its reference",
+            "passed": true
+        },
+        {
+            "name": "Restored recurring_billing_events retains exact consent invoices and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_invoices disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_invoices refuses native UI projection before storage queries",
+            "passed": true
+        },
+        {
+            "name": "Missing established recurring_billing_invoices requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_invoices refuses current agreement read",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_invoices refuses recurring invoice payment projection",
+            "passed": true
+        },
+        {
+            "name": "Missing recurring_billing_invoices cannot reclassify an invoice by changing its reference",
+            "passed": true
+        },
+        {
+            "name": "Restored recurring_billing_invoices retains exact consent invoices and audit",
+            "passed": true
+        },
+        {
+            "name": "Existing project fields are unchanged",
+            "passed": true
+        },
+        {
+            "name": "No provider call or payment attempt is created",
+            "passed": true
+        },
+        {
+            "name": "Audit excludes agreement text and passwords",
+            "passed": true
+        },
+        {
+            "name": "Financing native setup creates v3 gateway replacement and reversal storage",
+            "passed": true
+        },
+        {
+            "name": "Recognized empty interrupted financing setups resume and clear all durable pending markers",
+            "passed": true
+        },
+        {
+            "name": "One-time finance reconciliation rechecks current owner role inside its paid transaction",
+            "passed": true
+        },
+        {
+            "name": "One-time finance reconciliation rechecks current owner role inside its paid transaction leaves financial rows and audit unchanged",
+            "passed": true
+        },
+        {
+            "name": "Initial finance subscription reconciliation rechecks current owner role inside finalization",
+            "passed": true
+        },
+        {
+            "name": "Initial finance subscription reconciliation rechecks current owner role inside finalization leaves financial rows and audit unchanged",
+            "passed": true
+        },
+        {
+            "name": "Replacement reconciliation rechecks current owner role inside finalization",
+            "passed": true
+        },
+        {
+            "name": "Replacement reconciliation rechecks current owner role inside finalization leaves financial rows and audit unchanged",
+            "passed": true
+        },
+        {
+            "name": "Review-clearing recurring settlement requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Review-clearing recurring settlement requires current owner authority leaves financial rows and audit unchanged",
+            "passed": true
+        },
+        {
+            "name": "Financing setup rejects an expanded nonunique rights-history index",
+            "passed": true
+        },
+        {
+            "name": "Restored financing rights-history index is accepted on repeated setup",
+            "passed": true
+        },
+        {
+            "name": "Financing native schedule begins as exact future offered terms",
+            "passed": true
+        },
+        {
+            "name": "Initial financing agreement cannot grant resale or distribution rights before separate paid evidence",
+            "passed": true
+        },
+        {
+            "name": "Coherently retained pre-patch finance offer with unpaid resale rights cannot be signed",
+            "passed": true
+        },
+        {
+            "name": "Zero-down client signature persists signed offer status",
+            "passed": true
+        },
+        {
+            "name": "Zero-down client signature returns explicit payment field",
+            "passed": true
+        },
+        {
+            "name": "Zero-down client signature requires no initial payment request",
+            "passed": true
+        },
+        {
+            "name": "Signed zero-down financing begins active on the same website license",
+            "passed": true
+        },
+        {
+            "name": "Native software capture succeeds as unmatched with absent optional finance storage",
+            "passed": true
+        },
+        {
+            "name": "Native incomplete finance storage also declines routing before absent table access",
+            "passed": true
+        },
+        {
+            "name": "Native unrelated refund does not require finance production activation",
+            "passed": true
+        },
+        {
+            "name": "Native unrelated void does not require finance production activation",
+            "passed": true
+        },
+        {
+            "name": "Native lifecycle fixture never overwrites an existing subscription",
+            "passed": true
+        },
+        {
+            "name": "Native review survives delayed failed without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native review survives delayed suspended without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native review survives delayed terminated without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native review survives delayed cancelled without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native review survives delayed expired without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native paid_off survives delayed failed without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native paid_off survives delayed suspended without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native paid_off survives delayed terminated without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native paid_off survives delayed cancelled without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native paid_off survives delayed expired without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native cancelled survives delayed failed without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native cancelled survives delayed suspended without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native cancelled survives delayed terminated without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native cancelled survives delayed cancelled without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native cancelled survives delayed expired without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native reversal_recovery survives delayed failed without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native reversal_recovery survives delayed suspended without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native reversal_recovery survives delayed terminated without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native reversal_recovery survives delayed cancelled without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native reversal_recovery survives delayed expired without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native replacing survives delayed failed without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native replacing survives delayed suspended without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native replacing survives delayed terminated without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native replacing survives delayed cancelled without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native replacing survives delayed expired without row or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Native confirmed suspension survives delayed failure and retains catch-up eligibility",
+            "passed": true
+        },
+        {
+            "name": "Native active subscription records failed and exactly one audit",
+            "passed": true
+        },
+        {
+            "name": "Native active subscription records suspended and exactly one audit",
+            "passed": true
+        },
+        {
+            "name": "Native active subscription records terminated and exactly one audit",
+            "passed": true
+        },
+        {
+            "name": "Native active subscription records cancelled and exactly one audit",
+            "passed": true
+        },
+        {
+            "name": "Native active subscription records expired and exactly one audit",
+            "passed": true
+        },
+        {
+            "name": "Native audit failure rolls back lifecycle mutation atomically",
+            "passed": true
+        },
+        {
+            "name": "Native independent lifecycle session waits for the shared account mutex",
+            "passed": true
+        },
+        {
+            "name": "Native delayed event re-reads the replacement fence after acquiring the mutex",
+            "passed": true
+        },
+        {
+            "name": "Native webhook routing and lifecycle leave all licenses agreements invoices and payments unchanged",
+            "passed": true
+        },
+        {
+            "name": "Zero-down financing signs and activates even when payment-link storage is unavailable",
+            "passed": true
+        },
+        {
+            "name": "Injected unavailable infrastructure reports exactly one expected fault from financing_offers.php",
+            "passed": true
+        },
+        {
+            "name": "Down-payment agreement stays signed when payment-link storage is temporarily unavailable",
+            "passed": true
+        },
+        {
+            "name": "Delayed down-payment setup creates one exact initial invoice and one reusable current payment link",
+            "passed": true
+        },
+        {
+            "name": "Verified initial financing payment activates the retained financed license",
+            "passed": true
+        },
+        {
+            "name": "Reversing the initial payment before payoff immediately restores the initial-payment lock",
+            "passed": true
+        },
+        {
+            "name": "Replacement initial payment restores the same financed license and key",
+            "passed": true
+        },
+        {
+            "name": "Injected unavailable infrastructure reports exactly one expected fault from payments.php",
+            "passed": true
+        },
+        {
+            "name": "Committed financing signature survives later payment infrastructure failure",
+            "passed": true
+        },
+        {
+            "name": "Recovered payment setup reuses the signed agreement and one retained initial invoice",
+            "passed": true
+        },
+        {
+            "name": "Finance gateway v1 to v3 migration preserves ARB identity and adds replacement\/reversal metadata",
+            "passed": true
+        },
+        {
+            "name": "Finance gateway v2 to v3 migration adds reversal history without replacing active subscription",
+            "passed": true
+        },
+        {
+            "name": "Begun signed financing period issues the exact real ledger invoice",
+            "passed": true
+        },
+        {
+            "name": "Issued unpaid installment past the five-day grace suspends payment-dependent financing access",
+            "passed": true
+        },
+        {
+            "name": "Suspended financing exposes the stable delinquency denial reason",
+            "passed": true
+        },
+        {
+            "name": "Cancelled automatic billing is recorded without itself changing retained financing debt",
+            "passed": true
+        },
+        {
+            "name": "Prepared financing scheduler records durable last-run and success health",
+            "passed": true
+        },
+        {
+            "name": "Cancelled automatic billing prepares one secure manual catch-up for the real overdue installment",
+            "passed": true
+        },
+        {
+            "name": "Changing cancelled automatic billing to suspended reuses the same overdue payment request",
+            "passed": true
+        },
+        {
+            "name": "Catch-up payment restores the same financed license after suspension",
+            "passed": true
+        },
+        {
+            "name": "Replacement ARB contract begins at the first future unpaid signed installment",
+            "passed": true
+        },
+        {
+            "name": "Recurring replacement fixture begins with a disabled and unconfigured sandbox gateway",
+            "passed": true
+        },
+        {
+            "name": "Disabled gateway refuses replacement admission without subscription recovery or audit mutation",
+            "passed": true
+        },
+        {
+            "name": "Suspended ARB identity is retained while replacement enrollment is reserved",
+            "passed": true
+        },
+        {
+            "name": "Replacement finalization refuses a reservation before its dispatch boundary",
+            "passed": true
+        },
+        {
+            "name": "Refused undispatched replacement finalization retains all financial and audit state",
+            "passed": true
+        },
+        {
+            "name": "Synthetic retired predecessor admits one durable replacement dispatch",
+            "passed": true
+        },
+        {
+            "name": "Replacement finalization refuses a dispatched reservation without an observed successor",
+            "passed": true
+        },
+        {
+            "name": "Refused unobserved replacement finalization retains all financial and audit state",
+            "passed": true
+        },
+        {
+            "name": "Replacement ARB archives the suspended identity and activates only remaining periods",
+            "passed": true
+        },
+        {
+            "name": "Delayed lifecycle event from retired ARB identity is historical and cannot mutate current billing",
+            "passed": true
+        },
+        {
+            "name": "Recurring replacement fixture restores disabled gateway state before later payoff cases",
+            "passed": true
+        },
+        {
+            "name": "Pre-payoff manual owner deactivation is independent of financing state",
+            "passed": true
+        },
+        {
+            "name": "All signed installments permanently remove only the financing lock",
+            "passed": true
+        },
+        {
+            "name": "Paid-off financing exposes permanent authorization with no payment denial reason",
+            "passed": true
+        },
+        {
+            "name": "Owner can explicitly reactivate a manually inactive paid-off license",
+            "passed": true
+        },
+        {
+            "name": "Paid-off license refuses later owner deactivation without changing key state or audit",
+            "passed": true
+        },
+        {
+            "name": "Paid-off financed license cannot be disabled by removing its active domain",
+            "passed": true
+        },
+        {
+            "name": "Paid-off financing boundary ignores later billing correction and can never reapply the payment lock",
+            "passed": true
+        },
+        {
+            "name": "Default financed-site commercial rights remain site-use only after payoff",
+            "passed": true
+        },
+        {
+            "name": "Populated financed-license v1 upgrades additively to v2 rights evidence storage",
+            "passed": true
+        },
+        {
+            "name": "Normal financing installment cannot be reused as commercial-rights payment",
+            "passed": true
+        },
+        {
+            "name": "Separate fully paid same-customer invoice can grant post-sale resale rights",
+            "passed": true
+        },
+        {
+            "name": "Paid commercial-rights invoice is retained as immutable single-use grant evidence",
+            "passed": true
+        },
+        {
+            "name": "Consumed commercial-rights invoice cannot be reused to add broader rights",
+            "passed": true
+        },
+        {
+            "name": "Paid commercial rights remain monotonic and cannot be silently removed",
+            "passed": true
+        },
+        {
+            "name": "Order storage is not prepared by a read",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Order setup rejects incorrect owner password",
+            "passed": true
+        },
+        {
+            "name": "Financial administrator cannot prepare hosting orders",
+            "passed": true
+        },
+        {
+            "name": "Owner prepares additive empty order storage",
+            "passed": true
+        },
+        {
+            "name": "Order preparation preserves existing invoices",
+            "passed": true
+        },
+        {
+            "name": "Order schema refuses unexpected index",
+            "passed": true
+        },
+        {
+            "name": "Order refuses another client invoice",
+            "passed": true
+        },
+        {
+            "name": "Order refuses invoice with a different service price",
+            "passed": true
+        },
+        {
+            "name": "Order refuses stale source hash",
+            "passed": true
+        },
+        {
+            "name": "Order refuses stale invoice hash",
+            "passed": true
+        },
+        {
+            "name": "Order offer audit failure rolls back",
+            "passed": true
+        },
+        {
+            "name": "Order pins exact source invoice client and original offer",
+            "passed": true
+        },
+        {
+            "name": "Exact offer replay creates no second order or audit",
+            "passed": true
+        },
+        {
+            "name": "A second initial order cannot consume the same agreement",
+            "passed": true
+        },
+        {
+            "name": "A second agreement cannot reuse the consumed invoice",
+            "passed": true
+        },
+        {
+            "name": "Host domain normalizes only explicit ASCII input",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects https:\/\/example.com",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects 127.0.0.1",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects localhost",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects *.example.com",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects bad..example.com",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects x.example\/",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects example.com:22",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects -x.example",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects x.123",
+            "passed": true
+        },
+        {
+            "name": "Domain rejects \u00e9xample.com",
+            "passed": true
+        },
+        {
+            "name": "Owner cannot manufacture client hosting acceptance",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot read hosting order",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot accept hosting order",
+            "passed": true
+        },
+        {
+            "name": "Hosting acceptance requires explicit client confirmation",
+            "passed": true
+        },
+        {
+            "name": "Support session cannot accept hosting",
+            "passed": true
+        },
+        {
+            "name": "Revoked client session cannot accept hosting",
+            "passed": true
+        },
+        {
+            "name": "Client acceptance pins exact displayed offer",
+            "passed": true
+        },
+        {
+            "name": "Client acceptance audit failure rolls back",
+            "passed": true
+        },
+        {
+            "name": "Client confirms initial hosting domain and invoice",
+            "passed": true
+        },
+        {
+            "name": "Exact client acceptance replay has no additional effects",
+            "passed": true
+        },
+        {
+            "name": "Reused event cannot change hosting domain",
+            "passed": true
+        },
+        {
+            "name": "Stale order action refuses",
+            "passed": true
+        },
+        {
+            "name": "Unpaid accepted order is not commercially ready",
+            "passed": true
+        },
+        {
+            "name": "Exact verified receipt makes commercial review ready without dispatch",
+            "passed": true
+        },
+        {
+            "name": "Receipt reversal immediately removes commercial readiness",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Manual policy requires current owner password",
+            "passed": true
+        },
+        {
+            "name": "Manual policy cannot exceed one day",
+            "passed": true
+        },
+        {
+            "name": "Explicit manual policy is separate from unpaid invoice",
+            "passed": true
+        },
+        {
+            "name": "Manual policy expires exactly at its deadline",
+            "passed": true
+        },
+        {
+            "name": "Manual policy cannot bypass an inactive client",
+            "passed": true
+        },
+        {
+            "name": "Manual policy cannot bypass a paused source agreement",
+            "passed": true
+        },
+        {
+            "name": "Order retains original accepted prefix after an authorized resume",
+            "passed": true
+        },
+        {
+            "name": "Client payment assessment omits staff policy and receipt details",
+            "passed": true
+        },
+        {
+            "name": "Client order card shows domain invoice and cancellation without manual reason",
+            "passed": true
+        },
+        {
+            "name": "Manual revocation removes commercial readiness",
+            "passed": true
+        },
+        {
+            "name": "Malformed order JSON requires controlled restoration",
+            "passed": true
+        },
+        {
+            "name": "Current hosting order projection performs no database writes",
+            "passed": true
+        },
+        {
+            "name": "Corrupted order event refuses read",
+            "passed": true
+        },
+        {
+            "name": "Changed invoice cannot authorize hosting",
+            "passed": true
+        },
+        {
+            "name": "Client may cancel stale invoice order while retaining billing",
+            "passed": true
+        },
+        {
+            "name": "Cancelled order cannot regain manual eligibility",
+            "passed": true
+        },
+        {
+            "name": "Client may decline without payment or provisioning",
+            "passed": true
+        },
+        {
+            "name": "Monthly service cannot consume unrelated same-amount invoice",
+            "passed": true
+        },
+        {
+            "name": "Later recurring period cannot buy another initial service",
+            "passed": true
+        },
+        {
+            "name": "Recurring hosting pins original first period schedule invoice and source",
+            "passed": true
+        },
+        {
+            "name": "Future pause preserves current effective hosting eligibility",
+            "passed": true
+        },
+        {
+            "name": "Future pause blocks hosting exactly at its effective boundary",
+            "passed": true
+        },
+        {
+            "name": "Future end preserves current effective hosting eligibility",
+            "passed": true
+        },
+        {
+            "name": "Future end blocks hosting exactly at its effective boundary",
+            "passed": true
+        },
+        {
+            "name": "Scheduled future resume retains running last phase while current period stays paused",
+            "passed": true
+        },
+        {
+            "name": "Future resume cannot authorize initial hosting during current pause",
+            "passed": true
+        },
+        {
+            "name": "Explicit resumed period becomes eligible only at its actual boundary",
+            "passed": true
+        },
+        {
+            "name": "Concurrent distinct order offers consume an agreement and invoice only once",
+            "passed": true
+        },
+        {
+            "name": "Missing service_orders disables order readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing service_orders refuses setup before empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing service_orders was not recreated",
+            "passed": true
+        },
+        {
+            "name": "Lost marker cannot reset established service_orders",
+            "passed": true
+        },
+        {
+            "name": "Restored service_orders preserves exact order and receipt history",
+            "passed": true
+        },
+        {
+            "name": "Missing service_order_events disables order readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing service_order_events refuses setup before empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing service_order_events was not recreated",
+            "passed": true
+        },
+        {
+            "name": "Lost marker cannot reset established service_order_events",
+            "passed": true
+        },
+        {
+            "name": "Restored service_order_events preserves exact order and receipt history",
+            "passed": true
+        },
+        {
+            "name": "Repeated populated order preparation preserves original order documents",
+            "passed": true
+        },
+        {
+            "name": "Order actions never create payment attempts or provider profiles",
+            "passed": true
+        },
+        {
+            "name": "Order audit excludes passwords and manual policy reasons",
+            "passed": true
+        },
+        {
+            "name": "Order association read does not prepare storage",
+            "passed": true
+        },
+        {
+            "name": "Order association setup requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Financial administrator cannot prepare order associations",
+            "passed": true
+        },
+        {
+            "name": "Owner prepares empty additive order associations",
+            "passed": true
+        },
+        {
+            "name": "Association schema refuses unexpected indexes",
+            "passed": true
+        },
+        {
+            "name": "Unpaid accepted order cannot create a local hosting service",
+            "passed": true
+        },
+        {
+            "name": "Association requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Delegated financial access cannot map provider hosting",
+            "passed": true
+        },
+        {
+            "name": "Association refuses cross-client order selection",
+            "passed": true
+        },
+        {
+            "name": "Association rejects self alias without explicit reseller identity",
+            "passed": true
+        },
+        {
+            "name": "Association audit failure rolls back new hosting record and mapping",
+            "passed": true
+        },
+        {
+            "name": "Association insert failure rolls back newly created hosting record",
+            "passed": true
+        },
+        {
+            "name": "Final association audit failure rolls back all newly created records",
+            "passed": true
+        },
+        {
+            "name": "Accepted order deterministically owns one new pending hosting record",
+            "passed": true
+        },
+        {
+            "name": "Mapping retains exact original consent and manual policy",
+            "passed": true
+        },
+        {
+            "name": "Mapping uses documented addWeb body without mail or unrelated fields",
+            "passed": true
+        },
+        {
+            "name": "Exact mapping replay preserves single account and audit",
+            "passed": true
+        },
+        {
+            "name": "Current mapping review is explicitly not entitlement or dispatch authority",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot be selected for a retained mapping",
+            "passed": true
+        },
+        {
+            "name": "A second service identity cannot consume the same order",
+            "passed": true
+        },
+        {
+            "name": "A different order cannot adopt an existing service",
+            "passed": true
+        },
+        {
+            "name": "Changed package cannot replace a pinned mapping",
+            "passed": true
+        },
+        {
+            "name": "Inactive client blocks mapping replay",
+            "passed": true
+        },
+        {
+            "name": "Changed connection version refuses old mapping replay",
+            "passed": true
+        },
+        {
+            "name": "Connection changes preserve historical service association",
+            "passed": true
+        },
+        {
+            "name": "Current mapping review detects changed provider context",
+            "passed": true
+        },
+        {
+            "name": "Stale order mapping cannot reuse former manual permission",
+            "passed": true
+        },
+        {
+            "name": "Revoked policy blocks new service mapping",
+            "passed": true
+        },
+        {
+            "name": "Generic hosting dispatch cannot bypass order-specific authority",
+            "passed": true
+        },
+        {
+            "name": "Mapping does not create dispatch or provider attempt",
+            "passed": true
+        },
+        {
+            "name": "Malformed mapping produces controlled restoration refusal",
+            "passed": true
+        },
+        {
+            "name": "Rehashed foreign domain still fails retained order binding",
+            "passed": true
+        },
+        {
+            "name": "Order cancellation preserves original mapped service and invoice",
+            "passed": true
+        },
+        {
+            "name": "Cancelled order cannot remain commercially eligible through its mapping",
+            "passed": true
+        },
+        {
+            "name": "Repeated migration preserves every original association",
+            "passed": true
+        },
+        {
+            "name": "Missing association table refuses empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Missing association table cannot make generic dispatch eligible",
+            "passed": true
+        },
+        {
+            "name": "Missing association was not recreated",
+            "passed": true
+        },
+        {
+            "name": "Lost association marker and table still require restoration",
+            "passed": true
+        },
+        {
+            "name": "Exact association table restoration preserves original binding",
+            "passed": true
+        },
+        {
+            "name": "Lost association row cannot bypass generic dispatch",
+            "passed": true
+        },
+        {
+            "name": "Saved association and audit exclude credential plaintext and passwords",
+            "passed": true
+        },
+        {
+            "name": "Owner sees ready preparation and safe saved connection",
+            "passed": true
+        },
+        {
+            "name": "Unmapped client projection excludes connection and order internals",
+            "passed": true
+        },
+        {
+            "name": "Client cannot enter owner preparation",
+            "passed": true
+        },
+        {
+            "name": "Other client cannot read mapped order progress",
+            "passed": true
+        },
+        {
+            "name": "Revoked client session cannot read hosting progress",
+            "passed": true
+        },
+        {
+            "name": "Support impersonation cannot inspect consent workflow progress",
+            "passed": true
+        },
+        {
+            "name": "Typed package form preserves explicit zero and omits unknown limits",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 0",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 1",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 2",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 3",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 4",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 5",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 6",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 7",
+            "passed": true
+        },
+        {
+            "name": "Typed mapping rejects malformed fields 8",
+            "passed": true
+        },
+        {
+            "name": "Preparation form refuses revoked owner without changing stored state",
+            "passed": true
+        },
+        {
+            "name": "Preparation form refuses stale or unconfirmed intent 0",
+            "passed": true
+        },
+        {
+            "name": "Preparation form refuses stale or unconfirmed intent 1",
+            "passed": true
+        },
+        {
+            "name": "Preparation form refuses stale or unconfirmed intent 2",
+            "passed": true
+        },
+        {
+            "name": "Preparation form refuses stale or unconfirmed intent 3",
+            "passed": true
+        },
+        {
+            "name": "Preparation form refuses stale or unconfirmed intent 4",
+            "passed": true
+        },
+        {
+            "name": "Rejected mapping forms preserve native history",
+            "passed": true
+        },
+        {
+            "name": "Preparation refuses current provider revision without original history",
+            "passed": true
+        },
+        {
+            "name": "Missing provider revision leaves no service association or audit",
+            "passed": true
+        },
+        {
+            "name": "Financial staff cannot submit order mapping form",
+            "passed": true
+        },
+        {
+            "name": "Rendered preparation form retains exact order and provider context",
+            "passed": true
+        },
+        {
+            "name": "Real form adapter creates one order service and exact replay is inert",
+            "passed": true
+        },
+        {
+            "name": "Owner sees reviewed mapping and current connection",
+            "passed": true
+        },
+        {
+            "name": "Client progress has only approved service identity time and state",
+            "passed": true
+        },
+        {
+            "name": "Client progress excludes provider mapping profile and manual reason",
+            "passed": true
+        },
+        {
+            "name": "Client cancellation retains pending service history honestly",
+            "passed": true
+        },
+        {
+            "name": "Missing service association cannot become an empty preparation screen",
+            "passed": true
+        },
+        {
+            "name": "Client missing association returns restoration refusal",
+            "passed": true
+        },
+        {
+            "name": "Owner progress GET refuses missing table before querying it",
+            "passed": true
+        },
+        {
+            "name": "Client progress GET refuses missing table before querying it",
+            "passed": true
+        },
+        {
+            "name": "Preparation cannot recreate established missing association history",
+            "passed": true
+        },
+        {
+            "name": "UI preparation never creates provider dispatch or attempt",
+            "passed": true
+        },
+        {
+            "name": "Merged license administration cannot inherit ordinary website editing authority",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment GET readiness never prepares storage",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Fulfillment preparation requires current owner password",
+            "passed": true
+        },
+        {
+            "name": "Delegated financial access cannot prepare fulfillment",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment uses additive existing native dependencies",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment preparation rejects incompatible extra indexes",
+            "passed": true
+        },
+        {
+            "name": "Dispatch requires explicit account_type review",
+            "passed": true
+        },
+        {
+            "name": "Dispatch requires explicit defaults review",
+            "passed": true
+        },
+        {
+            "name": "Dispatch requires explicit costs review",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment confirmation must name the accepted domain",
+            "passed": true
+        },
+        {
+            "name": "Delegated staff cannot fulfill a provider order",
+            "passed": true
+        },
+        {
+            "name": "Client cannot supply owner provisioning authority",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment cannot substitute another client",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Fulfillment requires current owner password",
+            "passed": true
+        },
+        {
+            "name": "Authorization refusals mutate no order dispatch ledger or audit",
+            "passed": true
+        },
+        {
+            "name": "Final approval audit failure rolls back both approval and hosting fence",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment insertion failure rolls back the same native hosting attempt",
+            "passed": true
+        },
+        {
+            "name": "Dedicated order fulfillment sends once through existing native gateway ledger",
+            "passed": true
+        },
+        {
+            "name": "Native request uses exact stored addWeb intent without unrelated fields",
+            "passed": true
+        },
+        {
+            "name": "Provider assigned ID stays pending on the existing client account",
+            "passed": true
+        },
+        {
+            "name": "Manual fulfillment does not mark invoice paid or change its contents",
+            "passed": true
+        },
+        {
+            "name": "Exact submit replay sends no additional provider request",
+            "passed": true
+        },
+        {
+            "name": "New request identity cannot duplicate pending provisioning",
+            "passed": true
+        },
+        {
+            "name": "Refused second identity preserves original acknowledgement and all rows",
+            "passed": true
+        },
+        {
+            "name": "Client sees actual pending service without provider identity or approval details",
+            "passed": true
+        },
+        {
+            "name": "Lost fulfillment row cannot be treated as another first attempt",
+            "passed": true
+        },
+        {
+            "name": "Client progress refuses lost original fulfillment authority",
+            "passed": true
+        },
+        {
+            "name": "Original approval restoration preserves the same history without a send",
+            "passed": true
+        },
+        {
+            "name": "Missing original provider acknowledgement cannot be rebuilt from hosting state",
+            "passed": true
+        },
+        {
+            "name": "Restoring original provider ledger is exact and does not resend",
+            "passed": true
+        },
+        {
+            "name": "Revoked commercial policy before credential access prevents dispatch",
+            "passed": true
+        },
+        {
+            "name": "Commercial authority is checked again at the actual send boundary",
+            "passed": true
+        },
+        {
+            "name": "Ambiguous purchase persists unknown and performs only one attempt",
+            "passed": true
+        },
+        {
+            "name": "Unknown original request replay cannot repeat the purchase",
+            "passed": true
+        },
+        {
+            "name": "Definite provider refusal records safe failure separately from unknown",
+            "passed": true
+        },
+        {
+            "name": "Deliberate eligible retry uses a fresh attempt and current order authorization",
+            "passed": true
+        },
+        {
+            "name": "Final hosting-result audit failure retains provider acknowledgement and original fence",
+            "passed": true
+        },
+        {
+            "name": "Missing local result cannot reclaim an already accepted purchase",
+            "passed": true
+        },
+        {
+            "name": "Local recovery requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Local recovery rejects foreign or stale reviewed authority 1",
+            "passed": true
+        },
+        {
+            "name": "Local recovery rejects foreign or stale reviewed authority 3",
+            "passed": true
+        },
+        {
+            "name": "Local recovery rejects foreign or stale reviewed authority 4",
+            "passed": true
+        },
+        {
+            "name": "Delegated staff cannot recover provider fulfillment",
+            "passed": true
+        },
+        {
+            "name": "Client cannot supply retained-result recovery authority",
+            "passed": true
+        },
+        {
+            "name": "Rejected local recovery leaves all records and provider count unchanged",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider fingerprint beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider operation beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider external_id beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider attempts beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider claimed_epoch beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider resolved_epoch beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery validates original provider status beyond its reviewed hash",
+            "passed": true
+        },
+        {
+            "name": "Recovery cannot fabricate a missing original provider response",
+            "passed": true
+        },
+        {
+            "name": "Damaged proof refusals retain original approval and exact restored rows",
+            "passed": true
+        },
+        {
+            "name": "Recovery audit failure rolls back the reconstructed native result",
+            "passed": true
+        },
+        {
+            "name": "Exact original response recovers locally despite later commercial revocation",
+            "passed": true
+        },
+        {
+            "name": "Recovery preserves original response time and every provider ledger field",
+            "passed": true
+        },
+        {
+            "name": "Repeated local recovery is inert and never sends a provider request",
+            "passed": true
+        },
+        {
+            "name": "Recovery cannot rewrite an already recorded normal result",
+            "passed": true
+        },
+        {
+            "name": "A claimed provider row cannot become a recovered rejection or acceptance",
+            "passed": true
+        },
+        {
+            "name": "Definite rejection fixture retains provider result when local finalization fails",
+            "passed": true
+        },
+        {
+            "name": "Retained definite failure recovers as failure without resending or activating",
+            "passed": true
+        },
+        {
+            "name": "Unknown response fixture retains provider result when local finalization fails",
+            "passed": true
+        },
+        {
+            "name": "Retained unknown outcome remains unresolved after local recovery",
+            "passed": true
+        },
+        {
+            "name": "Competing native processes share one request fence and one provider attempt",
+            "passed": true
+        },
+        {
+            "name": "Revoked session after acceptance cannot erase the assigned resource",
+            "passed": true
+        },
+        {
+            "name": "Verified receipt fulfills the agreed order without a manual policy",
+            "passed": true
+        },
+        {
+            "name": "Receipt reversal before credential access prevents the purchase",
+            "passed": true
+        },
+        {
+            "name": "Endpoint failure before the gateway is a safe local failure without a provider claim",
+            "passed": true
+        },
+        {
+            "name": "Successful HTTP with false result cannot activate an order-derived service",
+            "passed": true
+        },
+        {
+            "name": "Repeated preparation preserves every fulfillment and original attempt",
+            "passed": true
+        },
+        {
+            "name": "Missing established fulfillment table cannot be recreated",
+            "passed": true
+        },
+        {
+            "name": "Lost marker and table still require original fulfillment restoration",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment restoration cannot trigger a hidden provider attempt",
+            "passed": true
+        },
+        {
+            "name": "Order cancellation preserves accepted service and does not delete hosting",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment history and audit contain no password or plaintext provider credential",
+            "passed": true
+        },
+        {
+            "name": "Owner approval renders the exact accepted order and saved mapping",
+            "passed": true
+        },
+        {
+            "name": "Typed approval presents costs defaults and accepted domain without credential material",
+            "passed": true
+        },
+        {
+            "name": "Owner fulfillment GET changes no history and sends no request",
+            "passed": true
+        },
+        {
+            "name": "Client cannot request the private fulfillment projection",
+            "passed": true
+        },
+        {
+            "name": "Financial delegate cannot open owner fulfillment controls",
+            "passed": true
+        },
+        {
+            "name": "Fulfillment view cannot substitute another client",
+            "passed": true
+        },
+        {
+            "name": "Preparation wrapper requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Repeated native setup preserves existing orders and provider attempts",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 0",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 1",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 2",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 3",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 4",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 5",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 6",
+            "passed": true
+        },
+        {
+            "name": "Typed approval form refuses unreviewed or stale intent 7",
+            "passed": true
+        },
+        {
+            "name": "Refused approval forms do not mutate or dispatch",
+            "passed": true
+        },
+        {
+            "name": "Failed approval preserves escaped typed confirmation and no password",
+            "passed": true
+        },
+        {
+            "name": "Rendered approval submits once and shows assigned ID pending confirmation",
+            "passed": true
+        },
+        {
+            "name": "Replayed rendered approval cannot create another provider purchase",
+            "passed": true
+        },
+        {
+            "name": "Client sees pending setup without private approval provider ID or credential",
+            "passed": true
+        },
+        {
+            "name": "Definite failure offers a separate deliberate local retry",
+            "passed": true
+        },
+        {
+            "name": "Retry form only prepares a fresh approval and performs no provider request",
+            "passed": true
+        },
+        {
+            "name": "Actual form retains response when local finalization fails",
+            "passed": true
+        },
+        {
+            "name": "Recovery form reviews the original saved response and approval",
+            "passed": true
+        },
+        {
+            "name": "Native recovery form records the existing pending ID with no send",
+            "passed": true
+        },
+        {
+            "name": "Recovery form replay preserves all rows and request count",
+            "passed": true
+        },
+        {
+            "name": "Unknown outcome shows review without approval retry or recovery controls",
+            "passed": true
+        },
+        {
+            "name": "Client gets an honest unknown outcome with the same bounded projection",
+            "passed": true
+        },
+        {
+            "name": "Owner GET refuses missing established fulfillment history",
+            "passed": true
+        },
+        {
+            "name": "Setup form cannot recreate established missing fulfillment history",
+            "passed": true
+        },
+        {
+            "name": "View history restoration preserves all original rows without dispatch",
+            "passed": true
+        },
+        {
+            "name": "Pending owner status card does not prepare inventory on GET",
+            "passed": true
+        },
+        {
+            "name": "Status history preparation requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Explicit repeated status preparation preserves orders attempts and resources",
+            "passed": true
+        },
+        {
+            "name": "Status confirmation requires current owner authority",
+            "passed": true
+        },
+        {
+            "name": "Confirmation refuses changed client attempt approval or password 1",
+            "passed": true
+        },
+        {
+            "name": "Confirmation refuses changed client attempt approval or password 2",
+            "passed": true
+        },
+        {
+            "name": "Confirmation refuses changed client attempt approval or password 3",
+            "passed": true
+        },
+        {
+            "name": "Client cannot request the private provider confirmation read",
+            "passed": true
+        },
+        {
+            "name": "Financial delegate cannot confirm hosting",
+            "passed": true
+        },
+        {
+            "name": "Refused confirmation requests change no history and perform no read",
+            "passed": true
+        },
+        {
+            "name": "Authenticated disabled package remains pending",
+            "passed": true
+        },
+        {
+            "name": "Status proof retains the exact refresh and original assigned package",
+            "passed": true
+        },
+        {
+            "name": "Status refresh shares the existing production cooldown",
+            "passed": true
+        },
+        {
+            "name": "Cooldown cannot send or replace saved proof",
+            "passed": true
+        },
+        {
+            "name": "Exact confirmation rejects different observed package_id",
+            "passed": true
+        },
+        {
+            "name": "Original status proof detects altered package_id",
+            "passed": true
+        },
+        {
+            "name": "Exact confirmation rejects different observed type_ref",
+            "passed": true
+        },
+        {
+            "name": "Original status proof detects altered type_ref",
+            "passed": true
+        },
+        {
+            "name": "Exact confirmation rejects different observed name",
+            "passed": true
+        },
+        {
+            "name": "Original status proof detects altered name",
+            "passed": true
+        },
+        {
+            "name": "Exact confirmation rejects different observed names",
+            "passed": true
+        },
+        {
+            "name": "Original status proof detects altered names",
+            "passed": true
+        },
+        {
+            "name": "Status proof refuses altered original scope",
+            "passed": true
+        },
+        {
+            "name": "Status proof refuses altered original key_fingerprint",
+            "passed": true
+        },
+        {
+            "name": "Status proof refuses altered original finished_at",
+            "passed": true
+        },
+        {
+            "name": "Restoring exact saved status evidence preserves all original rows",
+            "passed": true
+        },
+        {
+            "name": "Final confirmation audit failure rolls back native adoption while retaining the authenticated read",
+            "passed": true
+        },
+        {
+            "name": "Exact enabled ID domain and type confirm the existing order service",
+            "passed": true
+        },
+        {
+            "name": "Confirmation preserves the original provider acknowledgement and purchase count",
+            "passed": true
+        },
+        {
+            "name": "Replayed active confirmation is inert without another read",
+            "passed": true
+        },
+        {
+            "name": "Client sees confirmed service with no provider identifiers or proof",
+            "passed": true
+        },
+        {
+            "name": "Confirmed service refuses missing original inventory proof",
+            "passed": true
+        },
+        {
+            "name": "Status preparation cannot replace established missing observations",
+            "passed": true
+        },
+        {
+            "name": "Restored confirmation proof preserves active service and original rows",
+            "passed": true
+        },
+        {
+            "name": "Lost original inventory marker cannot recreate confirmation history",
+            "passed": true
+        },
+        {
+            "name": "Exact inventory marker restoration retains confirmed service",
+            "passed": true
+        },
+        {
+            "name": "Client revocation after read intent prevents credential use and confirmation",
+            "passed": true
+        },
+        {
+            "name": "Revoked read retains an access-changed receipt without a read or adoption",
+            "passed": true
+        },
+        {
+            "name": "Catalog GET does not create storage",
+            "passed": true
+        },
+        {
+            "name": "Owner list identifies unprepared catalog without writing storage",
+            "passed": true
+        },
+        {
+            "name": "Owner catalog list bounds one page",
+            "passed": true
+        },
+        {
+            "name": "Owner catalog list rejects malformed plan identifiers",
+            "passed": true
+        },
+        {
+            "name": "Catalog setup requires current owner authority and preserves all stored state",
+            "passed": true
+        },
+        {
+            "name": "Catalog excludes delegated financial administrator",
+            "passed": true
+        },
+        {
+            "name": "Repeated catalog preparation preserves one setup audit",
+            "passed": true
+        },
+        {
+            "name": "Catalog schema refuses extra index",
+            "passed": true
+        },
+        {
+            "name": "Catalog audit failure rolls back new mapping",
+            "passed": true
+        },
+        {
+            "name": "Prepared catalog without a mapping reports missing review",
+            "passed": true
+        },
+        {
+            "name": "Catalog retains exact decimal wholesale amount and separate currency",
+            "passed": true
+        },
+        {
+            "name": "Catalog idempotent submission does not append again",
+            "passed": true
+        },
+        {
+            "name": "Catalog nonce cannot change limits",
+            "passed": true
+        },
+        {
+            "name": "Current reviewed catalog mapping is eligible",
+            "passed": true
+        },
+        {
+            "name": "Ready list projection contains only bounded status and revision",
+            "passed": true
+        },
+        {
+            "name": "Selected review excludes key and owner authentication fingerprints",
+            "passed": true
+        },
+        {
+            "name": "Unavailable mapping revision is refused 0",
+            "passed": true
+        },
+        {
+            "name": "Unavailable mapping revision is refused 2",
+            "passed": true
+        },
+        {
+            "name": "Unavailable mapping revision is refused 129",
+            "passed": true
+        },
+        {
+            "name": "Delegated administrator cannot read catalog readiness",
+            "passed": true
+        },
+        {
+            "name": "Malformed historical selection remains a bounded form error",
+            "passed": true
+        },
+        {
+            "name": "Expired review has a precise local reason",
+            "passed": true
+        },
+        {
+            "name": "Future review has a precise local reason",
+            "passed": true
+        },
+        {
+            "name": "Client cannot read owner catalog readiness",
+            "passed": true
+        },
+        {
+            "name": "Client cannot select historical provider evidence",
+            "passed": true
+        },
+        {
+            "name": "Client cannot see provider costs",
+            "passed": true
+        },
+        {
+            "name": "Support session cannot read catalog readiness",
+            "passed": true
+        },
+        {
+            "name": "Support session cannot select historical provider evidence",
+            "passed": true
+        },
+        {
+            "name": "Support session cannot manage catalog",
+            "passed": true
+        },
+        {
+            "name": "Catalog rejects expiry at exact boundary",
+            "passed": true
+        },
+        {
+            "name": "Catalog rejects future-dated approval",
+            "passed": true
+        },
+        {
+            "name": "Owner credential rotation invalidates mapping",
+            "passed": true
+        },
+        {
+            "name": "Readiness explains changed reviewer authority",
+            "passed": true
+        },
+        {
+            "name": "Changed provider credential invalidates mapping",
+            "passed": true
+        },
+        {
+            "name": "Readiness explains changed provider key",
+            "passed": true
+        },
+        {
+            "name": "Readiness explains connection_changed",
+            "passed": true
+        },
+        {
+            "name": "Readiness explains connection_disabled",
+            "passed": true
+        },
+        {
+            "name": "Readiness explains credentials_missing",
+            "passed": true
+        },
+        {
+            "name": "Readiness distinguishes withdrawal from expiry",
+            "passed": true
+        },
+        {
+            "name": "Replaced review reports superseded without granting use",
+            "passed": true
+        },
+        {
+            "name": "Replaced mapping cannot be reused",
+            "passed": true
+        },
+        {
+            "name": "Withdrawn mapping cannot be used",
+            "passed": true
+        },
+        {
+            "name": "Stale editor cannot replace a newer mapping",
+            "passed": true
+        },
+        {
+            "name": "Owner catalog view escapes labels and shows distinct cost evidence",
+            "passed": true
+        },
+        {
+            "name": "Malformed catalog POST renders bounded safe form 0",
+            "passed": true
+        },
+        {
+            "name": "Malformed catalog POST renders bounded safe form 1",
+            "passed": true
+        },
+        {
+            "name": "Malformed catalog POST renders bounded safe form 2",
+            "passed": true
+        },
+        {
+            "name": "Malformed catalog POST renders bounded safe form 3",
+            "passed": true
+        },
+        {
+            "name": "Accepted order offers saved mapping preparation",
+            "passed": true
+        },
+        {
+            "name": "Prepared catalog form refuses a changed mapping fingerprint",
+            "passed": true
+        },
+        {
+            "name": "Selected catalog creates exact pending service and retains mapping provenance",
+            "passed": true
+        },
+        {
+            "name": "Catalog preparation preserves original retail invoice amount",
+            "passed": true
+        },
+        {
+            "name": "Client hosting progress excludes wholesale and provider mapping details",
+            "passed": true
+        },
+        {
+            "name": "Catalog cannot be used for another retail plan",
+            "passed": true
+        },
+        {
+            "name": "Historical selection preserves original limits and cost after replacement",
+            "passed": true
+        },
+        {
+            "name": "Historical display separates explicit zero unknown and private exact amount",
+            "passed": true
+        },
+        {
+            "name": "Selecting old evidence leaves the edit form on the latest review",
+            "passed": true
+        },
+        {
+            "name": "Readiness and history reads preserve every immutable row",
+            "passed": true
+        },
+        {
+            "name": "Malformed history cannot become a harmless readiness warning",
+            "passed": true
+        },
+        {
+            "name": "Historical selection rejects malformed original evidence",
+            "passed": true
+        },
+        {
+            "name": "Historical mapped service survives catalog withdrawal",
+            "passed": true
+        },
+        {
+            "name": "Lost latest history refuses owner list projection",
+            "passed": true
+        },
+        {
+            "name": "Lost latest history refuses selection of an older review",
+            "passed": true
+        },
+        {
+            "name": "Lost withdrawal and audit cannot reactivate earlier enabled mapping",
+            "passed": true
+        },
+        {
+            "name": "Lost withdrawal cannot be replaced with new review",
+            "passed": true
+        },
+        {
+            "name": "Missing catalog current-version pointer refuses adoption",
+            "passed": true
+        },
+        {
+            "name": "Missing mapping row refuses owner reads",
+            "passed": true
+        },
+        {
+            "name": "Missing mapping refuses original service provenance",
+            "passed": true
+        },
+        {
+            "name": "Lost catalog table cannot be silently recreated",
+            "passed": true
+        },
+        {
+            "name": "Lost table stays absent",
+            "passed": true
+        },
+        {
+            "name": "Lost catalog marker refuses destructive preparation",
+            "passed": true
+        },
+        {
+            "name": "Restoration preserves immutable mapping chain",
+            "passed": true
+        },
+        {
+            "name": "Retired retail plan cannot supply a new catalog review",
+            "passed": true
+        },
+        {
+            "name": "Historical catalog provenance remains readable after retail retirement",
+            "passed": true
+        },
+        {
+            "name": "Readiness identifies a retired retail plan",
+            "passed": true
+        },
+        {
+            "name": "Retired retail plan still displays immutable mapping history",
+            "passed": true
+        },
+        {
+            "name": "Lost provider setup cannot hide established mapping history",
+            "passed": true
+        },
+        {
+            "name": "Catalog audit does not expose costs passwords or provider credentials",
+            "passed": true
+        }
+    ]
+}

@@ -1,0 +1,2807 @@
+{
+    "passed": true,
+    "count": 220,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "mark_declined_same reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_new_key reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_conflicting_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_missing_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_missing_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_missing_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_missing_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_missing_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_missing_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_terminal reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_terminal expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_terminal exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_terminal exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_terminal parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_declined_terminal mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_same reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_new_key reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_conflicting_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_missing_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_missing_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_missing_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_missing_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_missing_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_missing_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_terminal reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_terminal expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_terminal exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_terminal exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_terminal parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_uncertain_terminal mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_review_same reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_review_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_review_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_review_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_review_new_key reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_review_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_review_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_review_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_review_conflicting_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_review_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_review_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_review_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_review_missing_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_review_missing_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_review_missing_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_missing_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_missing_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_review_missing_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_review_terminal reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_review_terminal expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_review_terminal exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_terminal exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_review_terminal parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_review_terminal mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_same reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_new_key reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_conflicting_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_missing_transaction reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_missing_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_missing_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_missing_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_missing_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_missing_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_terminal reports whether mark applied",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_terminal expected outcome",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_terminal exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_terminal exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_terminal parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "mark_sandbox_test_terminal mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_unbound_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_unbound_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_unbound_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_unbound_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_unbound_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_historical_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_historical_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_historical_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_historical_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_processing_historical_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_unbound_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_unbound_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_unbound_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_unbound_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_unbound_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_historical_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_historical_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_historical_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_historical_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_uncertain_historical_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_review_same expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_review_same exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_same exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_same parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_review_same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_review_unbound_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_review_unbound_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_unbound_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_unbound_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_review_unbound_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_review_new_key expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_review_new_key exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_new_key exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_new_key parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_review_new_key mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_review_conflicting_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_review_conflicting_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_conflicting_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_conflicting_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_review_conflicting_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_review_historical_transaction expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_review_historical_transaction exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_historical_transaction exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_review_historical_transaction parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_review_historical_transaction mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "paid_owner_revoked expected outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_owner_revoked exact charge retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_owner_revoked exact attempt retained or updated",
+            "passed": true
+        },
+        {
+            "name": "paid_owner_revoked parent records unchanged",
+            "passed": true
+        },
+        {
+            "name": "paid_owner_revoked mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "sandbox same expected orchestration result",
+            "passed": true
+        },
+        {
+            "name": "sandbox same subscription creation admission",
+            "passed": true
+        },
+        {
+            "name": "sandbox same exact stale rows or accepted mark",
+            "passed": true
+        },
+        {
+            "name": "sandbox same mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "sandbox replacement expected orchestration result",
+            "passed": true
+        },
+        {
+            "name": "sandbox replacement subscription creation admission",
+            "passed": true
+        },
+        {
+            "name": "sandbox replacement exact stale rows or accepted mark",
+            "passed": true
+        },
+        {
+            "name": "sandbox replacement mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "sandbox refunded expected orchestration result",
+            "passed": true
+        },
+        {
+            "name": "sandbox refunded subscription creation admission",
+            "passed": true
+        },
+        {
+            "name": "sandbox refunded exact stale rows or accepted mark",
+            "passed": true
+        },
+        {
+            "name": "sandbox refunded mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "sandbox voided expected orchestration result",
+            "passed": true
+        },
+        {
+            "name": "sandbox voided subscription creation admission",
+            "passed": true
+        },
+        {
+            "name": "sandbox voided exact stale rows or accepted mark",
+            "passed": true
+        },
+        {
+            "name": "sandbox voided mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "sandbox paid expected orchestration result",
+            "passed": true
+        },
+        {
+            "name": "sandbox paid subscription creation admission",
+            "passed": true
+        },
+        {
+            "name": "sandbox paid exact stale rows or accepted mark",
+            "passed": true
+        },
+        {
+            "name": "sandbox paid mutex and transaction released",
+            "passed": true
+        }
+    ],
+    "results": [
+        {
+            "case": "mark_declined_same",
+            "error": null,
+            "before_charge": {
+                "id": 1,
+                "request_id": 500,
+                "invoice_id": 500,
+                "offer_id": "93c357482bf6fc2be0a43bba50209cf1",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "87276ccb0db05b20364126da16c442bcf01f0fbc48c376500f2efeb7859a39b0",
+                "transaction_id": "770000500",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 1,
+                "request_id": 500,
+                "invoice_id": 500,
+                "offer_id": "93c357482bf6fc2be0a43bba50209cf1",
+                "amount_cents": 1250,
+                "status": "declined",
+                "request_key": "87276ccb0db05b20364126da16c442bcf01f0fbc48c376500f2efeb7859a39b0",
+                "transaction_id": "770000500",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            },
+            "before_attempt": {
+                "id": 1,
+                "invoice_id": 500,
+                "request_key": "87276ccb0db05b20364126da16c442bcf01f0fbc48c376500f2efeb7859a39b0",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000500",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 1,
+                "invoice_id": 500,
+                "request_key": "87276ccb0db05b20364126da16c442bcf01f0fbc48c376500f2efeb7859a39b0",
+                "amount_cents": 1250,
+                "status": "declined",
+                "transaction_id": "770000500",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            }
+        },
+        {
+            "case": "mark_declined_new_key",
+            "error": null,
+            "before_charge": {
+                "id": 2,
+                "request_id": 501,
+                "invoice_id": 501,
+                "offer_id": "4b57656685cf56c0c55cf41a07da0d5e",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "b9b7aa743ca92f6f1ff90b0040f6eb4644ac716cef56efe111f0397946377f1e",
+                "transaction_id": "770000501",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 2,
+                "request_id": 501,
+                "invoice_id": 501,
+                "offer_id": "4b57656685cf56c0c55cf41a07da0d5e",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "b9b7aa743ca92f6f1ff90b0040f6eb4644ac716cef56efe111f0397946377f1e",
+                "transaction_id": "770000501",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 2,
+                "invoice_id": 501,
+                "request_key": "b9b7aa743ca92f6f1ff90b0040f6eb4644ac716cef56efe111f0397946377f1e",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000501",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 2,
+                "invoice_id": 501,
+                "request_key": "b9b7aa743ca92f6f1ff90b0040f6eb4644ac716cef56efe111f0397946377f1e",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000501",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_declined_conflicting_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 3,
+                "request_id": 502,
+                "invoice_id": 502,
+                "offer_id": "587a839f5c6a7b4f88ed05ebb2d7b29b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "7a8238887c9e651e81f855c6e2404b55ea8ed9629d43b1aa738c6ce9d4abcf60",
+                "transaction_id": "770010502",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 3,
+                "request_id": 502,
+                "invoice_id": 502,
+                "offer_id": "587a839f5c6a7b4f88ed05ebb2d7b29b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "7a8238887c9e651e81f855c6e2404b55ea8ed9629d43b1aa738c6ce9d4abcf60",
+                "transaction_id": "770010502",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 3,
+                "invoice_id": 502,
+                "request_key": "7a8238887c9e651e81f855c6e2404b55ea8ed9629d43b1aa738c6ce9d4abcf60",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010502",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 3,
+                "invoice_id": 502,
+                "request_key": "7a8238887c9e651e81f855c6e2404b55ea8ed9629d43b1aa738c6ce9d4abcf60",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010502",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_declined_missing_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 4,
+                "request_id": 503,
+                "invoice_id": 503,
+                "offer_id": "d69f071e029262176dd2ee02d2702b90",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "30a66ca16ef1651873c5e5389430ca290c53d2fb5c164f426bbbcfb65b11b0d5",
+                "transaction_id": "770000503",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 4,
+                "request_id": 503,
+                "invoice_id": 503,
+                "offer_id": "d69f071e029262176dd2ee02d2702b90",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "30a66ca16ef1651873c5e5389430ca290c53d2fb5c164f426bbbcfb65b11b0d5",
+                "transaction_id": "770000503",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 4,
+                "invoice_id": 503,
+                "request_key": "30a66ca16ef1651873c5e5389430ca290c53d2fb5c164f426bbbcfb65b11b0d5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000503",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 4,
+                "invoice_id": 503,
+                "request_key": "30a66ca16ef1651873c5e5389430ca290c53d2fb5c164f426bbbcfb65b11b0d5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000503",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_declined_terminal",
+            "error": null,
+            "before_charge": {
+                "id": 5,
+                "request_id": 504,
+                "invoice_id": 504,
+                "offer_id": "13a6cb397e223c195049eff0be6debb9",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "752cb8f9215939f55afef0edfccb074cf2fa6e42fb91a20439679f67fbc99a17",
+                "transaction_id": "770000504",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 5,
+                "request_id": 504,
+                "invoice_id": 504,
+                "offer_id": "13a6cb397e223c195049eff0be6debb9",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "752cb8f9215939f55afef0edfccb074cf2fa6e42fb91a20439679f67fbc99a17",
+                "transaction_id": "770000504",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 5,
+                "invoice_id": 504,
+                "request_key": "752cb8f9215939f55afef0edfccb074cf2fa6e42fb91a20439679f67fbc99a17",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000504",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 5,
+                "invoice_id": 504,
+                "request_key": "752cb8f9215939f55afef0edfccb074cf2fa6e42fb91a20439679f67fbc99a17",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000504",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_uncertain_same",
+            "error": null,
+            "before_charge": {
+                "id": 6,
+                "request_id": 505,
+                "invoice_id": 505,
+                "offer_id": "52a449b600856bc687343d52f9418350",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "856c5e103a0c812fef92898574992141e77f949f385eab8df6cc66657e08f25c",
+                "transaction_id": "770000505",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 6,
+                "request_id": 505,
+                "invoice_id": 505,
+                "offer_id": "52a449b600856bc687343d52f9418350",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "856c5e103a0c812fef92898574992141e77f949f385eab8df6cc66657e08f25c",
+                "transaction_id": "770000505",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            },
+            "before_attempt": {
+                "id": 6,
+                "invoice_id": 505,
+                "request_key": "856c5e103a0c812fef92898574992141e77f949f385eab8df6cc66657e08f25c",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000505",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 6,
+                "invoice_id": 505,
+                "request_key": "856c5e103a0c812fef92898574992141e77f949f385eab8df6cc66657e08f25c",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770000505",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            }
+        },
+        {
+            "case": "mark_uncertain_new_key",
+            "error": null,
+            "before_charge": {
+                "id": 7,
+                "request_id": 506,
+                "invoice_id": 506,
+                "offer_id": "b4f051dcbeef02519def0e3d2cde5b4b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "d134be65b23c42c02a0f13923fac131e12b2641f4c09130eddce20dcad491acd",
+                "transaction_id": "770000506",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 7,
+                "request_id": 506,
+                "invoice_id": 506,
+                "offer_id": "b4f051dcbeef02519def0e3d2cde5b4b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "d134be65b23c42c02a0f13923fac131e12b2641f4c09130eddce20dcad491acd",
+                "transaction_id": "770000506",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 7,
+                "invoice_id": 506,
+                "request_key": "d134be65b23c42c02a0f13923fac131e12b2641f4c09130eddce20dcad491acd",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000506",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 7,
+                "invoice_id": 506,
+                "request_key": "d134be65b23c42c02a0f13923fac131e12b2641f4c09130eddce20dcad491acd",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000506",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_uncertain_conflicting_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 8,
+                "request_id": 507,
+                "invoice_id": 507,
+                "offer_id": "5358f506a3d9ce632bbbbf1b024b1639",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "d21ba92c39bdeb372c38b5970bf47d30af076c878ea5f0db39e6d24c9b875ff4",
+                "transaction_id": "770010507",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 8,
+                "request_id": 507,
+                "invoice_id": 507,
+                "offer_id": "5358f506a3d9ce632bbbbf1b024b1639",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "d21ba92c39bdeb372c38b5970bf47d30af076c878ea5f0db39e6d24c9b875ff4",
+                "transaction_id": "770010507",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 8,
+                "invoice_id": 507,
+                "request_key": "d21ba92c39bdeb372c38b5970bf47d30af076c878ea5f0db39e6d24c9b875ff4",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010507",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 8,
+                "invoice_id": 507,
+                "request_key": "d21ba92c39bdeb372c38b5970bf47d30af076c878ea5f0db39e6d24c9b875ff4",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010507",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_uncertain_missing_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 9,
+                "request_id": 508,
+                "invoice_id": 508,
+                "offer_id": "34f6f3024173de4572613c5f11f24ce5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "228143131e2321219f5483148635b88ebb621a4291b115b93b9290452fb16475",
+                "transaction_id": "770000508",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 9,
+                "request_id": 508,
+                "invoice_id": 508,
+                "offer_id": "34f6f3024173de4572613c5f11f24ce5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "228143131e2321219f5483148635b88ebb621a4291b115b93b9290452fb16475",
+                "transaction_id": "770000508",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 9,
+                "invoice_id": 508,
+                "request_key": "228143131e2321219f5483148635b88ebb621a4291b115b93b9290452fb16475",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000508",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 9,
+                "invoice_id": 508,
+                "request_key": "228143131e2321219f5483148635b88ebb621a4291b115b93b9290452fb16475",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000508",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_uncertain_terminal",
+            "error": null,
+            "before_charge": {
+                "id": 10,
+                "request_id": 509,
+                "invoice_id": 509,
+                "offer_id": "47b0f2b9f3c0f934611c6e37143b4ef3",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "a8ebe0eb67bdff975bacba8a990894f7c14b54556efe438f6c8e355f4dc1da8b",
+                "transaction_id": "770000509",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 10,
+                "request_id": 509,
+                "invoice_id": 509,
+                "offer_id": "47b0f2b9f3c0f934611c6e37143b4ef3",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "a8ebe0eb67bdff975bacba8a990894f7c14b54556efe438f6c8e355f4dc1da8b",
+                "transaction_id": "770000509",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 10,
+                "invoice_id": 509,
+                "request_key": "a8ebe0eb67bdff975bacba8a990894f7c14b54556efe438f6c8e355f4dc1da8b",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000509",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 10,
+                "invoice_id": 509,
+                "request_key": "a8ebe0eb67bdff975bacba8a990894f7c14b54556efe438f6c8e355f4dc1da8b",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000509",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_review_same",
+            "error": null,
+            "before_charge": {
+                "id": 11,
+                "request_id": 510,
+                "invoice_id": 510,
+                "offer_id": "ac844d23dc57d036ddf7794e9f0a364b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "56a8b4e7a1cb91176f5964bbe94d87d11bf127e400a03857be044d5f13aa94c2",
+                "transaction_id": "770000510",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 11,
+                "request_id": 510,
+                "invoice_id": 510,
+                "offer_id": "ac844d23dc57d036ddf7794e9f0a364b",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "56a8b4e7a1cb91176f5964bbe94d87d11bf127e400a03857be044d5f13aa94c2",
+                "transaction_id": "770000510",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            },
+            "before_attempt": {
+                "id": 11,
+                "invoice_id": 510,
+                "request_key": "56a8b4e7a1cb91176f5964bbe94d87d11bf127e400a03857be044d5f13aa94c2",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000510",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 11,
+                "invoice_id": 510,
+                "request_key": "56a8b4e7a1cb91176f5964bbe94d87d11bf127e400a03857be044d5f13aa94c2",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770000510",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            }
+        },
+        {
+            "case": "mark_review_new_key",
+            "error": null,
+            "before_charge": {
+                "id": 12,
+                "request_id": 511,
+                "invoice_id": 511,
+                "offer_id": "43c5cc57082bad5c5ebb59b27bc413a9",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "61cf437195d3a0f6ad0ea944a460ed943283cedb201100bfd2540362bc8f0475",
+                "transaction_id": "770000511",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 12,
+                "request_id": 511,
+                "invoice_id": 511,
+                "offer_id": "43c5cc57082bad5c5ebb59b27bc413a9",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "61cf437195d3a0f6ad0ea944a460ed943283cedb201100bfd2540362bc8f0475",
+                "transaction_id": "770000511",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 12,
+                "invoice_id": 511,
+                "request_key": "61cf437195d3a0f6ad0ea944a460ed943283cedb201100bfd2540362bc8f0475",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000511",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 12,
+                "invoice_id": 511,
+                "request_key": "61cf437195d3a0f6ad0ea944a460ed943283cedb201100bfd2540362bc8f0475",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000511",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_review_conflicting_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 13,
+                "request_id": 512,
+                "invoice_id": 512,
+                "offer_id": "03727fb4cca5aa1543657b6b77a26fa6",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "b47cbc39954dc63c8b4ccc48ed48c007084b28d9cd42348d1fe5061b61256ebc",
+                "transaction_id": "770010512",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 13,
+                "request_id": 512,
+                "invoice_id": 512,
+                "offer_id": "03727fb4cca5aa1543657b6b77a26fa6",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "b47cbc39954dc63c8b4ccc48ed48c007084b28d9cd42348d1fe5061b61256ebc",
+                "transaction_id": "770010512",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 13,
+                "invoice_id": 512,
+                "request_key": "b47cbc39954dc63c8b4ccc48ed48c007084b28d9cd42348d1fe5061b61256ebc",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010512",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 13,
+                "invoice_id": 512,
+                "request_key": "b47cbc39954dc63c8b4ccc48ed48c007084b28d9cd42348d1fe5061b61256ebc",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010512",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_review_missing_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 14,
+                "request_id": 513,
+                "invoice_id": 513,
+                "offer_id": "16d529c0f9a6e9e8e07739c13f061c83",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "79b859919950b59365874d0a2a99f478bb940aa1b22a1b2602c3e929c64d6f27",
+                "transaction_id": "770000513",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 14,
+                "request_id": 513,
+                "invoice_id": 513,
+                "offer_id": "16d529c0f9a6e9e8e07739c13f061c83",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "79b859919950b59365874d0a2a99f478bb940aa1b22a1b2602c3e929c64d6f27",
+                "transaction_id": "770000513",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 14,
+                "invoice_id": 513,
+                "request_key": "79b859919950b59365874d0a2a99f478bb940aa1b22a1b2602c3e929c64d6f27",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000513",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 14,
+                "invoice_id": 513,
+                "request_key": "79b859919950b59365874d0a2a99f478bb940aa1b22a1b2602c3e929c64d6f27",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000513",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_review_terminal",
+            "error": null,
+            "before_charge": {
+                "id": 15,
+                "request_id": 514,
+                "invoice_id": 514,
+                "offer_id": "7316217655d70fb643a405636f400fb3",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "b3e2439fd32cbc1bbbed0907b0c81f66d0b5153385459bbbcf51ac161a88ef6f",
+                "transaction_id": "770000514",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 15,
+                "request_id": 514,
+                "invoice_id": 514,
+                "offer_id": "7316217655d70fb643a405636f400fb3",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "b3e2439fd32cbc1bbbed0907b0c81f66d0b5153385459bbbcf51ac161a88ef6f",
+                "transaction_id": "770000514",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 15,
+                "invoice_id": 514,
+                "request_key": "b3e2439fd32cbc1bbbed0907b0c81f66d0b5153385459bbbcf51ac161a88ef6f",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000514",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 15,
+                "invoice_id": 514,
+                "request_key": "b3e2439fd32cbc1bbbed0907b0c81f66d0b5153385459bbbcf51ac161a88ef6f",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000514",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_sandbox_test_same",
+            "error": null,
+            "before_charge": {
+                "id": 16,
+                "request_id": 515,
+                "invoice_id": 515,
+                "offer_id": "2027aea2c0248a8e0842a13ee383bfa0",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "fece0b814ec7468d57775a6d293dfb9a817da94d9fac785d3da780dd76d0b2c6",
+                "transaction_id": "770000515",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 16,
+                "request_id": 515,
+                "invoice_id": 515,
+                "offer_id": "2027aea2c0248a8e0842a13ee383bfa0",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "request_key": "fece0b814ec7468d57775a6d293dfb9a817da94d9fac785d3da780dd76d0b2c6",
+                "transaction_id": "770000515",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            },
+            "before_attempt": {
+                "id": 16,
+                "invoice_id": 515,
+                "request_key": "fece0b814ec7468d57775a6d293dfb9a817da94d9fac785d3da780dd76d0b2c6",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000515",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 16,
+                "invoice_id": 515,
+                "request_key": "fece0b814ec7468d57775a6d293dfb9a817da94d9fac785d3da780dd76d0b2c6",
+                "amount_cents": 1250,
+                "status": "sandbox_test",
+                "transaction_id": "770000515",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            }
+        },
+        {
+            "case": "mark_sandbox_test_new_key",
+            "error": null,
+            "before_charge": {
+                "id": 17,
+                "request_id": 516,
+                "invoice_id": 516,
+                "offer_id": "f707c0322382949a7acdc49dba4a165b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "835e871beaacbecaef3d1f02efeab4703ba67c545a4c981bf5a32ce3b3b09fa4",
+                "transaction_id": "770000516",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 17,
+                "request_id": 516,
+                "invoice_id": 516,
+                "offer_id": "f707c0322382949a7acdc49dba4a165b",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "835e871beaacbecaef3d1f02efeab4703ba67c545a4c981bf5a32ce3b3b09fa4",
+                "transaction_id": "770000516",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 17,
+                "invoice_id": 516,
+                "request_key": "835e871beaacbecaef3d1f02efeab4703ba67c545a4c981bf5a32ce3b3b09fa4",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000516",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 17,
+                "invoice_id": 516,
+                "request_key": "835e871beaacbecaef3d1f02efeab4703ba67c545a4c981bf5a32ce3b3b09fa4",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000516",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_sandbox_test_conflicting_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 18,
+                "request_id": 517,
+                "invoice_id": 517,
+                "offer_id": "4e853884226b02a2c343dd88786f7759",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "99e35edc92789f8193ae064be2a52069c8a01499e2f5e1e8af2281519c580286",
+                "transaction_id": "770010517",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 18,
+                "request_id": 517,
+                "invoice_id": 517,
+                "offer_id": "4e853884226b02a2c343dd88786f7759",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "99e35edc92789f8193ae064be2a52069c8a01499e2f5e1e8af2281519c580286",
+                "transaction_id": "770010517",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 18,
+                "invoice_id": 517,
+                "request_key": "99e35edc92789f8193ae064be2a52069c8a01499e2f5e1e8af2281519c580286",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010517",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 18,
+                "invoice_id": 517,
+                "request_key": "99e35edc92789f8193ae064be2a52069c8a01499e2f5e1e8af2281519c580286",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010517",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_sandbox_test_missing_transaction",
+            "error": null,
+            "before_charge": {
+                "id": 19,
+                "request_id": 518,
+                "invoice_id": 518,
+                "offer_id": "dc729a37f8a473837f3982cf3839bc16",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "27f435bfa78eb9383c179dc58d1930cc7bcd02c4e9fa9f552ef4e5920fd2ee63",
+                "transaction_id": "770000518",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 19,
+                "request_id": 518,
+                "invoice_id": 518,
+                "offer_id": "dc729a37f8a473837f3982cf3839bc16",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "27f435bfa78eb9383c179dc58d1930cc7bcd02c4e9fa9f552ef4e5920fd2ee63",
+                "transaction_id": "770000518",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 19,
+                "invoice_id": 518,
+                "request_key": "27f435bfa78eb9383c179dc58d1930cc7bcd02c4e9fa9f552ef4e5920fd2ee63",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000518",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 19,
+                "invoice_id": 518,
+                "request_key": "27f435bfa78eb9383c179dc58d1930cc7bcd02c4e9fa9f552ef4e5920fd2ee63",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000518",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "mark_sandbox_test_terminal",
+            "error": null,
+            "before_charge": {
+                "id": 20,
+                "request_id": 519,
+                "invoice_id": 519,
+                "offer_id": "920239a44da9960d8d67609a4beb62c9",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "22892c5e425fc8c1236a71564559bd47828f716e04f6223212696349d10d158d",
+                "transaction_id": "770000519",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 20,
+                "request_id": 519,
+                "invoice_id": 519,
+                "offer_id": "920239a44da9960d8d67609a4beb62c9",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "request_key": "22892c5e425fc8c1236a71564559bd47828f716e04f6223212696349d10d158d",
+                "transaction_id": "770000519",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 20,
+                "invoice_id": 519,
+                "request_key": "22892c5e425fc8c1236a71564559bd47828f716e04f6223212696349d10d158d",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000519",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 20,
+                "invoice_id": 519,
+                "request_key": "22892c5e425fc8c1236a71564559bd47828f716e04f6223212696349d10d158d",
+                "amount_cents": 1250,
+                "status": "refunded",
+                "transaction_id": "770000519",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_processing_same",
+            "error": "eligible_ledger_boundary",
+            "before_charge": {
+                "id": 21,
+                "request_id": 520,
+                "invoice_id": 520,
+                "offer_id": "39bce4c2d448fa643929d4bb4b554847",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "126e9571fd12a6cd7add06a4930c9bb337bba77ace98563c4c41cd8a2317ff99",
+                "transaction_id": "770000520",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 21,
+                "request_id": 520,
+                "invoice_id": 520,
+                "offer_id": "39bce4c2d448fa643929d4bb4b554847",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "126e9571fd12a6cd7add06a4930c9bb337bba77ace98563c4c41cd8a2317ff99",
+                "transaction_id": "770000520",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 21,
+                "invoice_id": 520,
+                "request_key": "126e9571fd12a6cd7add06a4930c9bb337bba77ace98563c4c41cd8a2317ff99",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000520",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 21,
+                "invoice_id": 520,
+                "request_key": "126e9571fd12a6cd7add06a4930c9bb337bba77ace98563c4c41cd8a2317ff99",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000520",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_processing_unbound_transaction",
+            "error": "eligible_ledger_boundary",
+            "before_charge": {
+                "id": 22,
+                "request_id": 521,
+                "invoice_id": 521,
+                "offer_id": "5d2afcf0a9c47809c56ef9f38347a894",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "04f8ef0cc5a1b7b5a20c39967d46da7e6c577a818799633f12c0f55e122d40c7",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 22,
+                "request_id": 521,
+                "invoice_id": 521,
+                "offer_id": "5d2afcf0a9c47809c56ef9f38347a894",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "04f8ef0cc5a1b7b5a20c39967d46da7e6c577a818799633f12c0f55e122d40c7",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 22,
+                "invoice_id": 521,
+                "request_key": "04f8ef0cc5a1b7b5a20c39967d46da7e6c577a818799633f12c0f55e122d40c7",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 22,
+                "invoice_id": 521,
+                "request_key": "04f8ef0cc5a1b7b5a20c39967d46da7e6c577a818799633f12c0f55e122d40c7",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_processing_new_key",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 23,
+                "request_id": 522,
+                "invoice_id": 522,
+                "offer_id": "8b91c8d346cf7245e11b2758b673f545",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "54ffa1085e7af3f4540d64846788c98a93b43b8c9326f3c2c5964bc309eacee8",
+                "transaction_id": "770000522",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 23,
+                "request_id": 522,
+                "invoice_id": 522,
+                "offer_id": "8b91c8d346cf7245e11b2758b673f545",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "54ffa1085e7af3f4540d64846788c98a93b43b8c9326f3c2c5964bc309eacee8",
+                "transaction_id": "770000522",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 23,
+                "invoice_id": 522,
+                "request_key": "54ffa1085e7af3f4540d64846788c98a93b43b8c9326f3c2c5964bc309eacee8",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000522",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 23,
+                "invoice_id": 522,
+                "request_key": "54ffa1085e7af3f4540d64846788c98a93b43b8c9326f3c2c5964bc309eacee8",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000522",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_processing_conflicting_transaction",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 24,
+                "request_id": 523,
+                "invoice_id": 523,
+                "offer_id": "b52bc37ee7a6ade565010c0568d5825d",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "bce3f7a252095449861df653f2a05fc4cf4151ef70677ab07f00a47b92fd4fd2",
+                "transaction_id": "770010523",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 24,
+                "request_id": 523,
+                "invoice_id": 523,
+                "offer_id": "b52bc37ee7a6ade565010c0568d5825d",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "bce3f7a252095449861df653f2a05fc4cf4151ef70677ab07f00a47b92fd4fd2",
+                "transaction_id": "770010523",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 24,
+                "invoice_id": 523,
+                "request_key": "bce3f7a252095449861df653f2a05fc4cf4151ef70677ab07f00a47b92fd4fd2",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010523",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 24,
+                "invoice_id": 523,
+                "request_key": "bce3f7a252095449861df653f2a05fc4cf4151ef70677ab07f00a47b92fd4fd2",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770010523",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_processing_historical_transaction",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 25,
+                "request_id": 524,
+                "invoice_id": 524,
+                "offer_id": "74e4eb264deda66974d7feea5e5a65fe",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c326cd3215699bbc1136a7ff14d70301b2ef13243bb75292df5cacd485a20bfb",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 25,
+                "request_id": 524,
+                "invoice_id": 524,
+                "offer_id": "74e4eb264deda66974d7feea5e5a65fe",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "c326cd3215699bbc1136a7ff14d70301b2ef13243bb75292df5cacd485a20bfb",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 25,
+                "invoice_id": 524,
+                "request_key": "c326cd3215699bbc1136a7ff14d70301b2ef13243bb75292df5cacd485a20bfb",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 25,
+                "invoice_id": 524,
+                "request_key": "c326cd3215699bbc1136a7ff14d70301b2ef13243bb75292df5cacd485a20bfb",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_uncertain_same",
+            "error": "eligible_ledger_boundary",
+            "before_charge": {
+                "id": 26,
+                "request_id": 525,
+                "invoice_id": 525,
+                "offer_id": "7d1719826c1a19bf9c546ab38d451f29",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "ae0790796e02a11ebd53566e3650594c507b5241a689592ae004aeaecea8033a",
+                "transaction_id": "770000525",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 26,
+                "request_id": 525,
+                "invoice_id": 525,
+                "offer_id": "7d1719826c1a19bf9c546ab38d451f29",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "ae0790796e02a11ebd53566e3650594c507b5241a689592ae004aeaecea8033a",
+                "transaction_id": "770000525",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 27,
+                "invoice_id": 525,
+                "request_key": "ae0790796e02a11ebd53566e3650594c507b5241a689592ae004aeaecea8033a",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770000525",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 27,
+                "invoice_id": 525,
+                "request_key": "ae0790796e02a11ebd53566e3650594c507b5241a689592ae004aeaecea8033a",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770000525",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_uncertain_unbound_transaction",
+            "error": "eligible_ledger_boundary",
+            "before_charge": {
+                "id": 27,
+                "request_id": 526,
+                "invoice_id": 526,
+                "offer_id": "9001e33f81abc79cf51a2b03a5af525d",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "c8b174385e8efb4a04dae63e3975f4621678b0fc097b8e0871480c09eb87bee5",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 27,
+                "request_id": 526,
+                "invoice_id": 526,
+                "offer_id": "9001e33f81abc79cf51a2b03a5af525d",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "c8b174385e8efb4a04dae63e3975f4621678b0fc097b8e0871480c09eb87bee5",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 28,
+                "invoice_id": 526,
+                "request_key": "c8b174385e8efb4a04dae63e3975f4621678b0fc097b8e0871480c09eb87bee5",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 28,
+                "invoice_id": 526,
+                "request_key": "c8b174385e8efb4a04dae63e3975f4621678b0fc097b8e0871480c09eb87bee5",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_uncertain_new_key",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 28,
+                "request_id": 527,
+                "invoice_id": 527,
+                "offer_id": "b8f3cbaf9b0caaaac81fcf800f38b3e3",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "7ac3a188c9cac41c6f0eebdd60513495f9e92fdfaa020fb5f834a747638228f2",
+                "transaction_id": "770000527",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 28,
+                "request_id": 527,
+                "invoice_id": 527,
+                "offer_id": "b8f3cbaf9b0caaaac81fcf800f38b3e3",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "7ac3a188c9cac41c6f0eebdd60513495f9e92fdfaa020fb5f834a747638228f2",
+                "transaction_id": "770000527",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 29,
+                "invoice_id": 527,
+                "request_key": "7ac3a188c9cac41c6f0eebdd60513495f9e92fdfaa020fb5f834a747638228f2",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770000527",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 29,
+                "invoice_id": 527,
+                "request_key": "7ac3a188c9cac41c6f0eebdd60513495f9e92fdfaa020fb5f834a747638228f2",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770000527",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_uncertain_conflicting_transaction",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 29,
+                "request_id": 528,
+                "invoice_id": 528,
+                "offer_id": "e9e4a3970cf08afa406484de124bbc2f",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "ba516570ef2f94545f911cab0912734d27cd288f807b386f83b3d9bc0dd6154f",
+                "transaction_id": "770010528",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 29,
+                "request_id": 528,
+                "invoice_id": 528,
+                "offer_id": "e9e4a3970cf08afa406484de124bbc2f",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "ba516570ef2f94545f911cab0912734d27cd288f807b386f83b3d9bc0dd6154f",
+                "transaction_id": "770010528",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 30,
+                "invoice_id": 528,
+                "request_key": "ba516570ef2f94545f911cab0912734d27cd288f807b386f83b3d9bc0dd6154f",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770010528",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 30,
+                "invoice_id": 528,
+                "request_key": "ba516570ef2f94545f911cab0912734d27cd288f807b386f83b3d9bc0dd6154f",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": "770010528",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_uncertain_historical_transaction",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 30,
+                "request_id": 529,
+                "invoice_id": 529,
+                "offer_id": "98b9410c4dff7d9f8c23936872bda834",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "5af74b16e37bb7e9aa394e8d394d4db1e8fb6893c6a735200f07146790c025af",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 30,
+                "request_id": 529,
+                "invoice_id": 529,
+                "offer_id": "98b9410c4dff7d9f8c23936872bda834",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "request_key": "5af74b16e37bb7e9aa394e8d394d4db1e8fb6893c6a735200f07146790c025af",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 31,
+                "invoice_id": 529,
+                "request_key": "5af74b16e37bb7e9aa394e8d394d4db1e8fb6893c6a735200f07146790c025af",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 31,
+                "invoice_id": 529,
+                "request_key": "5af74b16e37bb7e9aa394e8d394d4db1e8fb6893c6a735200f07146790c025af",
+                "amount_cents": 1250,
+                "status": "uncertain",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_review_same",
+            "error": "eligible_ledger_boundary",
+            "before_charge": {
+                "id": 31,
+                "request_id": 530,
+                "invoice_id": 530,
+                "offer_id": "3d7efea45d2429156d5aef3ec268f08a",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "4d9fe6c1e25863206e47b14053c06cb5a3cb836d6780bea2692d2d8278873261",
+                "transaction_id": "770000530",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 31,
+                "request_id": 530,
+                "invoice_id": 530,
+                "offer_id": "3d7efea45d2429156d5aef3ec268f08a",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "4d9fe6c1e25863206e47b14053c06cb5a3cb836d6780bea2692d2d8278873261",
+                "transaction_id": "770000530",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 33,
+                "invoice_id": 530,
+                "request_key": "4d9fe6c1e25863206e47b14053c06cb5a3cb836d6780bea2692d2d8278873261",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770000530",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 33,
+                "invoice_id": 530,
+                "request_key": "4d9fe6c1e25863206e47b14053c06cb5a3cb836d6780bea2692d2d8278873261",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770000530",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_review_unbound_transaction",
+            "error": "eligible_ledger_boundary",
+            "before_charge": {
+                "id": 32,
+                "request_id": 531,
+                "invoice_id": 531,
+                "offer_id": "11d33dd1971769eaea15b481a7d27484",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "9c706a515fcdbd17755c0d4e3a7228f271b363cf07aa8ae4863a3a501d7cb4a2",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 32,
+                "request_id": 531,
+                "invoice_id": 531,
+                "offer_id": "11d33dd1971769eaea15b481a7d27484",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "9c706a515fcdbd17755c0d4e3a7228f271b363cf07aa8ae4863a3a501d7cb4a2",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 34,
+                "invoice_id": 531,
+                "request_key": "9c706a515fcdbd17755c0d4e3a7228f271b363cf07aa8ae4863a3a501d7cb4a2",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 34,
+                "invoice_id": 531,
+                "request_key": "9c706a515fcdbd17755c0d4e3a7228f271b363cf07aa8ae4863a3a501d7cb4a2",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_review_new_key",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 33,
+                "request_id": 532,
+                "invoice_id": 532,
+                "offer_id": "b6ed9ce5e677046366868cba4c4f9a78",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "8f8879ddfb636fc6917e3a3333d19fcd6e3b2051a13fffa94a25c87312a5af21",
+                "transaction_id": "770000532",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 33,
+                "request_id": 532,
+                "invoice_id": 532,
+                "offer_id": "b6ed9ce5e677046366868cba4c4f9a78",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "8f8879ddfb636fc6917e3a3333d19fcd6e3b2051a13fffa94a25c87312a5af21",
+                "transaction_id": "770000532",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 35,
+                "invoice_id": 532,
+                "request_key": "8f8879ddfb636fc6917e3a3333d19fcd6e3b2051a13fffa94a25c87312a5af21",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770000532",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 35,
+                "invoice_id": 532,
+                "request_key": "8f8879ddfb636fc6917e3a3333d19fcd6e3b2051a13fffa94a25c87312a5af21",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770000532",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_review_conflicting_transaction",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 34,
+                "request_id": 533,
+                "invoice_id": 533,
+                "offer_id": "e0ad04e6af8e923b3acabbd7a0316695",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "2f83102756a420c2edf11662e9f7959e9be7107ab6871998a6c31d6ee7cd5b84",
+                "transaction_id": "770010533",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 34,
+                "request_id": 533,
+                "invoice_id": 533,
+                "offer_id": "e0ad04e6af8e923b3acabbd7a0316695",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "2f83102756a420c2edf11662e9f7959e9be7107ab6871998a6c31d6ee7cd5b84",
+                "transaction_id": "770010533",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 36,
+                "invoice_id": 533,
+                "request_key": "2f83102756a420c2edf11662e9f7959e9be7107ab6871998a6c31d6ee7cd5b84",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770010533",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 36,
+                "invoice_id": 533,
+                "request_key": "2f83102756a420c2edf11662e9f7959e9be7107ab6871998a6c31d6ee7cd5b84",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": "770010533",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_review_historical_transaction",
+            "error": "Financing gateway attempt no longer matches this payment.",
+            "before_charge": {
+                "id": 35,
+                "request_id": 534,
+                "invoice_id": 534,
+                "offer_id": "3bf6432dbcc99f15fcadf1db05cc9a15",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "e584128aac05f2e0b8c55619ac50fcc93069a9d6445576cc526e698bf38166c9",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 35,
+                "request_id": 534,
+                "invoice_id": 534,
+                "offer_id": "3bf6432dbcc99f15fcadf1db05cc9a15",
+                "amount_cents": 1250,
+                "status": "review",
+                "request_key": "e584128aac05f2e0b8c55619ac50fcc93069a9d6445576cc526e698bf38166c9",
+                "transaction_id": null,
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 37,
+                "invoice_id": 534,
+                "request_key": "e584128aac05f2e0b8c55619ac50fcc93069a9d6445576cc526e698bf38166c9",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 37,
+                "invoice_id": 534,
+                "request_key": "e584128aac05f2e0b8c55619ac50fcc93069a9d6445576cc526e698bf38166c9",
+                "amount_cents": 1250,
+                "status": "review",
+                "transaction_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "paid_owner_revoked",
+            "error": "Current owner required",
+            "before_charge": {
+                "id": 36,
+                "request_id": 535,
+                "invoice_id": 535,
+                "offer_id": "ad03effc3dde0789d1254aa53ac620e5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "5a8abdde69c9fa6e030d8ca11bdd0b7351c512b21d655a093f1a1f4f1564b3a5",
+                "transaction_id": "770000535",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_charge": {
+                "id": 36,
+                "request_id": 535,
+                "invoice_id": 535,
+                "offer_id": "ad03effc3dde0789d1254aa53ac620e5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "request_key": "5a8abdde69c9fa6e030d8ca11bdd0b7351c512b21d655a093f1a1f4f1564b3a5",
+                "transaction_id": "770000535",
+                "customer_profile_id": null,
+                "payment_profile_id": null,
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "before_attempt": {
+                "id": 39,
+                "invoice_id": 535,
+                "request_key": "5a8abdde69c9fa6e030d8ca11bdd0b7351c512b21d655a093f1a1f4f1564b3a5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000535",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "after_attempt": {
+                "id": 39,
+                "invoice_id": 535,
+                "request_key": "5a8abdde69c9fa6e030d8ca11bdd0b7351c512b21d655a093f1a1f4f1564b3a5",
+                "amount_cents": 1250,
+                "status": "processing",
+                "transaction_id": "770000535",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            }
+        },
+        {
+            "case": "sandbox_same",
+            "result": "sandbox",
+            "profile_calls": [
+                {
+                    "offer": "c188d693854a2afb3f3c200cf6119001",
+                    "profiles": {
+                        "customer_profile_id": "1001",
+                        "payment_profile_id": "2001"
+                    }
+                }
+            ]
+        },
+        {
+            "case": "sandbox_replacement",
+            "result": "review",
+            "profile_calls": []
+        },
+        {
+            "case": "sandbox_refunded",
+            "result": "review",
+            "profile_calls": []
+        },
+        {
+            "case": "sandbox_voided",
+            "result": "review",
+            "profile_calls": []
+        },
+        {
+            "case": "sandbox_paid",
+            "result": "review",
+            "profile_calls": []
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "source_sha256": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "function_sha256": {
+        "license_finance_charge_mark": "be92e973ff6d593a1880652502489c2a7b8edaf1c1524e8575ab15106a3ded14",
+        "license_finance_charge_record_paid": "bdb6b3cb17f4024e3e78fc050b90e63934d5ee349bc45e3631848f603584209c",
+        "license_finance_charge_run": "8310c5e0ac8fab168740495583b786a6ce82e36effa10ed56de654b844d9e5f9"
+    },
+    "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+    },
+    "scope": "Canonical charge\/attempt SQL, real mutex\/transaction and delayed result snapshots. Synthetic owner, ledger-boundary sentinel and checkout preparation\/provider\/subscription boundaries. Actual sandbox checkout plus mark sees a separate SQL writer replace its attempt or state; no ledger settlement, license access, HTTP or provider claim."
+}

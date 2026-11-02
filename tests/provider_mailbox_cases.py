@@ -3,13 +3,15 @@ import requests
 from release_cases import db, chosen_form
 from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
     check, soup, form_data, form_for, submit = (env[k] for k in ['check', 'soup', 'form_data', 'form_for', 'submit'])
     base, qa, provider = env['BASE'], env['QA'], env['provider_server']
     admin, portal = base+'/existing/admin/index.php', base+'/existing/portal/index.php'
-    settings, url = admin+'?view=provider-settings', portal+'?hosting_mail=1'
+    settings, url = admin+'?view=provider-settings&section=domains', portal+'?hosting_mail=1'
+    inventory_url=admin+'?view=provider-settings&section=services'
     db('DELETE FROM ci_rate_limits')
     owner=requests.Session();submit(owner,admin+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     client=requests.Session();submit(client,portal,'login',{'email':'domain-client1@example.invalid','password':OWNER})
@@ -18,27 +20,35 @@ def run_browser(env, browser):
     calls, posts=provider.calls, len(provider.posts)
     prepare, policy_action, create='provider_inventory_mailbox_prepare','provider_inventory_mailbox_policy','client_mailbox_create'
     check('Mailbox GET offers explicit preparation without changing storage',prepare in owner.get(settings).text and not db('SHOW TABLES LIKE "ci_provider_mailbox_requests"') and provider.calls==calls)
-    for fields, label in [({'csrf':'bad','current_password':OWNER},'CSRF'),({'current_password':'wrong'},'owner password')]:
-        submit(owner,settings,prepare,fields)
-        check('Mailbox preparation rejects '+label,not db('SHOW TABLES LIKE "ci_provider_mailbox_requests"') and provider.calls==calls)
-    submit(owner,settings,prepare,{'current_password':OWNER})
+    submit(owner,settings,prepare,{'csrf':'bad'})
+    check('Mailbox preparation rejects CSRF',not db('SHOW TABLES LIKE "ci_provider_mailbox_requests"') and provider.calls==calls)
+    refuse_owner_action(env,owner,settings,prepare,{})
+    check('Mailbox preparation rejects revoked owner',not db('SHOW TABLES LIKE "ci_provider_mailbox_requests"') and provider.calls==calls)
+    submit(owner,settings,prepare,{})
     check('Mailbox preparation creates empty history without network',db('SELECT * FROM ci_provider_mailbox_requests')==[] and provider.calls==calls)
     check('Client mailbox form requires an explicit domain policy',create not in client.get(url).text)
     provider.mode='success';provider.write_mode='success'
     provider.packages.append({'id':85001,'typeRef':9,'enabled':True,'name':'mailbox.example.invalid','names':['mailbox.example.invalid'],'created':'2024-01-01T00:00:00Z'})
     age_unprotected_refreshes(120)
-    submit(owner,settings,'provider_inventory_refresh',{'current_password':OWNER})
+    submit(owner,inventory_url,'provider_inventory_refresh',{})
     profile=db('SELECT id,revision FROM ci_provider_profiles')[0]
-    fields={'csrf':env['token'](owner.get(settings)),'action':'provider_inventory_domain_link','profile_id':profile['id'],'revision':profile['revision'],'package_id':'85001','domain':'mailbox.example.invalid','client_id':cid,'current_password':OWNER}
-    owner.post(settings,data=fields)
+    fields={'csrf':env['token'](owner.get(inventory_url)),'action':'provider_inventory_domain_link','profile_id':profile['id'],'revision':profile['revision'],'package_id':'85001','domain':'mailbox.example.invalid','client_id':cid}
+    owner.post(inventory_url,data=fields)
     links=db('SELECT id FROM ci_provider_domain_links WHERE domain=?',['mailbox.example.invalid'])
     check('Owner explicitly links the mailbox test domain',len(links)==1)
     link=links[0]['id']
+    policy_values={'mailbox_enabled':'1','client_enabled':'1','daily_limit':'5','permission_hours':'24','capacity_reviewed':'1'}
     def policy(**changes):
-        return chosen_form(owner,settings,policy_action,'link_id',link,{'current_password':OWNER,'mailbox_enabled':'1','client_enabled':'1','daily_limit':'5','permission_hours':'24','capacity_reviewed':'1',**changes})
-    for changes,label in [({'csrf':'bad'},'CSRF'),({'current_password':'wrong'},'password'),({'capacity_reviewed':'0'},'capacity review')]:
+        return chosen_form(owner,settings,policy_action,'link_id',link,{**policy_values,**changes})
+    def policy_form(response,action):
+        forms=[form for form in soup(response).select('form') if form.select_one('[name=action][value="'+action+'"]') is not None and form.select_one('[name=link_id][value="'+str(link)+'"]') is not None]
+        if len(forms)!=1:raise AssertionError('Capture exactly one mailbox policy form for the assigned domain')
+        return forms[0]
+    for changes,label in [({'csrf':'bad'},'CSRF'),({'capacity_reviewed':'0'},'capacity review')]:
         policy(**changes)
         check('Mailbox policy refuses '+label,not db('SELECT * FROM ci_provider_mailbox_policies'))
+    refuse_owner_action({**env,'form_for':policy_form},owner,settings,policy_action,policy_values)
+    check('Mailbox policy refuses revoked owner',not db('SELECT * FROM ci_provider_mailbox_policies'))
     policy()
     response=client.get(url)
     check('Owner-approved mailbox form is private and scoped',create in response.text and 'mailbox.example.invalid' in response.text and 'no-store' in response.headers.get('Cache-Control','') and response.headers.get('Referrer-Policy')=='no-referrer' and 'profile_id' not in response.text)

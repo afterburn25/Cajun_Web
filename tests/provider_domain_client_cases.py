@@ -2,6 +2,7 @@
 import requests
 from release_cases import db, chosen_form
 from staff_cases import OWNER
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser, owner, settings_url, configure_owner):
@@ -15,10 +16,11 @@ def run_browser(env, browser, owner, settings_url, configure_owner):
     calls, posts = provider.calls, list(provider.posts)
     owner_history = db('SELECT * FROM ci_provider_domain_searches ORDER BY id')
     check('Client search GET offers preparation without DDL', prepare in owner.get(settings_url).text and not db('SHOW TABLES LIKE "ci_provider_domain_client_searches"'))
-    for changes, label in [({'csrf': 'bad', 'current_password': OWNER}, 'CSRF'), ({'current_password': 'wrong'}, 'password')]:
-        submit(owner, settings_url, prepare, changes)
-        check('Client search preparation refuses '+label, not db('SHOW TABLES LIKE "ci_provider_domain_client_searches"') and provider.calls==calls)
-    submit(owner, settings_url, prepare, {'current_password': OWNER})
+    submit(owner, settings_url, prepare, {'csrf': 'bad'})
+    check('Client search preparation refuses CSRF', not db('SHOW TABLES LIKE "ci_provider_domain_client_searches"') and provider.calls==calls)
+    refuse_owner_action(env, owner, settings_url, prepare, {})
+    check('Client search preparation refuses revoked owner', not db('SHOW TABLES LIKE "ci_provider_domain_client_searches"') and provider.calls==calls)
+    submit(owner, settings_url, prepare, {})
     check('Client search preparation preserves all owner records', owner_history==db('SELECT * FROM ci_provider_domain_searches ORDER BY id') and not db('SELECT * FROM ci_provider_domain_client_searches'))
     clients=[]
     for number in [1, 2]:
@@ -33,10 +35,11 @@ def run_browser(env, browser, owner, settings_url, configure_owner):
     check('Client lookup starts unavailable until owner explicitly enables it', action not in client.get(url).text and 'Find a domain' not in client.get(portal).text and provider.calls==calls)
     configure_owner()
     fields=form_data(form_for(owner.get(settings_url), configure))
-    for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({'current_password': 'wrong'}, 'password')]:
-        owner.post(settings_url, data={**fields, 'client_search_enabled': '1', 'current_password': OWNER, **changes})
-        check('Client search approval refuses '+label, not db('SELECT * FROM ci_provider_domain_client_policies') and provider.calls==calls)
-    owner.post(settings_url, data={**fields, 'client_search_enabled': '1', 'current_password': OWNER})
+    owner.post(settings_url, data={**fields, 'client_search_enabled': '1', 'csrf': 'bad'})
+    check('Client search approval refuses CSRF', not db('SELECT * FROM ci_provider_domain_client_policies') and provider.calls==calls)
+    refuse_owner_action(env, owner, settings_url, configure, {'client_search_enabled': '1'})
+    check('Client search approval refuses revoked owner', not db('SELECT * FROM ci_provider_domain_client_policies') and provider.calls==calls)
+    owner.post(settings_url, data={**fields, 'client_search_enabled': '1'})
     r=client.get(url)
     check('Owner approval exposes native client form without provider identity', action in r.text and 'Find a domain' in client.get(portal).text and 'SYNTHETIC_RAW_GENERAL_KEY' not in r.text and 'profile_id' not in r.text and 'current_password' not in r.text)
     check('Client search uses private uncached subfolder route', 'no-store' in r.headers.get('Cache-Control', '') and r.headers.get('Referrer-Policy')=='no-referrer' and soup(r).select_one('a[href="'+portal+'"]') is not None)
@@ -44,7 +47,7 @@ def run_browser(env, browser, owner, settings_url, configure_owner):
     for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({'domain_query': 'example.com'}, 'unoffered extension'), ({'domain_query': '<script>bad</script>'}, 'invalid query'), ({'search_policy': 'f'*32}, 'stale approval')]:
         r=client.post(url, data={**original, 'domain_query': 'example.invalid', **changes})
         check('Client domain form refuses '+label, not db('SELECT * FROM ci_provider_domain_client_searches') and provider.calls==calls and '<script>bad</script>' not in r.text)
-    chosen_form(owner, admin+'?view=support', 'support_policy', 'client_id', cid, {'allowed':'1','owner_password':OWNER})
+    chosen_form(owner, admin+'?view=support', 'support_policy', 'client_id', cid, {'allowed':'1'})
     check('Fixture owner explicitly permits support for the new client', db('SELECT allowed FROM ci_support_clients WHERE client_id=?',[cid])[0]['allowed']==1)
     support=chosen_form(owner, admin+'?view=support', 'support_start', 'client_id', cid, {})
     support_url=support.url
@@ -91,11 +94,11 @@ def run_browser(env, browser, owner, settings_url, configure_owner):
     try:
         r=client.get(url)
         check('Lost client history produces controlled unavailable view without DDL', r.status_code==200 and 'Search history is temporarily unavailable' in r.text and not db('SHOW TABLES LIKE "ci_provider_domain_client_results"'))
-        submit(owner, settings_url, prepare, {'current_password':OWNER})
+        submit(owner, settings_url, prepare, {})
         check('Owner cannot recreate lost client result history through preparation', not db('SHOW TABLES LIKE "ci_provider_domain_client_results"'))
     finally: db('RENAME TABLE ci_domain_client_saved_results TO ci_provider_domain_client_results')
     check('Original client search restoration preserves all saved records', all(db('SELECT * FROM ci_'+t+' ORDER BY id')==rows for t,rows in retained.items()) and 'Available when checked' in client.get(url).text)
-    submit(owner, settings_url, configure, {'client_search_enabled':'0','current_password':OWNER})
+    submit(owner, settings_url, configure, {'client_search_enabled':'0'})
     r=client.post(url, data={**sent_fields,'search_request':'e'*32,'domain_query':'example.invalid'})
     check('Owner revocation removes client form and keeps prior search results', action not in r.text and 'Available when checked' in r.text and provider.calls==paused_calls)
     check('Client search performs no provider writes or leaks raw provider responses',provider.posts==posts and not provider.errors and 'private synthetic domain response' not in foreign.get(url).text)

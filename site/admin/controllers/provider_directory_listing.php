@@ -10,5 +10,5 @@ function provider_directory_indexing_admin_action(string $action):never {
         $r=provider_directory_indexing_refresh($link,$binding,$password);flash($r['state']==='complete'?'The reported directory listing setting was saved.':'The directory listing setting refresh did not provide a usable observation.',$r['state']==='complete'?'success':'error');
     }elseif($action==='provider_inventory_directory_indexing_share'){
         $sharing=posted('sharing',7);if(!in_array($sharing,['enable','disable'],true))throw new InvalidArgumentException('Choose whether to share the Directory listing observation.');provider_directory_indexing_share(posted('link_id',32),posted('expected_id',32),posted('event_id',32),$sharing==='enable',posted('anchor_id',32),$password);flash($sharing==='enable'?'The saved directory listing setting is shared with the assigned client.':'directory listing setting sharing is off.');
-    }else throw new InvalidArgumentException('Unknown Directory listing observation action.');redirect(admin_url('provider-settings').'#directory-listing');
+    }else throw new InvalidArgumentException('Unknown Directory listing observation action.');redirect(admin_url('provider-settings',['section'=>'website']).'#directory-listing');
 }

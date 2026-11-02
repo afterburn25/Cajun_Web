@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "status": "source wired; native/browser/release acceptance required",
+  "base_commit": "321ef7a90e1ff46b5fcb208b892f76ec1b04de99",
+  "files": [
+    {
+      "path": "site/includes/layout/admin.php",
+      "before": "b649e64badcce40e9ec791bb294b78915976fa57",
+      "after": "fa2a96801310bb3dfcb5be86863000523a04f7dd"
+    },
+    {
+      "path": "site/admin/controllers/auth.php",
+      "before": "8369fdf59a827af15dc0117e9d786c2d4418dcae",
+      "after": "88ea8b9c5faa6df6204743c08854155a48b606d4"
+    },
+    {
+      "path": "site/admin/views/auth.php",
+      "before": "1d1e5294024f5817da026f6607f4133c9d545199",
+      "after": "1edcf142e867acf3da823878f8567065c2a31cf1"
+    },
+    {
+      "path": "site/portal/controllers/router.php",
+      "before": "4919f9867b055814d99afedd733b48fb5cb66f30",
+      "after": "1041df7229fa2a7fd4ff7734de77bb85a99c3a1a"
+    },
+    {
+      "path": "site/portal/views/auth.php",
+      "before": "1a745128dedd741e89738504e38e8fab8496ee6b",
+      "after": "575054b749b536955cd1b0884df54eca6b0d39d3"
+    }
+  ],
+  "policy": "Existing admin authentication; explicit client selection via audited support; no automatic customer identity creation or credential sharing"
+}

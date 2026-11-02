@@ -4,6 +4,8 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'trial-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.5.0',dest)
@@ -12,13 +14,14 @@ def upgrade():
     shutil.copyfile(ROOT/'test-runtime/trial-upgrade-config.php',dest/'config.php');(dest/'.installed.php').write_text('<?php exit; ?>original guard');(dest/'unrelated.txt').write_text('Retain unrelated file')
     preserved={p:p.read_bytes() for p in [dest/'config.php',dest/'.installed.php',dest/'unrelated.txt',ROOT/'test-runtime/trial-upgrade-private/media/retained.php',ROOT/'test-runtime/trial-upgrade-private/payment-master.key']}
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','payment_gateways','payment_requests','leads','projects']
-    before={t:db('SELECT * FROM trialup_'+t) for t in tables}
+    before={t:db('SELECT * FROM trialup_'+t) for t in tables};settings=db('SELECT * FROM trialup_settings')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
     from structure_helpers import apply_file_update
     apply_file_update(globals(),dest)
     check('Original 1.5 update preserves config guard private files and external master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/trial-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
-    r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'wrong','confirm':'1'});check('Trial upgrade refuses wrong owner password','current password' in r.text.lower())
+    before,settings=prepare_retained_payments(globals(),up,url,'trialup_',before,settings,preserved)
+    refuse_owner_action(globals(),up,url+'?view=payment-trials','payments_trial_setup',{'confirm':'1'},installed_root=dest)
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 upgrade enables additive sandbox history','Sandbox trial history enabled' in r.text)
     check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))
     check('Upgraded trial schema empty and real payment remains disabled',db('SELECT * FROM trialup_payment_attempts')==[] and 'Production and client checkout remain disabled' in r.text)
@@ -28,6 +31,9 @@ def run_browser(env,browser):
     globals().update(env);upgrade();url=BASE+'/existing/admin/index.php?view=payment-trials'
     admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=admin.get(url)
+    if 'Enable sandbox trials' not in r.text:
+        submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+        r=admin.get(url)
     if 'Enable sandbox trials' in r.text:r=submit(admin,url,'payments_trial_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner sees sandbox history and truthful real-payment boundary',r.status_code==200 and 'Sandbox attempt history' in r.text and 'Test card data only' in r.text)
     check('Unauthenticated visitor cannot see sandbox trial data','Sandbox attempt history' not in requests.get(url).text)
@@ -59,7 +65,7 @@ def run_browser(env,browser):
         else:route.continue_()
     p.route('**/admin/index.php?view=payment-trials*',capture)
     for key,value in [('card','4111111111111111'),('month','12'),('year','2030'),('code','123')]:p.locator('#sandbox-'+key).fill(value)
-    p.locator('#sandbox-token-form [name=owner_password]').fill(OWNER);p.locator('#sandbox-token-form [name=confirm]').check();p.locator('#sandbox-send').click();expect(p.get_by_text('Simulated form boundary only')).to_be_visible()
+    assert_no_owner_reprompt(check,p.locator('#sandbox-token-form'),'Sandbox trial token submission');p.locator('#sandbox-token-form [name=confirm]').check();p.locator('#sandbox-send').click();expect(p.get_by_text('Simulated form boundary only')).to_be_visible()
     check('Simulated Accept.js callback submits only token once despite duplicate callback',len(posted)==1 and 'BrowserSyntheticNonce' in posted[0] and '4111111111111111' not in posted[0] and 'cardNumber' not in posted[0] and 'cardCode' not in posted[0])
     check('Sandbox browser ran intercepted provider script without external gateway traffic',len(scripts)==1 and not errors and db('SELECT * FROM ci_payment_attempts')==[])
     p.unroute('**/admin/index.php?view=payment-trials*',capture);response=p.goto(BASE+'/existing/admin/index.php?view=dashboard');check('Ordinary admin page keeps self-only payment CSP','authorize.net' not in response.headers['content-security-policy'])

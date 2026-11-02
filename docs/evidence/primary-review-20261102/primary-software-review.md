@@ -1,0 +1,33 @@
+# Primary84 software implementation review supplement
+
+## Decision and source
+
+**Primary84 remains blocked.** This separate implementation pass confirmed **SW-AUTH-01 (P1)** at the customer mutation boundary. The independent finance findings FIN-01 and FIN-02 remain tracked separately. No further blocker was established in the software source scope described below. This is not whole-PR317, merge, release or deployment approval.
+
+The reviewed source is commit `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd`, tree `a206e95562ab751cd9461db3a8ed32c4305ecbec`, against main `1c44ca120e7768998fafa720b3e1c4c85990c330`. The clean detached review checkout was checked against every recorded Git blob. `primary-software-review.json` records exact path, blob, SHA256, byte/line count and the bounds of each review.
+
+The matrix contains **20 full-source reads, seven complete changed-clause reads and three partial reads**. They supplement the preserved shared, finance and hosting receipts; counts overlap deliberately and must not be added as unique-path totals. No application file, remote ref, Actions state, service or customer record changed in this pass.
+
+## Confirmed customer authority finding
+
+`software_order_place`, `software_charge_run` through `software_charge_prepare`, `software_subscription_enroll` and `software_subscription_cancel` accepted a customer array obtained earlier in the request. The latter three did not re-read current active/version/session authority at their claim transaction. Ordering checked active status but omitted the current session version. A committed owner account edit could therefore revoke the session while the in-flight request still reserved a new payment/enrollment/cancellation operation; a revoked but active client could also create an unpaid order. CSRF and initial router authentication do not supply that later current-authority check.
+
+The preserved actual-function synthetic probe includes the unchanged application functions and actual `studio_client`/`studio_client_save`; only persistence, locks, product policy inputs and provider transport are synthetic. It models the owner edit completing before admission, confirms that a fresh actual `studio_client` would refuse the session, then supplies the original captured request to the actual software mutation. Seven of eight stale negative cases were incorrectly admitted; deactivated ordering already refused. Four current-session controls entered their intended paths. The probe sends no provider request and claims no real concurrency, native SQL or HTTP evidence. Exact eight original application identities, entrypoints, helper comparison and all probe hashes are retained in `software-client-authority-review.json`.
+
+Root has a separate five-file correction under review: a software-specific current-client helper checks the current session/support/contact identity, existing 1800/28800-second ages, and the locked account's active/auth-version values inside the existing mutation transaction. The copied synthetic probe admits all four valid controls and refuses all eight stale negatives with no denied writes or transport calls. Original failed evidence is unchanged. This is preliminary uncommitted-source evidence only; final native regressions, final-source review and required acceptance remain outstanding. Outcome/finalization paths should remain able to record an already-admitted external outcome after later revocation.
+
+## Other reviewed software behavior
+
+- Paid fulfillment verifies the immutable order, client, SKU, quantity and paid invoice, then uses a unique invoice/unit relation for repeat-safe entitlement creation or trial upgrade. Dependency and policy snapshots remain in the purchase contract.
+- Product policies bound seats/update windows, retain explicit dependencies and reject cycles. Asset publication validates ZIP/private-path constraints, keeps SKU/version immutable and records the first release time. Customer download eligibility binds owned ordinary license, SKU and invoice unit, then applies domain and update-release restrictions.
+- Subscription settlement verifies the exact gateway receipt against amount, currency, subscription and invoice identity. Unique receipt records make replay explicit. Existing paid-through rights, cancellation/review states and manual suspensions remain separate from a failed future charge. Reversal/dispute paths retain immutable review evidence and bounded totals.
+- The webhook path bounds raw input and requires the exact signature format before verified readback. Public responses hide diagnostics. One-time capture review preserves uncertain outcomes instead of silently issuing a license from an unverified webhook.
+- Software mail uses a retained best-effort claim, retry/lease limits, paid-invoice checks and a portal link without license keys. This review does not call it exactly-once mail. Telemetry is bounded and its failure does not invalidate an otherwise valid license.
+- The software portal shows owned orders/licenses, preserves consent/CSRF and current policy fields, exposes only gateway public keys and truthful uncertain states, and uses tokenization so named posted fields contain the nonce rather than raw card data. This is source inspection, not a provider/browser run.
+- Software schema setup recognizes explicit interrupted history, preserves established tables and rows, adds v3 metadata and commits audited final markers. No destructive reset is introduced. Legacy bundle/download/fulfillment changes preserve the separation between ordinary software entitlements and historical website bundles.
+
+## Scope limits and remaining work
+
+The complete file matrix distinguishes full source, changed clauses and partial function spans. For `software_grants.php`, this pass read the classification/staff-domain/lifecycle span140–240; the finance reviewer separately read1–145 and235–475. Those recorded scopes together cover that source without mislabeling either reviewer's individual work. The finance receipt's remaining migrations, financing views and admin license action gaps are not implicitly cleared by this supplement. Hosting UI is covered in a distinct supplemental receipt.
+
+No fresh native SQL, HTTP/Chromium, Apache, upgrade, real payment/provider/mail, release or exact-main acceptance ran in this pass. Existing passing checks are not substitutes for the missing revocation case. The next blocking task is final review of the exact software and finance correction sources with their preserved failure/regression evidence, followed by required acceptance of the actual combined candidate.

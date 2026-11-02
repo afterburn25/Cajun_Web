@@ -1,0 +1,29 @@
+{
+  "source": "5b4785284f1e937e2985a58f465c4d616dcb9116",
+  "scope": "22 unchanged remaining native commands after a preserved interrupted segment, then the unchanged full HTTP/Chromium driver. Segmented local evidence only.",
+  "original_native_run_passed": false,
+  "previous_native_suffix_interrupted": true,
+  "continuation_passed": false,
+  "runner_pid": 46256,
+  "commands_sha256": "16ad76d8bd2c577b8c4e2eb455d7d0f4acbfd0eead4b3ef94b53f01342f91e95",
+  "started_at_utc": "2026-11-01T23:30:31Z",
+  "stages": [
+    {
+      "name": "remaining_native_commands",
+      "state": "failed",
+      "commands": [
+        {
+          "name": "native command 1",
+          "command": "\"$PHP_BINARY\" tests/stackcp_access_native.php",
+          "state": "failed",
+          "started_at_utc": "2026-11-01T23:30:31Z",
+          "pid": 46257,
+          "exit_code": 1,
+          "finished_at_utc": "2026-11-01T23:30:32Z",
+          "elapsed_seconds": 1.013
+        }
+      ]
+    }
+  ],
+  "updated_at_utc": "2026-11-01T23:30:32Z"
+}

@@ -1,0 +1,179 @@
+{
+  "passed": true,
+  "parent": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+  "scope": "Exact reversible source correction and retained assertions; not installed acceptance",
+  "checks": [
+    {
+      "name": "Correction descends from the exact published parent",
+      "passed": true
+    },
+    {
+      "name": "Only the two notification modules and canonical inventory change shipping bytes",
+      "passed": true
+    },
+    {
+      "name": "Historical builders, receipts, source guards and all focused/full workflow bodies remain unchanged",
+      "passed": true
+    },
+    {
+      "name": "Correction is an ordinary file site/app/notifications/feed.php",
+      "passed": true
+    },
+    {
+      "name": "Exact published predecessor reconstructed site/app/notifications/feed.php",
+      "passed": true
+    },
+    {
+      "name": "Changed current source refused site/app/notifications/feed.php",
+      "passed": true
+    },
+    {
+      "name": "Changed predecessor receipt refused site/app/notifications/feed.php",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused site/app/notifications/feed.php",
+      "passed": true
+    },
+    {
+      "name": "Changed output receipt refused site/app/notifications/feed.php",
+      "passed": true
+    },
+    {
+      "name": "Correction is an ordinary file site/app/notifications/outbox.php",
+      "passed": true
+    },
+    {
+      "name": "Exact published predecessor reconstructed site/app/notifications/outbox.php",
+      "passed": true
+    },
+    {
+      "name": "Changed current source refused site/app/notifications/outbox.php",
+      "passed": true
+    },
+    {
+      "name": "Changed predecessor receipt refused site/app/notifications/outbox.php",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused site/app/notifications/outbox.php",
+      "passed": true
+    },
+    {
+      "name": "Changed output receipt refused site/app/notifications/outbox.php",
+      "passed": true
+    },
+    {
+      "name": "Correction is an ordinary file site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "Exact published predecessor reconstructed site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "Changed current source refused site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "Changed predecessor receipt refused site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "Changed output receipt refused site/install/inventory.generated.php",
+      "passed": true
+    },
+    {
+      "name": "Correction is an ordinary file tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Exact published predecessor reconstructed tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed current source refused tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed predecessor receipt refused tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Changed output receipt refused tests/account_notification_contract.py",
+      "passed": true
+    },
+    {
+      "name": "Correction is an ordinary file tests/notification_center_native.php",
+      "passed": true
+    },
+    {
+      "name": "Exact published predecessor reconstructed tests/notification_center_native.php",
+      "passed": true
+    },
+    {
+      "name": "Changed current source refused tests/notification_center_native.php",
+      "passed": true
+    },
+    {
+      "name": "Changed predecessor receipt refused tests/notification_center_native.php",
+      "passed": true
+    },
+    {
+      "name": "Missing inverse refused tests/notification_center_native.php",
+      "passed": true
+    },
+    {
+      "name": "Changed output receipt refused tests/notification_center_native.php",
+      "passed": true
+    },
+    {
+      "name": "Actual cross-process native regression is retained exactly",
+      "passed": true
+    },
+    {
+      "name": "All original native assertions and their order are retained with two additive hooks",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed settings-correction parent refused",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed settings-correction paths refused",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed settings-correction shipping refused",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed settings-correction verifier refused",
+      "passed": true
+    },
+    {
+      "name": "Unreviewed settings-correction additions refused",
+      "passed": true
+    },
+    {
+      "name": "Broader shipping change refused",
+      "passed": true
+    },
+    {
+      "name": "Omitted shipping correction refused",
+      "passed": true
+    },
+    {
+      "name": "Untracked shipping file refused",
+      "passed": true
+    }
+  ]
+}

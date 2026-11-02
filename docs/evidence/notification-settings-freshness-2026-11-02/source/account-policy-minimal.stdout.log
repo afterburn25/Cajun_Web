@@ -1,0 +1,203 @@
+{
+    "passed": true,
+    "scope": "Actual account service with strict synthetic SQL\/transaction dependencies and actual PHP sessions; not native database acceptance",
+    "checks": [
+        {
+            "name": "anonymous rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "anonymous preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "idle rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "idle preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "absolute rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "absolute preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "revoked rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "revoked preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "disabled rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "disabled preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "support rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "support preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "selector rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "selector preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "contact-id rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "contact-id preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "contact-auth rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "contact-auth preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "administrator-only rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "administrator-only preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "wrong current rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "wrong current preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "mismatch rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "mismatch preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "short rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "short preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "oversize rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "oversize preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "nul rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "nul preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "same rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "same preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "audit failure rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "audit failure preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "lock-time revoked rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "lock-time revoked preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "lock-time support rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "lock-time support preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "lock-time expired rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "lock-time expired preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "lock-time identity-switch rejects at the intended boundary",
+            "passed": true
+        },
+        {
+            "name": "lock-time identity-switch preserves exact records and transaction state",
+            "passed": true
+        },
+        {
+            "name": "New password is hashed and old password no longer verifies",
+            "passed": true
+        },
+        {
+            "name": "Only current primary customer changes",
+            "passed": true
+        },
+        {
+            "name": "Recovery invitation revoked atomically",
+            "passed": true
+        },
+        {
+            "name": "Client auth, session ID and CSRF rotate",
+            "passed": true
+        },
+        {
+            "name": "Current session remains valid without extending absolute lifetime",
+            "passed": true
+        },
+        {
+            "name": "Audit is minimal and customer-attributed",
+            "passed": true
+        },
+        {
+            "name": "Other old sessions fail existing authentication",
+            "passed": true
+        }
+    ],
+    "failure": null
+}

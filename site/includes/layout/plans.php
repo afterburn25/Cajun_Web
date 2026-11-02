@@ -48,13 +48,15 @@ function service_plans_intent_fields(string $action,array $intent,string $csrf):
 }
 function service_plans_confirmation(string $label,bool $owner=false):void {
     echo '<label class="check"><input type="checkbox" name="confirm" value="1" required>'.esc($label).'</label>';
-    if($owner)echo '<label>Your current password<input type="password" name="current_password" autocomplete="current-password" required></label>';
+    if($owner)echo '';
 }
 function service_plans_agreement_history(ServiceSubscriptionDocument $doc):void {
-    $d=$doc->data();echo '<section class="workspace-card"><h2>Agreement history</h2><p>Offered '.esc(gmdate('Y-m-d H:i:s',$d['created_at'])).' UTC by the studio.</p><ol>';
+    $d=$doc->data();echo '<section class="workspace-card"><h2>Agreement history</h2>';
+    if($d['format']===2)echo '<p>Confirmed '.esc(gmdate('Y-m-d H:i:s',$d['created_at'])).' UTC by Client #'.(int)$d['created_by_client'].'.</p><ol>';
+    else echo '<p>Offered '.esc(gmdate('Y-m-d H:i:s',$d['created_at'])).' UTC by the studio.</p><ol>';
     foreach($d['events'] as $event) {
-        $actor=str_starts_with($event['actor'],'client:')?'Client':'Studio';
-        $label=match($event['command']) {'consent'=>'Service terms accepted','activate'=>'Agreement activated','pause'=>'Agreement paused','resume'=>'Agreement resumed','cancel'=>'Agreement ended','abandon'=>'Offer declined',default=>'Recorded action'};
+        $actor=$event['actor']==='system:hosting-checkout'?'Automatic checkout':(str_starts_with($event['actor'],'client:')?'Client':'Studio');
+        $label=match($event['command']) {'consent'=>$d['format']===2?'Service terms confirmed at checkout':'Service terms accepted','checkout_activate'=>'Agreement activated after confirmation','activate'=>'Agreement activated','pause'=>'Agreement paused','resume'=>'Agreement resumed','cancel'=>'Agreement ended','abandon'=>'Offer declined',default=>'Recorded action'};
         echo '<li><strong>'.esc($label).'</strong> · '.esc($actor).' · '.esc(gmdate('Y-m-d H:i:s',$event['at'])).' UTC';
         if($event['command']==='cancel')echo '<p>'.nl2br(esc($event['arguments']['reason'])).'</p>';
         echo '</li>';

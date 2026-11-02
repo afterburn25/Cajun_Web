@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__.'/current_owner_authority.php';
+
 /** Included in the disposable native controls fixture after an actual terminal-audit rollback. */
 if(!defined('CWP_BOOT')||PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 function dc_recovery_sources(string $id):array {
@@ -33,7 +35,7 @@ function dc_recovery_worker(string $phase):array {
 $recoverySources=dc_recovery_sources($terminalId);$recoveryState=dc_recovery_state();$reviewHash=dc_summary($terminalId)['recovery_ledger_sha256'];
 dc_ok('Missing local witness with a durable finished ledger offers exact owner recovery',is_string($reviewHash)&&$reviewHash===provider_directory_indexing_controls_ledger_digest($terminalLedger)&&dc_summary($terminalId)['status']==='interrupted');
 ob_start();provider_directory_indexing_controls_admin_render();$recoveryHtml=(string)ob_get_clean();dc_ok('Owner GET offers reviewed recovery without creating evidence',str_contains($recoveryHtml,'data-directory-listing-control-recover')&&str_contains($recoveryHtml,'Restore saved request history')&&dc_recovery_state()===$recoveryState);
-dc_deny('Recovery requires the current owner password',fn()=>provider_directory_indexing_controls_recover_finished($terminalId,$reviewHash,'wrong'));
+dc_deny('Revoked owner refuses: Recovery requires the current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_directory_indexing_controls_recover_finished($terminalId,$reviewHash,'wrong')));
 dc_actor(2);dc_deny('Administrator cannot recover a completed dispatch',fn()=>dc_recover($terminalId,$reviewHash));dc_actor(3);dc_deny_message('Another owner cannot adopt original approval',fn()=>dc_recover($terminalId,$reviewHash),'The original Directory listing approval owner or context changed.');dc_ok('Other owner receives no recovery form hash',dc_summary($terminalId)['recovery_ledger_sha256']===null);dc_actor();
 $_GET['support']='fixture';dc_deny('Support context cannot recover a completed dispatch',fn()=>dc_recover($terminalId,$reviewHash));unset($_GET['support']);
 dc_deny_message('Changed reviewed ledger hash refuses locally',fn()=>dc_recover($terminalId,str_repeat('f',64)),'The reviewed dispatch completion changed. Reload its history.');

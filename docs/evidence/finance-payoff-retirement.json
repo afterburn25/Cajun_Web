@@ -1,0 +1,2152 @@
+{
+  "base_pr": 298,
+  "base_sha": "4405433dc1dc97b9addd0a9b7967318df082eb82",
+  "branch": "codex/finance-payoff-subscription-retirement",
+  "finding": "https://github.com/afterburn25/Cajun_Web/pull/268#issuecomment-6486115622",
+  "source_sha256": {
+    "tests/finance_payoff_retirement_boundaries.php": "6f67a369ba62c6adca3baedec6dca2da7ec9392e6f4c127246d16bf272483452",
+    "tests/finance_payoff_retirement_guards.php": "52a554ba1714cb802075fe02dce8f7c78fd4b004453395cf75b963a76e6a8ad4",
+    "tests/finance_payoff_retirement_native.php": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4",
+    "tests/finance_payoff_retirement_settlement.php": "1aceebbaa10726d56384f81ea0201a5039cd58cf508bf48e1f957779cc2aa8eb",
+    "site/app/billing/finance_subscription.php": "90e15054e3e82a86cb599e7e016f643735314fcd0a653128201a974e41c11b80",
+    "site/app/billing/finance_authorize_net.php": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+    "site/app/licenses/financing.php": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+    "site/app/licenses/finance_installments.php": "95940e92727463cc7cde1d2b614c6bbb2121f1c3182220b44ff07c91c1716fb9",
+    ".github/workflows/recurring-billing-native.yml": "cac42d6c26d5bbca47d82e23df6d3db0d6ce672428fced19a5c9e120e96d338d"
+  },
+  "native_executions": 3132,
+  "focused_executions": 272,
+  "existing_native_matrix": [
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 240,
+      "failed": 0,
+      "expected_preparation_diagnostics": 38,
+      "separate_writer_commits": null,
+      "label": "8.2-mariadb-finance_enrollment_payoff_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "02f13fe173ecb09d9da669a0ce3a359fee7f473be7df39fbfa99933dae23561d",
+      "diagnostics": 38,
+      "unexpected": false
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 0,
+      "expected_preparation_diagnostics": 54,
+      "separate_writer_commits": null,
+      "label": "8.2-mariadb-finance_initial_enrollment_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "f1939d64865a807352d6cd7f868dbd2c916bb0a189822e306c696a4dc94104e4",
+      "diagnostics": 54,
+      "unexpected": false
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 240,
+      "failed": 0,
+      "expected_preparation_diagnostics": 38,
+      "separate_writer_commits": null,
+      "label": "8.4-mariadb-finance_enrollment_payoff_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "6105d005b6aa5de28c4d520d74578d7f95b8de9990dc10a787e347abc7541b16",
+      "diagnostics": 38,
+      "unexpected": false
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 0,
+      "expected_preparation_diagnostics": 54,
+      "separate_writer_commits": null,
+      "label": "8.4-mariadb-finance_initial_enrollment_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "eb633506f8e0395d5df8bb42fb7e34789f3780862819cede203f32ceae2da989",
+      "diagnostics": 54,
+      "unexpected": false
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 240,
+      "failed": 0,
+      "expected_preparation_diagnostics": 38,
+      "separate_writer_commits": null,
+      "label": "8.2-mysql-finance_enrollment_payoff_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "daf7db7ab28ea96bfb56876b56f431bc9694088158467309caa95818a3bf317b",
+      "diagnostics": 38,
+      "unexpected": false
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 207,
+      "failed": 0,
+      "expected_preparation_diagnostics": 54,
+      "separate_writer_commits": null,
+      "label": "8.2-mysql-finance_initial_enrollment_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "591cd24752f9583509fcc3419ad06267f65063a4e6b4f100b92d2427b961198b",
+      "diagnostics": 54,
+      "unexpected": false
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 240,
+      "failed": 0,
+      "expected_preparation_diagnostics": 38,
+      "separate_writer_commits": null,
+      "label": "8.4-mysql-finance_enrollment_payoff_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "857cf6d4006761c165aaf355d40ac5f86f7ba2d2667e82348ef87641ed17e223",
+      "diagnostics": 38,
+      "unexpected": false
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 207,
+      "failed": 0,
+      "expected_preparation_diagnostics": 54,
+      "separate_writer_commits": null,
+      "label": "8.4-mysql-finance_initial_enrollment_native",
+      "exit": 0,
+      "expected_failure": false,
+      "report_sha256": "b999f603b7420baedfa325165db7934778fe43a7495c3668f04efff3b1999703",
+      "diagnostics": 54,
+      "unexpected": false
+    }
+  ],
+  "retirement_matrix": [
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 290,
+      "failed": 0,
+      "label": "8.2-mariadb-retirement-v2",
+      "diagnostics": 50,
+      "report_sha256": "7ffa8c7fa0264505bcd67e57184347902de630279e85b59f5c29d2d73c6030fa",
+      "passed": true
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 5,
+      "failed": 0,
+      "label": "8.2-mariadb-owner-v2",
+      "diagnostics": 1,
+      "report_sha256": "c9602a4b47bdfe60f871af2f91f7aac1e33e722df832222376ceb62e7521968d",
+      "passed": true
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 290,
+      "failed": 0,
+      "label": "8.4-mariadb-retirement-v2",
+      "diagnostics": 50,
+      "report_sha256": "026d34cafb3eea71c4f9a2b6f568866a7f7eefbdefcca0d48fff6e1644137c6c",
+      "passed": true
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 5,
+      "failed": 0,
+      "label": "8.4-mariadb-owner-v2",
+      "diagnostics": 1,
+      "report_sha256": "1ffc688db5f8ab93fe82639b5a796c66de031f79a665734d13281751efaee343",
+      "passed": true
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 290,
+      "failed": 0,
+      "label": "8.2-mysql-retirement-v2",
+      "diagnostics": 50,
+      "report_sha256": "e71e9b0203a45cc0d77ef99e6b73cb41598b850cd8ddaa8bcbf6117c83eb56b0",
+      "passed": true
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 5,
+      "failed": 0,
+      "label": "8.2-mysql-owner-v2",
+      "diagnostics": 1,
+      "report_sha256": "be1ce3e8531cd3579f7cb8bfa0ee399475dccbb8dbef136bdc98013acc1d0389",
+      "passed": true
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 290,
+      "failed": 0,
+      "label": "8.4-mysql-retirement-v2",
+      "diagnostics": 50,
+      "report_sha256": "9c822dbe791d14cd9278fdede9901b00c4726b7f05185ca1001733cc6c955e24",
+      "passed": true
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 5,
+      "failed": 0,
+      "label": "8.4-mysql-owner-v2",
+      "diagnostics": 1,
+      "report_sha256": "7be066bffd9064f696a21f1e62a23fa0684db1f24b9a0f09df7fccf52c796f44",
+      "passed": true
+    }
+  ],
+  "settlement_matrix": [
+    {
+      "label": "8.2-mariadb-settlement",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 41,
+      "failed": 0,
+      "report_sha256": "46297a69d8909ef06c95a11d4957ee812c1d7ce81956070a4c5391259a84b3b5"
+    },
+    {
+      "label": "8.2-mysql-settlement",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 41,
+      "failed": 0,
+      "report_sha256": "c0a6e3f09e01bab605f678c2febae8c37d333f3220981112b484919d2562d68a"
+    },
+    {
+      "label": "8.4-mysql-settlement",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 41,
+      "failed": 0,
+      "report_sha256": "e2f4af302eeb554d52267b407fe354d29473008bc00a777186a3fd74e74b8a35"
+    },
+    {
+      "label": "8.4-mariadb-settlement",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 41,
+      "failed": 0,
+      "report_sha256": "7c662f357cf03681b0c542bb10605f084bf573a98d91a00b93b3c97fd7ee97ac"
+    }
+  ],
+  "focused": {
+    "tests": [
+      {
+        "php": "8.2",
+        "test": "finance_initial_enrollment_handler",
+        "count": 22,
+        "sha256": "6d016dd28fa9617874b75545759e43af1b76a7301043a5bd7d1d106466aede96"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_subscription_lifecycle",
+        "count": 45,
+        "sha256": "56a6e0e2819bedd739c5ba7945340eea03fed2aa44a246f0cb81fa383357493e"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_enrollment_sandbox_boundary",
+        "count": 6,
+        "sha256": "0dc47ea2ae86955bb3d76d34f3a5b1903ffdd8c6ace4dfc01420365b8568b6c8"
+      },
+      {
+        "php": "8.2",
+        "test": "license_finance_replacement_contract",
+        "count": 9,
+        "sha256": "f414abbc810fb999c7c7f5f25e3d8be256f97dd2cc381877cbcecd1a0cd66191"
+      },
+      {
+        "php": "8.2",
+        "test": "license_finance_source_contract",
+        "count": 54,
+        "sha256": "0e9e7473c33d3ad0552f6820de85116a1acdbaaa555edfd08b9a45ab170e0e4a"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_initial_enrollment_handler",
+        "count": 22,
+        "sha256": "6d016dd28fa9617874b75545759e43af1b76a7301043a5bd7d1d106466aede96"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_subscription_lifecycle",
+        "count": 45,
+        "sha256": "56a6e0e2819bedd739c5ba7945340eea03fed2aa44a246f0cb81fa383357493e"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_enrollment_sandbox_boundary",
+        "count": 6,
+        "sha256": "0dc47ea2ae86955bb3d76d34f3a5b1903ffdd8c6ace4dfc01420365b8568b6c8"
+      },
+      {
+        "php": "8.4",
+        "test": "license_finance_replacement_contract",
+        "count": 9,
+        "sha256": "f414abbc810fb999c7c7f5f25e3d8be256f97dd2cc381877cbcecd1a0cd66191"
+      },
+      {
+        "php": "8.4",
+        "test": "license_finance_source_contract",
+        "count": 54,
+        "sha256": "0e9e7473c33d3ad0552f6820de85116a1acdbaaa555edfd08b9a45ab170e0e4a"
+      }
+    ],
+    "source_boundary": {
+      "site/app/billing/finance_subscription.php": {
+        "unchanged": [
+          "license_finance_subscription_contract",
+          "license_finance_subscription_replacement_contract",
+          "license_finance_subscription_history_row",
+          "license_finance_subscription_known_gateway_id",
+          "license_finance_subscription_row",
+          "license_finance_subscription_mark_review",
+          "license_finance_subscription_sandbox_initial",
+          "license_finance_subscription_enrollment_offer",
+          "license_finance_subscription_reserve",
+          "license_finance_subscription_create_profile",
+          "license_finance_subscription_enroll_opaque",
+          "license_finance_subscription_replacement_reserve",
+          "license_finance_subscription_replacement_review",
+          "license_finance_subscription_replacement_declined",
+          "license_finance_subscription_replacement_finalize",
+          "license_finance_subscription_reenroll_opaque",
+          "license_finance_subscription_charge_reconcile",
+          "license_finance_subscription_lifecycle_review"
+        ],
+        "changed": [
+          "license_finance_subscription_finalize",
+          "license_finance_subscription_reconcile",
+          "license_finance_subscription_settle"
+        ],
+        "added": [
+          "license_finance_subscription_payoff_due",
+          "license_finance_subscription_payoff_retire"
+        ]
+      },
+      "site/app/billing/finance_authorize_net.php": {
+        "unchanged": [
+          "license_finance_anet_production_enabled",
+          "license_finance_anet_settings",
+          "license_finance_anet_execute",
+          "license_finance_billing_fields",
+          "license_finance_anet_charge_request",
+          "license_finance_anet_profile_ids",
+          "license_finance_anet_profile_from_transaction",
+          "license_finance_cadence_months",
+          "license_finance_anet_subscription_ref",
+          "license_finance_anet_arb_profile_request",
+          "license_finance_anet_arb_opaque_request",
+          "license_finance_anet_subscription_details",
+          "license_finance_anet_subscription_readback",
+          "license_finance_anet_retire_subscription"
+        ],
+        "changed": [],
+        "added": [
+          "license_finance_anet_retire_paid_off_subscription"
+        ]
+      },
+      "site/app/licenses/financing.php": {
+        "unchanged": [
+          "license_financing_table_present",
+          "license_financing_rights_grants_table_present",
+          "license_financing_ready",
+          "license_financing_feature_state",
+          "license_financing_plan",
+          "license_financing_terms_hash",
+          "license_financing_schedule",
+          "license_financing_rights_from_row",
+          "license_financing_rights_label",
+          "license_financing_bind",
+          "license_financing_grant_rights",
+          "license_financing_periods",
+          "license_financing_sync",
+          "license_financing_access",
+          "license_financing_authorized"
+        ],
+        "changed": [
+          "license_financing_sync_by_invoice"
+        ],
+        "added": []
+      },
+      "site/app/licenses/finance_installments.php": {
+        "unchanged": [
+          "license_finance_schedule_managed",
+          "license_finance_offer_for_schedule",
+          "license_finance_offer_for_subscription",
+          "license_finance_issue_period_tx",
+          "license_finance_issue_period",
+          "license_finance_issue_due"
+        ],
+        "changed": [
+          "license_finance_scheduler_run"
+        ],
+        "added": []
+      }
+    },
+    "yaml_bash_steps": [
+      "Prepare official PHP with PDO MySQL",
+      "Allow isolated MySQL audit-failure fixture triggers",
+      "Preserve newer one-time finance outcomes under delayed captures",
+      "Bind delayed checkout results to their original finance attempt",
+      "Initial financing enrollment from verified ledger payments",
+      "Native consent and unique period invoices",
+      "Print retained native order and recurring reports",
+      "Scope"
+    ]
+  },
+  "parent_count": 270,
+  "parent_failed": 57,
+  "parent_report_sha256": "dd1424b96413a7c62b4d5e4362de4ce518fdc00f00fa2dc03b9bc0a37bdc8537",
+  "parent_failures": [
+    {
+      "name": "opaque-normal verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-normal cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "opaque-cancel_timeout verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-cancel_timeout cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "opaque-cancel_timeout scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "opaque-lost_cancel_reply verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-lost_cancel_reply cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "opaque-lost_cancel_reply scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "opaque-cancel_error verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-cancel_error cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "opaque-cancel_error scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "opaque-still_active verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-still_active cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "opaque-still_active scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "opaque-wrong_readback verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-wrong_readback scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "opaque-already_expired verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-already_canceled verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "opaque-already_terminated verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-normal verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-normal cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "profile-cancel_timeout verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-cancel_timeout cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "profile-cancel_timeout owner reconciliation completes retirement",
+      "passed": false
+    },
+    {
+      "name": "profile-lost_cancel_reply verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-lost_cancel_reply cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "profile-lost_cancel_reply owner reconciliation completes retirement",
+      "passed": false
+    },
+    {
+      "name": "profile-cancel_error verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-cancel_error cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "profile-cancel_error owner reconciliation completes retirement",
+      "passed": false
+    },
+    {
+      "name": "profile-still_active verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-still_active cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "profile-still_active owner reconciliation completes retirement",
+      "passed": false
+    },
+    {
+      "name": "profile-wrong_readback verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-wrong_readback owner reconciliation completes retirement",
+      "passed": false
+    },
+    {
+      "name": "profile-already_expired verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-already_canceled verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "profile-already_terminated verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-normal verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-normal cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "manual-cancel_timeout verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-cancel_timeout cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "manual-cancel_timeout scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "manual-lost_cancel_reply verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-lost_cancel_reply cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "manual-lost_cancel_reply scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "manual-cancel_error verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-cancel_error cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "manual-cancel_error scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "manual-still_active verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-still_active cancels only nonterminal verified identity",
+      "passed": false
+    },
+    {
+      "name": "manual-still_active scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "manual-wrong_readback verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-wrong_readback scheduler retries paid-off billing",
+      "passed": false
+    },
+    {
+      "name": "manual-already_expired verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-already_canceled verified retirement or retained review",
+      "passed": false
+    },
+    {
+      "name": "manual-already_terminated verified retirement or retained review",
+      "passed": false
+    }
+  ],
+  "corrected_checks": [
+    {
+      "name": "opaque-normal verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_timeout retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-lost_cancel_reply retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-cancel_error retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-still_active retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-wrong_readback retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_expired releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_canceled releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-already_terminated releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-normal verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-normal retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-normal records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-normal permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-normal preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-normal cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-normal network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout owner reconciliation completes retirement",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_timeout retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply owner reconciliation completes retirement",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-lost_cancel_reply retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error owner reconciliation completes retirement",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-cancel_error retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active owner reconciliation completes retirement",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-still_active retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback owner reconciliation completes retirement",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-wrong_readback retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-already_expired releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-already_canceled releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "profile-already_terminated releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-normal enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-normal verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-normal retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-normal records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-normal permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-normal preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-normal cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-normal network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_timeout retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-lost_cancel_reply retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-cancel_error retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-still_active retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback scheduler retries paid-off billing",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback retry preserves ledger and permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-wrong_readback retry never creates overlapping billing",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-already_expired releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-already_canceled releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated enrollment precedes payoff",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated verified retirement or retained review",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated retains exact gateway contract",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated records real committed owner receipts",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated permanent license payoff survives cancellation result",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated preserves license identity domains and rights",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated cancels only nonterminal verified identity",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated network runs outside SQL and retains cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "manual-already_terminated releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "unpaid valid initial enrollment remains available",
+      "passed": true
+    },
+    {
+      "name": "unpaid cannot falsely finalize payoff retirement",
+      "passed": true
+    },
+    {
+      "name": "unpaid preserves ledger and financing",
+      "passed": true
+    },
+    {
+      "name": "unpaid does not call provider or alter subscription",
+      "passed": true
+    },
+    {
+      "name": "status_only valid initial enrollment remains available",
+      "passed": true
+    },
+    {
+      "name": "status_only cannot falsely finalize payoff retirement",
+      "passed": true
+    },
+    {
+      "name": "status_only preserves ledger and financing",
+      "passed": true
+    },
+    {
+      "name": "status_only does not call provider or alter subscription",
+      "passed": true
+    },
+    {
+      "name": "cross_customer valid initial enrollment remains available",
+      "passed": true
+    },
+    {
+      "name": "cross_customer cannot falsely finalize payoff retirement",
+      "passed": true
+    },
+    {
+      "name": "cross_customer preserves ledger and financing",
+      "passed": true
+    },
+    {
+      "name": "cross_customer does not call provider or alter subscription",
+      "passed": true
+    },
+    {
+      "name": "wrong_password valid initial enrollment remains available",
+      "passed": true
+    },
+    {
+      "name": "wrong_password cannot falsely finalize payoff retirement",
+      "passed": true
+    },
+    {
+      "name": "wrong_password preserves ledger and financing",
+      "passed": true
+    },
+    {
+      "name": "wrong_password does not call provider or alter subscription",
+      "passed": true
+    },
+    {
+      "name": "changed_snapshot valid initial enrollment remains available",
+      "passed": true
+    },
+    {
+      "name": "changed_snapshot cannot falsely finalize payoff retirement",
+      "passed": true
+    },
+    {
+      "name": "changed_snapshot preserves ledger and financing",
+      "passed": true
+    },
+    {
+      "name": "changed_snapshot preserves newer committed snapshot",
+      "passed": true
+    }
+  ],
+  "cases": [
+    {
+      "caller": "opaque",
+      "scenario": "normal",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "cancel_timeout",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "lost_cancel_reply",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "cancel_error",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "still_active",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "wrong_readback",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "already_expired",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "already_canceled",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "opaque",
+      "scenario": "already_terminated",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "normal",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "cancel_timeout",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "lost_cancel_reply",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "cancel_error",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "still_active",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "wrong_readback",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "already_expired",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "already_canceled",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "profile",
+      "scenario": "already_terminated",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "normal",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "cancel_timeout",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "lost_cancel_reply",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "cancel_error",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "still_active",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "wrong_readback",
+      "outcome": "review",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBCancelSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "already_expired",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "already_canceled",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    },
+    {
+      "caller": "manual",
+      "scenario": "already_terminated",
+      "outcome": "paid_off",
+      "calls": [
+        "ARBCreateSubscriptionRequest",
+        "ARBGetSubscriptionRequest",
+        "ARBGetSubscriptionRequest"
+      ]
+    }
+  ],
+  "scope": "Exact source bodies; canonical SQL, signed agreement, actual owner ledger_receive commits and license synchronization. Synthetic future-period invoices and ARB transport/mode; actual adapter readback and cancellation orchestration. No real provider, credentials, production settings, HTTP or independent approval.",
+  "original_failures": "The initial probe failed 2/6 on combined 640049eb. The first native fixture failed 48/236 on frozen #298 and passed 236/236 on the first correction. Expanded parent failed 57/270. The first expanded corrected fixture deliberately revoked the owner in-process; the real login redirect terminated all four lanes before JSON reporting. Original stdout/stderr and fixture copies are retained. Owner denial now runs in its own PHP process and verifies actual 303, no provider request and preserved records. No application auth behavior was weakened.",
+  "limitations": [
+    "Provider transport and mode are synthetic; readback validation and SQL/ledger code are real.",
+    "Future-period invoices and initial/historical receipts are synthetic fixtures.",
+    "One separate committed PDO writer per retirement lane changes retained profile data after terminal readback.",
+    "Cancellation ambiguity never rolls back committed payment or permanent payoff.",
+    "No real gateway, installed browser, final combined upgrade/main, external approval or release claim.",
+    "Replacement enrollment function bodies remain unchanged; payoff concurrent with replacement creation requires separate audit."
+  ]
+}

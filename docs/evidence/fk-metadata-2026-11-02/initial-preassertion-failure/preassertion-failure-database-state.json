@@ -1,0 +1,11 @@
+{
+  "checked_at_utc": "2026-11-02T02:45:24.441906+00:00",
+  "database_pid": 129190,
+  "port": 33316,
+  "version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "owned_fixture_tables": 0,
+  "process_and_socket_identity_verified": true,
+  "original_native_failure": "PHP redeclaration before any assertions or fixture DDL",
+  "browser_started": false,
+  "new_heavy_work_started": false
+}

@@ -45,7 +45,7 @@ function provider_stackcp_access_admin_render():void {
         if (!$packages) echo '<p>Save an owner-reviewed Stack-user assignment before reading access.</p>';
         foreach ($packages as $view) provider_stackcp_access_render($view,$page);
         if ($snapshot['error']!==null) throw new RuntimeException($snapshot['error']);
-        echo '<nav class="button-row" aria-label="StackCP access observation pages">';if ($page>1) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_access_page'=>$page-1])).'#stackcp-access-observations">Previous</a>';if ($snapshot['has_more']&&$page<500) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_access_page'=>$page+1])).'#stackcp-access-observations">More packages</a>';echo '</nav>';
+        echo '<nav class="button-row" aria-label="StackCP access observation pages">';if ($page>1) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced','stackcp_access_page'=>$page-1])).'#stackcp-access-observations">Previous</a>';if ($snapshot['has_more']&&$page<500) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced','stackcp_access_page'=>$page+1])).'#stackcp-access-observations">More packages</a>';echo '</nav>';
     } catch (InvalidArgumentException|RuntimeException $e) {if ($e instanceof PDOException) throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';}
     echo '</section>';
 }

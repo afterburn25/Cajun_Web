@@ -1,0 +1,10 @@
+{
+  "port": 33317,
+  "datadir": "/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/data",
+  "shutdown": "clean command completed",
+  "retained_logs_sha256": {
+    "launch.json": "b63f8dbc9e3472213e9ad519210192951a5c7d0b3d309d51c8983bdbeaf90015",
+    "server.log": "5c1c299e4267497a948d888d031976445826b95a02440b71d045324c280258d5"
+  },
+  "other_runtime_accessed": false
+}

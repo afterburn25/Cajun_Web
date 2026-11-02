@@ -1,0 +1,1512 @@
+{
+  "schema": "cajunwebpro.bounded-source-review.v1",
+  "reviewer": "/root/github_status_review/primary_finance_review",
+  "generated_at": "2026-11-02T01:12:10.172334+00:00",
+  "repository": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review",
+  "baseline": "1c44ca120e7768998fafa720b3e1c4c85990c330",
+  "target": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "target_is_frozen": true,
+  "source_clean_before_and_after": true,
+  "purpose": "Separate supplemental closure of 51 explicit UI/workspace source gaps in primary-hosting-review; original receipts unchanged.",
+  "outcome": "51 changed-source gaps closed at recorded depths; one P3 navigation integration finding; no additional authority/commerce blocker established by this bounded supplement.",
+  "approval": {
+    "whole_pr": false,
+    "release": false,
+    "browser_visual": false,
+    "live_provider": false,
+    "original_finance_blockers_cleared": false
+  },
+  "original_receipts": [
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/primary-hosting-review.md",
+      "sha256": "43d2dcc98c93fac48388c977ddae55c42c93a9bb76db48d1e38b37ca6f48a1fc",
+      "bytes": 30389,
+      "unchanged": true
+    },
+    {
+      "path": "/workspace/scratch/8cc2b4f257ab/primary-hosting-review.json",
+      "sha256": "8a908a454d9a99b3149ce5cf5b3285f8cbc3303d7d96efaa014363976805967b",
+      "bytes": 141225,
+      "unchanged": true
+    }
+  ],
+  "selected_path_count": 51,
+  "reviewed_selected_count": 51,
+  "unread_selected_paths": [],
+  "changed_paths": [
+    {
+      "path": "site/admin/controllers/provider_cloud_confirmation.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_cloud_confirmation.php",
+      "baseline_blob": "4c8efc2c34638bda4cab4b52af01623e573a8e30",
+      "target_blob": "f3df195c3bfca19e5166edbdcc4abd8963af1219",
+      "sha256": "1474a8312ff2c9bad525754050c1359cd06e28438c845a65f01475ed060b9491",
+      "bytes": 995,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_cloud_confirmation_admin_action(string $action):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_cloud_providers.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_cloud_providers.php",
+      "baseline_blob": "619ca3b23c2008aa54f7893d33abe6d33ee4abbf",
+      "target_blob": "fa0d645f84c69e1fa4e7c10126fbf8b5a4357c7f",
+      "sha256": "5ac0ea67eb8e7e848e53281858889f3288e9d1fe520af81b5c2b82edf55e4db9",
+      "bytes": 1350,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -8 +8 @@ function provider_cloud_providers_admin_action(string $action):void {",
+        "@@ -14 +14 @@ function provider_cloud_providers_admin_action(string $action):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_cloud_site_request_confirmation.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_cloud_site_request_confirmation.php",
+      "baseline_blob": "658144f255eeae4068974379316d12724ab42db2",
+      "target_blob": "76e7327aaf9670b4d4d276ae287982c259f6b1a5",
+      "sha256": "23bda548e8de260eda4370807de6778d88c7eeb09e2fe153120d6c6187b7b302",
+      "bytes": 2879,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -27 +27 @@ function provider_cloud_site_request_confirmation_render():void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_cloud_site_requests.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_cloud_site_requests.php",
+      "baseline_blob": "e6f1e1cbc537da1905b710169cc1c5bf0d7deaff",
+      "target_blob": "e5b1de991e5ba67c97eee03c1127ee853f5ddb93",
+      "sha256": "c2a9bd8e60cf2a08be58abc09cfb6751c4c2901b6db2186736058c6ec255c959",
+      "bytes": 3009,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -26 +26 @@ function provider_cloud_site_requests_admin_action(string $action):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_directory_listing.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_directory_listing.php",
+      "baseline_blob": "53d2cdeb6b8305cd40cda789e2ceaa36d5be7186",
+      "target_blob": "7656435a2b6e2e741966ccb72786dccef161e7cf",
+      "sha256": "02979825d327a442c0f5cf5bd09a64216d4a08bd99b8736b7e3e436f7b170d30",
+      "bytes": 1936,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_directory_indexing_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_directory_listing_controls.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_directory_listing_controls.php",
+      "baseline_blob": "9b3496794e5e129bd4c7f429ebeea5a52be4d3e1",
+      "target_blob": "b96765c8a9f5236c3ef837b704491d5d868ae596",
+      "sha256": "4220289a26b833d057b23e874d180fa82039978e56188a103958885053fd17b4",
+      "bytes": 1988,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -15 +15 @@ function provider_directory_indexing_controls_admin_action(string $action):never"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_document_roots.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_document_roots.php",
+      "baseline_blob": "6c7b69dfbdee4b040ad8b6ddcae010a571e9b1ec",
+      "target_blob": "8899d1a4720028ea8501e51d9bd43b48fb48171f",
+      "sha256": "d48dfa7d946232b9c63a84b6401fa03e213fab876565bb36b0bc0a56f669dc01",
+      "bytes": 1850,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_document_roots_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_force_ssl_controls.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_force_ssl_controls.php",
+      "baseline_blob": "a71abc74407e435b9bf74fef5706b6b1d1db2ee0",
+      "target_blob": "70d9935fb963a1391d73e398add41c3ee2f9fee7",
+      "sha256": "1ff0892f9878b2b94db6a861126173b19bfdea11181d720561ec6e9896eabad3",
+      "bytes": 1827,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -15 +15 @@ function provider_force_ssl_controls_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_forwarding.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_forwarding.php",
+      "baseline_blob": "40bec6e65f2cebd04a374dd5f1b1422d3563a10b",
+      "target_blob": "d3442cc3e83e22fa6076adff1583843515bd90ee",
+      "sha256": "999baa895389fce2f507778d1bb146992d475461278d383f45f2d106a80f5c09",
+      "bytes": 1565,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_forwarding_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_mailboxes.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_mailboxes.php",
+      "baseline_blob": "46f36a833e8181c1b6a49231b23ca55b77786059",
+      "target_blob": "79cd2598ed104d48a886b8e214925dbf7049adb8",
+      "sha256": "79dc10b379c882a334176e171c1ee02211742a674ae719d8ca41be23cc9936bb",
+      "bytes": 1353,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -17 +17 @@ function provider_mailbox_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_package_force_ssl.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_package_force_ssl.php",
+      "baseline_blob": "c089419bc974a986fcb540ea49fcf2b3d67a9098",
+      "target_blob": "2fe86a567c387d699e8f6a3f615de5f93c019693",
+      "sha256": "48ef938bdfe7fb110b234483bb3f2cbc9d6d4ecdbea1804e2850c50c5f32ecdb",
+      "bytes": 1796,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_force_ssl_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_package_php.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_package_php.php",
+      "baseline_blob": "230b07522b1771b783d31e2b55b54de4b32ea130",
+      "target_blob": "8c4e0c42b08ebf7f2ec537ea68da653307d12752",
+      "sha256": "262ee214a8bbe99fb72a169f0d573409f4c0f6d3cb7889a8452ccbd9dbd5f520",
+      "bytes": 1714,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_php_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_package_wordpress_installed.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_package_wordpress_installed.php",
+      "baseline_blob": "cf93f8cded045aacc6d1cef64e9f7058ee471e03",
+      "target_blob": "f91a7e991463a511bfa342e12aceace4729d3e06",
+      "sha256": "5a6d60de864fdd55ecebfb5a4e23a36dcb25c55acc583210f339b3228e406e47",
+      "bytes": 1955,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_wp_installed_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_password_reset_template.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_password_reset_template.php",
+      "baseline_blob": "1c8afd01f3c40219036961afb42623bcfe96c028",
+      "target_blob": "c66694d08339b00a35457ed09d2402af7863ae4a",
+      "sha256": "df95d7cf599ec55c9e0c0b98a39a55bc89c50b43e4e27ea4e27889e0939f401f",
+      "bytes": 3209,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -38 +38 @@ function provider_password_reset_template_admin_action(string $action):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_registrar.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_registrar.php",
+      "baseline_blob": "4fc7a0845cfbfa4909f2626ae64215b5579c1863",
+      "target_blob": "b2ee50b078a05bc75098d8bcd6f807f189c53a4e",
+      "sha256": "dc0629ba31e1959a45064aeafa37b12daceb6d286010a6bb2981aa081df1d953",
+      "bytes": 2157,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -8 +8 @@ function provider_registrar_admin_action(string $action):void {",
+        "@@ -13 +13 @@ function provider_registrar_admin_action(string $action):void {",
+        "@@ -19 +19 @@ function provider_registrar_admin_action(string $action):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_registration_periods.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_registration_periods.php",
+      "baseline_blob": "43bbde7e6af7cf6fd9aabc83d6e9cb9e3db98e2b",
+      "target_blob": "42a5119c302aed6436e8febfc5267a04e3d154f5",
+      "sha256": "7886ec6dd301cb9b33fb9b2f262cbe06bd4d3546f90e1c89c2469cc70fb0db3d",
+      "bytes": 1495,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -14 +14 @@ function provider_registration_period_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_schedule.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_schedule.php",
+      "baseline_blob": "24d5c687cac5a7d846f5d07caac0ee1733bad54a",
+      "target_blob": "ceaac8627891419d0007e92bc5ff5a5f656c921d",
+      "sha256": "6d7b8b2649ca271db8be392082b68cccdf77c6932c9a43611f256c76172ea601",
+      "bytes": 3069,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full small controller read: section-preserving redirect/back link is the delta. Existing action allowlist, exact identity/confirmation fields and owner/service destination remain; shared POST dispatcher performs CSRF and current administrator/permission checks before dispatch. Service scope is admission/navigation, not complete provider backend certification.",
+      "reviewed_diff_hunks": [
+        "@@ -7 +7 @@ function provider_schedule_admin_action(string $action):void {",
+        "@@ -22 +22 @@ function provider_schedule_admin_action(string $action):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_stackcp_access.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_stackcp_access.php",
+      "baseline_blob": "62d57849d913a3e3da2edac3051758423af4022a",
+      "target_blob": "570f7f771896c5922c79e223f54a70429ac7392d",
+      "sha256": "e7e2419407806c8e587fae10fb64639c5b3650ce241c34ed57e0c21d0a03f303",
+      "bytes": 2073,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full controller read: longer dispatch prefix precedes StackCP setup; confirmed read, package and bounded page inputs reach current-owner access refresh. Return includes advanced and both page parameters.",
+      "reviewed_diff_hunks": [
+        "@@ -17 +17 @@ function provider_stackcp_access_admin_action(string $action):never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/provider_stackcp_prerequisites.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/provider_stackcp_prerequisites.php",
+      "baseline_blob": "06af97f1f7889d3d57d0f021a550e1a0f66f90fd",
+      "target_blob": "240067c49a6472f7615e8805700bb9e26d411fdf",
+      "sha256": "41911e0208f76e0b74edd8d460e15df31087237feb711c7f2ea4949f1f201da5",
+      "bytes": 2787,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_controller",
+      "review_note": "Full controller read: key/assignment actions retain exact review hashes, bounded package IDs and acknowledgement; return page is string/regex/range bounded and both StackCP page fields are preserved.",
+      "reviewed_diff_hunks": [
+        "@@ -20 +20,2 @@ function provider_stackcp_admin_action(string $action): never {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/controllers/providers.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/providers.php",
+      "baseline_blob": "8204654f6be7865296a97af9ff86383964623de5",
+      "target_blob": "314e524eab0d0f05e7d2fb53529e86e0a93de83a",
+      "sha256": "50c38f2ef5152aa3a4d36a6a541ccf90f47f7efc4ea90686118a75edef306dca",
+      "bytes": 21813,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_dispatch_context",
+      "review_note": "Workspace helper include and every changed redirect read, with settings/inventory/domain-search action dispatch and selected service guards. Cloud focus is preserved, but ordinary cloud redirects lose section=cloud (HOST-UI-01). Unrelated operations controller bodies are outside this supplement.",
+      "reviewed_diff_hunks": [
+        "@@ -3,0 +4 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }",
+        "@@ -79 +80 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -83 +84 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -86 +87 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -94 +95 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -99 +100 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -103 +104 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -106 +107 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -109 +110 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -113 +114 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -116 +117 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -120 +121 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -127 +128 @@ function provider_inventory_admin_action(string $action):void {",
+        "@@ -135 +136 @@ function provider_settings_admin_action(string $action):void {",
+        "@@ -140 +141 @@ function provider_settings_admin_action(string $action):void {",
+        "@@ -151 +152 @@ function provider_settings_admin_action(string $action):void {",
+        "@@ -157 +158 @@ function provider_settings_admin_render(string $error):void {",
+        "@@ -234 +235 @@ function provider_domain_search_admin_action(string $action): void {",
+        "@@ -242 +243 @@ function provider_domain_search_admin_action(string $action): void {",
+        "@@ -248 +249 @@ function provider_domain_search_admin_action(string $action): void {",
+        "@@ -255 +256 @@ function provider_domain_search_admin_action(string $action): void {",
+        "@@ -259 +260 @@ function provider_domain_search_admin_action(string $action): void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/catalog_import.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/catalog_import.php",
+      "baseline_blob": "a42d262a173f72e4ba3c3515cc097d08027cdd6c",
+      "target_blob": "5424af60c2f914e4ab455d9d4404b3dc64a902b5",
+      "sha256": "eda88d8942557502cdfc9ec60f221bc1bd188aa56b86a0e98c7eb3878f524d84",
+      "bytes": 12117,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_view_and_destinations",
+      "review_note": "Full source read: fixed package.types/packages.list sources, exact preview hash and source retained on failed create/batch, bounded page/offset, explicit confirmations, local draft-only language, escaped values. Catalog controller and core source-bound import admission reused/traced.",
+      "reviewed_diff_hunks": [
+        "@@ -7 +7 @@ function provider_catalog_import_admin_view(array $user): void {",
+        "@@ -13,11 +13,17 @@ function provider_catalog_import_admin_view(array $user): void {",
+        "@@ -25 +30,0 @@ function provider_catalog_import_admin_view(array $user): void {",
+        "@@ -27,4 +32,35 @@ function provider_catalog_import_admin_view(array $user): void {",
+        "@@ -33 +69 @@ function provider_catalog_import_admin_view(array $user): void {",
+        "@@ -42 +78 @@ function provider_catalog_import_image_view(array $product,array $user): void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/catalog_variants.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/catalog_variants.php",
+      "baseline_blob": null,
+      "target_blob": "f3738f934a0cdb17b4758dc4095a08ede368344a",
+      "sha256": "352e36772c00fa324902aa67a19ddc8a06ef48705ac5731072535da075c40596",
+      "bytes": 5900,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_view_and_destinations",
+      "review_note": "Full new view read: direct owner/support boundary, exact product/revision/review identity preserved on failed POST, stale retry disables creation, new request ID generated only for a fresh form, fixed catalog action. Destination owner and create guards traced.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,65 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/hosting_catalog.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/hosting_catalog.php",
+      "baseline_blob": null,
+      "target_blob": "aea3cb202534e77000a74b4285c5b4aefff238d7",
+      "sha256": "a5257c68970f7711c447ef2dfedfbb0e82714834913ef2870101c14419ca6ce1",
+      "bytes": 13892,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_view_and_destinations",
+      "review_note": "Full new view read: request/project selectors, explicit convert/decline confirmations, setup and checkout preparation, product/plan review, checkout policy and publication retry identities, exact withdrawal identity, escaped content and fixed destinations. Service invariants remain in original core receipt.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,119 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_cloud.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_cloud.php",
+      "baseline_blob": "6c0aa8e386f52cbcb3342246f9e975c167aa76de",
+      "target_blob": "21dc02b9e6f057332705d16a0af41bb814ee38a8",
+      "sha256": "b10ef4863826f6ca0f017b31f6aa1175dfa0abad5596dd7444853334bfd1cb70",
+      "bytes": 4616,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_context",
+      "review_note": "Focused cloud-assignment view suppresses provider_cloud_sites.php while retaining cloud inventory, client links and history. Current profile/readiness/enabled-key display gates and fixed includes read.",
+      "reviewed_diff_hunks": [
+        "@@ -38 +38 @@ if($cloudLatest): ?><p>Last cloud refresh: <?=badge($cloudLatest['state'])?> ·"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_domain_search.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_domain_search.php",
+      "baseline_blob": "4d5818222f7beccb4816e9066d214f5f2c12f17e",
+      "target_blob": "387829e956b7d78348250a671e40870fd927931f",
+      "sha256": "0a194bb462ecad01c33c0f6696ae7d64d2e9857176f8e42f99d357fc485c7a17",
+      "bytes": 7624,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_context",
+      "review_note": "Domain-search history pagination now retains domains section; current profile/readiness gate and retained original configuration/profile revisions on failed POST inspected. No domain purchase is caused by the link.",
+      "reviewed_diff_hunks": [
+        "@@ -70 +70 @@ $searchAvailable=is_array($searchResult)&&$searchAttempt['state']==='checked'&&("
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_forwarding.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_forwarding.php",
+      "baseline_blob": "9eb1b977784c3ea3dd1efd7efff3e43a881a1a14",
+      "target_blob": "5350ad97a054727b6b41f73c344dff908ca77773",
+      "sha256": "db42a7d3b16fdd2a9679ca37c73a4c9035385a6daa779977abf764e60d68b622",
+      "bytes": 4472,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_view_and_destinations",
+      "review_note": "Full view read: direct repeated password field removed; CSRF/action, permission/event/context identities, explicit confirmation, bounded limits, current-versus-historical distinction remain. Destination configure/change uses current owner under staff lock/transaction. Pagination retains website section.",
+      "reviewed_diff_hunks": [
+        "@@ -16 +16 @@ if(!$forwardingReady): ?><form method=\"post\"><?php admin_action('provider_invent",
+        "@@ -18 +18 @@ if(!$forwardingReady): ?><form method=\"post\"><?php admin_action('provider_invent"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_registrar.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_registrar.php",
+      "baseline_blob": "fece6cfa518f3ac932f741ecfdea56c4c13b11e8",
+      "target_blob": "ef35617460b2c371447e81db205ad62943e2ba6e",
+      "sha256": "1df71257478eeddc417f3d4e3a15af7ef328b715661ee8d06ec9290871ab812a",
+      "bytes": 6228,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_context",
+      "review_note": "Registered-domain pagination retains domains section. Readiness, current complete-observation display gate, refresh ID, profile/link revisions, exact assignment POST actions and CSRF inspected.",
+      "reviewed_diff_hunks": [
+        "@@ -23 +23 @@ provider_settings_manager();"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_registration_periods.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_registration_periods.php",
+      "baseline_blob": "7f9f36e381b439bef6f8f7f9e9ea338028eb2d25",
+      "target_blob": "fdd8ecc8ed5f3e5ddda439e170f5b2aed5dd0cd6",
+      "sha256": "66c53f85f50905a90caaad5da3c243c1243ee0bd4e98e661d9314cf8a70851b5",
+      "bytes": 4384,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_context",
+      "review_note": "Both catalog and observation-history links retain domains section. Page parameters are string/digit/range bounded; current profile, readiness, exact retry profile/revision and enabled credential display gates inspected.",
+      "reviewed_diff_hunks": [
+        "@@ -32,2 +32,2 @@ if((int)$record['enabled']===1&&$record['has_credentials']): ?>",
+        "@@ -36 +36 @@ if((int)$record['enabled']===1&&$record['has_credentials']): ?>"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_schedule.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_schedule.php",
+      "baseline_blob": "f20d16074d77d76421fc32ee755df3685e31e201",
+      "target_blob": "924868ed0a49cc4c465d5398a2e51e5e483d8c39",
+      "sha256": "5ce251849c5865bd3489852a445089c7fc82004b4705a79b46a45f1be9d3ef9a",
+      "bytes": 6872,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_context",
+      "review_note": "History links retain services section. Owner, profile and inventory readiness, bounded page, pending/recovery rendering and exact schedule sequence are retained. Controller keeps owner admission and worker identity separate.",
+      "reviewed_diff_hunks": [
+        "@@ -34 +34 @@ $interval=$schedule['interval'];if(($_POST['action']??'')==='provider_inventory_"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_workspace/advanced.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_workspace/advanced.php",
+      "baseline_blob": null,
+      "target_blob": "a90c528c54c6f986d959a4854c0ccf37a45ff047",
+      "sha256": "b662d1d7decc1ac7eb3adce1f6a417eca9b59f2a201fc3d72f51f64ce67de3e6",
+      "bytes": 868,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_new_view",
+      "review_note": "Literal calls only to StackCP setup, password-reset-template and StackCP access renderers under the owner workspace. Fixed operations/documentation links. No provider work during this review.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,8 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_workspace/cloud.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_workspace/cloud.php",
+      "baseline_blob": null,
+      "target_blob": "a1f9b87f81a00e129f5fb9a263055be2910df985",
+      "sha256": "0cb0a347d95b464d5fc418f91ec7a919066f5e6fac9584a31a6ed37c5c96aeba",
+      "bytes": 1519,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_new_view",
+      "review_note": "Literal cloud inventory and provider-list includes; displayed observations are not represented as price, ownership or permission to buy. Ordinary cloud return URLs are affected by HOST-UI-01.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,11 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_workspace/connection.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_workspace/connection.php",
+      "baseline_blob": null,
+      "target_blob": "a4560d693957a4533332f5176606ef77f3b12822",
+      "sha256": "887a12366eeb9fc9b3b87ce30425daa38d3a61f45f294ddd50bafcb4499f411f",
+      "bytes": 6879,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_new_view_and_destinations",
+      "review_note": "Full connection form/history view read. General API key remains blank and is not confused with omitted current_password. Profile/revision, enabled/key, CSRF, explicit check/state buttons, escaped history and connection pagination retained. Settings owner/revision/transaction and check admission traced.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,50 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_workspace/domains.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_workspace/domains.php",
+      "baseline_blob": null,
+      "target_blob": "cb6213b5ae51962072a80ba01469a31e5fd3e185",
+      "sha256": "bc062c9f8e5a6cf77444ffb6ef6f26cb954a97202939a0f955f6de2c74482eac",
+      "bytes": 968,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_new_view",
+      "review_note": "Literal domain search, registration periods, mailboxes, registrar, contracts, expiry and renewal includes. Reads and purchases remain separate controller/service actions; selected section is not an authorization grant.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,14 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_workspace/services.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_workspace/services.php",
+      "baseline_blob": null,
+      "target_blob": "8723dabfc652782762f13beaa4feca752017a2e2",
+      "sha256": "0020e28e663890abfb47989d20fd4ca13eb4dfbf9b39f593c8e3302812ccc38e",
+      "bytes": 15467,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_new_view_and_destinations",
+      "review_note": "Full existing-services view read: current profile/readiness, explicit refresh, stale profile/key-context and moved-domain warnings, package/domain exact identities, active-client options and CSRF forms retained. Link/relink/unlink service admission inspected. No provider-inventory or provider-package-ID fragment targets exist (HOST-UI-01).",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,90 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/admin/views/provider_workspace/website.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/provider_workspace/website.php",
+      "baseline_blob": null,
+      "target_blob": "36a2f17c025e9507f666db2042fff7cce61bfe8a",
+      "sha256": "a467c81c0e4b6f04b8d64fd53ba79c2d3d626b7a19bef33f061da97fe931bbbb",
+      "bytes": 1165,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_new_view",
+      "review_note": "Literal observation, force-SSL/directory-change, forwarding and cloud-request includes/renderers only. No user-derived filename. Observation and mutation controls keep their dedicated service destinations.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,15 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/cloud_site_requests_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/cloud_site_requests_views.php",
+      "baseline_blob": "39b41c2e53bad23598fd977865a39571bc014b6e",
+      "target_blob": "0df5f6d46bf8c8c7f7e3990392c350bfc38106fa",
+      "sha256": "59c3d89f76615b182bba3d49d65937b85f88d8033e5ab8ee189409a33070fb64",
+      "bytes": 12943,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_form_admission",
+      "review_note": "Password helper emits nothing; POST remains exact-text parsed, CSRF-bearing and explicit-confirmation gated. Missing password becomes empty string and still selects owner authority in mutation calls. Confirmation URL carries fixed website section and validated grant ID; history links preserve website section and page.",
+      "reviewed_diff_hunks": [
+        "@@ -47 +47 @@ function provider_cloud_site_requests_password():void {",
+        "@@ -51 +51 @@ function provider_cloud_site_requests_confirmation_url(string $grantId):string {",
+        "@@ -125 +125 @@ function provider_cloud_site_requests_render(array $options,array $history,bool"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/directory_listing_controls_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/directory_listing_controls_views.php",
+      "baseline_blob": "5a33b56a3737eb99a1127828dc293d9f012a7070",
+      "target_blob": "4b13f8ef792d0fe0c2cf99e848fa11f1b946fc03",
+      "sha256": "a372f829149d939ba685f365c27e5641f0c1d86fa668ba89a523008b1d317827",
+      "bytes": 9223,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_navigation_clauses_and_destination",
+      "review_note": "Every changed pagination/return URL inspected; fixed website section is retained with the existing bounded page value and matching fragment. Owner renderer and controller/service admission inspected. Unchanged complete view/backend behavior is not certified.",
+      "reviewed_diff_hunks": [
+        "@@ -18 +18 @@ function provider_directory_indexing_controls_admin_render():void {",
+        "@@ -32 +32 @@ function provider_directory_indexing_controls_admin_render():void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/domain_registration_drafts_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/domain_registration_drafts_views.php",
+      "baseline_blob": "a8f8ce987264e2974ed85782832656de1b0728e8",
+      "target_blob": "a1d380447d6f408dd75923c07f1d329bdf33fa44",
+      "sha256": "9030fd373de0a57bd292dbca0ff114b8ffd5a56437338fc9d37b9750850bc169",
+      "bytes": 10338,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_form_admission",
+      "review_note": "Repeated owner password input removed. Existing CSRF, command/draft/revision/head/client-version fields retained; owner save passes empty string as non-null owner argument and current owner/session is checked under staff lock/transaction before retained command replay.",
+      "reviewed_diff_hunks": [
+        "@@ -49 +49 @@ function registration_drafts_editor(bool $owner,array $context,#[SensitiveParame"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/domain_renewal_dispatch_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/domain_renewal_dispatch_views.php",
+      "baseline_blob": "1160a99cbe72d77d8597518e5032515da59cf63a",
+      "target_blob": "865734f3bf61aa57314e72d2cfaee24cba838045",
+      "sha256": "3555cbe414ac48a79a258641473d3711d49c77eab3aa1aa68f5f10a6b377bd9b",
+      "bytes": 7718,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clauses_and_form_admission",
+      "review_note": "Three repeated password fields removed. CSRF, exact allocation/dispatch/review identities, unpaid invoice reservation confirmation and four explicit balance-charge checks retained. Dispatch current-owner/payments/ledger gate and commit-before-I/O/fence clauses traced; no complete re-review of renewal backend claimed.",
+      "reviewed_diff_hunks": [
+        "@@ -28 +28 @@ function domain_renewal_dispatch_owner_view(array $c,array $input=[]):void {",
+        "@@ -33 +33 @@ function domain_renewal_dispatch_owner_view(array $c,array $input=[]):void {",
+        "@@ -36 +36 @@ function domain_renewal_dispatch_owner_view(array $c,array $input=[]):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/domain_renewals_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/domain_renewals_views.php",
+      "baseline_blob": "dcf2d66fad6f9d32152f23d731cb494a76876cd4",
+      "target_blob": "aabb88cf5f1c0ebe62ceda5b48bfd98289038af8",
+      "sha256": "15a03c49e2cfb4e96755dec5c16d1a19442066021089b85683fb19f38bbbe26d",
+      "bytes": 4160,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_form_admission",
+      "review_note": "Owner review/decline password field removed; CSRF and exact request revision/event remain. Current owner admission occurs inside staff lock/transaction before event replay or request update; review stays pending and sends no renewal.",
+      "reviewed_diff_hunks": [
+        "@@ -21 +21 @@ function domain_renewals_render_history(array $doc,bool $admin):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/force_ssl_controls_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/force_ssl_controls_views.php",
+      "baseline_blob": "380d2425678cff7d8bb7c85221d0972615745ec2",
+      "target_blob": "2dbe84753aca1d5e6912bf395572494f1528aa15",
+      "sha256": "f80735eacd349114bf2ebe40c1db8590d114b357a368f2f5944c225322e0d0e4",
+      "bytes": 8863,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_navigation_clauses_and_destination",
+      "review_note": "Every changed pagination/return URL inspected; fixed website section is retained with the existing bounded page value and matching fragment. Owner renderer and controller/service admission inspected. Unchanged complete view/backend behavior is not certified.",
+      "reviewed_diff_hunks": [
+        "@@ -18 +18 @@ function provider_force_ssl_controls_admin_render():void {",
+        "@@ -32 +32 @@ function provider_force_ssl_controls_admin_render():void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/forwarding_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/forwarding_views.php",
+      "baseline_blob": "b0bedfd6534116da8d92e489ec0577ee29bdd3f8",
+      "target_blob": "7e3588f7992f3a19ca5570438ba8de91eab2def6",
+      "sha256": "0bf1a4e668c77bc6224588e6796cb5a56135152642a1719a3bb098f3e650f707",
+      "bytes": 2584,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_form_admission",
+      "review_note": "Owner review/decline password field removed; CSRF, expected event and fresh/current permission/resource checks remain in destination under staff lock/transaction. This path only changes local request review.",
+      "reviewed_diff_hunks": [
+        "@@ -13 +13 @@ function provider_forwarding_render_history(array $doc,bool $admin):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/password_reset_template_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/password_reset_template_views.php",
+      "baseline_blob": "ab57e31e2c446afc2182de995206cd8437954162",
+      "target_blob": "c132e0ad416b968104668228f41a41072c0aa60f",
+      "sha256": "14b9c739f20fdcd3eb45621f4dec828c1684463859090ebed83b893d513badf3",
+      "bytes": 9283,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_navigation_clauses_and_destination",
+      "review_note": "Every changed pagination/return URL inspected; fixed advanced section is retained with the existing bounded page value and matching fragment. Owner renderer and controller/service admission inspected. Unchanged complete view/backend behavior is not certified.",
+      "reviewed_diff_hunks": [
+        "@@ -39 +39 @@ function provider_password_reset_template_admin_render():void {",
+        "@@ -69 +69 @@ function provider_password_reset_template_admin_render():void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/service_observations_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/service_observations_views.php",
+      "baseline_blob": "6ff2162bcb954bf9e2b1491badd8e7276688e0ec",
+      "target_blob": "3a23e01f446246d7a41e47c2a963c2c8cbe71448",
+      "sha256": "69e0ae937c6fbd1468bc9b629e26072fccd623e811bb90085e98f45e1154c2d4",
+      "bytes": 5821,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_navigation_clauses_and_destination",
+      "review_note": "Every changed pagination/return URL inspected; fixed website section is retained with the existing bounded page value and matching fragment. Owner renderer and controller/service admission inspected. Unchanged complete view/backend behavior is not certified.",
+      "reviewed_diff_hunks": [
+        "@@ -19 +19 @@ function service_observations_admin_render():void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/stackcp_access_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/stackcp_access_views.php",
+      "baseline_blob": "55ab36587c7b7c2505aa13e5abaf7f7305ab9a2a",
+      "target_blob": "0d2f5d16ee6359cbb7627d4af1ab3c147bca581f",
+      "sha256": "a45304a8ad476325ca3258f553cd6a3c8714db2462fe46c60e1aa46e20a71ba8",
+      "bytes": 5611,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_navigation_clauses_and_destination",
+      "review_note": "Every changed pagination/return URL inspected; fixed advanced section is retained with the existing bounded page value and matching fragment. Owner renderer and controller/service admission inspected. Unchanged complete view/backend behavior is not certified.",
+      "reviewed_diff_hunks": [
+        "@@ -48 +48 @@ function provider_stackcp_access_admin_render():void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/app/providers/stackcp_prerequisite_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/stackcp_prerequisite_views.php",
+      "baseline_blob": "677a7bc32650f7df59a6e06a7e97d08d8317832d",
+      "target_blob": "a4d3bbd75590144144721e9367023c3a6cd26d72",
+      "sha256": "f94ea36cb5eb5f85608ef71a044a754f938e2f704b759d4d574bd93ef052e62a",
+      "bytes": 9865,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_navigation_clauses_and_destination",
+      "review_note": "Every changed pagination/return URL inspected; fixed advanced section is retained with the existing bounded page value and matching fragment. Owner renderer and controller/service admission inspected. Unchanged complete view/backend behavior is not certified.",
+      "reviewed_diff_hunks": [
+        "@@ -73 +73 @@ function provider_stackcp_admin_render(): void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/assets/css/hosting-comparison.css",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/assets/css/hosting-comparison.css",
+      "baseline_blob": null,
+      "target_blob": "923a4bdf456f416404af007f8a2f81967ec40f0d",
+      "sha256": "c22207ed65f0cb3a34ecace16ed63cc733a3e6fc87e645a0d982d036a89b3403",
+      "bytes": 5532,
+      "change": "added",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_styles_only",
+      "review_note": "Full stylesheet read: scoped comparison selectors, horizontal scrolling and focus outlines, 1–4-column widths, responsive sticky first column and print rules. Source-only: no visual, contrast, keyboard or responsive browser approval.",
+      "reviewed_diff_hunks": [
+        "@@ -0,0 +1,62 @@"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/includes/layout/catalog.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/catalog.php",
+      "baseline_blob": "4f48d2496a382907f36b436b3b380722083ac649",
+      "target_blob": "6e692f4272c9a7d1e3eac5a8a688d33e94fc1a2c",
+      "sha256": "6b53239075e428d93c3f1e95dec48289ed6da4eae8bdd7b8946472778a47f437",
+      "bytes": 3159,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_clause_and_destination",
+      "review_note": "Software family or explicit SOFTWARE/WEBSITE/APP SKU prefix selects fixed portal software=1 link. Existing escaped product terms remain. Portal auth/render destination traced; no GET purchase and no software-service authorization clearance. Parent software lane owns SW-AUTH.",
+      "reviewed_diff_hunks": [
+        "@@ -4 +4 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/includes/layout/hosting_fulfillment.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/hosting_fulfillment.php",
+      "baseline_blob": "df933ba5f1d140bfdb59ec551a8004bcf025f2b6",
+      "target_blob": "b86b350875c52edd26183c5f33cec65f21c180a3",
+      "sha256": "68500a68ad3a541261416b36fd94f6630cf0085f86ad90859ed6f1529c14935d",
+      "bytes": 9866,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_layout_and_destination",
+      "review_note": "Full layout read: owner-only escaped saved assignment status, explicit current-profile approval/recovery/confirmation forms, unknown/unresolved outcomes without retry button, verified-checkout explanatory message. Assignment link has HOST-UI-01. Provider-service correctness remains bounded by original core review.",
+      "reviewed_diff_hunks": [
+        "@@ -10 +10,19 @@ function hosting_fulfillment_ui_hidden(string $action,array $fields):void {",
+        "@@ -27 +45 @@ function hosting_fulfillment_ui(ServiceOrderDocument $order):void {",
+        "@@ -60,0 +79 @@ function hosting_fulfillment_ui(ServiceOrderDocument $order):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/includes/layout/hosting_order_links.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/hosting_order_links.php",
+      "baseline_blob": "4d4fceb1879b94245917ba770e0554370230c5c3",
+      "target_blob": "bd3beec8995c8d9afd8e698a40bcf7f7709a156c",
+      "sha256": "81633d29f4580f11fc78aa1422fdb8909efc4600667c1ec83be977fa1e8be155",
+      "bytes": 6392,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "full_source_layout_and_destination",
+      "review_note": "Full layout read: client-safe progress, owner-only setup forms, original catalog mapping carried forward and manual remapping form suppressed for catalog-origin order. requiresVerifiedPayment is forwarded for messaging; enforcement is server-side in original core receipt.",
+      "reviewed_diff_hunks": [
+        "@@ -9 +9 @@ require_once CWP_CODE_ROOT.'/includes/layout/provider_plan_catalog.php';",
+        "@@ -23 +23 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $",
+        "@@ -36 +36,5 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    },
+    {
+      "path": "site/includes/layout/provider_plan_catalog.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/provider_plan_catalog.php",
+      "baseline_blob": "cf3f738f4ffa88271f73bcad29a285506c687fbd",
+      "target_blob": "209187e1f10cb580821f81b35021536824afe6c0",
+      "sha256": "81760284d4d115e97c44c5563d7b103bc7233cbf68fd78cbc960aab5486ffa26",
+      "bytes": 13962,
+      "change": "modified",
+      "prior_coverage": "inventoried_not_reviewed",
+      "coverage": "changed_source_review_complete",
+      "review_depth": "changed_function_and_destination",
+      "review_note": "Entire changed provider_plan_catalog_order_ui function read: owner/recurring lock, exact original mapping lookup and SHA256 comparison, fresh validity check, no silent substitution with latest mapping, exact form identity. Other plan editor functions outside this supplement.",
+      "reviewed_diff_hunks": [
+        "@@ -72,3 +72,4 @@ function provider_plan_catalog_ui(ServicePlanDocument $plan):void {",
+        "@@ -77,0 +79 @@ function provider_plan_catalog_order_ui(ServiceOrderDocument $order):void {"
+      ],
+      "whole_module_clearance": false,
+      "runtime_or_visual_approval": false
+    }
+  ],
+  "dependency_context_count": 41,
+  "dependency_context": [
+    {
+      "path": "docs/ADMIN_20I_SESSION_INTEGRATION_2026-10-30.md",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/ADMIN_20I_SESSION_INTEGRATION_2026-10-30.md",
+      "target_blob": "c587be17e7d69ce76210fa6b2878e2db41966691",
+      "sha256": "04349947eb9d1a29f6622d3b92bf1265b0a067f9f344945c96673f40189dce37",
+      "bytes": 10820,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Intent sections: current session replaces repeated password; seven allowlisted workspaces; literal includes; section/focus preservation. Historical self-report is not current independent approval.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/workspace.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/workspace.php",
+      "target_blob": "523373d8c11790733b428910e66924645b6a2d14",
+      "sha256": "3efc6edd2f57fad9219013acd9bafc2f094c93373a754ce5fed0972ff630dbf1",
+      "bytes": 804,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "All 15 lines: allowlisted sections; fixed cloud focus; missing/invalid section defaults overview; local URL construction.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/views/providers.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/providers.php",
+      "target_blob": "088aee9974991a0ececaa511bbc00d416350d279",
+      "sha256": "872b1481e2159b328f6e65fb525f3bffc600974d490c8a79aaa53550f9d936a6",
+      "bytes": 6455,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owner-projected profile, cloud-focus early branch, fixed section map, overview/default and include selection; handoff destination trace.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/actions.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/actions.php",
+      "target_blob": "0c757047029955e9cd3b7532f99a69f56c292d74",
+      "sha256": "a843d78bdad8018ab3afd4041b0b385519ed3eb986930cf117946f72b057abc8",
+      "bytes": 4825,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "POST entry and provider/catalog/hosting dispatch clauses: check_csrf then require_admin and staff_action_permission; parent owns full shared dispatch.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/router.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/router.php",
+      "target_blob": "332c8703b7bd6ab6cb97aab1d99be8ff18292a19",
+      "sha256": "c0f733638c485cdc947e1cd5746f0e195b9c6df483c3dcf247971e1d1a57547a",
+      "bytes": 9899,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "provider-settings route to owner workspace renderer only; parent owns broader routing.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/includes/layout/admin.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/admin.php",
+      "target_blob": "9e9d1ab5e2ccf4f609bf4726d45a4210eadf9c34",
+      "sha256": "ae25c5ac834cf16da548ddd7db34864a5a579415dc338f966f55c657f8870b66",
+      "bytes": 11166,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "admin_action CSRF/action helper and admin_input repeated-password omission; parent owns admin_session_matches implementation.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/settings.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/settings.php",
+      "target_blob": "fa5b61da68cb18f3cc52dd31f48859bc8da0999c",
+      "sha256": "732c929b8196668afe95c47ea56014ee7c0c5a3f6c1a90b2e918435055d7873b",
+      "bytes": 6665,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Current manager/owner, support refusal, admin_session_matches, locked save/state and profile revision checks.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/checks.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/checks.php",
+      "target_blob": "b652c9e8300e5865ce65cb58613b0a29fea5a762",
+      "sha256": "656a5356b048305d6ae63205a488e551ae05bef5e0cae176a527764ad1d7e714",
+      "bytes": 11107,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Connection check durable admission/current authority; core review reused for transport boundary, no new runtime execution.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/inventory.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/inventory.php",
+      "target_blob": "64c2a16fd7700ebb20037efb7b7b2d5211b97626",
+      "sha256": "0e364dc91975fb3b28576ce32edfab34fb3cec4da6733ba4749cc6cb4275e863",
+      "bytes": 75374,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Core authority and refresh reused; inspected package/domain link, unlink and relink entrypoints and transaction ownership assertion.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/catalog.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/catalog.php",
+      "target_blob": "b1129d4a06dab514aa5c415b43d4753dcf6baf73",
+      "sha256": "b14e00fdae172fc823764eb642fc852fdec08b6fc17f7076808bcfc9a0ad5ce3",
+      "bytes": 17469,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Catalog import action branches: CSRF, current owner, strict operation/source/revision/offset, confirm and exact preview IDs.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/catalog_variants.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/catalog_variants.php",
+      "target_blob": "d8202758eab62a6351e7b402610eb10e8d06df79",
+      "sha256": "a6d4995a5aff5c8e461593968d6113ec2f7f2dcdb1333cfc687ef11a17ead283",
+      "bytes": 2199,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Full controller: exact parser/request/product/revision/review, confirmation and owner destination.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/hosting_catalog.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/hosting_catalog.php",
+      "target_blob": "09fb21b3ab066df7bc090f6e74eb11642e209630",
+      "sha256": "252ea976e81f84bc456a3baa78fa37b441298b8593fc9456fac7ccf944affec5",
+      "bytes": 9018,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Core source receipt reused; allowlisted field/CSRF helpers and confirmation/retry composition explicitly read.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/catalog_import.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/catalog_import.php",
+      "target_blob": "a5df5fad04103e22fdb284f35b8fa280b167e0fe",
+      "sha256": "61d12498e56bb28be0a9c211bf0f06da9896a47d135e8bfc423ba2444d62ebf0",
+      "bytes": 16811,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owner/session and owning-lock/transaction/current complete observation context; original core import/create/batch review reused.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/catalog_variants.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/catalog_variants.php",
+      "target_blob": "8db01176edb745103714a71666e5d173db3b2cff",
+      "sha256": "89ff0ca2ef72bb14f544b4481b6992510599f72883b4943451ce2a4158d414a5",
+      "bytes": 8061,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owner rejects client/contact/support session; original core create/replay/stale-source review reused.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/hosting/fulfillment_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/hosting/fulfillment_views.php",
+      "target_blob": "2bb84c6f32c636eb9421606de0adec803ac63b14",
+      "sha256": "38f09c7ad49d47dcfa64b8bba44560d4970e4bf101e474dc90d804f5a4774f01",
+      "bytes": 11132,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact assignment-state/navigation construction and original owner-only view context; source of HOST-UI-01.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/hosting/order_link_views.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/hosting/order_link_views.php",
+      "target_blob": "26e7237409faea9fe6e874bb4bccb9ea22216a18",
+      "sha256": "54bb2d422fa6d212b25b6e4b7e9d5b275693c0f71aa602ae5b6e256dff24aa61",
+      "bytes": 7541,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Original core context review reused for owner/client-safe projection and original catalog_origin.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/includes/layout/service_orders.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/service_orders.php",
+      "target_blob": "768258ece8d5843876d98a73213efc290884adc2",
+      "sha256": "c8ecac27b89e9ad69f25250da0332042c4c8b138802cff487ae92564127d1496",
+      "bytes": 9169,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "format2 requiresVerifiedPayment derivation, manual command removal and hosting layout call; no complete re-review.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/includes/layout/hosting_catalog.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/includes/layout/hosting_catalog.php",
+      "target_blob": "f5070462f24461f5aefa5c655c18b407e9a634be",
+      "sha256": "c8b3777fe2a12666b18977ad1ce5448382b1b044ed46ddb3c3649b032a28219a",
+      "bytes": 14869,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Entire comparison tail and validator now read, closing original scoped gap: bounded safe page, exact offer/hash, escaped content, fixed local links, 4-offer table grouping, monthly/annual navigation and checkout policy disclosure.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/portal/controllers/router.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/portal/controllers/router.php",
+      "target_blob": "8fba8a8b4ccee57f74f594c0762d4694a1cd0155",
+      "sha256": "f67d9b8c99ecb53ecd2efd0ff96fa950f3e895e5bddea5994018cd879528f0ed",
+      "bytes": 9295,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "software=1 fixed destination through existing studio_client/auth view; hosting target dispatch. Parent owns full shared portal routing.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/domain_registration_drafts.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/domain_registration_drafts.php",
+      "target_blob": "9088919a0031b04d3a807d70e236439b1868d57a",
+      "sha256": "f30513826763641a17961cb114786f786ede63037892de4cd125b37b358d8d96",
+      "bytes": 2039,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owner save argument flow after omitted password and existing CSRF dispatcher; exact client/version/revision/command inputs.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/domain_registration_drafts.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/domain_registration_drafts.php",
+      "target_blob": "05e685ea9b7c68765beea1466149908dee84833a",
+      "sha256": "570ba71f0cb778897431f0c7325c00383d2449299589ec98337ceeff3667d820",
+      "bytes": 13540,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Current owner/session and target auth version under staff lock/transaction precede replay/mutation.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/admin/controllers/domain_renewal_dispatch.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/controllers/domain_renewal_dispatch.php",
+      "target_blob": "18374888447a371cb6bbc15c3efaaf25d1e50b42",
+      "sha256": "4bcb8a13ec525b36e6faeee12e1bf723f5d5f9bb24d6e41375afe15ff390867f",
+      "bytes": 3390,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "CSRF, owner/payments readiness, exact allocation/send inputs, four explicit review checks, fixed navigation.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/domain_renewal_dispatch.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/domain_renewal_dispatch.php",
+      "target_blob": "cfaa878e065249797ef917fcdf5806984ede6b11",
+      "sha256": "ae5877c6b2ed6131fd2652b86b5c6c145d87b9748d9e134a821228961ea5591c",
+      "bytes": 37853,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owner gate, locked send admission and prior unresolved fence, durable approval, original context before I/O; selected clauses only.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/domain_renewals.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/domain_renewals.php",
+      "target_blob": "448d73d9338f99ee73987972d6c470e311a78662",
+      "sha256": "eb167e619e6f2849d8d156d7aa9503bd6ff7003221c694f821cd48558cfab11f",
+      "bytes": 12854,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Locked current-owner local review/decline admission, exact revision/event replay and current assignment recheck.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/forwarding.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/forwarding.php",
+      "target_blob": "fdb6c76fbcaadb307ff25c3475682144852c895e",
+      "sha256": "dc1e9863a5bf4bf012ec61757e76407519a6741e947f9c76dcd8dc5375f43d92",
+      "bytes": 13375,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Locked configure/create/change; current owner via mailbox actor, retained permission/context/event hashes and limits.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/mailbox_policies.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/mailbox_policies.php",
+      "target_blob": "bdac9e36fb0bda903068af657cbdf15ce2e2c467",
+      "sha256": "13294085019c9e81d88f363c26c8a676cf6712537ac578b348e1c30fdc43d6df",
+      "bytes": 9724,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "provider_mailbox_actor owner selects provider_settings_owner for non-null empty string; current policy resource and owner-version checks.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/cloud_site_requests.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/cloud_site_requests.php",
+      "target_blob": "95d13d8d7214042dd71b2158dd5bb763df9c1bb5",
+      "sha256": "ac5c3c666c916b26081b6f9a5dbef8d588ca942dae9b10164213509014d54af0",
+      "bytes": 24279,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Current primary-client versus owner actor, locked dispatch admission, exact IDs/context and retained-attempt replay destination.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/cloud_assignment.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/cloud_assignment.php",
+      "target_blob": "feb062efd0828a8e766f85a067a8ab7557aa7adf",
+      "sha256": "f3e29659f51d65b9bc54c0537ecc74eec3041556840a6ee21d572af129f62413",
+      "bytes": 36572,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owning inspect lock/transaction; profile/revision/credential and latest fresh complete cloud observation context.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/cloud_site_confirmation.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/cloud_site_confirmation.php",
+      "target_blob": "e1afc5fac810a73a32cf7f8e52849d8091929e1e",
+      "sha256": "5c74189fbe1c4c674afc22a2dfa6710dde336a9782f9c6c2a92a580f0e9fa2ca",
+      "bytes": 22426,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Selected current-owner confirmation admission located; original source-only core distinctions retained.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/package_php.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/package_php.php",
+      "target_blob": "c414c974a34c9ace938f7cf8b939d22c4f050efd",
+      "sha256": "77ca32d7092919dc374c6e7cf3e46aeeb107b5d8028d3f8ddd8b20736d4185b4",
+      "bytes": 25313,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact binding refresh delegates to provider_inventory_refresh_attempt; share checks owner inside transaction.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/package_force_ssl.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/package_force_ssl.php",
+      "target_blob": "2a2ce155253c3f5afbc465aeac483c8ef8a751e9",
+      "sha256": "54f83c0cf894558830206be64bf72e666182f027da9d6a13f6c1c257650c655b",
+      "bytes": 26811,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact binding refresh delegates to provider_inventory_refresh_attempt; share owner admission located.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/directory_listing.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/directory_listing.php",
+      "target_blob": "744a8946e2b065dbfed305999f97ce02492e06b0",
+      "sha256": "f96904b7826b37f487d9ed60a8a3aad46c13e97f20096e667269bbfbc9dccc1c",
+      "bytes": 28226,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact binding refresh delegates to provider_inventory_refresh_attempt; share owner admission located.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/document_roots.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/document_roots.php",
+      "target_blob": "482f1a0ba613cfe3bfc9fd2081f4b0ffcdd53a5f",
+      "sha256": "56f02eff5e74f30babaea4fd4ee838f90dcbb1b1b58870631fccb080ae71cb15",
+      "bytes": 28870,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact package binding refresh delegates to provider_inventory_refresh_attempt; share owner admission located.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/package_wordpress_installed.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/package_wordpress_installed.php",
+      "target_blob": "6bbb12e80bd436729e4dbe89e4cb14dfb36a03fc",
+      "sha256": "b1b33659535c783c0b8362aa6fb325e634023ea1ba16e21ed47161df53d97145",
+      "bytes": 27741,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact binding refresh delegates to provider_inventory_refresh_attempt; share owner admission located.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/registration_periods.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/registration_periods.php",
+      "target_blob": "3e6a181759a2da91335a3bf8f7600112ecb7475c",
+      "sha256": "050809c8ba48f361cb4492d010fc45d6f00fcc4bbf5edbf99c0648edf46c9dd0",
+      "bytes": 10528,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Owner/profile/current revision and credential-bound intent; refresh delegates fixed common operation.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/registrar.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/registrar.php",
+      "target_blob": "2ca689436ddd22393cd0e4161d4fa1951567f752",
+      "sha256": "1a75ca3a0a4bbd613c58c64e4cb7fd21796c7982ce945de56083fb4d349bf31b",
+      "bytes": 9058,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Exact link/relink/unlink current-owner destinations located; core inventory model unchanged by UI redirect.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/force_ssl_controls.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/force_ssl_controls.php",
+      "target_blob": "6d40d96a7a1791903993e7b1efd24232e57f1217",
+      "sha256": "73c83ebb2667b5c48188cdb6f8e5ca12429ba58e61683c868623a8940f848172",
+      "bytes": 30391,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Selected change admission: owning staff mutex, exact current owner/binding/anchor/request, unresolved fence and durable grant before I/O.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/directory_listing_controls.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/directory_listing_controls.php",
+      "target_blob": "82b8ca7b24bb36e337e8dfe39951d7b5093d4e68",
+      "sha256": "de2d9a5ad784662fa36d75b390c0ae6c8fd7eaae7a367b2562c8bcdfad161a7f",
+      "bytes": 32000,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Selected change admission: owning staff mutex, exact current owner/binding/anchor/request, unresolved fence and durable grant before I/O.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/stackcp_access.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/stackcp_access.php",
+      "target_blob": "a2153d069c3e2fe2e2786551bc5be9683f150361",
+      "sha256": "c99cd1da12949563802750593d0c5b21522f998186a80b6a8475f9b5f2737c57",
+      "bytes": 9097,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Access refresh current-owner and exact review hash under staff lock, then fixed inventory read.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/password_reset_template.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/password_reset_template.php",
+      "target_blob": "bacd0df7d74b5b69ace404f2dc9846f0e76fbf62",
+      "sha256": "15bb8bddc782acf9f06e700076715c5f1ae07048d04b7321995c892242aea63e",
+      "bytes": 39882,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Current owner helper and change/verify/recovery admission locations traced; no complete backend re-review.",
+      "whole_module_clearance": false
+    },
+    {
+      "path": "site/app/providers/schedule.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/providers/schedule.php",
+      "target_blob": "697ccec732cabfb6c59daf1870c90d8277b2c4ce",
+      "sha256": "dc8a7c8f5c086441e82c1810ddcc76a1d38313cdad99ee55356c88d60ee2e02c",
+      "bytes": 17754,
+      "coverage": "selected_dependency_context_or_original_review_reuse",
+      "review_note": "Configure/recovery owner boundaries and controller worker handoff checked; scheduler correctness not re-certified.",
+      "whole_module_clearance": false
+    }
+  ],
+  "additional_gap_closed": {
+    "path": "site/includes/layout/hosting_catalog.php",
+    "scope": "Comparison tail and validator complete source read; not browser/visual approval."
+  },
+  "findings": [
+    {
+      "id": "HOST-UI-01",
+      "priority": "P3",
+      "category": "navigation_integration",
+      "title": "Some hosting handoff and cloud action returns still open overview after the section split",
+      "status": "confirmed_from_exact_source",
+      "runtime_probe": false,
+      "evidence": [
+        {
+          "path": "site/app/hosting/fulfillment_views.php",
+          "lines": [
+            78,
+            84
+          ],
+          "detail": "Assignment URL has no section; fragment is provider-inventory or provider-package-ID."
+        },
+        {
+          "path": "site/includes/layout/hosting_fulfillment.php",
+          "lines": [
+            26
+          ],
+          "detail": "New Review client access link renders the saved assignment URL."
+        },
+        {
+          "path": "site/app/providers/workspace.php",
+          "lines": [
+            8,
+            11
+          ],
+          "detail": "Without section or cloud-assignment focus, selected section is overview."
+        },
+        {
+          "path": "site/admin/views/providers.php",
+          "lines": [
+            37,
+            52
+          ],
+          "detail": "Overview branch omits services controls; services child is included only for that selected section."
+        },
+        {
+          "path": "site/admin/views/provider_workspace/services.php",
+          "lines": [
+            6,
+            32
+          ],
+          "detail": "Service inventory and package cards do not define either fragment target."
+        },
+        {
+          "path": "site/admin/controllers/providers.php",
+          "lines": [
+            84,
+            100,
+            128
+          ],
+          "detail": "Cloud preparation, refresh and assignment return preserves focus when present, otherwise passes empty query and loses ordinary cloud section."
+        }
+      ],
+      "reproduction_by_source": [
+        "Open the saved active/confirmed hosting assignment card as the current owner and follow Review client access. The emitted URL lacks section=services. The destination chooses overview and cannot resolve either emitted fragment.",
+        "Submit normal cloud refresh or assignment action while in section=cloud without focus=cloud-assignment. After the authorized action, the changed redirect passes no section and selects overview."
+      ],
+      "impact": "Owner loses the intended review/action context and must choose the workspace again. No provider write, access grant, payment, or cross-client exposure is performed by these URLs; no authority bypass is claimed.",
+      "correction_invariants": [
+        "Client-access handoff must explicitly select services and use a fragment that exists on the inventory or exact package card; retain the current owner gate.",
+        "Ordinary cloud action returns must select cloud while preserving the existing focused cloud-assignment route when explicitly present.",
+        "Navigation must remain fixed local URLs with allowlisted section names; selecting a section must not become provider/assignment authority."
+      ]
+    }
+  ],
+  "coverage_limits": [
+    "All 51 previously unreviewed changed clauses are now source-reviewed, but review depths differ and are recorded per path. This is not complete backend certification for every destination.",
+    "No browser, screenshots, visual comparison, keyboard/mobile/print accessibility execution, HTTP render, PHP runtime, database, migration, service, provider, real account/payment/mail, remote write or Actions polling was performed.",
+    "The shared current-session helper implementation and broader shared administrator/portal routing remain parent-owned; this supplement verifies callers and selected entry gates, not all shared identity internals.",
+    "Historical runtime receipts remain historical and bounded; no old test pass is promoted to independent present-day approval. Original core coverage limits and FIN-01/FIN-02 remain unchanged.",
+    "Software catalog link routing was reviewed only as a fixed local GET destination. Parent software lane owns SW-AUTH and complete software mutation/entitlement authority review.",
+    "Provider operation backends for all nested workspace tools were not re-audited end to end; selected current-owner, exact-binding, lock and unresolved-outcome admission clauses were traced as dependencies.",
+    "HOST-UI-01 was established by source composition only. Its browser appearance and any additional unlisted legacy deep links were not executed or exhaustively audited."
+  ],
+  "activity_attestation": {
+    "source_edits": false,
+    "git_index_or_ref_changes": false,
+    "database_or_service_activity": false,
+    "provider_or_payment_or_mail_activity": false,
+    "remote_writes": false,
+    "actions_polling": false,
+    "runtime_probes": false,
+    "browser_activity": false,
+    "writes": [
+      "primary-hosting-ui-review.md",
+      "primary-hosting-ui-review.json",
+      "write-primary-hosting-ui-review.py"
+    ],
+    "writes_location": "/workspace/scratch/8cc2b4f257ab"
+  }
+}

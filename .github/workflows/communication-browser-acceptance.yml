@@ -1,0 +1,151 @@
+name: Current owner communication browser acceptance
+on:
+  push:
+    branches: [chatgpt/communication-browser-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: communication-browser-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/communication-browser-20261101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reproduce exact communication fixture repairs and verify retained guards
+        run: |
+          git merge-base --is-ancestor 44d00efb72363d7ebfae81180a404d60af5d45c5 HEAD
+          python3 tools/integration/communication_browser_apply.py
+          python3 -m venv "$RUNNER_TEMP/communication-source-python"
+          "$RUNNER_TEMP/communication-source-python/bin/pip" install beautifulsoup4 requests
+          mkdir -p qa/communication-source
+          "$RUNNER_TEMP/communication-source-python/bin/python" tests/owner_browser_forms_test.py > qa/communication-source/form-contract.json
+          python3 tests/communication_browser_fixture_contract.py > qa/communication-source/communication-contract.json
+          python3 tests/core_browser_fixture_contract.py > qa/communication-source/core-contract.json
+          python3 tests/installed_owner_authority_test.py > qa/communication-source/authority-contract.json
+          python3 tests/acceptance_artifacts_test.py --report qa/communication-source/helpers.json
+          python3 tools/build.py --refresh
+          git diff --exit-code -- site foundation tools/build.py tools/update tools/structure VERSION START-HERE.txt .github/workflows
+          git diff --check
+      - name: Record ordinary corrected files on this isolated branch only
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- tests docs
+          if ! git diff --cached --quiet; then
+            git commit -m 'test(browser): reconcile current-owner mail scheduling review and trial controls'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/communication-browser-20261101'
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=os.environ['EXPECTED_HEAD']:raise SystemExit('Concurrent branch change; refusing overwrite')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=remote:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact ordinary source',head)
+          PY
+      - name: Preserve source identity and evidence even on failure
+        if: always()
+        run: |
+          mkdir -p qa/communication-source
+          git archive --format=tar.gz HEAD > qa/communication-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/communication-source/identity.txt
+          git status --porcelain > qa/communication-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: communication-browser-source-${{ github.sha }}
+          path: qa/communication-source/
+          if-no-files-found: error
+          retention-days: 14
+  installed:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare synthetic PHP database and Chromium only
+        run: |
+          docker build -t cwp-communication-session - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-communication-session php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/communication-bin" qa/communication-session
+          cat > "$RUNNER_TEMP/communication-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-communication-session php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/communication-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/communication-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/communication-bin" >> "$GITHUB_PATH"
+          python3 -m venv "$RUNNER_TEMP/communication-browser-python"
+          "$RUNNER_TEMP/communication-browser-python/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/communication-browser-python/bin/python" -m playwright install --with-deps chromium
+      - name: Exercise installed communication forms CSRF and same-owner revocation
+        run: |
+          "$RUNNER_TEMP/communication-browser-python/bin/python" tests/communication_session_installed.py
+          git diff --exit-code
+          git diff --exit-code 44d00efb72363d7ebfae81180a404d60af5d45c5 HEAD -- site foundation tools/build.py tools/update tools/structure VERSION START-HERE.txt
+      - name: Preserve complete results and synthetic captures including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: communication-browser-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: qa/communication-session/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,installed]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Focused current-owner communication preparation, encrypted mailbox profile and diagnostic authorization passed on both synthetic databases, with unchanged shipping code. The complete historical browser/update journey and main integration remain separate. No external mailbox connection, production deploy, provider operation, message delivery, payment or release.' >> "$GITHUB_STEP_SUMMARY"

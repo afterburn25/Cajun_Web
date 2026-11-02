@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit']})
@@ -15,7 +16,7 @@ def run_browser(env,browser):
     lead=db("SELECT * FROM ci_leads WHERE service='Website review' ORDER BY id LIMIT 1")[0];detail=root+'?view=website-review&id='+str(lead['id'])
     r=submit(owner,detail,'reviews_setup',{'current_password':OWNER,'csrf':'invalid'})
     check('Review setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='website_reviews_schema_version'"))
-    r=submit(owner,detail,'reviews_setup',{'current_password':'incorrect'});check('Review setup requires owner password','current password' in r.text.lower())
+    refuse_owner_action(env,owner,detail,'reviews_setup',{})
     r=submit(owner,detail,'reviews_setup',{'current_password':OWNER});check('Review setup preserves existing inquiry and does not guess its URL',db('SELECT * FROM ci_leads WHERE id=?',[lead['id']])==[lead] and not db('SELECT * FROM ci_website_reviews') and 'Start this review' in r.text)
     r=submit(owner,detail,'reviews_adopt',{'website':'example.org/legacy'})
     check('Explicit HTTP legacy adoption starts review',r.status_code==200 and 'https://example.org/legacy' in r.text and db('SELECT stage FROM ci_website_reviews WHERE lead_id=?',[lead['id']])==[{'stage':'received'}])
@@ -37,8 +38,8 @@ def run_browser(env,browser):
     check('Stale review form keeps old revision and submitted content','review changed' in r.text and soup(r).select_one('[data-review-editor] [name=revision]')['value']==before_revision and 'Uncommitted stale summary' in r.text and db('SELECT summary FROM ci_website_review_reports')[0]['summary']=='Preserved report summary')
     before=db('SELECT * FROM ci_website_reviews');r=owner.post(detail,data={'csrf':token(owner.get(detail)),'action':'reviews_stage','id':lead['id'],'revision':before[0]['revision'],'stage':'delivered'})
     check('Forged delivery stage cannot bypass confirmation',db('SELECT * FROM ci_website_reviews')==before)
-    r=submit(owner,detail,'reviews_delivery',{'delivered_at':datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S'),'channel':'email','reference':'Synthetic external delivery reference','current_password':'wrong'})
-    check('External delivery needs fresh password and never echoes it','current password' in r.text.lower() and all(n.get('value','')=='' for n in soup(r).select('[name=current_password]')))
+    r=refuse_owner_action(env,owner,detail,'reviews_delivery',{'delivered_at':datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S'),'channel':'email','reference':'Synthetic external delivery reference'})
+    check('Refused external delivery does not reintroduce owner-password controls',not soup(r).select('[name=current_password],[name=owner_password]'))
     r=submit(owner,detail,'reviews_delivery',{'delivered_at':datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S'),'channel':'email','reference':'Synthetic external delivery reference','current_password':OWNER})
     check('HTTP records external delivery without sending and locks report','External delivery recorded' in r.text and 'not a delivery confirmation from a mail provider' in r.text and not soup(r).select('[data-review-editor]'))
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?',[original,member_id]);check('Removed website grant immediately hides review',member.get(detail).status_code==403)

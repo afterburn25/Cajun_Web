@@ -1,6 +1,8 @@
 <?php
 /** Disposable MariaDB: external-payment bookkeeping only; no real merchant/money operation. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='ledgerci_';
@@ -19,7 +21,7 @@ if(($argv[1]??'')==='receive-worker'){l_actor();try{echo ledger_receive(3,7000,'
 try{
     foreach(schema_statements('ledgerci_') as $name=>$sql)if($name!=='invoice_payments')db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');
-    foreach(['staff','support','catalog','payments','payment_attempts'] as $module)save_setting($module.'_schema_version','1');
+    foreach(['staff','support','catalog','payment_attempts'] as $module)save_setting($module.'_schema_version','1');save_setting('payments_schema_version','2');
     $now=gmdate('Y-m-d H:i:s');
     for($id=1;$id<=4;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Ledger staff '.$id,'ledger'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),substr(l_key(),0,32),$now]);
     staff_seed_owner(1);
@@ -28,7 +30,7 @@ try{
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (1,?,?,?,?,?)',['Ledger project','Retain summary','Retain milestones',$now,$now]);
     for($id=1;$id<=3;$id++)query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['LEDGER-'.$id,'Agreed invoice '.$id,12510,'Retain payment instructions',$now]);
     query('UPDATE '.table('studio_invoices')." SET status='paid',paid_note='Legacy private note',paid_at=NULL WHERE id=2");$original=all('SELECT * FROM '.table('studio_invoices'));
-    l_deny('Migration requires owner password',fn()=>ledger_migrate('wrong'));
+    l_deny('Revoked owner refuses: Migration requires owner password',fn()=>cwp_test_owner_revoked(fn()=>ledger_migrate('wrong')));
     db()->exec(ledger_schema('ledgerci_')['invoice_payments']);db()->exec('ALTER TABLE '.table('invoice_payments').' DROP INDEX reversal_of');
     l_deny('Migration rejects missing reversal uniqueness',fn()=>ledger_migrate($password));db()->exec('ALTER TABLE '.table('invoice_payments').' ADD UNIQUE reversal_of(reversal_of)');
     db()->exec('ALTER TABLE '.table('invoice_payments').' MODIFY request_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_general_ci NULL');l_deny('Migration rejects folded request hashes',fn()=>ledger_migrate($password));db()->exec('ALTER TABLE '.table('invoice_payments').' MODIFY request_hash CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL');
@@ -60,7 +62,7 @@ try{
     $calls=[];$reference='';$transport=function(string $body) use(&$calls,&$reference): array {$v=json_decode($body,true,32,JSON_THROW_ON_ERROR);$method=array_key_first($v);$calls[]=$method;$ok=['messages'=>['resultCode'=>'Ok','message'=>[['code'=>'I00001','text'=>'Synthetic']]]];if($method==='getMerchantDetailsRequest')return [200,json_encode($ok+['isTestMode'=>false,'currencies'=>['USD']])];if($method==='createTransactionRequest'){$reference=$v[$method]['refId'];l_ok('Synthetic sandbox trial uses remaining balance only',$v[$method]['transactionRequest']['amount']==='85.00');return [200,json_encode($ok+['refId'=>$reference,'transactionResponse'=>['responseCode'=>'1','transId'=>'930001']])];}if($method==='getTransactionDetailsRequest')return [200,json_encode($ok+['transaction'=>['transId'=>'930001','transactionType'=>'authCaptureTransaction','transactionStatus'=>'capturedPendingSettlement','responseCode'=>1,'order'=>['invoiceNumber'=>$reference],'authAmount'=>85.00,'settleAmount'=>85.00]])];throw new LogicException('Unexpected transport');};
     $attempt=attempts_submit($request,1,l_key(),'SyntheticLedgerNonce',$password,$transport);l_ok('Sandbox capture never adds real payment or pays invoice',one('SELECT state FROM '.table('payment_attempts').' WHERE id=?',[$attempt])['state']==='captured'&&l_balance()['paid_cents']===4010&&ledger_invoice(1)['status']==='issued');
     foreach(['unknown','held','submitting'] as $state){query('UPDATE '.table('payment_attempts').' SET state=? WHERE id=?',[$state,$attempt]);l_deny('Unresolved sandbox trial blocks manual receipt '.$state,fn()=>l_receive(1,'Blocked trial'));l_deny('Unresolved sandbox trial blocks recording reversal '.$state,fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),$password));}query('UPDATE '.table('payment_attempts')." SET state='captured' WHERE id=?",[$attempt]);
-    l_deny('Correction requires current owner password',fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),'wrong'));l_actor(2);l_deny('Payment staff cannot reverse recordings',fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),$password));l_actor();
+    l_deny('Revoked owner refuses: Correction requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),'wrong')));l_actor(2);l_deny('Payment staff cannot reverse recordings',fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),$password));l_actor();
     l_ok('Correction audit failure retains original balance and entries',l_audit_failure(fn()=>ledger_reverse($receipt,'Synthetic mistaken recording',l_key(),l_review(),$password))&&l_balance()['paid_cents']===4010&&!one('SELECT id FROM '.table('invoice_payments').' WHERE reversal_of=?',[$receipt]));
     $reverseReview=l_review();$reverseKey=l_key();$reversal=ledger_reverse($receipt,'Synthetic mistaken recording',$reverseKey,$reverseReview,$password);
     l_ok('Correction appends full reversal and leaves original immutable',l_balance()['due_cents']===12510&&one('SELECT * FROM '.table('invoice_payments').' WHERE id=?',[$receipt])===$entry&&one('SELECT reversal_of FROM '.table('invoice_payments').' WHERE id=?',[$reversal])['reversal_of']===$receipt);

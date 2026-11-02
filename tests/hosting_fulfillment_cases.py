@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from release_cases import db
 from staff_cases import OWNER
+from owner_browser_forms import assert_no_owner_reprompt, refuse_owner_action
 
 
 def run_browser(env, browser, owner, client, foreign, cid, job, command, capture):
@@ -35,24 +36,24 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
         client_url = portal+'?agreement='+historical['source_id']
         offer_form = form_for(owner.get(staff_url), 'service_plans_order_offer')
         choice = next(o['value'] for o in offer_form.select('[name=invoice_choice] option') if o.get('value', '').startswith(invoice+':'))
-        owner.post(staff_url, data={**form_data(offer_form), 'invoice_choice': choice, 'confirm': '1', 'current_password': OWNER})
+        owner.post(staff_url, data={**form_data(offer_form), 'invoice_choice': choice, 'confirm': '1'})
         domain = name+'.example'
         post(client, client_url, 'service_agreements_order_accept', {'domain_name': domain, 'confirm': '1'})
         if paid:
             post(owner, admin+'?view=invoice-payments&invoice_id='+invoice, 'payments_ledger_receive', {'amount': '25.00', 'method': 'bank', 'reference': 'Synthetic fulfillment receipt '+name, 'received_on': datetime.datetime.now(datetime.timezone.utc).date().isoformat(), 'confirm': '1'})
         else:
-            post(owner, staff_url, 'service_plans_order_allow_manual', {'reason': 'Synthetic reviewed fulfillment '+name, 'confirm': '1', 'current_password': OWNER})
+            post(owner, staff_url, 'service_plans_order_allow_manual', {'reason': 'Synthetic reviewed fulfillment '+name, 'confirm': '1'})
         if catalog:
             from provider_plan_catalog_cases import prepare
             prepare(env, browser, owner, client, historical['source_id'], staff_url, client_url, capture)
         else:
-            post(owner, staff_url, 'service_plans_order_map_service', {'reseller_id': '42', 'package_type': '811', 'package_label': 'Reviewed fulfillment package', 'package_region': 'Reviewed fixture location', 'package_websites': '1', 'mapping_only': '1', 'confirm': '1', 'current_password': OWNER})
+            post(owner, staff_url, 'service_plans_order_map_service', {'reseller_id': '42', 'package_type': '811', 'package_label': 'Reviewed fulfillment package', 'package_region': 'Reviewed fixture location', 'package_websites': '1', 'mapping_only': '1', 'confirm': '1'})
         order = db('SELECT * FROM ci_service_orders WHERE agreement_id=?', [historical['source_id']])[0]
         link = db('SELECT * FROM ci_hosting_order_links WHERE id=?', [order['id']])[0]
         return {'owner': staff_url, 'client': client_url, 'invoice': invoice, 'order': order, 'link': link, 'domain': domain}
 
     def intent(c):
-        return {**form_data(form_for(owner.get(c['owner']), 'service_plans_order_fulfill_service')), 'review_account_type': '1', 'review_defaults': '1', 'review_costs': '1', 'provision_confirmation': 'CREATE '+c['domain'], 'confirm': '1', 'current_password': OWNER}
+        return {**form_data(form_for(owner.get(c['owner']), 'service_plans_order_fulfill_service')), 'review_account_type': '1', 'review_defaults': '1', 'review_costs': '1', 'provision_confirmation': 'CREATE '+c['domain'], 'confirm': '1'}
 
     def history():
         return {table: db('SELECT * FROM ci_'+table+' ORDER BY id') for table in ['hosting_fulfillments', 'hosting_records', 'hosting_record_events', 'hosting_dispatches', 'hosting_operation_results', 'provider_operations', 'service_orders', 'service_order_events', 'invoice_payments', 'audit']}
@@ -61,14 +62,21 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
     setup = form_data(form_for(owner.get(c['owner']), 'service_plans_order_prepare_fulfillment'))
     check('Fulfillment GET does not create approval storage', not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='ci_hosting_fulfillments'"))
     calls, posts = provider.calls, len(provider.posts)
-    for delta, label in [({'csrf': 'bad', 'confirm': '1', 'current_password': OWNER}, 'CSRF'), ({'confirm': '1', 'current_password': 'wrong'}, 'owner password'), ({'current_password': OWNER}, 'confirmation')]:
-        response = owner.post(c['owner'], data={**setup, **delta})
+    for delta, label in [({'csrf': 'bad', 'confirm': '1'}, 'CSRF'), ({'confirm': '1'}, 'owner authority'), ({}, 'confirmation')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, c['owner'], 'service_plans_order_prepare_fulfillment', delta)
+        else:
+            response = owner.post(c['owner'], data={**setup, **delta})
         check('Fulfillment preparation rejects '+label, not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='ci_hosting_fulfillments'") and OWNER not in response.text)
-    owner.post(c['owner'], data={**setup, 'confirm': '1', 'current_password': OWNER})
+    owner.post(c['owner'], data={**setup, 'confirm': '1'})
     check('Owner prepares additive fulfillment history without contacting provider', db("SELECT value FROM ci_settings WHERE name='hosting_fulfillment_schema_version'")==[{'value': '1'}] and provider.calls==calls and len(provider.posts)==posts)
     data = intent(c); before = history()
-    for delta, label in [({'csrf': 'bad'}, 'CSRF'), ({'confirm': ''}, 'confirmation'), ({'current_password': 'wrong'}, 'password'), ({'review_account_type': ''}, 'account type review'), ({'review_defaults': ''}, 'package defaults'), ({'review_costs': ''}, 'cost approval'), ({'provision_confirmation': 'CREATE foreign.example'}, 'accepted domain'), ({'link_hash': 'a'*64}, 'saved mapping'), ({'order_hash': 'b'*64}, 'current order')]:
-        response = owner.post(c['owner'], data={**data, **delta})
+    for delta, label in [({'csrf': 'bad'}, 'CSRF'), ({'confirm': ''}, 'confirmation'), ({}, 'owner authority'), ({'review_account_type': ''}, 'account type review'), ({'review_defaults': ''}, 'package defaults'), ({'review_costs': ''}, 'cost approval'), ({'provision_confirmation': 'CREATE foreign.example'}, 'accepted domain'), ({'link_hash': 'a'*64}, 'saved mapping'), ({'order_hash': 'b'*64}, 'current order')]:
+        if label == 'owner authority':
+            response = refuse_owner_action(env, owner, c['owner'], 'service_plans_order_fulfill_service',
+                {key: data[key] for key in ['review_account_type', 'review_defaults', 'review_costs', 'provision_confirmation', 'confirm']})
+        else:
+            response = owner.post(c['owner'], data={**data, **delta})
         check('Actual provider approval refuses '+label, history()==before and len(provider.posts)==posts and OWNER not in response.text)
     client_csrf = form_data(form_for(client.get(c['client']), 'service_agreements_order_cancel'))['csrf']
     client.post(c['client'], data={**data, 'action': 'service_agreements_order_fulfill_service', 'csrf': client_csrf})
@@ -86,7 +94,7 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
     replay = {item['name']: item['value'] for item in form.locator('input[type=hidden]').evaluate_all('(items)=>items.map(i=>({name:i.name,value:i.value}))')}
     for key in ['review_account_type', 'review_defaults', 'review_costs', 'confirm']:
         form.locator('[name='+key+']').check()
-    form.locator('[name=provision_confirmation]').fill('CREATE '+c['domain']); form.locator('[name=current_password]').fill(OWNER)
+    form.locator('[name=provision_confirmation]').fill('CREATE '+c['domain']); assert_no_owner_reprompt(check, form, 'Request hosting setup')
     with page.expect_navigation():
         form.get_by_role('button', name='Request hosting setup', exact=True).click()
     page.wait_for_load_state('networkidle'); page.screenshot(path=str(qa/'hosting-fulfillment-submit.png'), full_page=True)
@@ -100,7 +108,7 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
     result = json.loads(db('SELECT result_json FROM ci_hosting_operation_results WHERE id=?', [request])[0]['result_json'])
     check('Assigned provider ID remains pending on the original client service', result['outcome']=='accepted_pending' and result['resource_ref']==provider_row['external_id'] and not db('SELECT id FROM ci_hosting_resources WHERE account_id=?', [c['link']['account_id']]))
     before=history(); posts=len(provider.posts)
-    owner.post(c['owner'], data={**replay, **{k:data[k] for k in ['review_account_type','review_defaults','review_costs','provision_confirmation','confirm','current_password']}})
+    owner.post(c['owner'], data={**replay, **{k:data[k] for k in ['review_account_type','review_defaults','review_costs','provision_confirmation','confirm']}})
     check('Actual approval POST replay does not resend or append history', len(provider.posts)==posts and history()==before)
     client_text=client.get(c['client']).text
     check('Actual client service view hides provider approval details', 'Hosting setup in progress' in client_text and 'data-hosting-fulfillment' not in client_text and 'Provider package number' not in client_text and 'Synthetic fulfillment receipt' not in client_text)
@@ -114,13 +122,16 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
         db('DROP TRIGGER ci_fulfillment_result_failure')
     check('HTTP finalization failure retains original provider result and fence', len(provider.posts)==posts+1 and not db('SELECT id FROM ci_hosting_operation_results WHERE id=?',[request]) and db('SELECT status FROM ci_provider_operations WHERE idempotency_key=?',['hosting-order:'+request])==[{'status':'accepted_pending'}])
     recovery_form=form_data(form_for(owner.get(recovery['owner']),'service_plans_order_recover_fulfillment'));before=history();posts=len(provider.posts)
-    for delta,label in [({'csrf':'bad'},'CSRF'),({'provider_hash':'c'*64},'retained response hash'),({'current_password':'wrong'},'owner password')]:
-        owner.post(recovery['owner'],data={**recovery_form,'confirm':'1','current_password':OWNER,**delta})
+    for delta,label in [({'csrf':'bad'},'CSRF'),({'provider_hash':'c'*64},'retained response hash'),({},'owner authority')]:
+        if label=='owner authority':
+            refuse_owner_action(env, owner, recovery['owner'], 'service_plans_order_recover_fulfillment', {'confirm':'1'})
+        else:
+            owner.post(recovery['owner'],data={**recovery_form,'confirm':'1',**delta})
         check('Actual local recovery refuses '+label,history()==before and len(provider.posts)==posts)
     capture(owner,recovery['owner'],'staff-fulfillment-recovery')
-    owner.post(recovery['owner'],data={**recovery_form,'confirm':'1','current_password':OWNER})
+    owner.post(recovery['owner'],data={**recovery_form,'confirm':'1'})
     check('Owner recovers original pending response through HTTP without another send',len(provider.posts)==posts and json.loads(db('SELECT result_json FROM ci_hosting_operation_results WHERE id=?',[request])[0]['result_json'])['outcome']=='accepted_pending')
-    before=history();owner.post(recovery['owner'],data={**recovery_form,'confirm':'1','current_password':OWNER})
+    before=history();owner.post(recovery['owner'],data={**recovery_form,'confirm':'1'})
     check('Actual recovery POST replay preserves every saved row',history()==before and len(provider.posts)==posts)
 
     failed=context('failed-fulfillment');provider.write_mode='failure';failed_data=intent(failed)
@@ -129,7 +140,7 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
     finally:
         provider.write_mode='success'
     retry=form_data(form_for(owner.get(failed['owner']),'service_plans_order_retry_fulfillment'));posts=len(provider.posts)
-    owner.post(failed['owner'],data={**retry,'confirm':'1','current_password':OWNER})
+    owner.post(failed['owner'],data={**retry,'confirm':'1'})
     check('Actual definite-failure retry only prepares a new approval',len(provider.posts)==posts and soup(owner.get(failed['owner'])).select_one('[name=action][value=service_plans_order_fulfill_service]') is not None)
     unknown=context('unknown-fulfillment');unknown_data=intent(unknown);provider.write_mode='uncertain'
     try:

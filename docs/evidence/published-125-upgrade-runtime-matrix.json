@@ -1,0 +1,58 @@
+{
+  "parent": "3fd87727ebafaa9290f03e37c97043f9e029cf75",
+  "scope": "Offline orchestration contracts only; hosted matrix pending",
+  "matrix": {
+    "php": [
+      "8.2",
+      "8.4"
+    ],
+    "database": [
+      "mariadb-10.11",
+      "mysql-8.4"
+    ],
+    "installation": [
+      "root-rewrite",
+      "subfolder-rewrite",
+      "root-no-rewrite",
+      "subfolder-no-rewrite"
+    ]
+  },
+  "runtime_verification": [
+    "Existing native environment probe checks CLI version/SAPI/extensions, minimal runtime and real database family/version.",
+    "Actual HTTP module version/SAPI checked in every installation scope before baseline population."
+  ],
+  "regression": {
+    "before": {
+      "methods": 15,
+      "failures": 6,
+      "errors": 1
+    },
+    "after": {
+      "PHP8.2.35": {
+        "methods": 15,
+        "passed": true
+      },
+      "PHP8.4.25": {
+        "methods": 15,
+        "passed": true
+      }
+    }
+  },
+  "checks": [
+    "Existing acceptance_environment_test.py exits successfully",
+    "Python syntax",
+    "99 workflow YAML parses",
+    "All gate run blocks pass bash -n",
+    "Runtime installation block byte-identical to maintained application-tests.yml Apache setup"
+  ],
+  "log_sha256": {
+    "upgrade-matrix-original.log": "1bc96068eff248cde3d3f12e1d3261dc97c87a54234e58d8415a3128d0693be3",
+    "upgrade-matrix-corrected-82.log": "6054f506c2dd467b8e48b2ca76c0a9c3624fc87620e383b6135a59583e545f06",
+    "upgrade-matrix-corrected-84.log": "bddf7012cca70710064702d95b66d8c388a59669edd0ebc04d780e919613f322"
+  },
+  "limits": [
+    "No local Apache/installed upgrade or new hosted result claimed.",
+    "Existing populated-data/actions/assertions unchanged; four actual HTTP runtime assertions added.",
+    "No sandbox/production gateway, deployment, approved commercial release or combined/main acceptance."
+  ]
+}

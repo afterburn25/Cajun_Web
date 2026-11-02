@@ -1,6 +1,8 @@
 <?php
 /** Native disposable database + actual shared gateway, synthetic API transport only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,TransportException};
@@ -52,7 +54,7 @@ try{
     provider_cloud_assignment_prepare($password);
     cw_ok('Native complete cloud observation',provider_inventory_refresh($profileId,1,$password,'cw_dns','cw_read',InventoryRead::CLOUD_SERVERS_LIST)==='complete');
     $refresh=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST)['id'];provider_cloud_link($profileId,1201,1,1,$refresh,$password);$link=provider_cloud_links($profileId)[0];$dnsCalls=0;
-    cw_deny('Wrong password refuses cloud request',fn()=>cw_create('wrong.example','',null,'wrong'));
+    cw_deny('Revoked owner refuses: Wrong password refuses cloud request',fn()=>cwp_test_owner_revoked(fn()=>cw_create('wrong.example','',null,'wrong')));
     cw_owner(2);cw_deny('Administrator cannot approve cloud website creation',fn()=>cw_create('admin.example'));cw_owner();
     $_GET['support']='test';cw_deny('Support selector cannot approve cloud website creation',fn()=>cw_create('support.example'));unset($_GET['support']);
     cw_client(1);cw_deny('Client cannot submit owner creation form',fn()=>cw_create('client.example'));cw_owner();
@@ -89,7 +91,7 @@ try{
     $before=$calls;$result=cw_create('revoked.example','',function(){query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');return cw_dns();});query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');cw_ok('Client deactivation during DNS prevents send',$result->status==='failed'&&$result->attempts===0&&$calls===$before);
     $revoked=bin2hex(random_bytes(16));$result=cw_create('grant.example',$revoked,function()use($revoked,$password){provider_operation_revoke($revoked,$password);return cw_dns();});cw_ok('Approval revocation during DNS prevents send',$result->status==='failed'&&$calls===$before);
     $result=cw_create('reassigned.example','',function()use($link){query('UPDATE '.table('provider_cloud_links').' SET revision=2 WHERE id=?',[$link['id']]);return cw_dns();});query('UPDATE '.table('provider_cloud_links').' SET revision=1 WHERE id=?',[$link['id']]);cw_ok('Assignment revision change during DNS prevents send',$result->status==='failed'&&$calls===$before);
-    $beforeTables=all('SHOW TABLES');require_once CWP_CODE_ROOT.'/includes/layout/admin.php';$record=provider_settings_projection(provider_settings_load($profileId));$cloudObservation=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST);ob_start();require CWP_CODE_ROOT.'/admin/views/provider_cloud_sites.php';$html=ob_get_clean();cw_ok('Actual owner view includes typed consent/password and pending-ID guidance',str_contains($html,'data-cloud-website-create')&&str_contains($html,'name="reviewed"')&&str_contains($html,'name="current_password"')&&str_contains($html,'Returned package #8881')&&!str_contains($html,$secret)&&all('SHOW TABLES')===$beforeTables);
+    $beforeTables=all('SHOW TABLES');require_once CWP_CODE_ROOT.'/includes/layout/admin.php';$record=provider_settings_projection(provider_settings_load($profileId));$cloudObservation=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST);ob_start();require CWP_CODE_ROOT.'/admin/views/provider_cloud_sites.php';$html=ob_get_clean();cw_ok('Actual owner view retains explicit consent and CSRF without repeat password',str_contains($html,'data-cloud-website-create')&&str_contains($html,'name="reviewed"')&&str_contains($html,'name="csrf"')&&!str_contains($html,'name="current_password"')&&str_contains($html,'Returned package #8881')&&!str_contains($html,$secret)&&all('SHOW TABLES')===$beforeTables);
     cw_client(1);$mine=provider_cloud_sites_client_history(1201);cw_ok('Actual client sees own safe pending request summary',count($mine)>=1&&in_array('first.example',array_column($mine,'domain'),true)&&!str_contains(json_encode($mine),'8881')&&!str_contains(json_encode($mine),$profileId));cw_client(2);cw_ok('Other client cannot see assigned server request history',provider_cloud_sites_client_history(1201)===[]);cw_owner();
     $_GET['support']='test';cw_ok('Support selector cannot view private cloud request history',provider_cloud_sites_client_history(1201)===[]);unset($_GET['support']);
     $stored=json_encode([all('SELECT * FROM '.table('provider_operation_grants')),all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('audit'))]);cw_ok('Approval ledger and audit never retain API key/password',!str_contains($stored,$secret)&&!str_contains($stored,$password));

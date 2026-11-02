@@ -4,7 +4,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/providers/schedule.php';
 function provider_schedule_admin_action(string $action):void {
     provider_settings_manager();$password=posted('current_password',200);
-    if($action==='provider_inventory_schedule_prepare'){provider_schedule_prepare($password);flash('Scheduled refresh history is ready. Scheduling remains disabled.');redirect(admin_url('provider-settings').'#scheduled-refresh');}
+    if($action==='provider_inventory_schedule_prepare'){provider_schedule_prepare($password);flash('Scheduled refresh history is ready. Scheduling remains disabled.');redirect(admin_url('provider-settings',['section'=>'services']).'#scheduled-refresh');}
     $number=static function(string $key):int{$v=$_POST[$key]??null;if(!is_string($v)||!preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$v)||(int)$v>2147483647)throw new InvalidArgumentException('Reload the current scheduled refresh form.');return (int)$v;};
     $seq=$number('schedule_sequence');
     if($action==='provider_inventory_schedule_enable'){
@@ -19,5 +19,5 @@ function provider_schedule_admin_action(string $action):void {
         $result=provider_schedule_run();$message=match($result){'complete'=>'The scheduled hosting list was saved.','partial'=>'A partial hosting list was saved. Review the result before relying on missing packages.','not_due'=>'The next refresh is not due yet.','busy'=>'Another scheduled worker is running.','disabled'=>'Scheduled reads are disabled.','needs_recovery'=>'Review the unfinished attempt before running another refresh.','approval_required'=>'Current approval or the refresh cooldown prevents this run. Review the schedule status.',default=>'The scheduled read did not finish successfully. Its bounded outcome is in the history below.'};
         flash($message,$result==='complete'?'success':'error');
     }else throw new InvalidArgumentException('Unknown scheduled refresh action.');
-    redirect(admin_url('provider-settings').'#scheduled-refresh');
+    redirect(admin_url('provider-settings',['section'=>'services']).'#scheduled-refresh');
 }

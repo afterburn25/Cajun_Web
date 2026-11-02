@@ -1,6 +1,8 @@
 <?php
 /** Native database and actual PHP forms; all provider traffic is synthetic. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -85,11 +87,11 @@ try{
 
     provider_registrar_prepare($password);
     exreg_ok('Expiry observation GET does not create storage',!domain_expiry_ready()&&!array_filter(domain_expiry_tables()));
-    exreg_deny('Preparation checks current password',fn()=>domain_expiry_prepare('wrong'));exreg_actor(2);exreg_deny('Administrator cannot prepare expiry observations',fn()=>domain_expiry_prepare($password));exreg_actor();
+    exreg_deny('Revoked owner refuses: Preparation checks current password',fn()=>cwp_test_owner_revoked(fn()=>domain_expiry_prepare('wrong')));exreg_actor(2);exreg_deny('Administrator cannot prepare expiry observations',fn()=>domain_expiry_prepare($password));exreg_actor();
     db()->beginTransaction();try{try{domain_expiry_prepare($password);exreg_ok('Preparation refuses caller transaction',false);}catch(LogicException){exreg_ok('Preparation refuses caller transaction',true);}exreg_ok('No DDL inside caller transaction',db()->inTransaction()&&!array_filter(domain_expiry_tables()));}finally{db()->rollBack();}
     exreg_ok('Preparation audit failure rolls back markers',exreg_fault('prepared',fn()=>domain_expiry_prepare($password))&&!domain_expiry_ready());domain_expiry_prepare($password);$n=exreg_count('audit');domain_expiry_prepare($password);exreg_ok('Preparation idempotent without provider calls',exreg_count('audit')===$n&&$dns===0&&$sent===0);
     $body='[{"id":701,"name":"one.synthetic.invalid"},{"id":702,"name":"two.synthetic.invalid"}]';$read=exreg_refresh($id);ex_cooldown();provider_registrar_link($id,701,1,1,$read['id'],$password);provider_registrar_link($id,702,2,1,$read['id'],$password);$link=one('SELECT * FROM '.table('provider_registrar_links').' WHERE client_id=1');$other=one('SELECT * FROM '.table('provider_registrar_links').' WHERE client_id=2');
-    $beforeDns=$dns;$before=exreg_count('provider_refreshes');exreg_deny('Wrong password refuses before DNS or intent',fn()=>domain_expiry_refresh($link['id'],1,1,$read['id'],'wrong','ex_resolve','ex_read'));exreg_actor(2);exreg_deny('Non-owner refuses before DNS',fn()=>ex_refresh($link));exreg_actor();exreg_ok('Denied reads leave DNS and intent unchanged',$dns===$beforeDns&&exreg_count('provider_refreshes')===$before);
+    $beforeDns=$dns;$before=exreg_count('provider_refreshes');exreg_deny('Revoked owner refuses: Wrong password refuses before DNS or intent',fn()=>cwp_test_owner_revoked(fn()=>domain_expiry_refresh($link['id'],1,1,$read['id'],'wrong','ex_resolve','ex_read')));exreg_actor(2);exreg_deny('Non-owner refuses before DNS',fn()=>ex_refresh($link));exreg_actor();exreg_ok('Denied reads leave DNS and intent unchanged',$dns===$beforeDns&&exreg_count('provider_refreshes')===$before);
     exreg_deny('Stale posted account revision refuses before DNS',fn()=>domain_expiry_refresh($link['id'],1,2,$read['id'],$password,'ex_resolve','ex_read'));exreg_deny('Stale posted source refuses before DNS',fn()=>domain_expiry_refresh($link['id'],1,1,str_repeat('f',32),$password,'ex_resolve','ex_read'));
     exreg_ok('Binding audit interruption rolls back shared intent',exreg_fault('bound',fn()=>ex_refresh($link))&&exreg_count('provider_refreshes')===$before&&$dns===$beforeDns);
     $first=ex_refresh($link);$row=domain_expiry_read_row($first['id']);exreg_ok('Shared receipt binds one complete saved timestamp',$first['state']==='complete'&&$row['timestamp']==='2028-02-29T01:02:03.000+05:45'&&$expirySent===1&&setting('domain_expiry_intent_count')==='1'&&setting('domain_expiry_result_count')==='1');

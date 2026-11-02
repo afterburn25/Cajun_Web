@@ -167,13 +167,25 @@ def installer_failures(env):
         check('Missing PDO MySQL/GD prevents installation',not result['ok'] and any(not c['ok'] for c in result['checks']))
     finally:noext.terminate();noext.wait(timeout=10)
 
+def retain_request_failures(page, failures):
+    # These properties are already supplied by browser events. Do not call
+    # Request.response() after failure: the target can close during delivery.
+    response_statuses = {}
+    def response_seen(response):
+        response_statuses[response.request] = response.status
+    def request_failed(request):
+        failures.append({'url':request.url,'failure':request.failure,
+                         'status':response_statuses.get(request)})
+    page.on('response', response_seen)
+    page.on('requestfailed', request_failed)
+
 def run_browser(env,browser,fixture):
     # Real network responses and DOM assertions; no request stubs or CSP bypass.
     context=browser.new_context(viewport={'width':320,'height':800},has_touch=True,reduced_motion='reduce')
     page=context.new_page();errors=[];failed=[]
     page.on('pageerror',lambda e:errors.append({'text':str(e),'url':'pageerror'}))
     page.on('console',lambda m:errors.append({'text':m.text,'url':m.location.get('url','')}) if m.type=='error' else None)
-    page.on('requestfailed',lambda r:failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))
+    retain_request_failures(page, failed)
     for route in ['','index.php?page=compare-squarespace','index.php?page=work','index.php?page=faq','index.php?page=consultation']:
         page.goto(BASE+'/existing/'+route,wait_until='networkidle')
         check('Narrow mobile layout '+(route or 'home'),page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
@@ -255,12 +267,16 @@ def run_browser(env,browser,fixture):
     check('Twelve-character administrator signs in after file overwrite',p.locator('.studio-welcome').is_visible());install.close()
     # Owner controls also run in Chromium, with saved database evidence.
     owner=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=owner.new_page();owner_errors=[];owner_failed=[]
-    p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None);p.on('requestfailed',lambda r:owner_failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))
+    p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None)
+    retain_request_failures(p, owner_failed)
     p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.wait_for_url('**/admin/index.php?view=dashboard')
     expect(p.locator('.studio-welcome')).to_be_visible()
     expect(p.locator('.metric-grid[aria-label="Website totals"]')).to_be_visible()
     admin_nav=p.locator('[data-admin-navigation]')
-    check('Grouped owner navigation retains core destinations',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).count()==1 for label in ['Overview','Service catalog','20i connection','Administrators']))
+    owner_destinations=[('Overview','dashboard'),('Service catalog','catalog'),('20i workspace','provider-settings'),('Administrators','staff'),('Licenses & software','studio-licenses')]
+    from owner_navigation_contract import core_admin_destinations
+    check('Grouped owner navigation retains core destinations',core_admin_destinations(p))
+    check('Grouped owner navigation links to the actual administration routes',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).get_attribute('href')==BASE+'/existing/admin/index.php?view='+view for label,view in owner_destinations))
     billing_group=admin_nav.locator('[data-nav-group=billing]')
     billing_group.locator('summary').click()
     expect(billing_group).to_have_attribute('open','')

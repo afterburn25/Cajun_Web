@@ -1,0 +1,56 @@
+{
+  "source": "bc9f97e049558ac48a6982a6e8d1f6901458b26b",
+  "run": 40785345723,
+  "jobs": [
+    {
+      "job": 123157026622,
+      "ci_checkout": "d2afffe804a462617dd9c0856505c2fd1d703cbe",
+      "log_sha256": "ecd53997c86f89f9c057e344f255fa56bb63cf2213dad6c43df781cb859ae87e",
+      "error": "NameError: name 'Path' is not defined",
+      "application_gate_started": false
+    },
+    {
+      "job": 123157026355,
+      "ci_checkout": "d2afffe804a462617dd9c0856505c2fd1d703cbe",
+      "log_sha256": "20d162ee316f528627c7a74f295cf8f2817073dcf03d6bd3ff6c7fb352fce613",
+      "error": "NameError: name 'Path' is not defined",
+      "application_gate_started": false
+    },
+    {
+      "job": 123157027062,
+      "ci_checkout": "d2afffe804a462617dd9c0856505c2fd1d703cbe",
+      "log_sha256": "29a7f62f15149140cf12e08e00b565fede8c0c8a137a2136a323a7b025d1c622",
+      "error": "NameError: name 'Path' is not defined",
+      "application_gate_started": false
+    },
+    {
+      "job": 123157026570,
+      "ci_checkout": "d2afffe804a462617dd9c0856505c2fd1d703cbe",
+      "log_sha256": "ad048acb6e4566d43c4b3dfa2a0e601b71e1fff5575dda65cac78782f8029d4e",
+      "error": "NameError: name 'Path' is not defined",
+      "application_gate_started": false
+    }
+  ],
+  "cause": "Extraction test omitted Path from function execution globals. Python3.12 evaluates the annotation at function definition; Python3.14 deferred it.",
+  "correction": "Supply the original Path dependency explicitly without changing assertions, application code, runtime matrix or environment probes.",
+  "local_original": "Python3.12.14: 15 methods, one matching NameError",
+  "local_corrected": {
+    "python": [
+      "3.12.14",
+      "3.14.7"
+    ],
+    "php": [
+      "8.2.35",
+      "8.4.25"
+    ],
+    "methods_per_combination": 15,
+    "all_passed": true
+  },
+  "scope": "Offline harness repair only; fresh hosted upgrade matrix remains required.",
+  "local_log_sha256": {
+    "upgrade-annotation-312-82.log": "05cf6d1f834d36617c0f65a25e9f0e121c6649a90a3dcdfa5f6630045dde4653",
+    "upgrade-annotation-312-84.log": "3ae84e39322115c453784eb3b083b96e5358be143202169f5c13de1c418278ce",
+    "upgrade-annotation-314-82.log": "133a6a5004df80bcd1cc672b8c129f50f1ca97a773a267b90272535f271977dc",
+    "upgrade-annotation-314-84.log": "39587d3264833d200f1bf430e28ab456dc2ede1bc53d1e88496824d95d163eee"
+  }
+}

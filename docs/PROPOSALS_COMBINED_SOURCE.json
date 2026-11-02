@@ -1,0 +1,75 @@
+{
+  "base": "3930ad96504006c5adcd511f9061da2fc8dec180",
+  "proposal_source": "052c42fee5c2e3eb79ee8fa3fcf0bd9350be3aab",
+  "shipping": {
+    "site/admin/controllers/actions.php": {
+      "before": "6054ad4850c903bed5577089a54b620cd2908150af70d48fa3de26c54605c42a",
+      "after": "cff616fbefd3a2e050e6afa580ee7a59bdf86a2c77a8baf7093e78f72f7e738a"
+    },
+    "site/admin/controllers/router.php": {
+      "before": "3e6a882e48e3152bccd813c2f6a44c2afcf4ff7bdbf4aee27a4989d72195a101",
+      "after": "313077ebf0e29e9dfc6eff7f3485bf590c38d7309cee2b00baac70336c92fbb8"
+    },
+    "site/app/marketing/proposals.php": {
+      "before": null,
+      "after": "3a17596fafb591257c6e74e7ed67fbeca1b25a2d51980490dff72c4bf862a02b"
+    },
+    "site/app/staff/accounts.php": {
+      "before": "5a6bde3fe8e6e80ca7d0696f0bf175b8df91256632867c93f6c39203bcb4cb50",
+      "after": "e20a53282c9f0997433d2db94a87a373d9fc8f7770f6777170bd6bb155e96ed1"
+    },
+    "site/database/migrations/proposals_migrate.php": {
+      "before": null,
+      "after": "89def60c9a4ab5407af20c9542b14c29555c74997380f51d2e7dff62663daf73"
+    },
+    "site/database/schema/proposals_schema.php": {
+      "before": null,
+      "after": "8e1a444823e56a6ed52da08364feea5ae6141286b5241f7d1194a1b810f2d26d"
+    },
+    "site/database/schema/proposals_validate_schema.php": {
+      "before": null,
+      "after": "d6f76819dae41351877992e83defed7b64009278873fa19a3335eda1b5678e8c"
+    },
+    "site/includes/foundation/proposals/ApprovalDecision.php": {
+      "before": null,
+      "after": "f10f833dfcbc8e3a34827c8ab8c53c76aea1334a3e1b49ef527395d887910a23"
+    },
+    "site/includes/foundation/proposals/Proposal.php": {
+      "before": null,
+      "after": "a082227d6345bbc12b55589edc392a4a71f0f7d5044238f2ada9fa4547e14410"
+    },
+    "site/includes/foundation/proposals/ProposalVersion.php": {
+      "before": null,
+      "after": "0b7b89917fb359fe90409d8d0ea6102ca8634be29536068b5845fad35e96b1c3"
+    },
+    "site/includes/layout/admin.php": {
+      "before": "568e5dbe4ee22be36ec3281ee75bd6f8397464dff08eb72f0a16a690ef056077",
+      "after": "fa8d92fdf5f7cd494c6b95552efb3c3104e4d8a29291e5e015aa3500963a7efa"
+    },
+    "site/includes/layout/proposals.php": {
+      "before": null,
+      "after": "9e330ec3ae53712eb5bf8096e780ca091a5a8cc8af2654f4b7b165af98ce6ea6"
+    },
+    "site/install/inventory.generated.php": {
+      "before": "2fe6cc8864d8fc5d1e435bf99dc83415ee6868285673522b054dbb4fb7ed53be",
+      "after": "27289a8898436adaf7692b79d64c096ee6ec328cb4722d2266a1268857bc5c40"
+    },
+    "site/portal/controllers/actions.php": {
+      "before": "2d3913c6aa7adce04127af4837a29e8b5556d581aaaee1543871813a64211dab",
+      "after": "4efbf1a19f532e45a9abbbf6247335570ab57791f5650aa32b9cd1e9457b7f41"
+    },
+    "site/portal/controllers/router.php": {
+      "before": "8c7b26781524b7d33e18b97d2ec8274cec04d6f5f720421477eb9979d2100a59",
+      "after": "bb0d6c1b7e1eed9818b5999438a8f6f37995194288cff96c9d13798f7d6ad157"
+    },
+    "site/portal/views/workspace.php": {
+      "before": "d8a4d684f104b0c1ec340547cac81db7b85fb956f9d71a269b2cc575a9838121",
+      "after": "e5ad1b8c1f58b3a28e35862b99ead1fb40db3d74be4df6c0bd85757812d9a3f8"
+    },
+    "tools/build.py": {
+      "before": "dfee6612f8a1f1cd1f5d67c7ab0226243500757428b4e0a0ec155a80110b7a99",
+      "after": "2efe0396b8fd62c518dc34dd668a01b795be536677ebe6ee279ad28d4634ee40"
+    }
+  },
+  "scope": "Proposals integrated on verified licensing/master-portal/20i/backups source. No new release or live deployment. SQL/browser evidence must match this combined tree."
+}

@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "reviewer": "/root/github_status_review/primary_finance_review",
+  "reviewed_at_utc": "2026-11-02T03:06:25.457827+00:00",
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "source_manifest": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/implementation-frozen05/manifest.json",
+  "source_manifest_sha256": "2c50b9c02296d0ea220b049fcc79ea705ab7ca3c3e34d6a5c1f9c2f7e4fa76ea",
+  "decision": "APPROVE_BOUNDED_FROZEN05_APPLICATION_CORRECTION",
+  "open_blockers_in_reviewed_scope": [],
+  "review_basis": "Independent source/fixture/evidence review; only the reviewer initial-admission witness was independently executed by this reviewer. Writer retained runs are independently hash-bound and inspected.",
+  "application_sha256": {
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_subscription.php": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+    "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f"
+  },
+  "all31_php_source_sha256": {
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_subscription.php": "3b7c779fdcf4a1e3a9f6d67756cbaa10b20c7b924f4191ebd0edadf12a3a483b",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+    "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+    "site/install/inventory.generated.php": "fd1cf9632156326746db7ba05fb25756f0ae53d79909aef66804d56ad7427579",
+    "tests/finance_initial_receipts_boundaries.php": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+    "tests/finance_initial_receipts_native.php": "6d05dc5f3a09b2e8dcd7afcfbd47f805533d4b576cc52543c1cf7fb2581140d4",
+    "tests/finance_payoff_retirement_boundaries.php": "567eaaed4b7723ddeaf8c52443395a58377729a3605e24d134ea937713a22b8b",
+    "tests/finance_payoff_retirement_native.php": "622a08903c74e2ee471bbef15ccfb896d960ddf2115f41e7f770439d58824cec",
+    "tests/finance_reconcile_snapshot.php": "6205354b5252cee7387eff560a14b049163ee8838efa17a3c051d9094aba8daa",
+    "tests/finance_replacement_outcomes.php": "5b2146f3b6c3da735176af82e97bd1a5a599c734cd605ff7e014f1c1d3d4c913",
+    "tests/finance_replacement_payoff_authority_cases.php": "49863331b3b8c12a37ed0eb55b2775dd77679f211516699291d5470e89c8c1e2",
+    "tests/finance_replacement_payoff_authority_native.php": "600f8a4fbcbc2afab788dadba386f0b18b29c9b7bac33c45b0a5b2556f267617",
+    "tests/finance_replacement_payoff_boundaries.php": "3e33ec5d79aeb3af7446c97a1b33075e9432cba6068e58824275d88f847e691d",
+    "tests/finance_replacement_payoff_gateway_cases.php": "427217bc891eee36eba5d3d54c5b05069bd2fe4e1a5ba7dfd0b852d98f038ec1",
+    "tests/finance_replacement_payoff_initial_admission.php": "087a779de88e3b6a763bf8b4a2f6fcad14ccc1905f667958cf64f040012e9a07",
+    "tests/finance_replacement_payoff_native.php": "dfef81e60bb68b25e2f9584ecbbd7d4ad53eb2bb699159a40203ff88f0a9c7c9",
+    "tests/finance_replacement_payoff_recovery_boundaries.php": "50f1233955582fcf8e21d1dcb2b94890f67e23605c031f3e0a2294bc3541220d",
+    "tests/finance_replacement_payoff_recovery_cases.php": "5f8b4b1299b0088fdc98b7a2e2b52d79533115cbb8bd85d730676b4de9e0e740",
+    "tests/finance_replacement_payoff_recovery_safety.php": "bd284178430c6c49b40d0402da67aef49f6270b531a3eecaedf12ad60d1aa6c2",
+    "tests/finance_replacement_pending_native.php": "4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240",
+    "tests/finance_replacement_receipts_native.php": "fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a",
+    "tests/license_finance_reconcile_native.php": "afd2870bf217c7994e749c1361c11a6fa6aaff2b5d07b64eac70ec1eb2ed9b11"
+  },
+  "findings": [
+    {
+      "id": "FIN-01",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "A replacement reservation durably retains the exact signed remaining contract, predecessor, agreement and nonsecret account context before dispatch; unknown create outcomes stay open through payoff and can only recover the existing candidate.",
+      "functions": [
+        "license_finance_recovery_reserve",
+        "license_finance_recovery_dispatch",
+        "license_finance_recovery_observe",
+        "license_finance_recovery_reconcile",
+        "license_finance_subscription_replacement_finalize",
+        "license_finance_subscription_payoff_retire"
+      ],
+      "evidence": [
+        "original01: 8 unknown/payoff failures among 217 checks",
+        "final-native05: retained core checks, durable reservation, rollback, scheduler and recovery cases"
+      ]
+    },
+    {
+      "id": "FIN-02",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "Covered manual/one-time receipts and an obsolete-contract retirement hold commit atomically; later provider collections remain separately identified without allocating a second invoice receipt.",
+      "functions": [
+        "ledger_receive",
+        "license_finance_charge_record_paid",
+        "license_finance_recovery_receipt",
+        "license_financing_sync_by_invoice",
+        "license_finance_subscription_settle",
+        "license_finance_recovery_collection_tx"
+      ],
+      "evidence": [
+        "original01: 12 post-enrollment receipt failures among 217 checks",
+        "final-native05: pending/active receipts, cancellation failures, repeat receipts, audit rollback, late collections and ordinary settlement controls"
+      ]
+    },
+    {
+      "id": "FIN-AUTH-01",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "Replacement entry, locked reservation and pre-create dispatch recheck the current primary client; an already-admitted external outcome remains recordable after subsequent revocation.",
+      "functions": [
+        "license_finance_subscription_reenroll_opaque",
+        "license_finance_subscription_replacement_reserve",
+        "license_finance_recovery_dispatch"
+      ],
+      "evidence": [
+        "original-auth01: 22 checks / 9 failures retained unchanged",
+        "original-auth02: 25 checks / 11 failures; nine captured baseline files equal exact84 and two new helpers match final source",
+        "final-native05: all 25 authority assertions pass"
+      ]
+    },
+    {
+      "id": "FIN-INIT-01",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "An unresolved covered-period one-time attempt refuses new initial enrollment before reservation and provider I/O; current finalizers still retain and retire historical admitted results.",
+      "functions": [
+        "license_finance_subscription_enrollment_offer",
+        "license_finance_subscription_reserve",
+        "license_finance_subscription_finalize",
+        "license_finance_recovery_invoice_clear"
+      ],
+      "evidence": [
+        "reviewer native03: 11 checks / 2 failures",
+        "reviewer unchanged native04: 11/11, only subscription source differs",
+        "final-native05: 26 new opaque/profile admission and legacy-result assertions",
+        "initial-compatibility03: 358/358, including four explicit historical recoveries"
+      ]
+    },
+    {
+      "id": "FIN-RECOVERY-EARLY-01",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "Retained needs_accounting collections fence further charge, initial and replacement admission, including otherwise legal paid-prefix cases.",
+      "functions": [
+        "license_finance_recovery_offer_clear",
+        "license_finance_recovery_charge_guard",
+        "license_finance_subscription_replacement_contract",
+        "license_finance_subscription_enrollment_offer"
+      ],
+      "evidence": [
+        "final-native05: late collection, exact rejection-reason and paid-prefix controls"
+      ]
+    },
+    {
+      "id": "FIN-RECOVERY-EARLY-02",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "Captured account context does not bypass current gateway disable, mode or production permission; actual execute reloads settings and uses only current credentials for the same account/environment.",
+      "functions": [
+        "license_finance_anet_execute",
+        "license_finance_recovery_dispatch"
+      ],
+      "evidence": [
+        "final-native05: actual settings/execute bodies with synthetic curl; separate native settings writer; disabled/mode/gate/account refusal and same-account credential rotation control"
+      ]
+    },
+    {
+      "id": "FIN-RECOVERY-EARLY-03",
+      "disposition": "closed in reviewed frozen05 correction",
+      "invariant": "A second replacement consults the prior bound attempt and refuses a different account before reservation or predecessor I/O.",
+      "functions": [
+        "license_finance_recovery_reserve",
+        "license_finance_recovery_require_context"
+      ],
+      "evidence": [
+        "final-native05: second replacement wrong-account refusal and same-account rotation control"
+      ]
+    }
+  ],
+  "current_native_evidence": {
+    "final-native05": {
+      "count": 413,
+      "failed": 0,
+      "elapsed_seconds": 357.384,
+      "source_files_verified": 32,
+      "stderr_bytes": 5036,
+      "execution": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/final-native05/execution.json",
+      "native": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/final-native05/native.json",
+      "source": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/final-native05/source"
+    },
+    "initial-compatibility03": {
+      "count": 358,
+      "failed": 0,
+      "elapsed_seconds": 84.716,
+      "source_files_verified": 32,
+      "stderr_bytes": 4162,
+      "execution": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/initial-compatibility03/execution.json",
+      "native": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/initial-compatibility03/native.json",
+      "source": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/initial-compatibility03/source"
+    }
+  },
+  "independent_native_witness": {
+    "original": "finance-initial-unresolved-native03",
+    "original_checks": 11,
+    "original_failures": 2,
+    "corrected": "finance-initial-unresolved-native04",
+    "corrected_checks": 11,
+    "corrected_failures": 0,
+    "scenarios": 2,
+    "sole_source_difference": "site/app/billing/finance_subscription.php",
+    "owned_port": 33317,
+    "shutdown": "clean"
+  },
+  "retention": {
+    "original138_assertions_retained": true,
+    "fresh79_core_assertions_retained": true,
+    "first387_current_checks_identical_to_frozen04": true,
+    "all25_authority_names_and_assertions_retained": true,
+    "all13_initial_assertion_call_sites_retained": true,
+    "historical_initial_scenarios": 4,
+    "current_initial_scenarios": 32
+  },
+  "current_main_stderr": {
+    "bytes": 5036,
+    "lines": 73,
+    "patterns": {
+      "RuntimeException code=0 in financing_offers.php:261": 67,
+      "RuntimeException code=0 in finance_replacement_payoff_boundaries.php:29": 1,
+      "RuntimeException code=0 in finance_authorize_net.php:167": 1,
+      "RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:13": 1,
+      "RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1,
+      "RuntimeException code=0 in finance_replacement_payoff_boundaries.php:21": 1,
+      "RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:16": 1
+    },
+    "unexpected_lines": 0,
+    "captured_case_exceptions": "Explicit lost replies, cancellation/readback faults and SQLSTATE45000/1644 injected audit rollback remain in case JSON; inspected as expected fault evidence."
+  },
+  "limits": [
+    "This is bounded independent application/schema/view and native-evidence approval for the exact frozen05 content, not whole-PR317, complete-tree, merge, release, hosted-matrix or production approval.",
+    "Root separately owns the strict provenance/generated-inventory proof, staged-tree admission, published histories and combined integration acceptance.",
+    "Native evidence is PHP 8.3.6 with MariaDB 10.11.14, real isolated SQL and separate PHP receipt/settings writers; provider transport/mode and future signed fixtures are synthetic. No real provider, charges, HTTP/browser or live service certification.",
+    "OBS-03 remains bounded: older operations without retained original merchant/environment provenance are not retroactively bound. No cross-merchant ID collision or actual wrong-customer cancellation is asserted.",
+    "Legacy ambiguous replacements without durable original contracts remain explicit manual merchant-account reconciliation cases; no inferred historical reservation is created.",
+    "Needs_accounting records intentionally remain visible and fence new collections. The correction adds no automatic allocation, refund or accounting-clearance workflow.",
+    "The earlier generic HY000 in adjacent-full01 remains unclassified and nonreproduced. It is not attributed to the later separately evidenced 33313 signal11 crash or to DDL.",
+    "Compatibility results on frozen04 and pure/fence evidence are retained with their source identities, not relabeled as current whole-tree runs. Current413, current358 and the independent11 witness exercise the final application correction."
+  ],
+  "evidence_sha256": {
+    "primary-finance-review.md": "f79433e6e29941d8203378f47f3cc347bbef88b354946077173b70228ac1c2a7",
+    "primary-finance-review.json": "8c6eeeb25b0960d9a1570d48aec891324df9eaa5cd8c8e9412333ba3c0b199c7",
+    "finance-recovery-early-correctness-review.md": "8b579588fe2bbbad06922f9d6a65a96c7c15fc9b1d9ee4e04553ee01db5f7a0b",
+    "finance-recovery-early-correctness-review.json": "91ecedd9a8ecaeb417aa0d483c744975bd16b345aeaa44f1392de6379118053c",
+    "finance-authority-baseline-review.md": "930aec4a05a5eef593ed0f996e51348c7e31b42c29bec15f62f4a84e740a3796",
+    "finance-authority-baseline-review.json": "68ac90634dcd59d98a5e60a9150ffde8540e7e6177bc8883d02655415cbd04a1",
+    "finance-initial-admission-review.md": "a668ee019e8121f9340838439cc14f8f94128d4279ab56b815d3046a6a3bb32b",
+    "finance-initial-admission-review.json": "5a579f37913265f55ca89c9008a7d99c254ec357a01e297df113cbcce1cc0770",
+    "finance-initial-admission-adaptation-independent-review.md": "ff2f31388cc8fb1ed28244096677bdae2c1bb6aea6dba874383a16eaa8a4bdc2",
+    "finance-initial-admission-adaptation-independent-review.json": "9ecc0454b50c108ea003918068d0004ca3d3abc4628b2b9bee516ab174ff1dd9",
+    "finance-final-independent-review/reviewed-functions.json": "9961eac245815cd1587f1fe3e7bb1dc979b2f4756e4b4961ba002258c8c462c5",
+    "finance-final-independent-review/frozen05-identity.json": "0090e1f441ef5294bbcaf2e8565eab3807a17ec0425b23ddb31005b6006d947d",
+    "finance-final-independent-review/original-core-retention.json": "f5eefa075c18a69876d73b2e4a864fca2b68978ffa5d0d8578295847a639081d",
+    "finance-final-independent-review/authority-baseline02-extension.json": "a1ed495c3475a0ad4ed06955527e22d5eeb7261a76c5d57286e9c1f081d222a0",
+    "finance-final-independent-review/current-initial-compatibility.json": "dad3de0d9d9ea7e1e224ba424a078eaaf09d01822cd15ddcf2036e365a061bb8",
+    "finance-recovery-local-evidence/implementation-frozen05/manifest.json": "2c50b9c02296d0ea220b049fcc79ea705ab7ca3c3e34d6a5c1f9c2f7e4fa76ea",
+    "finance-recovery-local-evidence/original01/execution.json": "36d129f00bfe9d9f5457fafad00f54ccd1f239a6bd78fab100fc886ee543500c",
+    "finance-recovery-local-evidence/original01/native.json": "b4735b104f915e1427e572e2dc1950e8e547731610588e55167f9f9737cb2d17",
+    "finance-recovery-local-evidence/original-auth02/execution.json": "cc90bafe48c4fd7b46534817a3c33d364e53f53551e1f4c0c9d3c4ad4a758a40",
+    "finance-recovery-local-evidence/original-auth02/native.json": "a21842cfb0774d3bcfc0f7fc7fe0f6c407047804991b4f8274c1329d52ab3c89",
+    "finance-recovery-local-evidence/final-native05/execution.json": "353aa7930bd9f34c15bd2642267ddb4765efd0246058f9dfc8eaf1e8d9792d02",
+    "finance-recovery-local-evidence/final-native05/native.json": "32e3c9d4569a08d9b8e5004ada4f564912fb7f95c23aecc168f08d873a62c6dc",
+    "finance-recovery-local-evidence/final-native05/native.stderr.log": "59a42d4a234e2aee552f8cb2228149edf3c6f20926c0aef6a5438fece4774814",
+    "finance-recovery-local-evidence/final-native05/diagnostic-classification.json": "da9840742c58f2518ef37fce068fe81a720d7fc3a7c524649030d82702784332",
+    "finance-recovery-local-evidence/initial-compatibility03/execution.json": "68a14e86a3255cd4efcf2fe27e54c2714ff874e2847506afd473f91c27187654",
+    "finance-recovery-local-evidence/initial-compatibility03/native.json": "27ade65b2e99c5c904a80f368c7845b8908ca70443036903292a81e07c7090cd",
+    "finance-recovery-local-evidence/initial-compatibility03/native.stderr.log": "3ab0df3bec543296e55b73bb9cec913690fdadb1b753b349ea6725f01ce7afde",
+    "finance-initial-unresolved-native03/execution.json": "d3dcab4caf32bbbc44cb2f14518116f5b15884588719750f428f6a7561bcc121",
+    "finance-initial-unresolved-native03/native.json": "df167544588a999bc7aa73cbfa10f939573bdfe123abd20e64c3124075f1f4ec",
+    "finance-initial-unresolved-native04/execution.json": "5dc3d0bc425a0e4015d941a650b17825e1cdad7d06d60108e769cd975520b2e9",
+    "finance-initial-unresolved-native04/native.json": "4170cab576062554497f235b02044d5861e921fdcc5993afce87e7019005a37f",
+    "finance-initial-unresolved-native04/owned-db-lifecycle.json": "13253678facaff543dc9d7d09dbde4d6cdd180157dc33d423dbc802977eb11a1",
+    "finance-recovery-local-evidence/adjacent-compatibility02/01-finance_payoff_retirement_native/execution.json": "92f08799522a00fb3ab8740d2bc9aa66fbf20ccb4c9fbf180c82b55ada71ef61",
+    "finance-recovery-local-evidence/adjacent-compatibility02/01-finance_payoff_retirement_native/native.json": "3dcfd11de3980376556724dc7ba322483fcd7a87d6d61fba90f057782f4549b1",
+    "finance-recovery-local-evidence/adjacent-resumed03/execution.json": "7e2a34baf8d480570c93854f0fd160d4365a24ae26d1ecf2253ba1f2c72c4fd0",
+    "finance-recovery-local-evidence/adjacent-resumed03/01-finance_replacement_receipts_native/native.json": "6b6f0f059fb593ba535ea6d060cb7b819a6bf29889afc067740481f20a3a6544",
+    "finance-recovery-local-evidence/adjacent-resumed03/02-finance_replacement_pending_native/native.json": "a64a00c64ceb84c83536650386ca229ade57b2dc25ee04679daaf880a0a86066",
+    "finance-recovery-local-evidence/compatibility-server-exit01/server.log": "68193ea9efd9d7c059302e74d2d653c3b2e96ace6b34688434bf89c9dab86afc",
+    "finance-recovery-local-evidence/compatibility-server-exit01/resource-observation.json": "69b3ac477ea22e0776bceecfd9e1f8d640991a7ec09a90a5e6b4bcc63c80fb9a",
+    "finance-recovery-local-evidence/adjacent-full01/01-finance_replacement_receipts_native/native.json": "8b3a494c975302a29fd1744ea38d68443d07bc79d9f25c9253ff6cbfa9217d5c",
+    "finance-payoff-compatibility-independent-review.json": "4136b9e78500b82e6fd7c9fd206d82e53a9a30f99cfe1bc17342f963e88dbd4a",
+    "finance-recovery-local-evidence/adjacent-fences01/execution.json": "255497bd261051097160fae5989116255ae15b24c8de9ac13c1d6478d0dad984",
+    "finance-recovery-local-evidence/pure-final04/execution.json": "b40e8290de2356987bf1bc0d722b4621ec9dbfa3b9b284904db57991441ba7b3"
+  }
+}

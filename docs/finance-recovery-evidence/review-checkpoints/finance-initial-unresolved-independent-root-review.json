@@ -1,0 +1,21 @@
+{
+  "reviewer": "root",
+  "reproduction_author": "primary_finance_review",
+  "source_snapshot": "implementation-frozen04",
+  "application_manifest_sha256": "aa1236c99fceb05af6d088bcd06737cd5dd37fd829b4f24196962b496cda3149",
+  "native_report_sha256": "df167544588a999bc7aa73cbfa10f939573bdfe123abd20e64c3124075f1f4ec",
+  "execution_sha256": "d3dcab4caf32bbbc44cb2f14518116f5b15884588719750f428f6a7561bcc121",
+  "source_files_independently_verified": 38,
+  "observed_checks": 11,
+  "observed_failures": 2,
+  "source_and_probe_semantically_reviewed": true,
+  "case": "Initial automatic enrollment admits a full recurring contract despite a preexisting unresolved one-time installment charge.",
+  "classification": "P1 verified at frozen04; inherited exact84 admission omission exposed by compatibility rollback.",
+  "independent_live_execution_by_root": false,
+  "decision": "Require serialized initial covered-period charge admission fence; preserve already-admitted result finalization and separately bind legacy fixture adaptation.",
+  "limitations": [
+    "Synthetic provider transport and future invoice timing; no real charge or browser run.",
+    "Two earlier invalid harness prerequisite runs remain preserved and are not application failures."
+  ],
+  "reviewed_utc": "2026-11-02T02:47:32.217972+00:00"
+}

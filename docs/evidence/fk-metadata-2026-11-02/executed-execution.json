@@ -1,0 +1,109 @@
+{
+  "source_base": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "source_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "commit": null,
+  "scope": "Bounded corrected native/HTTP validation; not full acceptance or hosted-root-cause proof",
+  "database_port": 33316,
+  "runner_pid": 135392,
+  "started_at_utc": "2026-11-02T02:49:44.233864+00:00",
+  "stages": [
+    {
+      "stage": "native-metadata",
+      "started_at_utc": "2026-11-02T02:49:44.234040+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135395,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:49:49.242671+00:00",
+      "elapsed_seconds": 5.008209809006075,
+      "stdout_sha256": "65a6df62065359fa5cd2b95becd0d251a8d15fdeb859f8744d325cd84ed8029e",
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "seed-prepare",
+      "started_at_utc": "2026-11-02T02:49:49.244371+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135426,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:49:51.249442+00:00",
+      "elapsed_seconds": 2.0033618900051806,
+      "stdout_sha256": "7eea43b9b02549bf8277710a7c5d944805256f991773a35e11343cc0c5e86dc5",
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "seed-historical",
+      "started_at_utc": "2026-11-02T02:49:51.250693+00:00",
+      "status": "passed",
+      "private_output": true,
+      "pid": 135460,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:49:52.254847+00:00",
+      "elapsed_seconds": 1.0022352939995471,
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "seed-finish",
+      "started_at_utc": "2026-11-02T02:49:52.255937+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135463,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:49:54.276643+00:00",
+      "elapsed_seconds": 2.0199456629998167,
+      "stdout_sha256": "5f71b32aafcaa7c9a3fb4b9b5c0d2031d65a5aea4574725a727359abcc1376bd",
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "browser-transition",
+      "started_at_utc": "2026-11-02T02:49:54.278321+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135467,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:50:01.291772+00:00",
+      "elapsed_seconds": 7.013206255003752,
+      "stdout_sha256": "90ee78f0567ce96d2787a75d9f0253f561e9e5178045c9ed4406b3dbfd64bc8d",
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "post-state",
+      "started_at_utc": "2026-11-02T02:50:01.293187+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135554,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:50:02.302867+00:00",
+      "elapsed_seconds": 1.0066239619991393,
+      "stdout_sha256": "aff4f56aeba6ce778c89c0f7f0c525796b122d9013858878bae71464465b3d25",
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "service-plans-native",
+      "started_at_utc": "2026-11-02T02:50:02.303486+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135556,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:50:11.325535+00:00",
+      "elapsed_seconds": 9.016893854000955,
+      "stdout_sha256": "33316760ce6e15db37f63ae6082c62c6622f8cb9e81eabb6c5562623409b141d",
+      "stderr_bytes": 0
+    },
+    {
+      "stage": "recurring-billing-native",
+      "started_at_utc": "2026-11-02T02:50:11.326939+00:00",
+      "status": "passed",
+      "private_output": false,
+      "pid": 135599,
+      "exit_code": 0,
+      "completed_at_utc": "2026-11-02T02:52:52.061611+00:00",
+      "elapsed_seconds": 160.73418447199947,
+      "stdout_sha256": "6b3fe67314e0cd4b60dd2300f2cc528d6108082fc07b19e7ec771624e20645cf",
+      "stderr_bytes": 0
+    }
+  ],
+  "state": "completed",
+  "heartbeat_at_utc": "2026-11-02T02:52:51.060105+00:00",
+  "completed_at_utc": "2026-11-02T02:52:52.063869+00:00"
+}

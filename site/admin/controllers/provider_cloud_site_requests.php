@@ -23,7 +23,7 @@ function provider_cloud_site_requests_admin_action(string $action):void {
             flash('The creation attempt was recorded. Review its outcome below; package confirmation is a separate step.');
         }
     }
-    redirect(admin_url('provider-settings').'#cloud-website-requests');
+    redirect(admin_url('provider-settings',['section'=>'website']).'#cloud-website-requests');
 }
 function provider_cloud_site_requests_admin_render():void {
     provider_cloud_site_requests_actor(null);

@@ -18,7 +18,7 @@ function provider_settings_manager(bool $ready=true): array {
 }
 function provider_settings_owner(#[\SensitiveParameter] string $password,bool $ready=true): array {
     $actor=provider_settings_manager($ready);
-    if (!password_verify($password,$actor['password_hash'])) throw new InvalidArgumentException('Your current password is not correct.');
+    if (!admin_session_matches($actor)) throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
     return $actor;
 }
 function provider_settings_audit(int $actor,string $action,string $detail): void {

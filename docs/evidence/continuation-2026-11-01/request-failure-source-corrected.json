@@ -1,0 +1,434 @@
+{
+  "scope": "Actual source-bound release callbacks and failure predicates; real ephemeral loopback HTTP and Chromium. No application/database/provider or full-release acceptance.",
+  "source_sha256": "09f49d2f6d67f07d774d69d4872af2724d9a41258c4dee0658aa5e472b2d27d5",
+  "playwright_version": "1.56.0",
+  "cases": [
+    {
+      "audience": "public",
+      "capture_binding": "actual-helper",
+      "chromium_version": "141.0.7390.37",
+      "checks": [
+        {
+          "name": "public: real truncated HTTP 200 failure retains its observed status",
+          "passed": true
+        },
+        {
+          "name": "public: real truncated HTTP 404 failure retains its observed status",
+          "passed": true
+        },
+        {
+          "name": "public: real truncated HTTP 500 failure retains its observed status",
+          "passed": true
+        },
+        {
+          "name": "public: ordinary HTTP 404 console error remains visible",
+          "passed": true
+        },
+        {
+          "name": "public: ordinary HTTP 500 console error remains visible",
+          "passed": true
+        },
+        {
+          "name": "public: completed HTTP 204 is observed without an invented failed request",
+          "passed": true
+        },
+        {
+          "name": "public: closure failure is retained without an invented HTTP status",
+          "passed": true
+        },
+        {
+          "name": "public: all four actual failed requests are retained exactly once",
+          "passed": true
+        },
+        {
+          "name": "public: actual rejection predicate keeps every observed genuine failure",
+          "passed": true
+        },
+        {
+          "name": "public: callback delivery and browser operations raise no exception",
+          "passed": true
+        },
+        {
+          "name": "public: all requests stay within the local fixture",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failed_requests": [
+        {
+          "url": "http://127.0.0.1:34673/truncated/200",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/404",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/500",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:34673/slow",
+          "failure": "net::ERR_ABORTED",
+          "status": null
+        }
+      ],
+      "unexpected_failed_requests": [
+        {
+          "url": "http://127.0.0.1:34673/truncated/200",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/404",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/500",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:34673/slow",
+          "failure": "net::ERR_ABORTED",
+          "status": null
+        }
+      ],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:34673/",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/200",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/404",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:34673/truncated/500",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:34673/status/404",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:34673/status/500",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:34673/status/204",
+          "status": 204
+        }
+      ],
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH",
+          "url": "http://127.0.0.1:34673/truncated/200"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://127.0.0.1:34673/truncated/404"
+        },
+        {
+          "text": "Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH",
+          "url": "http://127.0.0.1:34673/truncated/404"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "url": "http://127.0.0.1:34673/truncated/500"
+        },
+        {
+          "text": "Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH",
+          "url": "http://127.0.0.1:34673/truncated/500"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://127.0.0.1:34673/status/404"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "url": "http://127.0.0.1:34673/status/500"
+        }
+      ],
+      "callback_errors": [],
+      "operation_errors": [],
+      "server_paths": [
+        "/",
+        "/truncated/200",
+        "/truncated/404",
+        "/truncated/500",
+        "/status/404",
+        "/status/500",
+        "/status/204",
+        "/slow"
+      ]
+    },
+    {
+      "audience": "owner",
+      "capture_binding": "actual-helper",
+      "chromium_version": "141.0.7390.37",
+      "checks": [
+        {
+          "name": "owner: real truncated HTTP 200 failure retains its observed status",
+          "passed": true
+        },
+        {
+          "name": "owner: real truncated HTTP 404 failure retains its observed status",
+          "passed": true
+        },
+        {
+          "name": "owner: real truncated HTTP 500 failure retains its observed status",
+          "passed": true
+        },
+        {
+          "name": "owner: ordinary HTTP 404 console error remains visible",
+          "passed": true
+        },
+        {
+          "name": "owner: ordinary HTTP 500 console error remains visible",
+          "passed": true
+        },
+        {
+          "name": "owner: completed HTTP 204 is observed without an invented failed request",
+          "passed": true
+        },
+        {
+          "name": "owner: closure failure is retained without an invented HTTP status",
+          "passed": true
+        },
+        {
+          "name": "owner: all four actual failed requests are retained exactly once",
+          "passed": true
+        },
+        {
+          "name": "owner: actual rejection predicate keeps every observed genuine failure",
+          "passed": true
+        },
+        {
+          "name": "owner: callback delivery and browser operations raise no exception",
+          "passed": true
+        },
+        {
+          "name": "owner: all requests stay within the local fixture",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "failed_requests": [
+        {
+          "url": "http://127.0.0.1:41307/truncated/200",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/404",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/500",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:41307/slow",
+          "failure": "net::ERR_ABORTED",
+          "status": null
+        }
+      ],
+      "unexpected_failed_requests": [
+        {
+          "url": "http://127.0.0.1:41307/truncated/200",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/404",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/500",
+          "failure": "net::ERR_CONTENT_LENGTH_MISMATCH",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:41307/slow",
+          "failure": "net::ERR_ABORTED",
+          "status": null
+        }
+      ],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:41307/",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/200",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/404",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:41307/truncated/500",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:41307/status/404",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:41307/status/500",
+          "status": 500
+        },
+        {
+          "url": "http://127.0.0.1:41307/status/204",
+          "status": 204
+        }
+      ],
+      "console_errors": [
+        {
+          "text": "Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH",
+          "url": "http://127.0.0.1:41307/truncated/200"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://127.0.0.1:41307/truncated/404"
+        },
+        {
+          "text": "Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH",
+          "url": "http://127.0.0.1:41307/truncated/404"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "url": "http://127.0.0.1:41307/truncated/500"
+        },
+        {
+          "text": "Failed to load resource: net::ERR_CONTENT_LENGTH_MISMATCH",
+          "url": "http://127.0.0.1:41307/truncated/500"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "url": "http://127.0.0.1:41307/status/404"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+          "url": "http://127.0.0.1:41307/status/500"
+        }
+      ],
+      "callback_errors": [],
+      "operation_errors": [],
+      "server_paths": [
+        "/",
+        "/truncated/200",
+        "/truncated/404",
+        "/truncated/500",
+        "/status/404",
+        "/status/500",
+        "/status/204",
+        "/slow"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "public: real truncated HTTP 200 failure retains its observed status",
+      "passed": true
+    },
+    {
+      "name": "public: real truncated HTTP 404 failure retains its observed status",
+      "passed": true
+    },
+    {
+      "name": "public: real truncated HTTP 500 failure retains its observed status",
+      "passed": true
+    },
+    {
+      "name": "public: ordinary HTTP 404 console error remains visible",
+      "passed": true
+    },
+    {
+      "name": "public: ordinary HTTP 500 console error remains visible",
+      "passed": true
+    },
+    {
+      "name": "public: completed HTTP 204 is observed without an invented failed request",
+      "passed": true
+    },
+    {
+      "name": "public: closure failure is retained without an invented HTTP status",
+      "passed": true
+    },
+    {
+      "name": "public: all four actual failed requests are retained exactly once",
+      "passed": true
+    },
+    {
+      "name": "public: actual rejection predicate keeps every observed genuine failure",
+      "passed": true
+    },
+    {
+      "name": "public: callback delivery and browser operations raise no exception",
+      "passed": true
+    },
+    {
+      "name": "public: all requests stay within the local fixture",
+      "passed": true
+    },
+    {
+      "name": "owner: real truncated HTTP 200 failure retains its observed status",
+      "passed": true
+    },
+    {
+      "name": "owner: real truncated HTTP 404 failure retains its observed status",
+      "passed": true
+    },
+    {
+      "name": "owner: real truncated HTTP 500 failure retains its observed status",
+      "passed": true
+    },
+    {
+      "name": "owner: ordinary HTTP 404 console error remains visible",
+      "passed": true
+    },
+    {
+      "name": "owner: ordinary HTTP 500 console error remains visible",
+      "passed": true
+    },
+    {
+      "name": "owner: completed HTTP 204 is observed without an invented failed request",
+      "passed": true
+    },
+    {
+      "name": "owner: closure failure is retained without an invented HTTP status",
+      "passed": true
+    },
+    {
+      "name": "owner: all four actual failed requests are retained exactly once",
+      "passed": true
+    },
+    {
+      "name": "owner: actual rejection predicate keeps every observed genuine failure",
+      "passed": true
+    },
+    {
+      "name": "owner: callback delivery and browser operations raise no exception",
+      "passed": true
+    },
+    {
+      "name": "owner: all requests stay within the local fixture",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

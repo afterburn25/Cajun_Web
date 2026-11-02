@@ -5,6 +5,8 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'ledger-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.7.0',dest)
@@ -19,7 +21,8 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.7 update preserves configuration locks private media and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/ledger-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
-    r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'wrong','confirm':'1'});check('Ledger upgrade requires owner reauthentication','current password' in r.text.lower())
+    before,settings=prepare_retained_payments(globals(),up,url,'ledgerup_',before,settings,preserved)
+    refuse_owner_action(globals(),up,url+'?view=invoice-payments','payments_ledger_setup',{'confirm':'1'},installed_root=dest)
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.7 ledger upgrade succeeds','Invoice payment history enabled' in r.text)
     check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT * FROM ledgerup_'+t)==v for t,v in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings))
@@ -36,6 +39,7 @@ def run_browser(env,browser):
     check('Fresh setup creates empty enabled real-payment ledger',db("SELECT value FROM fresh_settings WHERE name='invoice_ledger_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_invoice_payments')==[])
     admin=requests.Session();root=BASE+'/existing/admin/index.php';portal=BASE+'/existing/portal/index.php';url=root+'?view=invoice-payments';job=root+'?view=studio-job&id=1'
     submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    if 'Enable payment preparation' in admin.get(root+'?view=payments').text:submit(admin,root+'?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     original=db('SELECT * FROM ci_studio_invoices');r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Ledger enablement rejects forged CSRF',not db("SELECT value FROM ci_settings WHERE name='invoice_ledger_schema_version'") and 'session expired' in r.text.lower())
     r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables ledger without editing prior invoices','Invoice payment history enabled' in r.text and db('SELECT * FROM ci_studio_invoices')==original)
     submit(admin,job,'studio_invoice',{'title':'Ledger design phase','amount':'1250.10','instructions':'Synthetic external payment instructions; do not send money.'});invoice=db("SELECT * FROM ci_studio_invoices WHERE title='Ledger design phase'")[0];iid=invoice['id'];target=url+'&invoice_id='+str(iid)
@@ -63,7 +67,8 @@ def run_browser(env,browser):
     member=requests.Session();submit(member,root+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF});check('Payment staff with client grant can read invoice ledger',member.get(target).status_code==200)
     reverse=form_data(form_for(admin.get(target),'payments_ledger_reverse'));reverse.update(reason='PrivateCorrectionReason recording mistake',owner_password=OWNER,confirm='1')
     forged=dict(reverse,csrf=token(member.get(target)));r=member.post(target,data=forged);check('Non-owner cannot forge recording reversal',not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]))
-    r=admin.post(target,data=dict(reverse,owner_password='wrong'));check('Reversal reauthenticates current owner',not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]) and 'current password' in r.text.lower())
+    refuse_owner_action(globals(),admin,target,'payments_ledger_reverse',{k:v for k,v in reverse.items() if k not in ('csrf','action','owner_password')})
+    check('Revoked owner cannot append a recording reversal',not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]))
     db("CREATE TRIGGER ci_ledger_fail BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action LIKE 'payments.ledger.%' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic ledger audit failure'; END IF; END")
     try:
         r=admin.post(target,data=reverse);check('HTTP reversal audit failure preserves payment and redacts SQL','could not be saved' in r.text and 'SQLSTATE' not in r.text and not db('SELECT id FROM ci_invoice_payments WHERE reversal_of=?',[rid]))
@@ -80,7 +85,7 @@ def run_browser(env,browser):
     p.screenshot(path=str(QA/'Invoice-Ledger-Desktop.png'),full_page=True);p.set_viewport_size({'width':320,'height':844});p.screenshot(path=str(QA/'Invoice-Ledger-Narrow.png'),full_page=True);check('Invoice ledger fits 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     f=p.locator('form').filter(has=p.locator('[name=action][value=payments_ledger_receive]'));f.locator('[name=reference]').fill('Browser full payment reference');f.locator('[name=confirm]').check();f.get_by_role('button',name='Record payment',exact=True).click();expect(p.get_by_text('External payment recorded',exact=False)).to_be_visible()
     check('Browser final receipt pays exactly remaining corrected amount',db('SELECT status FROM ci_studio_invoices WHERE id=?',[iid])==[{'status':'paid'}] and db("SELECT amount_cents FROM ci_invoice_payments WHERE invoice_id=? AND kind='manual' ORDER BY id DESC LIMIT 1",[iid])==[{'amount_cents':125010}])
-    p.goto(portal);p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php');p.goto(statement);expect(p.get_by_role('heading',name='Payment history')).to_be_visible();p.screenshot(path=str(QA/'Invoice-Statement-Narrow.png'),full_page=True);check('Client statement fits 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
+    p.goto(portal+'?job=1');p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php?master=1');p.goto(statement);expect(p.get_by_role('heading',name='Payment history')).to_be_visible();p.screenshot(path=str(QA/'Invoice-Statement-Narrow.png'),full_page=True);check('Client statement fits 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     p.get_by_role('link',name='Printable receipt',exact=False).first.click();expect(p.get_by_role('heading',name='Receipt #',exact=False)).to_be_visible();p.screenshot(path=str(QA/'Invoice-Receipt-Narrow.png'),full_page=True);check('Client receipt fits 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     p.set_viewport_size({'width':1440,'height':1000});p.emulate_media(media='print');p.screenshot(path=str(QA/'Invoice-Receipt-Print.png'),full_page=True);p.pdf(path=str(QA/'Invoice-Receipt.pdf'),format='Letter',print_background=True)
     check('Receipt print hides site navigation and retains payment amount',p.locator('body>header').count()==0 or not p.locator('body>header').is_visible());check('Receipt print has dark text on white page and hides secondary navigation',p.locator('.ledger-document p').first.evaluate("e=>getComputedStyle(e).color==='rgb(17, 17, 17)'") and p.locator('body').evaluate("e=>getComputedStyle(e).backgroundColor==='rgb(255, 255, 255)'") and not p.locator('.growth-subnav').is_visible());check('Printed receipt PDF is nonempty',(QA/'Invoice-Receipt.pdf').stat().st_size>5000)

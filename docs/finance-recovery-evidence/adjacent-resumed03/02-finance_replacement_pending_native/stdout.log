@@ -1,0 +1,116 @@
+{
+    "passed": true,
+    "count": 25,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "Known candidate remains pending after uncertain cancellation",
+            "passed": true
+        },
+        {
+            "name": "Actual partial receipt remains recorded",
+            "passed": true
+        },
+        {
+            "name": "Delayed failed cannot clear pending cancellation",
+            "passed": true
+        },
+        {
+            "name": "Delayed suspended cannot clear pending cancellation",
+            "passed": true
+        },
+        {
+            "name": "Delayed terminated cannot clear pending cancellation",
+            "passed": true
+        },
+        {
+            "name": "Delayed cancelled cannot clear pending cancellation",
+            "passed": true
+        },
+        {
+            "name": "Delayed expired cannot clear pending cancellation",
+            "passed": true
+        },
+        {
+            "name": "Automatic settlement explicitly refuses a pending candidate",
+            "passed": true
+        },
+        {
+            "name": "Owner settlement explicitly refuses a pending candidate",
+            "passed": true
+        },
+        {
+            "name": "Pending cancellation cannot open a second payment path",
+            "passed": true
+        },
+        {
+            "name": "Lifecycle observations never call the gateway",
+            "passed": true
+        },
+        {
+            "name": "Events preserve receipts, permanent-payoff evidence and license rights",
+            "passed": true
+        },
+        {
+            "name": "Event handling releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "Generic review cannot erase pending cancellation",
+            "passed": true
+        },
+        {
+            "name": "Partial refund preserves cancellation obligation",
+            "passed": true
+        },
+        {
+            "name": "Duplicate partial refund remains idempotent",
+            "passed": true
+        },
+        {
+            "name": "Full refund preserves cancellation obligation and reopens accounting",
+            "passed": true
+        },
+        {
+            "name": "Duplicate full refund does not duplicate ledger reversal",
+            "passed": true
+        },
+        {
+            "name": "Verified void preserves cancellation obligation and reopens accounting",
+            "passed": true
+        },
+        {
+            "name": "Duplicate void does not duplicate ledger reversal",
+            "passed": true
+        },
+        {
+            "name": "Scheduler finishes verified cancellation after delayed events",
+            "passed": true
+        },
+        {
+            "name": "Verified cancellation does not grant payoff",
+            "passed": true
+        },
+        {
+            "name": "Ordinary partial refunds still enter review",
+            "passed": true
+        },
+        {
+            "name": "Ordinary full refunds still reopen recovery and accounting",
+            "passed": true
+        },
+        {
+            "name": "Ordinary voids still reopen recovery and accounting",
+            "passed": true
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "sources": {
+        "app\/billing\/finance_subscription.php": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+        "app\/licenses\/financing_policy.php": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4",
+        "app\/licenses\/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+        "app\/billing\/finance_payment_review.php": "490728d01e5d0d04363b2f0ce48b314f55fa942a427e10da30dfe6bfb63b7295"
+    },
+    "scope": "Real lifecycle service, native SQL locks\/audit, actual owner partial receipt and scheduler retry. Synthetic provider boundaries and signed future invoice."
+}

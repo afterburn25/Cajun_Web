@@ -1,0 +1,17 @@
+{
+  "path": "final-native05/native.stderr.log",
+  "sha256": "59a42d4a234e2aee552f8cb2228149edf3c6f20926c0aef6a5438fece4774814",
+  "bytes": 5036,
+  "lines": 73,
+  "exact_expected_patterns": {
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:29": 1,
+    "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:13": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:21": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:16": 1,
+    "CWP [id] RuntimeException code=0 in financing_offers.php:261": 67
+  },
+  "unexpected_lines": 0,
+  "explanation": "67 explicitly unprepared seed payment links plus the original six readback/cancellation negative controls. Additional FinanceRecovery fault exceptions remain in case JSON, not dropped."
+}

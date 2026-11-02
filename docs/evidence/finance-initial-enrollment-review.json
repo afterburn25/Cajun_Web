@@ -1,0 +1,1107 @@
+{
+  "base_pr": 295,
+  "base_sha": "27d7b9e87d912126a877ffbf906ca8af2e035a16",
+  "branch": "codex/finance-initial-payment-enrollment",
+  "source_sha256": {
+    "site/app/billing/finance_subscription.php": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+    "site/portal/views/financing.php": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+    "tests/finance_initial_enrollment_native.php": "036ecb11d7b9ec7c88e957394067b46d7a4e1113e3e62ae828b0dc3872609618",
+    "tests/finance_initial_enrollment_handler.php": "a739420f11b75bf9b419388cd4f8137800b1cb267ac18b36e4367b4f8393bd27",
+    ".github/workflows/recurring-billing-native.yml": "386bc2ae8857abaf0ae2c0a5b2384ec3978442f00e95ea6e58b21a99a4d880a5"
+  },
+  "matrix": [
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 119,
+      "failed": 0,
+      "subscription_sha256": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+      "portal_sha256": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+      "report_sha256": "c96dd8bb356068fe429ac46a5edf261a76b184cf5a6fb925c02913a86bdca390",
+      "expected_unprepared_payment_link_logs": 33
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 119,
+      "failed": 0,
+      "subscription_sha256": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+      "portal_sha256": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+      "report_sha256": "533efacd8b8dfb58bb9209517a12e933291e7e209d501b1614022b8739c52c05",
+      "expected_unprepared_payment_link_logs": 33
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 119,
+      "failed": 0,
+      "subscription_sha256": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+      "portal_sha256": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+      "report_sha256": "8093cd08dc622fedfa121c0deb404ee908332936483cbd0b41a9865bddc1f9fc",
+      "expected_unprepared_payment_link_logs": 33
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 119,
+      "failed": 0,
+      "subscription_sha256": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+      "portal_sha256": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+      "report_sha256": "1ac4dfbb7566980e32b690c841974c3db131a74bc8a6ea6fe6aca7652fb82111",
+      "expected_unprepared_payment_link_logs": 33
+    }
+  ],
+  "native_checks": [
+    {
+      "name": "paid admission outcome",
+      "passed": true
+    },
+    {
+      "name": "paid exact finite reservation",
+      "passed": true
+    },
+    {
+      "name": "paid preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "paid releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "zero admission outcome",
+      "passed": true
+    },
+    {
+      "name": "zero exact finite reservation",
+      "passed": true
+    },
+    {
+      "name": "zero preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "zero releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "zero actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "partial admission outcome",
+      "passed": true
+    },
+    {
+      "name": "partial preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "partial releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "status_only admission outcome",
+      "passed": true
+    },
+    {
+      "name": "status_only preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "status_only releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "status_only actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "status_only portal does not assert verified initial payment",
+      "passed": true
+    },
+    {
+      "name": "reversed admission outcome",
+      "passed": true
+    },
+    {
+      "name": "reversed preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "reversed releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "reversed actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "reversed portal does not assert verified initial payment",
+      "passed": true
+    },
+    {
+      "name": "missing_ledger admission outcome",
+      "passed": true
+    },
+    {
+      "name": "missing_ledger preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "missing_ledger releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "missing_invoice admission outcome",
+      "passed": true
+    },
+    {
+      "name": "missing_invoice preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "missing_invoice releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "invoice_customer admission outcome",
+      "passed": true
+    },
+    {
+      "name": "invoice_customer preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "invoice_customer releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "invoice_project admission outcome",
+      "passed": true
+    },
+    {
+      "name": "invoice_project preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "invoice_project releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "invoice_amount admission outcome",
+      "passed": true
+    },
+    {
+      "name": "invoice_amount preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "invoice_amount releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "invoice_currency admission outcome",
+      "passed": true
+    },
+    {
+      "name": "invoice_currency preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "invoice_currency releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "invoice_hash admission outcome",
+      "passed": true
+    },
+    {
+      "name": "invoice_hash preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "invoice_hash releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "invoice_agreement admission outcome",
+      "passed": true
+    },
+    {
+      "name": "invoice_agreement preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "invoice_agreement releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "unsigned admission outcome",
+      "passed": true
+    },
+    {
+      "name": "unsigned preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "unsigned releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "signature_hash admission outcome",
+      "passed": true
+    },
+    {
+      "name": "signature_hash preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "signature_hash releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "terms_initial admission outcome",
+      "passed": true
+    },
+    {
+      "name": "terms_initial preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "terms_initial releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "terms_installments admission outcome",
+      "passed": true
+    },
+    {
+      "name": "terms_installments preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "terms_installments releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "license_customer admission outcome",
+      "passed": true
+    },
+    {
+      "name": "license_customer preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "license_customer releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "project_customer admission outcome",
+      "passed": true
+    },
+    {
+      "name": "project_customer preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "project_customer releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "plan_hash admission outcome",
+      "passed": true
+    },
+    {
+      "name": "plan_hash preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "plan_hash releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "plan_installments admission outcome",
+      "passed": true
+    },
+    {
+      "name": "plan_installments preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "plan_installments releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_off admission outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_off preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "paid_off releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_off actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "paid_off portal does not assert verified initial payment",
+      "passed": true
+    },
+    {
+      "name": "zero_paid_off admission outcome",
+      "passed": true
+    },
+    {
+      "name": "zero_paid_off preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "zero_paid_off releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "zero_paid_off actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "zero_paid_off portal does not assert verified initial payment",
+      "passed": true
+    },
+    {
+      "name": "paid_off_inconsistent admission outcome",
+      "passed": true
+    },
+    {
+      "name": "paid_off_inconsistent preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "paid_off_inconsistent releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_off_inconsistent actual portal enrollment visibility",
+      "passed": true
+    },
+    {
+      "name": "paid_off_inconsistent portal does not assert verified initial payment",
+      "passed": true
+    },
+    {
+      "name": "suspended admission outcome",
+      "passed": true
+    },
+    {
+      "name": "suspended preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "suspended releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "inactive_client admission outcome",
+      "passed": true
+    },
+    {
+      "name": "inactive_client preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "inactive_client releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "revoked_session admission outcome",
+      "passed": true
+    },
+    {
+      "name": "revoked_session preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "revoked_session releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "expired_session admission outcome",
+      "passed": true
+    },
+    {
+      "name": "expired_session preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "expired_session releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "support admission outcome",
+      "passed": true
+    },
+    {
+      "name": "support preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "support releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "other_client admission outcome",
+      "passed": true
+    },
+    {
+      "name": "other_client preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "other_client releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "contract_changed admission outcome",
+      "passed": true
+    },
+    {
+      "name": "contract_changed preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "contract_changed releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "duplicate admission outcome",
+      "passed": true
+    },
+    {
+      "name": "duplicate preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "duplicate releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "late_reversal admission outcome",
+      "passed": true
+    },
+    {
+      "name": "late_reversal preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "late_reversal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "late_payoff admission outcome",
+      "passed": true
+    },
+    {
+      "name": "late_payoff preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "late_payoff releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "late_revocation admission outcome",
+      "passed": true
+    },
+    {
+      "name": "late_revocation preserves retained financial and license records",
+      "passed": true
+    },
+    {
+      "name": "late_revocation releases transaction and mutex",
+      "passed": true
+    }
+  ],
+  "native_cases": [
+    {
+      "name": "paid",
+      "error": null,
+      "allowed": true
+    },
+    {
+      "name": "zero",
+      "error": null,
+      "allowed": true
+    },
+    {
+      "name": "partial",
+      "error": "Complete the signed agreement initial payment first.",
+      "allowed": false
+    },
+    {
+      "name": "status_only",
+      "error": "Invoice status and payment history do not agree. Ask an owner to investigate.",
+      "allowed": false
+    },
+    {
+      "name": "reversed",
+      "error": "Complete the signed agreement initial payment first.",
+      "allowed": false
+    },
+    {
+      "name": "missing_ledger",
+      "error": "Complete the signed agreement initial payment first.",
+      "allowed": false
+    },
+    {
+      "name": "missing_invoice",
+      "error": "Complete the signed agreement initial payment first.",
+      "allowed": false
+    },
+    {
+      "name": "invoice_customer",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "allowed": false
+    },
+    {
+      "name": "invoice_project",
+      "error": "Signed financing terms changed.",
+      "allowed": false
+    },
+    {
+      "name": "invoice_amount",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "allowed": false
+    },
+    {
+      "name": "invoice_currency",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "allowed": false
+    },
+    {
+      "name": "invoice_hash",
+      "error": "Invoice details differ from retained payment history. Ask an owner to investigate.",
+      "allowed": false
+    },
+    {
+      "name": "invoice_agreement",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "allowed": false
+    },
+    {
+      "name": "unsigned",
+      "error": "Signed financing terms are inconsistent.",
+      "allowed": false
+    },
+    {
+      "name": "signature_hash",
+      "error": "Signed financing terms are inconsistent.",
+      "allowed": false
+    },
+    {
+      "name": "terms_initial",
+      "error": "Signed financing terms changed.",
+      "allowed": false
+    },
+    {
+      "name": "terms_installments",
+      "error": "Signed financing terms changed.",
+      "allowed": false
+    },
+    {
+      "name": "license_customer",
+      "error": "Financing enrollment ownership or schedule changed.",
+      "allowed": false
+    },
+    {
+      "name": "project_customer",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "allowed": false
+    },
+    {
+      "name": "plan_hash",
+      "error": "Financing enrollment ownership or schedule changed.",
+      "allowed": false
+    },
+    {
+      "name": "plan_installments",
+      "error": "Financing enrollment ownership or schedule changed.",
+      "allowed": false
+    },
+    {
+      "name": "paid_off",
+      "error": "Paid-off financing cannot enroll more automatic installments.",
+      "allowed": false
+    },
+    {
+      "name": "zero_paid_off",
+      "error": "Paid-off financing cannot enroll more automatic installments.",
+      "allowed": false
+    },
+    {
+      "name": "paid_off_inconsistent",
+      "error": "Paid-off financing cannot enroll more automatic installments.",
+      "allowed": false
+    },
+    {
+      "name": "suspended",
+      "error": "Review financing access before enrolling automatic installments.",
+      "allowed": false
+    },
+    {
+      "name": "inactive_client",
+      "error": "Client unavailable.",
+      "allowed": false
+    },
+    {
+      "name": "revoked_session",
+      "error": "Your client session is no longer current. Sign in again.",
+      "allowed": false
+    },
+    {
+      "name": "expired_session",
+      "error": "Your client session is no longer current. Sign in again.",
+      "allowed": false
+    },
+    {
+      "name": "support",
+      "error": "Sign in as the selected client outside support access.",
+      "allowed": false
+    },
+    {
+      "name": "other_client",
+      "error": "Sign in as the selected client outside support access.",
+      "allowed": false
+    },
+    {
+      "name": "contract_changed",
+      "error": "Financing enrollment changed. Review the current agreement.",
+      "allowed": false
+    },
+    {
+      "name": "duplicate",
+      "error": "A financing subscription attempt already exists and must be reconciled.",
+      "allowed": false
+    },
+    {
+      "name": "late_reversal",
+      "error": "Complete the signed agreement initial payment first.",
+      "allowed": false
+    },
+    {
+      "name": "late_payoff",
+      "error": "Paid-off financing cannot enroll more automatic installments.",
+      "allowed": false
+    },
+    {
+      "name": "late_revocation",
+      "error": "Your client session is no longer current. Sign in again.",
+      "allowed": false
+    }
+  ],
+  "handler_reports": {
+    "bound-before-8.2-handler.json": {
+      "count": 22,
+      "failed": 11,
+      "sha256": "654fcd4032bfb598803f78c9429a81949d4bb604a9c24b1ffe03ee718d980227",
+      "checks": [
+        {
+          "name": "paid handler outcome",
+          "passed": false
+        },
+        {
+          "name": "paid provider admission",
+          "passed": false
+        },
+        {
+          "name": "paid current client reaches reservation",
+          "passed": false
+        },
+        {
+          "name": "paid exact finite signed contract readback",
+          "passed": false
+        },
+        {
+          "name": "paid sandbox outcome retained",
+          "passed": false
+        },
+        {
+          "name": "zero handler outcome",
+          "passed": false
+        },
+        {
+          "name": "zero provider admission",
+          "passed": false
+        },
+        {
+          "name": "zero current client reaches reservation",
+          "passed": false
+        },
+        {
+          "name": "zero exact finite signed contract readback",
+          "passed": false
+        },
+        {
+          "name": "zero sandbox outcome retained",
+          "passed": false
+        },
+        {
+          "name": "ineligible handler outcome",
+          "passed": true
+        },
+        {
+          "name": "ineligible provider admission",
+          "passed": true
+        },
+        {
+          "name": "ineligible current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve handler outcome",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve provider admission",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve current client reaches reservation",
+          "passed": false
+        },
+        {
+          "name": "support handler outcome",
+          "passed": true
+        },
+        {
+          "name": "support provider admission",
+          "passed": true
+        },
+        {
+          "name": "support current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "invalid_token handler outcome",
+          "passed": true
+        },
+        {
+          "name": "invalid_token provider admission",
+          "passed": true
+        },
+        {
+          "name": "invalid_token current client reaches reservation",
+          "passed": true
+        }
+      ]
+    },
+    "bound-after-8.2-handler.json": {
+      "count": 22,
+      "failed": 0,
+      "sha256": "b300ba77b7d0c1368531c5f71e53eaf98dfc9473f64b307e5448c68b7964d86e",
+      "checks": [
+        {
+          "name": "paid handler outcome",
+          "passed": true
+        },
+        {
+          "name": "paid provider admission",
+          "passed": true
+        },
+        {
+          "name": "paid current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "paid exact finite signed contract readback",
+          "passed": true
+        },
+        {
+          "name": "paid sandbox outcome retained",
+          "passed": true
+        },
+        {
+          "name": "zero handler outcome",
+          "passed": true
+        },
+        {
+          "name": "zero provider admission",
+          "passed": true
+        },
+        {
+          "name": "zero current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "zero exact finite signed contract readback",
+          "passed": true
+        },
+        {
+          "name": "zero sandbox outcome retained",
+          "passed": true
+        },
+        {
+          "name": "ineligible handler outcome",
+          "passed": true
+        },
+        {
+          "name": "ineligible provider admission",
+          "passed": true
+        },
+        {
+          "name": "ineligible current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve handler outcome",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve provider admission",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "support handler outcome",
+          "passed": true
+        },
+        {
+          "name": "support provider admission",
+          "passed": true
+        },
+        {
+          "name": "support current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "invalid_token handler outcome",
+          "passed": true
+        },
+        {
+          "name": "invalid_token provider admission",
+          "passed": true
+        },
+        {
+          "name": "invalid_token current client reaches reservation",
+          "passed": true
+        }
+      ]
+    },
+    "bound-before-8.4-handler.json": {
+      "count": 22,
+      "failed": 11,
+      "sha256": "654fcd4032bfb598803f78c9429a81949d4bb604a9c24b1ffe03ee718d980227",
+      "checks": [
+        {
+          "name": "paid handler outcome",
+          "passed": false
+        },
+        {
+          "name": "paid provider admission",
+          "passed": false
+        },
+        {
+          "name": "paid current client reaches reservation",
+          "passed": false
+        },
+        {
+          "name": "paid exact finite signed contract readback",
+          "passed": false
+        },
+        {
+          "name": "paid sandbox outcome retained",
+          "passed": false
+        },
+        {
+          "name": "zero handler outcome",
+          "passed": false
+        },
+        {
+          "name": "zero provider admission",
+          "passed": false
+        },
+        {
+          "name": "zero current client reaches reservation",
+          "passed": false
+        },
+        {
+          "name": "zero exact finite signed contract readback",
+          "passed": false
+        },
+        {
+          "name": "zero sandbox outcome retained",
+          "passed": false
+        },
+        {
+          "name": "ineligible handler outcome",
+          "passed": true
+        },
+        {
+          "name": "ineligible provider admission",
+          "passed": true
+        },
+        {
+          "name": "ineligible current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve handler outcome",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve provider admission",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve current client reaches reservation",
+          "passed": false
+        },
+        {
+          "name": "support handler outcome",
+          "passed": true
+        },
+        {
+          "name": "support provider admission",
+          "passed": true
+        },
+        {
+          "name": "support current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "invalid_token handler outcome",
+          "passed": true
+        },
+        {
+          "name": "invalid_token provider admission",
+          "passed": true
+        },
+        {
+          "name": "invalid_token current client reaches reservation",
+          "passed": true
+        }
+      ]
+    },
+    "bound-after-8.4-handler.json": {
+      "count": 22,
+      "failed": 0,
+      "sha256": "b300ba77b7d0c1368531c5f71e53eaf98dfc9473f64b307e5448c68b7964d86e",
+      "checks": [
+        {
+          "name": "paid handler outcome",
+          "passed": true
+        },
+        {
+          "name": "paid provider admission",
+          "passed": true
+        },
+        {
+          "name": "paid current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "paid exact finite signed contract readback",
+          "passed": true
+        },
+        {
+          "name": "paid sandbox outcome retained",
+          "passed": true
+        },
+        {
+          "name": "zero handler outcome",
+          "passed": true
+        },
+        {
+          "name": "zero provider admission",
+          "passed": true
+        },
+        {
+          "name": "zero current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "zero exact finite signed contract readback",
+          "passed": true
+        },
+        {
+          "name": "zero sandbox outcome retained",
+          "passed": true
+        },
+        {
+          "name": "ineligible handler outcome",
+          "passed": true
+        },
+        {
+          "name": "ineligible provider admission",
+          "passed": true
+        },
+        {
+          "name": "ineligible current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve handler outcome",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve provider admission",
+          "passed": true
+        },
+        {
+          "name": "changed_before_reserve current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "support handler outcome",
+          "passed": true
+        },
+        {
+          "name": "support provider admission",
+          "passed": true
+        },
+        {
+          "name": "support current client reaches reservation",
+          "passed": true
+        },
+        {
+          "name": "invalid_token handler outcome",
+          "passed": true
+        },
+        {
+          "name": "invalid_token provider admission",
+          "passed": true
+        },
+        {
+          "name": "invalid_token current client reaches reservation",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "original_mismatch": {
+    "scope": "Exact portal fragment and actual enrollment function with synthetic offer/invoice/HTML helpers; no database, browser or gateway request.",
+    "portal_offers_enrollment": true,
+    "portal_claims_initial_verified": true,
+    "handler_result": "Complete the signed agreement initial payment instead.",
+    "handler_invoice_reads": 0,
+    "source_sha256": "002867f809c5557fd175549a801b3b894551c9320209c3e41904410240def377",
+    "portal_sha256": "3a5f66531368deffdc63a909beb236d94a4cd122649fc874e13ebf61d324a909"
+  },
+  "intermediate_invoice_binding_probe": {
+    "result": "admitted_using_other_agreement_invoice",
+    "retained_offers_unchanged": true,
+    "subscription_sha256": "c26bacb989101c1145355ecffe468440504bf452480d9a65852f4c7a509d42e7",
+    "scope": "Native disposable fixture; transaction-only substitution of another same-customer/project/amount paid invoice; rollback restores exact original offers."
+  },
+  "scope": "Actual application functions, canonical schema, signed offers, journal validation, session authority, ledger hashes/balances and SQL reservation. Synthetic customer/receipt fixtures and a separate committed writer after preflight. Actual portal fragment with synthetic gateway display settings. No provider calls, HTTP, real payments or release approval."
+}

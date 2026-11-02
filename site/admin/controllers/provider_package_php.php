@@ -10,5 +10,5 @@ function provider_php_admin_action(string $action):never {
         $r=provider_php_refresh($link,$binding,$password);flash($r['state']==='complete'?'The reported PHP version was saved.':'The PHP version refresh did not provide a usable observation.',$r['state']==='complete'?'success':'error');
     }elseif($action==='provider_inventory_php_share'){
         $sharing=posted('sharing',7);if(!in_array($sharing,['enable','disable'],true))throw new InvalidArgumentException('Choose whether to share the PHP observation.');provider_php_share(posted('link_id',32),posted('expected_id',32),posted('event_id',32),$sharing==='enable',posted('anchor_id',32),$password);flash($sharing==='enable'?'The saved PHP version is shared with the assigned client.':'PHP version sharing is off.');
-    }else throw new InvalidArgumentException('Unknown PHP observation action.');redirect(admin_url('provider-settings').'#package-php-version');
+    }else throw new InvalidArgumentException('Unknown PHP observation action.');redirect(admin_url('provider-settings',['section'=>'website']).'#package-php-version');
 }

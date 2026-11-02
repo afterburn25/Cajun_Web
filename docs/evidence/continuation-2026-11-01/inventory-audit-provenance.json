@@ -1,0 +1,1186 @@
+{
+  "passed": true,
+  "scope": "Exact predecessor bytes independently compared against Git base plus maintained inverse and historical provenance checks; no installed application execution.",
+  "base": "366d53b1ed6b367b32664f2b91ee073fc6813544",
+  "source_files": 50,
+  "changed_receipt_entries_from_retained_head": [
+    "tests/provider_inventory_upgrade_native.php",
+    "tests/release_cases.py"
+  ],
+  "unchanged_historical_receipts": [
+    "docs/STANDALONE_ACCEPTANCE_REPAIRS.json",
+    "docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json",
+    "docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json",
+    "docs/CORE_BROWSER_FIXTURE_REPAIRS.json"
+  ],
+  "suites": {
+    "provider": {
+      "count": 205,
+      "checks": [
+        {
+          "name": "Exact provider browser correction retains predecessor tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/cloud_site_requests_wiring.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/cloud_site_requests_wiring.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/cloud_site_requests_wiring.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/cloud_site_requests_wiring.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/combined_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/combined_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/combined_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/combined_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/core_browser_fixture_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/core_browser_fixture_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/core_browser_fixture_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/core_browser_fixture_contract.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/domain_contracts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/domain_contracts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/domain_contracts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/domain_contracts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/domain_expiry_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/domain_expiry_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/domain_expiry_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/domain_expiry_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/domain_registration_drafts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/domain_registration_drafts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/domain_registration_drafts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/domain_registration_drafts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/domain_renewal_agreements_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/domain_renewal_agreements_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/domain_renewal_agreements_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/domain_renewal_agreements_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/domain_renewal_dispatch_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/domain_renewal_dispatch_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/domain_renewal_dispatch_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/domain_renewal_dispatch_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/domain_renewals_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/domain_renewals_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/domain_renewals_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/domain_renewals_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/hosting_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/hosting_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/hosting_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/hosting_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/hosting_fulfillment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/hosting_fulfillment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/hosting_fulfillment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/hosting_fulfillment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/license_release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/license_release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/license_release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/license_release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/payment_upgrade_helpers.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/payment_upgrade_helpers.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/payment_upgrade_helpers.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/payment_upgrade_helpers.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_cloud_assignment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_cloud_assignment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_cloud_assignment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_cloud_assignment_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_cloud_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_cloud_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_cloud_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_cloud_confirmation_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_cloud_providers_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_cloud_providers_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_cloud_providers_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_cloud_providers_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_cloud_site_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_cloud_site_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_cloud_site_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_cloud_site_requests_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_cloud_sites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_cloud_sites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_cloud_sites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_cloud_sites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_directory_listing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_directory_listing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_directory_listing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_directory_listing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_directory_listing_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_directory_listing_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_directory_listing_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_directory_listing_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_document_roots_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_document_roots_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_document_roots_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_document_roots_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_domain_client_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_domain_client_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_domain_client_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_domain_client_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_domain_search_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_domain_search_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_domain_search_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_domain_search_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_force_ssl_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_force_ssl_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_force_ssl_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_force_ssl_controls_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_forwarding_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_forwarding_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_forwarding_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_forwarding_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_inventory_upgrade_native.php",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_inventory_upgrade_native.php",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_inventory_upgrade_native.php",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_inventory_upgrade_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_mailbox_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_mailbox_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_mailbox_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_mailbox_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_operations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_operations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_operations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_operations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_package_force_ssl_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_package_force_ssl_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_package_force_ssl_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_package_force_ssl_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_package_php_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_package_php_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_package_php_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_package_php_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_package_wordpress_installed_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_package_wordpress_installed_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_package_wordpress_installed_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_package_wordpress_installed_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_password_reset_template_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_password_reset_template_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_password_reset_template_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_password_reset_template_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_plan_catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_plan_catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_plan_catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_plan_catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_registrar_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_registrar_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_registrar_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_registrar_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_registration_periods_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_registration_periods_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_registration_periods_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_registration_periods_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_schedule_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_schedule_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_schedule_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_schedule_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/provider_settings_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/provider_settings_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/provider_settings_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/provider_settings_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/recurring_billing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/recurring_billing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/recurring_billing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/recurring_billing_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/release_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/service_observations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/service_observations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/service_observations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/service_observations_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/service_plan_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/service_plan_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/service_plan_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/service_plan_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/software_commerce_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/software_commerce_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/software_commerce_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/software_commerce_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/stackcp_access_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/stackcp_access_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/stackcp_access_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/stackcp_access_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/stackcp_prerequisites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/stackcp_prerequisites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/stackcp_prerequisites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/stackcp_prerequisites_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/standalone_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/standalone_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/standalone_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/standalone_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Exact provider browser correction retains predecessor tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered current bytes tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses altered predecessor hash tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses omitted edit tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses changed base",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses changed missing-file",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses changed additional-file",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses changed verifier",
+          "passed": true
+        },
+        {
+          "name": "Provider browser receipt refuses changed unchanged-edit",
+          "passed": true
+        }
+      ]
+    },
+    "standalone": {
+      "count": 12,
+      "checks": [
+        {
+          "name": "Exact standalone correction retains predecessor tests/provider_domain_search_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/provider_domain_client_cases.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/twentyi-cloud-assignment/focused-view.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/twentyi-inventory-reader/run.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/organized_update_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/stackcp_legacy_workspace_routes.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/stackcp_access_read_snapshot_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/stackcp_legacy_workspace_routes_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/finance_payoff_retirement_guards.php",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/standalone_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Exact standalone correction retains predecessor tests/acceptance_artifacts_test.py",
+          "passed": true
+        }
+      ]
+    },
+    "combined": {
+      "count": 25,
+      "checks": [
+        {
+          "name": "Exact repaired file and predecessor retained tests/current_owner_authority.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/current_owner_authority_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/software_commerce_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/checkout_endpoint.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/service_plans_checkout_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/recurring_billing_checkout_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/consolidation_native.py",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_workspace_render.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_inventory_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_inventory_upgrade_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_cloud_sites_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_mailboxes_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/domain_registration_drafts_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_password_reset_template_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained site/admin/views/providers.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_cloud_assignment_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/provider_catalog_import_native.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/apache_acceptance.py",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/organized_update_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/checkout_authority_contract.php",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tools/acceptance-contract.json",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/combined_repair_provenance.py",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/acceptance_artifacts_test.py",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained tests/combined_runtime_repair.py",
+          "passed": true
+        },
+        {
+          "name": "Exact repaired file and predecessor retained .github/workflows/1261-main-reconcile.yml",
+          "passed": true
+        }
+      ]
+    },
+    "core": {
+      "count": 45,
+      "checks": [
+        {
+          "name": "Original bytes reconstructed tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/activity_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/attempts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/attempts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/attempts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/attempts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/attempts_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/catalog_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/delivery_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/ledger_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/notifications_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/notifications_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/notifications_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/notifications_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/notifications_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/payments_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/payments_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/payments_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/payments_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/payments_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/provider_catalog_import_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Original bytes reconstructed tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-output tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject changed-predecessor tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject missing-edit tests/support_cases.py",
+          "passed": true
+        },
+        {
+          "name": "Reject wrong-base tests/support_cases.py",
+          "passed": true
+        }
+      ]
+    }
+  }
+}

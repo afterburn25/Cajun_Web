@@ -1,0 +1,418 @@
+{
+  "passed": true,
+  "scope": "Disposable actual SQL and application authority, keyed storage, real concurrent process and synthetic provider transport only. No live20i, OAuth client decrypt, provider grant edit, token or session launch.",
+  "checks": [
+    {
+      "name": "Unprepared owner status neither creates storage nor enables login",
+      "passed": true
+    },
+    {
+      "name": "Observation preparation refuses caller transaction before DDL",
+      "passed": true
+    },
+    {
+      "name": "Caller owns intact transaction and absent read family",
+      "passed": true
+    },
+    {
+      "name": "Delegated administrator cannot prepare observation storage",
+      "passed": true
+    },
+    {
+      "name": "Revoked owner refuses: Preparation requires current password",
+      "passed": true
+    },
+    {
+      "name": "Preparation audit failure leaves no adopted marker or checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Exact preparation is idempotent without history mutation",
+      "passed": true
+    },
+    {
+      "name": "Owner must observe package after link before access form is available",
+      "passed": true
+    },
+    {
+      "name": "Membership authority is independent and binds current client auth configuration and package source",
+      "passed": true
+    },
+    {
+      "name": "Shared StackCP context slots append after unchanged WordPress positions",
+      "passed": true
+    },
+    {
+      "name": "Generic list cannot borrow a StackCP context",
+      "passed": true
+    },
+    {
+      "name": "StackCP operation cannot omit its exact typed context",
+      "passed": true
+    },
+    {
+      "name": "Invalid context admission performs no intent DNS or secret work",
+      "passed": true
+    },
+    {
+      "name": "Whole-user grants require exact current observed membership",
+      "passed": true
+    },
+    {
+      "name": "Repeated owner GET projection is HMAC-only with no provider resolution or writes",
+      "passed": true
+    },
+    {
+      "name": "Support identity cannot read access status",
+      "passed": true
+    },
+    {
+      "name": "Administrator cannot read private StackCP status",
+      "passed": true
+    },
+    {
+      "name": "Direct client cannot read owner StackCP access",
+      "passed": true
+    },
+    {
+      "name": "Actual executor saves selected membership rather than first user",
+      "passed": true
+    },
+    {
+      "name": "Unknown provider metadata never persists",
+      "passed": true
+    },
+    {
+      "name": "Actual cooldown denies before another intent DNS or credential",
+      "passed": true
+    },
+    {
+      "name": "Cooldown denial leaves all original evidence intact",
+      "passed": true
+    },
+    {
+      "name": "Exact own grants match saved membership but never enable login",
+      "passed": true
+    },
+    {
+      "name": "Safe owner projection contains no general key auth key raw grants or private digests",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed package_id",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed package_id preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed client_id",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed client_id preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed stack_identity",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed stack_identity preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed operation",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects changed indexed operation preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Zero ordinal cannot hide an earlier signed read",
+      "passed": true
+    },
+    {
+      "name": "Zero ordinal cannot hide an earlier signed read preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Sibling assignment is current exact package and client with a distinct valid ID",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects another valid indexed assignment",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects another valid indexed assignment preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects common sequence rollback",
+      "passed": true
+    },
+    {
+      "name": "Signed read rejects common sequence rollback preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Finished result rejects altered original outcome",
+      "passed": true
+    },
+    {
+      "name": "Finished result rejects altered original outcome preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Exactly one original package row deleted",
+      "passed": true
+    },
+    {
+      "name": "Original package row loss cannot be accepted",
+      "passed": true
+    },
+    {
+      "name": "Original package row loss cannot be accepted preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Exactly one signed record has synthetic unkeyed rewrite",
+      "passed": true
+    },
+    {
+      "name": "Exactly one unkeyed audit is rewritten",
+      "passed": true
+    },
+    {
+      "name": "Rewritten document hash and audit cannot replace keyed original",
+      "passed": true
+    },
+    {
+      "name": "Rewritten document hash and audit cannot replace keyed original preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Exactly one access audit action changed",
+      "passed": true
+    },
+    {
+      "name": "Exact start audit action case matters",
+      "passed": true
+    },
+    {
+      "name": "Exact start audit action case matters preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Exactly one finish document removed",
+      "passed": true
+    },
+    {
+      "name": "Exactly one corresponding finish audit removed",
+      "passed": true
+    },
+    {
+      "name": "Paired finish document and own audit loss cannot revive old match",
+      "passed": true
+    },
+    {
+      "name": "Paired finish document and own audit loss cannot revive old match preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_schema_version",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_schema_version preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_checkpoint preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_checkpoint_proof",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_checkpoint_proof preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_proof",
+      "passed": true
+    },
+    {
+      "name": "Retained state refuses missing provider_stackcp_access_proof preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Committed old observation loss removes exactly one row",
+      "passed": true
+    },
+    {
+      "name": "Actual refresh refuses committed old observation loss before DNS",
+      "passed": true
+    },
+    {
+      "name": "Owner GET also refuses committed observation loss 0",
+      "passed": true
+    },
+    {
+      "name": "Exact committed observation restoration 0 preserves all evidence without network",
+      "passed": true
+    },
+    {
+      "name": "Committed latest observation loss removes exactly one row",
+      "passed": true
+    },
+    {
+      "name": "Actual refresh refuses committed latest observation loss before DNS",
+      "passed": true
+    },
+    {
+      "name": "Owner GET also refuses committed observation loss 1",
+      "passed": true
+    },
+    {
+      "name": "Exact committed observation restoration 1 preserves all evidence without network",
+      "passed": true
+    },
+    {
+      "name": "Missing original master refuses owner saved observation",
+      "passed": true
+    },
+    {
+      "name": "Preparation cannot adopt a replacement master key",
+      "passed": true
+    },
+    {
+      "name": "Missing-key checks leave key absent and database intact",
+      "passed": true
+    },
+    {
+      "name": "Exact original master restores observation without history repair",
+      "passed": true
+    },
+    {
+      "name": "Internal journal writes reject missing staff mutex",
+      "passed": true
+    },
+    {
+      "name": "Internal journal writes reject missing owning transaction",
+      "passed": true
+    },
+    {
+      "name": "Rejected internal write makes no mutation",
+      "passed": true
+    },
+    {
+      "name": "Actual complete empty remains saved empty and invalidates earlier grants",
+      "passed": true
+    },
+    {
+      "name": "Earlier complete documents remain exact after empty read",
+      "passed": true
+    },
+    {
+      "name": "Unfinished whole-user read fences an older grants match",
+      "passed": true
+    },
+    {
+      "name": "Exactly one pending signed start removed",
+      "passed": true
+    },
+    {
+      "name": "Exactly one pending start audit removed",
+      "passed": true
+    },
+    {
+      "name": "Pending paired start and own audit loss cannot revive previous grants",
+      "passed": true
+    },
+    {
+      "name": "Pending paired start and own audit loss cannot revive previous grants preserves original rows and no provider work",
+      "passed": true
+    },
+    {
+      "name": "Unavailable latest grants still fence older successful result",
+      "passed": true
+    },
+    {
+      "name": "Whole-user later other-client intent invalidates original package grants",
+      "passed": true
+    },
+    {
+      "name": "Started audit fault rolls back common intent dedicated row and checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Exclusive typed recorder rejects a different exact binding",
+      "passed": true
+    },
+    {
+      "name": "Rejected typed write rolls back common result and all dedicated history",
+      "passed": true
+    },
+    {
+      "name": "Finished audit fault rolls back common result dedicated document and head",
+      "passed": true
+    },
+    {
+      "name": "Explicit restored result append completes the original read without provider replay",
+      "passed": true
+    },
+    {
+      "name": "Current client auth revocation hides old observed authority",
+      "passed": true
+    },
+    {
+      "name": "Captured form cannot survive current client auth revocation",
+      "passed": true
+    },
+    {
+      "name": "Exact synthetic client restoration requires no evidence rewrite or provider work",
+      "passed": true
+    },
+    {
+      "name": "Supported auth-key rotation invalidates old observation and leaves original encrypted revision",
+      "passed": true
+    },
+    {
+      "name": "Captured refresh refuses after supported auth-key rotation",
+      "passed": true
+    },
+    {
+      "name": "Restoring key text in a new revision cannot revive old assignment",
+      "passed": true
+    },
+    {
+      "name": "Explicit reassignment still requires new observed membership and grants",
+      "passed": true
+    },
+    {
+      "name": "Independent owner process reaches lock boundary",
+      "passed": true
+    },
+    {
+      "name": "Waiting captured owner loses access before DNS or secrets",
+      "passed": true
+    },
+    {
+      "name": "Original approving-owner revocation invalidates saved authority",
+      "passed": true
+    },
+    {
+      "name": "All observed access remains a no-login non-mutation capability",
+      "passed": true
+    }
+  ]
+}

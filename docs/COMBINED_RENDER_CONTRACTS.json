@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "predecessor_commit": "c6558a3fa5369b26bddb5561be56b19c191cf1a8",
+  "files": {
+    "tests/stackcp_prerequisites_views.php": {
+      "before_sha256": "79edd43a67a28d0a02e2261eaf0728214c4409bbd90d2fa5b22816d8f851b381",
+      "edits": [
+        [
+          "'Authentication and owner password inputs are blank',($inputs['auth_client_key']??[])===['']&&($inputs['current_password']??[])===['','']",
+          "'Provider key remains blank and repeated owner password is absent',($inputs['auth_client_key']??[])===['']&&!array_key_exists('current_password',$inputs)"
+        ]
+      ],
+      "after_sha256": "7ee28bde1cdc5816abb426a1635736a4516a5386b660d768f40d13086ba6c8d6"
+    },
+    "tests/stackcp_access_views.php": {
+      "before_sha256": "47d0c8fccb3fd8dde854d1d59ade5266ce03bac6e20f908d3f571fb942eb23db",
+      "edits": [
+        [
+          "'Both forms use actual CSRF and blank owner passwords',$inputs['csrf']===[str_repeat('a',64),str_repeat('a',64)]&&$inputs['current_password']===['','']",
+          "'Both forms retain actual CSRF without repeated owner passwords',$inputs['csrf']===[str_repeat('a',64),str_repeat('a',64)]&&!array_key_exists('current_password',$inputs)"
+        ]
+      ],
+      "after_sha256": "37d5f6116e53eddf2695ac8d7de42763184acb19b4286d297274bac45847ebc6"
+    },
+    "tests/domain_registration_drafts_pure.php": {
+      "before_sha256": "c63a048aebf145ae14e6e3f3cfd19f4cf56d1d7761b14ebb22392e1f5ddcb626",
+      "edits": [
+        [
+          "'Actual owner editor cannot submit client revision',str_contains($html,'owner_password')&&!str_contains($html,'registration_drafts_client_submit')",
+          "'Actual owner editor retains CSRF and own save action without client consent or repeated password',str_contains($html,'registration_drafts_owner_save')&&str_contains($html,'name=\"csrf\"')&&!str_contains($html,'owner_password')&&!str_contains($html,'registration_drafts_client_submit')"
+        ]
+      ],
+      "after_sha256": "a2ad5b783b44dbb40887705111da46d4438ce24672c09be78163145b2c794f60"
+    },
+    "tests/cloud_site_requests_ui_contract.php": {
+      "before_sha256": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
+      "edits": [
+        [
+          "'Every owner password is blank and confirmation unchecked',substr_count($html,'type=\"password\"')===substr_count($html,'type=\"password\" name=\"current_password\" value=\"\"')",
+          "'Repeated owner password is absent and confirmation unchecked',!str_contains($html,'type=\"password\"')&&str_contains($html,'name=\"csrf\"')"
+        ],
+        [
+          "'/subfolder/admin/index.php?view=provider-settings&cloud_website_confirm='",
+          "'/subfolder/admin/index.php?view=provider-settings&section=website&cloud_website_confirm='"
+        ],
+        [
+          "'Unprepared owner gets password-only explicit preparation',str_contains($html,'value=\"provider_inventory_cloud_request_prepare\"')&&str_contains($html,'type=\"password\"')",
+          "'Unprepared owner gets session-authorized explicit preparation with CSRF',str_contains($html,'value=\"provider_inventory_cloud_request_prepare\"')&&!str_contains($html,'type=\"password\"')&&str_contains($html,'name=\"csrf\"')"
+        ],
+        [
+          "view=provider-settings&amp;cloud_websites_page=1#cloud-website-requests",
+          "view=provider-settings&amp;section=website&amp;cloud_websites_page=1#cloud-website-requests"
+        ],
+        [
+          "'/subfolder/admin/index.php?view=provider-settings#cloud-website-requests'",
+          "'/subfolder/admin/index.php?view=provider-settings&section=website#cloud-website-requests'"
+        ],
+        [
+          "'Owner CSRF and actual password authority precede dispatch'",
+          "'Owner CSRF and current actor check precede dispatch with legacy argument'"
+        ],
+        [
+          "    cu_reset($send);cu_deny('Unrelated admin action never calls a mutation'",
+          "    $sessionOnly=$send;unset($sessionOnly['current_password']);cu_reset($sessionOnly);cu_call(fn()=>provider_cloud_site_requests_admin_action($send['action']));\n    cu_check('Owner dispatch accepts authenticated-session form without repeated password',cu_events('actor')===[['actor',null,'']]&&cu_events('dispatch')===[['dispatch',$id,$event,$dispatch,$grant,$context,true,'']]);\n    cu_reset($sessionOnly);$GLOBALS['authorized']=false;cu_deny('Session-only form still refuses invalid current owner',fn()=>provider_cloud_site_requests_admin_action($send['action']));cu_check('Session-only refusal cannot dispatch or flash success',cu_events('dispatch')===[]&&cu_events('flash')===[]);\n    cu_reset($send);cu_deny('Unrelated admin action never calls a mutation'"
+        ]
+      ],
+      "after_sha256": "e8f3c2d7902c6f9c1b265e8d346fae09557518d6cbcefaa4e9bb75e4e32dbfdc"
+    },
+    "tests/provider_catalog_import_batch_views.php": {
+      "before_sha256": "80dd47177a3404320fad762fac9e239292d05922f8a3504d55c6ec13dd876891",
+      "edits": [
+        [
+          "'Fresh batch requires confirmation and an empty current password',pcbv_input($form,'owner_password')===''&&str_contains($form,'name=\"confirm\" value=\"1\" >')&&str_contains($form,'autocomplete=\"current-password\"')",
+          "'Fresh batch requires explicit confirmation without a repeated password',!str_contains($form,'name=\"owner_password\"')&&str_contains($form,'name=\"confirm\" value=\"1\" >')&&!str_contains($form,'type=\"password\"')"
+        ],
+        [
+          "    $r=pcbv_action($post,csrf:false);",
+          "    $noPassword=$post;unset($noPassword['owner_password']);$sessionResult=pcbv_action($noPassword);\n    pcbv_ok('Actual batch controller accepts current owner session without password reentry',$sessionResult['calls']===[[$hash,'year','HOST','','package.types',50]]&&$sessionResult['destination']!==null);\n    $sessionRefused=pcbv_action($noPassword,owner:false);pcbv_ok('Session-only batch retains current-owner denial before any mutation',$sessionRefused['calls']===[]&&$sessionRefused['flashes']===[]&&$sessionRefused['destination']===null&&$sessionRefused['error']!==null);\n    $r=pcbv_action($post,csrf:false);"
+        ],
+        [
+          "str_contains($html,'No named hosting types')",
+          "str_contains($html,'No named plans are available in this saved response.')&&str_contains($html,'existing customer hosting inventory is a separate source.')"
+        ]
+      ],
+      "after_sha256": "3f53d17633fde5f57e5878b9ab648c61128314614edd24ebec4b2d41ad953b86"
+    },
+    "tests/hosting_purchases_views.php": {
+      "before_sha256": "a3f1a1aa1835be4eb9009ecaaa70b5c4c84c48c08f0690d77b35aa0bc070d0be",
+      "edits": [
+        [
+          "'Eligible checkout still exposes separate owner approval with blank password and unchecked reviews'",
+          "'Eligible checkout retains separate owner approval and unchecked reviews without password reentry'"
+        ],
+        [
+          "str_contains($checkout,'name=\"current_password\"')&&!preg_match('/<input[^>]*type=\"password\"[^>]*value=\"[^\\\"]+\"/',$checkout)",
+          "!str_contains($checkout,'name=\"current_password\"')&&!str_contains($checkout,'type=\"password\"')&&str_contains($checkout,'name=\"csrf\"')"
+        ]
+      ],
+      "after_sha256": "57fc1ec7347739b7dd7053104d5deedc7712fd73287572a91a202b969e566c9a"
+    }
+  },
+  "scope": "Test-only reconciliation with existing current-session forms and fixed seven-section URLs. API credentials, CSRF, permissions, explicit consent, source identity and every other check remain. No application or production change."
+}

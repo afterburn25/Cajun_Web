@@ -1,37 +1,83 @@
-CajunWebPro — choose ONE download for your purpose
+CajunWebPro 1.26.1 — choose ONE archive for your purpose
 
-FULL-PROJECT is the development/project archive. It includes site/, docs/, tests/,
-tools/, brand/, foundation/ and CI. Do not extract it wholesale into a public
-website directory. Read docs/DIRECTORY_STRUCTURE.md and the working agreement.
+EXISTING CAJUNWEBPRO SITE: USE UPDATE
 
-COMPLETE-UPLOAD is for a fresh website. Extract its CONTENTS directly into the
-intended website directory. There is no site/, version/ or upload/ wrapper.
-Keep its organized subdirectories. Open install.php over HTTPS, fill the one-page
-form and select Install. Setup is keyless. Do not use setup on an installed site.
+For the existing 1.26.0 RC installation, use CajunWebPro-1.26.1-UPDATE.zip.
+The updater recognizes the recorded release-file identity, not merely a version
+label. The exact RC supplied for this site is included in that history. Other
+recognized releases are checked by Verify and inspect before any file switch.
 
-UPDATE is for a recognized installed 1.0.8 through 1.24.0 website. Back up the
-website files, database, and configured private storage before starting. Extract
-the update into the existing website directory; it creates only the new staging
-directory cwp-update-1.25.0/. Do not copy its site/ payload over the live site.
-Do not overwrite an existing different staging directory. Open
-cwp-update-1.25.0/owner-update.php over HTTPS and authenticate as the owner.
-Confirm your recoverable backup, inspect, then apply. Keep the page and staging
-files available to retry or recover if interrupted. Customized conflicting files
-stop the update before activation; reconcile those using your backup. Unknown
-files and storage/upload protection are preserved. Fresh organized websites do
-not acquire legacy root compatibility files; existing ones remain supported. The temporary maintenance policy protects the site while
-changes are incomplete. Recovery copies/journal stay under your configured
-private storage in structure-1.25.0/. Configuration, keys, database and private
-files are never replaced or reset by this structure update.
+1. Back up the complete website, database, and configured PRIVATE STORAGE.
+   Private storage may be outside public_html. Keep its encryption keys, uploaded
+   customer files, and recovery records with the matching database backup.
+2. Sign in to the existing administration account as an owner.
+3. Extract the UPDATE archive into the current website root. It creates:
+       cwp-update-1.26.1/
+   The existing config.php and private storage must remain untouched. Do not copy
+   the staging directory's site/ payload over the live website. Do not run the
+   fresh installer on this existing installation.
+4. Open this path on the SAME website origin in the signed-in browser:
+       /cwp-update-1.26.1/owner-update.php
+   For CajunWebPro:
+       https://cajunwebpro.com/cwp-update-1.26.1/owner-update.php
+   A current owner session needs no second password. A signed-out or expired
+   session must sign in; this is normal authentication, not a removed protection.
+5. Confirm the recoverable-backup checkbox, select Verify and inspect, and check
+   the reported starting version. Then select Apply or retry update.
+6. After Complete, open administration and confirm version 1.26.1. Open
+   Settings > Version & database and use Verify & apply database update when
+   needed. Feature-specific storage preparation remains explicit; the file
+   updater does not silently enable payments, imports or provider operations.
+7. Verify public pages, the admin dashboard, customer portal, callbacks and
+   private downloads. Then remove ONLY the cwp-update-1.26.1 staging directory
+   through the hosting file manager. Keep protected recovery files with backup.
 
-After verifying the website, administration, portal, callbacks and private files,
-remove the exact cwp-update-1.25.0 staging directory using your hosting panel.
-Keep recovery copies with your backup. Recovery after application changes may
-require manual review; never restore a database independently of its backup set.
+If inspection reports customized/conflicting files, stop and reconcile those
+files against your backup; do not delete configuration or reset the database.
+During an interrupted file change the site uses maintenance protection. Keep
+this staging directory and owner-update.php available for Apply or retry update
+or Recover original files. File recovery is NOT database rollback. After schema
+or business-data changes, restore only a coordinated, reviewed backup set.
 
-These are alternatives, not sequential patches. No customer CLI/Composer/Node
-service is required. No automatic hosting deployment is performed.
-See the release manifests, SHA256SUMS.txt and migration instructions.
+WHERE THE NEW FEATURES ARE
 
-Updates share the retained structure-1.11.0/mutex.php lock inode so old and new
-owner tools cannot run at the same time. Each target has its own recovery journal.
+Software & Licensing > Licenses & software: review the staged readiness status;
+prepare licensing, the service catalog and software commerce as requested by
+that screen. Create products and issue standard, trial, temporary or internal
+master licenses. Customer-owned licenses and published private downloads appear
+under My Software. Internal master keys are not customer downloads.
+
+Master client portal: use the admin sidebar link. If client review has never
+been prepared, follow Set up client access once and confirm its access policy.
+Owner review uses the existing owner identity and audit trail, not a customer
+password. Customer-only signatures and payment approvals remain separate.
+
+Hosting & Domains > 20i workspace: Connection holds credentials, Existing
+services is customer hosting inventory, and the overview links to Import 20i
+plans, Manage products and prices, and Publish hosting offers. Available plans
+come from the package-type catalog; importing a local draft is separate from
+publishing an offer or provisioning a paid service. Set and review your own
+prices and terms. The update does not import or provision anything silently.
+
+Live card charging and provider operations remain separately gated. This update
+is not an instruction to enable production payments. Do not send passwords or
+API keys in a support conversation.
+
+FRESH WEBSITE: COMPLETE-UPLOAD
+
+CajunWebPro-1.26.1-COMPLETE-UPLOAD.zip is for a NEW installation only. Extract its
+contents directly into the intended website directory; it has no site/ or
+version wrapper. Open install.php over HTTPS and complete the one-page setup.
+Do not use COMPLETE-UPLOAD to overwrite an installed site.
+
+DEVELOPMENT / SOURCE: FULL-PROJECT
+
+CajunWebPro-1.26.1-FULL-PROJECT.zip contains the project source, documentation,
+tests and build tools. Do not extract it wholesale into a public website folder.
+No customer CLI, Composer installation command or Node service is required.
+
+These archives are alternatives, not nested ZIPs or sequential patches. Check
+SHA256SUMS.txt and the individual manifests for exact source and file identity.
+No automatic hosting deployment is performed. The target recovery journal uses
+structure-1.26.1; the shared retained structure-1.11.0/mutex.php serializes older
+and newer updater tools. Do not delete those private locks or recovery copies.

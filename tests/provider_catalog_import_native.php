@@ -1,6 +1,8 @@
 <?php
 /** Disposable InnoDB import and owner boundaries; synthetic saved inventory, no provider calls. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
@@ -14,6 +16,8 @@ $private=__DIR__.'/../test-runtime/provider-catalog-import-private';@mkdir($priv
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-import-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'pimci_']];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $checks=[];$password='Synthetic catalog import owner';$secret='SYNTHETIC_PRIVATE_IMPORT_KEY';$calls=0;
+/** The existing-inventory fixture must explicitly select that source in the revised UI. */
+function pim_render_inventory():string {$get=$_GET;$post=$_POST;$_GET=['import_source'=>'packages.list'];$_POST=[];ob_start();try{provider_catalog_import_admin_view(admin_user());return (string)ob_get_contents();}finally{ob_end_clean();$_GET=$get;$_POST=$post;}}
 function pim_ok(string $name,bool $passed):void {global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
 function pim_deny(string $name,callable $call):void {try{$call();}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;pim_ok($name,true);return;}pim_ok($name,false);}
 function pim_actor(int $id=1):void {$user=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$user['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
@@ -28,7 +32,7 @@ try {
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Import staff '.$id,'import'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat((string)$id,32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,\'administrator\',1,?)',[2,json_encode(array_keys(staff_permissions()))]);pim_actor();catalog_migrate($password);
     $tables=all('SHOW TABLES');pim_ok('Unprepared import read creates no tables',provider_catalog_import_ready()===false&&all('SHOW TABLES')===$tables);
-    pim_deny('Import setup requires current owner password',fn()=>provider_catalog_import_prepare('wrong'));
+    pim_deny('Revoked owner refuses: Import setup requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_catalog_import_prepare('wrong')));
     pim_ok('Refused setup creates no import table',!provider_catalog_import_exists());
     db()->exec(provider_catalog_import_schema('pimci_')['catalog_provider_imports']);
     provider_catalog_import_prepare($password);$state=pim_state();provider_catalog_import_prepare($password);
@@ -47,7 +51,7 @@ try {
     $_GET['support']='invalid';pim_deny('Support selector cannot preview imports',fn()=>provider_catalog_import_preview());unset($_GET['support']);
     $GLOBALS['cwp_support']=['id'=>'synthetic'];pim_deny('Active support cannot create imported products',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month',$password));unset($GLOBALS['cwp_support']);
     $_SESSION=['client_id'=>1,'client_auth'=>'synthetic'];pim_deny('Client session cannot preview provider imports',fn()=>provider_catalog_import_preview());pim_actor();
-    pim_deny('Wrong owner password cannot create a draft',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month','wrong'));
+    pim_deny('Revoked owner refuses: Wrong owner password cannot create a draft',fn()=>cwp_test_owner_revoked(fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','month','wrong')));
     pim_deny('Captured stale preview cannot create a draft',fn()=>provider_catalog_import_create(str_repeat('0',64),'1','HOST-ONE','month',$password));
     pim_deny('Unknown provider type cannot create a draft',fn()=>provider_catalog_import_create($hash,'900','HOST-ONE','month',$password));
     pim_deny('Unselected local service period cannot create a draft',fn()=>provider_catalog_import_create($hash,'1','HOST-ONE','',$password));
@@ -70,11 +74,32 @@ try {
     query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');try{pim_deny('Owner disabled after captured preview cannot import',fn()=>provider_catalog_import_create($hash,'3','HOST-THREE','month',$password));}finally{query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pim_actor();}
     query('UPDATE '.table('provider_profiles').' SET enabled=0 WHERE id=?',[$profile]);try{pim_deny('Disabled current provider prevents importing a saved observation',fn()=>provider_catalog_import_create($hash,'3','HOST-THREE','month',$password));}finally{query('UPDATE '.table('provider_profiles').' SET enabled=1 WHERE id=?',[$profile]);}
     $cipher=provider_settings_load($profile)['credentials'];$replacement=provider_settings_seal($profile,'live','SYNTHETIC_DIFFERENT_IMPORT_KEY');query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$replacement,$profile]);try{pim_deny('Same revision replacement credentials refuse earlier observations',fn()=>provider_catalog_import_preview());}finally{query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$cipher,$profile]);}
-    // Model a later complete observation under replacement credentials; retain and restore every changed operand.
+    // Corrupting an existing source must be refused, not mistaken for a later read.
     $savedResult=one('SELECT * FROM '.table('provider_refresh_results').' WHERE id=?',[$preview['refresh_id']]);$newFingerprint=provider_inventory_fingerprint('SYNTHETIC_DIFFERENT_IMPORT_KEY');$sameContextState=pim_state();
     query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$replacement,$profile]);query('UPDATE '.table('provider_refresh_results').' SET key_fingerprint=? WHERE id=?',[$newFingerprint,$preview['refresh_id']]);
-    try{$different=provider_catalog_import_preview();$matched=array_values(array_filter($different['types'],fn($type)=>$type['type_ref']==='1'));pim_ok('Changed credentials preserve an earlier-source draft without relabelling it',count($matched)===1&&$matched[0]['product_id']===$product&&$matched[0]['earlier_credentials']===true&&!str_contains(json_encode($different),$newFingerprint));pim_deny('Matching type under changed credentials cannot reuse the earlier import',fn()=>provider_catalog_import_create($different['hash'],'1','NOT-REIMPORTED','month',$password));pim_ok('Changed-context refusal preserves exact original catalog and provenance',pim_state()===$sameContextState);ob_start();provider_catalog_import_admin_view(admin_user());$changedHtml=ob_get_clean();pim_ok('Preview explains an existing draft from changed connection details',str_contains($changedHtml,'Your 20i connection details changed')&&!str_contains($changedHtml,$newFingerprint));}
-    finally{query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$cipher,$profile]);query('UPDATE '.table('provider_refresh_results').' SET key_fingerprint=? WHERE id=?',[$savedResult['key_fingerprint'],$preview['refresh_id']]);}
+    try{pim_deny('Mutated historical import source is refused before projection',fn()=>provider_catalog_import_preview());pim_ok('Corrupt source refusal retains exact imported products and provenance',pim_state()===$sameContextState);}
+    finally{query('UPDATE '.table('provider_refresh_results').' SET key_fingerprint=? WHERE id=?',[$savedResult['key_fingerprint'],$preview['refresh_id']]);query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$cipher,$profile]);}
+    $savedRefresh=one('SELECT * FROM '.table('provider_refreshes').' WHERE id=?',[$preview['refresh_id']]);$savedPackages=all('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=? ORDER BY package_id',[$preview['refresh_id']]);$laterId=bin2hex(random_bytes(16));
+    $insert=static function(string $tableName,array $row):void {
+        if(!in_array($tableName,['provider_refreshes','provider_refresh_results','provider_observation_packages'],true))throw new LogicException('Unexpected fixture table.');
+        foreach(array_keys($row) as $column)if(!preg_match('/^[a-z_]+$/D',$column))throw new LogicException('Unexpected fixture column.');
+        query('INSERT INTO '.table($tableName).' (`'.implode('`,`',array_keys($row)).'`) VALUES ('.implode(',',array_fill(0,count($row),'?')).')',array_values($row));
+    };
+    try{
+        $later=$savedRefresh;unset($later['seq']);$later['id']=$laterId;$insert('provider_refreshes',$later);
+        $later=$savedResult;$later['id']=$laterId;$later['key_fingerprint']=$newFingerprint;$insert('provider_refresh_results',$later);
+        foreach($savedPackages as $package){$package['id']=bin2hex(random_bytes(16));$package['refresh_id']=$laterId;$insert('provider_observation_packages',$package);}
+        query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$replacement,$profile]);
+        $different=provider_catalog_import_preview();$matched=array_values(array_filter($different['types'],fn($type)=>$type['type_ref']==='1'));
+        pim_ok('Changed credentials preserve an earlier-source draft without relabelling it',count($matched)===1&&$matched[0]['product_id']===$product&&$matched[0]['earlier_credentials']===true&&!str_contains(json_encode($different),$newFingerprint));
+        pim_deny('Matching type under changed credentials cannot reuse the earlier import',fn()=>provider_catalog_import_create($different['hash'],'1','NOT-REIMPORTED','month',$password));
+        pim_ok('Changed-context refusal preserves exact original catalog and provenance',pim_state()===$sameContextState);
+        $changedHtml=pim_render_inventory();pim_ok('Preview explains an existing draft from changed connection details',str_contains($changedHtml,'Your 20i connection details changed')&&!str_contains($changedHtml,$newFingerprint));
+        pim_ok('Later observation never alters the historical import source',one('SELECT * FROM '.table('provider_refresh_results').' WHERE id=?',[$preview['refresh_id']])===$savedResult&&all('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=? ORDER BY package_id',[$preview['refresh_id']])===$savedPackages);
+    }finally{
+        query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$cipher,$profile]);
+        query('DELETE FROM '.table('provider_observation_packages').' WHERE refresh_id=?',[$laterId]);query('DELETE FROM '.table('provider_refresh_results').' WHERE id=?',[$laterId]);query('DELETE FROM '.table('provider_refreshes').' WHERE id=?',[$laterId]);
+    }
     pim_ok('Exact credential and observation restoration restores the original preview',provider_settings_load($profile)['credentials']===$cipher&&one('SELECT * FROM '.table('provider_refresh_results').' WHERE id=?',[$preview['refresh_id']])===$savedResult&&provider_catalog_import_preview()['hash']===$hash);
     $keyPath=$private.'/provider-master.key';$keyHash=hash_file('sha256',$keyPath);if(!rename($keyPath,$keyPath.'.parked'))throw new RuntimeException('Cannot park fixture key');try{pim_deny('Missing original provider vault key refuses preview without replacement',fn()=>provider_catalog_import_preview());pim_ok('Read path did not recreate the missing key',!file_exists($keyPath));}finally{rename($keyPath.'.parked',$keyPath);}pim_ok('Original provider key restored exactly',hash_file('sha256',$keyPath)===$keyHash);
     $pending=bin2hex(random_bytes(16));query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',[$pending,$profile,1,1,gmdate('Y-m-d H:i:s'),time(),'packages.list']);try{pim_deny('A newer unfinished refresh blocks the previous complete observation',fn()=>provider_catalog_import_preview());}finally{query('DELETE FROM '.table('provider_refreshes').' WHERE id=?',[$pending]);}
@@ -90,7 +115,7 @@ try {
     $marker=one('SELECT * FROM '.table('settings').' WHERE name=?',['provider_catalog_import_version']);query('DELETE FROM '.table('settings').' WHERE name=?',[$marker['name']]);try{pim_deny('Surviving import history cannot be adopted after marker loss',fn()=>provider_catalog_import_prepare($password));}finally{save_setting($marker['name'],$marker['value']);}
     db()->exec('RENAME TABLE '.table('catalog_provider_imports').' TO '.table('catalog_provider_imports_parked'));try{pim_deny('Missing prepared table refuses automatic recreation',fn()=>provider_catalog_import_prepare($password));pim_deny('Housekeeping preparation refuses missing established import history',fn()=>provider_catalog_import_ready());query('DELETE FROM '.table('settings').' WHERE name=?',[$marker['name']]);try{pim_deny('Paired table and marker loss retains refusal through audit and count witnesses',fn()=>provider_catalog_import_prepare($password));pim_ok('Paired-loss refusal does not recreate a table',!provider_catalog_import_exists());}finally{save_setting($marker['name'],$marker['value']);}}finally{db()->exec('RENAME TABLE '.table('catalog_provider_imports_parked').' TO '.table('catalog_provider_imports'));}
     $other=provider_catalog_import_record((int)$ids[0]);pim_ok('Corruption fixture mutates one exact imported provenance record',query('UPDATE '.table('catalog_provider_imports').' SET type_name=? WHERE id=?',['Changed hidden provenance',$other['id']])->rowCount()===1);try{pim_deny('Global provenance validation refuses another product before preview',fn()=>provider_catalog_import_preview());pim_deny('Global provenance validation stops cleanup before any file deletion',fn()=>provider_catalog_import_ready());}finally{query('UPDATE '.table('catalog_provider_imports').' SET type_name=? WHERE id=?',[$other['type_name'],$other['id']]);}pim_ok('Correct original provenance restoration restores readiness',provider_catalog_import_ready());
-    ob_start();provider_catalog_import_admin_view(admin_user());$html=ob_get_clean();pim_ok('Owner view shows honest draft scope and local image fallback',str_contains($html,'Prices are not imported')&&str_contains($html,'Images are not copied from 20i')&&!str_contains($html,$secret)&&!str_contains($html,'private-'));
+    $html=pim_render_inventory();pim_ok('Owner view shows honest draft scope and local image fallback',str_contains($html,'Prices are not imported')&&str_contains($html,'Images are not copied from 20i')&&!str_contains($html,$secret)&&!str_contains($html,'private-'));
     pim_ok('Import never performs another provider request or creates invoices',$calls===1&&(int)query('SELECT COUNT(*) FROM '.table('studio_invoices'))->fetchColumn()===0);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $passed=!array_filter($checks,fn($check)=>$check['passed']!==true);file_put_contents(__DIR__.'/../qa/provider-catalog-import-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Disposable native database, synthetic saved observation and filesystem; no real provider requests or genuine multipart upload/browser acceptance','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' provider catalog import checks'.PHP_EOL;exit($passed?0:1);

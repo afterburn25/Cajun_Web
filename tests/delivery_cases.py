@@ -5,6 +5,8 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from payment_upgrade_helpers import prepare_retained_payments
 
 def archive(extra=None):
     stream=io.BytesIO()
@@ -31,10 +33,13 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.8 delivery update preserves config locks media master key and unrelated files',all(p.read_bytes()==b for p,b in preserved.items()))
     up=requests.Session();root=BASE+'/delivery-upgrade/admin/index.php';url=root+'?view=deliveries';submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),up,root,'deliveryup_',before,settings,preserved)
     r=submit(up,url,'delivery_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.8 additive delivery setup succeeds','Website deliveries enabled' in r.text and db('SELECT * FROM deliveryup_website_releases')==[])
     check('Actual 1.8 retains all prior billing notifications and client records',all(db('SELECT * FROM deliveryup_'+t)==rows for t,rows in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings))
     check('Actual 1.8 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM deliveryup_users'),users)))
+    r=up.get(root+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(up,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Actual 1.8 retained manual receipt and balance still render','$375.00' in up.get(root+'?view=invoice-payments&invoice_id=3').text)
     r=upload(up,url,'retained-upgrade');rid=db('SELECT id FROM deliveryup_website_releases')[0]['id'];r=publish(up,url+'&release='+rid,{'owner_password':'Synthetic upgrade passphrase 2026'});check('Upgraded 1.8 accepts and publishes new ZIP','Website release published' in r.text)
     client=requests.Session();portal=BASE+'/delivery-upgrade/portal/index.php';submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'});check('Retained client can download exact newly delivered ZIP',client.get(portal+'?download_release='+rid).content==archive())
@@ -46,7 +51,7 @@ def run_browser(env,browser):
     check('Fresh installation enables empty delivery tables',db("SELECT value FROM fresh_settings WHERE name='delivery_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_website_releases')==[])
     admin=requests.Session();root=BASE+'/existing/admin/index.php';url=root+'?view=deliveries';portal=BASE+'/existing/portal/index.php';submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(admin,url,'delivery_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Delivery setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='delivery_schema_version'"))
-    r=submit(admin,url,'delivery_setup',{'owner_password':'wrong','confirm':'1'});check('Delivery setup reauthenticates owner','current password' in r.text.lower())
+    refuse_owner_action(globals(),admin,url,'delivery_setup',{'confirm':'1'})
     r=submit(admin,url,'delivery_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables deliveries','Website deliveries enabled' in r.text)
     check('Project links to website deliveries',url+'&job_id=1' in [a.get('href') for a in soup(admin.get(root+'?view=studio-job&id=1')).select('a')])
     check('Anonymous admin delivery view requires sign-in','Prepare a private draft' not in requests.get(url).text)
@@ -64,7 +69,9 @@ def run_browser(env,browser):
     check('Authorized staff review downloads exact draft ZIP',member.get(url+'&download_release='+rid).content==archive())
     form=form_data(form_for(admin.get(detail),'delivery_publish'));form.update(owner_password=OWNER,confirm='1',rights='1')
     r=member.post(detail,data=dict(form,csrf=token(member.get(detail))));check('Non-owner forged publication denied',db('SELECT status FROM ci_website_releases WHERE id=?',[rid])==[{'status':'draft'}])
-    for changed in [{'csrf':'bad'},{'owner_password':'wrong'},{'rights':'0'},{'confirm':'0'},{'review_hash':'f'*64}]:
+    refuse_owner_action(globals(),admin,detail,'delivery_publish',{k:v for k,v in form.items() if k not in ('csrf','action','owner_password')})
+    check('Revoked owner cannot publish the private delivery',db('SELECT status FROM ci_website_releases WHERE id=?',[rid])==[{'status':'draft'}])
+    for changed in [{'csrf':'bad'},{'rights':'0'},{'confirm':'0'},{'review_hash':'f'*64}]:
         r=admin.post(detail,data=dict(form,**changed));check('Publication rejects invalid '+next(iter(changed)),db('SELECT status FROM ci_website_releases WHERE id=?',[rid])==[{'status':'draft'}])
     db("CREATE TRIGGER ci_delivery_fail BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action LIKE 'deliveries.%' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic delivery audit failure'; END IF; END")
     try:
@@ -107,7 +114,7 @@ def run_browser(env,browser):
     # Real browser owner/client screens and a filesystem-verified browser download.
     ctx=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce',accept_downloads=True);p=ctx.new_page();errors=[];p.on('pageerror',lambda e:errors.append(str(e)))
     p.goto(root+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');p.goto(url);p.screenshot(path=str(QA/'Website-Delivery-Admin-Desktop.png'),full_page=True);p.set_viewport_size({'width':320,'height':844});p.goto(url+'&release='+draft_id);p.locator('.delivery-detail > details > summary').click();p.evaluate('window.scrollTo(0,0)');p.screenshot(path=str(QA/'Website-Delivery-Admin-Narrow.png'),full_page=True);check('Admin draft manifest and owner review fit 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1') and p.get_by_role('button',name='Publish to client',exact=True).count()==1)
-    p.goto(portal);p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php');p.get_by_role('link',name='Website downloads',exact=True).click();expect(p.get_by_role('heading',name='Website downloads',exact=True)).to_be_visible();check('Client history does not expose later unpublished draft',draft_id not in p.content());p.screenshot(path=str(QA/'Website-Delivery-Client-History.png'),full_page=True);p.goto(client_detail);p.locator('.delivery-detail > details > summary').click();p.evaluate('window.scrollTo(0,0)');p.screenshot(path=str(QA/'Website-Delivery-Client-Narrow.png'),full_page=True);check('Client release manifest fits 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
+    p.goto(portal+'?job=1');p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php?master=1');p.goto(portal+'?job=1');p.get_by_role('link',name='Website downloads',exact=True).click();expect(p.get_by_role('heading',name='Website downloads',exact=True)).to_be_visible();check('Client history does not expose later unpublished draft',draft_id not in p.content());p.screenshot(path=str(QA/'Website-Delivery-Client-History.png'),full_page=True);p.goto(client_detail);p.locator('.delivery-detail > details > summary').click();p.evaluate('window.scrollTo(0,0)');p.screenshot(path=str(QA/'Website-Delivery-Client-Narrow.png'),full_page=True);check('Client release manifest fits 320px screen',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     with p.expect_download() as pending:p.get_by_role('link',name='Download website ZIP',exact=False).click()
     downloaded=QA/'Client-Website-Synthetic.zip';pending.value.save_as(downloaded);check('Chromium downloads exact published ZIP',downloaded.read_bytes()==data)
     with zipfile.ZipFile(downloaded) as z:

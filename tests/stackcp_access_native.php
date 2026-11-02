@@ -1,6 +1,8 @@
 <?php
 /** Disposable real database, application authority and synthetic reads; no live provider. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if (PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/app/providers/stackcp_access.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
@@ -48,7 +50,7 @@ try {
     san_ok('Unprepared owner status neither creates storage nor enables login',san_view()['status']==='unprepared'&&!provider_stackcp_access_exists('provider_stackcp_reads')&&$dns===0&&$sent===0);
     provider_stackcp_auth_prepare($password);provider_stackcp_auth_change($profile,provider_stackcp_auth_status($profile)['review_sha256'],true,$authKey,$password);provider_stackcp_assignment_prepare($password);san_hosting();provider_inventory_link($profile,2501,1,1,$password);provider_inventory_link($profile,2502,2,1,$password);san_assign(2501);san_assign(2502);
     db()->beginTransaction();save_setting('sca_transaction_probe','retained');san_deny('Observation preparation refuses caller transaction before DDL',fn()=>provider_stackcp_access_prepare($password));san_ok('Caller owns intact transaction and absent read family',db()->inTransaction()&&!provider_stackcp_access_exists('provider_stackcp_reads'));db()->rollBack();
-    san_actor(2);san_deny('Delegated administrator cannot prepare observation storage',fn()=>provider_stackcp_access_prepare($password));san_actor();san_deny('Preparation requires current password',fn()=>provider_stackcp_access_prepare('wrong'));
+    san_actor(2);san_deny('Delegated administrator cannot prepare observation storage',fn()=>provider_stackcp_access_prepare($password));san_actor();san_deny('Revoked owner refuses: Preparation requires current password',fn()=>cwp_test_owner_revoked(fn()=>provider_stackcp_access_prepare('wrong')));
     san_ok('Preparation audit failure leaves no adopted marker or checkpoint',san_fault('stackcp_access_prepared',fn()=>provider_stackcp_access_prepare($password))&&!san_ready()&&one('SELECT name FROM '.table('settings')." WHERE name LIKE 'provider_stackcp_access_%'")===null);
     provider_stackcp_access_prepare($password);$before=san_snapshot();provider_stackcp_access_prepare($password);san_ok('Exact preparation is idempotent without history mutation',san_ready()&&san_snapshot()===$before);
     san_ok('Owner must observe package after link before access form is available',san_view()['reviews']===[]);san_hosting();$membership=san_binding();san_ok('Membership authority is independent and binds current client auth configuration and package source',$membership->data['package_id']===2501&&$membership->data['client_id']===1&&$membership->data['operation']===B::MEMBERSHIP);

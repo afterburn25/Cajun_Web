@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_replacement_pending_native.php",
+    "fep_fcompatpend_",
+    "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 255,
+  "elapsed_seconds": 0.151,
+  "stderr_bytes": 602,
+  "report_passed": null,
+  "check_count": 0,
+  "failed_checks": []
+}

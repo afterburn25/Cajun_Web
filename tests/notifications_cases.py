@@ -4,6 +4,8 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'notification-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.6.0',dest)
@@ -18,7 +20,8 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Actual 1.6 update preserves config locks private files and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/notification-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
-    r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'wrong','confirm':'1'});check('Notification upgrade refuses wrong password','current password' in r.text.lower())
+    before,settings=prepare_retained_payments(globals(),up,url,'notifyup_',before,settings,preserved)
+    refuse_owner_action(globals(),up,url+'?view=payment-notifications','payments_notification_setup',{'confirm':'1'},installed_root=dest)
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.6 additive notification upgrade succeeds','Sandbox notification inbox enabled' in r.text)
     check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT * FROM notifyup_'+t)==v for t,v in before.items()))
     now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings))
@@ -29,6 +32,8 @@ def run_browser(env,browser):
     globals().update(env);upgrade();url=BASE+'/existing/admin/index.php?view=payment-notifications';endpoint=BASE+'/existing/webhooks/authorize-net/index.php'
     check('Fresh installer creates empty inbox and disabled receiver',db("SELECT value FROM fresh_settings WHERE name='payment_notifications_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_payment_notifications')==[] and db("SELECT * FROM fresh_settings WHERE name='sandbox_notification_receiver'")==[])
     admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    r=admin.get(url)
+    if 'Enable payment preparation' in admin.get(BASE+'/existing/admin/index.php?view=payments').text:submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     r=admin.get(url)
     if 'Enable sandbox inbox' in r.text:r=submit(admin,url,'payments_notification_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner notification page displays truthful sandbox boundary','Notification inbox' in r.text and 'Production and client checkout remain disabled' in r.text)
@@ -60,7 +65,7 @@ def run_browser(env,browser):
     p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');ctx.set_extra_http_headers({'X-Forwarded-Proto':'https'});p.goto(url);expect(p.get_by_role('heading',name='Notification inbox')).to_be_visible()
     check('Browser inbox redacts saved credentials and provider payload',all(x not in p.content() for x in ['HttpFixtureLogin','HttpFixtureKey12','b'*128,'NeverStoreHttpPayload']))
     p.screenshot(path=str(QA/'Sandbox-Notifications-Desktop.png'),full_page=True);p.set_viewport_size({'width':320,'height':844});p.screenshot(path=str(QA/'Sandbox-Notifications-Narrow.png'),full_page=True);check('Notification page fits 320px viewport',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
-    form=p.locator('form').filter(has=p.locator('[name=action][value=payments_notification_configure]'));form.locator('[name=enabled]').uncheck();form.locator('[name=owner_password]').fill(OWNER);form.get_by_role('button',name='Save receiver settings').click();expect(p.get_by_text('Sandbox receiver settings saved.',exact=False)).to_be_visible()
+    form=p.locator('form').filter(has=p.locator('[name=action][value=payments_notification_configure]'));form.locator('[name=enabled]').uncheck();assert_no_owner_reprompt(check,form,'Save receiver settings');form.get_by_role('button',name='Save receiver settings').click();expect(p.get_by_text('Sandbox receiver settings saved.',exact=False)).to_be_visible()
     check('Browser owner can disable callback while retaining history',requests.post(endpoint,headers=signed,data=body).status_code==503 and db('SELECT * FROM ci_payment_notifications')==rows)
     check('Inbox browser has no runtime errors or external provider requests',not errors and not external);ctx.close()
     (QA/'notification-browser-diagnostics.json').write_text(json.dumps({'page_errors':errors,'provider_requests':external,'signatures':'Synthetic Python HMAC over exact HTTP request bytes','tls':'Trusted loopback proxy fixture only; not actual TLS or merchant delivery'},indent=2),encoding='utf-8')

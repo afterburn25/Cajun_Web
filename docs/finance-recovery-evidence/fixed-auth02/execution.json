@@ -1,0 +1,33 @@
+{
+  "phase": "fixed-auth02",
+  "source": "current isolated correction",
+  "prefix": "fep_authfix2_",
+  "port": 33311,
+  "uid": 65534,
+  "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "elapsed_seconds": 9.42,
+  "exit_code": 0,
+  "check_count": 22,
+  "failures": [],
+  "stderr_bytes": 536,
+  "source_sha256": {
+    "site/app/billing/finance_subscription.php": "9f8e4965304ef90b0d9d22e3db02e14d870cd3a9d83fcbf46bdefbd633f0b6df",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/plans/records.php": "2d9df2440c7ef3d21cea9b6d640006fa5a6545783ef90659c24555f74d04531c",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "site/app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+    "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+    "tests/finance_replacement_payoff_native.php": "dfef81e60bb68b25e2f9584ecbbd7d4ad53eb2bb699159a40203ff88f0a9c7c9",
+    "tests/finance_replacement_payoff_boundaries.php": "0f220d09f928d36f0bda265e9b14a40ff3d5d7015aea533fc165b04c9f1e96cc",
+    "tests/finance_replacement_payoff_authority_native.php": "600f8a4fbcbc2afab788dadba386f0b18b29c9b7bac33c45b0a5b2556f267617",
+    "tests/finance_replacement_payoff_authority_cases.php": "2844174dadd4b7488acca4e8eedc337291e0f09af10f103a0f1a84eadb33f9d7"
+  },
+  "command": [
+    "/usr/bin/php8.3",
+    "/tmp/cwp-finance-authority-fixed-auth02-8cc2b4f257ab/tests/finance_replacement_payoff_authority_native.php",
+    "fep_authfix2_",
+    "/tmp/cwp-finance-authority-fixed-auth02-8cc2b4f257ab"
+  ],
+  "scope": "Exact84 application source for baseline; only two new authority fixture files overlaid. Actual native client state and separate PHP/SQL revocation, synthetic gateway only."
+}

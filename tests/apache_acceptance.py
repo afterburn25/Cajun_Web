@@ -85,6 +85,24 @@ PHPIniDir /etc/php/{PHP_VERSION}/apache2
                 check(label+suffix+' installed internal setup cannot be reused',session.get(url+'/install/actions/deploy.php').status_code in [403,404])
                 for route in ['/','/admin/index.php?view=login','/portal/index.php','/robots.php','/sitemap.php','/api/robots.php']:
                     rr=session.get(url+route);check(label+suffix+' canonical route '+route,rr.status_code==200 and 'We could not complete this request' not in rr.text)
+                software=session.get(url+'/portal/index.php?software=1')
+                check(label+suffix+' anonymous My Software route resolves safely at installed base path',
+                      software.status_code==200 and 'Software & Licenses' not in software.text
+                      and ('Sign in' in software.text or 'Client Portal' in software.text))
+                download=session.get(url+'/api/software-download.php?id=1&license=1')
+                check(label+suffix+' anonymous software download endpoint resolves and denies access',
+                      download.status_code==403)
+                validation=session.post(url+'/api/validate.php',json={'license_key':'short','domain':'example.com'})
+                check(label+suffix+' software validation endpoint resolves with bounded input error',
+                      validation.status_code==400 and validation.json()=={'authorized':False,'error':'Invalid license key format'})
+                webhook=session.get(url+'/api/software-webhook.php')
+                check(label+suffix+' software webhook endpoint resolves and requires POST',
+                      webhook.status_code==405)
+                for internal in ['app/licenses/software_products.php','app/licenses/software_grants.php',
+                                 'app/billing/software_orders.php','database/migrations/software_commerce_migrate.php']:
+                    protected=session.get(url+'/'+internal)
+                    check(label+suffix+' software internal route protected '+internal,
+                          protected.status_code in [403,404] and '<?php' not in protected.text)
                 cookies=[c for c in session.cookies if c.name.startswith('cwp_')];check(label+suffix+' shared session cookie uses site scope',len(cookies)==1 and cookies[0].path==(suffix+'/') and cookies[0].has_nonstandard_attr('HttpOnly'))
                 for n in ['images/branding/logo.png','images/icons/favicon.png','favicon.ico','images/backgrounds/hero.webp','images/portfolio/project-restaurant.webp','assets/css/site.css','assets/css/premium.css','assets/js/site.js','assets/js/activity.js']:
                     rr=session.get(url+'/'+n);check(label+suffix+' exact public asset '+n,rr.status_code==200 and rr.content==expected[n])
@@ -121,15 +139,20 @@ PHPIniDir /etc/php/{PHP_VERSION}/apache2
             for route in ['admin.php','portal.php','index.php','assets/site.css']:
                 check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
             session=requests.Session();url=base+'/legacy/'+STAGE+'/owner-update.php';r=session.get(url)
-            check(label+' authenticated owner recovery page remains reachable in maintenance',r.status_code==200 and 'Current owner password' in r.text)
+            recovery_form=BeautifulSoup(r.text,'html.parser').select_one('form')
+            check(label+' owner recovery sign-in remains reachable in maintenance',r.status_code==200 and recovery_form is not None and recovery_form.select_one('input[name=owner_password][type=password][required]') is not None and recovery_form.select_one('input[name=email][type=email][required]') is not None)
+            check(label+' interrupted recovery retains CSRF and explicit backup consent',recovery_form.select_one('input[name=csrf]') is not None and recovery_form.select_one('input[name=backup_confirm][type=checkbox][required]') is not None)
+            denied=session.post(url,data={'csrf':csrf(r),'email':'apache@example.invalid','owner_password':'Incorrect synthetic password','backup_confirm':'1','action':'apply'},timeout=90)
+            check(label+' incorrect initial owner password cannot resume migration',denied.status_code==200 and 'Owner authentication failed.' in denied.text and '<h2>Complete</h2>' not in denied.text and requests.get(base+'/legacy/admin.php').status_code==403)
+            r=session.get(url)
             check(label+' staged payload is denied independently of rewriting',requests.get(base+'/legacy/'+STAGE+'/site/admin/index.php').status_code==403)
             r=session.post(url,data={'csrf':csrf(r),'email':'apache@example.invalid','owner_password':'Synthetic Apache owner passphrase','backup_confirm':'1','action':'apply'},timeout=90)
             (QA/('apache-'+label+'-owner-update.html')).write_text(r.text)
             check(label+' owner resumes interrupted migration through actual Apache','<h2>Complete</h2>' in r.text and r.status_code==200)
             r=session.get(base+'/legacy/admin.php?view=security');doc=BeautifulSoup(r.text,'html.parser');form=next(f for f in doc.select('form') if f.select_one('[name=action][value=account_save]'))
-            fields={n['name']:n.get('value','') for n in form.select('input[name]')};fields['current_password']='Incorrect fixture password'
+            fields={n['name']:n.get('value','') for n in form.select('input[name]')};fields['email']='invalid-fixture-email'
             r=session.post(base+'/legacy/admin.php?view=security',data=fields,allow_redirects=False)
-            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
+            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'A name and valid email are required.' in r.text and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
             from organized_update_cases import run as organized_update
             # Exercise the newly added baseline first; keep every historical baseline.

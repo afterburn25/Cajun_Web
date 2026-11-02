@@ -1,0 +1,18 @@
+{
+  "published_asset_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+  "states": {
+    "original": {
+      "members": 2895,
+      "contains_version": false,
+      "version_text": null
+    },
+    "corrected": {
+      "members": 2895,
+      "contains_version": true,
+      "version_source": "config/defaults.php",
+      "version_text": "1.25.0"
+    }
+  },
+  "source_parent": "3fd87727ebafaa9290f03e37c97043f9e029cf75",
+  "scope": "Exact inspect_zip function against the actual immutable published COMPLETE package. Main still requires pinned digest/size and exact version. Extraction diagnostic only, not populated upgrade execution."
+}

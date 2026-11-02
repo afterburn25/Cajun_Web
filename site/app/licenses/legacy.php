@@ -26,6 +26,9 @@ function license_resolve_legacy_invoice(int $invoiceId,int $licenseId,bool $conf
         if($licenseId>0){
             $license=one('SELECT * FROM '.table('website_licenses').' WHERE id=? FOR UPDATE',[$licenseId]);
             if(!$license||$license['invoice_id']!==null||(int)$license['is_master']!==0||(int)$license['customer_id']!==(int)$invoice['client_id']||$license['product_id']!==$snapshot['sku'])throw new RuntimeException('Choose an unlinked ordinary license for this exact client and product.');
+            if(license_bundle_is_software_entitlement($licenseId)){
+                throw new RuntimeException('Software entitlements cannot be linked to historical website invoices.');
+            }
             // This is an explicit owner attestation, not inferred provenance.
             query('UPDATE '.table('website_licenses').' SET invoice_id=? WHERE id=? AND invoice_id IS NULL',[$invoiceId,$licenseId]);
         }else{

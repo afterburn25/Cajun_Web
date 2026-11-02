@@ -2,6 +2,7 @@
 from release_version import VERSION,STAGE,RECOVERY,LOCK_RECOVERY
 import requests
 import re, subprocess
+from owner_browser_forms import owner_update_form
 
 
 def removed_setup_unavailable(env, destination, session):
@@ -50,10 +51,18 @@ def apply_file_update(env, destination):
             check('Interrupted staged bootstrap upload has useful fallback before application loading',broken.status_code==503 and 'Update support is missing or mismatched' in broken.text and not (destination/'admin/index.php').exists())
         finally:path.write_bytes(saved)
     session=requests.Session();r=session.get(url,timeout=20)
-    check(destination.name+' staged update requires owner and backup',r.status_code==200 and 'Current owner password' in r.text and 'backup_confirm' in r.text)
+    check(destination.name+' staged update requires initial owner sign-in and backup',owner_update_form(r,soup,authenticated=False))
     data={'csrf':token(r),'email':'upgrade@example.invalid','owner_password':'Synthetic upgrade passphrase 2026','backup_confirm':'1','action':'inspect'}
     r=session.post(url,data=dict(data,csrf='wrong'),timeout=20)
     check(destination.name+' update rejects missing session protection','session expired' in r.text.lower() and not (destination/'admin/index.php').exists())
+    wrong=dict(data,csrf=token(session.get(url)),owner_password='Incorrect synthetic owner password')
+    refused=session.post(url,data=wrong,timeout=30)
+    check(destination.name+' incorrect initial password cannot inspect or switch files','Owner authentication failed.' in refused.text and '<h2>Planned</h2>' not in refused.text and not (destination/'admin/index.php').exists())
+    no_backup=dict(data,csrf=token(session.get(url)),backup_confirm='0')
+    refused=session.post(url,data=no_backup,timeout=30)
+    check(destination.name+' authenticated owner still must confirm a backup','Confirm a recoverable backup' in refused.text and '<h2>Planned</h2>' not in refused.text and not (destination/'admin/index.php').exists())
+    check(destination.name+' signed-in updater removes only the repeated password field',owner_update_form(refused,soup,authenticated=True))
+    data.pop('owner_password');data.pop('email');data['csrf']=token(refused)
     r=session.post(url,data=data,timeout=30)
     check(destination.name+' owner verifies immutable staged replacements',r.status_code==200 and '<h2>Planned</h2>' in r.text)
     data['csrf']=token(r);data['action']='apply'
@@ -66,7 +75,7 @@ def apply_file_update(env, destination):
     old=session.get(base+'/'+destination.name+'/admin.php',timeout=20)
     check(destination.name+' pre-switch owner session survives old and new URLs',old.status_code==200 and 'Sales pipeline' in old.text and 'Sales pipeline' in session.get(base+'/'+destination.name+'/admin/index.php').text)
     legacy=base+'/'+destination.name+'/admin.php?view=security';r=session.get(legacy)
-    fields=env['form_data'](env['form_for'](r,'account_save'));fields['current_password']='Incorrect synthetic password'
+    fields=env['form_data'](env['form_for'](r,'account_save'));fields['email']='invalid-fixture-email'
     r=session.post(legacy,data=fields,allow_redirects=False,timeout=20)
-    check(destination.name+' legacy POST body and query reach canonical action without redirect',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers)
+    check(destination.name+' legacy POST body and query reach canonical action without redirect',r.status_code==200 and 'A name and valid email are required.' in r.text and 'Location' not in r.headers)
     return session

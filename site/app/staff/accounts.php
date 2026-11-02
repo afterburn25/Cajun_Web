@@ -12,7 +12,7 @@ foreach (['access/AuthorizationVersion','access/AccessContext','access/MailboxGr
 }
 function staff_ready(): bool { return setting('staff_schema_version') === '1'; }
 require_once CWP_CODE_ROOT.'/database/schema/staff_schema.php';
-function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.tickets'=>'Client support conversations and private staff notes','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -56,7 +56,7 @@ require_once CWP_CODE_ROOT.'/database/migrations/staff_migrate.php';
 function staff_owner(#[\SensitiveParameter] string $password): array {
     if(!staff_ready())throw new RuntimeException('Enable administrator access first.');
     $actor=staff_require('staff.manage');
-    if(!password_verify($password,$actor['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
+    if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
     return $actor;
 }
 function staff_revoke_credentials(int $id): void {
@@ -107,7 +107,7 @@ function staff_account_save(int $id,string $name,string $email,#[\SensitiveParam
     if(trim($name)===''||strlen($name)>120||strlen($email)>190||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('A name and valid email are required.');
     if($password!=='')validate_admin_password($password);
     return staff_locked(fn()=>staff_transaction(function() use($id,$name,$email,$current,$password): string {
-        $u=require_admin();if((int)$u['id']!==$id||!password_verify($current,$u['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
+        $u=require_admin();if((int)$u['id']!==$id||!admin_session_matches($u))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
         $version=bin2hex(random_bytes(16));staff_revoke_credentials($id);query('UPDATE '.table('users').' SET name=?,email=?,password_hash=?,auth_version=? WHERE id=?',[trim($name),strtolower($email),$password===''?$u['password_hash']:password_hash($password,PASSWORD_DEFAULT),$version,$id]);log_event('account.update');return $version;
     }));
 }
@@ -130,6 +130,10 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='notifications')return null; // Recipient identity and current resource access are checked by the feed.
+    if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';
+    if($view==='activity')return null; // Current project/ticket actors independently authorize the activity controller.
+    if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
     if($view==='registration-drafts')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
     if($view==='studio-licenses')return 'staff.manage';
@@ -148,12 +152,18 @@ function staff_view_permission(string $view): ?string {
     if($view==='support')return 'support.login';
     if(in_array($view,['catalog','catalog-invoice'],true))return 'catalog.manage';
     if(in_array($view,['email','health','studio-upgrade'],true))return 'staff.manage';
-    if(in_array($view,['studio-clients','studio-job','deliveries','activity'],true))return 'clients.manage';
+    if(in_array($view,['studio-clients','studio-job','deliveries','activity','proposals','proposal'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if(in_array($action,['notifications_setup','notification_email_configure','notification_dispatch'],true))return 'staff.manage';
+    if(in_array($action,['notification_mark','notification_mark_all','notification_prefs'],true))return null; // Current recipient checked inside mutation lock.
     if(str_starts_with($action,'provider_reset_template_'))return 'staff.manage';
+    if(str_starts_with($action,'hosting_catalog_'))return 'staff.manage';
+    if($action==='tickets_setup')return 'staff.manage';
+    if(str_starts_with($action,'tickets_'))return 'support.tickets';
     if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
+    if(str_starts_with($action,'software_'))return 'staff.manage';
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
     if(str_starts_with($action,'recurring_'))return 'payments.manage';
     if(str_starts_with($action,'service_plans_'))return 'staff.manage';
@@ -186,6 +196,8 @@ function staff_action_permission(string $action): ?string {
     if($action==='activity_setup')return 'staff.manage';
     if($action==='activity_mark')return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
+    if($action==='proposal_setup')return 'staff.manage';
+    if(str_starts_with($action,'proposal_'))return 'clients.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
@@ -194,5 +206,6 @@ function staff_action_permission(string $action): ?string {
     return 'website.manage';
 }
 function staff_home(array $user): string {
+    if(staff_can('support.tickets',$user)&&!staff_can('website.manage',$user)&&!staff_can('clients.manage',$user))return 'tickets';
     return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('catalog.manage',$user)?'catalog':(staff_can('mail.templates.manage',$user)?'mail-templates':(staff_can('support.login',$user)?'support':((function_exists('mail_accounts_access')&&mail_accounts_access($user))?'mailboxes':'security')))));
 }

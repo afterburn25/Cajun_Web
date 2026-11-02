@@ -94,24 +94,33 @@ final readonly class ServicePlanDocument {
 final readonly class ServiceSubscriptionDocument {
     public const MAX_EVENTS=256;
     public const MAX_BYTES=1048576;
+    /** Embedded publication and composite consent are separately bounded before replay. */
+    public const MAX_CHECKOUT_BYTES=4194304;
     private function __construct(private string $bytes){}
     public static function create(string $id,int $client,int $owner,int $at,ServicePlanDocument $plan):self {
         return self::fromJson(service_plans_json(['format'=>1,'id'=>$id,'client_id'=>$client,'created_by'=>$owner,'created_at'=>$at,'plan'=>$plan->data(),'events'=>[]]));
     }
     public static function fromJson(string $bytes):self {
-        if(strlen($bytes)>self::MAX_BYTES)throw new InvalidArgumentException('Subscription history is too large.');
+        if(strlen($bytes)>self::MAX_BYTES && (strlen($bytes)>self::MAX_CHECKOUT_BYTES || !str_starts_with($bytes,'{"format":2,')))throw new InvalidArgumentException('Subscription history is too large.');
         $d=json_decode($bytes,true,40,JSON_THROW_ON_ERROR);
         if(!is_array($d))throw new InvalidArgumentException('Invalid subscription document.');
+        if(($d['format']??null)===2){self::replayCheckout($d,$bytes);return new self($bytes);}
         service_plans_keys($d,['format','id','client_id','created_by','created_at','plan','events']);
         if($d['format']!==1 || !is_string($d['id']) || !is_array($d['plan']) || !is_array($d['events']) || !array_is_list($d['events']) || count($d['events'])>self::MAX_EVENTS || service_plans_json($d)!==$bytes)throw new InvalidArgumentException('Invalid subscription document.');
         service_plans_id($d['id']);service_plans_actor($d['client_id']);service_plans_actor($d['created_by']);service_plans_time($d['created_at']);
         self::replay($d);return new self($bytes);
     }
     private static function replay(array $d):PlanSubscription {
+        if($d['format']===2)return self::replayCheckout($d,service_plans_json($d));
         $plan=ServicePlanDocument::fromJson(service_plans_json($d['plan']));$planData=$plan->data();$events=$planData['events'];$lastPlan=$events?$events[array_key_last($events)]['at']:$planData['created_at'];
         if($d['created_at']<$lastPlan)throw new InvalidArgumentException('Subscription predates its offered plan.');
-        $model=PlanSubscription::start($d['id'],$plan->model(),'client:'.$d['client_id'],'staff:'.$d['created_by'],gmdate('Y-m-d\TH:i:s\Z',$d['created_at']));$seen=[];
+        $model=PlanSubscription::start($d['id'],$plan->model(),'client:'.$d['client_id'],'staff:'.$d['created_by'],gmdate('Y-m-d\TH:i:s\Z',$d['created_at']));
+        return self::replayEvents($d,$model);
+    }
+    /** The checkout-only prefix is validated in full before any events are skipped here. */
+    private static function replayEvents(array $d,PlanSubscription $model,array $seen=[],int $skip=0):PlanSubscription {
         foreach($d['events'] as $index=>$event){
+            if($index<$skip)continue;
             if(!is_array($event))throw new InvalidArgumentException('Invalid subscription event.');
             service_plans_keys($event,['id','command','actor','at','arguments']);
             if(!is_string($event['id']) || !is_string($event['actor']) || !is_string($event['command']) || !is_array($event['arguments']) || !preg_match('/\A(staff|client):([1-9][0-9]{0,9})\z/',$event['actor'],$actor) || (int)$actor[2]>2147483647)throw new InvalidArgumentException('Invalid subscription event.');
@@ -137,6 +146,61 @@ final readonly class ServiceSubscriptionDocument {
             }
         }
         return $model;
+    }
+
+    /** Pure local composition only. Native storage must verify retained consent, actors and project ownership. */
+    public static function createCheckout(string $id,HostingCheckoutConsent $consent,HostingCatalogPublication $publication,int $projectId,string $consentEventId,string $activationEventId):self {
+        $c=$consent->data();$r=$consent->review()->data();$p=$publication->data();
+        $checkout=['request_id'=>$c['request_id'],'request_input_sha256'=>$consent->inputHash(),'publication_id'=>$p['id'],'publication_sha256'=>$publication->fingerprint(),
+            'publication_json'=>$publication->json(),'consent_sha256'=>$consent->fingerprint(),'consent_json'=>$consent->json(),
+            'project_id'=>$projectId,'authorizer'=>$p['publisher']];
+        $plan=ServicePlanDocument::fromJson($r['plan']['json']);
+        $events=self::checkoutEvents($consentEventId,$activationEventId,$c['client_id'],$c['accepted_at'],$plan->model()->termsHash(),$consent->fingerprint());
+        return self::fromJson(service_plans_json(['format'=>2,'id'=>$id,'client_id'=>$c['client_id'],'created_by_client'=>$c['client_id'],
+            'created_at'=>$c['accepted_at'],'plan'=>$plan->data(),'checkout'=>$checkout,'events'=>$events]));
+    }
+    private static function checkoutEvents(string $consentId,string $activationId,int $client,int $at,string $termsHash,string $consentHash):array {
+        service_plans_id($consentId);service_plans_id($activationId);
+        if($consentId===$activationId)throw new InvalidArgumentException('Checkout events need distinct identities.');
+        return [
+            ['id'=>$consentId,'command'=>'consent','actor'=>'client:'.$client,'at'=>$at,'arguments'=>['terms_hash'=>$termsHash,'checkout_consent_sha256'=>$consentHash]],
+            ['id'=>$activationId,'command'=>'checkout_activate','actor'=>'system:hosting-checkout','at'=>$at,'arguments'=>['consent_event_id'=>$consentId,'checkout_consent_sha256'=>$consentHash]]
+        ];
+    }
+    /** Historical structural validation is not current owner/client authority or proof of retained SQL rows. */
+    private static function replayCheckout(array $d,string $bytes):PlanSubscription {
+        if(strlen($bytes)>self::MAX_CHECKOUT_BYTES)throw new InvalidArgumentException('Checkout subscription history is too large.');
+        service_plans_keys($d,['format','id','client_id','created_by_client','created_at','plan','checkout','events']);
+        if($d['format']!==2 || !is_string($d['id']) || !is_array($d['plan']) || !is_array($d['checkout']) || !is_array($d['events'])
+            || !array_is_list($d['events']) || count($d['events'])<2 || count($d['events'])>self::MAX_EVENTS)throw new InvalidArgumentException('Invalid checkout subscription.');
+        service_plans_id($d['id']);service_plans_actor($d['client_id']);service_plans_actor($d['created_by_client']);service_plans_time($d['created_at']);
+        $x=$d['checkout'];service_plans_keys($x,['request_id','request_input_sha256','publication_id','publication_sha256','publication_json','consent_sha256','consent_json','project_id','authorizer']);
+        foreach(['publication_json','consent_json'] as $key)if(!is_string($x[$key]))throw new InvalidArgumentException('Invalid retained checkout document.');
+        service_plans_actor($x['project_id']);
+        // Localized loading keeps all legacy standalone document includes independent of checkout files.
+        require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout_document.php';
+        $publication=HostingCatalogPublication::fromJson($x['publication_json']);
+        $consent=HostingCheckoutConsent::fromJson($x['consent_json'],$publication);
+        $p=$publication->data();$c=$consent->data();$r=$consent->review()->data();
+        $plan=ServicePlanDocument::fromJson($r['plan']['json']);
+        $expected=['request_id'=>$c['request_id'],'request_input_sha256'=>$consent->inputHash(),'publication_id'=>$p['id'],'publication_sha256'=>$publication->fingerprint(),
+            'publication_json'=>$publication->json(),'consent_sha256'=>$consent->fingerprint(),'consent_json'=>$consent->json(),
+            'project_id'=>$x['project_id'],'authorizer'=>$p['publisher']];
+        if($x!==$expected || $d['client_id']!==$c['client_id'] || $d['created_by_client']!==$c['client_id'] || $d['created_at']!==$c['accepted_at']
+            || $d['plan']!==$plan->data() || ($r['project']['mode']==='existing' && $x['project_id']!==$r['project']['id'])) {
+            throw new InvalidArgumentException('Checkout agreement differs from its retained client consent, publication or project.');
+        }
+        $canonical=['format'=>2,'id'=>$d['id'],'client_id'=>$c['client_id'],'created_by_client'=>$c['client_id'],'created_at'=>$c['accepted_at'],
+            'plan'=>$plan->data(),'checkout'=>$expected,'events'=>$d['events']];
+        if(service_plans_json($canonical)!==$bytes)throw new InvalidArgumentException('Noncanonical checkout subscription.');
+        foreach([0,1] as $index)if(!is_array($d['events'][$index]) || !is_string($d['events'][$index]['id']??null))throw new InvalidArgumentException('Invalid checkout event prefix.');
+        $prefix=self::checkoutEvents($d['events'][0]['id'],$d['events'][1]['id'],$c['client_id'],$c['accepted_at'],$plan->model()->termsHash(),$consent->fingerprint());
+        if(array_slice($d['events'],0,2)!==$prefix)throw new InvalidArgumentException('Checkout needs exact client consent followed by its automatic local activation.');
+        $at=gmdate('Y-m-d\TH:i:s\Z',$c['accepted_at']);$client='client:'.$c['client_id'];
+        $model=PlanSubscription::start($d['id'],$plan->model(),$client,$client,$at);
+        $model->recordConsent($client,$plan->model()->termsHash(),$at);
+        $model->activate('system:hosting-checkout',$at);
+        return self::replayEvents($d,$model,array_fill_keys(array_column($prefix,'id'),true),2);
     }
     public function append(string $id,string $command,string $actor,int $at,array $arguments):self {
         $d=$this->data();$event=['id'=>$id,'command'=>$command,'actor'=>$actor,'at'=>$at,'arguments'=>$arguments];

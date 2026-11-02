@@ -69,12 +69,14 @@ function provider_plan_catalog_ui(ServicePlanDocument $plan):void {
     echo '</fieldset><label class="check"><input type="checkbox" name="catalog_enabled" value="1"'.(provider_plan_catalog_value('catalog_enabled',$current&& !$current['enabled']?'':'1')==='1'?' checked':'').'> Make this review available for new hosting preparation</label><label class="check"><input type="checkbox" name="reviewed_defaults" value="1" required> I reviewed this provider account, package defaults, limits and cost evidence.</label>';service_plans_confirmation('Save this exact mapping version; preserve all previous reviews.',true);echo '<button class="btn gold">Save provider mapping review</button></form>';
     echo '</section>';
 }
-function provider_plan_catalog_order_ui(ServiceOrderDocument $order):void {
-    $ctx=recurring_billing_locked(function()use($order):?array {
-        service_orders_owner();if(!provider_plan_catalog_state()['ready'])return null;$o=$order->data();$a=$o['agreement'];$source=service_orders_agreement($a['id'],$o['client_id'],$a['revision'],$a['sha256'],$a['terms_hash'])['prefix'];$plan=$source->data()['plan']['id'];$mapping=provider_plan_catalog_current($plan);
+function provider_plan_catalog_order_ui(ServiceOrderDocument $order,?array $origin=null):void {
+    $ctx=recurring_billing_locked(function()use($order,$origin):?array {
+        service_orders_owner();if(!provider_plan_catalog_state()['ready'])return null;$o=$order->data();$a=$o['agreement'];$source=service_orders_agreement($a['id'],$o['client_id'],$a['revision'],$a['sha256'],$a['terms_hash'])['prefix'];$plan=$source->data()['plan']['id'];$mapping=$origin===null?provider_plan_catalog_current($plan):provider_plan_catalog_lookup($origin['mapping_id']);
+        if($origin!==null && !hash_equals($origin['mapping_sha256'],$mapping['sha256']))throw new RuntimeException('The original hosting offer mapping needs recovery.');
         if(!$mapping)return null;try{provider_plan_catalog_order($mapping,$order,true);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;return ['plan'=>$plan,'mapping'=>null];}return ['plan'=>$plan,'mapping'=>$mapping];
     });
     if(!$ctx)return;
+    if(!$ctx['mapping'] && $origin!==null){echo '<p>The original hosting offer mapping is no longer available for preparation. A different setup needs a new offer and client agreement.</p>';return;}
     if(!$ctx['mapping']){echo '<p>The saved provider mapping needs review. <a href="'.esc(admin_url('service-plan',['record'=>$ctx['plan']])).'">Review this plan’s mapping</a>.</p>';return;}
     $mapping=$ctx['mapping'];echo '<form method="post" data-catalog-preparation><h3>Use the saved provider mapping</h3><p>'.esc($mapping['configuration']['label']).' · Type '.esc($mapping['configuration']['type']).' · '.esc($mapping['configuration']['region']).'</p>';service_orders_ui_fields('service_plans_order_map_catalog',$order->data()['agreement']['id'],$order);
     foreach(['order_hash'=>$order->fingerprint(),'account_id'=>bin2hex(random_bytes(16)),'catalog_id'=>$mapping['id'],'catalog_hash'=>$mapping['sha256']] as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc(service_orders_ui_value('service_plans_order_map_catalog',$key,$value,64)).'">';

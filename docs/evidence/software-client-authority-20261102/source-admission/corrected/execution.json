@@ -1,0 +1,40 @@
+[
+  {
+    "command": [
+      "python3",
+      "tests/software_authority_provenance.py"
+    ],
+    "returncode": 0,
+    "seconds": 1.108,
+    "stdout_sha256": "92dd156e46c94c80235011279b8fa1d7d8d5fd0cb3b8e654f993016a8361e5b6",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 11566,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "python3",
+      "tests/combined_runtime_repair.py"
+    ],
+    "returncode": 0,
+    "seconds": 1.967,
+    "stdout_sha256": "67d346ee879fbdcfda4a010fbbaefd8911f5ee0f8aea6ce6ac76f96f0ee74a35",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 69,
+    "stderr_bytes": 0
+  },
+  {
+    "command": [
+      "python3",
+      "tests/acceptance_artifacts_test.py",
+      "--report",
+      "/workspace/scratch/8cc2b4f257ab/software-authority-local-evidence/source-admission-followup/helpers.json"
+    ],
+    "returncode": 0,
+    "seconds": 8.856,
+    "stdout_sha256": "9798fa364f385917f31ccb1058e2595a6a9e170f063990fdce57ea71cc42a5a2",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 47,
+    "stderr_bytes": 0
+  }
+]

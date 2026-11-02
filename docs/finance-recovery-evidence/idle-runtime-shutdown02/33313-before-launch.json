@@ -1,0 +1,10 @@
+{
+  "port": 33313,
+  "bind": "127.0.0.1",
+  "datadir": "/tmp/cwp-finance-recovery-final-8cc2b4f257ab/data",
+  "pid": 103744,
+  "socket": "/tmp/cwp-finance-recovery-final-8cc2b4f257ab/mysql.sock",
+  "repository": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix",
+  "uid": 65534,
+  "scope": "New disposable synthetic database only; no prior fixture or application database touched."
+}

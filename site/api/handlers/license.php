@@ -47,6 +47,8 @@ if (!is_array($input)) {
 
 $licenseKey = $input['license_key'] ?? '';
 $domain = $input['domain'] ?? '';
+$productId = $input['product_id'] ?? null;
+$version = $input['version'] ?? null;
 
 if (!is_string($licenseKey) || strlen($licenseKey) < 8 || strlen($licenseKey) > 255) {
     license_response(false, 'Invalid license key format', 400);
@@ -54,6 +56,18 @@ if (!is_string($licenseKey) || strlen($licenseKey) < 8 || strlen($licenseKey) > 
 
 if (!is_string($domain) || strlen($domain) < 4 || strlen($domain) > 253 || !str_contains($domain, '.')) {
     license_response(false, 'Invalid domain format', 400);
+}
+if($productId!==null){
+    if(!is_string($productId)||!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',strtoupper(trim($productId)))){
+        license_response(false,'Invalid product format',400);
+    }
+    $productId=strtoupper(trim($productId));
+}
+if($version!==null){
+    if(!is_string($version)||!preg_match('/^[0-9A-Za-z][0-9A-Za-z._-]{0,39}$/D',trim($version))){
+        license_response(false,'Invalid version format',400);
+    }
+    $version=trim($version);
 }
 
 $domain = strtolower(trim($domain));
@@ -67,14 +81,14 @@ try {
         license_response(false, 'Licensing storage is not prepared', 500);
     }
 
-    // Log the validation attempt for security audit
-    $auditData = substr((string)json_encode(['license_key' => substr($licenseKey, 0, 8) . '...', 'domain' => $domain, 'ip' => $ip]), 0, 400);
-    query('INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (0, ?, ?, ?)',
-        ['license.validate', $auditData, gmdate('Y-m-d H:i:s')]);
+    // Do not write a permanent audit row for every heartbeat. Successful
+    // validations are recorded below by software_usage_record() as one
+    // minute-bucketed license/domain observation. Security rate limiting uses
+    // the request IP without retaining it in the business audit trail.
 
     // Look up the license key
     $license = one(
-        'SELECT id, license_key, is_active, is_master FROM ' . table('website_licenses') . ' WHERE license_key = ?',
+        'SELECT id, license_key, product_id, is_active, is_master FROM ' . table('website_licenses') . ' WHERE license_key = ?',
         [$licenseKey]
     );
 
@@ -84,6 +98,13 @@ try {
 
     if (!(bool) $license['is_active']) {
         license_response(false, 'License is deactivated');
+    }
+    require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+    if($productId===null&&software_grant_requires_product_identity($license)){
+        license_response(false,'Product identifier is required for this software license');
+    }
+    if($productId!==null&&!hash_equals((string)$license['product_id'],$productId)){
+        license_response(false,'License is not authorized for this product');
     }
 
     // Check if domain is authorized for this license. The www/apex pair
@@ -96,6 +117,27 @@ try {
         license_response(false, 'Domain not registered for this license');
     }
 
+    // Billing state is private to an otherwise-authorized installation. Do
+    // not reveal or mutate financing state for a leaked key used from a
+    // different product/domain.
+    require_once CWP_CODE_ROOT.'/app/licenses/financing.php';
+    $financing=license_financing_access((int)$license['id']);
+    if($financing!==null&&!$financing['authorized']){
+        license_response(false,(string)$financing['reason']);
+    }
+
+    // Existing v3 keys remain valid; new time-limited grants must also pass
+    // their server-side type/expiration policy before granting authority.
+    if (!software_grant_verdict($license, $domain)) {
+        license_response(false, 'License expired, over its installation limit, or not authorized');
+    }
+    if($version!==null){
+        $versionAllowed=software_grant_version_verdict($license,$version);
+        if($versionAllowed===null)license_response(false,'Unknown software version',400);
+        if(!$versionAllowed)license_response(false,'Software version is outside this license update entitlement');
+    }
+    require_once CWP_CODE_ROOT.'/app/licenses/software_usage.php';
+    software_usage_record((int)$license['id'], $domain);
     license_response(true);
 } catch (\Throwable $e) {
     report_error($e);

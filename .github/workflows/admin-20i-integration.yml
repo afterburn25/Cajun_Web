@@ -1,0 +1,245 @@
+name: Admin and 20i integrated candidate (isolated tests only)
+on:
+  push:
+    branches: [chatgpt/admin-20i-integration-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: admin-20i-integration-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assemble:
+    if: github.ref == 'refs/heads/chatgpt/admin-20i-integration-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.commit.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Expand exact source and preserve payment workflow boundaries
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tools/integration/admin_20i_assemble.py
+          python3 tools/integration/rc126_baseline.py --record
+          python3 tools/integration/master_portal_wiring.py
+          python3 tools/integration/admin_release_fixes.py
+          python3 tools/build.py --refresh
+      - name: Record the expanded source on the integration branch only
+        id: commit
+        env:
+          GH_SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro integration builder'
+          git config user.email 'integration-builder@users.noreply.github.com'
+          git add -- site foundation tests docs VERSION tools/legacy-release-files.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Integrate reviewed admin session and 20i source as 1.26.1 development candidate'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/admin-20i-integration-20261030'
+          expected=os.environ['EXPECTED_HEAD']
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=expected: raise SystemExit('Integration branch moved; refuse to overwrite concurrent work')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=expected:
+              token=base64.b64encode(('x-access-token:'+os.environ['GH_SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+token}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('source_sha='+head+'\n')
+          print('Exact candidate source:',head)
+          PY
+  portable:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source_sha }}
+          persist-credentials: false
+      - name: Verify canonical source and syntax
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tools/build.py --refresh
+          git diff --exit-code
+      - name: Run focused session, hosting, licensing and finance regressions
+        run: |
+          python3 tools/integration/portable_checks.py --root . --out qa/admin-20i-portable
+          php tests/master_portal_policy.php
+      - name: Upload source-bound portable evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: admin-20i-portable-${{ needs.assemble.outputs.source_sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: [assemble, portable, master-portal]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        php: ['8.2','8.4']
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_IMAGE: cwp-integration-php:${{ matrix.php }}
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_DATABASE_LABEL: ${{ matrix.database }}
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.source_sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source_sha }}
+          persist-credentials: false
+      - name: Build disposable PDO runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/invitations/Dockerfile -t "$CWP_TEST_IMAGE" .
+      - name: Wait for isolated SQL and permit fixture rollback triggers
+        run: |
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++) {try {$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");echo "Disposable SQL ready\n";exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Run real SQL catalog, batch import, publication, checkout and session denials
+        run: python3 tools/integration/native_checks.py
+      - name: Prepare Chromium for real installed fixture navigation
+        run: |
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Test actual SQL-backed catalog import and public hosting in Chromium
+        run: .ci-venv/bin/python tests/admin_20i_installed_browser.py
+      - name: Preserve all native and browser evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: admin-20i-php${{ matrix.php }}-${{ matrix.database }}-${{ needs.assemble.outputs.source_sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  master-portal:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_IMAGE: cwp-integration-php:8.4
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.source_sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source_sha }}
+          persist-credentials: false
+      - name: Prepare isolated SQL and PHP
+        run: |
+          docker build --build-arg PHP_VERSION=8.4 -f tests/invitations/Dockerfile -t "$CWP_TEST_IMAGE" .
+          docker run --rm --network host "$CWP_TEST_IMAGE" php -r '
+          for($i=0;$i<90;$i++){try{new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","cwp_test","local-ci-only");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Exercise master portal SQL authorization and client isolation
+        run: python3 tools/integration/master_portal_checks.py
+      - name: Prepare browser
+        run: |
+          python3 -m venv .master-venv
+          .master-venv/bin/pip install playwright
+          .master-venv/bin/python -m playwright install --with-deps chromium
+      - name: Sign in select client return and reject privilege confusion
+        run: .master-venv/bin/python tests/master_portal_installed_browser.py
+      - name: Preserve source-bound portal evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: master-portal-${{ matrix.database }}-${{ needs.assemble.outputs.source_sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+  upgrade-files:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CWP_SOURCE_SHA: ${{ needs.assemble.outputs.source_sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.assemble.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reconstruct and verify the exact deployed RC file tree
+        run: python3 tools/integration/rc126_baseline.py --snapshot test-runtime/rc126-original
+      - name: Exercise actual interrupted update resume rollback and data preservation
+        run: python3 tests/admin_20i_file_upgrade.py
+      - name: Preserve file-upgrade evidence without private fixture files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: admin-20i-file-upgrade-${{ needs.assemble.outputs.source_sha }}
+          path: qa/admin-20i-upgrade/
+          if-no-files-found: error
+          retention-days: 14
+  populated-upgrade:
+    needs: [assemble, portable, master-portal]
+    uses: ./.github/workflows/admin-20i-populated-upgrade.yml
+    with:
+      source_sha: ${{ needs.assemble.outputs.source_sha }}
+    permissions:
+      contents: read
+  checkpoint:
+    needs: [assemble, portable, native, master-portal, upgrade-files, populated-upgrade]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: State exactly what passed and what remains
+        run: |
+          {
+            echo '## Integrated source checkpoint'
+            echo 'Source: `${{ needs.assemble.outputs.source_sha }}`'
+            echo 'The focused portable, four SQL runtime combinations, installed browser, master portal, exact-RC file recovery and populated upgrade jobs passed.'
+            echo 'NOT a production release: expanded financial-state upgrades, full historical-suite contract reconciliation and independent security review remain required.'
+            echo 'No live provider calls, charges, deployments or customer data changes were performed.'
+          } >> "$GITHUB_STEP_SUMMARY"

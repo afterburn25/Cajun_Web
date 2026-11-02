@@ -7,6 +7,40 @@ require_once __DIR__.'/fixtures/license_pre_master_schema.php';
 function lu_state():array{$out=[];foreach(['website_licenses','license_domains','license_bundles','audit','settings'] as $n)$out[$n]=all('SELECT * FROM '.table($n).' ORDER BY '.($n==='settings'?'name':'id'));return$out;}
 function lu_owner():void{$u=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function lu_deny(string $label,callable $f,string $reason):void{try{$f();}catch(RuntimeException|InvalidArgumentException $e){if($e instanceof PDOException)throw $e;lic_ok($label,$e->getMessage()===$reason);return;}lic_ok($label,false);}
+/** Exact SQL-only legacy namespace; this fixture never reads archived bundle paths. */
+function lu_authority_state():array {
+    $cfg=config();$db=$cfg['db']??[];
+    if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||($db['name']??'')!=='cwp_test'||!in_array($db['host']??'',['127.0.0.1','localhost'],true)||($db['prefix']??'')!=='licup_'||($cfg['storage']??null)!=='')throw new AssertionError('Legacy license authority fixture requires its exact disposable SQL-only namespace.');
+    $out=[];
+    foreach(all("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,6)='licup_' AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME") as $entry){
+        $name=$entry['TABLE_NAME'];if(!is_string($name)||!preg_match('/^licup_[a-zA-Z0-9_]+$/D',$name))throw new AssertionError('Unexpected legacy fixture table.');
+        $rows=array_map('serialize',all('SELECT * FROM `'.$name.'`'));sort($rows,SORT_STRING);$schema=(string)(one('SHOW CREATE TABLE `'.$name.'`')['Create Table']??'');
+        if($schema==='')throw new AssertionError('Missing legacy fixture schema.');
+        $out[$name]=[hash('sha256',serialize($rows)),hash('sha256',preg_replace('/ AUTO_INCREMENT=[0-9]+\b/','',$schema))];
+    }
+    if(!$out)throw new AssertionError('An empty fixture cannot prove unchanged legacy data.');return $out;
+}
+/** The same authenticated owner loses only permission; unrelated errors are not valid denials. */
+function lu_owner_revoked(callable $work):never {
+    if(db()->inTransaction())throw new AssertionError('The legacy owner refusal cannot inherit a transaction.');
+    $before=lu_authority_state();$session=$_SESSION;$actor=admin_user();
+    if(!staff_ready()||!$actor||(int)$actor['id']!==1||$actor['role']!=='owner'||!admin_session_matches($actor))throw new AssertionError('Expected the original current owner.');
+    $profile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1');
+    if(!$profile||$profile['role']!=='owner'||(int)$profile['enabled']!==1)throw new AssertionError('Expected enabled owner profile.');
+    $error=null;
+    try{
+        query('UPDATE '.table('staff_profiles')." SET role='administrator',permissions='[]' WHERE user_id=1");$revoked=lu_authority_state();$current=admin_user();
+        if(!$current||(int)$current['id']!==1||$current['role']!=='administrator'||!admin_session_matches($current)||staff_can('staff.manage',$current))throw new AssertionError('Revocation changed identity instead of permission.');
+        try{$work();}catch(Throwable $e){$error=$e;}
+        if(db()->inTransaction()||lu_authority_state()!==$revoked)throw new AssertionError('Denied legacy operation changed rows, schema or transaction state.');
+    }finally{
+        if(db()->inTransaction())db()->rollBack();
+        query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=1',[$profile['role'],$profile['permissions']]);$_SESSION=$session;
+    }
+    if(lu_authority_state()!==$before)throw new AssertionError('Legacy authority fixture failed to restore exact state.');
+    if(!($error instanceof RuntimeException||$error instanceof InvalidArgumentException)||$error instanceof PDOException||$error->getMessage()!=='Your account does not have access to this action.')throw new AssertionError('Legacy action did not fail at its actual owner-permission boundary.');
+    $GLOBALS['cwp_current_authority_evidence'][]=['mode'=>'legacy-license-same-owner-revoked','tables'=>count($before),'state_unchanged'=>true,'scope'=>'SQL only; historical bundle paths are not read'];throw $error;
+}
 function lu_setup(string $prefix):void{
     global $password;$GLOBALS['cwp_config']['db']['prefix']=$prefix;$GLOBALS['cwp_config']['storage']='';unset($GLOBALS['cwp_settings']);
     $names=['settings','users','audit','staff_profiles','studio_clients','studio_jobs','studio_invoices','catalog_invoice_snapshots'];
@@ -45,7 +79,7 @@ try{
     $tables=all('SHOW TABLES');db()->beginTransaction();
     try{save_setting('lu_sentinel','rollback');$blocked=false;try{license_migrate($password);}catch(LogicException $e){$blocked=$e->getMessage()==='License preparation requires its own transaction.';}lic_ok('License migration refuses before DDL and preserves caller transaction',$blocked&&db()->inTransaction()&&all('SHOW TABLES')===$tables&&lu_preserved($before));}finally{db()->rollBack();unset($GLOBALS['cwp_settings']);}
     lic_ok('License migration caller sentinel actually rolls back',one('SELECT value FROM '.table('settings').' WHERE name=?',['lu_sentinel'])===null);
-    $state=lu_state();lu_deny('Preparation wrong password leaves legacy rows unchanged',fn()=>license_migrate('incorrect'),'Your current password is not correct.');lic_ok('Preparation denial preserves all data and settings',lu_state()===$state);
+    $state=lu_state();lu_deny('Preparation requires current owner authority and retains legacy rows',fn()=>lu_owner_revoked(fn()=>license_migrate($password)),'Your account does not have access to this action.');lic_ok('Preparation denial preserves all data and settings',lu_state()===$state);
     license_migrate($password);
     lic_ok('Unmarked populated pre-master upgrade preserves all original data',lu_preserved($before));
     $old=one('SELECT * FROM '.table('website_licenses').' WHERE id=1');$bundle=one('SELECT * FROM '.table('license_bundles').' WHERE id=1');
@@ -57,7 +91,7 @@ try{
     lu_invoice(901);$fresh=license_fulfill_invoice(901);lic_ok('New invoice after cutover still creates its own license',(int)$fresh['invoice_id']===901&&(int)$fresh['id']!==1&&one('SELECT invoice_id FROM '.table('website_licenses').' WHERE id=1')['invoice_id']===null);
     $state=lu_state();lic_ok('Exact newly linked invoice retry stays idempotent',license_fulfill_invoice(901)===$fresh&&lu_state()===$state);
     $state=lu_state();lu_deny('Legacy resolution requires explicit confirmation',fn()=>license_resolve_legacy_invoice(900,1,false,'Original purchase fixture',$password),'Confirm the exact invoice decision and record its evidence (10–200 characters).');
-    lu_deny('Legacy resolution reauthenticates password',fn()=>license_resolve_legacy_invoice(900,1,true,'Original purchase fixture','incorrect'),'Your current password is not correct.');
+    lu_deny('Legacy resolution requires the same owners current permission',fn()=>lu_owner_revoked(fn()=>license_resolve_legacy_invoice(900,1,true,'Original purchase fixture',$password)),'Your account does not have access to this action.');
     lic_ok('Refused reviews preserve rows and audit',lu_state()===$state);
     $other=license_create(2,'WEBSITE-RESTAURANT');$otherId=(int)license_get($other)['id'];lu_deny('Review refuses a foreign client license',fn()=>license_resolve_legacy_invoice(900,$otherId,true,'Original purchase fixture',$password),'Choose an unlinked ordinary license for this exact client and product.');
     $master=license_create(1,'WEBSITE-RESTAURANT',1,true);$masterId=(int)license_get($master)['id'];lu_deny('Review refuses an internal master license',fn()=>license_resolve_legacy_invoice(900,$masterId,true,'Original purchase fixture',$password),'Choose an unlinked ordinary license for this exact client and product.');

@@ -7,12 +7,14 @@ from urllib.parse import parse_qs, urlparse
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from owner_browser_forms import refuse_owner_action
 
 
 def run_browser(env, browser):
     base, qa, check, provider = (env[k] for k in ['BASE', 'QA', 'check', 'provider_server'])
     soup, token, submit = (env[k] for k in ['soup', 'token', 'submit'])
-    admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings'
+    admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings&section=website'
+    inventory_url = admin + '?view=provider-settings&section=services'
     portal = base + '/existing/portal/index.php'
     db('DELETE FROM ci_rate_limits')
     # Give this workflow its own real owner budget; retain all prior intent/audit
@@ -46,13 +48,13 @@ def run_browser(env, browser):
     # stay exact after this explicitly authorized setup authentication.
     staff_url = admin + '?view=staff'; roots_email = 'roots-observation-owner@example.invalid'
     check('Document roots fixture owner starts absent', not db('SELECT id FROM ci_users WHERE email=?', [roots_email]))
-    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Document roots observation owner', 'email': roots_email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
+    submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Document roots observation owner', 'email': roots_email, 'role': 'owner', 'enabled': '1', 'permissions[]': []})
     roots_owner = db('SELECT id,password_hash FROM ci_users WHERE email=?', [roots_email])[0]
-    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', roots_owner['id'], {'owner_password': OWNER})
+    invite = chosen_form(setup, staff_url, 'staff_invite', 'id', roots_owner['id'], {})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
     activation_response = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
-    activation.close(); setup.close()
+    activation.close()
     roots_profile = db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [roots_owner['id']])
     roots_activated = db('SELECT password_hash FROM ci_users WHERE id=?', [roots_owner['id']])[0]['password_hash'] != ''
     setup_evidence('dedicated_owner_activation', activation_response,
@@ -84,22 +86,27 @@ def run_browser(env, browser):
     client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']
     prepare = 'provider_inventory_document_roots_prepare'; refresh = 'provider_inventory_document_roots_refresh'; share = 'provider_inventory_document_roots_share'
     def post(action, **fields):
-        page = owner.get(url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'current_password': OWNER, 'profile_id': profile['id'], 'revision': str(profile['revision'])}
-        for form in forms:
-            if form.select_one('input[name=action][value="' + action + '"]'):
-                link = form.select_one('input[name=link_id]')
-                if not link or link.get('value') == fields.get('link_id'):
-                    data.update({n['name']: n.get('value', '') for n in form.select('input[name]')}); break
-        data.update({'current_password': OWNER, **fields})
-        return owner.post(url, data=data)
+        action_url = inventory_url if action in ['provider_inventory_refresh', 'provider_inventory_link'] else url
+        forms = [form for form in soup(owner.get(action_url)).select('form') if form.select_one('input[name=action][value="' + action + '"]')]
+        if action == 'provider_inventory_link':
+            forms = [form for form in forms if form.select_one('[name=package_id]') and form.select_one('[name=package_id]').get('value') == fields['package_id']]
+        elif action in [refresh, share]:
+            forms = [form for form in forms if form.select_one('[name=link_id]') and form.select_one('[name=link_id]').get('value') == fields['link_id']]
+        if len(forms) != 1:
+            raise AssertionError('Expected one exact installed package action form: ' + action)
+        data = env['form_data'](forms[0]); data.update(fields)
+        return owner.post(action_url, data=data)
     def cool():
         last = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?', [profile['id']])[0]['epoch']
         time.sleep(max(0, int(last or 0) + 31 - time.time()))
     calls, posts = provider.calls, list(provider.posts)
     old_roots, old_roots_mode = provider.document_roots, provider.document_roots_mode
     check('Document roots observation GET offers explicit preparation without DDL', prepare in owner.get(url).text and not db('SHOW TABLES LIKE "ci_provider_document_roots_reads"') and provider.calls == calls)
-    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'})]:
-        post(prepare, **fields)
+    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('owner authority', {})]:
+        if label == 'owner authority':
+            refuse_owner_action(env, setup, url, prepare, {})
+        else:
+            post(prepare, **fields)
         check('Document roots observation preparation refuses invalid ' + label, not db('SHOW TABLES LIKE "ci_provider_document_roots_reads"') and provider.calls == calls)
     post(prepare)
     check('Document roots observation preparation is local and explicit', db('SHOW TABLES LIKE "ci_provider_document_roots_reads"') != [] and not db('SELECT * FROM ci_provider_document_roots_reads') and provider.calls == calls)
@@ -113,8 +120,16 @@ def run_browser(env, browser):
     check('Document roots assignment alone does not share map', '../private/<folder> é' not in soup(client.get(target)).text and 'sharing is off' in client.get(target).text)
     cool(); response = post('provider_inventory_refresh'); evidence('Hosting observation after assignment', response)
     calls = provider.calls
-    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('password', {'current_password': 'wrong'}), ('binding', {'binding_sha256': 'a' * 64})]:
-        post(refresh, link_id=link['id'], **fields)
+    def refresh_form(response, action):
+        forms = [form for form in soup(response).select('form') if form.select_one('[name=action][value="' + action + '"]') and form.select_one('[name=link_id]') and form.select_one('[name=link_id]').get('value') == link['id']]
+        if len(forms) != 1:
+            raise AssertionError('Expected one exact package observation refresh form')
+        return forms[0]
+    for label, fields in [('CSRF', {'csrf': 'invalid'}), ('owner authority', {}), ('binding', {'binding_sha256': 'a' * 64})]:
+        if label == 'owner authority':
+            refuse_owner_action({**env, 'form_for': refresh_form}, setup, url, refresh, {})
+        else:
+            post(refresh, link_id=link['id'], **fields)
         check('Document roots refresh refuses invalid ' + label + ' before request', provider.calls == calls and not db('SELECT * FROM ci_provider_document_roots_reads'))
     cool(); provider.document_roots = {'roots-observation.synthetic.invalid': '../private/<folder> é', 'empty.synthetic.invalid': ''}; response = post(refresh, link_id=link['id'])
     evidence('Complete Document roots observation', response)
@@ -167,4 +182,4 @@ def run_browser(env, browser):
     (qa / 'document-roots-history-preservation.json').write_text(json.dumps({'inherited_intents': len(inherited), 'inherited_audits': len(inherited_audits), 'intents_sha256': hashlib.sha256(json.dumps(inherited, sort_keys=True).encode()).hexdigest(), 'audits_sha256': hashlib.sha256(json.dumps(inherited_audits, sort_keys=True).encode()).hexdigest(), 'retained_intents_sha256': hashlib.sha256(json.dumps(retained, sort_keys=True).encode()).hexdigest(), 'retained_audits_sha256': hashlib.sha256(json.dumps(retained_audits, sort_keys=True).encode()).hexdigest(), 'dedicated_actor': roots_owner['id'], 'dedicated_reads': len(diagnostics[-1]['actor_reads'])}, indent=2))
     for path in ['app/providers/document_roots.php', 'app/providers/document_roots_storage.php', 'app/providers/document_roots_views.php', 'database/schema/provider_document_roots_schema.php', 'admin/controllers/provider_document_roots.php', 'admin/views/provider_document_roots.php', 'portal/controllers/document_roots.php', 'portal/views/document_roots.php', 'includes/foundation/twentyi-document-roots/DocumentRootsBinding.php', 'includes/foundation/twentyi-document-roots/DocumentRootsObservation.php', 'includes/foundation/twentyi-document-roots/DocumentRootsReader.php']:
         check('Private document roots route refuses GET and POST '+path, owner.get(base+'/existing/'+path).status_code==404 and owner.post(base+'/existing/'+path,data={}).status_code==404)
-    provider.document_roots, provider.document_roots_mode = old_roots, old_roots_mode; owner.close(); member.close(); client.close()
+    provider.document_roots, provider.document_roots_mode = old_roots, old_roots_mode; owner.close(); member.close(); client.close(); setup.close()

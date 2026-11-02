@@ -1,0 +1,11 @@
+{
+  "passed": false,
+  "scope": "Disposable actual SQL and application authority, keyed storage, real concurrent process and synthetic provider transport only. No live20i, OAuth client decrypt, provider grant edit, token or session launch.",
+  "checks": [
+    {
+      "name": "Unexpected native exception",
+      "passed": false,
+      "error": "PDOException: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'sca_payment_gateways' already exists"
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "schema": "cajunwebpro.finance-recovery-early-correctness.v1",
+  "reviewer": "/root/github_status_review/primary_finance_review",
+  "created_at": "2026-11-02T01:42:04.335083+00:00",
+  "source_snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01",
+  "snapshot_manifest": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/manifest.json",
+  "baseline": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "snapshot_created_at": "2026-11-02T01:35:07.651461+00:00",
+  "source_frozen": false,
+  "application_files": [
+    {
+      "path": "site/app/billing/finance_recovery.php",
+      "sha256": "07fc039980eda8cd190f61467f98f03b184096344700945d283b8c55eaf496fb",
+      "bytes": 27400,
+      "baseline_sha256": null,
+      "new": true,
+      "changed": true,
+      "diff_lines": 316
+    },
+    {
+      "path": "site/database/schema/license_finance_recovery_schema.php",
+      "sha256": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+      "bytes": 3254,
+      "baseline_sha256": null,
+      "new": true,
+      "changed": true,
+      "diff_lines": 57
+    },
+    {
+      "path": "site/database/migrations/license_finance_recovery_migrate.php",
+      "sha256": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+      "bytes": 4349,
+      "baseline_sha256": null,
+      "new": true,
+      "changed": true,
+      "diff_lines": 70
+    },
+    {
+      "path": "site/app/billing/finance_subscription.php",
+      "sha256": "d0a130a57b7edef2f7c5782cf19389b727bbc2912d506eba9ae77b0966b279f6",
+      "bytes": 63054,
+      "baseline_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+      "new": false,
+      "changed": true,
+      "diff_lines": 380
+    },
+    {
+      "path": "site/app/billing/finance_authorize_net.php",
+      "sha256": "27091dfeb30fbe7ef2f4c4292b388370747afeaa282583b1057ae90f37a33d17",
+      "bytes": 14548,
+      "baseline_sha256": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+      "new": false,
+      "changed": true,
+      "diff_lines": 27
+    },
+    {
+      "path": "site/app/billing/ledger.php",
+      "sha256": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+      "bytes": 11677,
+      "baseline_sha256": "d2e144b11747ad2ea51e3a6c425b75dd3133f54f58e14a210110dc1ff0f1714a",
+      "new": false,
+      "changed": true,
+      "diff_lines": 11
+    },
+    {
+      "path": "site/app/billing/finance_charge.php",
+      "sha256": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+      "bytes": 17843,
+      "baseline_sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "new": false,
+      "changed": true,
+      "diff_lines": 18
+    },
+    {
+      "path": "site/app/licenses/financing.php",
+      "sha256": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+      "bytes": 25376,
+      "baseline_sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+      "new": false,
+      "changed": true,
+      "diff_lines": 26
+    },
+    {
+      "path": "site/app/licenses/finance_installments.php",
+      "sha256": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+      "bytes": 13556,
+      "baseline_sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+      "new": false,
+      "changed": true,
+      "diff_lines": 44
+    },
+    {
+      "path": "site/database/migrations/license_finance_gateway_migrate.php",
+      "sha256": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+      "bytes": 9898,
+      "baseline_sha256": "c3661c16c4c6e25fa567c236820764409a610c08be4ac4b671e87646d85520d2",
+      "new": false,
+      "changed": true,
+      "diff_lines": 16
+    },
+    {
+      "path": "site/database/schema/license_finance_gateway_schema.php",
+      "sha256": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+      "bytes": 6385,
+      "baseline_sha256": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+      "new": false,
+      "changed": false,
+      "diff_lines": 0
+    },
+    {
+      "path": "site/admin/views/studio/licenses.php",
+      "sha256": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+      "bytes": 59734,
+      "baseline_sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a",
+      "new": false,
+      "changed": true,
+      "diff_lines": 43
+    }
+  ],
+  "context_files": [
+    {
+      "path": "site/app/plans/records.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/plans/records.php",
+      "sha256": "2d9df2440c7ef3d21cea9b6d640006fa5a6545783ef90659c24555f74d04531c",
+      "bytes": 19038,
+      "git_blob": "e98ea964c96baf8118c68374c9105c1e85dc1a37",
+      "scope": "service_plans_current_client and service_plans_client_row authority under transaction"
+    },
+    {
+      "path": "site/app/clients/identity.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/clients/identity.php",
+      "sha256": "42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9",
+      "bytes": 1713,
+      "git_blob": "9aa55c3a0270a5b16ffdfba637cc22043049015f",
+      "scope": "studio_client session/current account checks"
+    },
+    {
+      "path": "site/app/clients/accounts.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/clients/accounts.php",
+      "sha256": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+      "bytes": 4936,
+      "git_blob": "81751de3d25b3f6424f22c5c7cfef98a87e536b9",
+      "scope": "studio_client_save committed auth version and active state rotation under staff lock"
+    },
+    {
+      "path": "site/app/staff/accounts.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/staff/accounts.php",
+      "sha256": "fdb9d77f4870891676bc69826af22353d37ec9faf736fe80a2e33fadbc6dfedd",
+      "bytes": 18715,
+      "git_blob": "f8657ce7ce62125064fabd497d31da8f29668d0e",
+      "scope": "staff_locked, staff_transaction and staff_owner current identity boundaries"
+    },
+    {
+      "path": "site/portal/controllers/router.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/portal/controllers/router.php",
+      "sha256": "f67d9b8c99ecb53ecd2efd0ff96fa950f3e895e5bddea5994018cd879528f0ed",
+      "bytes": 9295,
+      "git_blob": "8fba8a8b4ccee57f74f594c0762d4694a1cd0155",
+      "scope": "client snapshot and action dispatch at lines 62\u201363"
+    },
+    {
+      "path": "site/portal/controllers/actions.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/portal/controllers/actions.php",
+      "sha256": "e0c73a3679def7af53916ecbd6a41cccdbb73b1c05bf0897e2f9e755616c7a4e",
+      "bytes": 15321,
+      "git_blob": "d55f1f04b6a788642981845519f455d7213916f4",
+      "scope": "CSRF/support and financing enrollment/replacement dispatch clauses"
+    },
+    {
+      "path": "site/app/licenses/financing_offers.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/licenses/financing_offers.php",
+      "sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "bytes": 27378,
+      "git_blob": "ac12043b957a4122bff1883a806a3d03dfbf36ef",
+      "scope": "offer_row, offer_terms, initial_paid identity/terms boundaries"
+    },
+    {
+      "path": "site/app/licenses/financing_policy.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/licenses/financing_policy.php",
+      "sha256": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4",
+      "bytes": 8014,
+      "git_blob": "7d28b93a67ecdda0ebdf11d3a2ca8dae4ce502ac",
+      "scope": "subscription_settlement_status and recovery_link_allowed policies"
+    },
+    {
+      "path": "site/app/billing/attempts.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/billing/attempts.php",
+      "sha256": "9493ebc24698c24cf14dad40f79706755f9cb02ccd140c72e6796fd690371c89",
+      "bytes": 11188,
+      "git_blob": "a22d3edd05026dc5de11c0c82874fed2dfa2e064",
+      "scope": "attempts_assert_clear only generic sandbox unresolved attempts"
+    },
+    {
+      "path": "site/app/billing/authorize_net_contract.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/billing/authorize_net_contract.php",
+      "sha256": "1f54b01aeb7df7e991c472953e90bef42e27c047a895db198b92c6c2faa01bbc",
+      "bytes": 11312,
+      "git_blob": "8b7fb20623749666879329f0381b14b34071ca25",
+      "scope": "software_anet_subscription_charge_details transaction shape validation"
+    },
+    {
+      "path": "site/app/licenses/service.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/licenses/service.php",
+      "sha256": "bba380cb430d7bb8b8a3ece2fbba47be7ce67d7d9ef48cef10dae8dbeb97da43",
+      "bytes": 14652,
+      "git_blob": "26f4d721561d9c1d04107c8b8764678132e568e9",
+      "scope": "license_transaction and license_lock transaction ownership"
+    },
+    {
+      "path": "site/app/billing/software_subscription_settle.php",
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/context/site/app/billing/software_subscription_settle.php",
+      "sha256": "072fb05aeb15189eee3f9e5d546a04c3fd172517265a056f68bbccbf12e04246",
+      "bytes": 19337,
+      "git_blob": "298a92028345a77d7123010ec19144ccc452e845",
+      "scope": "finance known subscription routing locations; no full webhook correctness clearance"
+    }
+  ],
+  "fixture_context": [
+    {
+      "path": "tests/finance_replacement_payoff_recovery_boundaries.php",
+      "sha256": "6a55ba0f2bbf8ee236c05dd7ece9f5aa6b5b781474a5df4c9b7c23ec5190bf36",
+      "bytes": 4624,
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/fixture_context/tests/finance_replacement_payoff_recovery_boundaries.php",
+      "scope": "Selected source clauses only; mutable writer fixture captured for context, no execution or final evidence approval."
+    },
+    {
+      "path": "tests/finance_replacement_payoff_recovery_cases.php",
+      "sha256": "f3ba02e1433ddd277e81fe873cdc6899baf88953c8cea4ba168fb3b02e7da84d",
+      "bytes": 13285,
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/fixture_context/tests/finance_replacement_payoff_recovery_cases.php",
+      "scope": "Selected source clauses only; mutable writer fixture captured for context, no execution or final evidence approval."
+    },
+    {
+      "path": "tests/finance_replacement_payoff_recovery_safety.php",
+      "sha256": "ea5144371c0fd15da50437910e55a88a304cdf085a7ec42fe02a22576485c9f0",
+      "bytes": 25990,
+      "snapshot": "/workspace/scratch/8cc2b4f257ab/finance-recovery-correctness-review-early01/fixture_context/tests/finance_replacement_payoff_recovery_safety.php",
+      "scope": "Selected source clauses only; mutable writer fixture captured for context, no execution or final evidence approval."
+    }
+  ],
+  "findings": [
+    {
+      "id": "FIN-RECOVERY-EARLY-01",
+      "status": "Writer confirmed; correction and final evidence pending",
+      "classification": "New correction-layer missing admission fence",
+      "locations": [
+        "finance_recovery.php:231\u2013246",
+        "finance_recovery.php:249\u2013274",
+        "finance_subscription.php:785\u2013805",
+        "finance_installments.php:163\u2013168"
+      ],
+      "finding": "A retained needs_accounting collection does not block a new installment charge or later automatic-contract admission.",
+      "trace": [
+        "Owner partial receipt creates a retirement hold; verified cancellation moves the subscription to billing_suspended.",
+        "A late full ARB transaction is retained as needs_accounting without allocating it to the invoice. The partial ledger balance remains.",
+        "The balance-changed settlement branch retires the same provider identity and returns to billing_suspended.",
+        "The scheduler can create a catch-up request. charge_prepare calls charge_guard, which accepts billing_suspended and does not query collection_reviews. invoice_clear also omits that table.",
+        "A new charge may therefore be admitted before the already verified external collection is accounted for."
+      ],
+      "required_invariant": "Every new charge and initial/replacement automatic contract must refuse an affected unresolved collection obligation under the same admission transaction. Keep real external receipts recordable and preserve the unallocated outcome; do not fabricate allocation or erase the review.",
+      "required_cases": [
+        "Late full ARB collection after partial owner receipt, successful retirement, then fresh and previously prepared payment-link admission: no new charge attempt/provider call.",
+        "Remaining-contract admission with affected needs_accounting period: no replacement reservation/create.",
+        "Existing legitimate post-retirement payment positive control with no collection review remains admitted."
+      ]
+    },
+    {
+      "id": "FIN-RECOVERY-EARLY-02",
+      "status": "Writer confirmed; correction and final evidence pending",
+      "classification": "New correction-layer current gateway permission regression",
+      "locations": [
+        "finance_authorize_net.php:14\u201336",
+        "finance_subscription.php:497\u2013509",
+        "finance_recovery.php:72\u201396",
+        "tests/finance_replacement_payoff_recovery_boundaries.php:24\u201325 (observed source)"
+      ],
+      "finding": "Supplying a captured gateway context bypasses current mode/enable/production gates in the real adapter.",
+      "trace": [
+        "Reenrollment reads current settings before predecessor retirement.",
+        "Predecessor I/O runs outside the admission lock; an owner can finish disabling or changing gateway mode before replacement dispatch.",
+        "recovery_dispatch compares the retained attempt to captured settings only.",
+        "The following create passes the captured context, and execute uses context directly instead of calling current settings.",
+        "The observed synthetic execute unconditionally called settings even with context, unlike the real adapter, so those synthetic disabled tests could not prove the real adapter gate."
+      ],
+      "required_invariant": "Recheck current gateway dispatch permission and exact account/environment binding before admitting a new create and in the real adapter context path. Account pinning must not bypass current activation policy. Preserve unsent recovery evidence on refusal.",
+      "required_cases": [
+        "Completed disable, mode change and production approval removal between predecessor retirement and dispatch: no create transport.",
+        "Actual execute body with synthetic curl/transport: supplied stale context cannot bypass disabled/mode/approval checks.",
+        "Same-account permitted credential rotation positive control and explicit context identity mismatch negatives."
+      ]
+    },
+    {
+      "id": "FIN-RECOVERY-EARLY-03",
+      "status": "Writer confirmed; correction and final evidence pending",
+      "classification": "New recovery-backed predecessor account fence missing",
+      "locations": [
+        "finance_subscription.php:341\u2013356",
+        "finance_subscription.php:497\u2013503",
+        "finance_recovery.php:59\u201369",
+        "finance_recovery.php:132\u2013139"
+      ],
+      "finding": "A second replacement can send predecessor requests under an account different from the first replacement's retained account.",
+      "trace": [
+        "First replacement is bound under account A; its closed recovery attempt retains A.",
+        "After later billing suspension, current settings change to B.",
+        "reenroll obtains B and recovery_reserve writes a new B reservation without validating the closed attempt for the old gateway subscription.",
+        "Predecessor retirement passes B to execute; the helper that enforces retained subscription settings is not used on this path."
+      ],
+      "required_invariant": "Consult an existing recovery-backed predecessor binding before any new reservation or provider request. Same-account credential rotation can remain supported. Do not infer a merchant identity for legacy subscriptions that lack one.",
+      "required_cases": [
+        "Two successive replacements with a completed different-account or environment change: deny before reservation and before transport.",
+        "Same-account revision change retains original evidence and allows legitimate recovery."
+      ],
+      "scope_limit": "Source proves request credentials can differ from retained original account. It does not establish cross-merchant ID collision or actual wrong-customer cancellation; no provider semantics or outcomes were tested."
+    },
+    {
+      "id": "FIN-AUTH-01",
+      "status": "Root authorized narrow correction; exact84 origin verified; final fix/evidence pending",
+      "classification": "Inherited exact84 replacement admission current-client authority gap",
+      "locations": [
+        "exact84 finance_subscription.php:328 replacement_reserve",
+        "exact84 finance_subscription.php:452 reenroll_opaque",
+        "exact84 portal/controllers/router.php:62\u201363",
+        "exact84 portal/controllers/actions.php:50\u201354",
+        "exact84 app/plans/records.php:38\u201343"
+      ],
+      "finding": "Replacement reservation and pre-create admission use a prior client ID without rechecking the current client session/account under the shared lock.",
+      "trace": [
+        "Portal router obtains client=studio_client(), then dispatches the action using its ID.",
+        "A completed studio_client_save between that read and financial admission changes auth_version (and may deactivate the account) under staff_locked.",
+        "replacement_reserve checks the offer's client ID and current financial contract, but neither it nor reenroll rechecks current session auth_version/age.",
+        "Initial enrollment already calls service_plans_current_client under its reservation transaction; replacement omits that boundary.",
+        "For a valid otherwise eligible signed agreement, current auth-version revocation therefore is not an admission condition for replacement provider I/O."
+      ],
+      "required_invariant": "Use existing service_plans_current_client inside replacement reservation and pre-create authority admission. Refuse revoked/deactivated/expired sessions before new provider effects; do not require continued client authority merely to retain or reconcile an external outcome that was already admitted.",
+      "required_cases": [
+        "Real shared helper with stale auth_version, deactivated client, idle timeout and maximum session age before reservation: no reservation/provider call.",
+        "Completed revocation or disable after reservation but before create dispatch: no new create; retain recoverable unsent predecessor state.",
+        "Valid current client control; already dispatched lost/late results remain durably observable despite subsequent revocation."
+      ],
+      "baseline_function_identity": [
+        {
+          "name": "license_finance_subscription_enrollment_offer",
+          "first_line": 206,
+          "sha256": "765217900b9aa4f658e107882ef2b01a2c4206fbd2f2c44dce76585b96f61406",
+          "bytes": 3716,
+          "hash_scope": "raw function declaration through immediately before next top-level function, including intervening comments"
+        },
+        {
+          "name": "license_finance_subscription_reserve",
+          "first_line": 247,
+          "sha256": "d7b25ef74ade4b0cef8f98c37d7866e8f20d47efcd4808fa7fb7b7e10dd81fb9",
+          "bytes": 1643,
+          "hash_scope": "raw function declaration through immediately before next top-level function, including intervening comments"
+        },
+        {
+          "name": "license_finance_subscription_replacement_reserve",
+          "first_line": 328,
+          "sha256": "c9ed52c826621ec12a93756cc06d042cd7714038e53ea2517b12b1a897c08cab",
+          "bytes": 1094,
+          "hash_scope": "raw function declaration through immediately before next top-level function, including intervening comments"
+        },
+        {
+          "name": "license_finance_subscription_reenroll_opaque",
+          "first_line": 452,
+          "sha256": "d46505e5e6ac0b1a03de6a5a54f98fd6b9b1b3febd38798fa56a0dd46a741cd2",
+          "bytes": 5578,
+          "hash_scope": "raw function declaration through immediately before next top-level function, including intervening comments"
+        }
+      ],
+      "scope_limit": "Read-only source finding; no native reproduction executed by reviewer. Root separately authorized the bounded writer correction. This finding is appended here and does not rewrite the original finance review."
+    }
+  ],
+  "bounded_positive_observations": [
+    "Durable replacement reservation stores a signed remaining contract, predecessor identity, agreement hash and nonsecret provider context in the same transaction as replacing status.",
+    "Dispatch state commits before ARB create; unknown outcomes stay open and block ordinary second replacement reservation. A prepared unsent attempt can be closed only after predecessor retirement/readback and locked identity recheck.",
+    "Owner receipt and exact retirement hold/audit share the ledger transaction. A failure of that hold rolls back the receipt; later retirement I/O is outside the receipt transaction.",
+    "Known replacement IDs are recorded in a separate transaction before later readback/finalization; finalization binds successor and predecessor history atomically and retains obsolete candidates for retirement.",
+    "Retained collection review has unique external transaction identity, exact amount/period/account/contract consistency checks and audit, without creating a duplicate invoice receipt.",
+    "Scheduler includes open replacement attempts after payoff and retries known successor/retirement paths; unresolved unknown successors remain visible as partial health.",
+    "Recovery migration uses a separate v1 marker beside gateway v3, explicit owner/setup gates, pending marker before DDL, strict schema/index validation and refusal of unmarked/populated or incomplete storage. It does not invent legacy replacement contracts.",
+    "Admin view exposes unresolved attempts and unallocated collections with existing action/CSRF and owner reconciliation route; this was source review only."
+  ],
+  "limitations": [
+    "Intermediate application snapshot only; writer files remain mutable and subsequent fixes have not been reviewed here.",
+    "No tests, PHP/runtime, database, services, providers, network, Actions or remote writes were performed by this reviewer.",
+    "No source/test/Git state mutation; only outside-Git snapshot/review artifacts were written.",
+    "Selected fixture clauses expose boundaries and missing cases; no assertion count or writer pass is treated as final correctness approval.",
+    "Historical finance-account provenance for legacy subscriptions remains separate OBS-03; no account binding is fabricated.",
+    "This is not whole PR317, integration, release, live-provider or browser approval."
+  ],
+  "approval": false
+}

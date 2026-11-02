@@ -1,0 +1,29 @@
+{
+  "source": "adjacent-compatibility02/01-finance_payoff_retirement_native/stderr.log",
+  "sha256": "08709cb125f67c804508b963809ec2d770d042e3c6b7c2f097d2f349741fe09c",
+  "bytes": 3782,
+  "line_count": 50,
+  "exact_expected_patterns": {
+    "CWP [id] RuntimeException code=0 in financing_offers.php:261": 32,
+    "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php:22": 3,
+    "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php:25": 3,
+    "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php(61) : eval()'d code:13": 4,
+    "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php(61) : eval()'d code:16": 3,
+    "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 3,
+    "CWP [id] RuntimeException code=0 in accounts.php:34": 1,
+    "CWP [id] RuntimeException code=0 in finance_payoff_retirement_boundaries.php(61) : eval()'d code:28": 1
+  },
+  "classification": {
+    "preparation": 32,
+    "cancel_timeout": 3,
+    "lost_cancel_reply": 3,
+    "cancel_error": 3,
+    "wrong_signed_ownership": 1,
+    "nonterminal_readback": 3,
+    "wrong_contract_readback": 3,
+    "owner_role_denial": 1,
+    "post_readback_snapshot_change": 1
+  },
+  "unexpected_lines": 0,
+  "scope": "Synthetic negative controls are expected diagnostics, not an empty stderr claim. The unchanged native292 assertions passed."
+}

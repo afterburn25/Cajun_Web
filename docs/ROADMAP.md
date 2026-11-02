@@ -1,3 +1,47 @@
+## 2026-11-01 continuation — current component composition
+
+The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.
+
+Historical source comparisons use a finite exact-component composition; actual runtime tests continue on current files. Full hosted application/update/recovery, main integration and release gates remain pending. No new version, published asset or live-operation completion is claimed.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+No feature requirement or completion percentage changes. The component has a specific MySQL fixture blocker under correction; one reviewed local MariaDB supplement passes 172/172. Required current-source matrices and integrated acceptance remain open. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+This performance component promotes no feature requirement or completion percentage. Its repeated schema checks remain fresh, and targeted local evidence passes. Remaining gates are the exact component matrices, independent binding review and integration acceptance; the original hosted timeout is not declared resolved. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — P-07 notification settings acceptance gap
+
+| Requirement | Implemented | Tested | Integrated | Released | Live |
+| --- | --- | --- | --- | --- | --- |
+| P-07 bounded notification settings correction | Two-module correction on isolated source from `3cc10c1` | Original SQL failure retained; corrected local native 89/89 and source proofs pass; corrected hosted matrix pending | Pending reviewed PR #323 update and main integration | Not released | Not deployed |
+
+The pre-fix focused matrix passed but did not cover stale request-cache pauses. Preserve its evidence and all original assertions; this correction does not complete the broader notification/monitoring roadmap. [Details and remaining gates](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+The PR #317 correction and separate Account/Notifications fixture are now published as `84e1f4c6` and `ebcbbb56`; the previous connection failure's cause remains unknown. The primary full run has started. The combined candidate's read-only source admission, preserved matrix equivalence and automated team review are complete locally.
+
+This closes a concrete CI admission gap without adding a completed product requirement or promoting integrated/released/live status. Hosted focused and full combined acceptance, normal main integration, exact-main verification and immutable release delivery remain pending. The account fixture's 54/54 local browser result stays attributed to its own source. [Current candidate and proof](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Keep PR #317's reviewed acceptance correction pending publication and complete acceptance. Local database recovery adds no completed product requirement: two resumed commands passed, while the full browser journey remains pending. The separate Account/Notifications correction passes 54/54 checks in its isolated PHP 8.3/MariaDB/Chromium run; hosted matrix, review and combination remain gates. No implemented/tested/integrated/released status is promoted from the interrupted primary run. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — acceptance of the combined owner-requested increment
+
+Continue the mature PR317 integration before starting another feature. The current work repairs acceptance for the already-implemented admin session flow, organized 20i workspaces and combined licensing/hosting/support behavior. It adds no newly completed product requirement and changes no published/live status. Full combined acceptance, required review, normal main integration, exact-main verification and immutable release/download checks remain distinct gates. [Current continuation](CONTINUATION_2026_11_01.md).
+
 ## 2026-10-26 — development-check superseding concurrency
 
 PR267 `devin/ci-concurrency-hygiene`: 32 development-check workflows regrouped from per-`github.sha` concurrency groups (which made `cancel-in-progress` a no-op and produced the ~1000-run backlog) to per-PR/per-branch groups with `main`-exempt cancellation; `mail-receiving`/`mail-transport` gained the same block. Release certification, acceptance and diagnostic workflows remain non-canceling. `tools/ci_health.py`, a weekly `ci-health` snapshot and `docs/CI_HEALTH.md` document queue diagnosis. Live evidence: two consecutive pushes each canceled 31 superseded queued runs while protected acceptance stayed queued. This scheduling correction completes no product feature and does not run or replace any acceptance gate; merge follows the normal green-check process.

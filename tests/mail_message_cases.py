@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','submit','inbox_server']})
@@ -16,7 +17,7 @@ def run_browser(env,browser):
     before=inbox_server.connections
     check('Upgrade waits for owner message preparation','must prepare message reading' in owner.get(message).text and inbox_server.connections==before)
     r=submit(owner,library,'mail_message_setup',{'csrf':'bad','current_password':OWNER});check('Message preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_messages_schema_version'"))
-    r=submit(owner,library,'mail_message_setup',{'current_password':'wrong'});check('Message preparation requires current owner password','current password' in r.text and not db("SELECT value FROM ci_settings WHERE name='mail_messages_schema_version'"))
+    refuse_owner_action(env,owner,library,'mail_message_setup',{})
     r=submit(owner,library,'mail_message_setup',{'current_password':OWNER});check('Message preparation commits without mailbox access','Message request history is ready' in r.text and inbox_server.connections==before)
     def load(session,**overrides):
         fields={'action':'mail_message_read','csrf':token(session.get(message)),**route};fields.update(overrides)

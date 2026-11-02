@@ -6,7 +6,7 @@ require_once CWP_CODE_ROOT.'/app/hosting/order_link_views.php';
 require_once CWP_CODE_ROOT.'/includes/layout/hosting_fulfillment.php';
 require_once CWP_CODE_ROOT.'/includes/layout/provider_plan_catalog.php';
 
-function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment):void {
+function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment,bool $requiresVerifiedPayment=false):void {
     $ctx=hosting_order_links_context($order->data()['id'],$order->data()['client_id'],!$owner);$p=$ctx['progress'];
     if($p){
         $label=match($p['status']){'pending'=>'Hosting record prepared','provisioning'=>'Hosting setup in progress','unknown'=>'Hosting setup outcome needs review','active'=>'Hosting service active','failed'=>'Hosting setup needs attention','suspended'=>'Hosting service suspended','cancelled'=>'Hosting service cancelled','deprovisioned'=>'Hosting service removed',default=>'Hosting service needs review'};
@@ -20,7 +20,7 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $
             if($p['status']==='pending')echo '<p>Provider package availability and configuration still require verification before setup. No provider request was sent by this preparation form.</p>';
             if(!$p['profile_current'])echo '<p class="notice warning">The saved provider connection changed. Review its original mapping before any setup.</p>';
         }
-        echo '</section>';if($owner)hosting_fulfillment_ui($order);return;
+        echo '</section>';if($owner)hosting_fulfillment_ui($order,$requiresVerifiedPayment);return;
     }
     if(!$owner||$order->state()['phase']!=='accepted')return;
     $profile=$ctx['profile'];
@@ -33,7 +33,11 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $
         service_plans_confirmation('Prepare local hosting history for this accepted order.',true);echo '<button class="btn gold">Prepare hosting history</button></form></section>';return;
     }
     if(!$assessment||!$assessment['eligible']){echo '<p>Complete the commercial review before creating this order’s hosting record.</p></section>';return;}
-    provider_plan_catalog_order_ui($order);
+    $catalogOrigin=$ctx['catalog_origin']??null;
+    provider_plan_catalog_order_ui($order,$catalogOrigin);
+    if($catalogOrigin!==null){
+        echo '<p>This order keeps the provider mapping from its original hosting offer. <a href="'.esc(admin_url('studio-job',['id'=>$catalogOrigin['job_id']])).'">View original project</a>.</p></section>';return;
+    }
     $action='service_plans_order_map_service';
     echo '<p>Record the package and location reviewed in your provider account. This prepares a local service record; provider availability, defaults and setup authorization still require verification.</p><p>Check package defaults such as Website Turbo, welcome email, application installation and SSH keys in My20i. A package type can apply these automatically.</p><form method="post">';service_orders_ui_fields($action,$order->data()['agreement']['id'],$order);
     foreach(['order_hash'=>$order->fingerprint(),'account_id'=>bin2hex(random_bytes(16)),'profile_id'=>$profile['id'],'profile_revision'=>(string)$profile['revision']] as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc(service_orders_ui_value($action,$key,$value,64)).'">';

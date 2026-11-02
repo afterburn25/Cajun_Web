@@ -1,0 +1,108 @@
+{
+  "scope": "Independent read-only inspection of downloaded focused source artifact; no test rerun, SQL/browser acceptance, main integration or release clearance.",
+  "artifact_id": 13107212594,
+  "run_id": 41365339461,
+  "commit": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+  "tree": "e93332563bc365ef15d0e6676ad644c466302d43",
+  "direct_parents": [
+    "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "ebcbbb56336249fee2073c8f02e9d6998740b64e"
+  ],
+  "passed": true,
+  "source_zip": {
+    "bytes": 15436226,
+    "sha256": "2a3abb95598270da7808fb2262fb47df77d4f970b2d8180204264771cb7fdd17",
+    "members": 18,
+    "crc_verified": true,
+    "extracted_files_byte_identical": true
+  },
+  "source_tar": {
+    "sha256": "76c5c8b25f351302f73d54e34fb0c449254925dabdd36a252690f441fa255f28",
+    "members": 7534,
+    "regular_files": 6785,
+    "directories": 749,
+    "symlinks": 0,
+    "executables": 0,
+    "uncompressed_file_bytes": 54619790,
+    "every_blob_hash_matches_git": true,
+    "exact_file_and_directory_membership": true,
+    "safe_paths": true,
+    "tracked_mode_class_and_executable_bits_match": true,
+    "git_archive_comment_matches_commit": true,
+    "file_table_sha256": "058a402478e27f806eac107d1b69382ad28e933f318d202699dc8b7ba0039212"
+  },
+  "identity_file_exact": true,
+  "uncommitted_status_bytes": 0,
+  "commit_object_hash_verified": true,
+  "root_tree_object_hash_verified": true,
+  "proof_reports": [
+    {
+      "file": "account-policy.json",
+      "passed": true,
+      "checks": 49,
+      "sha256": "266d5b5f215230323b0ddb1d59c0c1c662f09224b9e45a5c0f7842af7f9843d5"
+    },
+    {
+      "file": "account-policy-minimal.json",
+      "passed": true,
+      "checks": 49,
+      "sha256": "266d5b5f215230323b0ddb1d59c0c1c662f09224b9e45a5c0f7842af7f9843d5"
+    },
+    {
+      "file": "admin-policy.json",
+      "passed": true,
+      "checks": 35,
+      "sha256": "0f116d04c16c1e6c5d76e218d80a5018719d23fd4f4daeb2af46e5bd69f4f2da"
+    },
+    {
+      "file": "core-navigation-provenance.json",
+      "passed": true,
+      "checks": 50,
+      "sha256": "9073333eea74f2d1eae4c02c30fd05bf566ece1beb42d1cd243d093f072c19fc"
+    },
+    {
+      "file": "fixture-combination.json",
+      "passed": true,
+      "checks": 36,
+      "sha256": "7d3a679f7c64b5f40e319ac39b12da9439ee291f7d8000740d425d09b1a9455b"
+    },
+    {
+      "file": "helpers.json",
+      "passed": true,
+      "checks": 575,
+      "sha256": "675fbca4e405040f2f8317272d8ff164f2c31041e3a74441a7780481ea64d928"
+    },
+    {
+      "file": "navigation-helper.json",
+      "passed": true,
+      "checks": 54,
+      "sha256": "9259f77ccfc00eb83c916d0ae8c7a79471046f0a51ef646689fd71b592518164"
+    },
+    {
+      "file": "provider-provenance.json",
+      "passed": true,
+      "checks": 241,
+      "sha256": "5530d32905f2f6a5518ff7f444f2f4e0e83c89dc4ab15a604c0b4ddedf28fc16"
+    },
+    {
+      "file": "workflow-contract.json",
+      "passed": true,
+      "checks": 56,
+      "sha256": "5b1569a268ff3f4da340d36deeb8a661de111509baec207f430c71097d0f7f85"
+    }
+  ],
+  "proof_counts_overlap": true,
+  "workflow_report_hashes_match_archived_source": true,
+  "source_guard_logs": {
+    "ticket-contract.log": "All ticket shipping changes match their exact reviewed source; the previous combined source remains preserved.",
+    "notification-contract.log": "Exact notification integration and original shipping scope verified.",
+    "runtime-contract.log": "Every other combined shipping file retains its exact reviewed bytes.",
+    "account-notification-contract.log": "Account and notification integration preserves both exact predecessor layers.",
+    "account-contract.log": "Exact six-path account integration verified; previous ticket and proposal layers retained.",
+    "build.log": "PASS: 40 locked packages; 2188 exact dependency/license files; no drift.\nPASS: 2201 receiving runtime files match the canonical bundle byte-for-byte.\nPASS:6 pinned original PHPMailer7.1.1 source/license/metadata files match recorded hashes\nPASS:15 submission runtime files match the canonical bundle byte-for-byte\nRefreshed and checked canonical installer; no release built from uncommitted files."
+  },
+  "limitations": [
+    "Source artifact does not contain separate stderr capture files; this review does not certify that source-job stderr was empty.",
+    "Successful source proof is distinct from native/browser evidence and the complete application or release gates."
+  ]
+}

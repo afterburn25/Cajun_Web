@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "recipe_sha256": "063de1708a33301b9134a82c809c5d98e4e593eba3f2d8e150012ebe98a4b3eb",
+  "files": [
+    {
+      "path": "site/app/licenses/service.php",
+      "before": "43c7e692ee47ac28d0a1e86a3eaeafd369667c2c",
+      "after": "26f4d721561d9c1d04107c8b8764678132e568e9"
+    },
+    {
+      "path": "site/admin/views/studio/licenses.php",
+      "before": "9481274d54e1fce6dbaaf4827470eeba99288ad0",
+      "after": "ba57d6acb23fac4e18e6f2e21d428af0def390a0"
+    },
+    {
+      "path": "tests/license_financing_native_cases.php",
+      "before": "a2119c361c3dc1e5ff53552ad625eca83d14a7cd",
+      "after": "965bda125e37594665130b9f593606dd29086dad"
+    },
+    {
+      "path": "tests/license_financing_cases.py",
+      "before": "57f50aa0eec92f198d3f87653b1aa7cad753067e",
+      "after": "4b7c0f8174c9aa38af07f0ad06159179fa0d33e7"
+    },
+    {
+      "path": "site/admin/controllers/support.php",
+      "before": "ee88f4638124776461fd1e6998de1416fcee02fc",
+      "after": "6c21e136e88b7f9f86f0ea0c515d0257f6fb2315"
+    }
+  ],
+  "status": "Source corrections recorded; exact-source installed and finance acceptance required",
+  "scope": "Self-contained client-review form; deny new owner deactivation after full financing payoff; retain customer identity, domain/resale rights, unpaid controls and existing recovery"
+}

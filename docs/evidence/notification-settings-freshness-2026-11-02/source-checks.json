@@ -1,0 +1,266 @@
+{
+  "parent": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+  "scope": "Current-source proof commands on the uncommitted correction; clean immutable-commit admission is a separate pending gate.",
+  "passed": true,
+  "commands": [
+    {
+      "name": "settings-provenance",
+      "command": [
+        "python3",
+        "tests/notification_settings_freshness_provenance.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "c0bc78c04a18fbea1b2a61f1ad1174318d728d7f0bf1a8ecb0cb5acc28ae46a9",
+      "report_passed": true,
+      "check_count": 43
+    },
+    {
+      "name": "workflow-contract",
+      "command": [
+        "python3",
+        "tests/account_notification_workflow_contract.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "5b1569a268ff3f4da340d36deeb8a661de111509baec207f430c71097d0f7f85",
+      "report_passed": true,
+      "check_count": 56
+    },
+    {
+      "name": "fixture-combination",
+      "command": [
+        "python3",
+        "tests/account_notification_fixture_provenance.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "7d3a679f7c64b5f40e319ac39b12da9439ee291f7d8000740d425d09b1a9455b",
+      "report_passed": true,
+      "check_count": 36
+    },
+    {
+      "name": "core-navigation",
+      "command": [
+        "python3",
+        "tests/core_browser_fixture_contract.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "9073333eea74f2d1eae4c02c30fd05bf566ece1beb42d1cd243d093f072c19fc",
+      "report_passed": true,
+      "check_count": 50
+    },
+    {
+      "name": "provider-provenance",
+      "command": [
+        "python3",
+        "tests/provider_browser_fixture_provenance.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "5530d32905f2f6a5518ff7f444f2f4e0e83c89dc4ab15a604c0b4ddedf28fc16",
+      "report_passed": true,
+      "check_count": 241
+    },
+    {
+      "name": "navigation-helper",
+      "command": [
+        "python3",
+        "tests/owner_navigation_contract_test.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "9259f77ccfc00eb83c916d0ae8c7a79471046f0a51ef646689fd71b592518164",
+      "report_passed": true,
+      "check_count": 54
+    },
+    {
+      "name": "account-policy",
+      "command": [
+        "php8.3",
+        "tests/account_security_policy.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "266d5b5f215230323b0ddb1d59c0c1c662f09224b9e45a5c0f7842af7f9843d5",
+      "report_passed": true,
+      "check_count": 49
+    },
+    {
+      "name": "account-policy-minimal",
+      "command": [
+        "php8.3",
+        "-n",
+        "tests/account_security_policy.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "266d5b5f215230323b0ddb1d59c0c1c662f09224b9e45a5c0f7842af7f9843d5",
+      "report_passed": true,
+      "check_count": 49
+    },
+    {
+      "name": "admin-policy",
+      "command": [
+        "php8.3",
+        "tests/admin_session_no_reentry.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "0f116d04c16c1e6c5d76e218d80a5018719d23fd4f4daeb2af46e5bd69f4f2da",
+      "report_passed": true,
+      "check_count": 35
+    },
+    {
+      "name": "acceptance-helpers",
+      "command": [
+        "python3",
+        "tests/acceptance_artifacts_test.py",
+        "--report",
+        "/workspace/scratch/8cc2b4f257ab/notification-pause-local-evidence/source-checks/acceptance-helpers.json"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "fc765232d9d2e984cdcdaceb4c25fd170c99f656dcc691a73789f518a11d92a7",
+      "report_passed": true,
+      "check_count": 575
+    },
+    {
+      "name": "account-notification-contract",
+      "command": [
+        "python3",
+        "tests/account_notification_contract.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "55a445bcf65fac7541ec115a501bb8978a5451ca67ecca0a079d52f1e0b13c90"
+    },
+    {
+      "name": "account-contract",
+      "command": [
+        "python3",
+        "tests/account_integration_contract.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "ba8c70c3be82656cba4fff90faf8bb9d36df8e8f890e437c8b9edabb2aac6f57"
+    },
+    {
+      "name": "notification-contract",
+      "command": [
+        "python3",
+        "tests/notification_integration_contract.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "f8f55f84e328639d5fc357d304cf113a1727f76acc961c8b51cf060649ad4c07"
+    },
+    {
+      "name": "ticket-contract",
+      "command": [
+        "python3",
+        "tests/tickets_integration_contract.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "1bb8275853a813105af9d2807287d7561408c350c726169b41fb5323892cd1ad"
+    },
+    {
+      "name": "runtime-contract",
+      "command": [
+        "python3",
+        "tests/combined_runtime_repair.py"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "67d346ee879fbdcfda4a010fbbaefd8911f5ee0f8aea6ce6ac76f96f0ee74a35"
+    },
+    {
+      "name": "lint-feed",
+      "command": [
+        "php8.3",
+        "-l",
+        "site/app/notifications/feed.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "922ebf72610186c4abd27eee3d030d1b05b3c856d0cf07b24dac4cd70233505f"
+    },
+    {
+      "name": "lint-outbox",
+      "command": [
+        "php8.3",
+        "-l",
+        "site/app/notifications/outbox.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "ec13659433ac937046a9b6c027f757e1364bd1d3b123426074a4186bebda2ed4"
+    },
+    {
+      "name": "lint-inventory",
+      "command": [
+        "php8.3",
+        "-l",
+        "site/install/inventory.generated.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "b7352f8a1d351a78574df199904b20e01db773f1ca8527778ee215c20c88d68e"
+    },
+    {
+      "name": "lint-native",
+      "command": [
+        "php8.3",
+        "-l",
+        "tests/notification_center_native.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "a8504a4ff00030d868ead8fe307c29c18cb9853f573fef6741cb100b38319a02"
+    },
+    {
+      "name": "lint-regression",
+      "command": [
+        "php8.3",
+        "-l",
+        "tests/notification_settings_freshness_cases.php"
+      ],
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "91ee8073b2ad5bc18f0338bdb1a8d58a3d7773791e08f7fc8e5ed1cec0ba6caa"
+    }
+  ],
+  "canonical_build": {
+    "command": [
+      "python3",
+      "tools/build.py",
+      "--refresh"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 109.078,
+    "stderr_bytes": 0,
+    "stdout_sha256": "ba976e209a189bbdaaf73c8e25419f0d43d46d1b27d94aa65a0763b66b96a3af",
+    "canonical_refresh_preserved_diff": true
+  },
+  "capture_note": "Original command exit codes were observed in execution tool output. The capture wrapper failed only when reading the helper summary integer after saving its complete passing output. The separately retained helper recheck records exit 0 and empty stderr; no other finished proof was repeated.",
+  "helper_recheck": {
+    "command": [
+      "python3",
+      "tests/acceptance_artifacts_test.py",
+      "--report",
+      "/workspace/scratch/8cc2b4f257ab/notification-pause-local-evidence/source-checks/acceptance-helpers-recheck.json"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "report": {
+      "passed": true,
+      "checks": 575,
+      "error": null
+    },
+    "stdout_sha256": "fc765232d9d2e984cdcdaceb4c25fd170c99f656dcc691a73789f518a11d92a7"
+  },
+  "original_capture_failure": "capture-runner-failure.json",
+  "overlapping_counts_not_summed": true
+}

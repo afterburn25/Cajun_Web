@@ -1,0 +1,33 @@
+{
+  "base": "1a7d1e538d464e7d384573c2372294d4bda68cfe",
+  "files": [
+    {
+      "path": "tests/finance_replacement_receipts_native.php",
+      "before": "2094d912d1bb9d57397a8f76334c84288e4aa1696a0a2be5e12d398891e58b98",
+      "after": "2aac58b0831628f4c420afbd52a16f262d3b6445d8f6cfc6c7cc1bb75bbe18da",
+      "edits": [
+        [
+          "                    $denied=false;rb_staff();try{\\FinancePayoffRetirement\\license_finance_subscription_reconcile($offer['id'],$new,'incorrect owner password');}catch(Throwable){$denied=true;}finally{rb_client();}\n                    fep_ok($name.' incorrect owner password never reaches gateway',$denied&&count($fepCalls)===$start);\n                    fep_ok($name.' denied owner preserves retained candidate',fep_snapshot()===$snapshot);\n",
+          "                    // Revoke the same signed-in owner's permission, not a removed second-password prompt.\n                    rb_staff();$savedSession=$_SESSION;$savedProfile=one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1');\n                    if(!$savedProfile||$savedProfile['role']!=='owner'||!admin_session_matches(admin_user()))throw new RuntimeException('Expected current owner fixture.');\n                    $auditBefore=all('SELECT * FROM '.table('audit').' ORDER BY id');$refusal=null;\n                    query('UPDATE '.table('staff_profiles').\" SET role='administrator',permissions='[]' WHERE user_id=1\");\n                    try{\n                        $current=admin_user();\n                        fep_ok($name.' revocation preserves the same authenticated identity',$current&&(int)$current['id']===1&&$current['role']==='administrator'&&admin_session_matches($current)&&!staff_can('staff.manage',$current));\n                        try{\\FinancePayoffRetirement\\license_finance_subscription_reconcile($offer['id'],$new,$password);}catch(Throwable $caught){$refusal=$caught;}\n                        $denied=($refusal instanceof RuntimeException||$refusal instanceof InvalidArgumentException)&&!($refusal instanceof PDOException)&&$refusal->getMessage()==='Your account does not have access to this action.';\n                        fep_ok($name.' revoked owner never reaches gateway',$denied&&count($fepCalls)===$start);\n                        fep_ok($name.' denied owner preserves retained candidate and audit',fep_snapshot()===$snapshot&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore&&!db()->inTransaction());\n                    }finally{\n                        query('UPDATE '.table('staff_profiles').' SET role=?,permissions=? WHERE user_id=1',[$savedProfile['role'],$savedProfile['permissions']]);$_SESSION=$savedSession;\n                        fep_ok($name.' authority fixture restores exact owner profile and session',one('SELECT * FROM '.table('staff_profiles').' WHERE user_id=1')===$savedProfile&&$_SESSION===$savedSession);\n                        rb_client();\n                    }\n"
+        ]
+      ]
+    },
+    {
+      "path": "tests/mail_submission_upgrade_cases.py",
+      "before": "921a9ea6825761fece448a05f52274e9ef37a4593bd2f7816fc6f7daf6599782",
+      "after": "6d73eee40f1452da6eb3d67933c8d3bc7155a638c71f43d5250a034006f6e13f",
+      "edits": [
+        [
+          "    r = session.post(library, data={'csrf': token(r), 'action': 'mail_submissions_setup', 'current_password': 'Wrong synthetic password'})\n    check(label + ' submission setup refuses wrong password', 'current password' in r.text and 'Prepare email submissions' in r.text)\n    r = session.post(library, data={'csrf': token(r), 'action': 'mail_submissions_setup', 'current_password': password})\n",
+          "    from installed_owner_authority import revoked_owner\n    check(label + ' submission setup does not request the signed-in owner password again', BeautifulSoup(r.text, 'html.parser').select_one('input[type=password]') is None)\n    fields = {'csrf': token(r), 'action': 'mail_submissions_setup'}\n    with revoked_owner(env['root'], env['php']):\n        refused = session.post(library, data=fields)\n        check(label + ' submission setup refuses the same owner after permission is revoked', refused.status_code == 403 or 'Your account does not have access to this action.' in refused.text)\n    check(label + ' denied setup retains all database records private files and owner authority', records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)\n    r = session.post(library, data={'csrf': token(session.get(library)), 'action': 'mail_submissions_setup'})\n"
+        ]
+      ]
+    }
+  ],
+  "helpers": {
+    "tests/installed_owner_authority.php": "8a15e41ca8482abc0903481ab20e126ea94035e7ced2e4e2f6db2ca480053b07",
+    "tests/installed_owner_authority.py": "4d3895b45ffdcb86f6b4f7df8cb883fff9f13a22c97297e08c7f65a37357bd9d",
+    "tests/installed_owner_authority_test.py": "e7140ec913e2d3c8a4e6af7ae5d6a29990c1ecfa6d8e93edd1380117e2b9c763"
+  },
+  "scope": "Test-only current-owner refusal and exact retention. No application or merchant change; native and installed evidence remain separate."
+}

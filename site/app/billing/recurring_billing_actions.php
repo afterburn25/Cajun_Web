@@ -14,8 +14,8 @@ function recurring_ui_action(string $action,?int $client=null):void {
     if($a['action']!==$action)throw new InvalidArgumentException('Choose a valid recurring billing action.');
     recurring_billing_locked(fn()=>recurring_ui_authority($client));
     if($action==='recurring_setup'&&$staff){
-        recurring_ui_confirm($a);$password=$_POST['owner_password']??null;
-        if(!is_string($password)||strlen($password)>1000)throw new InvalidArgumentException('Enter your current owner password.');
+        recurring_ui_confirm($a);$password=$_POST['owner_password']??'';
+        if(!is_string($password)||strlen($password)>1000)throw new InvalidArgumentException('Reload the billing setup form.');
         recurring_billing_migrate($password);flash('Recurring billing is ready. Existing records were preserved.');redirect(recurring_ui_url(true));
     }
     if(!$q['job']||recurring_ui_number($a['job_id'])!==$q['job'])throw new InvalidArgumentException('The form belongs to another project.');

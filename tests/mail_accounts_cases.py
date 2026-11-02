@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit']})
@@ -15,8 +16,7 @@ def run_browser(env,browser):
     before=db('SELECT * FROM ci_studio_jobs');settings=db('SELECT * FROM ci_settings')
     r=submit(owner,library,'mail_accounts_setup',{'current_password':OWNER,'csrf':'invalid'})
     check('Email setup rejects invalid CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_accounts_schema_version'"))
-    r=submit(owner,library,'mail_accounts_setup',{'current_password':'incorrect'})
-    check('Email setup requires owner reauthentication','current password' in r.text.lower())
+    refuse_owner_action(env,owner,library,'mail_accounts_setup',{})
     r=submit(owner,library,'mail_accounts_setup',{'current_password':OWNER})
     after={s['name']:s['value'] for s in db('SELECT * FROM ci_settings')}
     check('Email setup retains existing business and mail settings','Email account storage enabled' in r.text and db('SELECT * FROM ci_studio_jobs')==before and all(after[s['name']]==s['value'] for s in settings))
@@ -68,7 +68,7 @@ def run_browser(env,browser):
         if key=='enabled':form.locator('[name=enabled]').check()
         elif key.endswith('_encryption'):form.locator('[name='+key+']').select_option(value)
         else:form.locator('[name='+key+']').fill(value)
-    form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Save email account',exact=True).click();page.wait_for_url('**account_id=*')
+    assert_no_owner_reprompt(check,form,'Save email account');form.get_by_role('button',name='Save email account',exact=True).click();page.wait_for_url('**account_id=*')
     expect(page.locator('[data-mail-account-editor] [name=label]')).to_have_value('Browser email account')
     check('Chromium saves account without exposing passwords',page.locator('[name=imap_password]').input_value()=='' and fields['imap_password'] not in page.content())
     page.screenshot(path=str(QA/'Email-Accounts-Desktop.png'),full_page=True)

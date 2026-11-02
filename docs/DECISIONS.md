@@ -1,3 +1,65 @@
+## 2026-11-02 — PR317 financing acceptance correction
+
+The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.
+
+This fixture follow-up adds one fresh rate-limit window before the first financing validation request. Two focused runs proved that repair, then exposed stale support-ready and paid-off workspace text expectations (234/235 and 259/260 passing checks respectively). The support fallback now requires the exact current owner-review message, absence of the setup form and both stored readiness settings. The two payoff text literals now follow the retained permanent-unlock requirement; domain-removal refusal, domain replacement and all other policy assertions remain intact. One finite repair row contains three exact inverses, preserving all seventy check sites, fourteen probes and eleven previous repairs. Final-source verification passed 56 filesystem cases, 12 shallow-history checks and all 2,763 maintained helpers. Following independent pre-execution review, the third focused journey passed all 65 native seed checks, 274 maintained HTTP/browser checks and fourteen original financing validation probes. Its separate exhausted-window control still returned ten HTTP 200 responses then two HTTP 429 responses, and the actual mobile capture was directly inspected. Source stayed unchanged and owned services stopped. Publication requires final independent source/runtime review, followed by full corrected hosted acceptance, final integration clearance, normal merge and exact-main verification; those hosted and merge gates are not implied by the focused result. See the current [handoff](../SESSION_HANDOFF.md) for exact scope, retained failures and next action.
+
+## 2026-11-02 — PR317 full acceptance correction
+
+The current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](../SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.
+
+Next action: complete the focused real installed verification and independent finite-source review, publish the reviewed correction to the existing PR317 branch with an expected-head nonforce update, inspect its normal complete acceptance, then recheck current main before the authorized normal merge. Main was last observed at `1c44ca120e7768998fafa720b3e1c4c85990c330`; the candidate remains unmerged. Poll Actions at no faster than approximately ten minutes and do not duplicate a pending run.
+
+## Combined-source review completed — 2026-11-01 continuation
+
+A separate automated reviewer approved the final composition/hydration verifier `160e0c686365af222a6e61cf221a461a722665d87f855edb8647aa8fe4762561`, regression source `131bb4e4b3ccd4344627dada4a3596e4cb79779924688b917556b442f906e410`, receipt and four exact adapters. Independent isolated execution passes 2,149 source checks and 32 filesystem rejection/compatibility checks; the genuine shallow-checkout result passes 12 checks plus the unchanged 2,724-check acceptance helper. Root reviewed the actual implementation and verified the union of all shipping paths. The protected application workflow retains SHA256 `9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c`.
+
+A distinct local browser run executed the unchanged 54-check account/notification fixture as an unprivileged user. Its sole local launcher adaptation changes the fixed disposable directory used instead of Docker; no test assertion or application file changes. Actual desktop/mobile account and owner 20i preparation/navigation captures were inspected. These automated reviews and local executions do not replace the complete hosted application/update gates or establish production deployment.
+
+## 2026-11-01 continuation — bounded composition and finance fixture review
+
+Preserve the four independently reviewed component application trees and their original proofs. Resolve historical source comparisons through one finite composition verifier, four reversible adapters and canonical inventory, with exact file/mode/path validation. Source projections are restricted to named historical comparison functions; current PHP/browser/package execution receives no historical application bytes. Keep protected workflow bodies and existing assertions unchanged.
+
+The finance fixture follow-up at published `2dfe7697` has the identical tree `5afec38a662307d073e2c54730af36971e177adb` as independently reviewed local `c1dafb693e492ecd1552b2716249b46094a538c2`. A separate review verified all 640 original assertion records in order, the three insertion-only source inverses, all earlier proof functions, and eleven actual filesystem/receipt mutation rejections. Root separately inspected the runtime and proof diffs and verified GitHub blob/tree/readback identity. These are separate automated reviews, not human GitHub approvals or release certification.
+
+The protected full workflow uses a shallow checkout. The initial composition guard fails closed there because historical commits are absent; correcting that Git-source prerequisite must preserve exact ancestry, working source, index, branch refs and all existing application checks. It is not permission to bypass source verification or alter workflow timeouts.
+
+## 2026-11-02 — FK fixture rule follow-up
+
+Preserve the observed original FK actions when a test duplicates or restores a relationship. Do not substitute engine-specific action spelling, weaken the identical-occurrence assertion, or reinterpret original/candidate row equality as a failing query. Retain the failed MySQL reports and require the new exact-source matrix. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Use a filtered DISTINCT relation retaining complete constraint identity to keep metadata input scoped without merging separate constraints or outer column rows. Reject redundant predicates that did not alter the observed plan. Preserve current schema/authority checks and the original hosted failure; qualify the two local instrumented observations. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — read committed notification choices at admission
+
+Correct request-cache staleness at the two affected boundaries: clear the cache immediately inside the existing dispatch mutex, and query the owner email flag inside the existing emission transaction. Preserve claim/audit/retry semantics and portal events. Do not introduce an account mutex from inside that transaction or claim cancellation of already-started transport.
+
+Keep historical source proofs immutable. Add an exact reversible layer against published `3cc10c1`, verify current source first, and project predecessor bytes only for historical comparisons. The unchanged focused workflow executes the expanded current native suite. [Decision, original failures and verification](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Retain the two actual published parents `84e1f4c6` and `ebcbbb56` in the combined candidate. Preserve original receipts, builders, complete matrix command blocks and the protected full-application sequence. Use a separate read-only current-source workflow with immutable checkout, both published ancestry checks and clean canonical-source admission; include every pinned workflow dependency in its bounded triggers.
+
+Keep PR #317 stable while its already-started full run completes. If the separate acceptance branch is absent, publish the reviewed combination there; otherwise verify its tree and continue its existing run. Do not dispatch a duplicate. GitHub writes are now verified, while the cause of earlier connection/UI errors remains unknown. Local source proofs and the account fixture's separate 54/54 browser evidence do not replace combined hosted, main or release gates. [Reviewed decision and exact evidence](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md).
+
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+Preserve interrupted physical/SQL fixtures and the failed recovery before restoring readable completed fixtures into a fresh local database on the same port. Exclude only the original failed `pciu_` fixture and partial `sca_` fixture; explicitly retain the successful `pciu_retry_` tables. Resume unchanged native commands with their original assertions. A successful GitHub blob creation establishes that bounded write only; it does not explain earlier bulk errors or establish a published branch update. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — preserve meaningful denials when repeated passwords are removed
+
+The approved administrator experience authorizes mutations through the current session. A negative test that supplies a wrong value to a removed repeated-password field no longer tests that boundary. Capture the actual valid form, withdraw the same original owner's current authority, submit with its real CSRF and bound identifiers, and prove exact database/schema/private-file/profile retention. Keep initial sign-in, actual credentials, consent, CSRF, tenant/revision/replay and provider-budget coverage. Reach each form in its actual allowlisted 20i workspace. Preserve earlier source hashes by explicit reversible fixture receipts; do not overwrite historical pins or weaken the full driver to obtain a pass. [Implementation and evidence](CONTINUATION_2026_11_01.md).
+
 ## 2026-10-19 — superseded component queue checkpoint
 
 The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).

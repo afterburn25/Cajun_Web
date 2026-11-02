@@ -1,0 +1,937 @@
+{
+  "schema": "cajunwebpro.finance-correction-guard-inventory.v1",
+  "reviewer": "/root/github_status_review/primary_finance_review",
+  "generated_at": "2026-11-02T01:33:41.513622+00:00",
+  "baseline": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "repository": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review",
+  "writer_checkout": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix",
+  "writer_source_frozen": false,
+  "review_kind": "read-only exact84 guard-chain and retained evidence identity inventory",
+  "application_sources": [
+    {
+      "path": "site/app/billing/finance_subscription.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/billing/finance_subscription.php",
+      "git_blob": "74cae87cc76aa8f6f9663f4159786832d8a02229",
+      "sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+      "bytes": 59574,
+      "retained_document_pins": [
+        {
+          "document": "docs/evidence/finance-enrollment-payoff-guard.json",
+          "field_kind": "mapping",
+          "recorded_hash": "28ecafb8c6f4d9c397f784dada845d68451e67b739ee7fbca3037a0dafb9049f",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-enrollment-receipts.json",
+          "field_kind": "mapping",
+          "recorded_hash": "e3b05ecaaec95653ae8a9b63e68e11eb1769d11b9db6e37e451d6e7b0450b8e1",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-initial-enrollment-review.json",
+          "field_kind": "mapping",
+          "recorded_hash": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-initial-sync-review.json",
+          "field_kind": "mapping",
+          "recorded_hash": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-payoff-retirement.json",
+          "field_kind": "mapping",
+          "recorded_hash": "90e15054e3e82a86cb599e7e016f643735314fcd0a653128201a974e41c11b80",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-replacement-payoff.json",
+          "field_kind": "mapping",
+          "recorded_hash": "4c640ccdfe269f3d463edcf3a35bac5c4e0dccb7089f5ba303679bc3dd1e8241",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/pr266-owner-reauth-native.json",
+          "field_kind": "mapping",
+          "recorded_hash": "c62214dd62a8d50294b50afad12db94381a823d4d3b1c3758e33e1d005409b8f",
+          "matches_exact84": false
+        }
+      ],
+      "deployed_1260_history_hash": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/app/billing/finance_authorize_net.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/billing/finance_authorize_net.php",
+      "git_blob": "9f0b210a99c2dac05b2ab709a96a32534978d9de",
+      "sha256": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+      "bytes": 14452,
+      "retained_document_pins": [
+        {
+          "document": "docs/evidence/finance-payoff-retirement.json",
+          "field_kind": "mapping",
+          "recorded_hash": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+          "matches_exact84": true
+        },
+        {
+          "document": "docs/evidence/pr266-owner-reauth-native.json",
+          "field_kind": "mapping",
+          "recorded_hash": "51f5dd411705f666dd7dd859a9822e078db61bfa6076f43806b76ac7d59620ab",
+          "matches_exact84": false
+        }
+      ],
+      "deployed_1260_history_hash": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/app/billing/ledger.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/billing/ledger.php",
+      "git_blob": "0003ac4732d12e0b7ac457bd7085ba1f1d27da6f",
+      "sha256": "d2e144b11747ad2ea51e3a6c425b75dd3133f54f58e14a210110dc1ff0f1714a",
+      "bytes": 11526,
+      "retained_document_pins": [],
+      "deployed_1260_history_hash": "d2e144b11747ad2ea51e3a6c425b75dd3133f54f58e14a210110dc1ff0f1714a",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/app/licenses/financing.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/licenses/financing.php",
+      "git_blob": "e92dc8b63bb50a0aa0b8a919ae14b83f4686a86e",
+      "sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+      "bytes": 24832,
+      "retained_document_pins": [
+        {
+          "document": "docs/evidence/finance-initial-sync-review.json",
+          "field_kind": "mapping",
+          "recorded_hash": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-payoff-retirement.json",
+          "field_kind": "mapping",
+          "recorded_hash": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+          "matches_exact84": true
+        }
+      ],
+      "deployed_1260_history_hash": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/app/licenses/finance_installments.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/licenses/finance_installments.php",
+      "git_blob": "ba385ce59a95d4e401f366117cb19fb6064bd721",
+      "sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+      "bytes": 12572,
+      "retained_document_pins": [
+        {
+          "document": "docs/evidence/finance-enrollment-receipts.json",
+          "field_kind": "mapping",
+          "recorded_hash": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+          "matches_exact84": true
+        },
+        {
+          "document": "docs/evidence/finance-payoff-retirement.json",
+          "field_kind": "mapping",
+          "recorded_hash": "95940e92727463cc7cde1d2b614c6bbb2121f1c3182220b44ff07c91c1716fb9",
+          "matches_exact84": false
+        }
+      ],
+      "deployed_1260_history_hash": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/app/billing/finance_charge.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/app/billing/finance_charge.php",
+      "git_blob": "e2e23c8541913b92a2cae17d60c69e881d6b676b",
+      "sha256": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "bytes": 17709,
+      "retained_document_pins": [
+        {
+          "document": "docs/evidence/finance-sandbox-profile-review.json",
+          "field_kind": "mapping",
+          "recorded_hash": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+          "matches_exact84": true
+        },
+        {
+          "document": "docs/evidence/pr266-owner-reauth-native.json",
+          "field_kind": "mapping",
+          "recorded_hash": "aa3a96da003cb3fb02d1b064c9e4ede4a006bc1650a53e72998d196822d14578",
+          "matches_exact84": false
+        }
+      ],
+      "deployed_1260_history_hash": "538b57715bd909d3a06910e22ed4d94eb16bb9b45926bb3e67edc71079b3c003",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/database/migrations/license_finance_gateway_migrate.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/database/migrations/license_finance_gateway_migrate.php",
+      "git_blob": "a8f006c5ecd04a6002f640cd862658f0d132143f",
+      "sha256": "c3661c16c4c6e25fa567c236820764409a610c08be4ac4b671e87646d85520d2",
+      "bytes": 9761,
+      "retained_document_pins": [],
+      "deployed_1260_history_hash": "c3661c16c4c6e25fa567c236820764409a610c08be4ac4b671e87646d85520d2",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/database/schema/license_finance_gateway_schema.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/database/schema/license_finance_gateway_schema.php",
+      "git_blob": "2cbf2646c12c2b551791da76e0b3954d45dd9a84",
+      "sha256": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+      "bytes": 6385,
+      "retained_document_pins": [],
+      "deployed_1260_history_hash": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+      "deployed_1260_byte_equal": true
+    },
+    {
+      "path": "site/admin/views/studio/licenses.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/admin/views/studio/licenses.php",
+      "git_blob": "9bd0b6bb05933e1306ccfd2004e2f988e7df6455",
+      "sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a",
+      "bytes": 56542,
+      "retained_document_pins": [
+        {
+          "document": "docs/ADMIN_RELEASE_FIXES_SOURCE.json",
+          "field_kind": "after",
+          "recorded_hash": "ba57d6acb23fac4e18e6f2e21d428af0def390a0",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/ADMIN_RELEASE_FIXES_SOURCE.json",
+          "field_kind": "before",
+          "recorded_hash": "9481274d54e1fce6dbaaf4827470eeba99288ad0",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/LICENSING_WORKSPACE_SOURCE.json",
+          "field_kind": "after",
+          "recorded_hash": "9bd0b6bb05933e1306ccfd2004e2f988e7df6455",
+          "matches_exact84": true
+        },
+        {
+          "document": "docs/LICENSING_WORKSPACE_SOURCE.json",
+          "field_kind": "before",
+          "recorded_hash": "ba57d6acb23fac4e18e6f2e21d428af0def390a0",
+          "matches_exact84": false
+        },
+        {
+          "document": "docs/evidence/finance-enrollment-receipts.json",
+          "field_kind": "mapping",
+          "recorded_hash": "c83d686397b7b7dea178ec8c0b954441826f5de2c902449c25410081f7872b18",
+          "matches_exact84": false
+        }
+      ],
+      "deployed_1260_history_hash": "c83d686397b7b7dea178ec8c0b954441826f5de2c902449c25410081f7872b18",
+      "deployed_1260_byte_equal": false
+    }
+  ],
+  "guard_chain": [
+    {
+      "path": "tests/combined_runtime_repair.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/combined_runtime_repair.py",
+      "git_blob": "3a66a5644a394bb10a5ea6551f1bf727cff81009",
+      "sha256": "8b98bb42c24cee3e1c06d2839ac75692604a1d754150cc8cb2443e3b6e7b6fbc",
+      "bytes": 1226,
+      "scope": "Outer shipping guard: proposal/ticket validation chooses prior comparison; exact two-path combined delta and current provider-view hash remain enforced."
+    },
+    {
+      "path": "tests/proposals_integration_contract.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/proposals_integration_contract.py",
+      "git_blob": "32db7290aa9546efbe581ce26127a0fdbb998e88",
+      "sha256": "e10af57a516eba1b3de99a3a9d2dcb0ba376582d972f399378ad99f4d7ed4525",
+      "bytes": 2278,
+      "scope": "Prior proposal layer: delegates to ticket validation, compares exact changed path set and before/after hashes, preserves VERSION."
+    },
+    {
+      "path": "tests/tickets_integration_contract.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/tickets_integration_contract.py",
+      "git_blob": "96d4ca5125eb8d79875edcccb45c252af84b2fc7",
+      "sha256": "318992e307c192108e6de7ceb975ed2df719d6e9358d4bdda574c6a4305552df",
+      "bytes": 1916,
+      "scope": "First relevant shipping attachment: current BASE-to-HEAD path equality and each current output hash; FIN paths are implicitly required unchanged because absent from its 42-path receipt."
+    },
+    {
+      "path": "docs/TICKETS_COMBINED_SOURCE.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/TICKETS_COMBINED_SOURCE.json",
+      "git_blob": "fd5c337798dee707f0dbdcf966035a6ca89b2131",
+      "sha256": "8b85e54a78267ad0dfc6c17162a46aefe2bae698ac008136ffd3a1cea4c78c5f",
+      "bytes": 8274,
+      "scope": "Retained 42-path ticket source receipt. Do not rewrite its scope or hashes for FIN."
+    },
+    {
+      "path": "docs/PROPOSALS_COMBINED_SOURCE.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/PROPOSALS_COMBINED_SOURCE.json",
+      "git_blob": "7236c6140292f2f2265c04f9bbd5626b6c2ac6c5",
+      "sha256": "3faec54db80648a5924c30c6ff75dfbb5b78b47a87227bab4ddbf925d25a8cfa",
+      "bytes": 3568,
+      "scope": "Retained 17-path proposal source receipt. Do not rewrite for FIN."
+    },
+    {
+      "path": "tests/provider_browser_fixture_provenance.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/provider_browser_fixture_provenance.py",
+      "git_blob": "72f259cf2ce4a719cb3d1259921678687ad796ea",
+      "sha256": "5aacf4e03e1d28039b94e56e06fd8bdcc0524ea0ef8e66d39693a77e1bf94446",
+      "bytes": 9262,
+      "scope": "Strict fixed PATHS and verifier hash; restores complete original fixture bytes; projected_validation supplies old receipt validators only."
+    },
+    {
+      "path": "docs/PROVIDER_BROWSER_FIXTURE_REPAIRS_20261101.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/PROVIDER_BROWSER_FIXTURE_REPAIRS_20261101.json",
+      "git_blob": "aacc616db00e19faf8c9b3a75849ed61ef2727df",
+      "sha256": "9ea6c2f18879510b5475ae0d2d4ddccfbc2cbca4f86874ff3b0a579657801e2e",
+      "bytes": 641973,
+      "scope": "Pins provider fixture verifier and exact before/after edits. Any verifier adapter needs a strict separately reviewed self-inverse."
+    },
+    {
+      "path": "tests/combined_repair_provenance.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/combined_repair_provenance.py",
+      "git_blob": "511ae6e51819b139ee87a32406b16bdb4e199734",
+      "sha256": "406e8c3a5ff044e80b800267184081952c9a3a7d1b60190b576c3c95a1d12306",
+      "bytes": 2046,
+      "scope": "Exact corrected-file hashes and full predecessor inverse against retained combined repair receipts."
+    },
+    {
+      "path": "tests/standalone_repair_provenance.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/standalone_repair_provenance.py",
+      "git_blob": "cdc5487fd5c27cfb9798bd370d9bde3cb0871457",
+      "sha256": "46e4f7312806be1ac23e73a9a2732c19f591c6d25e5faba56159e488ba28b7fc",
+      "bytes": 1780,
+      "scope": "Exact corrected-file hashes and full predecessor inverse against retained standalone repair receipt."
+    },
+    {
+      "path": "docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json",
+      "git_blob": "3175cc387d9011de27a5b7ab5d615ee2793bb5b0",
+      "sha256": "0fbdd876ad53cf8e34ab73f3ca4aac1ad5626ccf78e9eb93884005de250c4910",
+      "bytes": 12809,
+      "scope": "Historical combined file edits; not an invitation to bless current FIN application bytes."
+    },
+    {
+      "path": "docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json",
+      "git_blob": "b89955adfe13b5981f561e06975aed35e8efac99",
+      "sha256": "77021f3b388d715df7644d63afc3c4a989e7b15683f892dee5dc91ebe947ff1a",
+      "bytes": 19002,
+      "scope": "Historical combined remaining fixture edits; preserve."
+    },
+    {
+      "path": "docs/STANDALONE_ACCEPTANCE_REPAIRS.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/STANDALONE_ACCEPTANCE_REPAIRS.json",
+      "git_blob": "556a4d9e53bee482f47d0ef4a1f278ee211b92d4",
+      "sha256": "e2f276f2acc1021c2f725bda7818c3ac346494185d0b9e4090973c6b1f4e72d7",
+      "bytes": 448894,
+      "scope": "Historical standalone fixture edits; preserve."
+    },
+    {
+      "path": "tests/acceptance_artifacts_test.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/acceptance_artifacts_test.py",
+      "git_blob": "c0a7df1d28698392206912fc939904b7ac79e891",
+      "sha256": "683ff6d60c867cdb0d61ffd019b8e69e6cc7da08a86604fc28fa0e65b1a34e6e",
+      "bytes": 48441,
+      "scope": "Runs provider validation, projected legacy validators and original-test hashes; validates original native command sequences separately."
+    },
+    {
+      "path": "tools/acceptance-contract.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/acceptance-contract.json",
+      "git_blob": "e1a1f4fe7d9af5195cce785268249d44b790fbf6",
+      "sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
+      "bytes": 50830,
+      "scope": "Old unchanged_test_sha256 contains no finance/financing fixture entry; original native command sequence still must remain intact."
+    },
+    {
+      "path": "tools/acceptance-reports.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/acceptance-reports.json",
+      "git_blob": "528a49322d018ce150bc36a67fe17767245acc35",
+      "sha256": "876ba4189bc1e4dc3dcf09bcac847ee8ca6fc64bd0ddb4db23d128228fd21f1a",
+      "bytes": 20158,
+      "scope": "Retained report/partition contracts. Any new acceptance integration must be explicit and additive."
+    },
+    {
+      "path": "tests/license_finance_source_contract.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/license_finance_source_contract.php",
+      "git_blob": "8632df57fe3963483216eef079441fecb1a77be0",
+      "sha256": "eab797ada4a051236e950d01b884451f0f246ef100ccfff4f9c018d7912541bb",
+      "bytes": 14694,
+      "scope": "Live source behavior/shape guard: gateway v3, v1/v2 upgrade, pending markers, owner queue, finite ARB, production gates and signed finance paths."
+    },
+    {
+      "path": "tests/licensing_workspace_contract.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/licensing_workspace_contract.php",
+      "git_blob": "a5f756fc70208adedc80c01ee95848fb480664cd",
+      "sha256": "b7fe98528df3833846ccd86604f7f0ab4e32a9441d99a83f05af6b2648e4a23c",
+      "bytes": 8574,
+      "scope": "Licensing owner/portal wiring behavior guard; not a substitute for finance lifecycle review."
+    },
+    {
+      "path": "docs/LICENSING_WORKSPACE_SOURCE.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/LICENSING_WORKSPACE_SOURCE.json",
+      "git_blob": "795af3187c7b8750543c8d6e0657d3fbaeb334f0",
+      "sha256": "7e82ababcc52776498fa196ca659e2eb6a00835165d680f17fee173ad110836f",
+      "bytes": 1664,
+      "scope": "Exact84 admin license view blob matches final after entry; native financing fixture and release runner also recorded."
+    },
+    {
+      "path": "tools/integration/licensing_workspace_apply.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/integration/licensing_workspace_apply.py",
+      "git_blob": "5e717a20d8990e9d064f5376c3571d22e089e59f",
+      "sha256": "cd4dd6782aeb0a6e998f1707937806fda4e7238db0c2885e566b9196682d1278",
+      "bytes": 7924,
+      "scope": "Exact before/after Git-blob recipe for those eight files; one-shot expansion, not current correction acceptance."
+    },
+    {
+      "path": "docs/ADMIN_RELEASE_FIXES_SOURCE.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/docs/ADMIN_RELEASE_FIXES_SOURCE.json",
+      "git_blob": "85ee378e16689b6ff115797512849afcbcde5112",
+      "sha256": "8007653c21ede9e08fed43d0df4ed85c4f771784f42ef63b2980ac624a585994",
+      "bytes": 1329,
+      "scope": "Earlier license view and native-case recipe layer; current view follows the later licensing workspace layer."
+    },
+    {
+      "path": "tools/integration/admin_release_fixes.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/integration/admin_release_fixes.py",
+      "git_blob": "dcfa3405f9ecc4b16cf810ac695d4dd874a61043",
+      "sha256": "837ac9d890b27e885aa5e33878f0abd698bfef26bd0e2ffb2030e509065bbe47",
+      "bytes": 8965,
+      "scope": "Earlier paid-off owner-control/source recipe; retain independently."
+    },
+    {
+      "path": "tools/integration/admin_20i_assemble.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/integration/admin_20i_assemble.py",
+      "git_blob": "9c6c79f6f82b866d7b5054ee7ec5bb6bd52c0bf7",
+      "sha256": "0c50c9fd98f128af911d134d233cbc9032dead958ed8f2b345fda673408a5e6b",
+      "bytes": 10268,
+      "scope": "Hash-bound saved candidate and owner-session assertion migration; do not rerun or broaden to introduce FIN correction."
+    },
+    {
+      "path": "tools/integration/finance_current_session_tests.patch",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/integration/finance_current_session_tests.patch",
+      "git_blob": "d680e068c11e75a078eed660bac875de6a14ed30",
+      "sha256": "da978f9311d9b697dc3fa3c748e7d746db3da6d6625e65a9ea7301915806db4d",
+      "bytes": 3959,
+      "scope": "Existing four commit-helper denials migrated to actual owner role revocation with before/after financial state comparisons; preserve."
+    },
+    {
+      "path": "tools/legacy-release-files.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/legacy-release-files.json",
+      "git_blob": "588f787a38c2c40c0f15d9c83cd75e6af224b94a",
+      "sha256": "b41477dd3beb9452573b69cf01820f5c1e4620558f8095e6f5013be8d0efacf5",
+      "bytes": 4341382,
+      "scope": "Historical deployed/published inventories; 1.26.0 records exact84 for eight requested finance application/schema files; do not refresh history."
+    },
+    {
+      "path": "tools/directory-map.json",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/directory-map.json",
+      "git_blob": "503822db2b087d03f36c995ace3e309ef3f626cd",
+      "sha256": "a4832247ec375793b376e80bcc7b4255fa7079a7967e78efedb3695a56c537dd",
+      "bytes": 11304,
+      "scope": "Module/dependency organization, not a current application hash approval; new recovery modules may be represented explicitly if required by maintained organization."
+    },
+    {
+      "path": "tools/build.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/build.py",
+      "git_blob": "05a70eac22ab2418cf2541770ce8b9cf8df4a7ad",
+      "sha256": "62eeb12834aefe7c8769ba75d73c5f88d74922cf212d0e01ea4b566b0a540cbb",
+      "bytes": 19954,
+      "scope": "Current installer inventory generation/verification. Regenerate inventory only from frozen corrected source through the builder; do not edit old release inventories."
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/site/install/inventory.generated.php",
+      "git_blob": "bf07eaf547f7019eaf459b29016c84f7a37e5c8d",
+      "sha256": "d950fdb0cd0e5583d0792c02ff4c4f23b6dae6852bd42e1bcf1114d79ff5b35a",
+      "bytes": 455273,
+      "scope": "Current per-file installation digest list; expected derived change for new application files."
+    },
+    {
+      "path": ".github/workflows/recurring-billing-native.yml",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/.github/workflows/recurring-billing-native.yml",
+      "git_blob": "29c1f260b2a8e106536d3851084fa3a02515ac66",
+      "sha256": "9d07cf3775f742b55783e577f9d2bf2d308fc1c048bac5964680abf627af04c4",
+      "bytes": 15483,
+      "scope": "Native finance suites and existing PHP8.2/8.4 x MariaDB10.11/MySQL8.4 matrix; retain commands and report artifacts."
+    },
+    {
+      "path": ".github/workflows/license-financing-contract.yml",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/.github/workflows/license-financing-contract.yml",
+      "git_blob": "3743ab642cb30718c5053448064f6b44537b18c2",
+      "sha256": "42ffc38604b2314c897783d69077e907f1e142a481012721ad73b545f273df1f",
+      "bytes": 4166,
+      "scope": "Focused finance contract execution boundary."
+    },
+    {
+      "path": ".github/workflows/finance-webhook-isolation.yml",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/.github/workflows/finance-webhook-isolation.yml",
+      "git_blob": "7868fe58083b4bff53673f1128e4f5b684d9f99c",
+      "sha256": "25e622d7683729859a012b3acb030e8157c4d4425da2c05e9f4c859c032fd0a2",
+      "bytes": 3199,
+      "scope": "Synthetic no-network finance orchestration/webhook boundary and source reports."
+    },
+    {
+      "path": "tools/integration/portable_checks.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/integration/portable_checks.py",
+      "git_blob": "453d976ed4107c00ecfb0ba5c16dbe39cd056271",
+      "sha256": "edd7d839c4bba23b091ca4c014b64699e998f756d10f1de0f4f36413cef2ba81",
+      "bytes": 3306,
+      "scope": "Focused session/finance portable suite wrapper; not SQL or installed acceptance."
+    },
+    {
+      "path": "tools/integration/native_checks.py",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tools/integration/native_checks.py",
+      "git_blob": "d371889655c06e9b1ea5dd7e6c022a497a5cb20f",
+      "sha256": "9b5a9c8ba3c3efc8372e7c3bde6990bff99f3b0620c153ad236a3f202024ca9b",
+      "bytes": 3186,
+      "scope": "Hosting-only isolated native wrapper, not the finance suite; avoid treating its green summary as FIN coverage."
+    }
+  ],
+  "native_fixture_boundaries": [
+    {
+      "path": "tests/finance_replacement_payoff_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_replacement_payoff_native.php",
+      "git_blob": "d669653686a57326f0d03f7bd86fd00f8d797c8a",
+      "sha256": "eaae47960f586f6b9aef01d744e56e05bfe4b5ac78350d620a361e597d928464",
+      "bytes": 15756,
+      "scope": "Actual native caller/finalizer/retirement/reconcile/ledger fixture; original assertions are retained. Existing scenarios assume a known returned candidate ID."
+    },
+    {
+      "path": "tests/finance_replacement_payoff_boundaries.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_replacement_payoff_boundaries.php",
+      "git_blob": "309de852d52aadc7c55c438d235415d36a2167b4",
+      "sha256": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514",
+      "bytes": 4648,
+      "scope": "Namespaced extraction of unchanged actual function bodies; synthetic transport/mode only. Required application groups: subscription, adapter retirement, invoice sync, scheduler and ledger_receive."
+    },
+    {
+      "path": "tests/finance_replacement_receipts_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_replacement_receipts_native.php",
+      "git_blob": "398a26c48d68757264d5d3521008af2e754fa1c0",
+      "sha256": "2aac58b0831628f4c420afbd52a16f262d3b6445d8f6cfc6c7cc1bb75bbe18da",
+      "bytes": 17192,
+      "scope": "Adjacent original receipt overlap native suite; historical fixture begins after billing suspension, so it did not alone cover FIN-02 enrolled partial/later receipt admission."
+    },
+    {
+      "path": "tests/finance_replacement_pending_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_replacement_pending_native.php",
+      "git_blob": "e058bc137fb2080b850a397d4fbcd4ce78dca98e",
+      "sha256": "a50d417723e0bcb2bbc008bd5ad7a20f00295865d63dc4745c108cb478e5297e",
+      "bytes": 17642,
+      "scope": "Native remaining-period/receipt and current-terms checks; emits multiple application source hashes."
+    },
+    {
+      "path": "tests/finance_initial_receipts_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_initial_receipts_native.php",
+      "git_blob": "550fe63f4f265b01479b6649d648a0691443b906",
+      "sha256": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+      "bytes": 15937,
+      "scope": "Actual initial callers with separate PHP/native receipt processes and rollback injections; emits application source identity."
+    },
+    {
+      "path": "tests/finance_initial_receipts_boundaries.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_initial_receipts_boundaries.php",
+      "git_blob": "7e67f07d815e22370482cdb5397acd2edc9fdac9",
+      "sha256": "587c3590d6cfcb4af4d5313cb2b26a5f6bd1215d0710e0b906a3e9aeb23f7d06",
+      "bytes": 5216,
+      "scope": "Actual extracted source with synthetic transport/mode and narrowly named audit failure; no rewriting of application bodies."
+    },
+    {
+      "path": "tests/finance_payoff_retirement_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_payoff_retirement_native.php",
+      "git_blob": "2686ba1697f2d21cb095480ee4e5aae85ac92ba7",
+      "sha256": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4",
+      "bytes": 12684,
+      "scope": "Native payoff retirement source hashes for subscription, adapter, financing sync and installments."
+    },
+    {
+      "path": "tests/finance_payoff_retirement_boundaries.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_payoff_retirement_boundaries.php",
+      "git_blob": "a7be9a67651b02a33572a6ead9b8be153634cba5",
+      "sha256": "6f67a369ba62c6adca3baedec6dca2da7ec9392e6f4c127246d16bf272483452",
+      "bytes": 3876,
+      "scope": "Namespaced copied actual functions and bounded synthetic gateway modes."
+    },
+    {
+      "path": "tests/finance_payoff_retirement_guards.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_payoff_retirement_guards.php",
+      "git_blob": "d0410e6265bc0dc649fc2785d157eb7e78b0cf91",
+      "sha256": "ec4ac48775871bc4bec323b8e3ccd5f07f8b9f087edd1dc5071a221e8992ed16",
+      "bytes": 6691,
+      "scope": "Native owner/session/role, cross-customer and changed-snapshot denial cases; separate owner_exit process preserves all other reports."
+    },
+    {
+      "path": "tests/finance_payoff_retirement_settlement.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_payoff_retirement_settlement.php",
+      "git_blob": "35a7b919a7dc12f4c3d4f46fb09f834d87e18456",
+      "sha256": "1aceebbaa10726d56384f81ea0201a5039cd58cf508bf48e1f957779cc2aa8eb",
+      "bytes": 10644,
+      "scope": "Native post-payoff settlement boundary; retained source hash."
+    },
+    {
+      "path": "tests/finance_enrollment_payoff_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_enrollment_payoff_native.php",
+      "git_blob": "eb82b5d8eb3ce0a17e3c264b450e0b081f39af49",
+      "sha256": "7071014608d6c5ff9fb9d20d47ef85e6df9e486d64f16b0de2c0fe4935bc0d03",
+      "bytes": 18088,
+      "scope": "Original initial-enrollment/payoff native suite and source report."
+    },
+    {
+      "path": "tests/finance_enrollment_payoff_boundaries.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_enrollment_payoff_boundaries.php",
+      "git_blob": "69a04bfba31b8f8f2d9e70ec628cd477cdf94bdb",
+      "sha256": "3d574b75e84586c69542681a365ed18df800c6ece61d0ffb600ee7e1d6788655",
+      "bytes": 1904,
+      "scope": "Original initial-enrollment namespace boundary."
+    },
+    {
+      "path": "tests/license_financing_native_cases.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/license_financing_native_cases.php",
+      "git_blob": "916456a92dce7535554b458a76c0b4a43fd7c3a6",
+      "sha256": "66234b40d1f1e8773b13c5186a75d076d493775adcd0e44eacec6526213c655a",
+      "bytes": 34318,
+      "scope": "Current owner-role denials plus exact gateway v1→v3/v2→v3 and interrupted setup retention; all original assertions must remain meaningful."
+    },
+    {
+      "path": "tests/license_finance_webhook_native_cases.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/license_finance_webhook_native_cases.php",
+      "git_blob": "5219955538547242600ef31a0308670b79789e11",
+      "sha256": "e07d125c5a823878697180a28034de3d6dbb7e8b35b5ebb196ffaf443ef45f7e",
+      "bytes": 9534,
+      "scope": "Current gateway readiness and isolated finance webhook/reversal behavior."
+    },
+    {
+      "path": "tests/release_finance_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/release_finance_native.php",
+      "git_blob": "d8bd7a852177c6502a0f0ec76a50deef891e4858",
+      "sha256": "e5d7ff560310199dc17620217f9006909b65214ca0cbac10310be426348ae914",
+      "bytes": 3751,
+      "scope": "Runs all existing native financing cases and repeats preparation while hashing retained populated tables; report source SHA is supplied by runner."
+    },
+    {
+      "path": "tests/release_finance_fixture.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/release_finance_fixture.php",
+      "git_blob": "265d2199c4bd6d202482656f884ba0847920024d",
+      "sha256": "08bb0d250098ae3e7d511bb4a7b8dda560f18126a5604313068a503e935b1a65",
+      "bytes": 5607,
+      "scope": "Disposable-loopback finance fixture bootstrap; not a deployed configuration."
+    },
+    {
+      "path": "tests/finance_charge_attempt_bindings.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_charge_attempt_bindings.php",
+      "git_blob": "2c0317304e5e1fe827b562d35045ba58788337ba",
+      "sha256": "528f2f27e41cfbee6563c1c245e6aa1e3728fa5ea98935e692130a738b9bc2ff",
+      "bytes": 6803,
+      "scope": "Extracts actual charge_run and charge_reconcile; synthetic state/provider dependencies, no native settlement claim."
+    },
+    {
+      "path": "tests/finance_charge_response_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_charge_response_native.php",
+      "git_blob": "7d5fb6b0637ea32acbb7398d72f495b000a5c973",
+      "sha256": "fc033f1970ada2277fb2cf7e36b12dd6982ee137ace2d9816a269df59f779374",
+      "bytes": 16081,
+      "scope": "Extracts actual mark/record_paid/run; real canonical charge/attempt storage and competing writes, synthetic owner/ledger sentinel/provider boundaries."
+    },
+    {
+      "path": "tests/finance_capture_snapshot_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_capture_snapshot_native.php",
+      "git_blob": "993d16ab21c49f0a974e3d8a9a5993d11304c5ad",
+      "sha256": "299334636d5ffcc9402a6d54f2c166e3cd197aacd1b069bb8592411e0ee60c28",
+      "bytes": 11522,
+      "scope": "Extracts actual charge_webhook_review; native canonical charge/attempt tables, contract and function/schema digests."
+    },
+    {
+      "path": "tests/license_finance_reconcile_native.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/license_finance_reconcile_native.php",
+      "git_blob": "0e0bff7110f87aff968ff7a73d754b7340c89785",
+      "sha256": "51448f66376845283988503cc9dde8f5f8aad79d3da82131ca1f1ec10b286df7",
+      "bytes": 12829,
+      "scope": "Extracts actual subscription row/reconcile, staff/audit functions; native canonical schema and competing commits, synthetic parent/owner/gateway boundaries."
+    },
+    {
+      "path": "tests/finance_replacement_outcomes.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_replacement_outcomes.php",
+      "git_blob": "c2f2518ebed2ffcff2ad71dfbc3a4aef9feef091",
+      "sha256": "a01812e1c886868b49a0ade2439d874de5df9b6fa924e50206844c4f7b7c1b19",
+      "bytes": 7838,
+      "scope": "Exact orchestration bodies with synthetic state/transport only; emits function hashes, no native SQL claim."
+    },
+    {
+      "path": "tests/finance_reconcile_snapshot.php",
+      "absolute_path": "/workspace/scratch/8cc2b4f257ab/Cajun_Web_primary_review/tests/finance_reconcile_snapshot.php",
+      "git_blob": "3a00f634b7b25dd7576f7a29c610b398835f7a5c",
+      "sha256": "33440173ad595bd029408e9ea8b56131dc31e0b0e25e314c2515d57a5534c4ed",
+      "bytes": 7005,
+      "scope": "Exact owner orchestration with synthetic dependencies and deterministic concurrent-state injection; no native SQL claim."
+    }
+  ],
+  "retained_runtime_witnesses": [
+    {
+      "phase": "original01",
+      "execution_file": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/execution.json",
+      "execution_sha256": "36d129f00bfe9d9f5457fafad00f54ccd1f239a6bd78fab100fc886ee543500c",
+      "native_file": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/native.json",
+      "native_sha256": "b4735b104f915e1427e572e2dc1950e8e547731610588e55167f9f9737cb2d17",
+      "count": 217,
+      "failed": 20,
+      "first_138_all_pass": true,
+      "php": "8.3.6",
+      "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+      "source_copies": [
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/app/billing/finance_subscription.php",
+          "sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+          "bytes": 59574,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "site/app/billing/finance_authorize_net.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/app/billing/finance_authorize_net.php",
+          "sha256": "75cd7b5d120084da911ab9810e095e10e1737bdaa99aece87dbba695fe11d00f",
+          "bytes": 14452,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "site/app/billing/ledger.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/app/billing/ledger.php",
+          "sha256": "d2e144b11747ad2ea51e3a6c425b75dd3133f54f58e14a210110dc1ff0f1714a",
+          "bytes": 11526,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "site/app/licenses/financing.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/app/licenses/financing.php",
+          "sha256": "c384d0303f59fe6c8351af0bc4f72d69f4b5b3065e1e3cc85103bb33e3ce95bb",
+          "bytes": 24832,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "site/app/licenses/finance_installments.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/app/licenses/finance_installments.php",
+          "sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+          "bytes": 12572,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "site/database/schema/license_finance_gateway_schema.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/database/schema/license_finance_gateway_schema.php",
+          "sha256": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+          "bytes": 6385,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "site/database/migrations/license_finance_gateway_migrate.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/site/database/migrations/license_finance_gateway_migrate.php",
+          "sha256": "c3661c16c4c6e25fa567c236820764409a610c08be4ac4b671e87646d85520d2",
+          "bytes": 9761,
+          "matches_execution_manifest": true,
+          "matches_exact84": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_native.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/tests/finance_replacement_payoff_native.php",
+          "sha256": "4cd3da88809fdcf8605ac232d236ceff6c329cc51f14eac101f520f6373a3c36",
+          "bytes": 15848,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_boundaries.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/tests/finance_replacement_payoff_boundaries.php",
+          "sha256": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514",
+          "bytes": 4648,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_cases.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/tests/finance_replacement_payoff_recovery_cases.php",
+          "sha256": "523bbc50001a4a73afc3a8eb95442655a622c5218f305607c4d89115bfb59691",
+          "bytes": 12948,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_boundaries.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/original01/source/tests/finance_replacement_payoff_recovery_boundaries.php",
+          "sha256": "cf23be5397b62b3f9a6a21e4c96a6cc1109297d407004e520c9875440839ee3b",
+          "bytes": 4199,
+          "matches_execution_manifest": true
+        }
+      ],
+      "review_scope": "Read existing report/manifest and hash each retained source copy only. Did not execute fixture or approve mutable application source."
+    },
+    {
+      "phase": "combined-first",
+      "execution_file": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/execution.json",
+      "execution_sha256": "195a52fd7bfc4fbc7b91c4b9bc669dcfc3a85e2f58b779d04dfa0ad8e1fe09ec",
+      "native_file": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/native.json",
+      "native_sha256": "936b1f17bcf15657930fe5a0f1a68b94f2e2f69d4d88559c842346516026b35b",
+      "count": 217,
+      "failed": 0,
+      "first_138_all_pass": true,
+      "php": "8.3.6",
+      "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+      "source_copies": [
+        {
+          "path": "site/app/billing/finance_recovery.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/app/billing/finance_recovery.php",
+          "sha256": "f92725cca9da667411e61a09b26799056163874da4b6b77ffac9b28787782f6d",
+          "bytes": 18083,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/database/schema/license_finance_recovery_schema.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/database/schema/license_finance_recovery_schema.php",
+          "sha256": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+          "bytes": 3254,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/database/migrations/license_finance_recovery_migrate.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/database/migrations/license_finance_recovery_migrate.php",
+          "sha256": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+          "bytes": 4349,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/app/billing/finance_subscription.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/app/billing/finance_subscription.php",
+          "sha256": "e0db8cb1a0aad5d9c49d5839d3ceb6f83d7bde7458244585fa5bf9d7c8353ab6",
+          "bytes": 60543,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/app/billing/finance_authorize_net.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/app/billing/finance_authorize_net.php",
+          "sha256": "27091dfeb30fbe7ef2f4c4292b388370747afeaa282583b1057ae90f37a33d17",
+          "bytes": 14548,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/app/billing/ledger.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/app/billing/ledger.php",
+          "sha256": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+          "bytes": 11677,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/app/licenses/financing.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/app/licenses/financing.php",
+          "sha256": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+          "bytes": 25376,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/app/licenses/finance_installments.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/app/licenses/finance_installments.php",
+          "sha256": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+          "bytes": 12572,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/database/schema/license_finance_gateway_schema.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/database/schema/license_finance_gateway_schema.php",
+          "sha256": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+          "bytes": 6385,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "site/database/migrations/license_finance_gateway_migrate.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/site/database/migrations/license_finance_gateway_migrate.php",
+          "sha256": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+          "bytes": 9898,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_native.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/tests/finance_replacement_payoff_native.php",
+          "sha256": "93767eabba32c992028032aada0412bd732c2503735e6be57ea8fd994e547852",
+          "bytes": 15929,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_boundaries.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/tests/finance_replacement_payoff_boundaries.php",
+          "sha256": "0f220d09f928d36f0bda265e9b14a40ff3d5d7015aea533fc165b04c9f1e96cc",
+          "bytes": 5193,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_cases.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/tests/finance_replacement_payoff_recovery_cases.php",
+          "sha256": "523bbc50001a4a73afc3a8eb95442655a622c5218f305607c4d89115bfb59691",
+          "bytes": 12948,
+          "matches_execution_manifest": true
+        },
+        {
+          "path": "tests/finance_replacement_payoff_recovery_boundaries.php",
+          "retained_copy": "/workspace/scratch/8cc2b4f257ab/finance-recovery-local-evidence/combined-first/source/tests/finance_replacement_payoff_recovery_boundaries.php",
+          "sha256": "a94763b1474455a43c86bd457eb924efe8d224995a924bdcf825ea58142dc6d0",
+          "bytes": 4247,
+          "matches_execution_manifest": true
+        }
+      ],
+      "review_scope": "Read existing report/manifest and hash each retained source copy only. Did not execute fixture or approve mutable application source."
+    }
+  ],
+  "exact_217_check_names_and_order_retained": true,
+  "recommended_attachments": [
+    {
+      "id": "A1",
+      "location": "New dedicated FIN proof and receipt, proposed tests/finance_recovery_provenance.py + docs/FINANCE_RECOVERY_SOURCE.json",
+      "requirement": "Anchor exact84 commit and tree; fixed explicit changed shipping and fixture/new-file scope; exact before/after SHA256 and byte counts; pinned verifier; exact reversible edits and new-file absence; reject missing, extra, overlapping, unchanged and unreviewed edits. These names are proposed, not existing reviewed files."
+    },
+    {
+      "id": "A2",
+      "location": "tests/tickets_integration_contract.py validate(root), before BASE→HEAD comparison/current file reads",
+      "requirement": "After validating the whole current FIN layer, supply source_revision=exact84 and predecessor_bytes only for historical comparison. Keep the original ticket/proposal/combined receipt sets, hashes, BASE IDs and VERSION policy intact. Verify current corrected source first; merely returning84 would bypass the required check."
+    },
+    {
+      "id": "A3",
+      "location": "tests/provider_browser_fixture_provenance.py receipt/validate/projected_validation historical boundaries, only if actual overlapping pinned files change",
+      "requirement": "An adapted verifier must self-invert through a separately pinned correction before its old verifier hash is checked. In projected_validation, inverse current correction bytes before old provider/combined/standalone inverses. Never supply predecessor fixtures to actual PHP/runtime tests. Existing FIN payoff helpers are not in provider PATHS or the old three repair receipts, so do not enlarge those sets preemptively."
+    },
+    {
+      "id": "A4",
+      "location": "tests/finance_replacement_payoff_native.php and dedicated new recovery cases/boundaries",
+      "requirement": "Keep original assertion statements and order; attach new cases through explicit require/call hooks and record inverses. Extract real changed functions and new dependencies without editing their bodies; record all function/module/schema hashes and exact synthetic boundaries. Retain original01 failure report and source copies unchanged."
+    },
+    {
+      "id": "A5",
+      "location": "tests/license_financing_native_cases.php; tests/license_finance_source_contract.php; new recovery migration/safety suite",
+      "requirement": "Preserve gateway version3 and original v1/v2→v3/readiness/interrupted-setup assertions. Add recovery version1 and its own marker/owner checks; add tests for empty/resumable setup, unmarked/damaged/populated history, retention and ambiguous legacy rows. Do not fabricate pre-create contracts for old ambiguous subscriptions."
+    },
+    {
+      "id": "A6",
+      "location": "site/install/inventory.generated.php and final source/evidence manifest",
+      "requirement": "After source freeze, regenerate current inventory using retained builder and prove it exactly matches current files. Preserve tools/legacy-release-files.json and old deployed1.26.0 hashes. Runtime evidence must bind the frozen commit/tree, full delta and helper/schema/source files; combined-first is an intermediate witness only."
+    },
+    {
+      "id": "A7",
+      "location": "Future combined software+finance candidate",
+      "requirement": "Keep each standalone correction anchored independently to84. Shared ticket/provider hooks and installer inventory need an explicit reviewed outer composition with exact constituent identities and conflict resolution. Neither proof may accept the other by widening a path allowlist or guessing a compatible hash."
+    }
+  ],
+  "software_coordination": {
+    "owner": "/root/github_status_review",
+    "reported_api": [
+      "source_revision",
+      "predecessor_bytes"
+    ],
+    "reported_proof": "software_authority_provenance.py",
+    "common_base": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "combination_requires_separate_review": true
+  },
+  "limitations": [
+    "This is source/provenance guard-chain inventory, not FIN-01/FIN-02 implementation approval; writer application bytes remain mutable.",
+    "No tests, PHP programs, database, service, provider, payment, mail, browser, network, remote write or Actions polling executed.",
+    "JSON receipt hashes establish source identity or historical observations only. No historical pass is promoted to complete independent current review.",
+    "The report scan identifies explicit path-to-hash and path-record entries under docs, plus the original finance review map; it is bounded and does not decode every archived artifact or claim exhaustive remote evidence discovery.",
+    "Current combined-first evidence does not cover later safety/migration/source edits automatically; a fresh frozen-source manifest and required regression evidence are still needed.",
+    "Software-layer hook names and design are coordination from parent, not independently reviewed final software proof bytes."
+  ],
+  "approval": false,
+  "source_or_test_changes": false,
+  "executed_tests": []
+}

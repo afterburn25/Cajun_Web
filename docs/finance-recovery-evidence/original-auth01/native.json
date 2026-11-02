@@ -1,0 +1,526 @@
+{
+    "passed": false,
+    "count": 22,
+    "failed": 9,
+    "checks": [
+        {
+            "name": "FIN-AUTH-01 healthy retains a legitimately admitted external outcome",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 healthy releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 stale_version refuses before any provider request",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 stale_version preserves financial reservation and license records",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 stale_version releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 deactivated refuses before any provider request",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 deactivated preserves financial reservation and license records",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 deactivated releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 idle_expired refuses before any provider request",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 idle_expired preserves financial reservation and license records",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 idle_expired releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 login_expired refuses before any provider request",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 login_expired preserves financial reservation and license records",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 login_expired releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 foreign_session refuses before any provider request",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 foreign_session preserves financial reservation and license records",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 foreign_session releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 revocation before create stops the successor request",
+            "passed": false
+        },
+        {
+            "name": "FIN-AUTH-01 revocation retains already completed predecessor retirement",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 before_dispatch_revoked releases native financial lock and transaction",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 after_dispatch_revoked retains a legitimately admitted external outcome",
+            "passed": true
+        },
+        {
+            "name": "FIN-AUTH-01 after_dispatch_revoked releases native financial lock and transaction",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "family": "FIN-AUTH-01",
+            "case": "healthy",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000002",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 1,
+                "offer_id": "5d0c03054225cca259d012b6de0d072f",
+                "gateway_subscription_id": "87000002",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:50",
+                "updated_at": "2026-11-02 01:45:50"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "stale_version",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": {
+                "pid": 99854,
+                "connection": 61,
+                "committed": true
+            },
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000004",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 2,
+                "offer_id": "09479465a3f59a5125b3ef4f77ce6d30",
+                "gateway_subscription_id": "87000004",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:51",
+                "updated_at": "2026-11-02 01:45:51"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "deactivated",
+            "result": null,
+            "error": "RuntimeException: Finance initial invoice no longer matches the signed agreement.",
+            "writer": {
+                "pid": 99855,
+                "connection": 62,
+                "committed": true
+            },
+            "calls": [],
+            "retained_subscription": {
+                "id": 3,
+                "offer_id": "3d55615d63ec6692defde884fcb1d992",
+                "gateway_subscription_id": "87000005",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "billing_suspended",
+                "created_at": "2026-11-02 01:45:51",
+                "updated_at": "2026-11-02 01:45:52"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "idle_expired",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000007",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 4,
+                "offer_id": "8f5749e1b51d8c23dd3b35ab69655fce",
+                "gateway_subscription_id": "87000007",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:52",
+                "updated_at": "2026-11-02 01:45:52"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "login_expired",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000009",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 5,
+                "offer_id": "d32043d461115c2b1afd4b45ffd63286",
+                "gateway_subscription_id": "87000009",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:53",
+                "updated_at": "2026-11-02 01:45:53"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "foreign_session",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": null,
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000011",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 6,
+                "offer_id": "61410718e1fe9dbb21a3370966f52098",
+                "gateway_subscription_id": "87000011",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:53",
+                "updated_at": "2026-11-02 01:45:54"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "before_dispatch_revoked",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": {
+                "pid": 99857,
+                "connection": 63,
+                "committed": true
+            },
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000013",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 7,
+                "offer_id": "c982bf97c4fd8da2f7ccbb6ea52ef708",
+                "gateway_subscription_id": "87000013",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:54",
+                "updated_at": "2026-11-02 01:45:54"
+            }
+        },
+        {
+            "family": "FIN-AUTH-01",
+            "case": "after_dispatch_revoked",
+            "result": "pending_first_payment",
+            "error": null,
+            "writer": {
+                "pid": 99858,
+                "connection": 64,
+                "committed": true
+            },
+            "calls": [
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "87000014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "87000015",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "retained_subscription": {
+                "id": 8,
+                "offer_id": "c99de3fe4da9cc258ef38226f9afd1e3",
+                "gateway_subscription_id": "87000015",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 01:45:55",
+                "updated_at": "2026-11-02 01:45:55"
+            }
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "source_sha256": "eae98b777fb8da6325c9ba92a5ca54c7bbe0eac01a575f01094eb5c3c05c19a9",
+    "scope": "Actual replacement callers, native signed agreements\/current client records, shared native mutex\/transactions, separate owner-authorized SQL revocation processes. Only ARB transport\/mode and future signed invoice timing are synthetic. No real gateway or HTTP."
+}

@@ -1,0 +1,3053 @@
+{
+    "passed": true,
+    "count": 358,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "opaque-partial-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal preserves paid charge and attempt identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_readback-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_readback-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal preserves paid charge and attempt identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-prepared_gateway-during_readback-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-readback_timeout recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-wrong_readback recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_error recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-cancel_timeout recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_cancel_reply recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-still_active recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-audit_failure recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-missing_create_id recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-missing_create_id recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-lost_create_reply recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-lost_create_reply recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-none-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal preserves paid charge and attempt identity",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_readback-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-one_paid-during_readback-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal preserves paid charge and attempt identity",
+            "passed": true
+        },
+        {
+            "name": "profile-prepared_gateway-during_readback-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-readback_timeout recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-wrong_readback recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_error recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-cancel_timeout recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_cancel_reply recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-still_active recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-audit_failure recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-missing_create_id recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-missing_create_id recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-partial-during_create-lost_create_reply recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply owner recovers the existing candidate safely",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply recovery preserves financial and license records",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-lost_create_reply recovery never creates an additional ARB",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-none-during_create-normal retry cannot create another subscription",
+            "passed": true
+        }
+    ],
+    "writers": [
+        {
+            "case": "opaque-partial-during_create-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 118,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 2
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-one_paid-during_create-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 119,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 4
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-prepared_gateway-during_create-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 120,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 6
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_readback-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 121,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 8
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-one_paid-during_readback-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 122,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 10
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-prepared_gateway-during_readback-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 123,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 12
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-readback_timeout",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 124,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 14
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-wrong_readback",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 125,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 16
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-cancel_error",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 126,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 18
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-cancel_timeout",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 127,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 20
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-lost_cancel_reply",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 128,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 22
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-still_active",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 129,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 24
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-audit_failure",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 130,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 26
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-missing_create_id",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 131,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 28
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-none-during_create-missing_create_id",
+            "parent_connection": 117,
+            "writer": null,
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "opaque-partial-during_create-lost_create_reply",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 132,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 31
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-none-during_create-lost_create_reply",
+            "parent_connection": 117,
+            "writer": null,
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "opaque-none-during_create-normal",
+            "parent_connection": 117,
+            "writer": null,
+            "result": "pending_first_payment",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 133,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 35
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-one_paid-during_create-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 134,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 37
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-prepared_gateway-during_create-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 135,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 39
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_readback-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 136,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 41
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-one_paid-during_readback-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 137,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 43
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-prepared_gateway-during_readback-normal",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 138,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 45
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-readback_timeout",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 139,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 47
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-wrong_readback",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 140,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 49
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-cancel_error",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 141,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 51
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-cancel_timeout",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 142,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 53
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860028",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-lost_cancel_reply",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 143,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 55
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860029",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-still_active",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 144,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 57
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860030",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-audit_failure",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 145,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 59
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860031",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-missing_create_id",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 146,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 61
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860032",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-none-during_create-missing_create_id",
+            "parent_connection": 117,
+            "writer": null,
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860033",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "profile-partial-during_create-lost_create_reply",
+            "parent_connection": 117,
+            "writer": {
+                "connection": 147,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 64
+                },
+                "committed": true
+            },
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860034",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "profile-none-during_create-lost_create_reply",
+            "parent_connection": 117,
+            "writer": null,
+            "result": "review",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860035",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        },
+        {
+            "case": "profile-none-during_create-normal",
+            "parent_connection": 117,
+            "writer": null,
+            "result": "pending_first_payment",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860036",
+                    "transaction": false,
+                    "retained": false
+                }
+            ]
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "source_sha256": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "scope": "Actual initial callers, separate PHP processes\/native connections, real owner ledger_receive and prepared charge_record_paid commits, native transaction rollback under injected audit failure. Synthetic provider transport\/mode, signed future invoice and request-token metadata."
+}

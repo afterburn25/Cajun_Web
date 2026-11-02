@@ -1,0 +1,6 @@
+RuntimeException: Authorize.Net checkout is disabled. in /workspace/scratch/3c40afcc1eee/cajun-finance/site/app/billing/finance_authorize_net.php:17
+Stack trace:
+#0 /workspace/scratch/3c40afcc1eee/cajun-finance/site/app/billing/finance_subscription.php(345): license_finance_anet_settings()
+#1 /workspace/scratch/3c40afcc1eee/cajun-finance/tests/license_financing_native_cases.php(401): license_finance_subscription_replacement_reserve()
+#2 /workspace/scratch/3c40afcc1eee/cajun-finance/tests/recurring_billing_native.php(107): require('...')
+#3 {main}

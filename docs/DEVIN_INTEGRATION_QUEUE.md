@@ -1,3 +1,118 @@
+## 2026-11-02 — PR317 financing acceptance correction
+
+The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.
+
+This fixture follow-up adds one fresh rate-limit window before the first financing validation request. Two focused runs proved that repair, then exposed stale support-ready and paid-off workspace text expectations (234/235 and 259/260 passing checks respectively). The support fallback now requires the exact current owner-review message, absence of the setup form and both stored readiness settings. The two payoff text literals now follow the retained permanent-unlock requirement; domain-removal refusal, domain replacement and all other policy assertions remain intact. One finite repair row contains three exact inverses, preserving all seventy check sites, fourteen probes and eleven previous repairs. Final-source verification passed 56 filesystem cases, 12 shallow-history checks and all 2,763 maintained helpers. Following independent pre-execution review, the third focused journey passed all 65 native seed checks, 274 maintained HTTP/browser checks and fourteen original financing validation probes. Its separate exhausted-window control still returned ten HTTP 200 responses then two HTTP 429 responses, and the actual mobile capture was directly inspected. Source stayed unchanged and owned services stopped. Publication requires final independent source/runtime review, followed by full corrected hosted acceptance, final integration clearance, normal merge and exact-main verification; those hosted and merge gates are not implied by the focused result. See the current [handoff](../SESSION_HANDOFF.md) for exact scope, retained failures and next action.
+
+## 2026-11-02 — PR317 full acceptance correction
+
+The current PR317 acceptance is blocked by a dedicated-owner recovery fixture mismatch and an omitted required software-authority report. This correction selects the original request owner for Force SSL and directory-listing recovery refusal tests and adds the existing authority report to both strict acceptance inventories. Application source, protected workflows, original assertions and historical release assets are unchanged. See the current [handoff](../SESSION_HANDOFF.md) for exact failed-source identity, evidence and remaining gates.
+
+Next action: complete the focused real installed verification and independent finite-source review, publish the reviewed correction to the existing PR317 branch with an expected-head nonforce update, inspect its normal complete acceptance, then recheck current main before the authorized normal merge. Main was last observed at `1c44ca120e7768998fafa720b3e1c4c85990c330`; the candidate remains unmerged. Poll Actions at no faster than approximately ten minutes and do not duplicate a pending run.
+
+## 2026-11-01 continuation — composed candidate and remaining gates
+
+| Source | Current disposition | Remaining action |
+| --- | --- | --- |
+| #317 `84e1f4c6` | Preserved integration base; original full browser failure remains recorded | Replace only with the reviewed combined successor, then complete protected full acceptance. |
+| #323 `fb8b5627` | Focused hosted checks passed; application preserved in local composition | Current combined source/browser acceptance. |
+| #324 `8e93c2a7` | Focused hosted native checks passed; application preserved in local composition | Current combined acceptance. |
+| #325 `4668c7d9` | Eight current native artifacts independently verified; all four MySQL/MariaDB lanes passed | Current combined full browser run must establish whether earlier timeout is resolved. |
+| #326 `2dfe7697` | Independently reviewed recurring fixture correction published; local 648 checks passed | Normally triggered current PHP/database matrices, then combined acceptance. |
+| Combined current application | 47 non-inventory shipping changes exactly match the component union; local maintained drivers pass | Finish shallow-checkout proof compatibility and independent review, publish stable candidate, preserve all protected gates. |
+
+No candidate is main/released merely because its component or local checks pass. [Current status and exact local counts](../PROJECT_STATUS.md).
+
+## 2026-11-02 — FK fixture rule follow-up
+
+NEEDS CORRECTION OR ACCEPTANCE: PR #325 c2f has a confirmed new MySQL fixture failure. Its reviewed action-preserving follow-up passes one local 172/172 supplement; publish that exact source, obtain the unchanged required matrices, and admit it to the outer composition. No ready-to-merge or delivered status is inferred. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+NEEDS CORRECTION OR ACCEPTANCE: the isolated primary84 FK metadata component is implemented and locally checked; final forwarded-port fixture handling is source reviewed. Await the unchanged component matrices and finite source/evidence review, then compose the exact published head. It is not reported merged, released or fully accepted. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
+## 2026-11-02 — PR #323 needs the reviewed settings correction
+
+| Candidate | State | Next action |
+| --- | --- | --- |
+| Draft PR #323 at `3cc10c1` | Four focused lanes passed; independently confirmed stale settings defect blocks acceptance of that behavior | Preserve the passing pre-fix checkpoint and original failures. |
+| `review/notification-pause-guard-20261102` | Two-module correction; 89/89 local native checks and retained source proofs pass; final frozen-tree review pending | Review, commit and run clean admission, then update the existing PR #323 source branch once through its normal event. |
+| PR #317 and main | Unchanged by this correction task | Preserve their separate acceptance and integration gates. |
+
+[Exact correction and evidence](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md). Neither local source proof nor the older passing matrix is corrected-source hosted/full acceptance or a main/release result.
+
+## 2026-11-02 continuation — published sources and combined acceptance
+
+Successful GitHub writes supersede the earlier publication blocker; the cause of the earlier connection/UI failure remains unknown. Preserve the old records below as historical evidence.
+
+| Candidate | Current state | Next action |
+| --- | --- | --- |
+| PR #317, `84e1f4c6` | Published; full acceptance 41363630471 started, result pending at 2026-11-01 23:55 UTC | Keep this head stable while its existing run completes. |
+| Account/Notifications fixture, `ebcbbb56` | Published; reviewed local browser 54/54, hosted matrix still pending | Preserve its exact implementation and original failures in the combined candidate. |
+| Ordinary merge of `84e1f4c6` + `ebcbbb56` | Source/workflow review and exact local admission pass; awaiting isolated candidate publication and acceptance | If `chatgpt/account-notifications-acceptance-20261101` is absent, publish it; otherwise verify its tree and continue the existing run. Complete focused/full combined and main/release gates. |
+| Main, `1c44ca120e7768998fafa720b3e1c4c85990c330` | Unchanged by these publications | Integrate only the reviewed, accepted combined result; verify exact main afterward. |
+
+[Current-source integration, evidence and remaining gates](ACCOUNT_NOTIFICATION_CURRENT_SOURCE_20261101.md). No candidate is marked ready to merge from these source-only checks.
+
+## 2026-11-01 23:40 UTC — preserved recovery and pending publication
+
+PR #317: reviewed local correction `77cdbc92` plus docs `be75116e` and this checkpoint await publication/current-source checks; the primary full browser run is still pending. Account/Notifications: base `fc14b841` plus its isolated fixture correction passes 54/54 local checks, with its own review, publication and hosted acceptance pending; it is not merged into the primary candidate. Main and PR #317 were not updated by the successful diagnostic-blob save. Preserve both lanes and combine only through reviewed integration. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).
+
+## 2026-11-01 — recover acceptance fixes and preserve diagnostic failures
+
+Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 helper checks and the clean 3,051-file test package, and corrected a real browser diagnostic race (original 6/22 failures; corrected 22/22 passes). Separate source review and exact historical inverses pass. The original native run failed with an engine-level table error; a fresh-prefix inventory replay passed 72 checks, and the remaining commands are continuing separately. No full acceptance, GitHub publication, main merge or release is claimed. The initial GitHub save returned a generic tool rejection after the owner accepted the connection prompt and saw a UI error; subsequent account/repository reads succeeded, while write completion remains unverified at this checkpoint. [Current review, evidence and continuation instructions](CONTINUATION_REVIEW_20261101.md).
+
+## 2026-11-01 — refreshed integration inventory
+
+| Candidate | Observed state | Next action |
+| --- | --- | --- |
+| PR319, PR320, PR321 | Already integrated into `main` through `1c44ca120e7768998fafa720b3e1c4c85990c330` | Preserve their foundation, provider-prerequisite and backup/runtime behavior in combined acceptance. |
+| PR317, initial head `366d53b1ed6b367b32664f2b91ee073fc6813544` | Current combined candidate; needs corrected acceptance and review | Retain this history, finish the installed fixture corrections and run the original complete journey before normal integration. |
+| PR322, older head `07da428` | Stale and conflicting with the newer combined candidate | Do not overwrite PR317 or claim it is a ready merge. Reuse only distinct reviewed work if later comparison identifies any. |
+| v1.25.0 | Latest published release observed | Preserve immutable assets; candidate 1.26.1 builds remain separate. |
+
+[Current exact sources, preserved failing runs, corrections and local evidence](CONTINUATION_2026_11_01.md). No candidate is promoted to ready-to-merge merely because focused tests pass.
+
+## 2026-10-29 — keep software orchestration evidence inside its sealed partition
+
+PR306 full run40821246468 passed283 helpers,69 build guards, six orchestration checks, packages and fixtures, then failed because its new standalone report was outside the build partition allowlist. The guard now appends to the existing build transcript with pipefail. Nine new actual-command/sealer regressions reproduce the failure and verify successful/failing evidence; all292 helpers pass, with original assertions and allowlists unchanged. Exact corrected full acceptance remains pending. [Failure and correction evidence](CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-29 — preserve acceptance command order after software-suite repair
+
+PR304 fixes the duplicate software-suite call, but its full run40820683270 failed helper check218 because the new orchestration guard interrupted the sealed native-command sequence. Isolated `codex/software-acceptance-guard-order` moves that unchanged guard to the build step. The parent reproduces217 passes/one failure; corrected source passes all283 helper checks and six orchestration checks. All production bytes and assertions remain unchanged. Exact corrected full acceptance and required reviews remain pending. [Evidence, source and ownership](CODEX_PR266_APPLICATION_40820683270.md).
+
+## 2026-10-28 — preserve reconciliation assertions across payoff integration
+
+Independent `codex/finance-reconcile-payoff-fixtures` declares the unpaid payoff-reader dependency in the existing strict #287/#289 fixtures. Case/assertion tails and production code are unchanged. Original combined undefined-function failure is preserved; 448 pure and 375 native executions pass against the frozen parent and combined source. [Evidence and pending review](CODEX_FINANCE_RECONCILE_FIXTURES.md).
+
+## 2026-10-28 — preserve payments during initial and replacement enrollment
+
+Independent `codex/finance-replacement-ledger-guard` from #300 `07fa7caf` prevents partial or nonconsecutive paid installments from being billed again by a newly created full ARB. Initial and replacement finalizers retain obsolete known candidates for verified cancellation; lifecycle/refund/void/settlement paths preserve pending retirement. Final PHP/database matrix passes 6,136 native executions and 306 focused executions. Initial cases include 30 actual separate-process payment commits per lane. Original replacement 37/230, pending-state 11/22, initial 6/44 and finalizer-rollback 4/22 failures remain retained. Hosted checks and independent review are pending; unknown replacement outcomes, established-ARB receipt audit, final combined acceptance, sandbox and main integration remain open. [Review and evidence](CODEX_FINANCE_ENROLLMENT_RECEIPTS.md).
+
+## 2026-10-28 — retain and retire a replacement created during payoff
+
+Independent `codex/finance-replacement-payoff-guard`, based on frozen #299 `fa404e59`, retains the known new gateway ID/history and verifies its retirement when payoff arrives during replacement creation or first readback. It also repairs the shared payoff reader's transaction requirement for ordinary unpaid owner reconciliation. Parent fails 40/138; the corrected PHP/database matrix passes 1,896 native and 272 focused executions. Earlier failures remain retained. Hosted exact-head and independent review are pending; final combined acceptance, unknown-create/partial-receipt audit, sandbox credentials and main integration remain gates. [Review and evidence](CODEX_FINANCE_REPLACEMENT_PAYOFF.md).
+
+## 2026-10-28 — retire recurring billing after verified financing payoff
+
+Independent `codex/finance-payoff-subscription-retirement`, based on frozen #298 `4405433d`, closes the post-reservation/manual-payoff billing gap. It retains the gateway identity before cancellation, requires exact contract and terminal readback, preserves uncertainty for owner/scheduler reconciliation, and never rolls back payment or permanent payoff. Parent fails 57/270; corrected native PHP/database matrix passes 3,132 total executions (1,344 new), plus 272 focused checks. Original failed probes and the isolated-owner test-harness correction are retained. Hosted exact-head and independent approval remain required; no main merge or release. [Review and evidence](CODEX_FINANCE_PAYOFF_RETIREMENT.md).
+
+## 2026-10-28 — initial financing enrollment rechecks authoritative payoff
+
+Independent review of #297 identified stale projected state after a committed payoff and an unchecked profile enrollment path. Separate `codex/finance-enrollment-payoff-guard`, based on frozen `89ecee07`, centralizes reservation-time signed agreement/customer/schedule/initial-payment and installment-ledger admission. Parent fails 138/240 native assertions; corrected source passes 240 new plus 207 existing assertions per PHP/database lane (1,788 executions across four lanes). Valid sandbox enrollment retains exact current charge/attempt proof without fulfillment. Permanent payoff, charge, replacement and production gates remain unchanged. Hosted and independent review gates remain open; no main merge or release. [Review and evidence](CODEX_FINANCE_ENROLLMENT_PAYOFF_GUARD.md).
+
+## 2026-10-28 — initial-payment integrity in license synchronization
+
+Independent `codex/finance-initial-sync-binding`, based on PR #296 `17357a9d`, closes the separate core access-state projection gap: another agreement/customer's paid invoice, wrong amount/currency or unavailable ledger must not activate the target financing. The target native reproduction has a fully reversed receipt with 500 cents due. Shared signed-offer/ledger validation now runs before activation; the permanent payoff early boundary is byte-identical. Parent fails 22/207 assertions; corrected native PHP 8.2/8.4 × MariaDB/MySQL matrix passes 207 per lane (828 total, including 119 existing enrollment assertions). Hosted acceptance and independent review remain pending. No customer pointer-edit capability, real gateway operation, main merge or release is claimed. [Review and evidence](CODEX_FINANCE_INITIAL_SYNC_REVIEW.md).
+
+## 2026-10-28 — verified initial-payment enrollment correction
+
+Independent `codex/finance-initial-payment-enrollment`, based on PR #295 at `27d7b9e`, corrects the portal/handler mismatch after a nonzero verified down payment. Enrollment now requires the exact agreement invoice and retained ledger payment, current client and running signed schedule, then repeats admission under the reservation lock. Paid-off plans cannot enroll new installments; existing license/domain/rights and subscription history stay intact. Native application checks pass 119 per PHP 8.2/8.4 × MariaDB/MySQL lane (476 total), plus 22 handler checks per PHP. Original handler and intermediate cross-agreement invoice substitution failures are retained. Hosted acceptance and independent review remain pending; no real gateway, merge or release claim. [Review and evidence](CODEX_FINANCE_INITIAL_ENROLLMENT_REVIEW.md).
+
 # Devin integration queue
 
 Created 2026-10-19 under the [sole-owner takeover](DEVIN_FULL_SITE_TAKEOVER.md); refreshed 2026-10-22 for the merge-first delivery cycle. Authoritative destination is `main`; the wide integration branch `devin/full-site-integration` and `devin/preflight-commercial` are staging lanes, not delivery.
@@ -5,6 +120,10 @@ Created 2026-10-19 under the [sole-owner takeover](DEVIN_FULL_SITE_TAKEOVER.md);
 Dispositions: READY-TO-MERGE = hosted acceptance green at exact head + required review complete. PENDING-ACCEPTANCE = exists but unverified/unreviewed at current head. IN-ACCEPTANCE = hosted run in flight at named commit. BLOCKED = named blocker recorded below. INTEGRATED = ancestor of `main`. SUPERSEDED = replaced by named successor.
 
 Merge-first rule (AGENTS.md, standing): prefer the smallest independently-verifiable slice; land one reviewed increment at a time into `main`; a green run on an older base does not validate a re-based merge result.
+
+## PR266 companion correction — 2026-10-28
+
+`codex/licensing-integration-review`, feature parent `6045b801`, main `fdf40a25`: PENDING-ACCEPTANCE. Installed financing independence assertions and document-roots dynamic CI port; preserves Devin’s repair. [Original failures, checks and next gates](PR266_INTEGRATION_ACCEPTANCE.md). No main merge or release clearance.
 
 ## Active delivery lane
 

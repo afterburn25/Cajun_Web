@@ -1,6 +1,8 @@
 <?php
 /** Real additive migration and PHP rendering against isolated MySQL/MariaDB; no credential or network use. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -16,14 +18,18 @@ $checks=[];$password='Synthetic upgrade owner passphrase';$profile=str_repeat('a
 function pu_ok(string $name,bool $ok):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function pu_deny(string $name,callable $fn):void {try{$fn();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;pu_ok($name,true);return;}pu_ok($name,false);}
 function pu_version():string{return (string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');}
-function pu_render():string {ob_start();try{require CWP_CODE_ROOT.'/admin/views/providers.php';return ob_get_contents();}finally{ob_end_clean();}}
+require_once __DIR__.'/provider_workspace_render.php';
+function pu_render(string $section='services'):string {return cwp_test_provider_workspace(['section'=>$section]);}
 function pu_snapshot():array {
     $out=[];foreach(['provider_profiles','provider_revisions','provider_refreshes','provider_refresh_results','provider_observation_packages','provider_package_links','provider_package_link_events'] as $name)$out[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');return $out;
 }
 function pu_old_fields(array $rows,array $before):array {foreach($rows as $name=>&$table)foreach($table as $i=>&$row)$row=array_intersect_key($row,$before[$name][$i]);unset($table,$row);return $rows;}
 function pu_audit_failure(int $version,callable $fn):void {
     $trigger=config()['db']['prefix'].'audit_fail';db()->exec('CREATE TRIGGER `'.$trigger.'` BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.inventory_prepared' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic migration audit failure'; END IF; END");
-    try{$fn();pu_ok('Migration audit failure is surfaced from v'.$version,false);}catch(PDOException){pu_ok('Migration audit failure is surfaced from v'.$version,true);}finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}
+    try{$fn();pu_ok('Migration audit failure is surfaced from v'.$version,false);}catch(PDOException $e){
+        if(($e->errorInfo[0]??null)!=='45000'||(int)($e->errorInfo[1]??0)!==1644||($e->errorInfo[2]??null)!=='Synthetic migration audit failure')throw $e;
+        pu_ok('Migration audit failure is surfaced from v'.$version,true);
+    }finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}
 }
 try {
     pu_ok('Isolated prefix is unused',(int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,?)=?',[strlen($prefix),$prefix])->fetchColumn()===0);
@@ -78,8 +84,8 @@ try {
     pu_ok('Legacy StackCP readiness probes restore exact settings audits tables and inventory without key creation',all('SELECT * FROM '.table('settings').' ORDER BY name')===$accessSettings&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$accessAudit&&all('SHOW TABLES')===$accessTables&&pu_snapshot()===$before&&!is_file($private.'/provider-master.key'));
     $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');$unpreparedHtml=pu_render();
     pu_ok('Populated v1 owner view retains preparation without querying missing domain tables',str_contains($unpreparedHtml,'Prepare inventory storage'));
-    pu_ok('Controller-rendered legacy view offers separate domain search preparation without schema-changing GET',str_contains($unpreparedHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView&&pu_snapshot()===$before);
-    pu_deny('Populated v1 preparation requires current owner password',fn()=>provider_inventory_migrate('wrong'));
+    pu_ok('Controller-rendered legacy view offers separate domain search preparation without schema-changing GET',str_contains(pu_render('domains'),'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView&&pu_snapshot()===$before);
+    pu_deny('Revoked owner refuses: Populated v1 preparation requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));
     pu_ok('Denied v1 preparation preserves schema version and records',pu_version()==='1'&&pu_snapshot()===$before);
     pu_audit_failure(1,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v1 preparation never stamps ready or rewrites retained facts',pu_version()==='1'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
@@ -138,7 +144,7 @@ try {
     db()->exec('DROP TABLE '.table('provider_observation_cloud'));db()->exec('ALTER TABLE '.table('provider_refreshes').' DROP COLUMN operation');save_setting('provider_inventory_schema_version','3');
     $v3=pu_snapshot();$domainBefore=all('SELECT * FROM '.table('provider_domain_links'));$domainEventsBefore=all('SELECT * FROM '.table('provider_domain_link_events'));
     pu_ok('Populated v3 routes retain explicit owner upgrade and safe client state',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage')&&provider_inventory_client_services(1)===[]&&provider_inventory_client_domains(2)===[]&&pu_snapshot()===$v3);
-    pu_deny('Populated v3 migration rejects wrong current password',fn()=>provider_inventory_migrate('wrong'));
+    pu_deny('Revoked owner refuses: Populated v3 migration rejects wrong current password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));
     pu_audit_failure(3,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v3 upgrade keeps original stamp and facts',pu_version()==='3'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$v3)===$v3);
     provider_inventory_migrate($password);
@@ -152,7 +158,7 @@ try {
     query('INSERT INTO '.table('provider_observation_cloud').' (id,refresh_id,server_id,metadata,unmapped_count) VALUES (?,?,4501,?,0)',[str_repeat('5',32),$cloudRefresh,json_encode(['id'=>4501,'name'=>'original-cloud.invalid'])]);
     $v4=pu_snapshot();$cloudBefore=all('SELECT * FROM '.table('provider_observation_cloud'));
     pu_ok('Populated v4 routes offer preparation without creating cloud links',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage')&&provider_cloud_client_services(1)===[]&&pu_snapshot()===$v4);
-    pu_deny('Populated v4 upgrade requires current owner password',fn()=>provider_inventory_migrate('wrong'));
+    pu_deny('Revoked owner refuses: Populated v4 upgrade requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_inventory_migrate('wrong')));
     pu_audit_failure(4,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v4 upgrade retains cloud observations and original stamp',pu_version()==='4'&&!provider_inventory_ready()&&pu_snapshot()===$v4&&all('SELECT * FROM '.table('provider_observation_cloud'))===$cloudBefore);
     provider_inventory_migrate($password);

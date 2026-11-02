@@ -1,0 +1,681 @@
+{
+    "passed": true,
+    "checks": [
+        {
+            "name": "suspended_paid_off expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "suspended_paid_off native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "suspended_paid_off native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "suspended_paid_off competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "suspended_paid_off expected audit count",
+            "passed": true
+        },
+        {
+            "name": "suspended_replacement expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "suspended_replacement native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "suspended_replacement native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "suspended_replacement competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "suspended_replacement expected audit count",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "suspended_unchanged expected audit count",
+            "passed": true
+        },
+        {
+            "name": "expired_paid_off expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "expired_paid_off native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "expired_paid_off native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "expired_paid_off competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "expired_paid_off expected audit count",
+            "passed": true
+        },
+        {
+            "name": "expired_replacement expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "expired_replacement native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "expired_replacement native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "expired_replacement competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "expired_replacement expected audit count",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "expired_unchanged expected audit count",
+            "passed": true
+        },
+        {
+            "name": "canceled_paid_off expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "canceled_paid_off native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "canceled_paid_off native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "canceled_paid_off competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "canceled_paid_off expected audit count",
+            "passed": true
+        },
+        {
+            "name": "canceled_replacement expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "canceled_replacement native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "canceled_replacement native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "canceled_replacement competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "canceled_replacement expected audit count",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "canceled_unchanged expected audit count",
+            "passed": true
+        },
+        {
+            "name": "active_replacement expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "active_replacement native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "active_replacement native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "active_replacement competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "active_replacement expected audit count",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "active_paid_off expected audit count",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "active_unchanged expected audit count",
+            "passed": true
+        },
+        {
+            "name": "sandbox_readonly expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "sandbox_readonly native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "sandbox_readonly native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "sandbox_readonly competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "sandbox_readonly expected audit count",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_nonactive expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_nonactive native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_nonactive native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_nonactive competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_nonactive expected audit count",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_active expected reconciliation outcome",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_active native row preserves concurrent or rolled-back state",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_active native mutex and transaction released",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_active competing writer uses a separate committed SQL connection",
+            "passed": true
+        },
+        {
+            "name": "audit_rollback_active expected audit count",
+            "passed": true
+        }
+    ],
+    "count": 75,
+    "failed": 0,
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "prefix": "fq_fin_recon_",
+    "source_sha256": "9f8e4965304ef90b0d9d22e3db02e14d870cd3a9d83fcbf46bdefbd633f0b6df",
+    "function_sha256": {
+        "license_finance_subscription_row": "f8ed8990bac2ba146dbd5f468279fb66baee5e8f1fafd785961b58ef3bd54d20",
+        "license_finance_subscription_reconcile": "d056a3595f0307acd5e8b1dc3aefc8a8350b095a595660a2163141935c7a659a"
+    },
+    "staff_function_sha256": {
+        "staff_locked": "6997548f884556109939d029992adb10f3675db0a6227f12358b8ca8d91cd713",
+        "staff_transaction": "bdb2a56a1a05dd2b6d910473bf9be09272170af9c18b618812da71ae1a04fa5c"
+    },
+    "audit_function_sha256": {
+        "license_audit": "4e677eb977d81d5c2951d63e0ceda6a743b8d95ca747c7e101d77c1bcc4a7056"
+    },
+    "audit_schema_sha256": "8f6cd6d5f6e907c73e369b6fbb78aebb8cbfdb04d4198e41d79d51769ef1ce04",
+    "subscription_schema_sha256": "5b7912e80ac77d67e3958a7e56f3cca6a3746e8df11e5bce303598be9daa4811",
+    "results": [
+        {
+            "case": "suspended_paid_off",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 1,
+                "offer_id": "506bb41a59b94653e30d75cb462c0588",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "paid_off",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 65,
+                "committed": true
+            }
+        },
+        {
+            "case": "suspended_replacement",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 2,
+                "offer_id": "51e8cee2db7ae01430cc895e54dbd6d0",
+                "gateway_subscription_id": "810002",
+                "customer_profile_id": "920001",
+                "payment_profile_id": "920002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 3,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "status": "pending_first_payment",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 66,
+                "committed": true
+            }
+        },
+        {
+            "case": "suspended_unchanged",
+            "result": "billing_suspended",
+            "error": null,
+            "row": {
+                "id": 3,
+                "offer_id": "c3be12fa23fd959b7a82d67f2119c472",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "910001",
+                "payment_profile_id": "910002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "billing_suspended",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            },
+            "writer": null
+        },
+        {
+            "case": "expired_paid_off",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 4,
+                "offer_id": "6f1f9974a60b563989b362ee5cc026c3",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "paid_off",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 67,
+                "committed": true
+            }
+        },
+        {
+            "case": "expired_replacement",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 5,
+                "offer_id": "1fe88dfd2b284206607efe96a892f218",
+                "gateway_subscription_id": "810002",
+                "customer_profile_id": "920001",
+                "payment_profile_id": "920002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 3,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "status": "pending_first_payment",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 68,
+                "committed": true
+            }
+        },
+        {
+            "case": "expired_unchanged",
+            "result": "cancelled",
+            "error": null,
+            "row": {
+                "id": 6,
+                "offer_id": "179a00c3f60e3c0ea977eae594feb693",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "910001",
+                "payment_profile_id": "910002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "cancelled",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:31"
+            },
+            "writer": null
+        },
+        {
+            "case": "canceled_paid_off",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 7,
+                "offer_id": "6af61c45b4a6df6d02e4ab83bb327a55",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "paid_off",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 69,
+                "committed": true
+            }
+        },
+        {
+            "case": "canceled_replacement",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 8,
+                "offer_id": "f0203d7e49efe65e973ddfb1c2e2f857",
+                "gateway_subscription_id": "810002",
+                "customer_profile_id": "920001",
+                "payment_profile_id": "920002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 3,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "status": "pending_first_payment",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 70,
+                "committed": true
+            }
+        },
+        {
+            "case": "canceled_unchanged",
+            "result": "cancelled",
+            "error": null,
+            "row": {
+                "id": 9,
+                "offer_id": "de95372d45a137018ecbcb293e0bde2b",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "910001",
+                "payment_profile_id": "910002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "cancelled",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:32"
+            },
+            "writer": null
+        },
+        {
+            "case": "active_replacement",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 10,
+                "offer_id": "d68db7187d1b1cd90eafd391c479cc7c",
+                "gateway_subscription_id": "810002",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 1,
+                "start_date": "2099-01-01",
+                "status": "replacing",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 71,
+                "committed": true
+            }
+        },
+        {
+            "case": "active_paid_off",
+            "result": null,
+            "error": "Financing subscription changed during gateway verification. Retry reconciliation.",
+            "row": {
+                "id": 11,
+                "offer_id": "2030e89d3ad8989c8dea0e66f16fede2",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "paid_off",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": {
+                "connection_id": 72,
+                "committed": true
+            }
+        },
+        {
+            "case": "active_unchanged",
+            "result": "review",
+            "error": null,
+            "row": {
+                "id": 12,
+                "offer_id": "226d2ac9c45053a7af70d31421be6dd4",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "review",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2026-11-02 02:06:32"
+            },
+            "writer": null
+        },
+        {
+            "case": "sandbox_readonly",
+            "result": "sandbox_verified",
+            "error": null,
+            "row": {
+                "id": 13,
+                "offer_id": "04f9c6905e9f62ac7db65ebad8aa5afb",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "billing_suspended",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "audit_rollback_nonactive",
+            "result": null,
+            "error": "SQLSTATE[45000]: <<Unknown error>>: 1644 Synthetic native audit failure",
+            "row": {
+                "id": 14,
+                "offer_id": "28a63ba84739815a4c1e312290443357",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "billing_suspended",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        },
+        {
+            "case": "audit_rollback_active",
+            "result": null,
+            "error": "SQLSTATE[45000]: <<Unknown error>>: 1644 Synthetic native audit failure",
+            "row": {
+                "id": 15,
+                "offer_id": "c33b1305282b1986f04a100c446c8137",
+                "gateway_subscription_id": "810001",
+                "customer_profile_id": "900001",
+                "payment_profile_id": "900002",
+                "interval_months": 1,
+                "amount_cents": 2500,
+                "total_occurrences": 6,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2099-01-01",
+                "status": "replacing",
+                "created_at": "2098-01-01 00:00:00",
+                "updated_at": "2098-01-01 00:00:00"
+            },
+            "writer": null
+        }
+    ],
+    "scope": "Actual subscription DDL\/FK\/indexes, InnoDB rows, account mutex, transactions and separate-process competing SQL commits. Synthetic parent\/owner\/gateway boundaries. No actual provider, installed HTTP or whole-license-access claim."
+}

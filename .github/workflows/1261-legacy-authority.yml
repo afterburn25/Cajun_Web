@@ -1,0 +1,118 @@
+name: 1.26.1 legacy authorization regression reconciliation
+on:
+  push:
+    branches: [chatgpt/1261-legacy-tests-20261030]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: legacy-authority-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/1261-legacy-tests-20261030'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply exact test corrections without changing released runtime
+        id: record
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          SOURCE_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 tools/integration/legacy_authority_apply.py
+          python3 - <<'PY'
+          import base64,json,os,subprocess
+          def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
+          rows=json.load(open('tools/integration/legacy_authority_recipe.json'))
+          mail=json.load(open('tools/integration/legacy_mail_submission.json'))
+          if len(mail)!=1 or mail[0]['path']!='tests/mail_submissions_native.php':raise SystemExit('Unexpected mail test scope')
+          rows+=mail
+          changed=set(git('diff','--name-only').splitlines())
+          if changed-{x['path'] for x in rows} or git('ls-files','--others','--exclude-standard'):raise SystemExit('Unexpected assembly change')
+          subprocess.run(['git','diff','--exit-code','5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d','--','site','foundation','tools/structure','tools/build.py','VERSION','START-HERE.txt'],check=True)
+          branch='refs/heads/chatgpt/1261-legacy-tests-20261030'
+          if git('ls-remote','origin',branch).split()[0]!=os.environ['EXPECTED_HEAD']:raise SystemExit('Concurrent branch movement; refuse overwrite')
+          if changed:
+              subprocess.run(['git','config','user.name','CajunWebPro test reconciliation'],check=True)
+              subprocess.run(['git','config','user.email','test-reconciliation@users.noreply.github.com'],check=True)
+              subprocess.run(['git','add','--',*sorted(changed)],check=True)
+              subprocess.run(['git','commit','-m','test: reconcile legacy repeat-password cases with current owner authority'],check=True)
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('sha='+git('rev-parse','HEAD')+'\n')
+          PY
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql, mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify runtime identity and pure contracts
+        run: |
+          git diff --exit-code 5c54d5fdd0c2ca1b006885b7fc533e8ba9d1140d HEAD -- site foundation tools/structure tools/build.py VERSION START-HERE.txt
+          mkdir -p qa/legacy-authority
+          php tests/current_owner_authority_contract.php > qa/legacy-authority/helper-contract.json
+          php tests/service-plans/forms.php > qa/legacy-authority/service-forms.json
+          php tests/twentyi-inventory/run.php > qa/legacy-authority/inventory-contract.json
+          php tests/provider_package_types.php > qa/legacy-authority/package-types.json
+      - name: Build disposable SQL and ZIP runtime
+        run: |
+          docker build -f tests/licensing-workspace/Dockerfile -t cwp-authority-test .
+          docker run --rm --network host cwp-authority-test php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Run full existing native suites with owner-revocation proof
+        run: |
+          mkdir -p test-runtime/software-private
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-authority-test php -r '$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>realpath("test-runtime/software-private"),"key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"swci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'
+          mkdir -p "$RUNNER_TEMP/authority-bin"
+          cat > "$RUNNER_TEMP/authority-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-authority-test php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/authority-bin/php"
+          PATH="$RUNNER_TEMP/authority-bin:$PATH" python3 tests/legacy_authority_checks.py
+      - name: Preserve every complete suite and refusal proof including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: legacy-authority-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14

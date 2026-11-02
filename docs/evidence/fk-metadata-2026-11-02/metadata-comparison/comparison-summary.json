@@ -1,0 +1,367 @@
+{
+  "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "scope": "Read-only, paired metadata query comparison; no application change or acceptance claim",
+  "created_at_utc": "2026-11-02T02:25:07.980633+00:00",
+  "decision": "Neither tested redundant-predicate variant is an effective demonstrated correction; no product diff proposed.",
+  "comparisons": [
+    {
+      "file": "comparison-33314.json",
+      "variant": "explicit_joined_table",
+      "port": 33314,
+      "tables_in_database": 94,
+      "table_comparisons": 8,
+      "paired_samples": 56,
+      "original_median_ms": 6.5197105,
+      "candidate_median_ms": 6.7085995,
+      "median_paired_original_divided_by_candidate": 0.9821816474976228,
+      "all_rows_equal": true,
+      "all_r_plans_scan_all_databases": true,
+      "all_r_plans_use_bnl_join": true
+    },
+    {
+      "file": "comparison-33311.json",
+      "variant": "explicit_joined_table",
+      "port": 33311,
+      "tables_in_database": 984,
+      "table_comparisons": 8,
+      "paired_samples": 56,
+      "original_median_ms": 15.937815,
+      "candidate_median_ms": 16.555093,
+      "median_paired_original_divided_by_candidate": 0.9964708424660145,
+      "all_rows_equal": true,
+      "all_r_plans_scan_all_databases": true,
+      "all_r_plans_use_bnl_join": true
+    },
+    {
+      "file": "comparison-owner-schema-33314.json",
+      "variant": "explicit_owner_schema_table",
+      "port": 33314,
+      "tables_in_database": 94,
+      "table_comparisons": 8,
+      "paired_samples": 56,
+      "original_median_ms": 7.7037510000000005,
+      "candidate_median_ms": 8.2723355,
+      "median_paired_original_divided_by_candidate": 0.8793126220261719,
+      "all_rows_equal": true,
+      "all_r_plans_scan_all_databases": true,
+      "all_r_plans_use_bnl_join": true
+    },
+    {
+      "file": "comparison-owner-schema-33311.json",
+      "variant": "explicit_owner_schema_table",
+      "port": 33311,
+      "tables_in_database": 984,
+      "table_comparisons": 8,
+      "paired_samples": 56,
+      "original_median_ms": 12.7352325,
+      "candidate_median_ms": 13.6874945,
+      "median_paired_original_divided_by_candidate": 0.9613115447856484,
+      "all_rows_equal": true,
+      "all_r_plans_scan_all_databases": true,
+      "all_r_plans_use_bnl_join": true
+    }
+  ],
+  "per_table": [
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_service_plans",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 6.172692,
+      "candidate_median_ms": 5.305244,
+      "original_divided_by_candidate_median": 1.1635076539363693
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_service_plan_events",
+      "rows": 2,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 5.568046,
+      "candidate_median_ms": 5.725902,
+      "original_divided_by_candidate_median": 0.972431243147368
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_service_subscriptions",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 6.382883,
+      "candidate_median_ms": 7.305776,
+      "original_divided_by_candidate_median": 0.8736762528717004
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_service_subscription_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 6.251335,
+      "candidate_median_ms": 5.822892,
+      "original_divided_by_candidate_median": 1.0735790737660942
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_recurring_billing_sources",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 7.396457,
+      "candidate_median_ms": 7.129818,
+      "original_divided_by_candidate_median": 1.0373977288059806
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_recurring_billing_schedules",
+      "rows": 4,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 7.870171,
+      "candidate_median_ms": 7.955999,
+      "original_divided_by_candidate_median": 0.9892121655621123
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_recurring_billing_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 6.714488,
+      "candidate_median_ms": 6.942401,
+      "original_divided_by_candidate_median": 0.9671708678308845
+    },
+    {
+      "comparison": "comparison-33314.json",
+      "table": "ci_recurring_billing_invoices",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 8.18261,
+      "candidate_median_ms": 7.235907,
+      "original_divided_by_candidate_median": 1.130834047480157
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_service_plans",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 22.435665,
+      "candidate_median_ms": 21.085732,
+      "original_divided_by_candidate_median": 1.0640211589524138
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_service_plan_events",
+      "rows": 2,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 24.801669,
+      "candidate_median_ms": 19.620652,
+      "original_divided_by_candidate_median": 1.2640593696886322
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_service_subscriptions",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 14.307735,
+      "candidate_median_ms": 13.979803,
+      "original_divided_by_candidate_median": 1.023457555160112
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_service_subscription_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 14.227468,
+      "candidate_median_ms": 15.095556,
+      "original_divided_by_candidate_median": 0.9424938041367936
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_recurring_billing_sources",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 16.043385,
+      "candidate_median_ms": 12.964628,
+      "original_divided_by_candidate_median": 1.2374736089612446
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_recurring_billing_schedules",
+      "rows": 4,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 15.793052,
+      "candidate_median_ms": 17.511204,
+      "original_divided_by_candidate_median": 0.9018827032110414
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_recurring_billing_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 16.083687,
+      "candidate_median_ms": 16.339471,
+      "original_divided_by_candidate_median": 0.9843456376280482
+    },
+    {
+      "comparison": "comparison-33311.json",
+      "table": "fep_finsafe2_recurring_billing_invoices",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 14.760489,
+      "candidate_median_ms": 16.115306,
+      "original_divided_by_candidate_median": 0.9159297999057542
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_service_plans",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 8.10799,
+      "candidate_median_ms": 7.221885,
+      "original_divided_by_candidate_median": 1.1226971905534358
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_service_plan_events",
+      "rows": 2,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 6.771005,
+      "candidate_median_ms": 8.310837,
+      "original_divided_by_candidate_median": 0.8147199854840133
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_service_subscriptions",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 7.90723,
+      "candidate_median_ms": 9.644161,
+      "original_divided_by_candidate_median": 0.8198981746571837
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_service_subscription_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 7.157432,
+      "candidate_median_ms": 8.130811,
+      "original_divided_by_candidate_median": 0.8802851277689274
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_recurring_billing_sources",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 9.884742,
+      "candidate_median_ms": 9.935757,
+      "original_divided_by_candidate_median": 0.9948655145249626
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_recurring_billing_schedules",
+      "rows": 4,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 7.877587,
+      "candidate_median_ms": 8.751971,
+      "original_divided_by_candidate_median": 0.9000929047868189
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_recurring_billing_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 9.30314,
+      "candidate_median_ms": 8.106436,
+      "original_divided_by_candidate_median": 1.1476239373258483
+    },
+    {
+      "comparison": "comparison-owner-schema-33314.json",
+      "table": "ci_recurring_billing_invoices",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 5.805983,
+      "candidate_median_ms": 7.029099,
+      "original_divided_by_candidate_median": 0.8259924920676178
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_service_plans",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 11.795492,
+      "candidate_median_ms": 11.782126,
+      "original_divided_by_candidate_median": 1.0011344302378025
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_service_plan_events",
+      "rows": 2,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 12.890088,
+      "candidate_median_ms": 11.665559,
+      "original_divided_by_candidate_median": 1.1049695946846612
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_service_subscriptions",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 11.798978,
+      "candidate_median_ms": 20.721292,
+      "original_divided_by_candidate_median": 0.5694132392902914
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_service_subscription_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 23.060938,
+      "candidate_median_ms": 16.490413,
+      "original_divided_by_candidate_median": 1.3984451450670157
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_recurring_billing_sources",
+      "rows": 1,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 12.666843,
+      "candidate_median_ms": 14.912314,
+      "original_divided_by_candidate_median": 0.8494216927030909
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_recurring_billing_schedules",
+      "rows": 4,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 17.088542,
+      "candidate_median_ms": 28.725408,
+      "original_divided_by_candidate_median": 0.5948929254547054
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_recurring_billing_events",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 11.899897,
+      "candidate_median_ms": 11.645155,
+      "original_divided_by_candidate_median": 1.021875363616886
+    },
+    {
+      "comparison": "comparison-owner-schema-33311.json",
+      "table": "fep_finsafe2_recurring_billing_invoices",
+      "rows": 3,
+      "all_sorted_rows_equal": true,
+      "original_median_ms": 11.413803,
+      "candidate_median_ms": 11.296417,
+      "original_divided_by_candidate_median": 1.0103914365059292
+    }
+  ],
+  "warmup_pairs_per_comparison": 1,
+  "measured_pairs_per_comparison": 7,
+  "total_table_snapshot_candidate_comparisons": 32,
+  "all_sorted_rows_equal": true,
+  "cross_referenced_schema_rows_present": false,
+  "no_ddl_data_server_setting_or_finance_process_changes": true,
+  "remaining_limits": [
+    "Both snapshots are local MariaDB10.11.14; hosted failure used10.11.19 and has no per-query measurements.",
+    "Current-schema names differ across snapshots; their differing total table counts are not a controlled cardinality experiment.",
+    "Shared-host load and single finite timing cohorts limit numerical precision.",
+    "Neither existing snapshot contains cross-referenced-schema foreign keys, so that semantic case was reasoned from metadata definitions but not executed.",
+    "MySQL has not been measured."
+  ]
+}

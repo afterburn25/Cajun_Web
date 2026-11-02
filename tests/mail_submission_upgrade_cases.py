@@ -12,9 +12,14 @@ def run(env):
     check(label + ' original draft remains editable before submission setup', 'Original 1.21 edited text' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is not None)
     r = session.get(library)
     check(label + ' 1.21 owner explicitly prepares additive submission storage', 'Prepare email submissions' in r.text)
-    r = session.post(library, data={'csrf': token(r), 'action': 'mail_submissions_setup', 'current_password': 'Wrong synthetic password'})
-    check(label + ' submission setup refuses wrong password', 'current password' in r.text and 'Prepare email submissions' in r.text)
-    r = session.post(library, data={'csrf': token(r), 'action': 'mail_submissions_setup', 'current_password': password})
+    from installed_owner_authority import revoked_owner
+    check(label + ' submission setup does not request the signed-in owner password again', BeautifulSoup(r.text, 'html.parser').select_one('input[type=password]') is None)
+    fields = {'csrf': token(r), 'action': 'mail_submissions_setup'}
+    with revoked_owner(env['root'], env['php']):
+        refused = session.post(library, data=fields)
+        check(label + ' submission setup refuses the same owner after permission is revoked', refused.status_code == 403 or 'Your account does not have access to this action.' in refused.text)
+    check(label + ' denied setup retains all database records private files and owner authority', records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)
+    r = session.post(library, data={'csrf': token(session.get(library)), 'action': 'mail_submissions_setup'})
     check(label + ' submission setup is empty additive and keeps prior private records', 'Email submission storage is ready' in r.text and records('submissions') == {'intents': [], 'dispatches': [], 'results': []} and records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)
     records('submissions-seed')
     saved = records('submissions'); drafts = records('drafts')

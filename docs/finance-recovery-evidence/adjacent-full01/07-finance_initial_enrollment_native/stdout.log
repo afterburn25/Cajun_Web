@@ -1,0 +1,1258 @@
+{
+    "passed": true,
+    "count": 207,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "paid exact finite reservation",
+            "passed": true
+        },
+        {
+            "name": "paid preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "zero admission outcome",
+            "passed": true
+        },
+        {
+            "name": "zero exact finite reservation",
+            "passed": true
+        },
+        {
+            "name": "zero preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "zero releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "zero actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "partial admission outcome",
+            "passed": true
+        },
+        {
+            "name": "partial preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "partial releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "status_only admission outcome",
+            "passed": true
+        },
+        {
+            "name": "status_only preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "status_only releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "status_only actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "status_only portal does not assert verified initial payment",
+            "passed": true
+        },
+        {
+            "name": "reversed admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reversed preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "reversed releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reversed actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "reversed portal does not assert verified initial payment",
+            "passed": true
+        },
+        {
+            "name": "missing_ledger admission outcome",
+            "passed": true
+        },
+        {
+            "name": "missing_ledger preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "missing_ledger releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "missing_invoice admission outcome",
+            "passed": true
+        },
+        {
+            "name": "missing_invoice preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "missing_invoice releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "invoice_customer admission outcome",
+            "passed": true
+        },
+        {
+            "name": "invoice_customer preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "invoice_customer releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "invoice_project admission outcome",
+            "passed": true
+        },
+        {
+            "name": "invoice_project preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "invoice_project releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "invoice_amount admission outcome",
+            "passed": true
+        },
+        {
+            "name": "invoice_amount preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "invoice_amount releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "invoice_currency admission outcome",
+            "passed": true
+        },
+        {
+            "name": "invoice_currency preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "invoice_currency releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "invoice_hash admission outcome",
+            "passed": true
+        },
+        {
+            "name": "invoice_hash preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "invoice_hash releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "invoice_agreement admission outcome",
+            "passed": true
+        },
+        {
+            "name": "invoice_agreement preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "invoice_agreement releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "unsigned admission outcome",
+            "passed": true
+        },
+        {
+            "name": "unsigned preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "unsigned releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "signature_hash admission outcome",
+            "passed": true
+        },
+        {
+            "name": "signature_hash preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "signature_hash releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "terms_initial admission outcome",
+            "passed": true
+        },
+        {
+            "name": "terms_initial preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "terms_initial releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "terms_installments admission outcome",
+            "passed": true
+        },
+        {
+            "name": "terms_installments preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "terms_installments releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "license_customer admission outcome",
+            "passed": true
+        },
+        {
+            "name": "license_customer preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "license_customer releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "project_customer admission outcome",
+            "passed": true
+        },
+        {
+            "name": "project_customer preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "project_customer releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "plan_hash admission outcome",
+            "passed": true
+        },
+        {
+            "name": "plan_hash preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "plan_hash releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "plan_installments admission outcome",
+            "passed": true
+        },
+        {
+            "name": "plan_installments preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "plan_installments releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_off admission outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_off preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "paid_off releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_off actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "paid_off portal does not assert verified initial payment",
+            "passed": true
+        },
+        {
+            "name": "zero_paid_off admission outcome",
+            "passed": true
+        },
+        {
+            "name": "zero_paid_off preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "zero_paid_off releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "zero_paid_off actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "zero_paid_off portal does not assert verified initial payment",
+            "passed": true
+        },
+        {
+            "name": "paid_off_inconsistent admission outcome",
+            "passed": true
+        },
+        {
+            "name": "paid_off_inconsistent preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "paid_off_inconsistent releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "paid_off_inconsistent actual portal enrollment visibility",
+            "passed": true
+        },
+        {
+            "name": "paid_off_inconsistent portal does not assert verified initial payment",
+            "passed": true
+        },
+        {
+            "name": "suspended admission outcome",
+            "passed": true
+        },
+        {
+            "name": "suspended preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "suspended releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "inactive_client admission outcome",
+            "passed": true
+        },
+        {
+            "name": "inactive_client preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "inactive_client releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "revoked_session admission outcome",
+            "passed": true
+        },
+        {
+            "name": "revoked_session preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "revoked_session releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "expired_session admission outcome",
+            "passed": true
+        },
+        {
+            "name": "expired_session preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "expired_session releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "support admission outcome",
+            "passed": true
+        },
+        {
+            "name": "support preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "support releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "other_client admission outcome",
+            "passed": true
+        },
+        {
+            "name": "other_client preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "other_client releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "contract_changed admission outcome",
+            "passed": true
+        },
+        {
+            "name": "contract_changed preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "contract_changed releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "duplicate admission outcome",
+            "passed": true
+        },
+        {
+            "name": "duplicate preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "duplicate releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "late_reversal admission outcome",
+            "passed": true
+        },
+        {
+            "name": "late_reversal preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "late_reversal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "late_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "late_payoff preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "late_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "late_revocation admission outcome",
+            "passed": true
+        },
+        {
+            "name": "late_revocation preserves retained financial and license records",
+            "passed": true
+        },
+        {
+            "name": "late_revocation releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "sync_paid expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_paid closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_zero expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_zero access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_zero preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_zero closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_other_agreement expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_other_agreement access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_other_agreement preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_other_agreement closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_foreign_customer expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_foreign_customer access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_foreign_customer preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_foreign_customer closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_amount expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_amount access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_amount preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_amount closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_currency expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_currency access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_currency preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_wrong_currency closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_status_only expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_status_only access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_status_only preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_status_only closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_signature expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_signature access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_signature preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_signature closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_initial_scalar expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_initial_scalar access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_initial_scalar preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_initial_scalar closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_inactive_client expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_inactive_client access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_inactive_client preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_inactive_client closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_owner_changed expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_owner_changed access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_owner_changed preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_owner_changed closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_ledger expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_ledger access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_ledger preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_ledger closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_invoice expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_invoice access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_invoice preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_missing_invoice closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_partial expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_partial access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_partial preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_partial closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_reversed expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_reversed access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_reversed preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_reversed closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_suspended expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_suspended access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_suspended preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_suspended closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_underpaid_recovery expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_underpaid_recovery access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_underpaid_recovery preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_underpaid_recovery closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_reversed expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_reversed access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_reversed preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_reversed closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_invoice expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_invoice access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_invoice preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_invoice closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_other_invoice expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_other_invoice access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_other_invoice preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_other_invoice closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_ledger expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_ledger access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_ledger preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_missing_ledger closes its transaction",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_owner_deactivated expected verification outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_owner_deactivated access state outcome",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_owner_deactivated preserves all other financial, license, domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "sync_paid_off_owner_deactivated closes its transaction",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "name": "paid",
+            "error": null,
+            "allowed": true
+        },
+        {
+            "name": "zero",
+            "error": null,
+            "allowed": true
+        },
+        {
+            "name": "partial",
+            "error": "Complete the signed agreement initial payment first.",
+            "allowed": false
+        },
+        {
+            "name": "status_only",
+            "error": "Invoice status and payment history do not agree. Ask an owner to investigate.",
+            "allowed": false
+        },
+        {
+            "name": "reversed",
+            "error": "Complete the signed agreement initial payment first.",
+            "allowed": false
+        },
+        {
+            "name": "missing_ledger",
+            "error": "Complete the signed agreement initial payment first.",
+            "allowed": false
+        },
+        {
+            "name": "missing_invoice",
+            "error": "Complete the signed agreement initial payment first.",
+            "allowed": false
+        },
+        {
+            "name": "invoice_customer",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "allowed": false
+        },
+        {
+            "name": "invoice_project",
+            "error": "Signed financing terms changed.",
+            "allowed": false
+        },
+        {
+            "name": "invoice_amount",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "allowed": false
+        },
+        {
+            "name": "invoice_currency",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "allowed": false
+        },
+        {
+            "name": "invoice_hash",
+            "error": "Invoice details differ from retained payment history. Ask an owner to investigate.",
+            "allowed": false
+        },
+        {
+            "name": "invoice_agreement",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "allowed": false
+        },
+        {
+            "name": "unsigned",
+            "error": "Signed financing terms are inconsistent.",
+            "allowed": false
+        },
+        {
+            "name": "signature_hash",
+            "error": "Signed financing terms are inconsistent.",
+            "allowed": false
+        },
+        {
+            "name": "terms_initial",
+            "error": "Signed financing terms changed.",
+            "allowed": false
+        },
+        {
+            "name": "terms_installments",
+            "error": "Signed financing terms changed.",
+            "allowed": false
+        },
+        {
+            "name": "license_customer",
+            "error": "Financing enrollment ownership or schedule changed.",
+            "allowed": false
+        },
+        {
+            "name": "project_customer",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "allowed": false
+        },
+        {
+            "name": "plan_hash",
+            "error": "Financing enrollment ownership or schedule changed.",
+            "allowed": false
+        },
+        {
+            "name": "plan_installments",
+            "error": "Financing enrollment ownership or schedule changed.",
+            "allowed": false
+        },
+        {
+            "name": "paid_off",
+            "error": "Paid-off financing cannot enroll more automatic installments.",
+            "allowed": false
+        },
+        {
+            "name": "zero_paid_off",
+            "error": "Paid-off financing cannot enroll more automatic installments.",
+            "allowed": false
+        },
+        {
+            "name": "paid_off_inconsistent",
+            "error": "Paid-off financing cannot enroll more automatic installments.",
+            "allowed": false
+        },
+        {
+            "name": "suspended",
+            "error": "Review financing access before enrolling automatic installments.",
+            "allowed": false
+        },
+        {
+            "name": "inactive_client",
+            "error": "Client unavailable.",
+            "allowed": false
+        },
+        {
+            "name": "revoked_session",
+            "error": "Your client session is no longer current. Sign in again.",
+            "allowed": false
+        },
+        {
+            "name": "expired_session",
+            "error": "Your client session is no longer current. Sign in again.",
+            "allowed": false
+        },
+        {
+            "name": "support",
+            "error": "Financing enrollment is unavailable during support access.",
+            "allowed": false
+        },
+        {
+            "name": "other_client",
+            "error": "Sign in as the selected client outside support access.",
+            "allowed": false
+        },
+        {
+            "name": "contract_changed",
+            "error": "Financing enrollment changed. Review the current agreement.",
+            "allowed": false
+        },
+        {
+            "name": "duplicate",
+            "error": "A financing subscription attempt already exists and must be reconciled.",
+            "allowed": false
+        },
+        {
+            "name": "late_reversal",
+            "error": "Complete the signed agreement initial payment first.",
+            "allowed": false
+        },
+        {
+            "name": "late_payoff",
+            "error": "Paid-off financing cannot enroll more automatic installments.",
+            "allowed": false
+        },
+        {
+            "name": "late_revocation",
+            "error": "Your client session is no longer current. Sign in again.",
+            "allowed": false
+        },
+        {
+            "name": "sync_paid",
+            "error": null,
+            "result_state": "active",
+            "expected_state": "active",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 36
+            }
+        },
+        {
+            "name": "sync_zero",
+            "error": null,
+            "result_state": "active",
+            "expected_state": "active",
+            "target_original_balance": null
+        },
+        {
+            "name": "sync_other_agreement",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 38
+            }
+        },
+        {
+            "name": "sync_foreign_customer",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 40
+            }
+        },
+        {
+            "name": "sync_wrong_amount",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 43
+            }
+        },
+        {
+            "name": "sync_wrong_currency",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 46
+            }
+        },
+        {
+            "name": "sync_status_only",
+            "error": "Invoice status and payment history do not agree. Ask an owner to investigate.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 48
+            }
+        },
+        {
+            "name": "sync_signature",
+            "error": "Signed financing terms are inconsistent.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 49
+            }
+        },
+        {
+            "name": "sync_initial_scalar",
+            "error": "Signed financing terms changed.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 50
+            }
+        },
+        {
+            "name": "sync_inactive_client",
+            "error": "Finance initial invoice no longer matches the signed agreement.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 51
+            }
+        },
+        {
+            "name": "sync_owner_changed",
+            "error": "Financing initial payment ownership changed.",
+            "result_state": null,
+            "expected_state": null,
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 52
+            }
+        },
+        {
+            "name": "sync_missing_ledger",
+            "error": null,
+            "result_state": "pending_initial",
+            "expected_state": "pending_initial",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 53
+            }
+        },
+        {
+            "name": "sync_missing_invoice",
+            "error": null,
+            "result_state": "pending_initial",
+            "expected_state": "pending_initial",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 54
+            }
+        },
+        {
+            "name": "sync_partial",
+            "error": null,
+            "result_state": "pending_initial",
+            "expected_state": "pending_initial",
+            "target_original_balance": {
+                "paid_cents": 250,
+                "due_cents": 250,
+                "revision": 56
+            }
+        },
+        {
+            "name": "sync_reversed",
+            "error": null,
+            "result_state": "pending_initial",
+            "expected_state": "pending_initial",
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 58
+            }
+        },
+        {
+            "name": "sync_suspended",
+            "error": null,
+            "result_state": "suspended",
+            "expected_state": "suspended",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 59
+            }
+        },
+        {
+            "name": "sync_underpaid_recovery",
+            "error": null,
+            "result_state": "pending_initial",
+            "expected_state": "pending_initial",
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 61
+            }
+        },
+        {
+            "name": "sync_paid_off_reversed",
+            "error": null,
+            "result_state": "paid_off",
+            "expected_state": "paid_off",
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 63
+            }
+        },
+        {
+            "name": "sync_paid_off_missing_invoice",
+            "error": null,
+            "result_state": "paid_off",
+            "expected_state": "paid_off",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 64
+            }
+        },
+        {
+            "name": "sync_paid_off_other_invoice",
+            "error": null,
+            "result_state": "paid_off",
+            "expected_state": "paid_off",
+            "target_original_balance": {
+                "paid_cents": 0,
+                "due_cents": 500,
+                "revision": 66
+            }
+        },
+        {
+            "name": "sync_paid_off_missing_ledger",
+            "error": null,
+            "result_state": "paid_off",
+            "expected_state": "paid_off",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 67
+            }
+        },
+        {
+            "name": "sync_paid_off_owner_deactivated",
+            "error": null,
+            "result_state": "paid_off",
+            "expected_state": "paid_off",
+            "target_original_balance": {
+                "paid_cents": 500,
+                "due_cents": 0,
+                "revision": 68
+            }
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "portal_sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8",
+    "financing_sha256": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "offers_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+    "expected_preparation_diagnostics": 54,
+    "scope": "Actual application functions, canonical schema, signed offers, journal validation, session authority, ledger hashes\/balances, SQL reservation and license synchronization\/payoff boundary. Synthetic customer\/receipt fixtures and a separate committed writer after preflight. Actual portal fragment with synthetic gateway display settings. No provider calls, HTTP, real payments or release approval."
+}

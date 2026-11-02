@@ -5,6 +5,8 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'activity-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.9.0',dest)
@@ -20,6 +22,7 @@ def upgrade():
     check('Actual 1.9 update preserves configuration guards private ZIPs media and master key',all(p.read_bytes()==b for p,b in preserved.items()))
     owner=requests.Session();root=BASE+'/activity-upgrade/admin/index.php';url=root+'?view=activity';portal=BASE+'/activity-upgrade/portal/index.php'
     submit(owner,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    before,settings=prepare_retained_payments(globals(),owner,root,'activityup_',before,settings,preserved)
     r=submit(owner,url,'activity_setup',{'password':'Synthetic upgrade passphrase 2026'});check('Actual 1.9 owner enables empty per-person read state','Workspace activity is enabled' in r.text and db('SELECT * FROM activityup_activity_reads')==[])
     check('Actual 1.9 activity setup preserves retained business and delivery records',all(db('SELECT * FROM activityup_'+t)==rows for t,rows in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings))
@@ -28,6 +31,8 @@ def upgrade():
     r=client.get(portal+'?activity=1');published=next(v for v in before['website_releases'] if v['status']=='published');draft=next(v for v in before['website_releases'] if v['status']=='draft')
     check('Retained 1.9 client sees studio review invoice receipt and published ZIP updates',all(x in r.text for x in ['Studio message','Review published','Invoice issued','Payment history updated',published['id']]) and draft['id'] not in r.text)
     response=client.get(portal+'?download_release='+published['id']);check('Retained published website downloads unchanged after 1.9 activity upgrade',response.content==(ROOT/'test-runtime/activity-upgrade.zip').read_bytes())
+    r=owner.get(root+'?view=payments')
+    if 'Enable payment preparation' in r.text:r=submit(owner,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Retained invoice balance renders after activity setup','$375.00' in owner.get(root+'?view=invoice-payments&invoice_id=3').text)
     r=submit(owner,root+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Retained protected credentials decrypt after 1.9 activity upgrade','Credentials protected and saved' in r.text)
 
@@ -41,7 +46,7 @@ def run_browser(env,browser):
     root=BASE+'/existing/admin/index.php';url=root+'?view=activity';portal=BASE+'/existing/portal/index.php';center=portal+'?activity=1';endpoint=BASE+'/existing/api/activity.php'
     admin=requests.Session();submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(admin,url,'activity_setup',{'password':OWNER,'csrf':'wrong'});check('Activity setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='activity_schema_version'"))
-    r=submit(admin,url,'activity_setup',{'password':'wrong'});check('Activity setup requires owner password','current password' in r.text.lower())
+    refuse_owner_action(globals(),admin,url,'activity_setup',{})
     r=submit(admin,url,'activity_setup',{'password':OWNER});check('HTTP owner enables workspace activity','Workspace activity is enabled' in r.text)
     member=requests.Session();submit(member,root+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
     viewer=requests.Session();submit(viewer,root+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
@@ -103,8 +108,8 @@ def run_browser(env,browser):
     for n in range(101):db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,feedback,created_at) VALUES (1,?,?,?,?,?,?)",[old_review['kind'],version+n+1,'Later review '+str(n),'Later immutable review','', '2026-10-13 01:00:00'])
     result=alice.get(center+'&open=review:'+str(old_review['id']));old_node=soup(result).find(id='review-'+str(old_review['id']))
     check('Focused review outside newest hundred remains visible without stale decision form',result.status_code==200 and old_node is not None and old_node.find('form') is None)
-    # Dual identity uses the explicitly requested audience.
-    submit(admin,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'});check('One browser can keep separate staff and client notifications',admin.get(endpoint+'?audience=client').json()['count']==100 and admin.get(endpoint+'?audience=admin').json()['url']==url)
+    # Use the real client project route while retaining the separate administrator identity.
+    submit(admin,portal+'?job=1','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'});check('One browser can keep separate staff and client notifications',admin.get(endpoint+'?audience=client').json()['count']==100 and admin.get(endpoint+'?audience=admin').json()['url']==url)
     uid=db("SELECT id FROM ci_users WHERE email='request-staff@example.invalid'")[0]['id'];old_grants=db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[uid])[0]['permissions'];db("UPDATE ci_staff_profiles SET permissions='[]' WHERE user_id=?",[uid])
     check('Current grant revocation removes count center and exact navigation',member.get(endpoint+'?audience=admin').status_code==204 and member.get(url).status_code==403 and member.get(url+'&open='+ckey).status_code==403);db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?',[old_grants,uid])
     db('UPDATE ci_studio_clients SET active=0 WHERE id=1');check('Client deactivation removes count and exact navigation',alice.get(endpoint+'?audience=client').status_code==204 and alice.get(center+'&open='+key).status_code==403);db('UPDATE ci_studio_clients SET active=1 WHERE id=1')
@@ -113,7 +118,7 @@ def run_browser(env,browser):
     p.goto(root+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');p.goto(url);expect(p.locator('.activity-bell')).to_be_visible();p.screenshot(path=str(QA/'Activity-Admin-Desktop.png'),full_page=True)
     p.set_viewport_size({'width':320,'height':844});p.goto(url);p.wait_for_load_state('networkidle');p.evaluate('document.fonts.ready');p.screenshot(path=str(QA/'Activity-Admin-Narrow.png'),full_page=True);check('Admin activity center and bell fit 320px',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     p.goto(BASE+'/existing/index.php');expect(p.locator('.activity-bell')).to_be_visible();check('Authenticated administrator gets public-site workspace bell',p.locator('.activity-bell').get_attribute('href')==url)
-    p.goto(portal);p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php');p.goto(center);expect(p.locator('.activity-bell')).to_have_text('🔔 99+');p.wait_for_load_state('networkidle');p.evaluate('document.fonts.ready');p.screenshot(path=str(QA/'Activity-Client-Narrow.png'),full_page=True);check('Client activity fits 320px and bell opens client center',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1') and p.locator('.activity-bell').get_attribute('href')==center)
+    p.goto(portal+'?job=1');p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php?master=1');p.goto(center);expect(p.locator('.activity-bell')).to_have_text('🔔 99+');p.wait_for_load_state('networkidle');p.evaluate('document.fonts.ready');p.screenshot(path=str(QA/'Activity-Client-Narrow.png'),full_page=True);check('Client activity fits 320px and bell opens client center',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1') and p.locator('.activity-bell').get_attribute('href')==center)
     p.set_viewport_size({'width':1440,'height':1000});p.screenshot(path=str(QA/'Activity-Client-Desktop.png'),full_page=True)
     calls=[];p.on('request',lambda request:calls.append(request.url) if '/api/activity.php?' in request.url else None);p.clock.install();p.goto(center);expect(p.locator('.activity-bell')).to_be_visible();initial=len(calls)
     p.evaluate("window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))");p.clock.fast_forward(59000);check('Focus and early timer do not over-poll',len(calls)==initial)

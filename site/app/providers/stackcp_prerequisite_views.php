@@ -70,7 +70,7 @@ function provider_stackcp_admin_render(): void {
             if ($row['error']!==null) {echo '<p class="notice error" role="alert">Package '.$row['package_id'].': '.esc($row['error']).'</p>';continue;}
             provider_stackcp_assignment_render($row['view'],$row['history']);
         }
-        echo '<nav class="button-row" aria-label="Local StackCP assignment pages">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_page'=>$page-1])).'#stackcp-prerequisites">Previous</a>';if($snapshot['has_more']&&$page<500)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_page'=>$page+1])).'#stackcp-prerequisites">More assignments</a>';echo '</nav>';
+        echo '<nav class="button-row" aria-label="Local StackCP assignment pages">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced','stackcp_page'=>$page-1])).'#stackcp-prerequisites">Previous</a>';if($snapshot['has_more']&&$page<500)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['section'=>'advanced','stackcp_page'=>$page+1])).'#stackcp-prerequisites">More assignments</a>';echo '</nav>';
     } catch (InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';}
     echo '</section>';
 }

@@ -1,0 +1,95 @@
+{
+  "head": "498776e5b729cc223c8f4d52ab2266f6a7920739",
+  "ci_checkout": "1e0413e0c8355f3847e7c914e7d950a985f464c1",
+  "tree": "6e91f5fcc6f49db11c5045ef0b3883355bf035af",
+  "run": 40781572702,
+  "job": 123144290592,
+  "artifact_id": 12858205123,
+  "artifact_sha256": "75ec8e7fd00ab4c937492ef7528e70a919f5619820b02420cecf6d87e6a5a6f1",
+  "artifact_members": [
+    {
+      "name": "organized-software-1.25 root-rewrite 1.25.0-install.json",
+      "sha256": "0d4a4ff90ad066636bab59ca67e34ad9b0ae155f0604f30c19935403295356e9"
+    },
+    {
+      "name": "software-release125-root-rewrite-launcher.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "software-release125-progress.json",
+      "sha256": "de024bb44c39da46ce386206d1422bd530e76d4902479575565935955bb80f27"
+    },
+    {
+      "name": "software-release125-root-rewrite.log",
+      "sha256": "b8981e4e59361d86178683bc7d9e7252cb2eebdfe777c0e969b56f69f3e2f007"
+    },
+    {
+      "name": "software-release125-upgrade.json",
+      "sha256": "8dae5bde676d115b1c5cb7c968cdcdb8933f6b6708e413a5dc1e915b0eb70e92"
+    }
+  ],
+  "retained_report": {
+    "passed": false,
+    "complete": false,
+    "baseline": "published v1.25.0 COMPLETE-UPLOAD",
+    "candidate_version": "1.26.0",
+    "scope": "Published baseline update/recovery with synthetic local data; no live provider, mail or payment transport",
+    "scopes": [],
+    "checks": [
+      {
+        "name": "root-rewrite Apache started",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 actual retained release installs through Apache",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 owner signs in before saving original provider settings",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 authenticated original provider save succeeds before history seeding",
+        "passed": true
+      },
+      {
+        "name": "software-1.25 root-rewrite 1.25.0 original 1.20 installation holds encrypted provider profile and nonempty check history",
+        "passed": true
+      }
+    ]
+  },
+  "first_error": "Seed only the original published1.24 inventory schema.",
+  "published_baseline_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+  "published_baseline_files": {
+    "config/defaults.php": "baa2c27f2fdd7f250c2df86cce377f5596875251f819587fa0bab550bd3b140e",
+    "app/providers/inventory.php": "5278dd5262dd2cf0f400521b83db70b5583bb8a244201f3c3adf94deb3efd0f6",
+    "database/migrations/provider_inventory_migrate.php": "df8accd80ae5782bb1884768f5e9f12723508f6fa945339fa78ee7f069b0a1f2",
+    "database/schema/provider_inventory_schema.php": "822054325b342402088f1b20c3973a8c2820e424c049c39cd16c3f23bb86f3cd"
+  },
+  "verified_cause": "The published 1.25 package uses inventory schema 5 and writes packages.list operation context. The reused 1.24 seed demanded schema 3 and its snapshot normalizer would reject non-null operation context.",
+  "repair": "Pass the original baseline version, require its exact published runtime/schema pair before seeding, and retain all 1.25 operation context byte values in exact row snapshots. Keep the default 1.24 schema/normalization boundary.",
+  "local_contracts": {
+    "original": {
+      "test_methods": 11,
+      "failures": 7
+    },
+    "corrected_php82": {
+      "version": "8.2.35",
+      "test_methods": 11,
+      "failures": 0
+    },
+    "corrected_php84": {
+      "version": "8.4.25",
+      "test_methods": 11,
+      "failures": 0
+    }
+  },
+  "local_installer_attempt": {
+    "passed": false,
+    "first_attempt": "Local diagnostic GET deadline of five seconds expired during cold installer initialization. Original attempt retained.",
+    "second_attempt": "Installer verified all 2894 published files, then correctly refused Windows directory mode 0777/UID unavailable. No permissions bypass; no actual inventory SQL acceptance claimed.",
+    "php_http_process_stopped": true,
+    "disposable_database_gracefully_stopped": true
+  },
+  "scope": "Test-only fixture correction. Full hosted populated upgrade still required; not real provider, payment, release or deployment evidence."
+}

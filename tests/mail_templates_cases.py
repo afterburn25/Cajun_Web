@@ -4,6 +4,7 @@ import requests,json
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit']})
@@ -14,8 +15,7 @@ def run_browser(env,browser):
     before=db('SELECT * FROM ci_studio_jobs');settings=db('SELECT * FROM ci_settings')
     r=submit(owner,library,'mail_templates_setup',{'current_password':OWNER,'csrf':'wrong'})
     check('Template setup rejects invalid CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_templates_schema_version'"))
-    r=submit(owner,library,'mail_templates_setup',{'current_password':'wrong'})
-    check('Template setup rejects wrong owner password','current password' in r.text.lower())
+    refuse_owner_action(env,owner,library,'mail_templates_setup',{})
     r=submit(owner,library,'mail_templates_setup',{'current_password':OWNER})
     check('HTTP template setup preserves business data',r.status_code==200 and 'Template library enabled' in r.text and db('SELECT * FROM ci_studio_jobs')==before)
     after={s['name']:s['value'] for s in db('SELECT * FROM ci_settings')}

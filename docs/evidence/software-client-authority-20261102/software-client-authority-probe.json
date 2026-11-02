@@ -1,0 +1,645 @@
+{
+    "scope": "Actual exact84 application functions; synthetic persistence, locks, catalog policies, gateway settings and recording transport. Actual studio_client_save commits the modeled owner edit before admission; actual studio_client supplies fresh negative controls. This is not native SQL, concurrent-process, HTTP or provider evidence.",
+    "source_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "source_sha256": {
+        "app/clients/identity.php": "42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9",
+        "app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+        "app/licenses/software_license_policy.php": "a369fe95acb531bf6756e055d7d8320e72a5467ccfd0bd047997ae2ada469497",
+        "app/billing/software_orders.php": "f5cc28db4b6aa06752ba04ce35e55ce9e7064d11126cb9e68563592b4932acdf",
+        "app/billing/software_charge_guard.php": "71a4f180ee4ee7d0f92e69adb50c58cfd4e15c3c3d1923fea635d435abe47ce0",
+        "app/billing/software_charge.php": "6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c",
+        "app/billing/software_subscription_enroll.php": "b85fa4d80084874385cd5a100cc71d9dc298b945d15f7ba400f1214bd026f07f",
+        "app/billing/software_subscription_cancel.php": "cf76198fd005b9c281aef7fe375dc5a07085f7fb468e521fe1a7f3eb26d9b5d5"
+    },
+    "cases": [
+        {
+            "operation": "order",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": 102,
+            "exception": null,
+            "created_invoice_count": 1,
+            "created_order_count": 1,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name FROM probe_studio_clients WHERE id=? AND active=1 FOR UPDATE",
+                "SELECT * FROM probe_software_orders WHERE request_key=? FOR UPDATE",
+                "SELECT id FROM probe_studio_jobs WHERE client_id=? AND title=? ORDER BY id LIMIT 1"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_studio_jobs (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        7,
+                        "Software purchases",
+                        "Purchased software and license administration",
+                        "care",
+                        "",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_studio_invoices (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        101,
+                        "SW-AD92940CB4A7",
+                        "Synthetic software",
+                        1000,
+                        "USD",
+                        "Payment is required before license issuance. Checkout uses tokenized Authorize.net card submission.",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_orders (client_id,invoice_id,product_id,sku,quantity,domain,request_key,request_hash,snapshot,billing_term,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    "args": [
+                        7,
+                        102,
+                        11,
+                        "SOFTWARE-PROBE",
+                        1,
+                        "probe.example.invalid",
+                        "e96c4c75a15081b02540fdcc5f738c629582528b83694807fb6e00288f5c1587",
+                        "60f0ad23a0fe89819fc3e8574b3e152eae113df05093d2fa59d1457a662c64f2",
+                        "{\"sku\":\"SOFTWARE-PROBE\",\"family\":\"software\",\"term\":\"once\",\"title\":\"Synthetic software\",\"total_cents\":1000,\"setup_cents\":0,\"quantity\":1,\"software_policy\":{\"revision\":1,\"dependency_skus\":[],\"max_installations\":1,\"update_months\":0}}",
+                        "once",
+                        "2026-11-02 01:03:15"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "order",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "c0044bc18699718bd247ef3ec1b80386",
+            "client_active": 1,
+            "result": 102,
+            "exception": null,
+            "created_invoice_count": 1,
+            "created_order_count": 1,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name FROM probe_studio_clients WHERE id=? AND active=1 FOR UPDATE",
+                "SELECT * FROM probe_software_orders WHERE request_key=? FOR UPDATE",
+                "SELECT id FROM probe_studio_jobs WHERE client_id=? AND title=? ORDER BY id LIMIT 1"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_studio_jobs (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        7,
+                        "Software purchases",
+                        "Purchased software and license administration",
+                        "care",
+                        "",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_studio_invoices (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        101,
+                        "SW-EBE901A547CA",
+                        "Synthetic software",
+                        1000,
+                        "USD",
+                        "Payment is required before license issuance. Checkout uses tokenized Authorize.net card submission.",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_orders (client_id,invoice_id,product_id,sku,quantity,domain,request_key,request_hash,snapshot,billing_term,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    "args": [
+                        7,
+                        102,
+                        11,
+                        "SOFTWARE-PROBE",
+                        1,
+                        "probe.example.invalid",
+                        "06946b07f6bbbd8e91ecdb3bb11da545c3884651df24b5dbe018b26ef2bf2bf1",
+                        "60f0ad23a0fe89819fc3e8574b3e152eae113df05093d2fa59d1457a662c64f2",
+                        "{\"sku\":\"SOFTWARE-PROBE\",\"family\":\"software\",\"term\":\"once\",\"title\":\"Synthetic software\",\"total_cents\":1000,\"setup_cents\":0,\"quantity\":1,\"software_policy\":{\"revision\":1,\"dependency_skus\":[],\"max_installations\":1,\"update_months\":0}}",
+                        "once",
+                        "2026-11-02 01:03:15"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "order",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "bbe6dd1e39ccb114882e3ef58d82668b",
+            "client_active": 0,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Customer account no longer active."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name FROM probe_studio_clients WHERE id=? AND active=1 FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "charge",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "createTransactionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_charges (invoice_id,client_id,amount_cents,status,request_key,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1000,
+                        "processing",
+                        "f685852921e151e38e72e14c7244c8554ef1dd1022bb8cde83fcc90fdeb69ab9",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_charge_attempts (invoice_id,request_key,amount_cents,status,created_at,updated_at) VALUES (?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        "f685852921e151e38e72e14c7244c8554ef1dd1022bb8cde83fcc90fdeb69ab9",
+                        1000,
+                        "processing",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charge_attempts SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:03:15",
+                        "f685852921e151e38e72e14c7244c8554ef1dd1022bb8cde83fcc90fdeb69ab9",
+                        "processing"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charges SET status=?,transaction_id=?,updated_at=? WHERE id=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:03:15",
+                        31
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "charge",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "77e0698cae0b95c68504e2c9743281c0",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "createTransactionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_charges (invoice_id,client_id,amount_cents,status,request_key,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1000,
+                        "processing",
+                        "c2c59abdef3242bbe0012848a9863382d20e6a5658e53ae0384f74d0275dcc19",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_charge_attempts (invoice_id,request_key,amount_cents,status,created_at,updated_at) VALUES (?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        "c2c59abdef3242bbe0012848a9863382d20e6a5658e53ae0384f74d0275dcc19",
+                        1000,
+                        "processing",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charge_attempts SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:03:15",
+                        "c2c59abdef3242bbe0012848a9863382d20e6a5658e53ae0384f74d0275dcc19",
+                        "processing"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charges SET status=?,transaction_id=?,updated_at=? WHERE id=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:03:15",
+                        31
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "charge",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "734dc07b4912050253b35818718b823d",
+            "client_active": 0,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "createTransactionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_charges (invoice_id,client_id,amount_cents,status,request_key,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1000,
+                        "processing",
+                        "d04761f5ad8ad8d8f7b262411d58f5339d18843f28c5e695af173fcd16e4ae4e",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_charge_attempts (invoice_id,request_key,amount_cents,status,created_at,updated_at) VALUES (?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        "d04761f5ad8ad8d8f7b262411d58f5339d18843f28c5e695af173fcd16e4ae4e",
+                        1000,
+                        "processing",
+                        "2026-11-02 01:03:15",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charge_attempts SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:03:15",
+                        "d04761f5ad8ad8d8f7b262411d58f5339d18843f28c5e695af173fcd16e4ae4e",
+                        "processing"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charges SET status=?,transaction_id=?,updated_at=? WHERE id=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:03:15",
+                        31
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "enroll",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCreateSubscriptionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000,
+                        "months": 1
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE",
+                "SELECT id,status,gateway_subscription_id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_subscriptions (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1,
+                        1000,
+                        "creating",
+                        "2026-11-02 00:00:00",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "review",
+                        41
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "enroll",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "5f086c8813178aad5312cbb22a9dce4d",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCreateSubscriptionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000,
+                        "months": 1
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE",
+                "SELECT id,status,gateway_subscription_id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_subscriptions (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1,
+                        1000,
+                        "creating",
+                        "2026-11-02 00:00:00",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "review",
+                        41
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "enroll",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "fb0c909e91c2d7d8c1e8b1eb219fc0a7",
+            "client_active": 0,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCreateSubscriptionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000,
+                        "months": 1
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE",
+                "SELECT id,status,gateway_subscription_id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_subscriptions (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1,
+                        1000,
+                        "creating",
+                        "2026-11-02 00:00:00",
+                        "2026-11-02 01:03:15"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "review",
+                        41
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "cancel",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCancelSubscriptionRequest",
+                    "payload": {
+                        "subscriptionId": "1234567"
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM probe_software_subscriptions s JOIN probe_software_orders o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE",
+                "SELECT status FROM probe_software_subscriptions WHERE id=?"
+            ],
+            "application_writes": [
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "cancelling",
+                        41
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=? AND status=?",
+                    "args": [
+                        "review",
+                        41,
+                        "cancelling"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "cancel",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "3bfd9ab7a7058841fcc1d81c0d46d40d",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCancelSubscriptionRequest",
+                    "payload": {
+                        "subscriptionId": "1234567"
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM probe_software_subscriptions s JOIN probe_software_orders o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE",
+                "SELECT status FROM probe_software_subscriptions WHERE id=?"
+            ],
+            "application_writes": [
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "cancelling",
+                        41
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=? AND status=?",
+                    "args": [
+                        "review",
+                        41,
+                        "cancelling"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "cancel",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "c19997fe7ebf54ddd82a94a9cb247d53",
+            "client_active": 0,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCancelSubscriptionRequest",
+                    "payload": {
+                        "subscriptionId": "1234567"
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM probe_software_subscriptions s JOIN probe_software_orders o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE",
+                "SELECT status FROM probe_software_subscriptions WHERE id=?"
+            ],
+            "application_writes": [
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "cancelling",
+                        41
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=? AND status=?",
+                    "args": [
+                        "review",
+                        41,
+                        "cancelling"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        }
+    ]
+}

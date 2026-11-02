@@ -25,11 +25,12 @@ function hc_cooldown():void {
     try{
         $c=hf_context(80000);HfTransport::$body='{"result":866260}';hf_run($c);$calls=HfTransport::$calls;
         rb_ok('Pending owner status card does not prepare inventory on GET',str_contains(hv_render($c),'Prepare status checks')&&!provider_inventory_ready()&&HfTransport::$calls===$calls);
-        rb_deny('Status history preparation requires the owner password',fn()=>hosting_fulfillment_confirmation_prepare('wrong'));
+        rb_deny('Status history preparation requires current owner authority',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_confirmation_prepare($password)));
         hosting_fulfillment_confirmation_prepare($password);$before=hf_snapshot(false);hosting_fulfillment_confirmation_prepare($password);
         rb_ok('Explicit repeated status preparation preserves orders attempts and resources',provider_inventory_ready()&&hf_snapshot(false)===$before&&HfTransport::$calls===$calls);
         $args=hc_args($c);$before=hc_snapshot();
-        foreach([[1,2],[2,rb_id(999999)],[3,str_repeat('a',64)],[4,'wrong']] as [$index,$value]){
+        rb_deny('Status confirmation requires current owner authority',fn()=>cwp_test_owner_revoked(fn()=>hosting_fulfillment_confirm(...$args)));
+        foreach([[1,2],[2,rb_id(999999)],[3,str_repeat('a',64)]] as [$index,$value]){
             $bad=$args;$bad[$index]=$value;rb_deny('Confirmation refuses changed client attempt approval or password '.$index,fn()=>hosting_fulfillment_confirm(...$bad));
         }
         rb_client();rb_deny('Client cannot request the private provider confirmation read',fn()=>hc_run($c));rb_staff(2);rb_deny('Financial delegate cannot confirm hosting',fn()=>hc_run($c));rb_staff();

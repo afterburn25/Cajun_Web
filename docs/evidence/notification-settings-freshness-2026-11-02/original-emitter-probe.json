@@ -1,0 +1,78 @@
+{
+    "candidate": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "tree": "e93332563bc365ef15d0e6676ad644c466302d43",
+    "scope": "Actual published settings, owner configuration, emitter and recipient\/prefs functions. Synthetic SQL and separate-request cache contexts; owner configure transaction completes before emission begins. No database\/server\/network\/mail execution.",
+    "finding_reproduced": true,
+    "sources_sha256": {
+        "site\/app\/settings\/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
+        "site\/app\/notifications\/feed.php": "9968652e7f6982cf858dcff4e18377a045a3b080223415a288cd331730a6ee22",
+        "site\/app\/notifications\/outbox.php": "4ed8d00ed7a4588c918df625ada0f9d024847ff87635a964bb0efe8536c61969",
+        "site\/includes\/foundation\/notifications\/Notification.php": "39e21158e7a82a8ca2a33c9f9fe1bf7b9ec197e6a29090c9ee6d70e74f660d0f",
+        "site\/includes\/foundation\/notifications\/NotificationPreferences.php": "93ce3255c86a38b7f4107a795e7b7557bb17eeb5d33bf553daf47dbbfc5b213f"
+    },
+    "scenarios": [
+        {
+            "name": "enabled control",
+            "owner_change_committed_before_emission": false,
+            "stored_settings_before_emission": {
+                "notification_feed_version": "1",
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "emitter_request_cache_before_emission": {
+                "notification_feed_version": "1",
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_before_emission_by_probe": false,
+            "feed_rows": 1,
+            "portal_rows": 1,
+            "email_rows": 1,
+            "owner_audits": 0,
+            "settings_database_reads": 1,
+            "synthetic_transport_calls": 0
+        },
+        {
+            "name": "owner pause committed before stale-cache emission",
+            "owner_change_committed_before_emission": true,
+            "stored_settings_before_emission": {
+                "notification_feed_version": "1",
+                "notification_email_enabled": "0",
+                "email_mode": "smtp"
+            },
+            "emitter_request_cache_before_emission": {
+                "notification_feed_version": "1",
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_before_emission_by_probe": false,
+            "feed_rows": 1,
+            "portal_rows": 1,
+            "email_rows": 1,
+            "owner_audits": 1,
+            "settings_database_reads": 2,
+            "synthetic_transport_calls": 0
+        },
+        {
+            "name": "owner pause with fresh-cache emission control",
+            "owner_change_committed_before_emission": true,
+            "stored_settings_before_emission": {
+                "notification_feed_version": "1",
+                "notification_email_enabled": "0",
+                "email_mode": "smtp"
+            },
+            "emitter_request_cache_before_emission": {
+                "notification_feed_version": "1",
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_before_emission_by_probe": true,
+            "feed_rows": 1,
+            "portal_rows": 1,
+            "email_rows": 0,
+            "owner_audits": 1,
+            "settings_database_reads": 3,
+            "synthetic_transport_calls": 0
+        }
+    ]
+}

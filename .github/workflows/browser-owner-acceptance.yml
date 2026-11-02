@@ -1,0 +1,149 @@
+name: Current owner browser and update fixture acceptance
+on:
+  push:
+    branches: [chatgpt/browser-owner-acceptance-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: browser-owner-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    if: github.ref == 'refs/heads/chatgpt/browser-owner-acceptance-20261101'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reproduce bounded test corrections and verify actual updater controls
+        run: |
+          git merge-base --is-ancestor a827fca40f5c056d249293b11f07e425f0b71600 HEAD
+          python3 tools/integration/owner_browser_apply.py
+          python3 -m venv "$RUNNER_TEMP/owner-source-python"
+          "$RUNNER_TEMP/owner-source-python/bin/pip" install beautifulsoup4 requests
+          mkdir -p qa/owner-source
+          "$RUNNER_TEMP/owner-source-python/bin/python" tests/owner_browser_forms_test.py > qa/owner-source/form-contract.json
+          python3 tests/installed_owner_authority_test.py > qa/owner-source/authority-contract.json
+          python3 tests/acceptance_artifacts_test.py --report qa/owner-source/helpers.json
+          python3 tools/build.py --refresh
+          git diff --exit-code -- site foundation tools/build.py tools/update tools/structure VERSION START-HERE.txt .github/workflows
+          git diff --check
+      - name: Record ordinary corrected files on this isolated branch only
+        id: record
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'CajunWebPro reviewed integration'
+          git config user.email 'integration-review@users.noreply.github.com'
+          git add -- tests docs
+          if ! git diff --cached --quiet; then
+            git commit -m 'Retain real owner authentication and state-preserving browser refusal tests'
+          fi
+          python3 - <<'PY'
+          import base64,os,subprocess
+          branch='refs/heads/chatgpt/browser-owner-acceptance-20261101'
+          remote=subprocess.check_output(['git','ls-remote','origin',branch],text=True).split()[0]
+          if remote!=os.environ['EXPECTED_HEAD']:raise SystemExit('Concurrent branch change; refusing overwrite')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if head!=remote:
+              auth=base64.b64encode(('x-access-token:'+os.environ['SOURCE_TOKEN']).encode()).decode()
+              env={**os.environ,'GIT_CONFIG_COUNT':'1','GIT_CONFIG_KEY_0':'http.https://github.com/.extraheader','GIT_CONFIG_VALUE_0':'AUTHORIZATION: basic '+auth}
+              subprocess.run(['git','push','origin','HEAD:'+branch],env=env,check=True)
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:out.write('sha='+head+'\n')
+          print('Exact ordinary source',head)
+          PY
+      - name: Preserve source identity and evidence even on failure
+        if: always()
+        run: |
+          mkdir -p qa/owner-source
+          git archive --format=tar.gz HEAD > qa/owner-source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/owner-source/identity.txt
+          git status --porcelain > qa/owner-source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: owner-browser-source-${{ github.sha }}
+          path: qa/owner-source/
+          if-no-files-found: error
+          retention-days: 14
+  installed:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [mysql,mariadb]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare synthetic PHP database and Chromium only
+        run: |
+          docker build -t cwp-owner-session - <<'DOCKER'
+          FROM php:8.4-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev libpng-dev && docker-php-ext-install pdo_mysql zip gd && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          docker run --rm --network host cwp-owner-session php -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=33306;dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          mkdir -p "$RUNNER_TEMP/owner-bin" qa/owner-session
+          cat > "$RUNNER_TEMP/owner-bin/php" <<'SH'
+          #!/bin/sh
+          exec docker run -i --rm --network host --user "$(id -u):$(id -g)" -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-owner-session php "$@"
+          SH
+          chmod +x "$RUNNER_TEMP/owner-bin/php"
+          echo "PHP_BINARY=$RUNNER_TEMP/owner-bin/php" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/owner-bin" >> "$GITHUB_PATH"
+          python3 -m venv "$RUNNER_TEMP/owner-browser-python"
+          "$RUNNER_TEMP/owner-browser-python/bin/pip" install requests beautifulsoup4 playwright
+          "$RUNNER_TEMP/owner-browser-python/bin/python" -m playwright install --with-deps chromium
+      - name: Exercise actual owner staff invitation recovery and same-identity refusal
+        run: |
+          "$RUNNER_TEMP/owner-browser-python/bin/python" tests/owner_session_installed.py
+          git diff --exit-code
+          git diff --exit-code a827fca40f5c056d249293b11f07e425f0b71600 HEAD -- site foundation tools/build.py tools/update tools/structure VERSION START-HERE.txt
+      - name: Preserve complete results and synthetic captures including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-browser-${{ matrix.database }}-${{ needs.source.outputs.sha }}
+          path: qa/owner-session/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source,installed]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo 'Current owner/staff HTTP and Chromium journeys passed on both synthetic databases, with unchanged shipping code. The complete historical browser/update journey and main integration remain separate. No production deploy, provider operation, email, payment or new release package.' >> "$GITHUB_STEP_SUMMARY"

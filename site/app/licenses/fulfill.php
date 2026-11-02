@@ -31,6 +31,17 @@ function license_product_industry(array $product): ?string {
  * or manually from the admin license page.
  */
 function license_fulfill_invoice(int $invoiceId): ?array {
+    // New software orders use invoice-unit entitlements; the historical
+    // WEBSITE-* fulfillment path remains untouched for existing invoices.
+    require_once CWP_CODE_ROOT.'/app/licenses/software_fulfill.php';
+    if (software_commerce_ready() && one('SELECT id FROM '.table('software_orders').' WHERE invoice_id=?',[$invoiceId])) {
+        $license=software_fulfill_paid_order($invoiceId);
+        if($license){
+            require_once CWP_CODE_ROOT.'/app/licenses/software_notices.php';
+            software_delivery_notice_send($invoiceId);
+        }
+        return $license;
+    }
     if (!catalog_ready() || !license_ready()) return null;
     $snapshot = catalog_snapshot($invoiceId);
     if (!$snapshot) return null; // not a catalog invoice

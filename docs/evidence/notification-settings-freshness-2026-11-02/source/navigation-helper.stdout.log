@@ -1,0 +1,222 @@
+{
+  "passed": true,
+  "scope": "Shared navigation assertion with strict locator doubles, not installed browser acceptance",
+  "checks": [
+    {
+      "name": "Current labels and precise controller targets are accepted",
+      "passed": true
+    },
+    {
+      "name": "Missing or duplicate administration region is refused 0",
+      "passed": true
+    },
+    {
+      "name": "Missing or duplicate administration region is refused 2",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects missing",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects duplicate",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects missing href",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects blank href",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects wrong view",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects foreign host",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects wrong path",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects extra selector",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects duplicate selector",
+      "passed": true
+    },
+    {
+      "name": "Overview rejects fragment",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects missing",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects duplicate",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects missing href",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects blank href",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects wrong view",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects foreign host",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects wrong path",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects extra selector",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects duplicate selector",
+      "passed": true
+    },
+    {
+      "name": "Service catalog rejects fragment",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects missing",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects duplicate",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects missing href",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects blank href",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects wrong view",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects foreign host",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects wrong path",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects extra selector",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects duplicate selector",
+      "passed": true
+    },
+    {
+      "name": "20i workspace rejects fragment",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects missing",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects duplicate",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects missing href",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects blank href",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects wrong view",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects foreign host",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects wrong path",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects extra selector",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects duplicate selector",
+      "passed": true
+    },
+    {
+      "name": "Administrators rejects fragment",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects missing",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects duplicate",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects missing href",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects blank href",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects wrong view",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects foreign host",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects wrong path",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects extra selector",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects duplicate selector",
+      "passed": true
+    },
+    {
+      "name": "Licenses & software rejects fragment",
+      "passed": true
+    },
+    {
+      "name": "Obsolete accessible label cannot substitute for current workspace",
+      "passed": true
+    }
+  ]
+}

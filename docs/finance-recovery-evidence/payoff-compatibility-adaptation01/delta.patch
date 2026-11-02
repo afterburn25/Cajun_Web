@@ -1,0 +1,95 @@
+--- retained/site/app/licenses/financing.php
++++ proposed/site/app/licenses/financing.php
+@@ -347,7 +347,9 @@
+     require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+     $retiring=one('SELECT s.offer_id,s.status FROM '.table('license_finance_offers').' o JOIN '.table('license_finance_subscriptions').
+         ' s ON s.offer_id=o.id WHERE o.license_id=? AND o.schedule_id=? AND o.status=?',[$row['license_id'],$plan['schedule_id'],'signed']);
+-    if($retiring&&(string)$retiring['status']==='retirement_pending'){
++    // Permanent payoff uses its existing review/terminal retirement path;
++    // partial-receipt retirement must not replace that durable payoff state.
++    if($retiring&&(string)$retiring['status']==='retirement_pending'&&(string)$plan['state']!=='paid_off'){
+         license_finance_subscription_replacement_retire((string)$retiring['offer_id']);
+         return;
+     }
+--- retained/tests/finance_payoff_retirement_native.php
++++ proposed/tests/finance_payoff_retirement_native.php
+@@ -72,15 +72,20 @@
+                 $invoices[]=(int)$issued['invoice_id'];
+             }
+             $before=fep_snapshot();$fepCalls=[];$paymentEvidence=[];$providerScenario=$scenario;$postReservation=null;
+-            $pay=static function()use($invoices,&$paymentEvidence):void{
++            $pay=static function()use($invoices,&$paymentEvidence,$caller):void{
+                 $session=$_SESSION;rb_staff();
+                 try{
+                     foreach($invoices as $invoice){
++                        // Isolate the original final-payoff fault: the first two
++                        // manual receipts commit while the synthetic gateway is
++                        // paused. FIN-02 separately covers immediate retirement
++                        // and repeated receipts with an enabled gateway.
++                        $GLOBALS['fepReceiptGatewayPaused']=$caller==='manual'&&$invoice!==$invoices[array_key_last($invoices)];
+                         $row=ledger_invoice($invoice);$entry=\FinancePayoffRetirement\ledger_receive($invoice,1000,'bank','Synthetic payoff '.$invoice,
+                             gmdate('Y-m-d'),hash('sha256','payoff-'.$invoice),ledger_review_hash($row));
+                         $paymentEvidence[]=['invoice'=>$invoice,'entry'=>$entry,'balance'=>ledger_balance(ledger_invoice($invoice))];
+                     }
+-                }finally{$_SESSION=$session;}
++                }finally{unset($GLOBALS['fepReceiptGatewayPaused']);$_SESSION=$session;}
+             };
+             if($caller!=='manual')$postReservation=$pay;
+             $result=$caller==='opaque'
+--- retained/tests/finance_payoff_retirement_boundaries.php
++++ proposed/tests/finance_payoff_retirement_boundaries.php
+@@ -3,7 +3,10 @@
+ declare(strict_types=1);
+ namespace FinancePayoffRetirement;
+ if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+-function license_finance_anet_settings():array{return ['mode'=>'production','login'=>'synthetic-finance-account','key'=>'synthetic-key','client_key'=>'synthetic-client-key','revision'=>1]; /* Test-only mode; no real activation. */}
++function license_finance_anet_settings():array{
++    if($GLOBALS['fepReceiptGatewayPaused']??false)throw new \RuntimeException('Synthetic gateway paused before final payoff receipt.');
++    return ['mode'=>'production','login'=>'synthetic-finance-account','key'=>'synthetic-key','client_key'=>'synthetic-client-key','revision'=>1]; /* Test-only mode; no real activation. */
++}
+ function license_finance_anet_execute(string $method,array $request,?array $context=null):array{
+     $id=(string)($request['subscriptionId']??'');
+     $sub=$id!==''?\one('SELECT * FROM '.\table('license_finance_subscriptions').' WHERE gateway_subscription_id=?',[$id]):null;
+--- retained/tests/finance_replacement_payoff_recovery_safety.php
++++ proposed/tests/finance_replacement_payoff_recovery_safety.php
+@@ -152,6 +152,40 @@
+                 fep_snapshot()===$beforeRetry&&count(array_filter($GLOBALS['frgCalls'],fn($call)=>$call['method']==='ARBCreateSubscriptionRequest'))===$beforeCreates);
+         }
+         $observations[]=['family'=>'FIN-02 cancellation failure','fault'=>$fault,'writer'=>$proof,'recovered'=>$recovered];
++    }
++
++    foreach(['cancel_timeout','lost_cancel_reply'] as $fault){
++        [$offer,$gateway,$invoices]=frg_seed('repeated-receipt-'.$fault,true);
++        $before=fep_snapshot();$start=count($GLOBALS['frgCalls']);$proofs=[];
++        $proofs[]=frg_receipt_process([[$invoices[1],300]],'repeated-first-'.$fault,$fault);
++        fep_ok('FIN-02 repeated '.$fault.' first receipt attempts immediate retirement',
++            license_finance_subscription_row($offer['id'])['status']==='retirement_pending'
++            &&count(array_filter($proofs[0]['calls'],fn($call)=>$call['method']==='ARBCancelSubscriptionRequest'))===1
++            &&$GLOBALS['frgProvider'][$gateway]['status']===($fault==='lost_cancel_reply'?'canceled':'active'));
++        $proofs[]=frg_receipt_process([[$invoices[2],1000]],'repeated-later-'.$fault,$fault);
++        fep_ok('FIN-02 repeated '.$fault.' later receipt uses a fresh truthful readback',
++            license_finance_subscription_row($offer['id'])['status']===($fault==='lost_cancel_reply'?'billing_suspended':'retirement_pending')
++            &&count(array_filter($proofs[1]['calls'],fn($call)=>$call['method']==='ARBCancelSubscriptionRequest'))===($fault==='lost_cancel_reply'?0:1)
++            &&count(array_filter($proofs[1]['calls'],fn($call)=>$call['method']==='ARBGetSubscriptionRequest'))>=1);
++        $proofs[]=frg_receipt_process([[$invoices[1],700]],'repeated-payoff-'.$fault,$fault);
++        $sub=license_finance_subscription_row($offer['id']);$plan=license_financing_plan((int)$offer['license_id']);
++        fep_ok('FIN-02 repeated '.$fault.' final payoff retains the truthful terminal or review state',
++            $sub['status']===($fault==='lost_cancel_reply'?'paid_off':'review')&&$sub['gateway_subscription_id']===$gateway
++            &&$plan['state']==='paid_off'&&$plan['paid_off_at']!==null);
++        $calls=array_slice($GLOBALS['frgCalls'],$start);$after=fep_snapshot();
++        fep_ok('FIN-02 repeated '.$fault.' records exactly three receipts without another create',
++            count($after['invoice_payments'])===count($before['invoice_payments'])+3
++            &&count(array_unique(array_merge(...array_column($proofs,'entries'))))===3
++            &&!array_filter($calls,fn($call)=>$call['method']==='ARBCreateSubscriptionRequest'));
++        fep_ok('FIN-02 repeated '.$fault.' all retirement I/O stays outside transaction and mutex',
++            !array_filter($calls,fn($call)=>$call['transaction']||$call['mutex_owned']));
++        $GLOBALS['frgScenario']='normal';rb_staff();
++        $recovered=\FinanceRecovery\license_finance_subscription_reconcile($offer['id'],$gateway,$password);
++        fep_ok('FIN-02 repeated '.$fault.' explicit recovery preserves receipts and permanent payoff',
++            $recovered==='paid_off'&&$GLOBALS['frgProvider'][$gateway]['status']==='canceled'
++            &&$after['invoice_payments']===fep_snapshot()['invoice_payments']
++            &&$after['license_financing']===fep_snapshot()['license_financing']);
++        $observations[]=['family'=>'FIN-02 repeated receipt retirement','fault'=>$fault,'writers'=>$proofs,'recovered'=>$recovered];
+     }
+ 
+     [$offer,$gateway,$invoices]=frg_seed('receipt-audit-rollback');rb_staff();$before=frg_safe_snapshot();$error=null;

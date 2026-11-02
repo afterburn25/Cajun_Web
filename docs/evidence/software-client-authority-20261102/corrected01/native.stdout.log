@@ -1,0 +1,467 @@
+PASS Not ready until owner explicitly prepares
+PASS Pre-commerce install preserves legacy v3 validation
+PASS Owner preparation creates new v3 storage
+PASS Fresh v3 storage includes product policy, entitlement snapshots and immutable release metadata
+PASS V3 marker alone does not report ready when release metadata is incomplete
+PASS Owner preparation repairs incomplete v3 release metadata additively
+PASS V3 readiness fails closed when a non-core commerce history table is missing
+PASS Owner preparation refuses to silently recreate a missing established v3 history table
+PASS V3 readiness returns only after the complete commerce table set is restored
+PASS Existing entitlement storage without readiness marker is inconclusive, not authorized
+PASS Incomplete software readiness blocks add-domain mutation instead of falling back to legacy
+PASS Incomplete software readiness blocks deactivate-domain mutation instead of falling back to legacy
+PASS Incomplete software readiness blocks replacement mutation instead of falling back to legacy
+PASS Published branch v1 storage upgrades additively to v3
+PASS V1 to v3 upgrade restores payment review and software policy tables
+PASS V1 to v3 upgrade adds entitlement column purpose
+PASS V1 to v3 upgrade adds entitlement column updates_until
+PASS V1 to v3 upgrade adds entitlement column max_installations
+PASS V1 to v3 upgrade adds entitlement column policy_revision
+PASS V1 to v3 upgrade adds immutable release timestamp metadata
+PASS Published branch v2 storage upgrades additively to v3
+PASS V2 to v3 upgrade adds product policy, entitlement snapshots and immutable release metadata
+PASS V2 recurring entitlement keeps paid-through update access and legacy two-install defaults
+PASS V3 preparation can be repeated safely
+PASS Software setup refuses revoked owner authority without stored changes
+PASS Private asset resolver refuses non-ZIP files even inside storage
+PASS Private asset resolver accepts a contained ZIP file
+PASS Customer-visible publication records immutable path, checksum, size and first release time
+PASS Published software version cannot be overwritten by a repeated publication
+PASS Software publisher rejects nested ZIP members
+PASS Software publisher rejects parent-directory ZIP paths
+PASS Software publisher accepts only canonical portable ZIP member names
+PASS Software publisher rejects case-colliding extraction paths
+PASS Rejected package publications create no extra software asset rows
+PASS Owner-private software release has no customer release timestamp
+PASS Software release visibility rechecks owner role inside its mutation boundary
+PASS Rejected visibility change leaves owner-private release hidden
+PASS Owner can make a verified private release customer-visible
+PASS First customer publication stamps release time without changing immutable ZIP identity
+PASS Owner can hide a customer release without erasing release history
+PASS Owner can restore a customer release
+PASS Hide and restore preserves the immutable first customer release time
+PASS Software entitlement requires product-bound runtime validation
+PASS Trial authorizes its registered domain
+PASS Expired trial denied
+PASS Software entitlement is recognized by legacy-bundle guard
+PASS Software entitlement cannot be stored through legacy website bundle path
+PASS Legacy website key preserves validation without a product field
+PASS Master requires recorded purpose
+PASS Internal master issuance refuses revoked owner role and preserves all stored state
+PASS Master issuer must match reauthenticated owner
+PASS Internal master remains product-bound despite its any-domain authority
+PASS Owner master supports any domain
+PASS Owner cannot attach installation domains to a software master license
+PASS Master purpose is persisted for owner review
+PASS New internal master snapshots unrestricted version and seat policy
+PASS Internal master ignores stale customer update cutoff for published versions
+PASS Internal master validates an owner-private staged release
+PASS Ordinary customer license cannot discover an owner-private staged release
+PASS Master QA validation does not change staged release visibility
+PASS Software update month arithmetic clamps month-end safely
+PASS Owner software product policy records module dependency updates and install limit
+PASS Stale software product policy revision cannot overwrite current policy
+PASS Software policy save refuses revoked owner role inside serialized mutation
+PASS Owner-issued ordinary software grant cannot bypass missing dependency entitlement
+PASS Acyclic software dependency policy is accepted
+PASS Circular software dependency policy is refused
+PASS Rejected circular dependency creates no policy row
+PASS Owner may remove a dependency from future software offers
+PASS Software dependency SKU captured in an immutable purchase snapshot cannot be renamed
+PASS Rejected dependency SKU rename leaves the referenced product unchanged
+PASS Orphan key for a registered software product still fails closed against legacy bundles
+PASS Orphan registered software key cannot be stored as a legacy website bundle
+PASS Reduced API license row cannot authorize registered software with missing entitlement history
+PASS Orphan registered software cannot mutate domains without entitlement history
+PASS Rejected orphan software domain mutation preserves the original active domain
+PASS Owner domain add also fails closed for orphan software entitlement history
+PASS Owner domain deactivation also fails closed for orphan software entitlement history
+PASS Owner domain replacement also fails closed for orphan software entitlement history
+PASS Customer dependency check recognizes a valid ordinary software entitlement
+PASS Foreign customer cannot add a software installation through the service directly
+PASS Foreign customer cannot deactivate a software installation through the service directly
+PASS Foreign customer cannot replace a software installation through the service directly
+PASS Rejected foreign software-domain mutations leave ownership state unchanged
+PASS Owner-issued dependent software grant succeeds after dependency entitlement is valid
+PASS Software dependency entitlement is tenant-isolated
+PASS Uncertain-charge fixture reserves the exact software invoice amount
+PASS Paid reconciliation finalizer refuses revoked owner role without financial changes
+PASS Rejected owner proof leaves uncertain charge, invoice and entitlements unchanged
+PASS Disabled delivery records exactly one expected diagnostic and retains its retryable notice
+PASS Owner reconciliation finalizes an independently verified uncertain charge
+PASS Reconciliation atomically aligns charge attempt, charge and invoice states
+PASS Reconciled payment safely fulfills exactly one purchased entitlement
+PASS Reconciliation replay is idempotent and does not mint a duplicate license
+PASS Owner reconciliation records one immutable audit event
+PASS Signed one-time capture readback is fenced for owner review instead of ARB settlement
+PASS One-time capture webhook retains transaction identity without paying or fulfilling the invoice
+PASS Disabled delivery records exactly one expected diagnostic and retains its retryable notice
+PASS Owner can finalize the exact one-time webhook review after independent reconciliation
+PASS Paid one-time capture webhook replay is acknowledged without duplicate fulfillment
+PASS Sandbox one-time capture shape is verified against the exact local invoice and amount
+PASS Sandbox one-time capture verification does not mutate paid state
+PASS Sandbox one-time capture refuses amount mismatch instead of simulating payment
+PASS Gateway transaction already assigned to another invoice is classified as a permanent webhook conflict
+PASS Cross-invoice webhook conflict does not rewrite the unrelated local charge
+PASS One-time capture amount mismatch is retained for review rather than treated as a subscription
+PASS Mismatched one-time webhook cannot mark invoice paid or issue software
+PASS Gateway transaction already assigned to another software invoice cannot be reused
+PASS Rejected reconciliation leaves the second invoice unpaid and unfulfilled
+PASS Verified paid upgrade preserves trial key issuer creation and domain history
+PASS Verified paid upgrade converts trial entitlement to purchased standard rights
+PASS Paid trial upgrade and fulfillment replay do not mint a second key
+PASS Paid trial upgrade retains one immutable conversion audit on replay
+PASS Ambiguous matching trial licenses stop paid fulfillment for owner review
+PASS Ambiguous paid upgrade leaves both original trials untouched and mints no paid key
+PASS Customer without required software dependency cannot create the order
+PASS Software order stores the exact entitlement policy disclosed at purchase
+PASS Owner can publish a later policy revision after an order is created
+PASS Exact order retry reuses its original invoice after policy changes
+PASS New checkout with a stale disclosed policy revision is refused
+PASS Purchased software SKU cannot be renamed after order creation
+PASS Purchased software product cannot be converted out of software family
+PASS Rejected software identity edits leave catalog revision unchanged
+PASS Legacy prefixed catalog product remains orderable as software
+PASS Purchased legacy-prefixed software SKU cannot be renamed out of compatibility identity
+PASS One-time software refuses recurring billing consent
+PASS Changed order cannot reuse request
+PASS Malformed local one-time token is refused before gateway attempt reservation
+PASS Malformed one-time token leaves no charge fence or attempt history
+PASS Malformed local subscription token is refused before enrollment reservation
+PASS Malformed subscription token leaves no subscription attempt row
+PASS Missing required software dependency blocks charge reservation
+PASS Dependency refusal creates no gateway charge attempt
+PASS First one-time card attempt is fenced to the invoice amount
+PASS Conclusive decline permits a fresh card attempt
+PASS Declined and retried card attempts are both retained
+PASS Original declined attempt remains immutable history
+PASS Unpaid software cannot be licensed
+PASS No unpaid entitlements minted
+PASS Paid software does not mint licenses while its snapshotted dependency is missing
+PASS Dependency failure after payment leaves paid order unfulfilled for owner review
+PASS Paid two-unit invoice mints exactly two keys after retry
+PASS One delivery email outbox entry
+PASS Disabled delivery records exactly one expected diagnostic and retains its retryable notice
+PASS Disabled mail transport leaves software delivery notice retryable
+PASS Unaccepted software email is not falsely marked sent
+PASS Paid units snapshot the purchased update window and one-install policy
+PASS One-install software entitlement rejects a second concurrent installation
+PASS Runtime validation denies a software license whose active installations exceed its snapshot limit
+PASS Exact purchased entitlement authorizes its matching release
+PASS Second purchased unit independently authorizes its matching release
+PASS Detached entitlement unit cannot authorize a download beyond purchased quantity
+PASS Runtime validation is inconclusive when entitlement unit exceeds purchased quantity
+PASS Entitlement cannot authorize a download when its purchase ownership is inconsistent
+PASS Runtime validation is inconclusive when entitlement purchase owner is inconsistent
+PASS Purchased entitlement is inconclusive when its originating invoice is no longer trusted paid history
+PASS Private download treats an untrusted paid-order history as inconclusive and refuses access
+PASS Version-aware validation permits a release inside the update window
+PASS Version-aware validation denies a known release outside the update window
+PASS Private staging date cannot make a post-cutoff customer release eligible
+PASS Exact download authorization uses first customer release time, not staging time
+PASS Version-aware validation treats an unknown release as inconclusive
+PASS Existing entitlement rights do not change when product policy changes
+PASS New grant snapshots the latest lifetime-update three-install policy
+PASS Three-install entitlement rejects a fourth concurrent installation
+PASS New software entitlement begins in active lifecycle state
+PASS Owner can temporarily suspend software without deleting its entitlement
+PASS Suspended customer cannot change software installations
+PASS Owner resume restores the same software entitlement
+PASS Software revocation rechecks current owner role and preserves the entitlement
+PASS Owner can distinctly revoke a software license
+PASS Revoked customer cannot change software installations
+PASS Owner restoration returns the same revoked key to active state
+PASS Validation observation retention purges inactive domains older than 180 days
+PASS Unrelated successful validation prunes stale observations from a fully inactive license
+PASS Repeated validation inside one minute is write-bucketed
+PASS Validation after the one-minute bucket advances observed usage once
+PASS Owner usage view retains old observations for still-active installations
+PASS Owner usage view applies the 180-day inactive-domain retention boundary
+PASS Customer usage helper does not expose another customer software observations
+PASS First customer software domain move succeeds
+PASS Immediate repeated software domain move is blocked by cooldown
+PASS Owner-reviewed support change may override the customer domain cooldown
+PASS Owner-reviewed domain add still cannot exceed the purchased installation cap
+PASS Owner cooldown override preserves exactly one active installation
+PASS Verified refund moves one-time payment to review
+PASS One-time reversal review state is persisted
+PASS Exact repeated refund event is idempotent
+PASS Reused reversal transaction ID with conflicting amount is refused
+PASS Distinct partial refund against same charge is retained
+PASS Both distinct refund transactions are preserved
+PASS Cumulative one-time refunds cannot exceed the verified original payment
+PASS Rejected over-refund creates no reversal receipt
+PASS Merchant dispute mutation refuses revoked owner role without financial changes
+PASS Rejected owner proof creates no merchant dispute evidence
+PASS Owner can record verified merchant dispute against one-time payment
+PASS Repeated merchant dispute case is idempotent
+PASS Reused dispute case reference with conflicting evidence is refused
+PASS Merchant dispute evidence is retained once
+PASS Merchant dispute places one-time charge into review
+PASS Late capture webhook acknowledges sticky dispute review without reopening payment
+PASS Late capture webhook cannot downgrade dispute review state
+PASS Owner paid reconciliation remains blocked after refund or dispute review
+PASS ARB enrollment finalizer stores verified gateway id and pending state
+PASS ARB enrollment finalizer persists verified gateway identity
+PASS Sandbox recurring capture shape is verified against stored subscription identity amount and invoice
+PASS Sandbox recurring capture verification does not advance subscription state
+PASS Concurrent local review wins over ARB enrollment success
+PASS Concurrent review still retains external ARB subscription id for reconciliation
+PASS Conflicting gateway subscription id is refused instead of overwritten
+PASS Interrupted ARB finalization retains the known gateway subscription id for owner reconciliation
+PASS Repeated ARB uncertainty marking is idempotent for the same gateway id
+PASS ARB uncertainty marker refuses to overwrite a different retained gateway id
+PASS Late uncertainty handling does not downgrade an already-finalized subscription
+PASS ARB reconciliation finalizer refuses revoked owner role without financial changes
+PASS Rejected ARB owner proof leaves local subscription identity and state unchanged
+PASS Owner ARB reconciliation links an exact active gateway subscription without granting paid access
+PASS ARB reconciliation persists exact gateway identity and pending-first-payment state
+PASS ARB enrollment reconciliation replay is idempotent
+PASS Reconciled local subscription refuses a conflicting gateway id
+PASS ARB enrollment reconciliation never fulfills software before the first verified charge
+PASS ARB reconciliation records a gateway-cancelled enrollment without granting access
+PASS Cancelled ARB reconciliation mints no entitlement
+PASS ARB reconciliation keeps a suspended gateway subscription in owner review
+PASS Gateway subscription id already linked to another invoice cannot be reused
+PASS Cancellation finalizer refuses a foreign customer even after gateway cancellation
+PASS Rejected cancellation ownership leaves the local subscription pending finalization
+PASS Cancellation finalizer confirms stored cancelled state
+PASS Late cancellation error handling cannot overwrite a concurrent cancelled state
+PASS Cancellation error moves only the still-cancelling state into review
+PASS Cancellation finalizer preserves concurrent review state
+PASS Failed gateway subscription records a recoverable payment failure
+PASS Payment-failed subscription state is persisted distinctly from disputes
+PASS Gateway suspension records a temporary billing suspension
+PASS Billing-suspended state is persisted for automatic payment recovery
+PASS Exactly verified renewal is allowed to resume billing suspension
+PASS Cancellation can stop future renewal from a billing-suspended state
+PASS Cancellation stops future renewal when no review is pending
+PASS Cancelled subscription state is persisted
+PASS Recurring refund cannot exceed the verified period payment
+PASS Recurring payment reversal moves subscription to review
+PASS Recurring reversal review state is persisted
+PASS suspended register waits for the held license row lock
+PASS suspended register is denied after acquiring the license lock
+PASS suspended register denial preserves all installation domains
+PASS suspended register denial preserves the committed lifecycle state
+PASS suspended register positive control permits an active unexpired grant
+PASS suspended deactivate waits for the held license row lock
+PASS suspended deactivate is denied after acquiring the license lock
+PASS suspended deactivate denial preserves all installation domains
+PASS suspended deactivate denial preserves the committed lifecycle state
+PASS suspended deactivate positive control permits an active unexpired grant
+PASS suspended replace waits for the held license row lock
+PASS suspended replace is denied after acquiring the license lock
+PASS suspended replace denial preserves all installation domains
+PASS suspended replace denial preserves the committed lifecycle state
+PASS suspended replace positive control permits an active unexpired grant
+PASS expired register waits for the held license row lock
+PASS expired register is denied after acquiring the license lock
+PASS expired register denial preserves all installation domains
+PASS expired register denial preserves the committed lifecycle state
+PASS expired register positive control permits an active unexpired grant
+PASS expired deactivate waits for the held license row lock
+PASS expired deactivate is denied after acquiring the license lock
+PASS expired deactivate denial preserves all installation domains
+PASS expired deactivate denial preserves the committed lifecycle state
+PASS expired deactivate positive control permits an active unexpired grant
+PASS expired replace waits for the held license row lock
+PASS expired replace is denied after acquiring the license lock
+PASS expired replace denial preserves all installation domains
+PASS expired replace denial preserves the committed lifecycle state
+PASS expired replace positive control permits an active unexpired grant
+PASS Current order positive control reaches its expected local outcome
+PASS Current order positive control contacts only synthetic transport after commit
+PASS Current charge positive control reaches its expected local outcome
+PASS Current charge positive control contacts only synthetic transport after commit
+PASS Current enroll positive control reaches its expected local outcome
+PASS Current enroll positive control contacts only synthetic transport after commit
+PASS Current cancel positive control reaches its expected local outcome
+PASS Current cancel positive control contacts only synthetic transport after commit
+PASS Version revoked order refuses the stale or ineligible customer
+PASS Version revoked order makes no gateway request
+PASS Version revoked order leaves no transaction open
+PASS Version revoked order preserves all stored rows, schema and private bytes
+PASS Version revoked charge refuses the stale or ineligible customer
+PASS Version revoked charge makes no gateway request
+PASS Version revoked charge leaves no transaction open
+PASS Version revoked charge preserves all stored rows, schema and private bytes
+PASS Version revoked enroll refuses the stale or ineligible customer
+PASS Version revoked enroll makes no gateway request
+PASS Version revoked enroll leaves no transaction open
+PASS Version revoked enroll preserves all stored rows, schema and private bytes
+PASS Version revoked cancel refuses the stale or ineligible customer
+PASS Version revoked cancel makes no gateway request
+PASS Version revoked cancel leaves no transaction open
+PASS Version revoked cancel preserves all stored rows, schema and private bytes
+PASS Account disabled order refuses the stale or ineligible customer
+PASS Account disabled order makes no gateway request
+PASS Account disabled order leaves no transaction open
+PASS Account disabled order preserves all stored rows, schema and private bytes
+PASS Account disabled charge refuses the stale or ineligible customer
+PASS Account disabled charge makes no gateway request
+PASS Account disabled charge leaves no transaction open
+PASS Account disabled charge preserves all stored rows, schema and private bytes
+PASS Account disabled enroll refuses the stale or ineligible customer
+PASS Account disabled enroll makes no gateway request
+PASS Account disabled enroll leaves no transaction open
+PASS Account disabled enroll preserves all stored rows, schema and private bytes
+PASS Account disabled cancel refuses the stale or ineligible customer
+PASS Account disabled cancel makes no gateway request
+PASS Account disabled cancel leaves no transaction open
+PASS Account disabled cancel preserves all stored rows, schema and private bytes
+PASS wrong_client order refuses the stale or ineligible customer
+PASS wrong_client order makes no gateway request
+PASS wrong_client order leaves no transaction open
+PASS wrong_client order preserves all stored rows, schema and private bytes
+PASS wrong_client charge refuses the stale or ineligible customer
+PASS wrong_client charge makes no gateway request
+PASS wrong_client charge leaves no transaction open
+PASS wrong_client charge preserves all stored rows, schema and private bytes
+PASS wrong_client enroll refuses the stale or ineligible customer
+PASS wrong_client enroll makes no gateway request
+PASS wrong_client enroll leaves no transaction open
+PASS wrong_client enroll preserves all stored rows, schema and private bytes
+PASS wrong_client cancel refuses the stale or ineligible customer
+PASS wrong_client cancel makes no gateway request
+PASS wrong_client cancel leaves no transaction open
+PASS wrong_client cancel preserves all stored rows, schema and private bytes
+PASS missing_version order refuses the stale or ineligible customer
+PASS missing_version order makes no gateway request
+PASS missing_version order leaves no transaction open
+PASS missing_version order preserves all stored rows, schema and private bytes
+PASS missing_version charge refuses the stale or ineligible customer
+PASS missing_version charge makes no gateway request
+PASS missing_version charge leaves no transaction open
+PASS missing_version charge preserves all stored rows, schema and private bytes
+PASS missing_version enroll refuses the stale or ineligible customer
+PASS missing_version enroll makes no gateway request
+PASS missing_version enroll leaves no transaction open
+PASS missing_version enroll preserves all stored rows, schema and private bytes
+PASS missing_version cancel refuses the stale or ineligible customer
+PASS missing_version cancel makes no gateway request
+PASS missing_version cancel leaves no transaction open
+PASS missing_version cancel preserves all stored rows, schema and private bytes
+PASS idle_expired order refuses the stale or ineligible customer
+PASS idle_expired order makes no gateway request
+PASS idle_expired order leaves no transaction open
+PASS idle_expired order preserves all stored rows, schema and private bytes
+PASS idle_expired charge refuses the stale or ineligible customer
+PASS idle_expired charge makes no gateway request
+PASS idle_expired charge leaves no transaction open
+PASS idle_expired charge preserves all stored rows, schema and private bytes
+PASS idle_expired enroll refuses the stale or ineligible customer
+PASS idle_expired enroll makes no gateway request
+PASS idle_expired enroll leaves no transaction open
+PASS idle_expired enroll preserves all stored rows, schema and private bytes
+PASS idle_expired cancel refuses the stale or ineligible customer
+PASS idle_expired cancel makes no gateway request
+PASS idle_expired cancel leaves no transaction open
+PASS idle_expired cancel preserves all stored rows, schema and private bytes
+PASS absolute_expired order refuses the stale or ineligible customer
+PASS absolute_expired order makes no gateway request
+PASS absolute_expired order leaves no transaction open
+PASS absolute_expired order preserves all stored rows, schema and private bytes
+PASS absolute_expired charge refuses the stale or ineligible customer
+PASS absolute_expired charge makes no gateway request
+PASS absolute_expired charge leaves no transaction open
+PASS absolute_expired charge preserves all stored rows, schema and private bytes
+PASS absolute_expired enroll refuses the stale or ineligible customer
+PASS absolute_expired enroll makes no gateway request
+PASS absolute_expired enroll leaves no transaction open
+PASS absolute_expired enroll preserves all stored rows, schema and private bytes
+PASS absolute_expired cancel refuses the stale or ineligible customer
+PASS absolute_expired cancel makes no gateway request
+PASS absolute_expired cancel leaves no transaction open
+PASS absolute_expired cancel preserves all stored rows, schema and private bytes
+PASS support_selector order refuses the stale or ineligible customer
+PASS support_selector order makes no gateway request
+PASS support_selector order leaves no transaction open
+PASS support_selector order preserves all stored rows, schema and private bytes
+PASS support_selector charge refuses the stale or ineligible customer
+PASS support_selector charge makes no gateway request
+PASS support_selector charge leaves no transaction open
+PASS support_selector charge preserves all stored rows, schema and private bytes
+PASS support_selector enroll refuses the stale or ineligible customer
+PASS support_selector enroll makes no gateway request
+PASS support_selector enroll leaves no transaction open
+PASS support_selector enroll preserves all stored rows, schema and private bytes
+PASS support_selector cancel refuses the stale or ineligible customer
+PASS support_selector cancel makes no gateway request
+PASS support_selector cancel leaves no transaction open
+PASS support_selector cancel preserves all stored rows, schema and private bytes
+PASS support_context order refuses the stale or ineligible customer
+PASS support_context order makes no gateway request
+PASS support_context order leaves no transaction open
+PASS support_context order preserves all stored rows, schema and private bytes
+PASS support_context charge refuses the stale or ineligible customer
+PASS support_context charge makes no gateway request
+PASS support_context charge leaves no transaction open
+PASS support_context charge preserves all stored rows, schema and private bytes
+PASS support_context enroll refuses the stale or ineligible customer
+PASS support_context enroll makes no gateway request
+PASS support_context enroll leaves no transaction open
+PASS support_context enroll preserves all stored rows, schema and private bytes
+PASS support_context cancel refuses the stale or ineligible customer
+PASS support_context cancel makes no gateway request
+PASS support_context cancel leaves no transaction open
+PASS support_context cancel preserves all stored rows, schema and private bytes
+PASS contact_id order refuses the stale or ineligible customer
+PASS contact_id order makes no gateway request
+PASS contact_id order leaves no transaction open
+PASS contact_id order preserves all stored rows, schema and private bytes
+PASS contact_id charge refuses the stale or ineligible customer
+PASS contact_id charge makes no gateway request
+PASS contact_id charge leaves no transaction open
+PASS contact_id charge preserves all stored rows, schema and private bytes
+PASS contact_id enroll refuses the stale or ineligible customer
+PASS contact_id enroll makes no gateway request
+PASS contact_id enroll leaves no transaction open
+PASS contact_id enroll preserves all stored rows, schema and private bytes
+PASS contact_id cancel refuses the stale or ineligible customer
+PASS contact_id cancel makes no gateway request
+PASS contact_id cancel leaves no transaction open
+PASS contact_id cancel preserves all stored rows, schema and private bytes
+PASS contact_auth order refuses the stale or ineligible customer
+PASS contact_auth order makes no gateway request
+PASS contact_auth order leaves no transaction open
+PASS contact_auth order preserves all stored rows, schema and private bytes
+PASS contact_auth charge refuses the stale or ineligible customer
+PASS contact_auth charge makes no gateway request
+PASS contact_auth charge leaves no transaction open
+PASS contact_auth charge preserves all stored rows, schema and private bytes
+PASS contact_auth enroll refuses the stale or ineligible customer
+PASS contact_auth enroll makes no gateway request
+PASS contact_auth enroll leaves no transaction open
+PASS contact_auth enroll preserves all stored rows, schema and private bytes
+PASS contact_auth cancel refuses the stale or ineligible customer
+PASS contact_auth cancel makes no gateway request
+PASS contact_auth cancel leaves no transaction open
+PASS contact_auth cancel preserves all stored rows, schema and private bytes
+PASS Locked order waits for the actual client row lock
+PASS Locked order refuses after the revocation commits
+PASS Locked order closes its transaction without a gateway request
+PASS Locked order preserves the committed account and every other row
+PASS Locked order observes the independently committed version change
+PASS Locked charge waits for the actual client row lock
+PASS Locked charge refuses after the revocation commits
+PASS Locked charge closes its transaction without a gateway request
+PASS Locked charge preserves the committed account and every other row
+PASS Locked charge observes the independently committed version change
+PASS Locked enroll waits for the actual client row lock
+PASS Locked enroll refuses after the revocation commits
+PASS Locked enroll closes its transaction without a gateway request
+PASS Locked enroll preserves the committed account and every other row
+PASS Locked enroll observes the independently committed version change
+PASS Locked cancel waits for the actual client row lock
+PASS Locked cancel refuses after the revocation commits
+PASS Locked cancel closes its transaction without a gateway request
+PASS Locked cancel preserves the committed account and every other row
+PASS Locked cancel observes the independently committed version change
+PASS Admitted charge retains its actual synthetic gateway outcome after later revocation
+PASS Admitted charge preserves the committed revocation and closes all transactions
+PASS Admitted enroll retains its actual synthetic gateway outcome after later revocation
+PASS Admitted enroll preserves the committed revocation and closes all transactions
+PASS Admitted cancel retains its actual synthetic gateway outcome after later revocation
+PASS Admitted cancel preserves the committed revocation and closes all transactions
+Software commerce native: 466 checks passed

@@ -1,0 +1,104 @@
+name: RC 1.26 test package (no live operations)
+on:
+  push:
+    branches:
+      - chatgpt/rc126-artifact-20261029
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+concurrency:
+  group: rc126-package-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Import bounded reviewed admin files without merging security history
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "RC integration builder"
+          git config user.email "rc-builder@users.noreply.github.com"
+          # Preserve the base candidate's payment workflows, security tests,
+          # acceptance contracts and historical release handoff unchanged.
+          # Only the explicitly reviewed admin/product/support files are ported.
+          import_files() {
+            branch="$1"
+            shift
+            git fetch --no-tags origin "refs/heads/$branch:refs/remotes/origin/$branch"
+            git restore --source="refs/remotes/origin/$branch" --worktree -- "$@"
+            git add -- "$@"
+            if ! git diff --cached --quiet; then
+              git commit -m "Port reviewed files from $branch into disposable RC"
+            fi
+          }
+          import_files chatgpt/20i-catalog-import-no-repassword-20261029 \
+            site/admin/controllers/catalog.php \
+            site/admin/views/catalog_import.php \
+            site/app/providers/catalog_import.php \
+            site/database/migrations/provider_catalog_import_migrate.php
+          import_files chatgpt/owner-all-client-portal-review-20261029 \
+            site/admin/controllers/support.php \
+            site/app/support/sessions.php \
+            site/database/migrations/support_migrate.php \
+            site/portal/controllers/router.php \
+            site/portal/views/auth.php
+          import_files chatgpt/20i-connection-guided-ui-20261029 \
+            site/admin/views/providers.php \
+            site/assets/css/admin.css
+          # Installer inventory is generated from the combined source below.
+          # Fail instead of resolving any remaining unrelated conflict.
+          test -z "$(git diff --name-only --diff-filter=U)"
+      - name: Set up PHP and Node
+        shell: bash
+        run: |
+          php -v
+          node -v
+          python3 -V
+      - name: Refresh generated installer inventory
+        run: |
+          python3 tools/build.py --refresh
+          git add -u -- site/ foundation/
+          if ! git diff --cached --quiet; then git commit -m "Refresh integrated generated site sources"; fi
+          git status --short
+          test -z "$(git status --porcelain --untracked-files=all)" || { echo 'Unclean refreshed source tree'; exit 1; }
+      - name: Build from exact clean candidate commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          COMMIT="$(git rev-parse HEAD)"
+          python3 tools/build.py --commit "$COMMIT"
+          python3 - <<'PY'
+          import json,pathlib,zipfile
+          root=pathlib.Path('dist')
+          manifests=list(root.glob('CajunWebPro-*-COMPLETE-UPLOAD.manifest.json'))
+          assert len(manifests)==1,manifests
+          package=root/manifests[0].name.replace('.manifest.json','.zip')
+          assert package.is_file()
+          with zipfile.ZipFile(package) as z:
+              names=z.namelist()
+              assert names and not any(x.lower().endswith('.zip') for x in names),'Nested ZIP forbidden'
+              assert z.testzip() is None
+              dest=pathlib.Path('rc-upload')
+              dest.mkdir()
+              z.extractall(dest)
+          (pathlib.Path('rc-upload')/'RC-TEST-ONLY.txt').write_text('UNRELEASED 1.26.0 test candidate. Do not deploy to production. Validate installation, financing, 20i and security before shipping.\\n')
+          print('Created test-only upload bundle; files:',len(names))
+          PY
+      - name: Upload directly extractable installation files (no ZIP inside ZIP)
+        uses: actions/upload-artifact@v4
+        with:
+          name: CajunWebPro-1.26.0-RC-TEST-COMPLETE-UPLOAD
+          path: rc-upload/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true

@@ -1,0 +1,41 @@
+{
+  "scope": "Finite source-bound local component evidence; no full-site or hosted-root-cause acceptance",
+  "raw_runtime_config_private_keys_sessions_sql_dumps_authenticated_dom_or_post_bodies_copied": false,
+  "browser_event_derivative": "External diagnostic listener emitted only method/status/type, safe URL fields, monotonic timestamps and hashes; no headers/cookies/tokens/bodies",
+  "retained_private_records": [
+    {
+      "identity": "full-corrected-request-timing.jsonl",
+      "bytes": 5748560,
+      "sha256": "2862705a1f7d5be5288407428be3fd6bc35f0a7c34b3b167c5757a101bb7e453"
+    },
+    {
+      "identity": "initial-native-stderr.log",
+      "bytes": 285,
+      "sha256": "a90c0a3bc0443c7d9d94abf5ace6264cbeddf0e8c58e20aec181caeb02def4e4"
+    },
+    {
+      "identity": "comparison-33314.json",
+      "bytes": 88718,
+      "sha256": "840cfa5e2bbf0cc22b77d787eed36a7457384de6e52c0fad2f384620351a07a7"
+    },
+    {
+      "identity": "comparison-33311.json",
+      "bytes": 89453,
+      "sha256": "6a110a08f88da006ea64f59f582268dc5be1eb9d0093c374036d3f22a34b9d2e"
+    },
+    {
+      "identity": "comparison-owner-schema-33314.json",
+      "bytes": 89769,
+      "sha256": "5542e7f81fd3aca533b3b7dc22e0f34d522ee43bb957925a4f35f079d3db05fe"
+    },
+    {
+      "identity": "comparison-owner-schema-33311.json",
+      "bytes": 90500,
+      "sha256": "5a32288edb0bc9e57736893cf8e2fbfa56155d39c6e587a333d4c1f2870b5348"
+    }
+  ],
+  "source_zip_in_git": false,
+  "screenshot_visually_inspected": true,
+  "screenshot_interpretation": "Synthetic accepted/paid agreement with local hosting record prepared and provider setup still unprepared; not provisioning or live deployment",
+  "new_engine_matrix_execution": false
+}

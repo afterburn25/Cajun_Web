@@ -1,0 +1,1655 @@
+{
+  "transport": "real loopback HTTP; PHP built-in server; native database; actual browser fetch",
+  "checks": [
+    {
+      "name": "Public route home",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=services",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=work",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=work&cat=Construction",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=about",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=process",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=contact",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=why-custom",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=compare-wix",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=compare-squarespace",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=switch",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=packages",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=faq",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=industries",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=estimate",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=website-review",
+      "passed": true
+    },
+    {
+      "name": "Public route index.php?page=consultation",
+      "passed": true
+    },
+    {
+      "name": "Asset bytes images/icons/favicon.png",
+      "passed": true
+    },
+    {
+      "name": "Asset bytes favicon.ico",
+      "passed": true
+    },
+    {
+      "name": "Asset bytes assets/css/growth.css",
+      "passed": true
+    },
+    {
+      "name": "Asset bytes assets/js/growth.js",
+      "passed": true
+    },
+    {
+      "name": "Asset bytes images/branding/logo.png",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry includes/bootstrap.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry includes/security/csrf.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry includes/foundation/estimator/PriceRule.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry app/marketing/estimator.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry app/staff/accounts.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry config/example.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry database/schema/base.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry admin/controllers/router.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry admin/views/auth.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry portal/views/workspace.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry pages/home/body.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry includes/foundation/access/AccessContext.php",
+      "passed": true
+    },
+    {
+      "name": "PHP guard denies direct internal entry install/actions/deploy.php",
+      "passed": true
+    },
+    {
+      "name": "Uninstalled nested entry redirects to actual site-root setup",
+      "passed": true
+    },
+    {
+      "name": "Transport enforcement retains nested canonical path query and POST method",
+      "passed": true
+    },
+    {
+      "name": "Installed-site guard blocks setup",
+      "passed": true
+    },
+    {
+      "name": "Server filter marks non-matching cards hidden",
+      "passed": true
+    },
+    {
+      "name": "Filter link marks active category",
+      "passed": true
+    },
+    {
+      "name": "Unknown category shows honest empty state",
+      "passed": true
+    },
+    {
+      "name": "Published case study resolves",
+      "passed": true
+    },
+    {
+      "name": "Unknown case study returns 404",
+      "passed": true
+    },
+    {
+      "name": "HTTP estimator ignores browser total",
+      "passed": true
+    },
+    {
+      "name": "HTTP lead persists",
+      "passed": true
+    },
+    {
+      "name": "HTTP duplicate has same saved reference",
+      "passed": true
+    },
+    {
+      "name": "HTTP bad CSRF is rejected",
+      "passed": true
+    },
+    {
+      "name": "HTTP admin login owner@example.invalid",
+      "passed": true
+    },
+    {
+      "name": "Public head references original favicon",
+      "passed": true
+    },
+    {
+      "name": "Admin head references original favicon",
+      "passed": true
+    },
+    {
+      "name": "Client head references original favicon",
+      "passed": true
+    },
+    {
+      "name": "Installer head references original favicon",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-clients",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-job&id=1",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-pipeline",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-content",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-prices",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-history",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-portfolio",
+      "passed": true
+    },
+    {
+      "name": "Admin route studio-upgrade",
+      "passed": true
+    },
+    {
+      "name": "Admin route lead&id=1",
+      "passed": true
+    },
+    {
+      "name": "Admin client create persists",
+      "passed": true
+    },
+    {
+      "name": "Staff message persists",
+      "passed": true
+    },
+    {
+      "name": "Published review appears in admin",
+      "passed": true
+    },
+    {
+      "name": "HTTP client login alice@example.invalid",
+      "passed": true
+    },
+    {
+      "name": "HTTP client login bob@example.invalid",
+      "passed": true
+    },
+    {
+      "name": "Other client project is not accessible",
+      "passed": true
+    },
+    {
+      "name": "Client approval persists",
+      "passed": true
+    },
+    {
+      "name": "HTTP duplicate approval rejected",
+      "passed": true
+    },
+    {
+      "name": "Private upload saved",
+      "passed": true
+    },
+    {
+      "name": "Owner downloads identical private file",
+      "passed": true
+    },
+    {
+      "name": "Another client cannot download private file",
+      "passed": true
+    },
+    {
+      "name": "Anonymous private-file request denied",
+      "passed": true
+    },
+    {
+      "name": "Manual invoice created",
+      "passed": true
+    },
+    {
+      "name": "Client sees own invoice",
+      "passed": true
+    },
+    {
+      "name": "Other client does not see invoice",
+      "passed": true
+    },
+    {
+      "name": "Real GD image upload returns successfully",
+      "passed": true
+    },
+    {
+      "name": "Cross-client message POST denied",
+      "passed": true
+    },
+    {
+      "name": "Cross-client message not saved",
+      "passed": true
+    },
+    {
+      "name": "Portal CSRF rejected",
+      "passed": true
+    },
+    {
+      "name": "CSRF message not saved",
+      "passed": true
+    },
+    {
+      "name": "Disguised executable upload rejected",
+      "passed": true
+    },
+    {
+      "name": "Anonymous admin workspace redirected to login",
+      "passed": true
+    },
+    {
+      "name": "Client session does not grant admin access",
+      "passed": true
+    },
+    {
+      "name": "Filesystem acceptance runs without root",
+      "passed": true
+    },
+    {
+      "name": "Fresh setup is absent by default",
+      "passed": true
+    },
+    {
+      "name": "Session token alone never enables fresh setup",
+      "passed": true
+    },
+    {
+      "name": "Empty posted intent keeps ordinary setup",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects value 0",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects value 2",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects value x",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects wrong type or length 0",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects wrong type or length 1",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects wrong type or length 2",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent rejects wrong type or length 3",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 0",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 1",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 2",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 3",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 4",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 5",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 6",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent requires exact session token 7",
+      "passed": true
+    },
+    {
+      "name": "Only the valid session token selects fresh resources",
+      "passed": true
+    },
+    {
+      "name": "Ordinary setup preserves the explicitly entered prefix",
+      "passed": true
+    },
+    {
+      "name": "Fresh prefix is the bounded session-derived twenty-character prefix",
+      "passed": true
+    },
+    {
+      "name": "Fresh selection changes no database credentials or database name",
+      "passed": true
+    },
+    {
+      "name": "Repeated database selection is stable without session or POST mutation",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent preserves database input validation",
+      "passed": true
+    },
+    {
+      "name": "Ordinary candidate model retains private then protected-local choices",
+      "passed": true
+    },
+    {
+      "name": "Fresh candidate model uses a separate full-token suffix",
+      "passed": true
+    },
+    {
+      "name": "Explicit-parent model uses the same separate fresh destination",
+      "passed": true
+    },
+    {
+      "name": "Fresh candidate model never offers protected public storage",
+      "passed": true
+    },
+    {
+      "name": "Server-check source selects the same fresh destination as preparation",
+      "passed": true
+    },
+    {
+      "name": "Checks and database selection retain one session-bound fresh choice",
+      "passed": true
+    },
+    {
+      "name": "Clearing fresh intent returns checks and prefix to ordinary selection",
+      "passed": true
+    },
+    {
+      "name": "Ordinary preparation refuses existing media",
+      "passed": true
+    },
+    {
+      "name": "Ordinary refusal leaves every retained file and directory unchanged",
+      "passed": true
+    },
+    {
+      "name": "Real temporary sandbox supplies no fresh private candidate",
+      "passed": true
+    },
+    {
+      "name": "Fresh intent fails closed when no permanent private location exists",
+      "passed": true
+    },
+    {
+      "name": "Unavailable fresh destination never adopts or alters prior storage",
+      "passed": true
+    },
+    {
+      "name": "Installed existence guard detects config.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed guard precedes token and preparation for config.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed refusal preserves all files for config.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed existence guard detects config.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Installed guard precedes token and preparation for config.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Installed refusal preserves all files for config.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Server-check source reports the installed refusal for config.php",
+      "passed": true
+    },
+    {
+      "name": "Installed existence guard detects .installed.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed guard precedes token and preparation for .installed.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed refusal preserves all files for .installed.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed existence guard detects .installed.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Installed guard precedes token and preparation for .installed.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Installed refusal preserves all files for .installed.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Server-check source reports the installed refusal for .installed.php",
+      "passed": true
+    },
+    {
+      "name": "Installed existence guard detects storage/install.lock.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed guard precedes token and preparation for storage/install.lock.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed refusal preserves all files for storage/install.lock.php by default",
+      "passed": true
+    },
+    {
+      "name": "Installed existence guard detects storage/install.lock.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Installed guard precedes token and preparation for storage/install.lock.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Installed refusal preserves all files for storage/install.lock.php with fresh intent",
+      "passed": true
+    },
+    {
+      "name": "Server-check source reports the installed refusal for storage/install.lock.php",
+      "passed": true
+    },
+    {
+      "name": "Retained private lock and media survive every guard scenario",
+      "passed": true
+    },
+    {
+      "name": "Missing dependency leaves the full one-page form visible",
+      "passed": true
+    },
+    {
+      "name": "Unprivileged write denial is reported honestly",
+      "passed": true
+    },
+    {
+      "name": "Storage failure leaves setup fields visible",
+      "passed": true
+    },
+    {
+      "name": "Missing configuration with retained lock shows recovery index.php",
+      "passed": true
+    },
+    {
+      "name": "Missing configuration with retained lock shows recovery admin/index.php",
+      "passed": true
+    },
+    {
+      "name": "Missing configuration with retained lock shows recovery portal/index.php",
+      "passed": true
+    },
+    {
+      "name": "Fresh start cannot bypass retained installed marker",
+      "passed": true
+    },
+    {
+      "name": "Missing PHP extensions do not hide configuration form",
+      "passed": true
+    },
+    {
+      "name": "Missing PDO MySQL/GD prevents installation",
+      "passed": true
+    },
+    {
+      "name": "Fresh setup shows one form",
+      "passed": true
+    },
+    {
+      "name": "Native one-request fresh installation succeeds",
+      "passed": true
+    },
+    {
+      "name": "Fresh configuration exists",
+      "passed": true
+    },
+    {
+      "name": "Installer physically removed after successful setup",
+      "passed": true
+    },
+    {
+      "name": "Installed homepage loads after cleanup",
+      "passed": true
+    },
+    {
+      "name": "PHP acceptance worker is not root",
+      "passed": true
+    },
+    {
+      "name": "Published sitemap includes growth routes and portfolio",
+      "passed": true
+    },
+    {
+      "name": "Unpublished sitemap excludes preview content",
+      "passed": true
+    },
+    {
+      "name": "Saved HTTP website-review submission",
+      "passed": true
+    },
+    {
+      "name": "Database and local mail capture website-review",
+      "passed": true
+    },
+    {
+      "name": "Saved HTTP consultation submission",
+      "passed": true
+    },
+    {
+      "name": "Database and local mail capture consultation",
+      "passed": true
+    },
+    {
+      "name": "Consultation is still explicitly unconfirmed",
+      "passed": true
+    },
+    {
+      "name": "Admin introduction saved in database",
+      "passed": true
+    },
+    {
+      "name": "Saved introduction rendered on homepage",
+      "passed": true
+    },
+    {
+      "name": "HTTP stale content save rejected",
+      "passed": true
+    },
+    {
+      "name": "Deliberate HTTP restore persists as history",
+      "passed": true
+    },
+    {
+      "name": "Pipeline stage and notes persisted",
+      "passed": true
+    },
+    {
+      "name": "Seven-status legacy lead editor regression",
+      "passed": true
+    },
+    {
+      "name": "Admin pricing-disabled state uses consultation",
+      "passed": true
+    },
+    {
+      "name": "Price rules saved by administration",
+      "passed": true
+    },
+    {
+      "name": "Invalid HTTP estimator values rejected",
+      "passed": true
+    },
+    {
+      "name": "Project milestones and stage saved",
+      "passed": true
+    },
+    {
+      "name": "Client cannot mark invoices paid",
+      "passed": true
+    },
+    {
+      "name": "Manual receipt sets paid state and reference",
+      "passed": true
+    },
+    {
+      "name": "Duplicate manual receipt rejected",
+      "passed": true
+    },
+    {
+      "name": "Client payment status reflects saved receipt",
+      "passed": true
+    },
+    {
+      "name": "Disguised executable rejected: looks-valid.php",
+      "passed": true
+    },
+    {
+      "name": "Disguised executable rejected: polyglot.png",
+      "passed": true
+    },
+    {
+      "name": "Private download rejects stored path traversal",
+      "passed": true
+    },
+    {
+      "name": "upgrade staged update requires initial owner sign-in and backup",
+      "passed": true
+    },
+    {
+      "name": "upgrade update rejects missing session protection",
+      "passed": true
+    },
+    {
+      "name": "upgrade incorrect initial password cannot inspect or switch files",
+      "passed": true
+    },
+    {
+      "name": "upgrade authenticated owner still must confirm a backup",
+      "passed": true
+    },
+    {
+      "name": "upgrade signed-in updater removes only the repeated password field",
+      "passed": true
+    },
+    {
+      "name": "upgrade owner verifies immutable staged replacements",
+      "passed": true
+    },
+    {
+      "name": "upgrade actual owner structure migration completes",
+      "passed": true
+    },
+    {
+      "name": "upgrade old privileged entry is a tiny direct-dispatch shim",
+      "passed": true
+    },
+    {
+      "name": "upgrade setup cannot be reused after update",
+      "passed": true
+    },
+    {
+      "name": "upgrade pre-switch owner session survives old and new URLs",
+      "passed": true
+    },
+    {
+      "name": "upgrade legacy POST body and query reach canonical action without redirect",
+      "passed": true
+    },
+    {
+      "name": "Actual update ZIP preserves config locks media and unrelated files",
+      "passed": true
+    },
+    {
+      "name": "Original owner can sign in after file update",
+      "passed": true
+    },
+    {
+      "name": "Supported admin database upgrade completes",
+      "passed": true
+    },
+    {
+      "name": "Upgrade retains populated leads",
+      "passed": true
+    },
+    {
+      "name": "Upgrade retains populated projects",
+      "passed": true
+    },
+    {
+      "name": "Upgrade preserves all original settings",
+      "passed": true
+    },
+    {
+      "name": "Upgrade preserves original credentials and identity",
+      "passed": true
+    },
+    {
+      "name": "HTTP upgrade can safely repeat",
+      "passed": true
+    },
+    {
+      "name": "Upgraded site never reruns fresh setup",
+      "passed": true
+    },
+    {
+      "name": "Desktop no horizontal overflow Homepage",
+      "passed": true
+    },
+    {
+      "name": "Mobile no horizontal overflow Homepage",
+      "passed": true
+    },
+    {
+      "name": "Desktop no horizontal overflow Wix-Comparison",
+      "passed": true
+    },
+    {
+      "name": "Mobile no horizontal overflow Wix-Comparison",
+      "passed": true
+    },
+    {
+      "name": "Desktop no horizontal overflow Planner",
+      "passed": true
+    },
+    {
+      "name": "Mobile no horizontal overflow Planner",
+      "passed": true
+    },
+    {
+      "name": "Desktop no horizontal overflow Portfolio",
+      "passed": true
+    },
+    {
+      "name": "Mobile no horizontal overflow Portfolio",
+      "passed": true
+    },
+    {
+      "name": "Browser estimator uses actual server response",
+      "passed": true
+    },
+    {
+      "name": "Browser filter link updates URL and grid",
+      "passed": true
+    },
+    {
+      "name": "Browser back restores full portfolio",
+      "passed": true
+    },
+    {
+      "name": "Unrevealed sections start hidden under motion",
+      "passed": true
+    },
+    {
+      "name": "Brand sheen animates under normal motion",
+      "passed": true
+    },
+    {
+      "name": "Motion toggle marks the page paused",
+      "passed": true
+    },
+    {
+      "name": "Motion toggle reports pressed state",
+      "passed": true
+    },
+    {
+      "name": "Paused motion force-reveals pending sections",
+      "passed": true
+    },
+    {
+      "name": "Paused motion disables smooth scrolling",
+      "passed": true
+    },
+    {
+      "name": "Paused motion stops transitions",
+      "passed": true
+    },
+    {
+      "name": "Paused motion suppresses the brand sheen",
+      "passed": true
+    },
+    {
+      "name": "Saved pause survives navigation",
+      "passed": true
+    },
+    {
+      "name": "Resuming motion survives navigation",
+      "passed": true
+    },
+    {
+      "name": "Homepage lab metrics use a real layout-shift observer",
+      "passed": true
+    },
+    {
+      "name": "Reduced-motion preference suppresses brand animation",
+      "passed": true
+    },
+    {
+      "name": "Reduced-motion preference prevents smooth scrolling",
+      "passed": true
+    },
+    {
+      "name": "Reduced-motion content stays visible",
+      "passed": true
+    },
+    {
+      "name": "Homepage remains readable without JavaScript",
+      "passed": true
+    },
+    {
+      "name": "Homepage work link navigates without JavaScript",
+      "passed": true
+    },
+    {
+      "name": "Client project list Desktop fits viewport",
+      "passed": true
+    },
+    {
+      "name": "Client project list Mobile fits viewport",
+      "passed": true
+    },
+    {
+      "name": "Browser private project renders",
+      "passed": true
+    },
+    {
+      "name": "No uncaught browser errors",
+      "passed": true
+    },
+    {
+      "name": "Browser authorized download matches stored file",
+      "passed": true
+    },
+    {
+      "name": "Browser client logout clears access",
+      "passed": true
+    },
+    {
+      "name": "Narrow mobile layout home",
+      "passed": true
+    },
+    {
+      "name": "Narrow mobile layout index.php?page=compare-squarespace",
+      "passed": true
+    },
+    {
+      "name": "Narrow mobile layout index.php?page=work",
+      "passed": true
+    },
+    {
+      "name": "Narrow mobile layout index.php?page=faq",
+      "passed": true
+    },
+    {
+      "name": "Narrow mobile layout index.php?page=consultation",
+      "passed": true
+    },
+    {
+      "name": "Touch switches portfolio device",
+      "passed": true
+    },
+    {
+      "name": "Keyboard changes before-after slider",
+      "passed": true
+    },
+    {
+      "name": "Portfolio fixture is honestly labeled",
+      "passed": true
+    },
+    {
+      "name": "Browser website-review persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser consultation persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser estimator error preserves entered value",
+      "passed": true
+    },
+    {
+      "name": "Browser invitation activation consumed token",
+      "passed": true
+    },
+    {
+      "name": "Browser client message saved",
+      "passed": true
+    },
+    {
+      "name": "Browser version-specific change request saved",
+      "passed": true
+    },
+    {
+      "name": "Narrow client workspace fits",
+      "passed": true
+    },
+    {
+      "name": "Pending invitation exists before account revocation",
+      "passed": true
+    },
+    {
+      "name": "Client change revokes real browser session",
+      "passed": true
+    },
+    {
+      "name": "Client update revokes outstanding setup token",
+      "passed": true
+    },
+    {
+      "name": "Extended browser has no unexpected console or page errors",
+      "passed": true
+    },
+    {
+      "name": "Extended browser has no unexpected failed network requests",
+      "passed": true
+    },
+    {
+      "name": "Original inquiry browser submission persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser installer shows the current source build",
+      "passed": true
+    },
+    {
+      "name": "Browser installer loads both original brand images",
+      "passed": true
+    },
+    {
+      "name": "Browser setup validation preserves entered fields",
+      "passed": true
+    },
+    {
+      "name": "Retained external storage blocks ordinary fresh setup",
+      "passed": true
+    },
+    {
+      "name": "Explicit fresh setup selects a separate read-only prefix",
+      "passed": true
+    },
+    {
+      "name": "One-page installer fits mobile",
+      "passed": true
+    },
+    {
+      "name": "Browser single-form install creates native database and removes setup",
+      "passed": true
+    },
+    {
+      "name": "Fresh setup preserves previous tables and private storage",
+      "passed": true
+    },
+    {
+      "name": "Ordinary COMPLETE file overwrite preserves configuration and settings",
+      "passed": true
+    },
+    {
+      "name": "Reuploaded installer remains blocked on an installed site",
+      "passed": true
+    },
+    {
+      "name": "Twelve-character administrator signs in after file overwrite",
+      "passed": true
+    },
+    {
+      "name": "Grouped owner navigation retains core destinations",
+      "passed": true
+    },
+    {
+      "name": "Grouped owner navigation links to the actual administration routes",
+      "passed": true
+    },
+    {
+      "name": "Owner can expand Billing and Products with native controls",
+      "passed": true
+    },
+    {
+      "name": "Public navigation destination responds hosting",
+      "passed": true
+    },
+    {
+      "name": "Public navigation destination responds services",
+      "passed": true
+    },
+    {
+      "name": "Public navigation destination responds products",
+      "passed": true
+    },
+    {
+      "name": "Public service destinations remain reachable in the mobile menu",
+      "passed": true
+    },
+    {
+      "name": "Admin overview Desktop fits viewport",
+      "passed": true
+    },
+    {
+      "name": "Admin overview Mobile fits viewport",
+      "passed": true
+    },
+    {
+      "name": "Browser admin change persisted",
+      "passed": true
+    },
+    {
+      "name": "Admin mobile workspace fits",
+      "passed": true
+    },
+    {
+      "name": "Admin mobile navigation toggles and closes by keyboard",
+      "passed": true
+    },
+    {
+      "name": "Browser content edit persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser price-disabled state persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser unpublished pricing offers consultation",
+      "passed": true
+    },
+    {
+      "name": "Browser pipeline edit persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser admin client create persisted",
+      "passed": true
+    },
+    {
+      "name": "Browser admin GD media upload persisted",
+      "passed": true
+    },
+    {
+      "name": "Admin browser has no console errors or unexpected failed requests",
+      "passed": true
+    },
+    {
+      "name": "No-JavaScript estimator computes on server",
+      "passed": true
+    },
+    {
+      "name": "Root-domain links use the configured root",
+      "passed": true
+    },
+    {
+      "name": "Root-domain favicon loads",
+      "passed": true
+    },
+    {
+      "name": "Fresh installed owner has account-management role",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade staged update requires initial owner sign-in and backup",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade update rejects missing session protection",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade incorrect initial password cannot inspect or switch files",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade authenticated owner still must confirm a backup",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade signed-in updater removes only the repeated password field",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade owner verifies immutable staged replacements",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade actual owner structure migration completes",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade old privileged entry is a tiny direct-dispatch shim",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade setup cannot be reused after update",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade pre-switch owner session survives old and new URLs",
+      "passed": true
+    },
+    {
+      "name": "staff-upgrade legacy POST body and query reach canonical action without redirect",
+      "passed": true
+    },
+    {
+      "name": "1.1.0 package update preserves configuration locks media unrelated files",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 owner signs in before explicit staff migration",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 account upgrade succeeds",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 retains populated leads",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 retains populated projects",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 retains populated studio_clients",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 retains populated studio_jobs",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 retains all original settings",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.1.0 retains all passwords identifiers and auth versions",
+      "passed": true
+    },
+    {
+      "name": "Migration explicitly assigns owner and other existing staff",
+      "passed": true
+    },
+    {
+      "name": "Upgraded 1.1.0 fresh setup remains blocked",
+      "passed": true
+    },
+    {
+      "name": "Other legacy administrator retains normal sign-in and client access",
+      "passed": true
+    },
+    {
+      "name": "HTTP owner enables administrator access using the current session",
+      "passed": true
+    },
+    {
+      "name": "SQL-seeded browser fixture begins without a fabricated installation marker",
+      "passed": true
+    },
+    {
+      "name": "HTTP staff create rejects bad CSRF",
+      "passed": true
+    },
+    {
+      "name": "staff_save refuses the same signed-in owner after permission revocation",
+      "passed": true
+    },
+    {
+      "name": "staff_save refusal retains all database records, schema, private bytes and owner profile",
+      "passed": true
+    },
+    {
+      "name": "HTTP staff create preserves missing account after current owner permission is revoked",
+      "passed": true
+    },
+    {
+      "name": "HTTP creates pending administrator without a password",
+      "passed": true
+    },
+    {
+      "name": "Private staff link uses a fragment and is shown once",
+      "passed": true
+    },
+    {
+      "name": "Viewing staff setup link cannot consume it",
+      "passed": true
+    },
+    {
+      "name": "Invitations do not send customer or staff mail",
+      "passed": true
+    },
+    {
+      "name": "Database invitation holds only its separated digest",
+      "passed": true
+    },
+    {
+      "name": "Malformed setup code returns usable inline error",
+      "passed": true
+    },
+    {
+      "name": "Client identity cannot create administrator accounts",
+      "passed": true
+    },
+    {
+      "name": "HTTP cannot demote last activated owner",
+      "passed": true
+    },
+    {
+      "name": "Administrator desktop fits",
+      "passed": true
+    },
+    {
+      "name": "Administrator narrow mobile fits",
+      "passed": true
+    },
+    {
+      "name": "Create administrator uses the current session without another owner-password field",
+      "passed": true
+    },
+    {
+      "name": "Create administrator retains a nonempty CSRF field",
+      "passed": true
+    },
+    {
+      "name": "Browser administrator creation persists selected access",
+      "passed": true
+    },
+    {
+      "name": "Invite staff client uses the current session without another owner-password field",
+      "passed": true
+    },
+    {
+      "name": "Invite staff client retains a nonempty CSRF field",
+      "passed": true
+    },
+    {
+      "name": "Long private link fits narrow mobile",
+      "passed": true
+    },
+    {
+      "name": "Browser setup removes token from location without consuming it",
+      "passed": true
+    },
+    {
+      "name": "Private setup page prevents referrer disclosure",
+      "passed": true
+    },
+    {
+      "name": "Browser activates account and consumes single-use link",
+      "passed": true
+    },
+    {
+      "name": "Assigned website navigation hides owner and client sections",
+      "passed": true
+    },
+    {
+      "name": "Website staff can save authorized inquiry work",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial staff",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial email",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial health",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial studio-upgrade",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial studio-clients",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial studio-job&id=1",
+      "passed": true
+    },
+    {
+      "name": "Direct website staff denial studio-job&file=1",
+      "passed": true
+    },
+    {
+      "name": "POST authorization cannot be bypassed through own-account page",
+      "passed": true
+    },
+    {
+      "name": "No-JavaScript setup and client-only landing work",
+      "passed": true
+    },
+    {
+      "name": "Client-only navigation excludes inquiries website and accounts",
+      "passed": true
+    },
+    {
+      "name": "Client-only staff can save authorized project updates",
+      "passed": true
+    },
+    {
+      "name": "Direct client-only staff denial leads",
+      "passed": true
+    },
+    {
+      "name": "Direct client-only staff denial projects",
+      "passed": true
+    },
+    {
+      "name": "Direct client-only staff denial staff",
+      "passed": true
+    },
+    {
+      "name": "Direct client-only staff denial email",
+      "passed": true
+    },
+    {
+      "name": "Direct client-only staff denial studio-content",
+      "passed": true
+    },
+    {
+      "name": "Client-only account cannot forge website mutations",
+      "passed": true
+    },
+    {
+      "name": "Disable administrator uses the current session without another owner-password field",
+      "passed": true
+    },
+    {
+      "name": "Disable administrator retains a nonempty CSRF field",
+      "passed": true
+    },
+    {
+      "name": "Browser deactivation revokes existing administrator session",
+      "passed": true
+    },
+    {
+      "name": "Disabled administrator password cannot sign in",
+      "passed": true
+    },
+    {
+      "name": "Reenable administrator uses the current session without another owner-password field",
+      "passed": true
+    },
+    {
+      "name": "Reenable administrator retains a nonempty CSRF field",
+      "passed": true
+    },
+    {
+      "name": "Invite staff recovery uses the current session without another owner-password field",
+      "passed": true
+    },
+    {
+      "name": "Invite staff recovery retains a nonempty CSRF field",
+      "passed": true
+    },
+    {
+      "name": "Recovery immediately retires previous password",
+      "passed": true
+    },
+    {
+      "name": "Owner-issued recovery restores completed setup",
+      "passed": true
+    },
+    {
+      "name": "Administrator cannot promote itself through forged POST",
+      "passed": true
+    },
+    {
+      "name": "Removing grants revokes the active session",
+      "passed": true
+    },
+    {
+      "name": "No-grant staff can sign in to own account only",
+      "passed": true
+    },
+    {
+      "name": "Staff browser has no uncaught page errors",
+      "passed": true
+    },
+    {
+      "name": "Setup secret absent from server request log",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade staged update requires initial owner sign-in and backup",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade update rejects missing session protection",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade incorrect initial password cannot inspect or switch files",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade authenticated owner still must confirm a backup",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade signed-in updater removes only the repeated password field",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade owner verifies immutable staged replacements",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade actual owner structure migration completes",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade old privileged entry is a tiny direct-dispatch shim",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade setup cannot be reused after update",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade pre-switch owner session survives old and new URLs",
+      "passed": true
+    },
+    {
+      "name": "support-upgrade legacy POST body and query reach canonical action without redirect",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 update preserves configuration locks private media and unrelated files",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 owner signs in before support migration",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support remains unprepared before explicit owner approval",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support upgrade refuses invalid CSRF without preparation",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support upgrade still requires backup and policy confirmation",
+      "passed": true
+    },
+    {
+      "name": "support_migrate refuses the same signed-in owner after permission revocation",
+      "passed": true
+    },
+    {
+      "name": "support_migrate refusal retains all database records, schema, private bytes and owner profile",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support upgrade requires current owner authority before preparation",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 explicit support upgrade succeeds",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support update retains staff_profiles",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support update retains staff_invitations",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support update retains studio_clients",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support update retains studio_jobs",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support update retains leads",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 support update retains projects",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 retains original settings",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 retains passwords and auth versions",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 has no implicit client support grants",
+      "passed": true
+    },
+    {
+      "name": "Actual 1.2.0 installed guard still blocks fresh setup",
+      "passed": true
+    },
+    {
+      "name": "Fresh installation includes support tables but no automatic client access",
+      "passed": true
+    },
+    {
+      "name": "support_migrate refuses the same signed-in owner after permission revocation",
+      "passed": true
+    },
+    {
+      "name": "support_migrate refusal retains all database records, schema, private bytes and owner profile",
+      "passed": true
+    },
+    {
+      "name": "HTTP support setup rejects forged CSRF",
+      "passed": true
+    },
+    {
+      "name": "Owner explicitly enables support schema and policy",
+      "passed": true
+    },
+    {
+      "name": "Ordinary support staff remains restricted without client approval",
+      "passed": true
+    },
+    {
+      "name": "Support start opens selected client 1",
+      "passed": true
+    },
+    {
+      "name": "Owner can review an active unapproved client without granting staff access",
+      "passed": true
+    },
+    {
+      "name": "Client record exposes one-click support action",
+      "passed": true
+    },
+    {
+      "name": "Client cannot start a staff support session",
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failure": "AssertionError('Form missing login at http://127.0.0.1:8091/existing/portal/index.php?master=1')"
+}

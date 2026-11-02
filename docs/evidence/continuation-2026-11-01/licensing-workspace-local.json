@@ -1,0 +1,199 @@
+{
+  "passed": true,
+  "scope": "Actual navigation/readiness rendering with policy doubles, isolated real support refusal branch and source-route contracts; not installed SQL or HTTP/browser acceptance",
+  "checks": [
+    {
+      "name": "Owner navigation exposes actual licensing route",
+      "passed": true
+    },
+    {
+      "name": "Licensing navigation group is expanded and selected",
+      "passed": true
+    },
+    {
+      "name": "Non-owner navigation does not expose owner licensing",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 0 always links to real software product filter",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 0 never asks for an administrator password",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 0 only links to rendered license section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 0 only links to prepared software release section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 1 always links to real software product filter",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 1 never asks for an administrator password",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 1 only links to rendered license section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 1 only links to prepared software release section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 2 always links to real software product filter",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 2 never asks for an administrator password",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 2 only links to rendered license section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 2 only links to prepared software release section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 3 always links to real software product filter",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 3 never asks for an administrator password",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 3 only links to rendered license section",
+      "passed": true
+    },
+    {
+      "name": "Readiness state 3 only links to prepared software release section",
+      "passed": true
+    },
+    {
+      "name": "Authenticated portal route wired: software_portal_render($client,$error)",
+      "passed": true
+    },
+    {
+      "name": "Authenticated portal route wired: license_finance_portal_render($client,$_GET['finance'],$error)",
+      "passed": true
+    },
+    {
+      "name": "Malformed and mixed license routes rejected",
+      "passed": true
+    },
+    {
+      "name": "License administration rejects support query contexts",
+      "passed": true
+    },
+    {
+      "name": "studio-clients remains available outside support",
+      "passed": true
+    },
+    {
+      "name": "studio-clients refuses resolved support with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-clients refuses invalid support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-clients refuses empty support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-clients refuses array support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-clients refuses zero support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-licenses remains available outside support",
+      "passed": true
+    },
+    {
+      "name": "studio-licenses refuses resolved support with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-licenses refuses invalid support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-licenses refuses empty support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-licenses refuses array support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "studio-licenses refuses zero support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposals remains available outside support",
+      "passed": true
+    },
+    {
+      "name": "proposals refuses resolved support with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposals refuses invalid support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposals refuses empty support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposals refuses array support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposals refuses zero support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposal remains available outside support",
+      "passed": true
+    },
+    {
+      "name": "proposal refuses resolved support with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposal refuses invalid support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposal refuses empty support token with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposal refuses array support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "proposal refuses zero support marker with HTTP 403 before rendering",
+      "passed": true
+    },
+    {
+      "name": "License responses use private no-store caching",
+      "passed": true
+    }
+  ],
+  "error": null
+}

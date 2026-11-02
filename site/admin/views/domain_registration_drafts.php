@@ -5,7 +5,7 @@ $page=isset($_GET['draft_page'])?registration_drafts_number($_GET,'draft_page',1
 ?>
 <section class="workspace-card"><h1>Private registration drafts</h1><p>Review a client's proposed domain and private registrant contact. These drafts do not reserve a name, quote a fee, record registry consent or submit a registration.</p></section>
 <?php if(!$screen['ready']):?>
-<section class="workspace-card"><h2>Enable private draft storage</h2><p>Contact details are encrypted using a dedicated key in private server storage. Back up that key together with the database; replacing a missing key cannot recover saved contacts.</p><form method="post"><?=csrf_field()?><input name="action" type="hidden" value="registration_drafts_prepare"><label>Current owner password<input name="owner_password" type="password" autocomplete="current-password" required></label><button class="btn gold">Enable drafts</button></form></section>
+<section class="workspace-card"><h2>Enable private draft storage</h2><p>Contact details are encrypted using a dedicated key in private server storage. Back up that key together with the database; replacing a missing key cannot recover saved contacts.</p><form method="post"><?=csrf_field()?><input name="action" type="hidden" value="registration_drafts_prepare"><button class="btn gold">Enable drafts</button></form></section>
 <?php else:
     $id=isset($_GET['draft'])?registration_drafts_text($_GET,'draft',32):'';$context=null;
     if($id!=='')$context=domain_registration_drafts_get($id);

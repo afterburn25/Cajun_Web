@@ -1,6 +1,8 @@
 <?php
 /** Isolated MariaDB/private files, no customer data or provider calls. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/delivery_fixture.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='deliverci_';
@@ -23,7 +25,7 @@ try{
     foreach([2=>['clients.manage'],3=>['website.manage']] as $id=>$grants)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);d_actor();
     for($id=1;$id<=2;$id++)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Delivery client '.$id,'delivery-client'.$id.'@example.invalid',str_repeat((string)$id,32),$now]);
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (1,?,?,?,?,?)',['Delivered project','Preserve summary','Preserve milestones',$now,$now]);$original=all('SELECT * FROM '.table('studio_jobs'));
-    d_deny('Setup requires owner reauthentication',fn()=>delivery_migrate('wrong'));
+    d_deny('Revoked owner refuses: Setup requires owner reauthentication',fn()=>cwp_test_owner_revoked(fn()=>delivery_migrate('wrong')));
     foreach(delivery_schema('deliverci_') as $sql)db()->exec($sql);db()->exec('ALTER TABLE '.table('website_releases').' DROP INDEX project_version');d_deny('Setup rejects missing version uniqueness',fn()=>delivery_migrate($password));db()->exec('ALTER TABLE '.table('website_releases').' ADD UNIQUE project_version(job_id,version)');
     db()->exec('ALTER TABLE '.table('website_releases').' MODIFY sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');d_deny('Setup rejects folded hash identifiers',fn()=>delivery_migrate($password));db()->exec('ALTER TABLE '.table('website_releases').' MODIFY sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
     query('INSERT INTO '.table('delivery_events').' (release_id,client_id,actor_type,actor_id,action,detail,created_at) VALUES (?,1,\'admin\',1,\'unknown\',\'unknown\',?)',[str_repeat('a',32),$now]);d_deny('Setup refuses unknown populated delivery tables',fn()=>delivery_migrate($password));query('DELETE FROM '.table('delivery_events'));
@@ -33,7 +35,7 @@ try{
     $key=bin2hex(random_bytes(32));$id=d_upload('1.0.0',$key);$row=delivery_record($id);d_ok('Client staff upload creates private immutable manifest',strlen($id)===32&&$row['status']==='draft'&&(int)$row['created_by']===2&&count(json_decode($row['manifest'],true)['files'])===3);
     d_ok('Same request returns same record and bytes',d_upload('1.0.0',$key)===$id&&(int)query('SELECT COUNT(*) FROM '.table('website_releases'))->fetchColumn()===1);
     d_deny('Reusing upload key with changed version rejected',fn()=>d_upload('2.0.0',$key));d_deny('Duplicate version cannot replace archive',fn()=>d_upload('1.0.0'));
-    d_deny('Non-owner cannot publish',fn()=>d_publish($id));d_actor();d_deny('Another actor cannot reuse upload request',fn()=>d_upload('1.0.0',$key));d_deny('Publish requires current password',fn()=>delivery_publish($id,delivery_review_hash($row),'wrong'));d_deny('Publish requires current manifest fingerprint',fn()=>delivery_publish($id,str_repeat('f',64),$password));
+    d_deny('Non-owner cannot publish',fn()=>d_publish($id));d_actor();d_deny('Another actor cannot reuse upload request',fn()=>d_upload('1.0.0',$key));d_deny('Revoked owner refuses: Publish requires current password',fn()=>cwp_test_owner_revoked(fn()=>delivery_publish($id,delivery_review_hash($row),'wrong')));d_deny('Publish requires current manifest fingerprint',fn()=>delivery_publish($id,str_repeat('f',64),$password));
     $file=delivery_directory().'/release-'.$id.'.php';d_ok('Private file is guarded and uses restrictive permissions',str_starts_with(file_get_contents($file),CWP_GUARD)&&(fileperms($file)&0777)===0600);$fh=delivery_open($row);d_ok('Verified download descriptor contains exact ZIP',stream_get_contents($fh)===file_get_contents($path));fclose($fh);
     $before=glob(delivery_directory().'/*');d_ok('Upload audit failure rolls back row and uncommitted file',d_audit_failure(fn()=>d_upload('failed'))&&glob(delivery_directory().'/*')===$before&&!one('SELECT id FROM '.table('website_releases')." WHERE version='failed'"));
     d_ok('Publish audit failure retains draft',d_audit_failure(fn()=>d_publish($id))&&delivery_record($id)['status']==='draft');

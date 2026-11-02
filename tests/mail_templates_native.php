@@ -1,6 +1,8 @@
 <?php
 /** Native A-07 application acceptance. Disposable synthetic tables only. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if (PHP_SAPI!=='cli' || getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='tplci_';
@@ -29,7 +31,7 @@ try {
     staff_seed_owner(1);
     foreach ([2=>['mail.templates.manage'],3=>['website.manage'],4=>['mail.templates.manage']] as $id=>$grants) query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);
     t_actor();$users=all('SELECT * FROM '.table('users').' ORDER BY id');
-    t_deny('Owner setup requires current password',fn()=>mail_templates_migrate('wrong'));
+    t_deny('Revoked owner refuses: Owner setup requires current password',fn()=>cwp_test_owner_revoked(fn()=>mail_templates_migrate('wrong')));
     t_actor(2);t_deny('Template permission cannot enable schema',fn()=>mail_templates_migrate($password));
     t_deny('Library unavailable before explicit setup',fn()=>mail_templates_list());t_actor();
     foreach (mail_templates_schema('tplci_') as $sql) db()->exec($sql);

@@ -1,0 +1,27 @@
+{
+  "port": 33317,
+  "datadir": "/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/data",
+  "restart_pid": 136357,
+  "launch_command": [
+    "/usr/sbin/mariadbd",
+    "--no-defaults",
+    "--user=nobody",
+    "--datadir=/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/data",
+    "--socket=/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/mysql.sock",
+    "--pid-file=/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/mysql.pid",
+    "--log-error=/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/server.log",
+    "--bind-address=127.0.0.1",
+    "--port=33317",
+    "--skip-name-resolve",
+    "--log-bin-trust-function-creators=1"
+  ],
+  "identity": [
+    "33317",
+    "/tmp/cwp-finance-initial-probe-db-8cc2b4f257ab/data/",
+    "10.11.14-MariaDB-0ubuntu0.24.04.1"
+  ],
+  "shutdown": "clean command completed",
+  "server_exit_code": 0,
+  "other_runtime_accessed": false,
+  "driver_sha256": "61ec038dcf44c692e327278062bec50c75f191c5eb642e5b105a965b29979878"
+}

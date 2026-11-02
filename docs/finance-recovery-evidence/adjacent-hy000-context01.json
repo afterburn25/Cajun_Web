@@ -1,0 +1,62 @@
+{
+  "scope": "Read-only state and timestamps from the owned synthetic adjacent receipt failure and another-prefix migration. No identifiers, license keys, credentials, SQL arguments or provider payloads are emitted. Original generic HY000 log has no recoverable numeric driver code; temporal overlap alone cannot establish causality.",
+  "failure_case": "partial_later-during_readback-normal",
+  "source_report_sha256": "8b3a494c975302a29fd1744ea38d68443d07bc79d9f25c9253ff6cbfa9217d5c",
+  "facts": {
+    "subscription_state": {
+      "status": "review",
+      "created_at": "2026-11-02 02:14:43",
+      "updated_at": "2026-11-02 02:14:47"
+    },
+    "reservation": [
+      {
+        "state": "not_dispatched",
+        "dispatched_at": null,
+        "predecessor_terminal_status": null,
+        "retirement_required": 0,
+        "created_at": "2026-11-02 02:14:46",
+        "updated_at": "2026-11-02 02:14:47"
+      }
+    ],
+    "agreement_action_times": [
+      {
+        "action": "license.financing.offer",
+        "created_at": "2026-11-02 02:14:41"
+      },
+      {
+        "action": "license.financing.offer.signed",
+        "created_at": "2026-11-02 02:14:42"
+      },
+      {
+        "action": "license.financing.installment.issued",
+        "created_at": "2026-11-02 02:14:42"
+      },
+      {
+        "action": "license.financing.installment.issued",
+        "created_at": "2026-11-02 02:14:42"
+      },
+      {
+        "action": "license.financing.installment.issued",
+        "created_at": "2026-11-02 02:14:42"
+      },
+      {
+        "action": "license.financing.subscription.created",
+        "created_at": "2026-11-02 02:14:44"
+      },
+      {
+        "action": "license.financing.replacement.reserved",
+        "created_at": "2026-11-02 02:14:46"
+      },
+      {
+        "action": "license.financing.replacement.review",
+        "created_at": "2026-11-02 02:14:47"
+      }
+    ],
+    "other_prefix_migration_actions": [
+      {
+        "action": "license.financing.recovery.setup",
+        "created_at": "2026-11-02 02:12:34"
+      }
+    ]
+  }
+}

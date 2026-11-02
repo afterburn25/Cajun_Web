@@ -1,0 +1,15 @@
+{
+  "command": [
+    "tests/finance_initial_receipts_native.php",
+    "fep_fadjirisk_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 9.865,
+  "stderr_bytes": 201,
+  "report_passed": false,
+  "check_count": 17,
+  "failed_checks": [
+    "fixture exception: RuntimeException A separate financing collection has an unresolved outcome. Reconcile it before automatic enrollment."
+  ]
+}

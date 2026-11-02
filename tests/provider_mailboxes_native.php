@@ -1,6 +1,8 @@
 <?php
 /** Native disposable MySQL/MariaDB with the real shared gateway and synthetic transport. */
 declare(strict_types=1);
+require_once __DIR__.'/current_owner_authority.php';
+
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -85,7 +87,7 @@ try {
     mb_ok('Fresh mailbox GET creates no storage',provider_mailbox_ready()===false&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pmb_provider_mailbox_requests']));
     db()->beginTransaction();try{query('INSERT INTO '.table('settings').' (name,value) VALUES (?,?)',['mailbox_caller_probe','uncommitted']);try{provider_mailbox_prepare($password);mb_ok('Preparation refuses caller transaction',false);}catch(LogicException){mb_ok('Preparation refuses caller transaction',true);}mb_ok('Preparation preserves caller transaction and creates no mailbox tables',db()->inTransaction()&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pmb_provider_mailbox_policies']));}finally{if(db()->inTransaction())db()->rollBack();}
     mb_ok('Caller data rolls back after refused preparation',!one('SELECT name FROM '.table('settings').' WHERE name=?',['mailbox_caller_probe'])&&!one('SELECT id FROM '.table('audit').' WHERE action=?',['provider.mailbox_prepared']));
-    mb_deny('Preparation requires current owner password',fn()=>provider_mailbox_prepare('wrong'));
+    mb_deny('Revoked owner refuses: Preparation requires current owner password',fn()=>cwp_test_owner_revoked(fn()=>provider_mailbox_prepare('wrong')));
     mb_actor(2);mb_deny('Administrator cannot prepare mailbox records',fn()=>provider_mailbox_prepare($password));mb_actor();
     mb_ok('Interrupted preparation rolls back marker and audit',mb_audit_fail('mailbox_prepared',fn()=>provider_mailbox_prepare($password))&&!one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_mailbox_schema_version']));
     provider_mailbox_prepare($password);mb_ok('Empty interrupted preparation resumes with exact schema',provider_mailbox_ready());
@@ -152,7 +154,7 @@ try {
     mb_ok('Failed form preserves the second approved domain selection',str_contains($html,'value="'.$secondPolicy.'" selected')&&!str_contains($html,'value="'.$policy1.'" selected'));
     $_POST['mailbox_policy']='f'.str_repeat('0',31);mb_ok('Unavailable posted domain forces a fresh explicit selection',str_contains(mb_render(),'<option value="" selected>Choose a domain</option>'));
     mb_ok('Client form does not expose foreign domain or owner credentials',!str_contains($html,'two.example')&&!str_contains($html,'current_password')&&str_contains($html,'not a complete list'));$_POST=[];
-    mb_actor();$html=mb_render(true);mb_ok('Rendered owner creation form requires current password',str_contains($html,'current_password')&&str_contains($html,'provider_inventory_mailbox_create'));
+    mb_actor();$html=mb_render(true);mb_ok('Rendered owner form uses current session and retains CSRF and create action',!str_contains($html,'current_password')&&str_contains($html,'name="csrf"')&&str_contains($html,'provider_inventory_mailbox_create'));
     $html=mb_render_owner($profileId);mb_ok('Native owner view exposes per-domain policy and truthful quota guidance',str_contains($html,'Maximum requests in 24 hours')&&str_contains($html,'does not set mailbox storage')&&!str_contains($html,$mailPassword));
     foreach(['provider_mailbox_requests','provider_mailbox_policies','provider_operation_grants','provider_operations','audit'] as $table){$json=json_encode(all('SELECT * FROM '.table($table)));mb_ok('No raw mailbox or API password in '.$table,!str_contains($json,$mailPassword)&&!str_contains($json,$secret));}
     save_setting('provider_mailbox_schema_version','');mb_deny('Lost mailbox marker cannot reset history',fn()=>provider_mailbox_prepare($password));save_setting('provider_mailbox_schema_version','1');

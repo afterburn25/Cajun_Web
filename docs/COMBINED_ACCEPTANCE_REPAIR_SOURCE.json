@@ -1,0 +1,191 @@
+{
+  "schema": 1,
+  "base_tree": "2f11bc1fa202020880ead9abc1ee72d19205cac5",
+  "files": {
+    "tests/current_owner_authority.php": {
+      "before_sha256": "39596d784de6556fd391acbcceebce29aacb9c82f78dceb845255d3ce0c68e6f",
+      "edits": [
+        [
+          "        'Only an owner can verify administrator access.',",
+          "        'Only an owner can verify administrator access.',\n        'Current website and inquiry permission is required.',\n        'Your current account does not have access to client administration.',"
+        ]
+      ],
+      "after_sha256": "6fc2cf4068f991216931fa0b9821de93af1519f2ef04aeb484c9775bd4b7716e"
+    },
+    "tests/current_owner_authority_contract.php": {
+      "before_sha256": "19a757e3c5508fdb8a0ef8cb160830cb2073186f32a784ec9972570fd39ba463",
+      "edits": [
+        [
+          " reset_fixture();must_reject('A callback that wrongly succeeds cannot pass',fn()=>null);",
+          " foreach(['Current website and inquiry permission is required.','Your current account does not have access to client administration.'] as $message){\n  reset_fixture();$before=cwp_test_authority_snapshot();$correct=false;\n  try{cwp_test_owner_revoked(fn()=>throw new RuntimeException($message));}catch(RuntimeException $e){$correct=$e->getMessage()===$message;}\n  ok_fixture('Actual service authority gate is recognized: '.$message,$correct&&cwp_test_authority_snapshot()===$before);\n  reset_fixture();must_reject('Matching service error cannot hide a write: '.$message,function()use($message){$GLOBALS['rows']['authority_audit'][]=['id'=>2];throw new RuntimeException($message);});\n }\n reset_fixture();must_reject('A callback that wrongly succeeds cannot pass',fn()=>null);"
+        ]
+      ],
+      "after_sha256": "7ee211d16b292244ab6e9d5b84f50f487a7a4d46fc20dce2dc1b545443b8e17e"
+    },
+    "tests/software_commerce_native.php": {
+      "before_sha256": "932dcbb6a5ae5f854caac45ac879572037a5e05b96a5b8251f0c846c58eda336",
+      "edits": [
+        [
+          "$n=0;\nfunction swok(bool $pass,string $name):void{global $n;if(!$pass)throw new RuntimeException($name);$n++;echo 'PASS '.$name.PHP_EOL;}",
+          "$n=0;$checks=[];\nfunction swok(bool $pass,string $name):void{global $n,$checks;$checks[]=['name'=>$name,'passed'=>$pass];if(!$pass)throw new RuntimeException($name);$n++;echo 'PASS '.$name.PHP_EOL;}"
+        ]
+      ],
+      "after_sha256": "f0e4276cee60eb90ccff49eea2d7a674a72e5a0c5ce436bf7f94d33f47f8a56f"
+    },
+    "tests/checkout_endpoint.php": {
+      "before_sha256": null,
+      "after_sha256": "77d06bcb419af77c0ca05cabf81af4480d2ef293f7ddd99163f00472576d4b1e"
+    },
+    "tests/service_plans_checkout_native.php": {
+      "before_sha256": "b7f038f2c69c2434771221a032bdf2c8cb8625495500f25b403f58d87d0ea4e8",
+      "edits": [
+        [
+          "require_once __DIR__.'/current_owner_authority.php';",
+          "require_once __DIR__.'/current_owner_authority.php';\nrequire_once __DIR__.'/checkout_endpoint.php';"
+        ],
+        [
+          "(int)query('SELECT @@port')->fetchColumn()===$port&&query('SELECT DATABASE()')->fetchColumn()===$database",
+          "cwp_test_checkout_endpoint($port,(int)query('SELECT @@port')->fetchColumn())&&(int)config()['db']['port']===$port&&query('SELECT DATABASE()')->fetchColumn()===$database"
+        ]
+      ],
+      "after_sha256": "4582451eb68075d463db2969980b7e3e709ef9c08bdfe217599783c0074da392"
+    },
+    "tests/recurring_billing_checkout_native.php": {
+      "before_sha256": "ee1eb08da93dbd864c8beedf080bad57fe5aba2839ef7f7844c6723d947bd4f1",
+      "edits": [
+        [
+          "require_once __DIR__.'/current_owner_authority.php';",
+          "require_once __DIR__.'/current_owner_authority.php';\nrequire_once __DIR__.'/checkout_endpoint.php';"
+        ],
+        [
+          "(int)query('SELECT @@port')->fetchColumn()===$port&&query('SELECT DATABASE()')->fetchColumn()===$database",
+          "cwp_test_checkout_endpoint($port,(int)query('SELECT @@port')->fetchColumn())&&(int)config()['db']['port']===$port&&query('SELECT DATABASE()')->fetchColumn()===$database"
+        ],
+        [
+          "    rcn_owner();service_plans_migrate($password);service_plans_checkout_migrate($password);recurring_billing_migrate($password);",
+          "    rcn_owner();$retainedClients=all('SELECT * FROM '.table('studio_clients').' ORDER BY id');$retainedJobs=all('SELECT * FROM '.table('studio_jobs').' ORDER BY id');\n    payments_migrate($password);\n    rcn_ok('Current payment prerequisite is migrated with retained clients and jobs '.$prefix,payments_ready()&&setting('payments_schema_version')==='2'&&all('SELECT * FROM '.table('studio_clients').' ORDER BY id')===$retainedClients&&all('SELECT * FROM '.table('studio_jobs').' ORDER BY id')===$retainedJobs);\n    service_plans_migrate($password);service_plans_checkout_migrate($password);recurring_billing_migrate($password);"
+        ]
+      ],
+      "after_sha256": "7bbd4a805aa4fe53db1ba85944d10ff9e6bc1afb8cf1ee2adbd4f118b07c5271"
+    },
+    "tests/consolidation_native.py": {
+      "before_sha256": "c928e9994186e82ef6285668c194f0e22719c24666ccf18aaf95aef5b1653bb5",
+      "edits": [
+        [
+          "'CWP_CONSOLIDATION_CASE',*flags.values()",
+          "'CWP_CONSOLIDATION_CASE','CWP_TEST_CHECKOUT_DOCKER_PORT',*flags.values()"
+        ],
+        [
+          "env.update(CWP_TEST_DATABASE='cwp_checkout_test',CWP_TEST_PORT='43319')",
+          "env.update(CWP_TEST_DATABASE='cwp_checkout_test',CWP_TEST_PORT='43319',CWP_TEST_CHECKOUT_DOCKER_PORT='3306')"
+        ],
+        [
+          "if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')",
+          "if len(cases)!=63 or sum(cases.values())!=122:raise SystemExit('Native suite inventory changed')\n# Additional actual owner-denial assertion replaces the obsolete inline password branch.\ncases['provider_password_reset_template_native']+=1"
+        ],
+        [
+          "cases['provider_password_reset_template_native']+=1",
+          "cases['provider_password_reset_template_native']+=1\n# Retain the nested cloud/order/fulfillment refusals as actual authority checks.\ncases['provider_inventory_native']+=1\ncases['recurring_billing_native']+=7"
+        ]
+      ],
+      "after_sha256": "b2a4da6722719a993e76c642d03101a0d20e32ebaff6e43474b3ed84240d014c"
+    },
+    "tests/provider_workspace_render.php": {
+      "before_sha256": null,
+      "after_sha256": "c57c0b30fa816caa160363d569d8fa9f6b477670de7133ed384269a8c39e3959"
+    },
+    "tests/provider_inventory_native.php": {
+      "before_sha256": "a094ecd07033653a9f48a698ac595325e1b084b467b3237f6ea88706ce341047",
+      "edits": [
+        [
+          "require_once CWP_CODE_ROOT.'/includes/layout/admin.php';ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();",
+          "require_once CWP_CODE_ROOT.'/includes/layout/admin.php';require_once __DIR__.'/provider_workspace_render.php';$domainHtml=cwp_test_provider_workspace(['section'=>'domains']);$cloudHtml=cwp_test_provider_workspace(['section'=>'cloud']);"
+        ],
+        [
+          "str_contains($cloudHtml,'Prepare domain search')",
+          "str_contains($domainHtml,'Prepare domain search')"
+        ],
+        [
+          "provider_settings_save($id,6,'Cloud context changed',true,'',$password);ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();",
+          "provider_settings_save($id,6,'Cloud context changed',true,'',$password);$cloudHtml=cwp_test_provider_workspace(['section'=>'cloud']);"
+        ]
+      ],
+      "after_sha256": "e83b494cc53be679871a01366dc9404e50a3241eb6cf91599b2b2a2bf2176c5b"
+    },
+    "tests/provider_inventory_upgrade_native.php": {
+      "before_sha256": "e98fa71e01bef9d56e7de51243d66ccb1f39a76ca9a80b13d134aced07b43940",
+      "edits": [
+        [
+          "function pu_render():string {ob_start();try{require CWP_CODE_ROOT.'/admin/views/providers.php';return ob_get_contents();}finally{ob_end_clean();}}",
+          "require_once __DIR__.'/provider_workspace_render.php';\nfunction pu_render(string $section='services'):string {return cwp_test_provider_workspace(['section'=>$section]);}"
+        ],
+        [
+          "str_contains($unpreparedHtml,'Prepare domain search')",
+          "str_contains(pu_render('domains'),'Prepare domain search')"
+        ]
+      ],
+      "after_sha256": "b66b957270b95a3b32d7aee63660166ae18d67e0ad250b5f245406c7ca72a038"
+    },
+    "tests/provider_cloud_sites_native.php": {
+      "before_sha256": "12e13af3f4aaadfcbe757308293721cda4796d28af1abca99ff9614cc563d476",
+      "edits": [
+        [
+          "'Actual owner view includes typed consent/password and pending-ID guidance',str_contains($html,'data-cloud-website-create')&&str_contains($html,'name=\"reviewed\"')&&str_contains($html,'name=\"current_password\"')",
+          "'Actual owner view retains explicit consent and CSRF without repeat password',str_contains($html,'data-cloud-website-create')&&str_contains($html,'name=\"reviewed\"')&&str_contains($html,'name=\"csrf\"')&&!str_contains($html,'name=\"current_password\"')"
+        ]
+      ],
+      "after_sha256": "2e894bd87f7d0f9b3e30b751a38217055d8f2b5ac1e655ac2c453cef5bb55049"
+    },
+    "tests/provider_mailboxes_native.php": {
+      "before_sha256": "bb013ba82dbba0381482e408e5e2f181b4c9bdcf9ed74555a99116c2be743219",
+      "edits": [
+        [
+          "'Rendered owner creation form requires current password',str_contains($html,'current_password')&&str_contains($html,'provider_inventory_mailbox_create')",
+          "'Rendered owner form uses current session and retains CSRF and create action',!str_contains($html,'current_password')&&str_contains($html,'name=\"csrf\"')&&str_contains($html,'provider_inventory_mailbox_create')"
+        ]
+      ],
+      "after_sha256": "02b336ff5e60dee55d8c7ee844f4110546e6a636ca1388df1bdbaa13dfc5ee46"
+    },
+    "tests/domain_registration_drafts_native.php": {
+      "before_sha256": "9d69464bc2741fdf4551a28e762d0d3ecb3675b558a59b3a53ea2bbd5a024806",
+      "edits": [
+        [
+          "str_contains($html,'owner_password')&&!str_contains($html,'registration_drafts_client_submit')",
+          "!str_contains($html,'owner_password')&&str_contains($html,'registration_drafts_owner_save')&&str_contains($html,'name=\"client_id\"')&&str_contains($html,'name=\"csrf\"')&&!str_contains($html,'registration_drafts_client_submit')"
+        ]
+      ],
+      "after_sha256": "d0d2ce7ec19093ae797b635e2c6c58423081f58a6010b25d01ee8fc4db2221c4"
+    },
+    "tests/provider_password_reset_template_native.php": {
+      "before_sha256": "e5a0e61a7b45a55502fc87249019caca0fa01153d21de8762bd909cc51fe7180",
+      "edits": [
+        [
+          "    foreach(['password','confirmation','proof','text'] as $bad)",
+          "    $before=[$dns,$reads,$writes,prtn_snapshot()];prtn_deny('Save refuses revoked owner and preserves provider request history',fn()=>cwp_test_owner_revoked(fn()=>prtn_change($review)));prtn_ok('Revoked owner consumes no approval or provider call',[$dns,$reads,$writes,prtn_snapshot()]===$before);\n    foreach(['confirmation','proof','text'] as $bad)"
+        ]
+      ],
+      "after_sha256": "17848b4c2d951ab604b6de98882b8281ecf56caf2d87186365a47c247f195b46"
+    },
+    "site/admin/views/providers.php": {
+      "before_sha256": "b69c97a6f406de7f64ea92c6a8806fe5ed3a9c037629c3554af785e2462b49c5",
+      "edits": [
+        [
+          "require_once CWP_CODE_ROOT.'/app/providers/workspace.php';",
+          "require_once CWP_CODE_ROOT.'/app/providers/workspace.php';\n$cloudAssignmentFocused=($_GET['focus']??null)==='cloud-assignment';\nif($cloudAssignmentFocused){\n    ?><section class=\"workspace-card\" data-cloud-assignment-focus><h2>Cloud assignments</h2><p>Review cloud observations, client assignments and their recorded history. This focused page does not load unrelated website or package controls.</p><a class=\"btn outline\" href=\"<?=esc(admin_url('provider-settings'))?>\">All 20i workspaces</a></section><?php\n    require CWP_CODE_ROOT.'/admin/views/provider_cloud.php';\n    return;\n}"
+        ]
+      ],
+      "after_sha256": "872b1481e2159b328f6e65fb525f3bffc600974d490c8a79aaa53550f9d936a6"
+    },
+    "tests/provider_cloud_assignment_native.php": {
+      "before_sha256": "1d1bbe7d9c8617def2d11ef05a8fe27dc4e7b6fee35deb0911926d0a624f330f",
+      "edits": [
+        [
+          "str_contains($focused,'name=\"current_password\"')",
+          "!str_contains($focused,'name=\"current_password\"')"
+        ]
+      ],
+      "after_sha256": "ca6b60bdba7673f3a33bb3959a0126d8a4aae76e190f0962d96e201925a17b27"
+    }
+  },
+  "scope": "Reviewed current-session, reporting, render-routing and isolated-checkout corrections. Native and installed acceptance remain required; no deployment."
+}

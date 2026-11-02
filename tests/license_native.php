@@ -23,7 +23,9 @@ try{
 
     // --- key generation ----------------------------------------------------
     $k1=license_generate_key();$k2=license_generate_key();
-    lic_ok('Key format is XXXX-XXXX-XXXX-XXXX hex',(bool)preg_match('/^[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/D',$k1));
+    lic_ok('New keys retain all 128 random bits as eight hexadecimal groups',
+        (bool)preg_match('/^(?:[0-9A-F]{4}-){7}[0-9A-F]{4}$/D',$k1)
+        &&strlen(str_replace('-','',$k1))===32);
     lic_ok('Keys are unique',$k1!==$k2);
 
     // --- license creation ---------------------------------------------------

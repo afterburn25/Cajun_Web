@@ -1,0 +1,737 @@
+{
+  "recorded_utc": "2026-10-28T07:42:04.280Z",
+  "parent_source": "d40af22898818a575d9c3e9c358f7be05ad0af74",
+  "tested_working_tree_sha256": {
+    "site/app/billing/finance_charge.php": "aa3a96da003cb3fb02d1b064c9e4ede4a006bc1650a53e72998d196822d14578",
+    "site/app/billing/finance_subscription.php": "c62214dd62a8d50294b50afad12db94381a823d4d3b1c3758e33e1d005409b8f",
+    "site/app/billing/finance_authorize_net.php": "51f5dd411705f666dd7dd859a9822e078db61bfa6076f43806b76ac7d59620ab",
+    "site/app/licenses/financing_policy.php": "77fc9d62e93d0ac367f7e2c279cf6847f066809b961eb45cea88a4af41f35d26",
+    "site/install/inventory.generated.php": "429b856186335d16c876e44b43755e3a72c86061091f4ff99da9ff0ff398f278",
+    "tests/license_financing_native_cases.php": "c60eb34a2995d0080239a34d35b4414b3d07ce1991799799e05ce9c7eab3e73f",
+    "tests/license_financing_policy.php": "6e25998e1bce802eb8d5d7ac8be7e78fbb4656927b597bbd09770646867208f5",
+    "tests/license_finance_replacement_contract.php": "0a4e540ddc50e807dc387101088ddd22ab718caeac52b46bd57a956d91696278"
+  },
+  "environment": {
+    "os": "Windows",
+    "php": "8.4.27",
+    "database": "MariaDB 10.11.14",
+    "network": "Disposable loopback database on an assigned port; no external gateway"
+  },
+  "summary": {
+    "suite_passed": false,
+    "passed_checks": 173,
+    "recorded_checks": 174,
+    "owner_reauthentication_checks_passed": 4,
+    "blocker": "Existing private-file security guard refuses a runtime that cannot retain POSIX 0600 permissions"
+  },
+  "native_report": {
+    "passed": false,
+    "scope": "Synthetic MariaDB native recurring consent/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.",
+    "php": "8.4.27",
+    "checks": [
+      {
+        "name": "Existing installation requires explicit recurring setup",
+        "passed": true
+      },
+      {
+        "name": "Setup rejects wrong owner password",
+        "passed": true
+      },
+      {
+        "name": "Financial administrator cannot run owner setup",
+        "passed": true
+      },
+      {
+        "name": "Owner setup creates empty recurring storage",
+        "passed": true
+      },
+      {
+        "name": "Repeated setup preserves empty storage",
+        "passed": true
+      },
+      {
+        "name": "Unexpected storage index refuses adoption",
+        "passed": true
+      },
+      {
+        "name": "Staff offer pins exact retained active service terms",
+        "passed": true
+      },
+      {
+        "name": "Exact offer retry is unchanged",
+        "passed": true
+      },
+      {
+        "name": "Changed offer identity refuses",
+        "passed": true
+      },
+      {
+        "name": "Overlapping undecided offer refuses",
+        "passed": true
+      },
+      {
+        "name": "Partial staff permission refuses 3",
+        "passed": true
+      },
+      {
+        "name": "Partial staff permission refuses 4",
+        "passed": true
+      },
+      {
+        "name": "Both financial and client permissions allow staff read",
+        "passed": true
+      },
+      {
+        "name": "Staff cannot manufacture client acceptance",
+        "passed": true
+      },
+      {
+        "name": "Another client cannot read agreement",
+        "passed": true
+      },
+      {
+        "name": "Client decision requires explicit confirmation",
+        "passed": true
+      },
+      {
+        "name": "Support parameter cannot consent",
+        "passed": true
+      },
+      {
+        "name": "Consent must bind the exact presented terms",
+        "passed": true
+      },
+      {
+        "name": "Actual client acceptance is retained",
+        "passed": true
+      },
+      {
+        "name": "Exact decision retry does not append again",
+        "passed": true
+      },
+      {
+        "name": "Conflicting decision identity refuses",
+        "passed": true
+      },
+      {
+        "name": "Revoked client session refuses replay",
+        "passed": true
+      },
+      {
+        "name": "Expired client idle session refuses read",
+        "passed": true
+      },
+      {
+        "name": "Expired absolute client session refuses read",
+        "passed": true
+      },
+      {
+        "name": "Audit failure rolls back activation",
+        "passed": true
+      },
+      {
+        "name": "Future activation preserves client consent",
+        "passed": true
+      },
+      {
+        "name": "Future unstarted period cannot be invoiced",
+        "passed": true
+      },
+      {
+        "name": "Stale lifecycle revision refuses",
+        "passed": true
+      },
+      {
+        "name": "Actual client end overrides later planned resume",
+        "passed": true
+      },
+      {
+        "name": "Replacement cannot overlap original end boundary",
+        "passed": true
+      },
+      {
+        "name": "Replacement keeps prior history and new consent requirement",
+        "passed": true
+      },
+      {
+        "name": "Withdrawing an intermediate offer cannot bypass earlier end cutoff",
+        "passed": true
+      },
+      {
+        "name": "Historical event corruption refuses newer agreement reads",
+        "passed": true
+      },
+      {
+        "name": "Missing generation anchor refuses",
+        "passed": true
+      },
+      {
+        "name": "Synthetic historical active agreement passes native integrity",
+        "passed": true
+      },
+      {
+        "name": "Invoice audit failure rolls back invoice and permanent obligation",
+        "passed": true
+      },
+      {
+        "name": "Invoice mapping failure rolls back inserted invoice",
+        "passed": true
+      },
+      {
+        "name": "Eligible period creates exact existing-ledger invoice",
+        "passed": true
+      },
+      {
+        "name": "Identical invoice request returns original without duplication",
+        "passed": true
+      },
+      {
+        "name": "Different request cannot duplicate invoiced period",
+        "passed": true
+      },
+      {
+        "name": "Conflicting request ID cannot select another period",
+        "passed": true
+      },
+      {
+        "name": "Changed invoice amount refuses current ledger use",
+        "passed": true
+      },
+      {
+        "name": "Corrupt invoice binding refuses replay",
+        "passed": true
+      },
+      {
+        "name": "Paused source refuses new invoices",
+        "passed": true
+      },
+      {
+        "name": "Paused source does not invalidate an existing obligation",
+        "passed": true
+      },
+      {
+        "name": "Current authorized exact retry preserves existing invoice after source pause",
+        "passed": true
+      },
+      {
+        "name": "Resumed intact source permits its next agreed invoice",
+        "passed": true
+      },
+      {
+        "name": "Concurrent distinct requests create exactly one period invoice",
+        "passed": true
+      },
+      {
+        "name": "Inactive client blocks invoice replay",
+        "passed": true
+      },
+      {
+        "name": "Staff can inspect inactive client retained agreement",
+        "passed": true
+      },
+      {
+        "name": "Revoked staff permissions refuse saved agreement",
+        "passed": true
+      },
+      {
+        "name": "Populated repeated migration preserves agreements and invoices",
+        "passed": true
+      },
+      {
+        "name": "Unknown version refuses setup",
+        "passed": true
+      },
+      {
+        "name": "Offer cannot reprice the agreed service",
+        "passed": true
+      },
+      {
+        "name": "Offer cannot change subscribed cadence",
+        "passed": true
+      },
+      {
+        "name": "Offer cannot use another client project",
+        "passed": true
+      },
+      {
+        "name": "Offer cannot use another clients subscription",
+        "passed": true
+      },
+      {
+        "name": "Staff support parameter refuses invoices",
+        "passed": true
+      },
+      {
+        "name": "Active support context refuses staff reads",
+        "passed": true
+      },
+      {
+        "name": "Expired staff session refuses invoice replay",
+        "passed": true
+      },
+      {
+        "name": "Changed project owner refuses recurring agreement reads",
+        "passed": true
+      },
+      {
+        "name": "Changed project owner refuses existing invoice balance",
+        "passed": true
+      },
+      {
+        "name": "Ambiguous retained client consent attribution refuses invoice balance",
+        "passed": true
+      },
+      {
+        "name": "Missing permanent mapping refuses recurring invoice balance",
+        "passed": true
+      },
+      {
+        "name": "Lost mapping plus changed reference cannot bypass retained recurring origin",
+        "passed": true
+      },
+      {
+        "name": "Lost mapping plus changed reference refuses a new manual receipt",
+        "passed": true
+      },
+      {
+        "name": "Lost mapping plus changed reference refuses a new payment request",
+        "passed": true
+      },
+      {
+        "name": "Restoring lost binding restores original invoice and audit exactly",
+        "passed": true
+      },
+      {
+        "name": "Missing version marker cannot bypass retained recurring mapping",
+        "passed": true
+      },
+      {
+        "name": "Missing version marker refuses recurring manual receipt",
+        "passed": true
+      },
+      {
+        "name": "Missing version marker refuses recurring payment request",
+        "passed": true
+      },
+      {
+        "name": "Missing marker and mapping still consult independent recurring origin",
+        "passed": true
+      },
+      {
+        "name": "Version marker restoration retains original recurring invoice and history",
+        "passed": true
+      },
+      {
+        "name": "Retained issuance origin prevents another request duplicating a lost period",
+        "passed": true
+      },
+      {
+        "name": "Lost period refusal retains original invoice and audit",
+        "passed": true
+      },
+      {
+        "name": "Missing independent issuance origin refuses intact invoice mapping",
+        "passed": true
+      },
+      {
+        "name": "Ambiguous duplicate issuance origin refuses invoice use",
+        "passed": true
+      },
+      {
+        "name": "Origin history restoration preserves original agreement invoice and audit",
+        "passed": true
+      },
+      {
+        "name": "Oversized retained agreement refuses before parsing",
+        "passed": true
+      },
+      {
+        "name": "Corrupt current source refuses historical invoice use",
+        "passed": true
+      },
+      {
+        "name": "Negative invoice period refuses",
+        "passed": true
+      },
+      {
+        "name": "Unrepresentable invoice period refuses",
+        "passed": true
+      },
+      {
+        "name": "Future invoice period refuses",
+        "passed": true
+      },
+      {
+        "name": "Canonical command input survives reverse argument order",
+        "passed": true
+      },
+      {
+        "name": "Canonical reordered action retry remains a no-op",
+        "passed": true
+      },
+      {
+        "name": "Later lifecycle does not invalidate originally issued invoice prefix",
+        "passed": true
+      },
+      {
+        "name": "Original invoice request replays after later lifecycle",
+        "passed": true
+      },
+      {
+        "name": "Cancelled source refuses new invoice",
+        "passed": true
+      },
+      {
+        "name": "Cancelled source refuses resuming billing",
+        "passed": true
+      },
+      {
+        "name": "Cancelled source retains invoice history",
+        "passed": true
+      },
+      {
+        "name": "Staff can end billing after the source is cancelled",
+        "passed": true
+      },
+      {
+        "name": "Setup refuses populated unrecognized recurring storage",
+        "passed": true
+      },
+      {
+        "name": "Refused adoption preserves all existing rows",
+        "passed": true
+      },
+      {
+        "name": "Rehashed snapshot cannot invent another due date",
+        "passed": true
+      },
+      {
+        "name": "Missing prerequisite refuses recurring invoice use: invoice_ledger_schema_version",
+        "passed": true
+      },
+      {
+        "name": "Missing prerequisite refuses recurring invoice use: service_plans_schema_version",
+        "passed": true
+      },
+      {
+        "name": "Missing prerequisite refuses recurring invoice use: payments_schema_version",
+        "passed": true
+      },
+      {
+        "name": "Zero-price agreed period cannot create an invoice",
+        "passed": true
+      },
+      {
+        "name": "Zero-price refusal creates no debt or fabricated receipt",
+        "passed": true
+      },
+      {
+        "name": "UI staff overview lists both real project owners",
+        "passed": true
+      },
+      {
+        "name": "UI project shows validated source and billing history",
+        "passed": true
+      },
+      {
+        "name": "UI retains original obligation after source cancellation and future end",
+        "passed": true
+      },
+      {
+        "name": "UI selected period keeps original dates amount and due rule",
+        "passed": true
+      },
+      {
+        "name": "UI derives partial payments from existing ledger rather than eligibility",
+        "passed": true
+      },
+      {
+        "name": "UI rejects schedule bound to a different project",
+        "passed": true
+      },
+      {
+        "name": "UI rejects source bound to a different project owner",
+        "passed": true
+      },
+      {
+        "name": "UI requires both current staff permissions 3",
+        "passed": true
+      },
+      {
+        "name": "UI requires both current staff permissions 4",
+        "passed": true
+      },
+      {
+        "name": "UI staff support link cannot inspect recurring terms",
+        "passed": true
+      },
+      {
+        "name": "UI reads preserve original session activity timestamp",
+        "passed": true
+      },
+      {
+        "name": "UI actual client overview isolates project ownership",
+        "passed": true
+      },
+      {
+        "name": "UI actual client sees original invoice and partial balance",
+        "passed": true
+      },
+      {
+        "name": "UI actual client cannot select another client identity",
+        "passed": true
+      },
+      {
+        "name": "UI foreign client cannot read another project",
+        "passed": true
+      },
+      {
+        "name": "UI expired client cannot inspect saved terms",
+        "passed": true
+      },
+      {
+        "name": "UI support cannot consent or read through client context",
+        "passed": true
+      },
+      {
+        "name": "UI listing validates predecessor history outside displayed agreement",
+        "passed": true
+      },
+      {
+        "name": "UI refuses unknown schema rather than showing empty records",
+        "passed": true
+      },
+      {
+        "name": "UI refuses populated unregistered records",
+        "passed": true
+      },
+      {
+        "name": "UI preview checks exact retained source and creates no database records",
+        "passed": true
+      },
+      {
+        "name": "UI stale source preview cannot silently refresh review tokens",
+        "passed": true
+      },
+      {
+        "name": "UI failed source draft retains original revision and request identity",
+        "passed": true
+      },
+      {
+        "name": "UI POST requires exact project in its route",
+        "passed": true
+      },
+      {
+        "name": "UI publication requires explicit confirmation",
+        "passed": true
+      },
+      {
+        "name": "UI history uses bounded non-overlapping pages after validating all decisions",
+        "passed": true
+      },
+      {
+        "name": "UI first history page refuses corruption in an older undisplayed page",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_sources disables readiness",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_sources refuses native UI projection before storage queries",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_sources requires restore without empty recreation",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_sources refuses current agreement read",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_sources refuses recurring invoice payment projection",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_sources cannot reclassify an invoice by changing its reference",
+        "passed": true
+      },
+      {
+        "name": "Restored recurring_billing_sources retains exact consent invoices and audit",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_schedules disables readiness",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_schedules refuses native UI projection before storage queries",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_schedules requires restore without empty recreation",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_schedules refuses current agreement read",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_schedules refuses recurring invoice payment projection",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_schedules cannot reclassify an invoice by changing its reference",
+        "passed": true
+      },
+      {
+        "name": "Restored recurring_billing_schedules retains exact consent invoices and audit",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_events disables readiness",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_events refuses native UI projection before storage queries",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_events requires restore without empty recreation",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_events refuses current agreement read",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_events refuses recurring invoice payment projection",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_events cannot reclassify an invoice by changing its reference",
+        "passed": true
+      },
+      {
+        "name": "Restored recurring_billing_events retains exact consent invoices and audit",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_invoices disables readiness",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_invoices refuses native UI projection before storage queries",
+        "passed": true
+      },
+      {
+        "name": "Missing established recurring_billing_invoices requires restore without empty recreation",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_invoices refuses current agreement read",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_invoices refuses recurring invoice payment projection",
+        "passed": true
+      },
+      {
+        "name": "Missing recurring_billing_invoices cannot reclassify an invoice by changing its reference",
+        "passed": true
+      },
+      {
+        "name": "Restored recurring_billing_invoices retains exact consent invoices and audit",
+        "passed": true
+      },
+      {
+        "name": "Existing project fields are unchanged",
+        "passed": true
+      },
+      {
+        "name": "No provider call or payment attempt is created",
+        "passed": true
+      },
+      {
+        "name": "Audit excludes agreement text and passwords",
+        "passed": true
+      },
+      {
+        "name": "Financing native setup creates v3 gateway replacement and reversal storage",
+        "passed": true
+      },
+      {
+        "name": "One-time finance reconciliation reauthenticates inside its paid transaction",
+        "passed": true
+      },
+      {
+        "name": "Initial finance subscription reconciliation reauthenticates inside finalization",
+        "passed": true
+      },
+      {
+        "name": "Replacement reconciliation reauthenticates inside finalization",
+        "passed": true
+      },
+      {
+        "name": "Review-clearing recurring settlement requires current owner credentials",
+        "passed": true
+      },
+      {
+        "name": "Financing setup rejects an expanded nonunique rights-history index",
+        "passed": true
+      },
+      {
+        "name": "Restored financing rights-history index is accepted on repeated setup",
+        "passed": true
+      },
+      {
+        "name": "Financing native schedule begins as exact future offered terms",
+        "passed": true
+      },
+      {
+        "name": "Initial financing agreement cannot grant resale or distribution rights before separate paid evidence",
+        "passed": true
+      },
+      {
+        "name": "Coherently retained pre-patch finance offer with unpaid resale rights cannot be signed",
+        "passed": true
+      },
+      {
+        "name": "Zero-down client signature persists signed offer status",
+        "passed": true
+      },
+      {
+        "name": "Zero-down client signature returns explicit payment field",
+        "passed": true
+      },
+      {
+        "name": "Zero-down client signature requires no initial payment request",
+        "passed": true
+      },
+      {
+        "name": "Signed zero-down financing begins active on the same website license",
+        "passed": true
+      },
+      {
+        "name": "Zero-down financing signs and activates even when payment-link storage is unavailable",
+        "passed": true
+      },
+      {
+        "name": "Down-payment agreement stays signed when payment-link storage is temporarily unavailable",
+        "passed": true
+      },
+      {
+        "name": "Unexpected failure: The server did not retain private file permissions (0600).",
+        "passed": false
+      }
+    ]
+  },
+  "limits": [
+    "Not Linux matrix acceptance",
+    "Not installed HTTP or Chromium acceptance",
+    "Not independent approval",
+    "No real sandbox or production payment"
+  ],
+  "cleanup": "Disposable server stopped after test"
+}

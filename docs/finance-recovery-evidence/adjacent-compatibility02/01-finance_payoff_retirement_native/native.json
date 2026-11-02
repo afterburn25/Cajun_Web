@@ -1,0 +1,3006 @@
+{
+    "passed": true,
+    "count": 292,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "opaque-normal verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_timeout retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-lost_cancel_reply retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-cancel_error retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-still_active retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-wrong_readback retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_expired releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_canceled releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-already_terminated releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-normal verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-normal retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-normal records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-normal permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-normal preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-normal cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-normal network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout owner reconciliation completes retirement",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_timeout retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply owner reconciliation completes retirement",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-lost_cancel_reply retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error owner reconciliation completes retirement",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-cancel_error retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active owner reconciliation completes retirement",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-still_active retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback owner reconciliation completes retirement",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "profile-wrong_readback retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-already_expired releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-already_canceled releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "profile-already_terminated releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-normal enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-normal verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-normal retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-normal records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-normal permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-normal preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-normal cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-normal network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-normal releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_timeout retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-lost_cancel_reply retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-cancel_error retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-still_active retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback scheduler retries paid-off billing",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback retry preserves ledger and permanent payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-wrong_readback retry never creates overlapping billing",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-already_expired releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-already_canceled releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated enrollment precedes payoff",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated verified retirement or retained review",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated retains exact gateway contract",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated records real committed owner receipts",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated permanent license payoff survives cancellation result",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated preserves license identity domains and rights",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated cancels only nonterminal verified identity",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated network runs outside SQL and retains cancellation identity",
+            "passed": true
+        },
+        {
+            "name": "manual-already_terminated releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "unpaid valid initial enrollment remains available",
+            "passed": true
+        },
+        {
+            "name": "unpaid cannot falsely finalize payoff retirement",
+            "passed": true
+        },
+        {
+            "name": "unpaid preserves ledger and financing",
+            "passed": true
+        },
+        {
+            "name": "unpaid does not call provider or alter subscription",
+            "passed": true
+        },
+        {
+            "name": "status_only valid initial enrollment remains available",
+            "passed": true
+        },
+        {
+            "name": "status_only cannot falsely finalize payoff retirement",
+            "passed": true
+        },
+        {
+            "name": "status_only preserves ledger and financing",
+            "passed": true
+        },
+        {
+            "name": "status_only does not call provider or alter subscription",
+            "passed": true
+        },
+        {
+            "name": "cross_customer valid initial enrollment remains available",
+            "passed": true
+        },
+        {
+            "name": "cross_customer cannot falsely finalize payoff retirement",
+            "passed": true
+        },
+        {
+            "name": "cross_customer preserves ledger and financing",
+            "passed": true
+        },
+        {
+            "name": "cross_customer does not call provider or alter subscription",
+            "passed": true
+        },
+        {
+            "name": "role_revoked valid initial enrollment remains available",
+            "passed": true
+        },
+        {
+            "name": "Role revocation retains the same enabled authenticated identity",
+            "passed": true
+        },
+        {
+            "name": "Role-denial fixture restores exact staff profile and session",
+            "passed": true
+        },
+        {
+            "name": "role_revoked cannot falsely finalize payoff retirement",
+            "passed": true
+        },
+        {
+            "name": "role_revoked preserves ledger and financing",
+            "passed": true
+        },
+        {
+            "name": "role_revoked does not call provider or alter subscription",
+            "passed": true
+        },
+        {
+            "name": "changed_snapshot valid initial enrollment remains available",
+            "passed": true
+        },
+        {
+            "name": "changed_snapshot cannot falsely finalize payoff retirement",
+            "passed": true
+        },
+        {
+            "name": "changed_snapshot preserves ledger and financing",
+            "passed": true
+        },
+        {
+            "name": "changed_snapshot preserves newer committed snapshot",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "caller": "opaque",
+            "scenario": "normal",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 2,
+                    "entry": 2,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 2
+                    }
+                },
+                {
+                    "invoice": 3,
+                    "entry": 3,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 3
+                    }
+                },
+                {
+                    "invoice": 4,
+                    "entry": 4,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 4
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "cancel_timeout",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 6,
+                    "entry": 6,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 6
+                    }
+                },
+                {
+                    "invoice": 7,
+                    "entry": 7,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 7
+                    }
+                },
+                {
+                    "invoice": 8,
+                    "entry": 8,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 8
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "lost_cancel_reply",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 10,
+                    "entry": 10,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 10
+                    }
+                },
+                {
+                    "invoice": 11,
+                    "entry": 11,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 11
+                    }
+                },
+                {
+                    "invoice": 12,
+                    "entry": 12,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 12
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860003",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "cancel_error",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 14,
+                    "entry": 14,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 14
+                    }
+                },
+                {
+                    "invoice": 15,
+                    "entry": 15,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 15
+                    }
+                },
+                {
+                    "invoice": 16,
+                    "entry": 16,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 16
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860004",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "still_active",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 18,
+                    "entry": 18,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 18
+                    }
+                },
+                {
+                    "invoice": 19,
+                    "entry": 19,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 19
+                    }
+                },
+                {
+                    "invoice": 20,
+                    "entry": 20,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 20
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860005",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "wrong_readback",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 22,
+                    "entry": 22,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 22
+                    }
+                },
+                {
+                    "invoice": 23,
+                    "entry": 23,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 23
+                    }
+                },
+                {
+                    "invoice": 24,
+                    "entry": 24,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 24
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860006",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "already_expired",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 26,
+                    "entry": 26,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 26
+                    }
+                },
+                {
+                    "invoice": 27,
+                    "entry": 27,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 27
+                    }
+                },
+                {
+                    "invoice": 28,
+                    "entry": 28,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 28
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860007",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "already_canceled",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 30,
+                    "entry": 30,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 30
+                    }
+                },
+                {
+                    "invoice": 31,
+                    "entry": 31,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 31
+                    }
+                },
+                {
+                    "invoice": 32,
+                    "entry": 32,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 32
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860008",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "opaque",
+            "scenario": "already_terminated",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 34,
+                    "entry": 34,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 34
+                    }
+                },
+                {
+                    "invoice": 35,
+                    "entry": 35,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 35
+                    }
+                },
+                {
+                    "invoice": 36,
+                    "entry": 36,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 36
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860009",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "normal",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 38,
+                    "entry": 38,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 38
+                    }
+                },
+                {
+                    "invoice": 39,
+                    "entry": 39,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 39
+                    }
+                },
+                {
+                    "invoice": 40,
+                    "entry": 40,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 40
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860010",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "cancel_timeout",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 42,
+                    "entry": 42,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 42
+                    }
+                },
+                {
+                    "invoice": 43,
+                    "entry": 43,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 43
+                    }
+                },
+                {
+                    "invoice": 44,
+                    "entry": 44,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 44
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860011",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "lost_cancel_reply",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 46,
+                    "entry": 46,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 46
+                    }
+                },
+                {
+                    "invoice": 47,
+                    "entry": 47,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 47
+                    }
+                },
+                {
+                    "invoice": 48,
+                    "entry": 48,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 48
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860012",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "cancel_error",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 50,
+                    "entry": 50,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 50
+                    }
+                },
+                {
+                    "invoice": 51,
+                    "entry": 51,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 51
+                    }
+                },
+                {
+                    "invoice": 52,
+                    "entry": 52,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 52
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860013",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "still_active",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 54,
+                    "entry": 54,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 54
+                    }
+                },
+                {
+                    "invoice": 55,
+                    "entry": 55,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 55
+                    }
+                },
+                {
+                    "invoice": 56,
+                    "entry": 56,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 56
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860014",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "wrong_readback",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 58,
+                    "entry": 58,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 58
+                    }
+                },
+                {
+                    "invoice": 59,
+                    "entry": 59,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 59
+                    }
+                },
+                {
+                    "invoice": 60,
+                    "entry": 60,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 60
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860015",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "already_expired",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 62,
+                    "entry": 62,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 62
+                    }
+                },
+                {
+                    "invoice": 63,
+                    "entry": 63,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 63
+                    }
+                },
+                {
+                    "invoice": 64,
+                    "entry": 64,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 64
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860016",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "already_canceled",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 66,
+                    "entry": 66,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 66
+                    }
+                },
+                {
+                    "invoice": 67,
+                    "entry": 67,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 67
+                    }
+                },
+                {
+                    "invoice": 68,
+                    "entry": 68,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 68
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860017",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "profile",
+            "scenario": "already_terminated",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 70,
+                    "entry": 70,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 70
+                    }
+                },
+                {
+                    "invoice": 71,
+                    "entry": 71,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 71
+                    }
+                },
+                {
+                    "invoice": 72,
+                    "entry": 72,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 72
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860018",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "normal",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 74,
+                    "entry": 74,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 74
+                    }
+                },
+                {
+                    "invoice": 75,
+                    "entry": 75,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 75
+                    }
+                },
+                {
+                    "invoice": 76,
+                    "entry": 76,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 76
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860019",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "cancel_timeout",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 78,
+                    "entry": 78,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 78
+                    }
+                },
+                {
+                    "invoice": 79,
+                    "entry": 79,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 79
+                    }
+                },
+                {
+                    "invoice": 80,
+                    "entry": 80,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 80
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860020",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "lost_cancel_reply",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 82,
+                    "entry": 82,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 82
+                    }
+                },
+                {
+                    "invoice": 83,
+                    "entry": 83,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 83
+                    }
+                },
+                {
+                    "invoice": 84,
+                    "entry": 84,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 84
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860021",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "cancel_error",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 86,
+                    "entry": 86,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 86
+                    }
+                },
+                {
+                    "invoice": 87,
+                    "entry": 87,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 87
+                    }
+                },
+                {
+                    "invoice": 88,
+                    "entry": 88,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 88
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860022",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "still_active",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 90,
+                    "entry": 90,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 90
+                    }
+                },
+                {
+                    "invoice": 91,
+                    "entry": 91,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 91
+                    }
+                },
+                {
+                    "invoice": 92,
+                    "entry": 92,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 92
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860023",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "wrong_readback",
+            "outcome": "review",
+            "payments": [
+                {
+                    "invoice": 94,
+                    "entry": 94,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 94
+                    }
+                },
+                {
+                    "invoice": 95,
+                    "entry": 95,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 95
+                    }
+                },
+                {
+                    "invoice": 96,
+                    "entry": 96,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 96
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860024",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "already_expired",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 98,
+                    "entry": 98,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 98
+                    }
+                },
+                {
+                    "invoice": 99,
+                    "entry": 99,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 99
+                    }
+                },
+                {
+                    "invoice": 100,
+                    "entry": 100,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 100
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860025",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "already_canceled",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 102,
+                    "entry": 102,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 102
+                    }
+                },
+                {
+                    "invoice": 103,
+                    "entry": 103,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 103
+                    }
+                },
+                {
+                    "invoice": 104,
+                    "entry": 104,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 104
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860026",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "caller": "manual",
+            "scenario": "already_terminated",
+            "outcome": "paid_off",
+            "payments": [
+                {
+                    "invoice": 106,
+                    "entry": 106,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 106
+                    }
+                },
+                {
+                    "invoice": 107,
+                    "entry": 107,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 107
+                    }
+                },
+                {
+                    "invoice": 108,
+                    "entry": 108,
+                    "balance": {
+                        "paid_cents": 1000,
+                        "due_cents": 0,
+                        "revision": 108
+                    }
+                }
+            ],
+            "provider_calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860027",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "sources": {
+        "app\/billing\/finance_subscription.php": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+        "app\/billing\/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+        "app\/licenses\/financing.php": "2d2857ef961963044c641123899041bf728247ac555bb22a2599ea4c04664bc6",
+        "app\/licenses\/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c"
+    },
+    "expected_preparation_diagnostics": 32,
+    "separate_writer_commits": 1,
+    "scope": "Exact source bodies; canonical SQL, signed agreement, actual owner ledger_receive commits and license synchronization. Synthetic future-period invoices and ARB transport\/mode; actual adapter readback and cancellation orchestration. No real provider, credentials, production settings, HTTP or independent approval."
+}

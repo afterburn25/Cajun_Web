@@ -1,0 +1,5 @@
+PHP Fatal error:  Uncaught Error: Call to undefined function license_finance_recovery_open() in /tmp/cwp-reconcile-R2dkZN:17
+Stack trace:
+#0 /workspace/scratch/8cc2b4f257ab/Cajun_Web_finance_recovery_fix/tests/finance_reconcile_snapshot.php(49): license_finance_subscription_reconcile()
+#1 {main}
+  thrown in /tmp/cwp-reconcile-R2dkZN on line 17

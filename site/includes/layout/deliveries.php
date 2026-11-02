@@ -33,12 +33,16 @@ function delivery_list(int $client=0,int $job=0,bool $admin=false): void {
     if($more){$params=['before'=>$rows[49]['id']];if($job)$params[$admin?'job_id':'job']=$job;if(!$admin)$params['downloads']=1;$url=$admin?admin_url('deliveries',$params):studio_url($params);echo '<p><a class="btn outline" href="'.esc($url).'">Earlier releases →</a></p>';}
 }
 function delivery_detail(array $r,bool $admin): void {
-    $manifest=json_decode($r['manifest'],true,512,JSON_THROW_ON_ERROR);$job=studio_job((int)$r['job_id']);$canDownload=$admin||!support_current()||support_can('support.download');$available=true;
+    $manifest=json_decode($r['manifest'],true,512,JSON_THROW_ON_ERROR);$job=studio_job((int)$r['job_id']);$financeLocked=false;$financeReview=false;
+    if(!$admin){try{$finance=delivery_financing_access($r);$financeLocked=$finance!==null&&!$finance['authorized'];}catch(Throwable $e){$financeReview=true;report_error($e);}}
+    $canDownload=$admin||(!$financeLocked&&!$financeReview&&(!support_current()||support_can('support.download')));$available=true;
     try{$fh=delivery_open($r);fclose($fh);}catch(RuntimeException){$available=false;}
     echo '<article class="workspace-card delivery-detail"><span class="eyebrow">'.esc($job['title']).' / '.esc($r['status']).'</span><h2>'.esc($r['version'].' · '.$r['title']).'</h2><p><strong>'.esc(delivery_scopes()[$r['scope']]).'</strong></p><div class="prose">'.nl2br(esc($r['notes'])).'</div><p>'.number_format($r['bytes']/1048576,2).' MiB ZIP · '.count($manifest['files']).' files · '.number_format($manifest['expanded_bytes']/1048576,2).' MiB expanded</p><p class="delivery-hash">SHA-256: <code>'.esc($r['sha256']).'</code></p>';
     if($r['source_revision']!=='')echo '<p class="delivery-hash">Source revision: <code>'.esc($r['source_revision']).'</code></p>';
     echo '<p>'.($r['published_at']?'Published '.esc($r['published_at']):'Uploaded '.esc($r['created_at'])).' UTC</p>';
     if(!$available)echo '<div class="notice error">This file is temporarily unavailable or failed its integrity check. Contact the studio.</div>';
+    elseif(!$admin&&$financeReview)echo '<div class="notice warning">Website release download is paused while financing status is reviewed. Contact billing before retrying.</div>';
+    elseif(!$admin&&$financeLocked)echo '<div class="notice warning">Website release download is paused until financing access is current. The published release and its checksum are preserved.</div>';
     elseif($canDownload){$url=$admin?admin_url('deliveries',['download_release'=>$r['id']]):studio_url(['download_release'=>$r['id']]);echo '<p><a class="btn gold" href="'.esc($url).'">'.($r['status']==='draft'?'Download draft for review':'Download website ZIP').' ↓</a></p>';}
     else echo '<p>Support download permission is required to retrieve this package.</p>';
     echo '<p class="hint">Keep a copy of this ZIP and checksum. Read HANDOVER.md and LICENSES.md before installation. Files-only packages exclude databases and separately licensed services.</p><details><summary>File manifest ('.count($manifest['files']).')</summary><ul class="delivery-manifest">';

@@ -5,47 +5,54 @@ from playwright.sync_api import expect
 from release_cases import db
 from cloud_assignment_fixture import age_unprotected_refreshes, dedicated_cloud_owner
 from staff_cases import OWNER,STAFF
+from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from installed_owner_authority import revoked_owner
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit','provider_server']})
     db('DELETE FROM ci_rate_limits')
-    root=BASE+'/existing/admin/index.php';url=root+'?view=provider-settings';secret='SYNTHETIC_RAW_GENERAL_KEY'
+    root=BASE+'/existing/admin/index.php';provider_url=root+'?view=provider-settings'
+    connection_url=provider_url+'&section=connection';inventory_url=provider_url+'&section=services';cloud_url=provider_url+'&focus=cloud-assignment'
+    url=connection_url;secret='SYNTHETIC_RAW_GENERAL_KEY'
     check('Fresh installation prepares empty provider settings',db("SELECT value FROM fresh_settings WHERE name='provider_settings_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_provider_profiles'))
     check('Fresh packaged installation stamps current cloud inventory storage',db("SELECT value FROM fresh_settings WHERE name='provider_inventory_schema_version'")==[{'value':'5'}] and db('SHOW TABLES LIKE "fresh_provider_observation_cloud"')!=[] and db('SHOW COLUMNS FROM fresh_provider_refreshes LIKE "operation"')!=[] and db('SHOW TABLES LIKE "fresh_provider_domain_links"')!=[])
     fresh_owner=requests.Session();submit(fresh_owner,BASE+'/fresh/admin/index.php?view=login','login',{'email':'fresh@example.invalid','password':'Fresh synthetic passphrase 2026'})
-    fresh_provider=fresh_owner.get(BASE+'/fresh/admin/index.php?view=provider-settings')
+    fresh_provider=fresh_owner.get(BASE+'/fresh/admin/index.php?view=provider-settings&section=cloud')
     check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text and 'Save your 20i connection above' in fresh_provider.text)
-    check('Fresh owner inventory page directs connection setup without unavailable actions',fresh_provider.status_code==200 and 'Save your 20i connection above before refreshing inventory.' in fresh_provider.text and 'Prepare inventory storage' not in fresh_provider.text and 'data-provider-refresh' not in fresh_provider.text)
+    fresh_provider=fresh_owner.get(BASE+'/fresh/admin/index.php?view=provider-settings&section=services')
+    check('Fresh owner inventory page directs connection setup without unavailable actions',fresh_provider.status_code==200 and 'Save your 20i connection in the Connection workspace before refreshing existing services.' in fresh_provider.text and 'Prepare inventory storage' not in fresh_provider.text and 'data-provider-refresh' not in fresh_provider.text)
     fresh_owner.close()
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
-    r=submit(owner,url,'provider_settings_setup',{'current_password':OWNER,'csrf':'invalid'})
+    r=submit(owner,url,'provider_settings_setup',{'csrf':'invalid'})
     check('Provider setup rejects invalid CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='provider_settings_schema_version'"))
-    r=submit(owner,url,'provider_settings_setup',{'current_password':'wrong'})
-    check('Provider setup requires current owner password','current password' in r.text.lower())
+    refuse_owner_action(env,owner,url,'provider_settings_setup',{})
     before=db('SELECT * FROM ci_settings');jobs=db('SELECT * FROM ci_studio_jobs')
-    r=submit(owner,url,'provider_settings_setup',{'current_password':OWNER})
+    r=submit(owner,url,'provider_settings_setup',{})
     after={v['name']:v['value'] for v in db('SELECT * FROM ci_settings')}
     check('Additive provider setup preserves earlier settings and projects',soup(r).select_one('[data-provider-editor]') is not None and all(after[v['name']]==v['value'] for v in before) and db('SELECT * FROM ci_studio_jobs')==jobs and provider_server.calls==0)
     def edit(**values):
-        fields=form_data(soup(owner.get(url)).select_one('[data-provider-editor]'));fields.update({'current_password':OWNER,**values});return owner.post(url,data=fields)
+        fields=form_data(soup(owner.get(url)).select_one('[data-provider-editor]'));fields.update(values);return owner.post(url,data=fields)
     r=edit(label='Studio provider fixture',general_key=secret,enabled='1')
     profile=db('SELECT * FROM ci_provider_profiles')[0];pid=profile['id'];cipher=profile['credentials']
     check('Owner HTTP saves protected key without contacting provider',profile['revision']==1 and profile['enabled']==1 and secret not in cipher and provider_server.calls==0)
     check('Provider HTML omits key ciphertext and password refill',secret not in r.text and cipher not in r.text and all(n.get('value','')=='' for n in soup(r).select('input[type=password]')))
     check('Provider page is private with no referrer','no-store' in r.headers.get('Cache-Control','') and r.headers.get('Referrer-Policy')=='no-referrer')
-    r=edit(label='Preserved invalid edit',general_key='SecretMustNeverEcho',current_password='wrong')
+    r=refuse_owner_action(env,owner,url,'provider_settings_save',{'label':'Preserved invalid edit','general_key':'SecretMustNeverEcho','enabled':'1'})
+    check('Provider credential edit refuses revoked owner without exposing or replacing the saved key','SecretMustNeverEcho' not in r.text and cipher not in r.text and db('SELECT * FROM ci_provider_profiles')[0]==profile and provider_server.calls==0)
+    r=edit(label='Preserved invalid edit',general_key='SecretMustNeverEcho',revision='0')
     check('Provider error preserves name but clears key and password','Preserved invalid edit' in r.text and 'SecretMustNeverEcho' not in r.text and all(n.get('value','')=='' for n in soup(r).select('input[type=password]')) and db('SELECT * FROM ci_provider_profiles')[0]==profile)
     r=edit(label='<img src=x onerror=alert(1)>',general_key='')
     check('Provider labels are escaped in forms and history',soup(r).select_one('[data-provider-editor] [name=label]')['value']=='<img src=x onerror=alert(1)>' and not soup(r).select('img[onerror]'))
     def action(name,**values):
         current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
-        return owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_settings_'+name,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
-    stale=form_data(soup(owner.get(url)).select_one('[data-provider-editor]'));stale.update(current_password=OWNER,label='Stale provider form')
+        return owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_settings_'+name,'profile_id':pid,'revision':str(current),**values})
+    stale=form_data(soup(owner.get(url)).select_one('[data-provider-editor]'));stale.update(label='Stale provider form')
     action('disable');r=owner.post(url,data=stale)
     check('Stale provider form retains original revision without overwriting','profile changed' in r.text and 'Stale provider form' in r.text and soup(r).select_one('[data-provider-editor] [name=revision]')['value']=='2' and db('SELECT revision,enabled FROM ci_provider_profiles')==[{'revision':3,'enabled':0}])
     action('enable')
     r=action('check',csrf='invalid');check('Provider check rejects invalid CSRF before request','session expired' in r.text.lower() and provider_server.calls==0 and not db('SELECT * FROM ci_provider_checks'))
-    r=action('check',current_password='wrong');check('Provider check rejects password before request','current password' in r.text.lower() and provider_server.calls==0 and not db('SELECT * FROM ci_provider_checks'))
+    refuse_owner_action(env,owner,url,'provider_settings_check',{})
+    check('Provider check rejects revoked owner before request',provider_server.calls==0 and not db('SELECT * FROM ci_provider_checks'))
     r=action('check',revision='1');check('Provider check rejects stale settings before request','profile changed' in r.text and provider_server.calls==0 and not db('SELECT * FROM ci_provider_checks'))
     member=requests.Session();submit(member,root+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
     r=member.get(url);check('Administrator cannot view owner provider settings',r.status_code==403 and 'Studio provider fixture' not in r.text and soup(r).select_one('[data-provider-editor]') is None)
@@ -67,17 +74,24 @@ def run_browser(env,browser):
         check('Provider internal direct HTTP denial '+path,requests.get(BASE+'/existing/'+path).status_code==404)
     context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
     page.goto(root+'?view=login');page.locator('[name=email]').fill('owner@example.invalid');page.locator('[name=password]').fill(OWNER);page.locator('form button').first.click();page.wait_for_url(root+'?view=dashboard');page.goto(url)
-    form=page.locator('[data-provider-editor]');form.locator('[name=label]').fill('Browser 20i connection');form.locator('[name=current_password]').fill(OWNER);form.get_by_role('button',name='Save 20i settings',exact=True).click()
+    form=page.locator('[data-provider-editor]');form.locator('[name=label]').fill('Browser 20i connection');assert_no_owner_reprompt(check,form,'Save 20i settings');form.get_by_role('button',name='Save 20i settings',exact=True).click()
     expect(page.locator('[data-provider-editor] [name=label]')).to_have_value('Browser 20i connection')
     check('Chromium provider save clears secret inputs',page.locator('[name=general_key]').input_value()=='' and secret not in page.content())
-    page.locator('[data-provider-check] [name=current_password]').fill('wrong');page.get_by_role('button',name='Check saved 20i connection',exact=True).click();expect(page.locator('.notice.error').first).to_contain_text('current password')
-    check('Chromium check error clears confirmation password',page.locator('[data-provider-check] [name=current_password]').input_value()=='')
+    form=page.locator('[data-provider-check]');assert_no_owner_reprompt(check,form,'Check saved 20i connection')
+    calls=provider_server.calls
+    with revoked_owner(WEB/'existing',env['php']):
+        with page.expect_navigation(wait_until='domcontentloaded') as navigation:
+            form.get_by_role('button',name='Check saved 20i connection',exact=True).click()
+        check('Chromium captured connection check refuses the same owner after permission withdrawal',navigation.value.status==403 and provider_server.calls==calls)
+    check('Chromium permission refusal retains every record schema private file and original owner profile',True)
+    page.goto(url);assert_no_owner_reprompt(check,page.locator('[data-provider-check]'),'Connection check after restored owner authority')
     db('UPDATE ci_provider_checks SET started_epoch=?',[int(time.time())-31]);calls=provider_server.calls
-    page.locator('[data-provider-check] [name=current_password]').fill(OWNER)
     with page.expect_navigation(wait_until='domcontentloaded'):
         page.get_by_role('button',name='Check saved 20i connection',exact=True).click()
     expect(page.locator('[data-provider-history]')).to_contain_text('Read verified')
     check('Chromium explicit check reaches isolated HTTPS once',provider_server.calls==calls+1)
+    page.get_by_role('navigation',name='20i workspaces',exact=True).get_by_role('link',name='Cloud',exact=True).click()
+    expect(page.locator('#twentyi-cloud')).to_be_visible()
     capability=page.get_by_text('A successful connection check confirms access to the hosting list. It does not confirm that every service is available or approved for use.',exact=True)
     try:
         expect(capability).to_be_visible()
@@ -86,18 +100,21 @@ def run_browser(env,browser):
         page.screenshot(path=str(QA/'Provider-Capabilities-Failure.png'),full_page=True)
         raise
     check('Provider UI limits connection verification to the hosting list',capability.is_visible())
+    page.get_by_role('navigation',name='20i workspaces',exact=True).get_by_role('link',name='Connection',exact=True).click()
+    expect(page.locator('[data-provider-editor]')).to_be_visible()
     page.screenshot(path=str(QA/'Provider-Settings-Desktop.png'),full_page=True);page.set_viewport_size({'width':320,'height':740});expect(page.locator('.admin-sidebar')).not_to_be_in_viewport();page.screenshot(path=str(QA/'Provider-Settings-Mobile.png'),full_page=True)
     check('Provider owner page fits 320px viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Provider browser has no script errors',not errors);context.close()
     check('Provider fixture verified exact request and original TLS hostname',not provider_server.errors and provider_server.names and all(n=='api.20i.com' for n in provider_server.names))
 
     # Domain ownership links over a seeded observed package.
+    url=inventory_url
     provider_server.packages.append({'id':910,'typeRef':1,'name':'client-pack.example','names':['client-pack.example','linked-domain.example','shared.example'],'enabled':True,'created':'2000-01-01T00:00:00Z'})
-    r=owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_inventory_prepare','current_password':OWNER})
+    r=owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_inventory_prepare'})
     check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'5'}])
     def inv_post(action_name,**values):
         current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
-        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action_name,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
+        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action_name,'profile_id':pid,'revision':str(current),**values})
     refresh_response=inv_post('provider_inventory_refresh')
     (QA/'provider-first-refresh.json').write_text(json.dumps({'status':refresh_response.status_code,'results':db('SELECT state,coverage,reason,package_count FROM ci_provider_refresh_results'),'package_ids':db('SELECT package_id FROM ci_provider_observation_packages'),'fixture_errors':provider_server.errors}),encoding='utf-8')
     check('Packaged refresh records a complete observation',db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id ORDER BY f.seq DESC LIMIT 1')[0]['state']=='complete' and db('SELECT COUNT(*) AS n FROM ci_provider_observation_packages')[0]['n']==1)
@@ -127,8 +144,8 @@ def run_browser(env,browser):
         check('Populated v'+old_version+' GET changes neither schema nor retained records',db('SHOW TABLES')==schema_before and snapshot()==before)
         r=inv_post('provider_inventory_prepare',csrf='invalid')
         check('Populated v'+old_version+' upgrade rejects invalid CSRF','session expired' in r.text.lower() and db('SHOW TABLES')==schema_before)
-        r=inv_post('provider_inventory_prepare',current_password='wrong')
-        check('Populated v'+old_version+' upgrade requires current owner password','current password' in r.text.lower() and db('SHOW TABLES')==schema_before)
+        refuse_owner_action(env,owner,url,'provider_inventory_prepare',{})
+        check('Populated v'+old_version+' upgrade refuses revoked owner without schema mutation',db('SHOW TABLES')==schema_before and snapshot()==before)
         r=inv_post('provider_inventory_prepare')
         after=snapshot()
         projected={t:[{k:row[k] for k in before[t][i]} for i,row in enumerate(rows)] for t,rows in after.items()}
@@ -144,8 +161,8 @@ def run_browser(env,browser):
         before=snapshot();inv_post('provider_inventory_prepare')
         check('Repeated v'+old_version+' HTTP preparation retains history and fingerprints',snapshot()==before)
     inv_post('provider_inventory_unlink',link_id=package_link)
-    r=inv_post('provider_inventory_domain_link',package_id='910',domain='linked-domain.example',client_id=str(alice_id),current_password='wrong')
-    check('Packaged domain link requires owner password','current password' in r.text.lower() and not db('SELECT * FROM ci_provider_domain_links'))
+    refuse_owner_action(env,owner,url,'provider_inventory_domain_link',{'package_id':'910','domain':'linked-domain.example','client_id':str(alice_id)})
+    check('Packaged domain link requires current owner authority',not db('SELECT * FROM ci_provider_domain_links'))
     r=inv_post('provider_inventory_domain_link',package_id='910',domain='unseen.example',client_id=str(alice_id))
     check('An unobserved domain cannot be linked',not db('SELECT * FROM ci_provider_domain_links'))
     r=inv_post('provider_inventory_domain_link',package_id='910',domain='linked-domain.example',client_id=str(alice_id))
@@ -187,7 +204,9 @@ def run_browser(env,browser):
     check('Provider fixture stays clean after inventory reads',not provider_server.errors)
 
     # A separate invited owner keeps retained cloud reads out of the original owner's later budget.
+    authority_owner=owner
     owner, cloud_actor_id = dedicated_cloud_owner(env, owner, 'cloud-inventory-owner@example.invalid', 'Cloud inventory owner')
+    url=cloud_url
     # Real packaged cloud GET over the same isolated TLS fixture and transport.
     cloud_item={'id':1201,'name':'cloud.browser.invalid','location':'dc_location-uk','productSpec':'cloud-20i','configuration':{'CpuCores':2,'RamMb':2048,'OsDiskSizeGb':40,'DataDiskSizeGb':0,'Provider':'20i','Zone':'20i','Country':'GB','VpsOsId':1,'spec':'synthetic'},'packageIds':[911],'cpanelInfo':{'password':'CLOUD_BROWSER_PRIVATE'}}
     provider_server.cloud_servers=[cloud_item]
@@ -196,8 +215,8 @@ def run_browser(env,browser):
     before_calls=provider_server.calls;before_refreshes=db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
     r=inv_post('provider_inventory_cloud_refresh',csrf='bad')
     check('Cloud refresh rejects invalid CSRF before network or intent','session expired' in r.text.lower() and provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
-    r=inv_post('provider_inventory_cloud_refresh',current_password='wrong')
-    check('Cloud refresh rejects wrong password before network or intent','current password' in r.text and provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
+    refuse_owner_action(env,authority_owner,url,'provider_inventory_cloud_refresh',{})
+    check('Cloud refresh rejects revoked owner before network or intent',provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
     packages_before=db('SELECT * FROM ci_provider_observation_packages ORDER BY id')
     age_unprotected_refreshes(7200)
     r=inv_post('provider_inventory_cloud_refresh')
@@ -236,8 +255,8 @@ def run_browser(env,browser):
     before_calls=provider_server.calls
     r=inv_post('provider_inventory_cloud_link',**cloud_args,csrf='bad')
     check('Cloud assignment rejects invalid CSRF without link or network','session expired' in r.text.lower() and not db('SELECT * FROM ci_provider_cloud_links') and provider_server.calls==before_calls)
-    r=inv_post('provider_inventory_cloud_link',**cloud_args,current_password='wrong')
-    check('Cloud assignment rejects wrong password','current password' in r.text and not db('SELECT * FROM ci_provider_cloud_links'))
+    refuse_owner_action(env,authority_owner,url,'provider_inventory_cloud_link',cloud_args)
+    check('Cloud assignment rejects revoked owner',not db('SELECT * FROM ci_provider_cloud_links') and provider_server.calls==before_calls)
     r=inv_post('provider_inventory_cloud_link',**{**cloud_args,'server_id':'1201garbage'})
     check('Cloud assignment rejects coercible server identifiers','Reload the current cloud assignment form' in r.text and not db('SELECT * FROM ci_provider_cloud_links'))
     r=inv_post('provider_inventory_cloud_link',**cloud_args)
@@ -254,7 +273,7 @@ def run_browser(env,browser):
             rendered.set_viewport_size({'width':width,'height':height});rendered.goto(url if session is owner else services_url);rendered.evaluate('document.fonts.ready');expect(rendered.locator(selector)).to_be_visible();rendered.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})');rendered.screenshot(path=str(QA/(title+'-'+label+'.png')),full_page=True)
             check(title+' '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         check(title+' has no script errors',not capture_errors);capture.close()
-    r=inv_post('provider_settings_save',label='Cloud assignment revised settings',enabled='1',general_key='')
+    r=submit(owner,connection_url,'provider_settings_save',{'label':'Cloud assignment revised settings','enabled':'1','general_key':''})
     cloud_card=soup(alice.get(services_url)).select_one('[data-client-cloud]')
     check('Settings edit hides cloud details pending owner review',cloud_card and 'Server details are hidden' in cloud_card.text and 'cloud.browser.invalid' not in cloud_card.text)
     r=inv_post('provider_inventory_cloud_relink',link_id=cloud_link['id'],link_revision='1',refresh_id=cloud_observation)

@@ -1,0 +1,27 @@
+{
+  "released": true,
+  "utc": "2026-11-01T23:35:50.793458+00:00",
+  "http_port": 8091,
+  "tcp_connection_refused": true,
+  "port_bind_with_reuseaddr_verified": true,
+  "processes": [
+    {
+      "case": "original",
+      "pid": 46310,
+      "pid_present": false
+    },
+    {
+      "case": "setup-redirect-attempt1",
+      "pid": 47082,
+      "pid_present": false
+    },
+    {
+      "case": "corrected",
+      "pid": 47708,
+      "pid_present": false
+    }
+  ],
+  "corrected_checks": 54,
+  "database_port": 33308,
+  "database_remains_separate": true
+}

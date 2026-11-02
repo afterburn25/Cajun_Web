@@ -51,7 +51,8 @@ final class ProviderStackCpReadProjection {
             // At most 10,000 rows and 200 rows per fetch. No per-row database round trips.
             while ($seen<$count) {
                 $detail="CONCAT(BINARY '".$f['label']." version ',r.id,' ',r.document_sha256,' ',r.proof)";
-                $rows=all("SELECT r.*,(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS audit_count,(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail AND a.user_id=r.actor_id) AS actor_count,(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS journal_audit_id FROM $table r WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$action,$action,$action,$seen]);
+                // One grouped audit pass per page batch; identical counts/min-id to the per-row correlated scans.
+                $rows=all("SELECT r.*,COALESCE(aj.audit_count,0) AS audit_count,COALESCE(au.actor_count,0) AS actor_count,aj.audit_id AS journal_audit_id FROM $table r LEFT JOIN (SELECT detail,COUNT(*) AS audit_count,MIN(id) AS audit_id FROM $audit WHERE BINARY action=? GROUP BY detail) aj ON aj.detail=BINARY $detail LEFT JOIN (SELECT detail,user_id,COUNT(*) AS actor_count FROM $audit WHERE BINARY action=? GROUP BY detail,user_id) au ON au.detail=BINARY $detail AND au.user_id=r.actor_id WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$action,$action,$seen]);
                 if (!$rows) throw new RuntimeException('StackCP history order needs recovery.');
                 foreach ($rows as $row) {
                     $d=provider_stackcp_row($kind,$row,$vault);$previous=$chains[$d['scope_id']]??null;
@@ -159,16 +160,18 @@ final class ProviderStackCpReadProjection {
             while ($seen<$checkpoint[$kind]) {
                 $detail="CONCAT(BINARY 'StackCP access $kind ',r.id,' ',r.document_sha256,' ',r.proof)";
                 $select=['r.*'];foreach (provider_stackcp_access_common_keys($kind==='finished') as $field) $select[]=((in_array($field,provider_stackcp_access_common_keys(),true)?'f.':'z.').$field.' AS c_'.$field);
-                $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS own_audit_count";
-                $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail AND a.user_id=f.actor_id) AS own_actor_count";
-                $select[]="(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS own_audit_id";
                 $commonDetail=$kind==='started'?"CONCAT(BINARY 'Refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision)":"CONCAT(BINARY 'Refresh ',f.id,' ',z.state,IF(z.reason='','',' '),z.reason)";
                 $commonAction='provider.refresh_'.($kind==='started'?'started':'finished');
-                $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $commonDetail) AS common_audit_count";
-                $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $commonDetail AND a.user_id=f.actor_id) AS common_actor_count";
-                $select[]="(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $commonDetail) AS common_audit_id";
+                // One grouped audit pass per action per page batch; identical counts/min-id to the six per-row correlated scans.
+                $select[]='COALESCE(own.audit_count,0) AS own_audit_count';
+                $select[]='COALESCE(own_actor.actor_count,0) AS own_actor_count';
+                $select[]='own.audit_id AS own_audit_id';
+                $select[]='COALESCE(common.audit_count,0) AS common_audit_count';
+                $select[]='COALESCE(common_actor.actor_count,0) AS common_actor_count';
+                $select[]='common.audit_id AS common_audit_id';
                 $join='';if ($kind==='finished') {$select[]='s.document_json AS start_json';$select[]='s.document_sha256 AS start_sha256';$join=" LEFT JOIN $z z ON z.id=r.id LEFT JOIN $reads s ON s.id=r.id";}
-                $rows=all('SELECT '.implode(',',$select)." FROM $table r LEFT JOIN $f f ON f.id=r.id $join WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$action,$action,$action,$commonAction,$commonAction,$commonAction,$seen]);
+                $auditJoins=" LEFT JOIN (SELECT detail,COUNT(*) AS audit_count,MIN(id) AS audit_id FROM $audit WHERE BINARY action=? GROUP BY detail) own ON own.detail=BINARY $detail LEFT JOIN (SELECT detail,user_id,COUNT(*) AS actor_count FROM $audit WHERE BINARY action=? GROUP BY detail,user_id) own_actor ON own_actor.detail=BINARY $detail AND own_actor.user_id=f.actor_id LEFT JOIN (SELECT detail,COUNT(*) AS audit_count,MIN(id) AS audit_id FROM $audit WHERE BINARY action=? GROUP BY detail) common ON common.detail=BINARY $commonDetail LEFT JOIN (SELECT detail,user_id,COUNT(*) AS actor_count FROM $audit WHERE BINARY action=? GROUP BY detail,user_id) common_actor ON common_actor.detail=BINARY $commonDetail AND common_actor.user_id=f.actor_id";
+                $rows=all('SELECT '.implode(',',$select)." FROM $table r LEFT JOIN $f f ON f.id=r.id $join$auditJoins WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$action,$action,$commonAction,$commonAction,$seen]);
                 if (!$rows) throw new RuntimeException('StackCP access history order needs recovery.');$starts=[];
                 foreach ($rows as $row) {
                     $d=provider_stackcp_access_row($kind,$row);$common=[];foreach (provider_stackcp_access_common_keys($kind==='finished') as $field) $common[$field]=$row['c_'.$field];

@@ -1,0 +1,173 @@
+{
+    "passed": false,
+    "count": 17,
+    "failed": 1,
+    "checks": [
+        {
+            "name": "opaque-partial-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-partial-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal retains the required cancellation or unknown-result state",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal actual writer uses a different native connection",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal preserves the exact committed receipt",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal retains exactly the known gateway identity",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal preserves license identity and domains",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal does not claim full payoff",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal releases parent transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque-one_paid-during_create-normal retry cannot create another subscription",
+            "passed": true
+        },
+        {
+            "name": "fixture exception: RuntimeException A separate financing collection has an unresolved outcome. Reconcile it before automatic enrollment.",
+            "passed": false
+        }
+    ],
+    "writers": [
+        {
+            "case": "opaque-partial-during_create-normal",
+            "parent_connection": 92,
+            "writer": {
+                "connection": 93,
+                "balance": {
+                    "paid_cents": 500,
+                    "due_cents": 500,
+                    "revision": 2
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860001",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        },
+        {
+            "case": "opaque-one_paid-during_create-normal",
+            "parent_connection": 92,
+            "writer": {
+                "connection": 94,
+                "balance": {
+                    "paid_cents": 1000,
+                    "due_cents": 0,
+                    "revision": 4
+                },
+                "committed": true
+            },
+            "result": "billing_suspended",
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBCancelSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "860002",
+                    "transaction": false,
+                    "retained": true
+                }
+            ]
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "source_sha256": "9f8e4965304ef90b0d9d22e3db02e14d870cd3a9d83fcbf46bdefbd633f0b6df",
+    "scope": "Actual initial callers, separate PHP processes\/native connections, real owner ledger_receive and prepared charge_record_paid commits, native transaction rollback under injected audit failure. Synthetic provider transport\/mode, signed future invoice and request-token metadata."
+}

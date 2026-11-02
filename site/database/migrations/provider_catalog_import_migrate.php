@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
-function provider_catalog_import_prepare(#[\SensitiveParameter] string $password): void {
+function provider_catalog_import_prepare(): void {
     if(db()->inTransaction())throw new LogicException('Import preparation requires its own transaction.');
-    staff_locked(function()use($password):void {
-        $actor=provider_catalog_import_owner($password);
+    staff_locked(function():void {
+        $actor=provider_catalog_import_owner();
         if(provider_catalog_import_ready())return;
         if(provider_catalog_import_exists())provider_catalog_import_schema_valid();
         else db()->exec(provider_catalog_import_schema(config()['db']['prefix'])['catalog_provider_imports']);

@@ -1,0 +1,25 @@
+{
+  "base_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "tree": "f97c27ba06d0795fa544daf97e7387cbd2bc4316",
+  "commit": null,
+  "branch": "review/fk-metadata-scope-20261102",
+  "scope": "Two FK metadata calls/comments, exact inventory refresh, source-bound native regression",
+  "files": [
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "sha256": "301208ac8439e037a2f527961181e572144127e4a24fa9bb9301ab348528b7f9"
+    },
+    {
+      "path": "site/database/migrations/service_plans_migrate.php",
+      "sha256": "e85836146e1b4a15656fe22e10e64c2e8845d5b6e797571a288f7171e90c6b15"
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "sha256": "668be5ac0a961539bc7f7b37065f078b0a93e32f884b7c74ee739f2d685d3bba"
+    },
+    {
+      "path": "tests/foreign_key_metadata_native.php",
+      "sha256": "92c686263dca8c88c2042b8eb355191b1c235ab6514a5d65407a3202c42db611"
+    }
+  ]
+}

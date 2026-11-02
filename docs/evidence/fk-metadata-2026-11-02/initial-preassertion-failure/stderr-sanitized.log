@@ -1,0 +1,1 @@
+PHP Fatal error:  Cannot redeclare service_plans_schema() (previously declared in [initial-owned-runtime]/source/site/database/schema/service_plans_schema.php:4) in [initial-owned-runtime]/source/site/database/schema/service_plans_schema.php on line 20
