@@ -1,7 +1,7 @@
 name: Recurring invoice lifecycle checks
 on:
   push:
-    branches: [main, codex/recurring-billing-lifecycle, codex/twentyi-recurring-eligibility]
+    branches: [main, codex/recurring-billing-lifecycle, codex/twentyi-recurring-eligibility, "devin/non20i-*"]
     paths: ['foundation/recurring-billing/**', 'tests/recurring-billing/**', 'foundation/billing-calendar/**', '.github/workflows/recurring-billing-lifecycle.yml']
   pull_request:
     paths: ['foundation/recurring-billing/**', 'tests/recurring-billing/**', 'foundation/billing-calendar/**', '.github/workflows/recurring-billing-lifecycle.yml']

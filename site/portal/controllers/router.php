@@ -54,8 +54,10 @@ if(array_key_exists('hosting_purchases',$_GET))header('Cache-Control: no-store, 
 if(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
+if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_search')header('Cache-Control: no-store, private');
+require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
 if($supportRequested)header('Cache-Control: no-store, private');
 if($supportRequested){
@@ -77,6 +79,7 @@ if(isset($_GET['proposal']))proposals_portal_render($error);
 if(array_key_exists('notifications',$_GET))notification_center_portal_render($error);
 if(isset($_GET['services']))provider_services_portal_render();
 if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_key_exists('ticket_new',$_GET))support_tickets_portal_render($client,$error);
+if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if($accountRequested){require CWP_CODE_ROOT.'/portal/views/account.php';}
 if($softwareRequested){require_once CWP_CODE_ROOT.'/portal/views/software.php';software_portal_render($client,$error);}

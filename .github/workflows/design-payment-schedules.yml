@@ -1,0 +1,45 @@
+name: Design payment schedule checks
+on:
+  push:
+    branches: [main, codex/design-payment-schedules]
+    paths: ['foundation/design-payments/**', 'tests/design-payments/**', '.github/workflows/design-payment-schedules.yml']
+  pull_request:
+    paths: ['foundation/design-payments/**', 'tests/design-payments/**', '.github/workflows/design-payment-schedules.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: design-payment-schedules-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  records:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Financial records in isolated official PHP
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            php -l foundation/design-payments/DesignPaymentSchedule.php
+            php -l tests/design-payments/records.php
+            php tests/design-payments/records.php > qa/design-payment-schedules-default.json
+            php -n tests/design-payments/records.php > qa/design-payment-schedules-no-ini.json
+          '
+      - name: Preserve named evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-payment-schedules-${{ matrix.php }}-${{ github.sha }}
+          path: qa/design-payment-schedules-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record scope
+        if: always()
+        run: echo 'Pure exact quote/allocation records. No database, current authorization, browser, invoice issuance or gateway acceptance.' >> "$GITHUB_STEP_SUMMARY"

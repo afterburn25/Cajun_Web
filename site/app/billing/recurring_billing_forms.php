@@ -20,6 +20,7 @@ function recurring_ui_capture(array $post):array {
         else $out[$key]=$value;
     }
     foreach($post as $key=>$value)if(!array_key_exists($key,$limits)&&!in_array($key,['csrf','owner_password'],true))$out['invalid'][]='unknown field';
+    if($out['focus_event']!==''&&$out['schedule']==='')throw new InvalidArgumentException('Choose the original recurring agreement for this event.');
     return $out;
 }
 function recurring_ui_valid(array $form):void {
@@ -39,17 +40,24 @@ function recurring_ui_confirm(array $form):void {
 /** Browsers submit textarea line breaks as CRLF; canonical documents retain LF. */
 function recurring_ui_lines(string $text):string {return str_replace("\r\n","\n",$text);}
 function recurring_ui_query(array $query,bool $staff):array {
-    $allowed=['job','schedule','p','sources_page','schedules_page','history_page','invoices_page','period_date'];
+    $allowed=['job','schedule','p','sources_page','schedules_page','history_page','invoices_page','period_date','focus_event'];
     $allowed[]=$staff?'view':'recurring';if($staff)$allowed[]='source';
     foreach($query as $key=>$value)if(!in_array($key,$allowed,true)||!is_string($value))throw new InvalidArgumentException('Use a valid recurring billing link.');
     if(($staff&&($query['view']??'')!=='recurring-billing')||(!$staff&&($query['recurring']??'')!=='1'))throw new InvalidArgumentException('Open the recurring billing page to continue.');
-    $out=['job'=>isset($query['job'])?recurring_ui_number($query['job']):0,'schedule'=>'','source'=>'','period_date'=>''];
-    foreach(['schedule','source'] as $key)if(isset($query[$key]))$out[$key]=recurring_ui_hex($query[$key]);
+    $out=['job'=>isset($query['job'])?recurring_ui_number($query['job']):0,'schedule'=>'','source'=>'','period_date'=>'','focus_event'=>''];
+    foreach(['schedule','source','focus_event'] as $key)if(isset($query[$key]))$out[$key]=recurring_ui_hex($query[$key]);
     foreach(['p','sources_page','schedules_page','history_page','invoices_page'] as $key)$out[$key]=recurring_ui_number($query[$key]??'0',10000,true);
     if(isset($query['period_date'])){$value=$query['period_date'];if(!preg_match('/\A[1-9][0-9]{3}-[0-9]{2}-[0-9]{2}\z/',$value))throw new InvalidArgumentException('Choose a billing period start date.');$out['period_date']=$value;}
     if(($out['source']!==''||$out['schedule']!=='')&&!$out['job'])throw new InvalidArgumentException('Choose the related project first.');
     if($out['source']!==''&&$out['schedule']!=='')throw new InvalidArgumentException('Choose an offer or an existing agreement.');
     return $out;
+}
+/** Resolve an opaque event against the whole journal after later entries have been appended. */
+function recurring_ui_history_page(RecurringBillingSchedule $doc,int $page,string $focus):int {
+    if($focus==='')return $page;
+    recurring_ui_hex($focus);$events=$doc->data()['events'];
+    foreach($events as $i=>$event)if($event['id']===$focus)return intdiv(count($events)-1-$i,10);
+    throw new InvalidArgumentException('The original recurring decision is unavailable.');
 }
 function recurring_ui_period(RecurringBillingTerms $terms,string $date):int {
     $t=$terms->data();$period=(new BillingCalendar($t['anchor'],$t['cadence'],$t['alignment']))->periodAt($date);
