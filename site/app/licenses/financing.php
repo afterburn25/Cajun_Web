@@ -333,7 +333,7 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
     }
     if(!$row)return;
     $plan=license_financing_sync((int)$row['license_id'],null,true);
-    if(!$plan||!in_array((string)$plan['state'],['active','grace','paid_off'],true))return;
+    if(!$plan)return;
 
     // A fully repaid installment that was reopened by a verified refund/void
     // can clear only the dedicated reversal-recovery gateway state. Review,
@@ -344,6 +344,16 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
     $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
         [config()['db']['prefix'].'license_finance_offers']);
     if(!$gatewayTable||!$offerTable)return;
+    require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+    $retiring=one('SELECT s.offer_id,s.status FROM '.table('license_finance_offers').' o JOIN '.table('license_finance_subscriptions').
+        ' s ON s.offer_id=o.id WHERE o.license_id=? AND o.schedule_id=? AND o.status=?',[$row['license_id'],$plan['schedule_id'],'signed']);
+    // Permanent payoff uses its existing review/terminal retirement path;
+    // partial-receipt retirement must not replace that durable payoff state.
+    if($retiring&&(string)$retiring['status']==='retirement_pending'&&(string)$plan['state']!=='paid_off'){
+        license_finance_subscription_replacement_retire((string)$retiring['offer_id']);
+        return;
+    }
+    if(!in_array((string)$plan['state'],['active','grace','paid_off'],true))return;
     if((string)$plan['state']==='paid_off'){
         require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
         $offer=one('SELECT id FROM '.table('license_finance_offers').' WHERE license_id=? AND schedule_id=? AND status=?',

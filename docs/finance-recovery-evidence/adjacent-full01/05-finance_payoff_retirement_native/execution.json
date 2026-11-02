@@ -1,0 +1,14 @@
+{
+  "command": [
+    "tests/finance_payoff_retirement_native.php",
+    "fep_fadjown_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab",
+    "owner_exit"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 2.45,
+  "stderr_bytes": 67,
+  "report_passed": true,
+  "check_count": 5,
+  "failed_checks": []
+}

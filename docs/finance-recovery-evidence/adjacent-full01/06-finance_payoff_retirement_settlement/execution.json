@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_payoff_retirement_settlement.php",
+    "fep_fadjset_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 36.279,
+  "stderr_bytes": 507,
+  "report_passed": true,
+  "check_count": 41,
+  "failed_checks": []
+}

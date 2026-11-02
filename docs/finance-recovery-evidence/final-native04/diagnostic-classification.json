@@ -1,0 +1,25 @@
+{
+  "sha256": "ae803d2e738b4cf8ae6fdaa44486460450581cb825b89818e9f963fead2f7bbe",
+  "bytes": 4433,
+  "line_count": 64,
+  "exact_expected_patterns": {
+    "CWP [id] RuntimeException code=0 in financing_offers.php:261": 58,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:29": 1,
+    "CWP [id] RuntimeException code=0 in finance_authorize_net.php:167": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:13": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:18": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php:21": 1,
+    "CWP [id] RuntimeException code=0 in finance_replacement_payoff_boundaries.php(72) : eval()'d code:16": 1
+  },
+  "classification": {
+    "deliberately_unprepared_payment_link": 58,
+    "readback_timeout": 1,
+    "wrong_contract_readback": 1,
+    "cancel_error": 1,
+    "cancel_timeout": 1,
+    "lost_cancel_reply": 1,
+    "nonterminal_readback": 1
+  },
+  "unexpected_lines": 0,
+  "scope": "Expected synthetic negative diagnostics, not empty stderr. FinanceRecovery additional fault diagnostics remain separately captured in native case JSON."
+}

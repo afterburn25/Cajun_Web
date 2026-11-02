@@ -72,15 +72,20 @@ try{
                 $invoices[]=(int)$issued['invoice_id'];
             }
             $before=fep_snapshot();$fepCalls=[];$paymentEvidence=[];$providerScenario=$scenario;$postReservation=null;
-            $pay=static function()use($invoices,&$paymentEvidence):void{
+            $pay=static function()use($invoices,&$paymentEvidence,$caller):void{
                 $session=$_SESSION;rb_staff();
                 try{
                     foreach($invoices as $invoice){
+                        // Isolate the original final-payoff fault: the first two
+                        // manual receipts commit while the synthetic gateway is
+                        // paused. FIN-02 separately covers immediate retirement
+                        // and repeated receipts with an enabled gateway.
+                        $GLOBALS['fepReceiptGatewayPaused']=$caller==='manual'&&$invoice!==$invoices[array_key_last($invoices)];
                         $row=ledger_invoice($invoice);$entry=\FinancePayoffRetirement\ledger_receive($invoice,1000,'bank','Synthetic payoff '.$invoice,
                             gmdate('Y-m-d'),hash('sha256','payoff-'.$invoice),ledger_review_hash($row));
                         $paymentEvidence[]=['invoice'=>$invoice,'entry'=>$entry,'balance'=>ledger_balance(ledger_invoice($invoice))];
                     }
-                }finally{$_SESSION=$session;}
+                }finally{unset($GLOBALS['fepReceiptGatewayPaused']);$_SESSION=$session;}
             };
             if($caller!=='manual')$postReservation=$pay;
             $result=$caller==='opaque'

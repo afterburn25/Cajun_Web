@@ -1,0 +1,1304 @@
+{
+    "passed": true,
+    "count": 240,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "reserve paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve zero admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve zero local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve zero ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve zero preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve zero releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_active_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_active_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_active_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_active_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_active_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_active_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_grace_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_grace_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_grace_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_grace_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_grace_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve stale_grace_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "reserve late_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve late_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve late_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve late_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve late_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve late_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "reserve zero_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve zero_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve zero_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve zero_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve zero_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve zero_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "reserve one_paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve one_paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve one_paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve one_paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve one_paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve one_paid committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "reserve partial_paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "reserve partial_paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "reserve partial_paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "reserve partial_paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "reserve partial_paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "reserve partial_paid committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "opaque paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque zero admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque zero local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque zero ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque zero preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque zero releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_active_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_active_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_active_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_active_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_active_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_active_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_grace_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_grace_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_grace_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_grace_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_grace_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque stale_grace_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "opaque late_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque late_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque late_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque late_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque late_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque late_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "opaque zero_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque zero_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque zero_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque zero_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque zero_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque zero_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "opaque one_paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque one_paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque one_paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque one_paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque one_paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque one_paid committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "opaque partial_paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "opaque partial_paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "opaque partial_paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "opaque partial_paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "opaque partial_paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "opaque partial_paid committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile zero admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile zero local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile zero ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile zero preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile zero releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile stale_active_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile stale_active_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile stale_active_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile stale_active_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile stale_active_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile stale_active_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile stale_grace_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile stale_grace_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile stale_grace_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile stale_grace_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile stale_grace_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile stale_grace_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile late_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile late_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile late_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile late_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile late_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile late_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile zero_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile zero_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile zero_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile zero_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile zero_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile zero_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile one_paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile one_paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile one_paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile one_paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile one_paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile one_paid committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile partial_paid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile partial_paid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile partial_paid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile partial_paid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile partial_paid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile partial_paid committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile profile_unpaid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_unpaid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_unpaid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_unpaid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_unpaid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_reversed admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_reversed local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_reversed ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_reversed preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_reversed releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_suspended admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_suspended local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_suspended ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_suspended preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_suspended releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_paid_off admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_paid_off local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_paid_off ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_paid_off preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_paid_off releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_inactive_client admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_inactive_client local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_inactive_client ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_inactive_client preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_inactive_client releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_changed admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_changed local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_changed ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_changed preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_changed releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_schedule_changed admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_schedule_changed local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_schedule_changed ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_schedule_changed preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_schedule_changed releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_session admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_session local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_session ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_session preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile profile_owner_session releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_valid admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_valid local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_valid ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_valid preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_valid releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_missing_attempt admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_missing_attempt local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_missing_attempt ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_missing_attempt preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_missing_attempt releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_charge admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_charge local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_charge ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_charge preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_charge releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_attempt admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_attempt local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_attempt ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_attempt preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_stale_attempt releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_offer admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_offer local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_offer ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_offer preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_offer releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_amount admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_amount local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_amount ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_amount preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_amount releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_transaction admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_transaction local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_transaction ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_transaction preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_wrong_transaction releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_reversed_initial admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_reversed_initial local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_reversed_initial ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_reversed_initial preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_reversed_initial releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_paid_off admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_paid_off local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_paid_off ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_paid_off preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_paid_off releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_late_payoff admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_late_payoff local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_late_payoff ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_late_payoff preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_late_payoff releases transaction and mutex",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_late_payoff committed writer leaves original projection stale",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_support admission outcome",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_support local subscription admission",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_support ARB requests",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_support preserves financial license domain and rights records",
+            "passed": true
+        },
+        {
+            "name": "profile sandbox_support releases transaction and mutex",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "caller": "reserve",
+            "name": "paid",
+            "allowed": true,
+            "error": null,
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "zero",
+            "allowed": true,
+            "error": null,
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "stale_active_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "stale_grace_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "late_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "zero_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "one_paid",
+            "allowed": false,
+            "error": "RuntimeException: Existing installment payments require review before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "reserve",
+            "name": "partial_paid",
+            "allowed": false,
+            "error": "RuntimeException: Existing installment payments require review before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "opaque",
+            "name": "paid",
+            "allowed": true,
+            "error": null,
+            "provider_calls": [
+                "ARBCreateSubscriptionRequest",
+                "ARBGetSubscriptionRequest"
+            ]
+        },
+        {
+            "caller": "opaque",
+            "name": "zero",
+            "allowed": true,
+            "error": null,
+            "provider_calls": [
+                "ARBCreateSubscriptionRequest",
+                "ARBGetSubscriptionRequest"
+            ]
+        },
+        {
+            "caller": "opaque",
+            "name": "stale_active_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "opaque",
+            "name": "stale_grace_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "opaque",
+            "name": "late_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "opaque",
+            "name": "zero_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "opaque",
+            "name": "one_paid",
+            "allowed": false,
+            "error": "RuntimeException: Existing installment payments require review before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "opaque",
+            "name": "partial_paid",
+            "allowed": false,
+            "error": "RuntimeException: Existing installment payments require review before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "paid",
+            "allowed": true,
+            "error": null,
+            "provider_calls": [
+                "ARBCreateSubscriptionRequest",
+                "ARBGetSubscriptionRequest"
+            ]
+        },
+        {
+            "caller": "profile",
+            "name": "zero",
+            "allowed": true,
+            "error": null,
+            "provider_calls": [
+                "ARBCreateSubscriptionRequest",
+                "ARBGetSubscriptionRequest"
+            ]
+        },
+        {
+            "caller": "profile",
+            "name": "stale_active_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "stale_grace_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "late_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "zero_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "one_paid",
+            "allowed": false,
+            "error": "RuntimeException: Existing installment payments require review before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "partial_paid",
+            "allowed": false,
+            "error": "RuntimeException: Existing installment payments require review before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_unpaid",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_reversed",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_suspended",
+            "allowed": false,
+            "error": "RuntimeException: Review financing access before enrolling automatic installments.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_paid_off",
+            "allowed": false,
+            "error": "RuntimeException: Paid-off financing cannot enroll more automatic installments.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_inactive_client",
+            "allowed": false,
+            "error": "RuntimeException: Financing customer is unavailable.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_owner_changed",
+            "allowed": false,
+            "error": "RuntimeException: Financing enrollment ownership or schedule changed.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_schedule_changed",
+            "allowed": false,
+            "error": "RuntimeException: Financing enrollment ownership or schedule changed.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "profile_owner_session",
+            "allowed": true,
+            "error": null,
+            "provider_calls": [
+                "ARBCreateSubscriptionRequest",
+                "ARBGetSubscriptionRequest"
+            ]
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_valid",
+            "allowed": true,
+            "error": null,
+            "provider_calls": [
+                "ARBCreateSubscriptionRequest",
+                "ARBGetSubscriptionRequest"
+            ]
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_missing_attempt",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_stale_charge",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_stale_attempt",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_wrong_offer",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_wrong_amount",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_wrong_transaction",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_reversed_initial",
+            "allowed": false,
+            "error": "RuntimeException: Complete the signed agreement initial payment first.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_paid_off",
+            "allowed": false,
+            "error": "RuntimeException: Paid-off financing cannot enroll more automatic installments.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_late_payoff",
+            "allowed": false,
+            "error": "RuntimeException: Review current financing installment balances before automatic enrollment.",
+            "provider_calls": []
+        },
+        {
+            "caller": "profile",
+            "name": "sandbox_support",
+            "allowed": false,
+            "error": "RuntimeException: Financing enrollment is unavailable during support access.",
+            "provider_calls": []
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "portal_sha256": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8",
+    "financing_sha256": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "offers_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+    "writer_commits": 20,
+    "expected_preparation_diagnostics": 38,
+    "scope": "Exact source enrollment\/reservation functions with actual SQL, canonical signed schedules, invoices, ledger and separately committed PDO payoff writers. Only gateway settings, transport and readback are synthetic namespace boundaries. No HTTP or real payment claim."
+}

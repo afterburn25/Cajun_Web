@@ -1,0 +1,158 @@
+{
+  "port": 33313,
+  "datadir": "/tmp/cwp-finance-recovery-final-8cc2b4f257ab/data/",
+  "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "uid": 65534,
+  "source_sha256": {
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_subscription.php": "37815cbae63d7eecf19bedf95133d582b51fd75169962fbc47a939baa2fd15a1",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+    "site/app/staff/accounts.php": "fdb9d77f4870891676bc69826af22353d37ec9faf736fe80a2e33fadbc6dfedd",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+    "tests/finance_enrollment_payoff_boundaries.php": "3d574b75e84586c69542681a365ed18df800c6ece61d0ffb600ee7e1d6788655",
+    "tests/finance_enrollment_payoff_native.php": "7071014608d6c5ff9fb9d20d47ef85e6df9e486d64f16b0de2c0fe4935bc0d03",
+    "tests/finance_initial_enrollment_native.php": "0632b77c78a78992c81505d9ec30e142373d4c42c2a1608dbb38f8e312d05de3",
+    "tests/finance_initial_receipts_boundaries.php": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+    "tests/finance_initial_receipts_native.php": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+    "tests/finance_payoff_retirement_boundaries.php": "c38497be0de914b060356e113cdc99da0632798dcda9199c64dd8e23365cf237",
+    "tests/finance_payoff_retirement_native.php": "64bb7e8997a7b26995ed52e72930ccc252f9c36431303f37c154395412272de4",
+    "tests/finance_payoff_retirement_settlement.php": "1aceebbaa10726d56384f81ea0201a5039cd58cf508bf48e1f957779cc2aa8eb",
+    "tests/finance_replacement_payoff_boundaries.php": "0f220d09f928d36f0bda265e9b14a40ff3d5d7015aea533fc165b04c9f1e96cc",
+    "tests/finance_replacement_pending_native.php": "4c6596b46ed19d2ad0612979ab3fea859f97cb6eb5e6c053203156bba9e59240",
+    "tests/finance_replacement_receipts_native.php": "fcd673714810f5978cce053c47a423dd365522226dc3cfe7e0e06ab13921016a"
+  },
+  "results": [
+    {
+      "command": [
+        "tests/finance_replacement_receipts_native.php",
+        "fep_fadjrcpt_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 400.633,
+      "stderr_bytes": 2481,
+      "report_passed": false,
+      "check_count": 232,
+      "failed_checks": [
+        "partial_first-after_retirement-normal refuses create when remaining receipts changed",
+        "paid_later-after_retirement-normal refuses create when remaining receipts changed",
+        "partial_later-after_retirement-normal refuses create when remaining receipts changed",
+        "paid_first-after_retirement-normal refuses create when remaining receipts changed",
+        "partial_later-during_readback-normal retires or visibly retains the obsolete candidate",
+        "partial_later-during_readback-normal retains actual owner receipts",
+        "partial_later-during_readback-normal retains candidate identity and predecessor history"
+      ]
+    },
+    {
+      "command": [
+        "tests/finance_replacement_pending_native.php",
+        "fep_fadjpend_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.089,
+      "stderr_bytes": 221,
+      "report_passed": true,
+      "check_count": 25,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_initial_receipts_native.php",
+        "fep_fadjinit_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 159.053,
+      "stderr_bytes": 4162,
+      "report_passed": true,
+      "check_count": 358,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_payoff_retirement_native.php",
+        "fep_fadjret_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 217.741,
+      "stderr_bytes": 4522,
+      "report_passed": false,
+      "check_count": 292,
+      "failed_checks": [
+        "manual-cancel_timeout verified retirement or retained review",
+        "manual-cancel_timeout cancels only nonterminal verified identity",
+        "manual-lost_cancel_reply verified retirement or retained review",
+        "manual-cancel_error verified retirement or retained review",
+        "manual-cancel_error cancels only nonterminal verified identity",
+        "manual-still_active verified retirement or retained review",
+        "manual-still_active cancels only nonterminal verified identity",
+        "manual-wrong_readback verified retirement or retained review"
+      ]
+    },
+    {
+      "command": [
+        "tests/finance_payoff_retirement_native.php",
+        "fep_fadjown_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab",
+        "owner_exit"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.45,
+      "stderr_bytes": 67,
+      "report_passed": true,
+      "check_count": 5,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_payoff_retirement_settlement.php",
+        "fep_fadjset_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 36.279,
+      "stderr_bytes": 507,
+      "report_passed": true,
+      "check_count": 41,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_initial_enrollment_native.php",
+        "fie_fadjinit_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 52.881,
+      "stderr_bytes": 3618,
+      "report_passed": true,
+      "check_count": 207,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_enrollment_payoff_native.php",
+        "fep_fadjenr_",
+        "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 79.363,
+      "stderr_bytes": 2546,
+      "report_passed": true,
+      "check_count": 240,
+      "failed_checks": []
+    }
+  ],
+  "scope": "Bounded retained finance native fixtures on actual current source, native PDO and synthetic transport; no provider or external operation."
+}

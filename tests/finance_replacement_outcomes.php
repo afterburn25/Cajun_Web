@@ -21,6 +21,14 @@ try{
 $fixture=[];
 function support_current():bool{return false;}
 function license_finance_gateway_ready():bool{return true;}
+// This orchestration fixture supplies a current client and a synthetic durable
+// intent. The payoff native suite exercises actual session and journal storage.
+function service_plans_current_client(int $id):array{if($id!==1)throw new LogicException('Wrong synthetic client');return ['id'=>1];}
+function license_finance_recovery_reserve(array $offer,array $old,array $contract,array $settings):array{global $fixture;$fixture['intent']=['id'=>'synthetic-intent','dispatched_at'=>null,'gateway_subscription_id'=>null];return $fixture['intent'];}
+function license_finance_recovery_dispatch(string $offer,string $old,string $terminal,array $settings,?int $client=null):bool{global $fixture;if($terminal!=='canceled'||$fixture['status']!=='replacing')throw new LogicException('Unretired synthetic predecessor');$fixture['intent']['dispatched_at']='2099-01-01 00:00:00';return true;}
+function license_finance_recovery_open(string $offer,bool $lock=false):?array{global $fixture;return $fixture['intent']??null;}
+function license_finance_recovery_review(string $offer,string $old):void{}
+function license_finance_recovery_observe(string $offer,string $old,string $new):void{global $fixture;$fixture['intent']['gateway_subscription_id']=$new;}
 function software_anet_nonce(string $descriptor,string $nonce):void{if($descriptor!=='COMMON.ACCEPT.INAPP.PAYMENT'||$nonce!=='synthetic-one-use')throw new LogicException('Unexpected synthetic nonce.');}
 function license_finance_offer_row(string $id,int $client):array{if($id!==str_repeat('a',32)||$client!==1)throw new LogicException('Wrong owner');return ['status'=>'signed','license_id'=>7];}
 function license_financing_sync(int $id):array{return ['state'=>'active'];}
@@ -31,6 +39,8 @@ function table(string $name):string{return 'probe_'.$name;}
 function license_finance_subscription_row(string $id,bool $lock=false):array{global $fixture;return ['id'=>7,'gateway_subscription_id'=>$fixture['gateway_id'],'status'=>$fixture['status']];}
 function query(string $sql,array $params):void{
     global $fixture;
+    if($sql==='UPDATE probe_license_finance_replacement_attempts SET state=?,open_offer_id=NULL,updated_at=? WHERE id=?'
+        &&$params[0]==='rejected'&&$params[2]==='synthetic-intent'){$fixture['intent']=null;return;}
     if($sql!=='UPDATE probe_license_finance_subscriptions SET status=?,updated_at=? WHERE id=?'||$params[2]!==7)throw new LogicException('Unexpected SQL mutation');
     $fixture['status']=$params[0];$fixture['states'][]=$params[0];
 }

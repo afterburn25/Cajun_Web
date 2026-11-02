@@ -1,0 +1,145 @@
+{
+    "passed": false,
+    "count": 11,
+    "failed": 2,
+    "checks": [
+        {
+            "name": "uncertain uses real charge prepare and mark on an unpaid signed period",
+            "passed": true
+        },
+        {
+            "name": "unresolved initial period attempt refuses every new ARB create",
+            "passed": false
+        },
+        {
+            "name": "unresolved initial period refusal preserves all financial records",
+            "passed": false
+        },
+        {
+            "name": "unresolved one-time outcome remains retained",
+            "passed": true
+        },
+        {
+            "name": "uncertain does not invent an installment receipt",
+            "passed": true
+        },
+        {
+            "name": "uncertain releases native mutex and keeps provider I\/O outside transactions",
+            "passed": true
+        },
+        {
+            "name": "declined uses real charge prepare and mark on an unpaid signed period",
+            "passed": true
+        },
+        {
+            "name": "explicitly declined attempt permits lawful initial enrollment",
+            "passed": true
+        },
+        {
+            "name": "declined positive control retains its exact earlier attempt",
+            "passed": true
+        },
+        {
+            "name": "declined does not invent an installment receipt",
+            "passed": true
+        },
+        {
+            "name": "declined releases native mutex and keeps provider I\/O outside transactions",
+            "passed": true
+        }
+    ],
+    "cases": [
+        {
+            "state": "uncertain",
+            "invoice": 2,
+            "result": "pending_first_payment",
+            "error": null,
+            "creates": 1,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "89000001",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "attempt_status_before": "uncertain",
+            "attempt_status_after": "uncertain",
+            "subscription": {
+                "id": 1,
+                "offer_id": "21692f81bd302c324bbebf44ceefe539",
+                "gateway_subscription_id": "89000001",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 02:46:06",
+                "updated_at": "2026-11-02 02:46:06"
+            },
+            "financial_before_sha256": "81549d468b690091c44992d547a50a7d927a80a80e1a34cd4e15d8a79bfc591d",
+            "financial_after_sha256": "6b276a5951b483296dee3859ae1136e801d78d921e3f944f99e0ab9d59846dce",
+            "changed_tables": [
+                "license_finance_subscriptions"
+            ]
+        },
+        {
+            "state": "declined",
+            "invoice": 4,
+            "result": "pending_first_payment",
+            "error": null,
+            "creates": 1,
+            "calls": [
+                {
+                    "method": "ARBCreateSubscriptionRequest",
+                    "id": "",
+                    "transaction": false,
+                    "retained": false
+                },
+                {
+                    "method": "ARBGetSubscriptionRequest",
+                    "id": "89000002",
+                    "transaction": false,
+                    "retained": false
+                }
+            ],
+            "attempt_status_before": "declined",
+            "attempt_status_after": "declined",
+            "subscription": {
+                "id": 2,
+                "offer_id": "461a0c45c8af1ac9ad086ad3a98c7227",
+                "gateway_subscription_id": "89000002",
+                "customer_profile_id": "1001",
+                "payment_profile_id": "2001",
+                "interval_months": 1,
+                "amount_cents": 1000,
+                "total_occurrences": 3,
+                "period_offset": 0,
+                "replacement_count": 0,
+                "start_date": "2026-11-06",
+                "status": "pending_first_payment",
+                "created_at": "2026-11-02 02:46:08",
+                "updated_at": "2026-11-02 02:46:09"
+            },
+            "financial_before_sha256": "b5a3ec48da1155b13e4de01ac2375024d320397ea2134ef65da3539a94fadc4c",
+            "financial_after_sha256": "d814108a7ab5ff16f8c440ab8ee0f0108da842dd9b2925eacf20836ae2960e1f",
+            "changed_tables": [
+                "license_finance_subscriptions"
+            ]
+        }
+    ],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+    "scope": "Two isolated native admission scenarios on reviewer-owned port33317: actual signed agreement, invoice issuance, financing payment request, charge prepare\/mark and initial caller. Existing source bodies and native schema; only ARB transport\/mode and future signed invoice timing are synthetic. No real charge, provider, HTTP or original assertion changes."
+}

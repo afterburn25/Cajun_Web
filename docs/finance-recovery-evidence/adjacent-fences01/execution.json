@@ -1,0 +1,71 @@
+{
+  "port": 33313,
+  "datadir": "/tmp/cwp-finance-recovery-final-8cc2b4f257ab/data/",
+  "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "uid": 65534,
+  "source_sha256": {
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "site/app/billing/finance_authorize_net.php": "484bd1208f743548a9e92b90a9a44f223d4f8399fec80da157479ba8d8a572ba",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/app/billing/finance_recovery.php": "4edb7a10b9684e5fc2959484dc2902ccc8ff19cf99fa8ef5f4ecd247c6270ec2",
+    "site/app/billing/finance_subscription.php": "9f8e4965304ef90b0d9d22e3db02e14d870cd3a9d83fcbf46bdefbd633f0b6df",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/app/licenses/financing.php": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "site/app/licenses/service.php": "04739cc0327ba6e474808f4df2aa8d0974a27c94455d2891e790114a228d6443",
+    "site/app/staff/accounts.php": "fdb9d77f4870891676bc69826af22353d37ec9faf736fe80a2e33fadbc6dfedd",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+    "tests/finance_capture_snapshot_native.php": "299334636d5ffcc9402a6d54f2c166e3cd197aacd1b069bb8592411e0ee60c28",
+    "tests/finance_charge_response_native.php": "fc033f1970ada2277fb2cf7e36b12dd6982ee137ace2d9816a269df59f779374",
+    "tests/finance_enrollment_payoff_boundaries.php": "3d574b75e84586c69542681a365ed18df800c6ece61d0ffb600ee7e1d6788655",
+    "tests/finance_initial_receipts_boundaries.php": "3985468cc782231e10a120dc27908b45e2519c3a57bb83529f95d8415dd7354a",
+    "tests/finance_payoff_retirement_boundaries.php": "c38497be0de914b060356e113cdc99da0632798dcda9199c64dd8e23365cf237",
+    "tests/finance_replacement_payoff_boundaries.php": "0f220d09f928d36f0bda265e9b14a40ff3d5d7015aea533fc165b04c9f1e96cc",
+    "tests/license_finance_reconcile_native.php": "afd2870bf217c7994e749c1361c11a6fa6aaff2b5d07b64eac70ec1eb2ed9b11"
+  },
+  "results": [
+    {
+      "command": [
+        "tests/finance_capture_snapshot_native.php",
+        "site/app/billing/finance_charge.php",
+        "fc_fin_snap_"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.146,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 140,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/finance_charge_response_native.php",
+        "site/app/billing/finance_charge.php",
+        "fc_fin_resp_"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.599,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 220,
+      "failed_checks": []
+    },
+    {
+      "command": [
+        "tests/license_finance_reconcile_native.php",
+        "site/app/billing/finance_subscription.php",
+        "fq_fin_recon_"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.587,
+      "stderr_bytes": 0,
+      "report_passed": true,
+      "check_count": 75,
+      "failed_checks": []
+    }
+  ],
+  "scope": "Bounded retained finance native fixtures on actual current source, native PDO and synthetic transport; no provider or external operation."
+}

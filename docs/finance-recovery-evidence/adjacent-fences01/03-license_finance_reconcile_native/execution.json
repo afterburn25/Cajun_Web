@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/license_finance_reconcile_native.php",
+    "site/app/billing/finance_subscription.php",
+    "fq_fin_recon_"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.587,
+  "stderr_bytes": 0,
+  "report_passed": true,
+  "check_count": 75,
+  "failed_checks": []
+}

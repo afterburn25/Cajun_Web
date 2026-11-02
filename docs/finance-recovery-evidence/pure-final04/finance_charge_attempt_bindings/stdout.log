@@ -1,0 +1,114 @@
+{
+    "passed": true,
+    "count": 26,
+    "failed": 0,
+    "checks": [
+        {
+            "name": "declined expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "declined binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "unapproved expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "unapproved binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "unconfirmed expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "unconfirmed binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "sandbox expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "sandbox binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "production expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "production binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "transport_before_id expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "transport_before_id binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "transport_after_id expected orchestration outcome",
+            "passed": true
+        },
+        {
+            "name": "transport_after_id binds exactly one mutation to original attempt",
+            "passed": true
+        },
+        {
+            "name": "processing owner reconciliation completes",
+            "passed": true
+        },
+        {
+            "name": "processing passes original attempt and commit-time owner credential",
+            "passed": true
+        },
+        {
+            "name": "uncertain owner reconciliation completes",
+            "passed": true
+        },
+        {
+            "name": "uncertain passes original attempt and commit-time owner credential",
+            "passed": true
+        },
+        {
+            "name": "review owner reconciliation completes",
+            "passed": true
+        },
+        {
+            "name": "review passes original attempt and commit-time owner credential",
+            "passed": true
+        },
+        {
+            "name": "Sandbox continuation reflects mark admission 1",
+            "passed": true
+        },
+        {
+            "name": "Sandbox subscription boundary follows mark admission 1",
+            "passed": true
+        },
+        {
+            "name": "Sandbox mark keeps original attempt 1",
+            "passed": true
+        },
+        {
+            "name": "Sandbox continuation reflects mark admission 0",
+            "passed": true
+        },
+        {
+            "name": "Sandbox subscription boundary follows mark admission 0",
+            "passed": true
+        },
+        {
+            "name": "Sandbox mark keeps original attempt 0",
+            "passed": true
+        }
+    ],
+    "php": "8.3.6",
+    "source_sha256": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "scope": "Actual checkout and reconciliation functions; synthetic provider, owner and mutation doubles. No gateway, SQL, payment or license-access claim."
+}

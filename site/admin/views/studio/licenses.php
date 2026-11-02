@@ -10,6 +10,7 @@ $softwareReady=software_commerce_ready();
 $financingReady=license_financing_feature_state()===true;
 $financeOffersReady=license_finance_offers_ready();
 $financeGatewayReady=license_finance_gateway_ready();
+$financeRecoveryReady=license_finance_recovery_ready();
 $ready = license_ready() && license_invoice_cutover_ready();
 require CWP_CODE_ROOT.'/admin/views/studio/license_overview.php';
 ?>
@@ -55,6 +56,8 @@ $financeSchedulerLastState=$financeOffersReady?(string)setting('finance_schedule
 $financeSchedulerLastErrors=$financeOffersReady?(int)setting('finance_scheduler_last_errors'):0;
 $financeChargeReviews=$financeGatewayReady?all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.title,c.name FROM '.table('license_finance_charges').' ch JOIN '.table('license_finance_offers').' o ON o.id=ch.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE ch.status IN (?,?,?) ORDER BY ch.id DESC LIMIT 30',['processing','uncertain','review']):[];
 $financeSubscriptionReviews=$financeGatewayReady?all('SELECT s.offer_id,s.gateway_subscription_id,s.status,o.title,c.name FROM '.table('license_finance_subscriptions').' s JOIN '.table('license_finance_offers').' o ON o.id=s.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE s.status IN (?,?,?,?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',['creating','replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery','retirement_pending']):[];
+$financeReplacementReviews=$financeRecoveryReady?all('SELECT a.*,o.title,c.name FROM '.table('license_finance_replacement_attempts').' a JOIN '.table('license_finance_offers').' o ON o.id=a.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE a.open_offer_id IS NOT NULL ORDER BY a.created_at,a.id LIMIT 30'):[];
+$financeCollectionReviews=$financeRecoveryReady?all('SELECT r.*,o.title,c.name FROM '.table('license_finance_collection_reviews').' r JOIN '.table('license_finance_offers').' o ON o.id=r.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE r.state=? ORDER BY r.id LIMIT 30',['needs_accounting']):[];
 $financeMailAccounts=[];
 try{
     if(mail_accounts_ready()&&mail_drafts_ready())foreach(array_slice(mail_accounts_assigned(1),0,20) as $a)if($a['can_send'])$financeMailAccounts[]=mail_drafts_account($a['id']);
@@ -124,7 +127,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </section>
 <?php endif; ?>
 
-<?php if($financeOffersReady&&!$financeGatewayReady): ?>
+<?php if($financeOffersReady&&(!$financeGatewayReady||!$financeRecoveryReady)): ?>
 <section class="workspace-card"><h2>Prepare financing card processing</h2><p>Create durable one-time charge and finite-subscription fencing. This setup does not enable production charging.</p><form method="post"><?php admin_action('studio_license_finance_gateway_setup');admin_input('current_password','Owner password','','password','required autocomplete="current-password"');?><button class="btn gold">Prepare finance gateway state</button></form></section>
 <?php elseif($financeGatewayReady): ?>
 <section class="workspace-card"><h2>Financing payment status</h2><p>Unified Authorize.Net mode: <strong><?=esc((string)setting('software_gateway_mode','disabled'))?></strong>.</p>
@@ -135,6 +138,14 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php if($financeGatewayReady): ?>
 <section class="workspace-card"><h2>Financing payment reconciliation</h2>
 <p>Use these only after independently locating the exact transaction/subscription in Authorize.Net. CajunWebPro re-fetches gateway facts before changing local state.</p>
+<?php if($financeReplacementReviews): ?><h3>Unresolved replacement subscriptions</h3>
+<p>These obligations remain open after payoff. Locate the existing successor in the original merchant account; recovery verifies its reserved signed contract and retires it when payments have made it obsolete. An unknown response must never be retried as another create.</p>
+<?php foreach($financeReplacementReviews as $r): ?><div class="workspace-version"><p><?=esc($r['name'].' · '.$r['title'])?> · <?=esc($r['state'])?> · predecessor <?=esc($r['old_gateway_subscription_id'])?> · reserved <?=esc($r['created_at'])?> UTC</p>
+<form method="post"><?php admin_action('studio_license_finance_subscription_reconcile'); ?><input type="hidden" name="finance_id" value="<?=esc($r['offer_id'])?>"><?php admin_input('gateway_subscription_id',$r['dispatched_at']===null?'Retained predecessor ID (no create was sent)':'Verified existing successor ID',(string)($r['gateway_subscription_id']??($r['dispatched_at']===null?$r['old_gateway_subscription_id']:'')),'text','required pattern="[0-9]{1,25}" maxlength="25"'); ?><?php admin_input('current_password','Owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Recover retained subscription</button></form></div><?php endforeach; endif; ?>
+<?php if($financeCollectionReviews): ?><h3>Verified collections needing accounting review</h3>
+<p>These gateway charges are retained separately because automatic allocation could duplicate or exceed an invoice payment. Review the original receipt and gateway transaction before recording an allocation or arranging a refund. Subscription retirement does not erase these collections or change permanent payoff.</p>
+<?php foreach($financeCollectionReviews as $r): ?><div class="workspace-version"><p><?=esc($r['name'].' · '.$r['title'])?> · $<?=esc(number_format((int)$r['amount_cents']/100,2))?> · transaction <?=esc($r['gateway_transaction_id'])?> · subscription <?=esc($r['gateway_subscription_id'])?> · installment <?=(int)$r['period_index']+1?><?php if($r['invoice_id']!==null): ?> · invoice <?=(int)$r['invoice_id']?><?php endif; ?> · <?=esc($r['environment'])?></p></div><?php endforeach; endif; ?>
+<p class="hint">Older ambiguous replacements without a retained original contract require manual reconciliation in the original merchant account. Existing records are preserved; an original reservation cannot be inferred safely.</p>
 <h3>One-time finance charges</h3>
 <?php if(!$financeChargeReviews): ?><p class="muted">No financing one-time charges require review.</p><?php endif; ?>
 <?php foreach($financeChargeReviews as $r): ?><div class="workspace-version"><p><?=esc($r['name'].' · '.$r['title'])?> · invoice <?=(int)$r['invoice_id']?> · <?=esc($r['status'])?></p>

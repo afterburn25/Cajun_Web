@@ -1,0 +1,22 @@
+{
+  "command": [
+    "tests/finance_payoff_retirement_native.php",
+    "fep_fadjret_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 217.741,
+  "stderr_bytes": 4522,
+  "report_passed": false,
+  "check_count": 292,
+  "failed_checks": [
+    "manual-cancel_timeout verified retirement or retained review",
+    "manual-cancel_timeout cancels only nonterminal verified identity",
+    "manual-lost_cancel_reply verified retirement or retained review",
+    "manual-cancel_error verified retirement or retained review",
+    "manual-cancel_error cancels only nonterminal verified identity",
+    "manual-still_active verified retirement or retained review",
+    "manual-still_active cancels only nonterminal verified identity",
+    "manual-wrong_readback verified retirement or retained review"
+  ]
+}

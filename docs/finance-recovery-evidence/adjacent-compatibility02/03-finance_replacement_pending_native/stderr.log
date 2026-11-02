@@ -1,0 +1,7 @@
+PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [2002] Connection refused in /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php:7
+Stack trace:
+#0 /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php(7): PDO->__construct()
+#1 /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php(13): db()
+#2 /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/tests/finance_replacement_pending_native.php(149): query()
+#3 {main}
+  thrown in /tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab/site/includes/database.php on line 7

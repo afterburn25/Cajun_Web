@@ -6,6 +6,7 @@ require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
 require_once CWP_CODE_ROOT.'/app/billing/ledger.php';
 require_once CWP_CODE_ROOT.'/database/migrations/license_finance_gateway_migrate.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_recovery.php';
 
 use CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms;
 use CajunWebPro\Foundation\RecurringBilling\RecurringBillingSchedule;
@@ -117,6 +118,7 @@ function license_finance_scheduler_run(?int $at=null):array{
     $unfinished='f.paid_off_at IS NULL';
     if(license_finance_gateway_ready())$unfinished='('.$unfinished.' OR EXISTS (SELECT 1 FROM '.table('license_finance_subscriptions').
         " s WHERE s.offer_id=o.id AND s.status NOT IN ('paid_off','cancelled','sandbox_test')))";
+    if(license_finance_recovery_ready())$unfinished='('.$unfinished.' OR EXISTS (SELECT 1 FROM '.table('license_finance_replacement_attempts').' a WHERE a.open_offer_id=o.id))';
     $rows=all('SELECT o.id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id WHERE o.status=? AND '.$unfinished.' AND o.id>? ORDER BY o.id LIMIT 100',['signed',$cursor]);
     if(!$rows&&$cursor!==''){
         $cursor='';$rows=all('SELECT o.id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id WHERE o.status=? AND '.$unfinished.' ORDER BY o.id LIMIT 100',['signed']);
@@ -126,6 +128,17 @@ function license_finance_scheduler_run(?int $at=null):array{
     foreach($rows as $row){$last=(string)$row['id'];
         try{
             $result=license_finance_issue_due((string)$row['id'],$at);$summary['offers']++;$summary['invoices']+=count($result['issued']);
+            $pending=license_finance_recovery_open((string)$row['id']);
+            if($pending){
+                require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+                if($pending['state']==='prepared'&&$pending['dispatched_at']===null){
+                    license_finance_recovery_abandon_prepared((string)$row['id']);
+                }elseif($pending['gateway_subscription_id']!==null){
+                    license_finance_recovery_reconcile((string)$row['id'],(string)$pending['gateway_subscription_id']);
+                }else{
+                    $summary['errors']++;$summary['state']='partial';
+                }
+            }
             if($result['state']==='suspended')$summary['suspended']++;
             if($result['state']==='paid_off'){
                 $summary['paid_off']++;
@@ -133,6 +146,7 @@ function license_finance_scheduler_run(?int $at=null):array{
                     require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
                     $sub=license_finance_subscription_row((string)$row['id']);
                     if($sub&&!in_array((string)$sub['status'],['paid_off','cancelled','sandbox_test'],true)
+                        &&!license_finance_recovery_open((string)$row['id'])
                         &&license_finance_subscription_payoff_retire((string)$row['id'])!=='paid_off'){
                         $summary['errors']++;$summary['state']='partial';
                     }

@@ -1,0 +1,16 @@
+{
+    "passed": false,
+    "count": 1,
+    "failed": 1,
+    "checks": [
+        {
+            "name": "fixture exception: RuntimeException Payment credentials need verified private storage outside the document root. Ask the hosting owner to configure private storage.",
+            "passed": false
+        }
+    ],
+    "cases": [],
+    "php": "8.3.6",
+    "database": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "subscription_sha256": "3baa531431b52fc42b63d17c6b6190a38eb881f7de709099a6f92881302654f8",
+    "scope": "Two isolated native admission scenarios on reviewer-owned port33317: actual signed agreement, invoice issuance, financing payment request, charge prepare\/mark and initial caller. Existing source bodies and native schema; only ARB transport\/mode and future signed invoice timing are synthetic. No real charge, provider, HTTP or original assertion changes."
+}

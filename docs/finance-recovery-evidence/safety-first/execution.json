@@ -1,0 +1,44 @@
+{
+  "phase": "safety-first",
+  "parent": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "prefix": "fep_finsafe_",
+  "command": [
+    "/usr/bin/php8.3",
+    "/tmp/cwp-finance-recovery-runtime-8cc2b4f257ab/tests/finance_replacement_payoff_native.php",
+    "fep_finsafe_",
+    "/tmp/cwp-finance-recovery-runtime-8cc2b4f257ab"
+  ],
+  "uid": 65534,
+  "port": 33311,
+  "datadir": "/tmp/cwp-finance-recovery-8cc2b4f257ab/data/",
+  "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "elapsed_seconds": 490.389,
+  "exit_code": 1,
+  "stderr_bytes": 3295,
+  "source_sha256": {
+    "site/app/billing/finance_recovery.php": "07fc039980eda8cd190f61467f98f03b184096344700945d283b8c55eaf496fb",
+    "site/app/billing/finance_charge.php": "b6fd12026dc4fc51550ece8d4cc1d4001eed1e5e1ecc64e05d3e61d36c1c11f8",
+    "site/admin/views/studio/licenses.php": "897c428f411be19b73dfb89004bcd5f16c5536d11e1a2ccba585853a8bf2d3fc",
+    "tests/finance_replacement_payoff_recovery_safety.php": "ea5144371c0fd15da50437910e55a88a304cdf085a7ec42fe02a22576485c9f0",
+    "site/database/schema/license_finance_recovery_schema.php": "ae8c112da7961d3bbcd6944b6c2c98220ecdfe6dbc78a22c6d6e3b3e5592e21f",
+    "site/database/migrations/license_finance_recovery_migrate.php": "4745502b88e9037a2ce9da298c1f98845295220aee69b8780e2c352720beac0e",
+    "site/app/billing/finance_subscription.php": "d0a130a57b7edef2f7c5782cf19389b727bbc2912d506eba9ae77b0966b279f6",
+    "site/app/billing/finance_authorize_net.php": "27091dfeb30fbe7ef2f4c4292b388370747afeaa282583b1057ae90f37a33d17",
+    "site/app/billing/ledger.php": "fd42830175fc973694d13791d81e8c507be85482210b974d9f9398ceb54fc989",
+    "site/app/licenses/financing.php": "964f62a8146552555fbd194ed45a71ab988fdbc71ae00f5044460cf05dce2f99",
+    "site/app/licenses/finance_installments.php": "fcbc11b6b742e906bd7a0d14544b3bd9499f4722af2d9d869e446d1a4bb75f4c",
+    "site/database/schema/license_finance_gateway_schema.php": "9e02f98f9b38eefa1361c441f09c0e1841fd9c0e5a498708b3a39ed470f6dd25",
+    "site/database/migrations/license_finance_gateway_migrate.php": "df61523c70d26912ec17b22c2bf3bba4f681ba736f7c88fb302a86b4c15413d9",
+    "tests/finance_replacement_payoff_native.php": "dfef81e60bb68b25e2f9584ecbbd7d4ad53eb2bb699159a40203ff88f0a9c7c9",
+    "tests/finance_replacement_payoff_boundaries.php": "0f220d09f928d36f0bda265e9b14a40ff3d5d7015aea533fc165b04c9f1e96cc",
+    "tests/finance_replacement_payoff_recovery_cases.php": "f3ba02e1433ddd277e81fe873cdc6899baf88953c8cea4ba168fb3b02e7da84d",
+    "tests/finance_replacement_payoff_recovery_boundaries.php": "6a55ba0f2bbf8ee236c05dd7ece9f5aa6b5b781474a5df4c9b7c23ec5190bf36"
+  },
+  "report_passed": false,
+  "check_count": 304,
+  "failed_checks": [
+    "FIN-01 recovery retains original reservation and committed accounting",
+    "fixture exception: TypeError realpath(): Argument #1 ($path) must be of type string, null given"
+  ],
+  "scope": "Actual native SQL and separate PHP receipt processes; synthetic gateway transport/mode and future invoice timing only. No real merchant, provider, customer or network operation."
+}

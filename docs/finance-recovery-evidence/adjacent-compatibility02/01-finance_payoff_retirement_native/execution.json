@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_payoff_retirement_native.php",
+    "fep_fcompatret_",
+    "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 326.275,
+  "stderr_bytes": 3782,
+  "report_passed": true,
+  "check_count": 292,
+  "failed_checks": []
+}

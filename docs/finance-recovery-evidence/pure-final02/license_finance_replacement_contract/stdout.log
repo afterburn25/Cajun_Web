@@ -1,0 +1,10 @@
+PASS Suspended prior ARB is cancelled and independently read back before retirement
+PASS Already canceled prior ARB needs no further gateway mutation
+PASS Already expired prior ARB needs no further gateway mutation
+PASS Already terminated prior ARB needs no further gateway mutation
+PASS Reactivated prior ARB prevents a parallel replacement billing path
+PASS Rejected cancellation prevents replacement billing
+PASS An accepted cancellation without terminal readback prevents replacement billing
+PASS Mismatched prior amount prevents cancellation and replacement
+PASS Uncertain gateway transport prevents replacement billing
+Finance replacement retirement contract: PASS

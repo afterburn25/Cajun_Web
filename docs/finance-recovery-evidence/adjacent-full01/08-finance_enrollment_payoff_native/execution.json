@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_enrollment_payoff_native.php",
+    "fep_fadjenr_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 79.363,
+  "stderr_bytes": 2546,
+  "report_passed": true,
+  "check_count": 240,
+  "failed_checks": []
+}

@@ -48,6 +48,8 @@ function ledger_receive(int $invoice,int $amount,string $method,string $referenc
         $paid=$balance['paid_cents']+$amount;$full=$paid===(int)$i['amount_cents'];
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',[$full?'paid':'issued',$full?'Payment history entry '.$id:'',$full?gmdate('Y-m-d H:i:s'):null,$invoice]);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
+        require_once CWP_CODE_ROOT.'/app/billing/finance_recovery.php';
+        license_finance_recovery_receipt($invoice,(int)$id,(int)$actor['id']);
         return $id;
     }));
     $fresh=one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$invoice]);

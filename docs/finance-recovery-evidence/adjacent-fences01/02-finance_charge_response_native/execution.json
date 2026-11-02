@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_charge_response_native.php",
+    "site/app/billing/finance_charge.php",
+    "fc_fin_resp_"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.599,
+  "stderr_bytes": 0,
+  "report_passed": true,
+  "check_count": 220,
+  "failed_checks": []
+}

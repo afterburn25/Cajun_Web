@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_replacement_receipts_native.php",
+    "fep_fcompatrcpt_",
+    "/tmp/cwp-finance-compatibility-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 255,
+  "elapsed_seconds": 122.291,
+  "stderr_bytes": 2032,
+  "report_passed": null,
+  "check_count": 0,
+  "failed_checks": []
+}

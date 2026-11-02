@@ -1,0 +1,13 @@
+{
+  "command": [
+    "tests/finance_initial_enrollment_native.php",
+    "fie_fadjinit_",
+    "/tmp/cwp-finance-adjacent-runtime-8cc2b4f257ab"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 52.881,
+  "stderr_bytes": 3618,
+  "report_passed": true,
+  "check_count": 207,
+  "failed_checks": []
+}
