@@ -133,3 +133,5 @@
 
 .catalog-filters{display:grid;grid-template-columns:minmax(160px,2fr) repeat(2,minmax(120px,1fr));gap:12px;align-items:end;margin:18px 0}.catalog-filters label{margin:0}.catalog-filters button{justify-self:start}.catalog-filters>a{align-self:center;font-size:12px}.catalog-filters input,.catalog-filters select{min-width:0}
 @media(max-width:700px){.catalog-filters{grid-template-columns:1fr}.catalog-filters button{width:100%}}
+
+.diff-add{display:block;color:#9fe3a8}.diff-remove{display:block;color:#e39f9f;text-decoration:line-through}.history-diff{margin:10px 0}
