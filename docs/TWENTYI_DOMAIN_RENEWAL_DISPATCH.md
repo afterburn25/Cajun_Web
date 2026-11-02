@@ -1,5 +1,9 @@
 # Paid domain renewal submission
 
+## Invoice creation follow-up — 2026-10-19
+
+The separate [renewal invoicing candidate](TWENTYI_RENEWAL_INVOICING.md) adds atomic creation of the exact agreed invoice in an owner-selected client project, preserving the existing version-one allocation and all payment/provider gates. Its current evidence and delivery status are separate from the historical accepted component below. The earlier statement that no invoice generator was added describes that original component.
+
 ## Current accepted component and integration — 2026-10-16
 
 Corrected b221eb4be95ec1509458d916f1ffd10d65e71e64 has original focused38890526079 success in all four PHP/database environments. Root independently verifies each actual archive:23 reports/2,179 named checks, including84 native and128+128 pure cases. [Portable evidence](TWENTYI_DOMAIN_RENEWAL_DISPATCH_NATIVE_VERIFICATION.json) retains exact IDs/digests and scope; root proof526a49e0. This branch is now normally combined with556 on codex/twentyi-renewal-integration, preserving the newer parallel workflow with111 native invocations and121/160 reports. All111 offline helper cases pass. Combined HTTP/Chromium, real desktop/mobile screenshots, packages and release acceptance remain pending. The earlier fixture/source checkpoints below are historical; the original bbf43 failure is retained.

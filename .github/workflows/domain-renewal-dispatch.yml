@@ -2,9 +2,9 @@ name: Native paid domain renewal dispatch checks
 on:
   push:
     branches: [main, codex/twentyi-domain-renewal-dispatch]
-    paths: ['site/app/providers/**', 'site/app/plans/**', 'site/app/hosting/**', 'site/app/billing/**', 'site/admin/**', 'site/portal/**', 'site/includes/layout/plans.php', 'site/includes/layout/ledger.php', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'tests/domain_renewal_dispatch*', 'tests/domain_renewal_agreements*', 'tests/provider_http_server.py', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/includes/foundation/**', 'tests/domain_renewals_native.php', 'tests/service_plans_native.php', 'tests/recurring_billing_native.php', 'tests/service_orders*', '.github/workflows/domain-renewal-dispatch.yml']
+    paths: ['site/app/providers/**', 'site/app/plans/**', 'site/app/hosting/**', 'site/app/billing/**', 'site/admin/**', 'site/portal/**', 'site/includes/layout/plans.php', 'site/includes/layout/ledger.php', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'tests/domain_renewal_dispatch*', 'tests/domain_renewal_invoice*', 'tests/domain_renewal_invoicing*', 'site/assets/css/growth.css', 'tests/domain_renewal_agreements*', 'tests/provider_http_server.py', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/includes/foundation/**', 'tests/domain_renewals_native.php', 'tests/service_plans_native.php', 'tests/recurring_billing_native.php', 'tests/service_orders*', '.github/workflows/domain-renewal-dispatch.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/app/plans/**', 'site/app/hosting/**', 'site/app/billing/**', 'site/admin/**', 'site/portal/**', 'site/includes/layout/plans.php', 'site/includes/layout/ledger.php', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'tests/domain_renewal_dispatch*', 'tests/domain_renewal_agreements*', 'tests/provider_http_server.py', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/includes/foundation/**', 'tests/domain_renewals_native.php', 'tests/service_plans_native.php', 'tests/recurring_billing_native.php', 'tests/service_orders*', '.github/workflows/domain-renewal-dispatch.yml']
+    paths: ['site/app/providers/**', 'site/app/plans/**', 'site/app/hosting/**', 'site/app/billing/**', 'site/admin/**', 'site/portal/**', 'site/includes/layout/plans.php', 'site/includes/layout/ledger.php', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'tests/domain_renewal_dispatch*', 'tests/domain_renewal_invoice*', 'tests/domain_renewal_invoicing*', 'site/assets/css/growth.css', 'tests/domain_renewal_agreements*', 'tests/provider_http_server.py', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/includes/foundation/**', 'tests/domain_renewals_native.php', 'tests/service_plans_native.php', 'tests/recurring_billing_native.php', 'tests/service_orders*', '.github/workflows/domain-renewal-dispatch.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -70,7 +70,7 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-inventory-test sh -ec '
-              for source in site/app/providers/domain_renewal_agreements*.php site/admin/controllers/domain_renewal_agreements.php site/admin/views/domain_renewal_agreements.php site/database/schema/domain_renewal_agreements_schema.php site/app/plans/records.php site/app/hosting/orders.php tests/domain_renewal_agreements*.php site/app/providers/domain_renewal_dispatch*.php site/admin/controllers/domain_renewal_dispatch.php site/database/schema/domain_renewal_dispatch_schema.php tests/domain_renewal_dispatch*.php; do php -l "$source"; done
+              for source in site/app/providers/domain_renewal_agreements*.php site/admin/controllers/domain_renewal_agreements.php site/admin/views/domain_renewal_agreements.php site/database/schema/domain_renewal_agreements_schema.php site/app/plans/records.php site/app/hosting/orders.php tests/domain_renewal_agreements*.php site/app/providers/domain_renewal_dispatch*.php site/app/providers/domain_renewal_invoice*.php site/admin/controllers/domain_renewal_dispatch.php site/database/schema/domain_renewal_dispatch_schema.php tests/domain_renewal_dispatch*.php tests/domain_renewal_invoice*.php tests/domain_renewal_invoicing*.php; do php -l "$source"; done
               php tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
               php -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
               php tests/domain_renewal_agreements_native.php
@@ -82,6 +82,9 @@ jobs:
               php tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
               php -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
               php tests/domain_renewal_dispatch_native.php
+              php tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json
+              php -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json
+              CWP_TEST_RENEWAL_INVOICING=1 php tests/domain_renewal_invoice_create_native.php
               php tests/twentyi-operations/run.php qa/renewal-existing-operations.json
               php tests/twentyi-operations/mailboxes.php qa/renewal-existing-mailboxes.json
               php tests/twentyi-operations/cloud-sites.php qa/renewal-existing-cloud-sites.json
@@ -99,6 +102,9 @@ jobs:
             qa/domain-renewal-dispatch-transport-minimal.json
             qa/domain-renewal-dispatch-handler-results.json
             qa/domain-renewal-dispatch-native-results.json
+            qa/domain-renewal-invoicing-default.json
+            qa/domain-renewal-invoicing-minimal.json
+            qa/domain-renewal-invoicing-native-results.json
             qa/renewal-existing-operations.json
             qa/renewal-existing-mailboxes.json
             qa/renewal-existing-cloud-sites.json

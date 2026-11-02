@@ -50,6 +50,7 @@ function domain_renewal_dispatch_ready():bool {
         $used=one("SELECT id FROM $a WHERE BINARY action LIKE 'domain_renewal_dispatch.%' LIMIT 1")!==null||one('SELECT name FROM '.table('settings')." WHERE name LIKE 'domain_renewal_dispatch_%_count' LIMIT 1")!==null;
         foreach($tables as $name)if(domain_renewal_dispatch_exists($name)&&$count('SELECT COUNT(*) FROM '.table($name)))$used=true;
         foreach(['provider_operation_grants'=>"BINARY operation='domains.renew'",'provider_operations'=>"BINARY operation='domains.renew' OR BINARY idempotency_key LIKE 'domain-renewal:%'"] as $name=>$where)if(domain_renewal_dispatch_exists($name)&&one('SELECT id FROM '.table($name).' WHERE '.$where.' LIMIT 1'))$used=true;
+        if(domain_renewal_dispatch_exists('studio_invoices')&&one("SELECT id FROM ".table('studio_invoices')." WHERE OCTET_LENGTH(reference)=35 AND reference COLLATE utf8mb4_bin REGEXP '^DR-[a-f0-9]{32}$' LIMIT 1"))$used=true;
         if($used)throw new RuntimeException('Renewal dispatch history needs recovery.');return false;
     }
     if($v!=='1'||!domain_renewal_agreements_ready()||!provider_operations_ready()||!payments_ready()||!ledger_ready())throw new RuntimeException('Renewal dispatch storage needs recovery.');
@@ -71,6 +72,7 @@ function domain_renewal_dispatch_ready():bool {
     if(one("SELECT p.id FROM $p p LEFT JOIN $q q ON BINARY p.idempotency_key=BINARY CONCAT(BINARY 'domain-renewal:',q.id) WHERE (BINARY p.operation='domains.renew' OR BINARY p.idempotency_key LIKE 'domain-renewal:%') AND q.id IS NULL LIMIT 1"))throw new RuntimeException('Renewal execution lost its original approval.');
     $ledger=domain_renewal_dispatch_sql_digest(array_map(static fn($k)=>"COALESCE(CAST(p.$k AS CHAR),'')",domain_renewal_dispatch_ledger_fields()));
     if(one("SELECT t.id FROM $t t LEFT JOIN $q q ON q.id=t.id LEFT JOIN $p p ON BINARY p.idempotency_key=BINARY CONCAT(BINARY 'domain-renewal:',t.id) WHERE q.id IS NULL OR BINARY t.disposition NOT IN ('not_sent','attempted') OR (BINARY t.disposition='not_sent' AND p.id IS NOT NULL) OR BINARY t.ledger_sha256<>BINARY IF(p.id IS NULL,REPEAT('0',64),$ledger) LIMIT 1"))throw new RuntimeException('Renewal completion evidence needs recovery.');
+    domain_renewal_dispatch_creation_ready();
     return true;
 }
 function domain_renewal_dispatch_insert(string $kind,array $row):void {

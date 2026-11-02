@@ -7,6 +7,7 @@ require_once CWP_CODE_ROOT.'/app/billing/ledger_fulfillment.php';
 require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_document.php';
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_storage.php';
+require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_invoice_create.php';
 use CajunWebPro\Foundation\TwentyI\Operations\DomainRenewal;
 use CajunWebPro\Foundation\Provider\{ProviderOperation,ProviderGateway};
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
@@ -80,19 +81,25 @@ function domain_renewal_dispatch_allocation(string $id):array {
     $invoice=ledger_invoice($d['invoice']['id']);if(domain_renewal_dispatch_invoice_snapshot($invoice)!==$d['invoice'])throw new RuntimeException('The original renewal invoice changed.');domain_renewal_dispatch_other_origins($d['invoice']['id']);
     return ['row'=>$row,'document'=>$doc,'audit'=>$audit,'history'=>$history,'offer'=>$offer,'invoice'=>$invoice];
 }
+/** Final v1 witness writer shared by allocation and atomic invoice creation. */
+function domain_renewal_dispatch_record_allocation_locked(string $id,string $requestId,string $bindingHash,string $agreementHash,array $actor,array $offer,array $snapshot):array {
+    domain_renewal_agreements_locked();$b=$offer['binding'];$agreement=$offer['agreement'];$bd=$b->data();$invoiceId=$snapshot['id'];
+$events=$agreement->data()['events'];$at=max(time(),$events[array_key_last($events)]['at']);$doc=DomainRenewalInvoiceDocument::fromArray(['version'=>1,'id'=>$id,'binding'=>$bd,'binding_sha256'=>$bindingHash,'agreement_revision'=>$agreement->revision(),'agreement_sha256'=>$agreementHash,'invoice'=>$snapshot,'actor_id'=>(int)$actor['id'],'created_epoch'=>$at]);
+        $row=['id'=>$id,'invoice_id'=>$invoiceId,'binding_id'=>$bd['id'],'request_id'=>$requestId,'client_id'=>$bd['registrar']['client_id'],'actor_id'=>(int)$actor['id'],'document_json'=>$doc->jsonBytes(),'document_sha256'=>$doc->fingerprint()];domain_renewal_dispatch_insert('allocation',domain_renewal_dispatch_prove('allocation',$row));return domain_renewal_dispatch_allocation($id);
+}
 function domain_renewal_dispatch_allocate(string $id,string $requestId,string $bindingHash,string $agreementHash,int $invoiceId,string $invoiceHash,bool $confirmed,#[SensitiveParameter] string $password):array {
     if(db()->inTransaction())throw new LogicException('Renewal allocation cannot inherit a transaction.');DomainRenewalInvoiceDocument::id($id);DomainRenewalInvoiceDocument::id($requestId);foreach([$bindingHash,$agreementHash,$invoiceHash] as $hash)DomainRenewalInvoiceDocument::hash($hash);if(!$confirmed)throw new InvalidArgumentException('Explicitly reserve this unpaid invoice for the exact renewal terms.');
     return staff_locked(fn()=>staff_transaction(function()use($id,$requestId,$bindingHash,$agreementHash,$invoiceId,$invoiceHash,$password):array{
         $actor=domain_renewal_dispatch_owner($password);$existing=one('SELECT id FROM '.table('domain_renewal_invoices').' WHERE id=?',[$id]);
-        if($existing){$old=domain_renewal_dispatch_allocation($id);$d=$old['document']->data();if($d['actor_id']!==(int)$actor['id']||$d['binding']['request_id']!==$requestId||$d['binding_sha256']!==$bindingHash||$d['agreement_sha256']!==$agreementHash||$d['invoice']['id']!==$invoiceId||$d['invoice']['sha256']!==$invoiceHash)throw new RuntimeException('This allocation identity was already used.');return $old;}
+        if($existing){$old=domain_renewal_dispatch_allocation($id);$d=$old['document']->data();if($d['invoice']['reference']===domain_renewal_dispatch_creation_reference($id))throw new RuntimeException('Use the original renewal invoice creation request.');if($d['actor_id']!==(int)$actor['id']||$d['binding']['request_id']!==$requestId||$d['binding_sha256']!==$bindingHash||$d['agreement_sha256']!==$agreementHash||$d['invoice']['id']!==$invoiceId||$d['invoice']['sha256']!==$invoiceHash)throw new RuntimeException('This allocation identity was already used.');return $old;}
         $context=domain_renewal_dispatch_offer($requestId);$offer=$context['offer'];$b=$offer['binding'];$agreement=$offer['agreement'];if(!hash_equals($b->fingerprint(),$bindingHash)||!hash_equals($agreement->fingerprint(),$agreementHash))throw new RuntimeException('Review the current accepted renewal terms.');
         $invoice=one('SELECT i.*,j.client_id,c.active FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE i.id=? FOR UPDATE',[$invoiceId]);if(!$invoice)throw new RuntimeException('Choose an existing invoice.');$snapshot=domain_renewal_dispatch_invoice_snapshot($invoice);$bd=$b->data();
         if($snapshot['client_id']!==$bd['registrar']['client_id']||$snapshot['currency']!=='USD'||$snapshot['amount_minor']!==$bd['price_minor']||!hash_equals($snapshot['sha256'],$invoiceHash))throw new RuntimeException('Choose this client’s exact agreed one-time USD invoice.');
+        if(domain_renewal_dispatch_creation_reference_matches($snapshot['reference']))throw new RuntimeException('A created renewal invoice cannot be allocated again.');
         domain_renewal_dispatch_other_origins($invoiceId);domain_renewal_dispatch_unpaid($invoice);domain_renewal_dispatch_exclude_invoice($invoiceId);
         if(one('SELECT id FROM '.table('domain_renewal_invoices').' WHERE binding_id=?',[$bd['id']]))throw new RuntimeException('This renewal agreement already has its permanent invoice.');
         if(one('SELECT id FROM '.table('domain_renewal_dispatches').' WHERE request_id=?',[$requestId]))throw new RuntimeException('A renewal dispatch already exists for this request.');
-        $events=$agreement->data()['events'];$at=max(time(),$events[array_key_last($events)]['at']);$doc=DomainRenewalInvoiceDocument::fromArray(['version'=>1,'id'=>$id,'binding'=>$bd,'binding_sha256'=>$bindingHash,'agreement_revision'=>$agreement->revision(),'agreement_sha256'=>$agreementHash,'invoice'=>$snapshot,'actor_id'=>(int)$actor['id'],'created_epoch'=>$at]);
-        $row=['id'=>$id,'invoice_id'=>$invoiceId,'binding_id'=>$bd['id'],'request_id'=>$requestId,'client_id'=>$bd['registrar']['client_id'],'actor_id'=>(int)$actor['id'],'document_json'=>$doc->jsonBytes(),'document_sha256'=>$doc->fingerprint()];domain_renewal_dispatch_insert('allocation',domain_renewal_dispatch_prove('allocation',$row));return domain_renewal_dispatch_allocation($id);
+        return domain_renewal_dispatch_record_allocation_locked($id,$requestId,$bindingHash,$agreementHash,$actor,$offer,$snapshot);
     }));
 }
 /** Payment receipts are only usable after this purpose origin, with a complete audit bijection. */
@@ -181,16 +188,19 @@ function domain_renewal_dispatch_invoice_context(int $invoice,int $client,bool $
 function domain_renewal_dispatch_completed(string $request):bool {
     domain_renewal_agreements_locked();if(!domain_renewal_dispatch_ready())return false;$r=one('SELECT id FROM '.table('domain_renewal_dispatches').' WHERE request_id=?',[$request]);return $r!==null&&domain_renewal_dispatch_summary($r['id'])['status']==='provider_reported_success';
 }
-function domain_renewal_dispatch_owner_request(string $request,int $page=1):array {
+function domain_renewal_dispatch_owner_request(string $request,int $page=1,int $projectPage=1):array {
     if(db()->inTransaction())throw new LogicException('Renewal dispatch display cannot inherit a transaction.');
-    return staff_locked(fn()=>staff_transaction(function()use($request,$page):array{
-        provider_settings_manager(false);service_plans_owner(false);$original=domain_renewals_load($request);$prepared=domain_renewal_dispatch_ready();$out=['prepared'=>$prepared,'request'=>$original,'offer'=>null,'allocations'=>[],'invoices'=>[],'page'=>max(1,min(10000,$page)),'message'=>null];if(!$prepared)return $out;domain_renewal_dispatch_owner();
+    return staff_locked(fn()=>staff_transaction(function()use($request,$page,$projectPage):array{
+        provider_settings_manager(false);service_plans_owner(false);$original=domain_renewals_load($request);$prepared=domain_renewal_dispatch_ready();$out=['prepared'=>$prepared,'request'=>$original,'offer'=>null,'allocations'=>[],'invoices'=>[],'page'=>max(1,min(10000,$page)),'create_invoice'=>null,'project_page'=>max(1,min(10000,$projectPage)),'projects'=>[],'projects_has_more'=>false,'message'=>null];if(!$prepared)return $out;domain_renewal_dispatch_owner();
         foreach(all('SELECT id FROM '.table('domain_renewal_invoices').' WHERE request_id=? ORDER BY id LIMIT 129',[$request]) as $n=>$row){if($n>=128)throw new RuntimeException('Renewal invoice history exceeds its limit.');$a=domain_renewal_dispatch_allocation($row['id']);$public=domain_renewal_dispatch_public($a);$review=null;$message=null;
             if($public['dispatch']===null)try{$current=domain_renewal_dispatch_current($a);domain_renewal_dispatch_fence($public['domain']);$review=$current['review_sha256'];}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$message='Dispatch is unavailable. Review the active accepted terms, current domain assignment and verified payment history.';}
             $out['allocations'][]=['public'=>$public,'review_sha256'=>$review,'message'=>$message];
         }
         try{$context=domain_renewal_dispatch_offer($request);$offer=$context['offer'];$b=$offer['binding'];$d=$b->data();$out['offer']=['binding_sha256'=>$b->fingerprint(),'agreement_sha256'=>$offer['agreement']->fingerprint(),'domain'=>$d['registrar']['domain'],'years'=>$d['requested_years'],'renew_privacy'=>$d['renew_privacy'],'price_minor'=>$d['price_minor']];
-            if(!one('SELECT id FROM '.table('domain_renewal_invoices').' WHERE binding_id=?',[$d['id']])&&!one('SELECT id FROM '.table('domain_renewal_dispatches').' WHERE request_id=?',[$request]))foreach(all('SELECT i.*,j.client_id,c.active FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE j.client_id=? AND i.status=? AND i.currency=? AND i.amount_cents=? ORDER BY i.id DESC LIMIT 10 OFFSET '.(($out['page']-1)*10),[$d['registrar']['client_id'],'issued','USD',$d['price_minor']]) as $i){try{domain_renewal_dispatch_other_origins((int)$i['id']);domain_renewal_dispatch_unpaid($i);domain_renewal_dispatch_exclude_invoice((int)$i['id']);$out['invoices'][]=domain_renewal_dispatch_invoice_snapshot($i);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}}
+            if(!one('SELECT id FROM '.table('domain_renewal_invoices').' WHERE binding_id=?',[$d['id']])&&!one('SELECT id FROM '.table('domain_renewal_dispatches').' WHERE request_id=?',[$request])){
+                $out['create_invoice']=$out['offer'];$projects=domain_renewal_dispatch_projects($d['registrar']['client_id'],$out['project_page']);$out['projects']=$projects['items'];$out['projects_has_more']=$projects['has_more'];
+                foreach(all('SELECT i.*,j.client_id,c.active FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE j.client_id=? AND i.status=? AND i.currency=? AND i.amount_cents=? ORDER BY i.id DESC LIMIT 10 OFFSET '.(($out['page']-1)*10),[$d['registrar']['client_id'],'issued','USD',$d['price_minor']]) as $i){try{domain_renewal_dispatch_other_origins((int)$i['id']);domain_renewal_dispatch_unpaid($i);domain_renewal_dispatch_exclude_invoice((int)$i['id']);if(domain_renewal_dispatch_creation_reference_matches($i['reference']))continue;$out['invoices'][]=domain_renewal_dispatch_invoice_snapshot($i);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}}
+            }
         }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$out['message']='Current, active renewal terms with this client’s recorded consent are required before allocating an invoice.';}
         return $out;
     }));
