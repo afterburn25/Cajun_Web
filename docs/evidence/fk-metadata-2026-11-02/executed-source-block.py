@@ -1,0 +1,10 @@
+    context = browser.new_context(viewport={'width': 1440, 'height': 1000})
+    context.add_cookies([{'name': cookie.name, 'value': cookie.value, 'url': base} for cookie in owner.cookies])
+    page = context.new_page(); errors = []; page.on('pageerror', lambda e: errors.append(str(e))); page.goto(staff_url)
+    form = page.locator('form[data-catalog-preparation]')
+    form.locator('[name=confirm]').check(); assert_no_owner_reprompt(check, form, 'Prepare from saved mapping')
+    with page.expect_navigation():
+        form.get_by_role('button', name='Prepare from saved mapping', exact=True).click()
+    page.wait_for_load_state('networkidle'); page.screenshot(path=str(qa/'provider-plan-catalog-prepared.png'), full_page=True)
+    check('Chromium catalog selection prepares an existing hosting record', not errors and 'Hosting record prepared' in page.content() and not page.locator('.notice.error').count())
+    context.close()

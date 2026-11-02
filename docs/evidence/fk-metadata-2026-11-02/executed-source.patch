@@ -1,0 +1,228 @@
+diff --git a/site/database/migrations/recurring_billing_migrate.php b/site/database/migrations/recurring_billing_migrate.php
+index d7afb692..0036394d 100644
+--- a/site/database/migrations/recurring_billing_migrate.php
++++ b/site/database/migrations/recurring_billing_migrate.php
+@@ -17,7 +17,9 @@ function recurring_billing_validate_schema(string $name,string $sql,bool $checko
+     }
+     foreach($actual as &$entry){ksort($entry[1]);$entry[1]=array_values($entry[1]);}unset($entry);ksort($actual);ksort($expected);
+     if($actual!==$expected)throw new RuntimeException('Incompatible recurring billing indexes.');
+-    $rows=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);$seen=[];
++    // DISTINCT keeps this schema/table-scoped relation materialized; full constraint
++    // identity preserves separate constraints and the outer foreign-key column rows.
++    $rows=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN (SELECT DISTINCT CONSTRAINT_SCHEMA,CONSTRAINT_NAME,TABLE_NAME,DELETE_RULE,UPDATE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME=?) r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name,config()['db']['prefix'].$name]);$seen=[];
+     if(count($rows)!==count($c['relations']))throw new RuntimeException('Incompatible recurring billing relationships.');
+     foreach($rows as $row){$target=$c['relations'][$row['COLUMN_NAME']]??null;
+         if(!$target||isset($seen[$row['COLUMN_NAME']])||$row['REFERENCED_TABLE_NAME']!==config()['db']['prefix'].$target[0]||$row['REFERENCED_COLUMN_NAME']!==$target[1]||!in_array($row['DELETE_RULE'],['RESTRICT','NO ACTION'],true)||!in_array($row['UPDATE_RULE'],['RESTRICT','NO ACTION'],true))throw new RuntimeException('Incompatible recurring billing relationship.');$seen[$row['COLUMN_NAME']]=true;
+diff --git a/site/database/migrations/service_plans_migrate.php b/site/database/migrations/service_plans_migrate.php
+index f0e808d8..059002a7 100644
+--- a/site/database/migrations/service_plans_migrate.php
++++ b/site/database/migrations/service_plans_migrate.php
+@@ -46,7 +46,9 @@ function service_plans_validate_schema(string $name,string $sql,bool $checkout=f
+         'service_subscription_events'=>['subscription_id'=>['service_subscriptions','id'],'actor_staff_id'=>['users','id'],'actor_client_id'=>['studio_clients','id']],
+     };
+     if($checkout && $name==='service_subscriptions')$expected['created_by_client']=['studio_clients','id'];
+-    $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
++    // DISTINCT keeps this schema/table-scoped relation materialized; full constraint
++    // identity preserves separate constraints and the outer foreign-key column rows.
++    $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN (SELECT DISTINCT CONSTRAINT_SCHEMA,CONSTRAINT_NAME,TABLE_NAME,DELETE_RULE,UPDATE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME=?) r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name,config()['db']['prefix'].$name]);
+     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible service-plan relationships. Existing data was preserved.');
+     $seen=[];
+     foreach($relations as $relation) {
+diff --git a/site/install/inventory.generated.php b/site/install/inventory.generated.php
+index bf07eaf5..93002e5b 100644
+--- a/site/install/inventory.generated.php
++++ b/site/install/inventory.generated.php
+@@ -451,11 +451,11 @@ function setup_expected_files(): array { return [
+     'database/migrations/provider_package_types_migrate.php'=>'69ea2a23fb5f6d34006c600c0889af0e702562dae82116b6841343e3501eb4f7',
+     'database/migrations/provider_settings_migrate.php'=>'684673dd648a7bbeb71e09bd9d55aaeeb8e5c863d1298abd844eca1050db489d',
+     'database/migrations/recurring_billing_checkout_migrate.php'=>'188e8df9b32489866936bbb6f6870bb5caddd0012f6ddfeb080819d4ef5927de',
+-    'database/migrations/recurring_billing_migrate.php'=>'9c3b391a4f15247da36561a0f1a75da8a4f2d121b1fbf49e77e636cccd1703b9',
++    'database/migrations/recurring_billing_migrate.php'=>'301208ac8439e037a2f527961181e572144127e4a24fa9bb9301ab348528b7f9',
+     'database/migrations/reviews_migrate.php'=>'fab14a5aca1545e28936d465046b938bf111e5ac536ba365a23574c797b18e7d',
+     'database/migrations/service_orders_migrate.php'=>'7d1c42c31aa4bfadc3c5a3ad70adb8741855bef2d9ecfed146f8f365fd68a17c',
+     'database/migrations/service_plans_checkout_migrate.php'=>'6d058be8375efc790ab7d236b40209d7c5e3987720c8f37d2df8790dec69602b',
+-    'database/migrations/service_plans_migrate.php'=>'f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57',
++    'database/migrations/service_plans_migrate.php'=>'e85836146e1b4a15656fe22e10e64c2e8845d5b6e797571a288f7171e90c6b15',
+     'database/migrations/software_commerce_migrate.php'=>'bde75d9b4ee23bc2170781ab47bd8c05acf2bc576d450bcdabd1bca94ea272e9',
+     'database/migrations/staff_migrate.php'=>'66a2abc136c889ef7e7269b74b7b5356a2e189ab285703db57f65598a487a15f',
+     'database/migrations/support_migrate.php'=>'15a57284aba1cb5fbf370f970bfb23af0b9875dab87b83080ddb980b7ba08a8a',
+diff --git a/tests/foreign_key_metadata_native.php b/tests/foreign_key_metadata_native.php
+new file mode 100644
+index 00000000..e521e428
+--- /dev/null
++++ b/tests/foreign_key_metadata_native.php
+@@ -0,0 +1,14 @@
++<?php
++/** Explicit local cross-schema supplement. CI calls the portable helper from its native suites. */
++declare(strict_types=1);
++if(PHP_SAPI!=='cli'||getenv('CWP_TEST_FK_METADATA')!=='1'||getenv('CWP_TEST_DATABASE')!=='cwp_fk_metadata_test'||getenv('CWP_TEST_HOST')!=='127.0.0.1'||!(int)getenv('CWP_TEST_PORT'))exit(2);
++define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';
++$GLOBALS['cwp_config']=['db'=>['host'=>'127.0.0.1','port'=>(int)getenv('CWP_TEST_PORT'),'name'=>'cwp_fk_metadata_test','user'=>(string)getenv('CWP_TEST_USER'),'pass'=>(string)getenv('CWP_TEST_PASSWORD'),'prefix'=>'fkml_l_']];
++require_once __DIR__.'/foreign_key_metadata_native_cases.php';
++$checks=[];$failure=null;$scope=null;$output=__DIR__.'/../qa/foreign-key-metadata-native.json';
++if(file_exists($output)){fwrite(STDERR,"Refusing to overwrite native evidence\n");exit(2);}
++try {$scope=fkm_run_native_cases(['plans','recurring'],'cwp_fk_metadata_foreign','fkml_');}
++catch(Throwable $e){$failure=['class'=>get_class($e),'message'=>$e instanceof PDOException?'Database fixture operation failed':$e->getMessage(),'line'=>$e->getLine()];if($e instanceof PDOException)$failure+=['sqlstate'=>$e->errorInfo[0]??null,'driver_code'=>$e->errorInfo[1]??null];}
++$report=['scope'=>'Local native cross-schema supplement, including all portable cases; no provider I/O','passed'=>$failure===null,'failure'=>$failure,'checks'=>$checks,'coverage'=>$scope,'php'=>PHP_VERSION,'database_port'=>(int)getenv('CWP_TEST_PORT'),'completed_at_utc'=>gmdate('Y-m-d\TH:i:s\Z')];
++@mkdir(__DIR__.'/../qa',0700,true);file_put_contents($output,json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");
++echo json_encode(['passed'=>$report['passed'],'checks'=>count($checks),'failure'=>$failure],JSON_THROW_ON_ERROR)."\n";exit($failure===null?0:1);
+diff --git a/tests/foreign_key_metadata_native_cases.php b/tests/foreign_key_metadata_native_cases.php
+new file mode 100644
+index 00000000..29b6b700
+--- /dev/null
++++ b/tests/foreign_key_metadata_native_cases.php
+@@ -0,0 +1,130 @@
++<?php
++/** Additive real native FK metadata regressions; no external I/O or privileged setup. */
++declare(strict_types=1);
++if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||!in_array(getenv('CWP_TEST_DATABASE'),['cwp_test','cwp_fk_metadata_test'],true))exit(2);
++require_once CWP_CODE_ROOT.'/database/schema/base.php';
++require_once CWP_CODE_ROOT.'/database/schema/service_plans_schema.php';
++require_once CWP_CODE_ROOT.'/database/schema/recurring_billing_schema.php';
++require_once CWP_CODE_ROOT.'/database/migrations/service_plans_migrate.php';
++require_once CWP_CODE_ROOT.'/database/migrations/recurring_billing_migrate.php';
++// Pre-optimization row-multiset oracle. The candidate is taken from current source,
++// and the actual application validators decide every positive/negative schema case.
++const FKM_ORIGINAL='SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL';
++function fkm_ok(string $name,bool $passed):void {global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
++function fkm_identifier(string $value):string {if(!preg_match('/\A[a-zA-Z][a-zA-Z0-9_]*\z/D',$value))throw new LogicException('Unsafe fixture identifier');return '`'.$value.'`';}
++function fkm_source_query(string $path):string {
++    $queries=[];
++    foreach(token_get_all(file_get_contents($path)) as $token)if(is_array($token)&&$token[0]===T_CONSTANT_ENCAPSED_STRING&&str_starts_with($token[1],"'SELECT k.COLUMN_NAME,"))$queries[]=substr($token[1],1,-1);
++    if(count($queries)!==1||str_contains($queries[0],'\\'))throw new LogicException('Cannot bind the current metadata query');
++    return $queries[0];
++}
++function fkm_sorted(array $rows):array {usort($rows,static fn(array $a,array $b):int=>strcmp(json_encode($a,JSON_THROW_ON_ERROR),json_encode($b,JSON_THROW_ON_ERROR)));return $rows;}
++function fkm_equal(string $label,string $name,string $sql):array {
++    global $fkm_observations;
++    $table=config()['db']['prefix'].$name;
++    $original=fkm_sorted(all(FKM_ORIGINAL,[$table]));
++    $candidate=fkm_sorted(all($sql,array_fill(0,substr_count($sql,'?'),$table)));
++    fkm_ok($label.' preserves the exact original row multiset',$candidate===$original);
++    $fkm_observations[]=['case'=>$label,'rows'=>count($candidate),'rows_sha256'=>hash('sha256',json_encode($candidate,JSON_THROW_ON_ERROR))];
++    return $candidate;
++}
++function fkm_validate(string $family,string $name,array $schema,bool $checkout):void {
++    if($family==='plans')service_plans_validate_schema($name,$schema[$name],$checkout);
++    else recurring_billing_validate_schema($name,$schema[$name],$checkout);
++}
++function fkm_valid(string $label,string $family,string $name,array $schema,bool $checkout):void {fkm_validate($family,$name,$schema,$checkout);fkm_ok($label,true);}
++function fkm_refused(string $label,string $family,string $name,array $schema,bool $checkout):void {
++    try{fkm_validate($family,$name,$schema,$checkout);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;fkm_ok($label,str_contains($e->getMessage(),'relationship'));return;}
++    fkm_ok($label,false);
++}
++function fkm_fk_name(string $name,string $column):string {
++    $rows=all('SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=? AND REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name,$column]);
++    if(count($rows)!==1)throw new RuntimeException('Expected one unmodified fixture relationship');return $rows[0]['CONSTRAINT_NAME'];
++}
++function fkm_drop_fk(string $name,string $constraint):void {db()->exec('ALTER TABLE '.table($name).' DROP FOREIGN KEY '.fkm_identifier($constraint));}
++function fkm_add_fk(string $name,string $constraint,string $parentSchema,string $parentTable,string $parentColumn='id',string $delete='RESTRICT',string $update='RESTRICT'):void {
++    if(!in_array($delete,['RESTRICT','CASCADE'],true)||!in_array($update,['RESTRICT','CASCADE'],true))throw new LogicException('Unsupported fixture rule');
++    db()->exec('ALTER TABLE '.table($name).' ADD CONSTRAINT '.fkm_identifier($constraint).' FOREIGN KEY (created_by) REFERENCES '.fkm_identifier($parentSchema).'.'.fkm_identifier($parentTable).' ('.fkm_identifier($parentColumn).') ON DELETE '.$delete.' ON UPDATE '.$update);
++}
++function fkm_run_native_cases(array $families,?string $foreign,string $namespace):array {
++    global $checks,$fkm_observations;
++    if(!$families||array_diff($families,['plans','recurring'])||!preg_match('/\A[a-z][a-z0-9_]{2,10}_\z/D',$namespace))throw new LogicException('Unexpected metadata fixture scope');
++    if(!in_array(config()['db']['name'],['cwp_test','cwp_fk_metadata_test'],true)||($foreign!==null&&$foreign!=='cwp_fk_metadata_foreign'))throw new LogicException('Unexpected metadata fixture database');
++    $sources=['plans'=>CWP_CODE_ROOT.'/database/migrations/service_plans_migrate.php','recurring'=>CWP_CODE_ROOT.'/database/migrations/recurring_billing_migrate.php'];
++    $queries=array_map('fkm_source_query',$sources);$originalPrefix=config()['db']['prefix'];
++    $before=count($checks);$fkm_observations??=[];$observedBefore=count($fkm_observations);
++    try {
++        $identity=one('SELECT DATABASE() AS name,@@port AS port,VERSION() AS version');
++        fkm_ok('Connection selects only the explicit disposable native database',$identity['name']===config()['db']['name']&&(int)$identity['port']===(int)config()['db']['port']);
++        $ownedSchemas=[config()['db']['name']];if($foreign!==null)$ownedSchemas[]=$foreign;
++        foreach($ownedSchemas as $database)fkm_ok('Owned metadata prefix is empty in '.$database,(int)query('SELECT COUNT(*) FROM information_schema.tables WHERE TABLE_SCHEMA=? AND BINARY LEFT(TABLE_NAME,?)=?',[$database,strlen($namespace),$namespace])->fetchColumn()===0);
++        fkm_ok('Both validators expose the same source-bound metadata query',$queries['plans']===$queries['recurring']);
++        foreach([false,true] as $checkout){
++            $variant=$checkout?'checkout':'legacy';$prefix=$namespace.($checkout?'c_':'l_');$GLOBALS['cwp_config']['db']['prefix']=$prefix;
++            foreach(schema_statements($prefix) as $statement)db()->exec($statement);
++            $schemas=['plans'=>service_plans_schema($prefix,$checkout),'recurring'=>recurring_billing_schema($prefix,$checkout)];
++            foreach($schemas as $family=>$schema)foreach($schema as $name=>$statement){db()->exec($statement);if(in_array($family,$families,true)){fkm_equal($variant.' '.$name,$name,$queries[$family]);fkm_valid($variant.' '.$name.' passes the actual validator',$family,$name,$schema,$checkout);}}
++            $parent=$prefix.'users';$local=config()['db']['name'];
++            if($foreign!==null)db()->exec('CREATE TABLE '.fkm_identifier($foreign).'.'.fkm_identifier($parent).' (id INT UNSIGNED PRIMARY KEY) ENGINE=InnoDB');
++            db()->exec('ALTER TABLE '.fkm_identifier($parent).' ADD diagnostic_other_id INT UNSIGNED NOT NULL, ADD UNIQUE INDEX diagnostic_other_id(diagnostic_other_id)');
++            db()->exec('CREATE TABLE '.fkm_identifier($prefix.'wrong_parent').' (id INT UNSIGNED PRIMARY KEY) ENGINE=InnoDB');
++            db()->exec('CREATE TABLE '.fkm_identifier($prefix.'composite_parent').' (entity_id CHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,version INT UNSIGNED NOT NULL,PRIMARY KEY(entity_id,version)) ENGINE=InnoDB');
++            foreach(['plans'=>['service_plans','service_plan_events','plan_id','revision'],'recurring'=>['recurring_billing_schedules','recurring_billing_events','schedule_id','revision']] as $family=>$target){
++                if(!in_array($family,$families,true))continue;
++                [$name,$eventName,$compositeColumn,$compositeRevision]=$target;$schema=$schemas[$family];$query=$queries[$family];$label=$variant.' '.$family;
++                $constraint=fkm_fk_name($name,'created_by');$base=fkm_equal($label.' baseline',$name,$query);
++                $duplicate=$prefix.$family.'_duplicate';
++                fkm_add_fk($name,$duplicate,$local,$parent);
++                $rows=fkm_equal($label.' two named constraints on one column',$name,$query);
++                $created=array_values(array_filter($rows,static fn(array $row):bool=>$row['COLUMN_NAME']==='created_by'));
++                fkm_ok($label.' preserves both identical projected occurrences',count($rows)===count($base)+1&&count($created)===2&&$created[0]===$created[1]);
++                fkm_refused($label.' actual validator refuses the extra named relationship',$family,$name,$schema,$checkout);
++                fkm_drop_fk($name,$duplicate);fkm_valid($label.' duplicate removal is visible immediately',$family,$name,$schema,$checkout);
++
++                $composite=$prefix.$family.'_composite';
++                db()->exec('ALTER TABLE '.table($eventName).' ADD CONSTRAINT '.fkm_identifier($composite).' FOREIGN KEY ('.fkm_identifier($compositeColumn).','.fkm_identifier($compositeRevision).') REFERENCES '.fkm_identifier($prefix.'composite_parent').' (entity_id,version) ON DELETE RESTRICT');
++                $eventRows=fkm_equal($label.' composite foreign key',$eventName,$query);
++                fkm_ok($label.' keeps both composite-key column rows',count(array_filter($eventRows,static fn(array $row):bool=>$row['REFERENCED_TABLE_NAME']===$prefix.'composite_parent'))===2);
++                fkm_refused($label.' actual validator refuses the extra composite relationship',$family,$eventName,$schema,$checkout);
++                fkm_drop_fk($eventName,$composite);fkm_valid($label.' composite removal restores the current schema',$family,$eventName,$schema,$checkout);
++
++                fkm_drop_fk($name,$constraint);fkm_equal($label.' missing relationship',$name,$query);
++                fkm_refused($label.' second validation sees a removed relationship',$family,$name,$schema,$checkout);
++                fkm_add_fk($name,$constraint,$local,$parent);fkm_valid($label.' third validation sees the restored relationship',$family,$name,$schema,$checkout);
++                foreach([['wrong target table',$prefix.'wrong_parent','id','RESTRICT','RESTRICT'],['wrong target column',$parent,'diagnostic_other_id','RESTRICT','RESTRICT'],['wrong delete rule',$parent,'id','CASCADE','RESTRICT'],['wrong update rule',$parent,'id','RESTRICT','CASCADE']] as [$case,$targetTable,$targetColumn,$delete,$update]){
++                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$targetTable,$targetColumn,$delete,$update);
++                    fkm_equal($label.' '.$case,$name,$query);fkm_refused($label.' refuses '.$case,$family,$name,$schema,$checkout);
++                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$parent);fkm_valid($label.' restoration after '.$case.' is current',$family,$name,$schema,$checkout);
++                }
++
++                if($foreign!==null){
++                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$foreign,$parent);
++                    $rows=fkm_equal($label.' cross-schema referenced parent',$name,$query);
++                    fkm_ok($label.' cross-schema parent is still present',count($rows)===count($base)&&count(array_filter($rows,static fn(array $row):bool=>$row['COLUMN_NAME']==='created_by'&&$row['REFERENCED_TABLE_NAME']===$parent))===1);
++                    // Preserve existing behavior: these validators compare target table/column,
++                    // not referenced schema. The optimization must not silently hide this FK.
++                    fkm_valid($label.' preserves existing cross-schema validator behavior',$family,$name,$schema,$checkout);
++                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$parent);
++
++                    $foreignChild=$prefix.$name;
++                    db()->exec('CREATE TABLE '.fkm_identifier($foreign).'.'.fkm_identifier($foreignChild).' (id INT UNSIGNED PRIMARY KEY,created_by INT UNSIGNED NOT NULL,CONSTRAINT '.fkm_identifier($constraint).' FOREIGN KEY (created_by) REFERENCES '.fkm_identifier($foreign).'.'.fkm_identifier($parent).' (id) ON DELETE CASCADE) ENGINE=InnoDB');
++                }
++                $other=$prefix.'other_'.$name;
++                db()->exec('CREATE TABLE '.fkm_identifier($other).' (id INT UNSIGNED PRIMARY KEY,created_by INT UNSIGNED NOT NULL,CONSTRAINT '.fkm_identifier($other.'_fk').' FOREIGN KEY (created_by) REFERENCES '.fkm_identifier($parent).' (id) ON DELETE CASCADE) ENGINE=InnoDB');
++                $rows=fkm_equal($label.($foreign!==null?' foreign child and other prefix':' other prefix'),$name,$query);
++                fkm_ok($label.($foreign!==null?' excludes same-name foreign child and other-prefix constraints':' excludes other-prefix constraints'),$rows===$base);
++                fkm_valid($label.' unrelated constraints do not contaminate validation',$family,$name,$schema,$checkout);
++
++                $preserved=$prefix.$family.'_preserved_events';
++                db()->exec('RENAME TABLE '.table($eventName).' TO '.fkm_identifier($preserved));
++                fkm_ok($label.' missing table metadata remains empty',fkm_equal($label.' missing table',$eventName,$query)===[]);
++                $pdoFailure=null;
++                try{fkm_validate($family,$eventName,$schema,$checkout);}catch(PDOException $e){$pdoFailure=$e;}
++                fkm_ok($label.' missing-table PDO failure propagates unchanged',$pdoFailure instanceof PDOException&&($pdoFailure->errorInfo[0]??null)==='42S02'&&(int)($pdoFailure->errorInfo[1]??0)===1146);
++                db()->exec('RENAME TABLE '.fkm_identifier($preserved).' TO '.table($eventName));
++                fkm_valid($label.' restoring the missing table permits a fresh validation',$family,$eventName,$schema,$checkout);
++            }
++        }
++    } finally {$GLOBALS['cwp_config']['db']['prefix']=$originalPrefix;}
++    return ['scope'=>'Actual native schema validators and original-query multiset equivalence','families'=>$families,'legacy_and_checkout'=>true,'cross_schema_executed'=>$foreign!==null,'named_checks'=>count($checks)-$before,'observations'=>array_slice($fkm_observations,$observedBefore),'source_sha256'=>array_map(static fn(string $path):string=>hash_file('sha256',$path),$sources),'query_sha256'=>array_map(static fn(string $sql):string=>hash('sha256',$sql),$queries),'original_query_sha256'=>hash('sha256',FKM_ORIGINAL),'database_version'=>$identity['version']];
++}
+diff --git a/tests/recurring_billing_native.php b/tests/recurring_billing_native.php
+index b4ff6ddf..b31784a6 100644
+--- a/tests/recurring_billing_native.php
++++ b/tests/recurring_billing_native.php
+@@ -112,5 +112,7 @@ try {
+     require __DIR__.'/hosting_fulfillment_view_cases.php';
+     require __DIR__.'/hosting_fulfillment_confirmation_cases.php';
+     require __DIR__.'/provider_plan_catalog_cases.php';
++    require_once __DIR__.'/foreign_key_metadata_native_cases.php';
++    fkm_run_native_cases(['recurring'],null,'fkmr_');
+ }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
+ $passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/recurring-billing-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB native recurring consent/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native recurring checks'.PHP_EOL;exit($passed?0:1);
+diff --git a/tests/service_plans_native.php b/tests/service_plans_native.php
+index eb4bcbc9..a408e2a4 100644
+--- a/tests/service_plans_native.php
++++ b/tests/service_plans_native.php
+@@ -135,5 +135,7 @@ try {
+         }finally{db()->exec('RENAME TABLE `'.$saved.'` TO '.table($missing));}
+         sn_ok('Restored '.$missing.' retains exact original terms consent and audit',service_plans_ready() && sn_all()===$beforeMissing);
+     }
++    require_once __DIR__.'/foreign_key_metadata_native_cases.php';
++    fkm_run_native_cases(['plans'],null,'fkmp_');
+ }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e."\n");}
+ $passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/service-plans-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Native MariaDB owner plans, exact-client consent/history and current-authorized bounded projections; synthetic terms, no HTTP, invoice generation or payment authorization','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native service-plan checks'.PHP_EOL;exit($passed?0:1);

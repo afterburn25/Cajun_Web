@@ -135,5 +135,7 @@ try {
         }finally{db()->exec('RENAME TABLE `'.$saved.'` TO '.table($missing));}
         sn_ok('Restored '.$missing.' retains exact original terms consent and audit',service_plans_ready() && sn_all()===$beforeMissing);
     }
+    require_once __DIR__.'/foreign_key_metadata_native_cases.php';
+    fkm_run_native_cases(['plans'],null,'fkmp_');
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e."\n");}
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/service-plans-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Native MariaDB owner plans, exact-client consent/history and current-authorized bounded projections; synthetic terms, no HTTP, invoice generation or payment authorization','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native service-plan checks'.PHP_EOL;exit($passed?0:1);

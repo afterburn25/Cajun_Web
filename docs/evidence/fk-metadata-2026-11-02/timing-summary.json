@@ -1,0 +1,348 @@
+{
+  "source_base": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "source_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "commit": null,
+  "scope": "One corrected synthetic saved-mapping diagnostic; not full acceptance or proof of hosted root cause",
+  "browser_executions": 1,
+  "requests": [
+    {
+      "method": "GET",
+      "status": 200,
+      "wall_ms": 484.398745,
+      "query_count": 886,
+      "sql_prepare_execute_ms": 416.756013,
+      "sql_fraction_of_wall": 0.8603573343279409,
+      "metadata_prepare_execute_ms": 327.305479,
+      "metadata_fraction_of_wall": 0.6756943166729302,
+      "service_plan_schema_stage_calls": 14,
+      "service_plan_schema_stage_query_count": 378,
+      "service_plan_schema_stage_ms": 207.584829,
+      "categories": {
+        "data.select": {
+          "count": 288,
+          "prepare_execute_ms": 79.10203599999997
+        },
+        "metadata.tables": {
+          "count": 146,
+          "prepare_execute_ms": 60.27271299999998
+        },
+        "metadata.columns": {
+          "count": 190,
+          "prepare_execute_ms": 173.76099000000002
+        },
+        "metadata.indexes": {
+          "count": 152,
+          "prepare_execute_ms": 52.39815599999999
+        },
+        "metadata.foreign_keys": {
+          "count": 76,
+          "prepare_execute_ms": 40.87362
+        },
+        "lock.acquire": {
+          "count": 5,
+          "prepare_execute_ms": 1.038422
+        },
+        "data.row_lock": {
+          "count": 24,
+          "prepare_execute_ms": 8.107572
+        },
+        "lock.release": {
+          "count": 5,
+          "prepare_execute_ms": 1.202504
+        }
+      },
+      "omitted_queries": 0,
+      "redirect": null,
+      "php_diagnostic": null
+    },
+    {
+      "method": "POST",
+      "status": 303,
+      "wall_ms": 803.143741,
+      "query_count": 1195,
+      "sql_prepare_execute_ms": 685.004607,
+      "sql_fraction_of_wall": 0.8529041216795089,
+      "metadata_prepare_execute_ms": 513.373998,
+      "metadata_fraction_of_wall": 0.6392056263313394,
+      "service_plan_schema_stage_calls": 15,
+      "service_plan_schema_stage_query_count": 405,
+      "service_plan_schema_stage_ms": 281.631103,
+      "categories": {
+        "data.select": {
+          "count": 394,
+          "prepare_execute_ms": 150.23188999999988
+        },
+        "lock.acquire": {
+          "count": 4,
+          "prepare_execute_ms": 0.48507200000000006
+        },
+        "metadata.tables": {
+          "count": 195,
+          "prepare_execute_ms": 98.297932
+        },
+        "metadata.columns": {
+          "count": 250,
+          "prepare_execute_ms": 262.96241800000007
+        },
+        "metadata.indexes": {
+          "count": 200,
+          "prepare_execute_ms": 78.18217999999995
+        },
+        "metadata.foreign_keys": {
+          "count": 100,
+          "prepare_execute_ms": 73.93146799999997
+        },
+        "data.row_lock": {
+          "count": 44,
+          "prepare_execute_ms": 18.829315
+        },
+        "lock.release": {
+          "count": 4,
+          "prepare_execute_ms": 0.564558
+        },
+        "data.insert": {
+          "count": 4,
+          "prepare_execute_ms": 1.519774
+        }
+      },
+      "omitted_queries": 0,
+      "redirect": {
+        "path": "/existing/admin/index.php",
+        "view": "service-agreement",
+        "record_present": true
+      },
+      "php_diagnostic": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "wall_ms": 753.191463,
+      "query_count": 1301,
+      "sql_prepare_execute_ms": 664.36822,
+      "sql_fraction_of_wall": 0.8820708314374508,
+      "metadata_prepare_execute_ms": 529.190556,
+      "metadata_fraction_of_wall": 0.7025976554383756,
+      "service_plan_schema_stage_calls": 18,
+      "service_plan_schema_stage_query_count": 486,
+      "service_plan_schema_stage_ms": 327.032988,
+      "categories": {
+        "data.select": {
+          "count": 409,
+          "prepare_execute_ms": 119.98161599999993
+        },
+        "metadata.tables": {
+          "count": 224,
+          "prepare_execute_ms": 91.376513
+        },
+        "metadata.columns": {
+          "count": 280,
+          "prepare_execute_ms": 268.1277579999999
+        },
+        "metadata.indexes": {
+          "count": 224,
+          "prepare_execute_ms": 77.00279200000004
+        },
+        "metadata.foreign_keys": {
+          "count": 112,
+          "prepare_execute_ms": 92.683493
+        },
+        "lock.acquire": {
+          "count": 5,
+          "prepare_execute_ms": 0.65545
+        },
+        "data.row_lock": {
+          "count": 42,
+          "prepare_execute_ms": 13.790921
+        },
+        "lock.release": {
+          "count": 5,
+          "prepare_execute_ms": 0.7496769999999999
+        }
+      },
+      "omitted_queries": 0,
+      "redirect": null,
+      "php_diagnostic": null
+    }
+  ],
+  "target_total_queries": 3382,
+  "target_total_wall_ms": 2040.733949,
+  "browser_block_wall_ms": 4348.552336,
+  "top_metadata_call_sites": [
+    {
+      "category": "metadata.columns",
+      "file": "database/schema/catalog_validate_schema.php",
+      "line": 5,
+      "count": 288,
+      "prepare_execute_ms": 277.944376
+    },
+    {
+      "category": "metadata.columns",
+      "file": "database/migrations/service_plans_migrate.php",
+      "line": 14,
+      "count": 188,
+      "prepare_execute_ms": 183.68494599999997
+    },
+    {
+      "category": "metadata.foreign_keys",
+      "file": "database/migrations/service_plans_migrate.php",
+      "line": 51,
+      "count": 188,
+      "prepare_execute_ms": 137.30148200000005
+    },
+    {
+      "category": "metadata.tables",
+      "file": "database/schema/catalog_validate_schema.php",
+      "line": 5,
+      "count": 288,
+      "prepare_execute_ms": 122.08526800000001
+    },
+    {
+      "category": "metadata.indexes",
+      "file": "database/schema/catalog_validate_schema.php",
+      "line": 13,
+      "count": 288,
+      "prepare_execute_ms": 101.7414799999999
+    },
+    {
+      "category": "metadata.columns",
+      "file": "database/migrations/recurring_billing_migrate.php",
+      "line": 7,
+      "count": 100,
+      "prepare_execute_ms": 94.028494
+    },
+    {
+      "category": "metadata.columns",
+      "file": "database/migrations/service_plans_checkout_migrate.php",
+      "line": 19,
+      "count": 94,
+      "prepare_execute_ms": 88.800365
+    },
+    {
+      "category": "metadata.foreign_keys",
+      "file": "database/migrations/recurring_billing_migrate.php",
+      "line": 22,
+      "count": 100,
+      "prepare_execute_ms": 70.187099
+    },
+    {
+      "category": "metadata.indexes",
+      "file": "database/migrations/service_plans_migrate.php",
+      "line": 34,
+      "count": 188,
+      "prepare_execute_ms": 66.008199
+    },
+    {
+      "category": "metadata.columns",
+      "file": "database/migrations/recurring_billing_checkout_migrate.php",
+      "line": 19,
+      "count": 50,
+      "prepare_execute_ms": 60.392984999999996
+    },
+    {
+      "category": "metadata.indexes",
+      "file": "database/migrations/recurring_billing_migrate.php",
+      "line": 14,
+      "count": 100,
+      "prepare_execute_ms": 39.83344899999999
+    },
+    {
+      "category": "metadata.tables",
+      "file": "database/migrations/service_plans_checkout_migrate.php",
+      "line": 15,
+      "count": 47,
+      "prepare_execute_ms": 27.691990999999994
+    }
+  ],
+  "retained_failed_requests": [
+    {
+      "monotonic_ms": 2729.513735,
+      "event": "requestfailed",
+      "page_id": 1,
+      "url": {
+        "path": "/existing/api/activity.php",
+        "audience": "admin"
+      },
+      "failure": "net::ERR_ABORTED",
+      "resource_type": "fetch"
+    },
+    {
+      "monotonic_ms": 2767.761297,
+      "event": "requestfailed",
+      "page_id": 1,
+      "url": {
+        "path": "/existing/api/mail-notices.php"
+      },
+      "failure": "net::ERR_ABORTED",
+      "resource_type": "fetch"
+    },
+    {
+      "monotonic_ms": 4692.307494,
+      "event": "requestfailed",
+      "page_id": 1,
+      "url": {
+        "path": "/existing/api/activity.php",
+        "audience": "admin"
+      },
+      "failure": "net::ERR_ABORTED",
+      "resource_type": "fetch"
+    },
+    {
+      "monotonic_ms": 4695.598453,
+      "event": "requestfailed",
+      "page_id": 1,
+      "url": {
+        "path": "/existing/api/mail-notices.php"
+      },
+      "failure": "net::ERR_ABORTED",
+      "resource_type": "fetch"
+    }
+  ],
+  "poll_response_statuses": [
+    {
+      "path": "/existing/api/activity.php",
+      "status": 204,
+      "monotonic_ms": 2729.341749
+    },
+    {
+      "path": "/existing/api/mail-notices.php",
+      "status": 204,
+      "monotonic_ms": 2767.520477
+    },
+    {
+      "path": "/existing/api/activity.php",
+      "status": 204,
+      "monotonic_ms": 4691.78004
+    },
+    {
+      "path": "/existing/api/mail-notices.php",
+      "status": 204,
+      "monotonic_ms": 4692.169591
+    }
+  ],
+  "page_errors": [],
+  "console_events": [],
+  "no_query_trace_truncation": true,
+  "native_reports": [
+    {
+      "report": "foreign-key-metadata-native.json",
+      "passed": true,
+      "named_checks": 172,
+      "false_named_checks": 0,
+      "sha256": "c21ddb3e740ba47d053e8c236c8b6ca72fdea7a569f86f63d943b65dfd6746c4"
+    },
+    {
+      "report": "service-plans-native-results.json",
+      "passed": true,
+      "named_checks": 219,
+      "false_named_checks": 0,
+      "sha256": "7495f0dd4482348e7439f77d48054005a4a225b9ccf07c8369a027764af7cf6e"
+    },
+    {
+      "report": "recurring-billing-native-results.json",
+      "passed": true,
+      "named_checks": 721,
+      "false_named_checks": 0,
+      "sha256": "9741f86091c0048832b4ed540d6da7749bb2fd31bfca853ebbcc74ee978b815f"
+    }
+  ]
+}

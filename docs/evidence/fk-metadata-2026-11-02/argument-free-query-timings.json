@@ -1,0 +1,5306 @@
+{
+  "scope": "Sanitized per-request query-category/callsite aggregation; full observer trace retained privately",
+  "raw_trace_sha256": "2862705a1f7d5be5288407428be3fd6bc35f0a7c34b3b167c5757a101bb7e453",
+  "query_values_arguments_headers_cookies_tokens_or_bodies_included": false,
+  "requests": [
+    {
+      "method": "GET",
+      "status": 200,
+      "query_count": 886,
+      "categories_and_callsites": [
+        {
+          "category": "data.select",
+          "query_sha256": "573ffed2c0fd092a10c3203573bf246e0d9f156539bc54556f34428c8cc5378c",
+          "argument_free_callsite": {
+            "file": "includes/auth/admin.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 3.942816,
+          "minimum_ms": 0.106025,
+          "median_ms": 0.17857800000000001,
+          "maximum_ms": 1.529333
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "310f4236b147bed638378fba05c25f2fabafbd28b6a2c4aaca48ef326b742ebf",
+          "argument_free_callsite": {
+            "file": "app/settings/store.php",
+            "line": 4,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.190571,
+          "minimum_ms": 0.190571,
+          "median_ms": 0.190571,
+          "maximum_ms": 0.190571
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7339d8e8cf37b0a7b9da18c25d8702ab582efcd3fb54438c07575d8a21e718fd",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 81,
+          "total_prepare_execute_ms": 16.276335,
+          "minimum_ms": 0.079188,
+          "median_ms": 0.133186,
+          "maximum_ms": 2.202848
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e607e9336400d5cde3396a7f929268a1380870d7a20135c7a46e7619dbf158a4",
+          "argument_free_callsite": {
+            "file": "includes/layout/admin.php",
+            "line": 44,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.251642,
+          "minimum_ms": 0.251642,
+          "median_ms": 0.251642,
+          "maximum_ms": 0.251642
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 4.663435,
+          "minimum_ms": 0.086403,
+          "median_ms": 0.13754850000000002,
+          "maximum_ms": 2.302839
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 8.010529,
+          "minimum_ms": 0.08217,
+          "median_ms": 0.19039899999999998,
+          "maximum_ms": 3.57493
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 18,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 8.050636,
+          "minimum_ms": 0.246222,
+          "median_ms": 0.3370385,
+          "maximum_ms": 2.438766
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 15,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 6.78958,
+          "minimum_ms": 0.236241,
+          "median_ms": 0.35951,
+          "maximum_ms": 1.616107
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "41561a68ac8a7bac8ad5ee8ea7f57c2086680a9d5650ec36899780b9a96f465a",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 11.177521,
+          "minimum_ms": 0.411839,
+          "median_ms": 0.7935085,
+          "maximum_ms": 1.271301
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9bd88a0795073a852add5a8414722f801f5f707569cfdbd61db450066e6c73c3",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "one"
+          },
+          "count": 76,
+          "total_prepare_execute_ms": 30.640613,
+          "minimum_ms": 0.148772,
+          "median_ms": 0.301218,
+          "maximum_ms": 1.294018
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "970e652ef891c18dfcbb1be2b53ff3ee4ee147d72f9aa872e797df66dce36da4",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 4.318792,
+          "minimum_ms": 0.152769,
+          "median_ms": 0.224726,
+          "maximum_ms": 0.778929
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "41561a68ac8a7bac8ad5ee8ea7f57c2086680a9d5650ec36899780b9a96f465a",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 14.486827,
+          "minimum_ms": 0.430352,
+          "median_ms": 0.8994150000000001,
+          "maximum_ms": 2.257035
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "970e652ef891c18dfcbb1be2b53ff3ee4ee147d72f9aa872e797df66dce36da4",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 5.128317,
+          "minimum_ms": 0.129799,
+          "median_ms": 0.2721095,
+          "maximum_ms": 1.455565
+        },
+        {
+          "category": "metadata.foreign_keys",
+          "query_sha256": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 51,
+            "function": "all"
+          },
+          "count": 56,
+          "total_prepare_execute_ms": 27.235504,
+          "minimum_ms": 0.274841,
+          "median_ms": 0.37019749999999996,
+          "maximum_ms": 2.031354
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "b2c1e10546862d84bc773f6a34bbe73c8abb631761a3fa6757485c7fd5f7b47c",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 10.839271,
+          "minimum_ms": 0.422788,
+          "median_ms": 0.587554,
+          "maximum_ms": 1.734979
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "fcb1e22b10aef7f125541238300ddb7e3ee920fe347453f6176d2649504ecefb",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 5.007499,
+          "minimum_ms": 0.130887,
+          "median_ms": 0.2682565,
+          "maximum_ms": 1.478878
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "b2c1e10546862d84bc773f6a34bbe73c8abb631761a3fa6757485c7fd5f7b47c",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 14.05454,
+          "minimum_ms": 0.436675,
+          "median_ms": 0.7624055000000001,
+          "maximum_ms": 3.00601
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "fcb1e22b10aef7f125541238300ddb7e3ee920fe347453f6176d2649504ecefb",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 4.63173,
+          "minimum_ms": 0.122619,
+          "median_ms": 0.24012,
+          "maximum_ms": 0.847456
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 11.397804,
+          "minimum_ms": 0.452421,
+          "median_ms": 0.7704125,
+          "maximum_ms": 1.542392
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 9.328147,
+          "minimum_ms": 0.46406,
+          "median_ms": 0.6202624999999999,
+          "maximum_ms": 1.057083
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "8786b6163ae4cd821e5764630f4aae17a42095be7bd6e950da5602d6ef3e6e46",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 4.696989,
+          "minimum_ms": 0.12637,
+          "median_ms": 0.22015,
+          "maximum_ms": 1.330381
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 14.282681,
+          "minimum_ms": 0.42001,
+          "median_ms": 0.570604,
+          "maximum_ms": 4.443748
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "8786b6163ae4cd821e5764630f4aae17a42095be7bd6e950da5602d6ef3e6e46",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 4.9401459999999995,
+          "minimum_ms": 0.114723,
+          "median_ms": 0.2641095,
+          "maximum_ms": 0.715919
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 12.745675,
+          "minimum_ms": 0.449372,
+          "median_ms": 0.9138055,
+          "maximum_ms": 1.353588
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 10.165371,
+          "minimum_ms": 0.427709,
+          "median_ms": 0.668165,
+          "maximum_ms": 1.3414
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "18b457b6c97059570da01524d7bb74baa4249f4c89c15e7098275242274fe526",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 3.483172,
+          "minimum_ms": 0.150799,
+          "median_ms": 0.20794,
+          "maximum_ms": 0.522132
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 9.12572,
+          "minimum_ms": 0.346435,
+          "median_ms": 0.5751615,
+          "maximum_ms": 1.130522
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "18b457b6c97059570da01524d7bb74baa4249f4c89c15e7098275242274fe526",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 3.484873,
+          "minimum_ms": 0.129437,
+          "median_ms": 0.2243905,
+          "maximum_ms": 0.419364
+        },
+        {
+          "category": "lock.acquire",
+          "query_sha256": "2d6e58c397c6ec878c6a2990f6185758e9d160095378f86fbb631d856a117a7a",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 40,
+            "function": "query"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.038422,
+          "minimum_ms": 0.091152,
+          "median_ms": 0.211693,
+          "maximum_ms": 0.291573
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f81a0f40ea559bd406ac2a3b4ec91d793557882b2c72a0f1d1928954f0a62bdf",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 1.297377,
+          "minimum_ms": 1.297377,
+          "median_ms": 1.297377,
+          "maximum_ms": 1.297377
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2ff5fe6c6a7628dc3e5f0c561afbc4a970711fadf31a38081364c4e41d1a044a",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 5.142404,
+          "minimum_ms": 0.104334,
+          "median_ms": 0.313933,
+          "maximum_ms": 0.952512
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "004ce1f7f3d703155c75d508f728c497996bbe9d729bb2ea2de8b1531e5d9957",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 68,
+            "function": "all"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 5.360509,
+          "minimum_ms": 0.145869,
+          "median_ms": 0.28303900000000004,
+          "maximum_ms": 1.372573
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "4ffe03d7cfc217d2836f2ff741b18a528e04656102e49deadb16a1f6f6978f63",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 68,
+            "function": "all"
+          },
+          "count": 11,
+          "total_prepare_execute_ms": 3.8197389999999998,
+          "minimum_ms": 0.131259,
+          "median_ms": 0.233853,
+          "maximum_ms": 1.180292
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "e58f6977de5ed03e3b9f5505775b9aa73a97113cc4dcb1fd892d245b1d0d72cf",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 34,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.022663,
+          "minimum_ms": 0.454442,
+          "median_ms": 0.5113315,
+          "maximum_ms": 0.568221
+        },
+        {
+          "category": "lock.release",
+          "query_sha256": "dbe9fcf72d0d993f0cad81cdb30842cd34210716a4ee6b06972bf2b37ade5764",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 41,
+            "function": "query"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.202504,
+          "minimum_ms": 0.079039,
+          "median_ms": 0.114982,
+          "maximum_ms": 0.741553
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9bd88a0795073a852add5a8414722f801f5f707569cfdbd61db450066e6c73c3",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 17,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.449193,
+          "minimum_ms": 0.201211,
+          "median_ms": 0.2245965,
+          "maximum_ms": 0.247982
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.215717,
+          "minimum_ms": 0.215717,
+          "median_ms": 0.215717,
+          "maximum_ms": 0.215717
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.2551780000000001,
+          "minimum_ms": 0.188301,
+          "median_ms": 0.6275890000000001,
+          "maximum_ms": 1.066877
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b6703784c35be9f39fe76d8953a04356fbcda8dfd3479eb10280579aad4ce8ab",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.107392,
+          "minimum_ms": 0.107392,
+          "median_ms": 0.107392,
+          "maximum_ms": 0.107392
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "9a15e1163ff9f45902d2284873776df6ffd21796053247d4ec48939bab6179e1",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.144588,
+          "minimum_ms": 0.144588,
+          "median_ms": 0.144588,
+          "maximum_ms": 0.144588
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 14,
+            "function": "one"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 3.10253,
+          "minimum_ms": 0.122046,
+          "median_ms": 0.2116575,
+          "maximum_ms": 0.589312
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 15,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 2.5678710000000002,
+          "minimum_ms": 0.098389,
+          "median_ms": 0.250597,
+          "maximum_ms": 1.276407
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 13,
+          "total_prepare_execute_ms": 3.343165,
+          "minimum_ms": 0.091884,
+          "median_ms": 0.213756,
+          "maximum_ms": 0.816486
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "ea0d59ccab3ad162c62d8818f3da5fd93ae1013286eca8e710672073a5374d06",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.044353,
+          "minimum_ms": 0.115778,
+          "median_ms": 0.2692945,
+          "maximum_ms": 1.334802
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b95a63b1cf8840be871e4328a50bc456fe2a8db89c05b925c0d23c2210802533",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_views.php",
+            "line": 15,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.263762,
+          "minimum_ms": 0.263762,
+          "median_ms": 0.263762,
+          "maximum_ms": 0.263762
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "87b30feda66926dc2db4023e0a3431c583e38b4b68782db6c298920558eabd23",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 93,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.766686,
+          "minimum_ms": 0.25255,
+          "median_ms": 0.383343,
+          "maximum_ms": 0.514136
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e59abec8d586c9be41cf2a5a57da9de1ab0ebedd787442622eec8c533127a9be",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 95,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.286364,
+          "minimum_ms": 0.198124,
+          "median_ms": 0.643182,
+          "maximum_ms": 1.08824
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "8e735e0cd44dd27d6880a2d69e472c2d60f4679a619dd0578747b67321b61699",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements.php",
+            "line": 13,
+            "function": "query"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.358859,
+          "minimum_ms": 0.358859,
+          "median_ms": 0.358859,
+          "maximum_ms": 0.358859
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7eaaff106ef9eab279fdcad63558cbf8befcf241e94fdcceb76637987826a357",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements.php",
+            "line": 13,
+            "function": "query"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.17747,
+          "minimum_ms": 0.17747,
+          "median_ms": 0.17747,
+          "maximum_ms": 0.17747
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 48,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.313291,
+          "minimum_ms": 0.313291,
+          "median_ms": 0.313291,
+          "maximum_ms": 0.313291
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e73946a0e04c7507ea8cb48341334fdf770b12cfaf8f8b7b84722b33f199b1c4",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 50,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.24052,
+          "minimum_ms": 0.24052,
+          "median_ms": 0.24052,
+          "maximum_ms": 0.24052
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f5c0f846ef3a8e05a4d8a9941fad6f25d3d2b3eb363a849cf2e01723b6f6ef62",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 50,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.246628,
+          "minimum_ms": 0.246628,
+          "median_ms": 0.246628,
+          "maximum_ms": 0.246628
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.441223,
+          "minimum_ms": 0.151673,
+          "median_ms": 0.236717,
+          "maximum_ms": 0.472244
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fed14b3ea481ccee17c0c8320a9fdbdb5a70958fd050b2c31afdb0f101e9b456",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 52,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.475329,
+          "minimum_ms": 0.475329,
+          "median_ms": 0.475329,
+          "maximum_ms": 0.475329
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c69b2d1be496255f24b28185af14a3d081450bafbfef7f778c93b24cb287abf3",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 52,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.374903,
+          "minimum_ms": 0.374903,
+          "median_ms": 0.374903,
+          "maximum_ms": 0.374903
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "1da66b6f7b5db70271e4bbd4aa047cbdb434c974d755c878374c1870887e0ce7",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 64,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.67857,
+          "minimum_ms": 0.67857,
+          "median_ms": 0.67857,
+          "maximum_ms": 0.67857
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 30,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 0.7091810000000001,
+          "minimum_ms": 0.094478,
+          "median_ms": 0.120306,
+          "maximum_ms": 0.222464
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 32,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 3.5319659999999997,
+          "minimum_ms": 0.265002,
+          "median_ms": 0.847563,
+          "maximum_ms": 1.107794
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 0.807773,
+          "minimum_ms": 0.11533,
+          "median_ms": 0.139359,
+          "maximum_ms": 0.230867
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 15,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 2.149585,
+          "minimum_ms": 0.228245,
+          "median_ms": 0.384988,
+          "maximum_ms": 0.81549
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "e01832bb414c958510c8f15501da5ab794441d0ec93c0c78ed09d0cff86ed1ab",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 4.0555129999999995,
+          "minimum_ms": 0.603556,
+          "median_ms": 0.75161,
+          "maximum_ms": 0.981314
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "4af2fd05bc527f926ba165a31bab795d243c9890c436661d01a14a24317ba71f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.213926,
+          "minimum_ms": 0.172298,
+          "median_ms": 0.197279,
+          "maximum_ms": 0.364366
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "e01832bb414c958510c8f15501da5ab794441d0ec93c0c78ed09d0cff86ed1ab",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 3.777267,
+          "minimum_ms": 0.397615,
+          "median_ms": 0.625438,
+          "maximum_ms": 1.456364
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "4af2fd05bc527f926ba165a31bab795d243c9890c436661d01a14a24317ba71f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 2.447617,
+          "minimum_ms": 0.175661,
+          "median_ms": 0.431182,
+          "maximum_ms": 0.993341
+        },
+        {
+          "category": "metadata.foreign_keys",
+          "query_sha256": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 22,
+            "function": "all"
+          },
+          "count": 20,
+          "total_prepare_execute_ms": 13.638116,
+          "minimum_ms": 0.306365,
+          "median_ms": 0.5027105000000001,
+          "maximum_ms": 1.551713
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "02b0da54a685dff87a9c3c9d217dc632ad4f2210f482e42b5031dd6d8e63e06f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 4.018697,
+          "minimum_ms": 0.51751,
+          "median_ms": 0.754595,
+          "maximum_ms": 1.206722
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "e9e3af869a8b3adad383154703ad34f4923b389426af85e820b5cb038b8dc29f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 2.105766,
+          "minimum_ms": 0.171445,
+          "median_ms": 0.437443,
+          "maximum_ms": 0.774262
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "02b0da54a685dff87a9c3c9d217dc632ad4f2210f482e42b5031dd6d8e63e06f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 7.228764,
+          "minimum_ms": 0.687064,
+          "median_ms": 1.304883,
+          "maximum_ms": 2.27987
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "e9e3af869a8b3adad383154703ad34f4923b389426af85e820b5cb038b8dc29f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 4.43219,
+          "minimum_ms": 0.562063,
+          "median_ms": 0.638471,
+          "maximum_ms": 1.6451
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 6.577557,
+          "minimum_ms": 0.492725,
+          "median_ms": 0.847575,
+          "maximum_ms": 2.882383
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 4.408364,
+          "minimum_ms": 0.479418,
+          "median_ms": 0.958955,
+          "maximum_ms": 1.076751
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "ef8e1295cf1544389b4d49f787af9b21b18fb4f815c367418b81544b0e95c92e",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.463251,
+          "minimum_ms": 0.162848,
+          "median_ms": 0.245931,
+          "maximum_ms": 0.475996
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 3.835055,
+          "minimum_ms": 0.507149,
+          "median_ms": 0.641993,
+          "maximum_ms": 1.303778
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "ef8e1295cf1544389b4d49f787af9b21b18fb4f815c367418b81544b0e95c92e",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.5947879999999999,
+          "minimum_ms": 0.166897,
+          "median_ms": 0.300876,
+          "maximum_ms": 0.434303
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 9.059443,
+          "minimum_ms": 0.57818,
+          "median_ms": 0.95281,
+          "maximum_ms": 5.581364
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 7.00487,
+          "minimum_ms": 0.363001,
+          "median_ms": 0.782754,
+          "maximum_ms": 4.370288
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "13267a08f0adbd14885bf25fdb584cc32814272e4aae0896ea87a6bc8294e4b9",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 2.326746,
+          "minimum_ms": 0.175326,
+          "median_ms": 0.319052,
+          "maximum_ms": 1.225148
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 6.191903,
+          "minimum_ms": 0.451445,
+          "median_ms": 0.681447,
+          "maximum_ms": 3.709386
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "13267a08f0adbd14885bf25fdb584cc32814272e4aae0896ea87a6bc8294e4b9",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.122354,
+          "minimum_ms": 0.133452,
+          "median_ms": 0.215482,
+          "maximum_ms": 0.364287
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "aecf76901f830249e4537557be1c0ab28b48c4ba4396adfa2a99cb3aec8ae6d0",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 109,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.657404,
+          "minimum_ms": 0.187432,
+          "median_ms": 0.328702,
+          "maximum_ms": 0.469972
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "9e662248967ea97e67f07033b83565d3ccac0601b3088c16bed5238710b33193",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 49,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 1.177904,
+          "minimum_ms": 0.138439,
+          "median_ms": 0.1852005,
+          "maximum_ms": 0.281648
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "d27a87641c073415f66f00aff8d12355652ffe58ab0e56c66b45f142cc88893d",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 120,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.42695,
+          "minimum_ms": 0.097408,
+          "median_ms": 0.145404,
+          "maximum_ms": 0.184138
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "195f7d317a724470b879a482d265540ab2780987e3128b836419f0a05cc3cf38",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 121,
+            "function": "all"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.497194,
+          "minimum_ms": 0.125964,
+          "median_ms": 0.126582,
+          "maximum_ms": 0.244648
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "0ae4ba9f3ab60e21daf971aa16a0b23c06a8e854c575cde0da54f0192d5ff5a7",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 26,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 1.56638,
+          "minimum_ms": 0.140654,
+          "median_ms": 0.2698125,
+          "maximum_ms": 0.383911
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fb03273ba8a3edc264f45c487215ee71fa7b986740b0b3163932b583754cb996",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 87,
+            "function": "all"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 2.371761,
+          "minimum_ms": 0.116326,
+          "median_ms": 0.2614875,
+          "maximum_ms": 1.250384
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "bfe9b0d8f03f93e1bee7127c0242c7b5081a407a8d84f52d00aa7a5b4de2587c",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 52,
+            "function": "all"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.828603,
+          "minimum_ms": 0.170518,
+          "median_ms": 0.195659,
+          "maximum_ms": 0.266767
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "652ce34234331ac4fcdfeb6088f44f51a686a533e771c147d5035cb952eb5b8b",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 94,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 1.232107,
+          "minimum_ms": 0.320748,
+          "median_ms": 0.361306,
+          "maximum_ms": 0.550053
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "aecf76901f830249e4537557be1c0ab28b48c4ba4396adfa2a99cb3aec8ae6d0",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 72,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.122706,
+          "minimum_ms": 0.122706,
+          "median_ms": 0.122706,
+          "maximum_ms": 0.122706
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "f4b100573bb11e75b87ad5b47d41743069448f2c8bbc30f141eebb4f4f2f79d3",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 16,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.207456,
+          "minimum_ms": 0.207456,
+          "median_ms": 0.207456,
+          "maximum_ms": 0.207456
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2e26bb104ef6aeff987d830457010407893e144d3033f9953c004a12504e6b38",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.29226,
+          "minimum_ms": 0.29226,
+          "median_ms": 0.29226,
+          "maximum_ms": 0.29226
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "d28d281c5cc2818750762f89db2182d29c5a8ff176092e2f6ce38b45b0d855ff",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 22,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.227263,
+          "minimum_ms": 0.227263,
+          "median_ms": 0.227263,
+          "maximum_ms": 0.227263
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "853c556d65f6f96b0fdea14180dcf75220304fd7ebbfff1a5a2e85ac5c705184",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 24,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.30127,
+          "minimum_ms": 0.30127,
+          "median_ms": 0.30127,
+          "maximum_ms": 0.30127
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 62,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.118552,
+          "minimum_ms": 0.118552,
+          "median_ms": 0.118552,
+          "maximum_ms": 0.118552
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 63,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.141537,
+          "minimum_ms": 0.141537,
+          "median_ms": 0.141537,
+          "maximum_ms": 0.141537
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "53219fa08225e05dae4a0c65f033572b47f93792dc36653b5db0afca439086ad",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 66,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.125331,
+          "minimum_ms": 0.125331,
+          "median_ms": 0.125331,
+          "maximum_ms": 0.125331
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "c4e09bcf00782a2dc2a27164b4133544e324a3fcf0844bc5ad0af8bed5f99d6a",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 33,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.1612,
+          "minimum_ms": 0.1612,
+          "median_ms": 0.1612,
+          "maximum_ms": 0.1612
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c7c4eb06190885e49281587ee505c7d3d7b799f0043d38a0b829452a3bfd8f06",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_link_views.php",
+            "line": 16,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.153335,
+          "minimum_ms": 0.153335,
+          "median_ms": 0.153335,
+          "maximum_ms": 0.153335
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/storage.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.232107,
+          "minimum_ms": 0.10539,
+          "median_ms": 0.1160535,
+          "maximum_ms": 0.126717
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/storage.php",
+            "line": 20,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 1.428502,
+          "minimum_ms": 0.141109,
+          "median_ms": 0.17246,
+          "maximum_ms": 1.114933
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f8cc0c9d0bc0e902e996b3d85298820de16c9ee0bf20b9577110a340e19f8efb",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_link_views.php",
+            "line": 24,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.258555,
+          "minimum_ms": 0.258555,
+          "median_ms": 0.258555,
+          "maximum_ms": 0.258555
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 11,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.743565,
+          "minimum_ms": 0.116922,
+          "median_ms": 0.167045,
+          "maximum_ms": 0.292553
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c3749fadb5a8f0d8a6c5c0a6a93ceb82be30596eebc7f7f76f58e7a1cd667deb",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 40,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.264867,
+          "minimum_ms": 0.264867,
+          "median_ms": 0.264867,
+          "maximum_ms": 0.264867
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "a783c4a571fd9cbac9b2e31e6c07b42a3b20bf69fbd5c6aa517d2da4397044ae",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 12,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.32093900000000003,
+          "minimum_ms": 0.118497,
+          "median_ms": 0.16046950000000001,
+          "maximum_ms": 0.202442
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 191,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.138547,
+          "minimum_ms": 0.138547,
+          "median_ms": 0.138547,
+          "maximum_ms": 0.138547
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 194,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.186772,
+          "minimum_ms": 0.110511,
+          "median_ms": 0.23155,
+          "maximum_ms": 0.613161
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 24,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.708352,
+          "minimum_ms": 0.155068,
+          "median_ms": 0.17047600000000002,
+          "maximum_ms": 0.212332
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2090885824e7a3fac622a13f095564c717234901a020adcdd0d370ba191a83d6",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 198,
+            "function": "query"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.328052,
+          "minimum_ms": 0.328052,
+          "median_ms": 0.328052,
+          "maximum_ms": 0.328052
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 17,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.417381,
+          "minimum_ms": 0.08909,
+          "median_ms": 0.110727,
+          "maximum_ms": 0.217564
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.583818,
+          "minimum_ms": 0.130881,
+          "median_ms": 0.214441,
+          "maximum_ms": 0.238496
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "108c06d71b0cd2bd20ac8f6cc04d523347ff009ff751cac0cc97a37a5c1a44bf",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.7633840000000001,
+          "minimum_ms": 0.214761,
+          "median_ms": 0.248977,
+          "maximum_ms": 0.299646
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e58f028d7540d19639f4bb52959c3be84b88349300e4a8633d639284aad4497c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 22,
+            "function": "query"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.604546,
+          "minimum_ms": 0.135542,
+          "median_ms": 0.144563,
+          "maximum_ms": 0.324441
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fe10da72c197a6b99695fbf5ea0b783e9c433612847ecd9a3076a47fde6f988b",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 23,
+            "function": "query"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.597267,
+          "minimum_ms": 0.155802,
+          "median_ms": 0.166701,
+          "maximum_ms": 0.274764
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e58f028d7540d19639f4bb52959c3be84b88349300e4a8633d639284aad4497c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 24,
+            "function": "query"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.34267800000000004,
+          "minimum_ms": 0.099071,
+          "median_ms": 0.116052,
+          "maximum_ms": 0.127555
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "a69bcb5656aa91f7bab05e31753034cf472f626758afd7e653589644edd6f904",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 26,
+            "function": "query"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.353201,
+          "minimum_ms": 0.10819,
+          "median_ms": 0.1178,
+          "maximum_ms": 0.127211
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c6b125405fb42d183d3e789c200950bfd01bd764e658a541683d98eccabdd2a3",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 26,
+            "function": "query"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.345761,
+          "minimum_ms": 0.098794,
+          "median_ms": 0.123014,
+          "maximum_ms": 0.123953
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "63ad854d8dd52806c32a7beeb6d33433dd473187282f44a22bdca3f13ff9e841",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 45,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.905113,
+          "minimum_ms": 0.28118,
+          "median_ms": 0.4525565,
+          "maximum_ms": 0.623933
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7debba2f94d8d0bedd4e47ae887896784bd3a57a2f4e054d989763c186757e0e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 53,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.329216,
+          "minimum_ms": 0.11762,
+          "median_ms": 0.164608,
+          "maximum_ms": 0.211596
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f20fc8d5e51567ba5863bd49f48fad0d4aa1b96b6d0d00f409ef1edcaeeb66b7",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 55,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.7556160000000001,
+          "minimum_ms": 0.269677,
+          "median_ms": 0.37780800000000003,
+          "maximum_ms": 0.485939
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 59,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.297415,
+          "minimum_ms": 0.088981,
+          "median_ms": 0.1487075,
+          "maximum_ms": 0.208434
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "acd3bbfea76eb793b6f49a58b32c6eedc6e686b8616fa5c20d26d85a1eb0dff6",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 29,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.258551,
+          "minimum_ms": 0.124783,
+          "median_ms": 0.1292755,
+          "maximum_ms": 0.133768
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "573ffed2c0fd092a10c3203573bf246e0d9f156539bc54556f34428c8cc5378c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 84,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.197957,
+          "minimum_ms": 0.197957,
+          "median_ms": 0.197957,
+          "maximum_ms": 0.197957
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "status": 303,
+      "query_count": 1195,
+      "categories_and_callsites": [
+        {
+          "category": "data.select",
+          "query_sha256": "573ffed2c0fd092a10c3203573bf246e0d9f156539bc54556f34428c8cc5378c",
+          "argument_free_callsite": {
+            "file": "includes/auth/admin.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 16,
+          "total_prepare_execute_ms": 6.423748,
+          "minimum_ms": 0.151983,
+          "median_ms": 0.291934,
+          "maximum_ms": 1.347364
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "310f4236b147bed638378fba05c25f2fabafbd28b6a2c4aaca48ef326b742ebf",
+          "argument_free_callsite": {
+            "file": "app/settings/store.php",
+            "line": 4,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 1.152355,
+          "minimum_ms": 1.152355,
+          "median_ms": 1.152355,
+          "maximum_ms": 1.152355
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7339d8e8cf37b0a7b9da18c25d8702ab582efcd3fb54438c07575d8a21e718fd",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 41,
+          "total_prepare_execute_ms": 10.004922,
+          "minimum_ms": 0.089371,
+          "median_ms": 0.203022,
+          "maximum_ms": 0.740919
+        },
+        {
+          "category": "lock.acquire",
+          "query_sha256": "2d6e58c397c6ec878c6a2990f6185758e9d160095378f86fbb631d856a117a7a",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 40,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.485072,
+          "minimum_ms": 0.089118,
+          "median_ms": 0.11199300000000001,
+          "maximum_ms": 0.171968
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 4.767705,
+          "minimum_ms": 0.11102,
+          "median_ms": 0.210908,
+          "maximum_ms": 0.76054
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 3.071787,
+          "minimum_ms": 0.09227,
+          "median_ms": 0.161495,
+          "maximum_ms": 0.498313
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 18,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 10.05077,
+          "minimum_ms": 0.319932,
+          "median_ms": 0.562911,
+          "maximum_ms": 1.167596
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 15,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 11.054011,
+          "minimum_ms": 0.313169,
+          "median_ms": 0.499128,
+          "maximum_ms": 2.494487
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "41561a68ac8a7bac8ad5ee8ea7f57c2086680a9d5650ec36899780b9a96f465a",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 19.111753,
+          "minimum_ms": 0.623141,
+          "median_ms": 0.941999,
+          "maximum_ms": 5.742307
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9bd88a0795073a852add5a8414722f801f5f707569cfdbd61db450066e6c73c3",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "one"
+          },
+          "count": 100,
+          "total_prepare_execute_ms": 47.982772,
+          "minimum_ms": 0.204125,
+          "median_ms": 0.3696015,
+          "maximum_ms": 3.177302
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "970e652ef891c18dfcbb1be2b53ff3ee4ee147d72f9aa872e797df66dce36da4",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 5.903461,
+          "minimum_ms": 0.178976,
+          "median_ms": 0.310435,
+          "maximum_ms": 0.877822
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "41561a68ac8a7bac8ad5ee8ea7f57c2086680a9d5650ec36899780b9a96f465a",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 20.143422,
+          "minimum_ms": 0.585126,
+          "median_ms": 1.004832,
+          "maximum_ms": 4.481908
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "970e652ef891c18dfcbb1be2b53ff3ee4ee147d72f9aa872e797df66dce36da4",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 6.319211,
+          "minimum_ms": 0.206489,
+          "median_ms": 0.333186,
+          "maximum_ms": 1.268154
+        },
+        {
+          "category": "metadata.foreign_keys",
+          "query_sha256": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 51,
+            "function": "all"
+          },
+          "count": 60,
+          "total_prepare_execute_ms": 44.209647000000004,
+          "minimum_ms": 0.331303,
+          "median_ms": 0.568533,
+          "maximum_ms": 2.939263
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "b2c1e10546862d84bc773f6a34bbe73c8abb631761a3fa6757485c7fd5f7b47c",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 16.99941,
+          "minimum_ms": 0.651502,
+          "median_ms": 0.952996,
+          "maximum_ms": 2.874038
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "fcb1e22b10aef7f125541238300ddb7e3ee920fe347453f6176d2649504ecefb",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 5.0236979999999996,
+          "minimum_ms": 0.184893,
+          "median_ms": 0.313495,
+          "maximum_ms": 0.669114
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "b2c1e10546862d84bc773f6a34bbe73c8abb631761a3fa6757485c7fd5f7b47c",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 13.296889,
+          "minimum_ms": 0.579176,
+          "median_ms": 0.822252,
+          "maximum_ms": 1.454006
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "fcb1e22b10aef7f125541238300ddb7e3ee920fe347453f6176d2649504ecefb",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 4.768986,
+          "minimum_ms": 0.205659,
+          "median_ms": 0.245971,
+          "maximum_ms": 0.795504
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 13.974771,
+          "minimum_ms": 0.645785,
+          "median_ms": 0.938972,
+          "maximum_ms": 1.316087
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 14.005912,
+          "minimum_ms": 0.594889,
+          "median_ms": 0.824371,
+          "maximum_ms": 2.21009
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "8786b6163ae4cd821e5764630f4aae17a42095be7bd6e950da5602d6ef3e6e46",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 4.643548,
+          "minimum_ms": 0.197404,
+          "median_ms": 0.298244,
+          "maximum_ms": 0.770385
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 13.649262,
+          "minimum_ms": 0.58519,
+          "median_ms": 0.885706,
+          "maximum_ms": 1.40851
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "8786b6163ae4cd821e5764630f4aae17a42095be7bd6e950da5602d6ef3e6e46",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 4.842269,
+          "minimum_ms": 0.205345,
+          "median_ms": 0.310122,
+          "maximum_ms": 0.653023
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 14.797967,
+          "minimum_ms": 0.616558,
+          "median_ms": 0.87149,
+          "maximum_ms": 2.044419
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 15.246261,
+          "minimum_ms": 0.502432,
+          "median_ms": 0.927057,
+          "maximum_ms": 1.738592
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "18b457b6c97059570da01524d7bb74baa4249f4c89c15e7098275242274fe526",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 7.457599,
+          "minimum_ms": 0.133373,
+          "median_ms": 0.339591,
+          "maximum_ms": 2.508953
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 13.585356,
+          "minimum_ms": 0.557264,
+          "median_ms": 0.809558,
+          "maximum_ms": 2.101152
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "18b457b6c97059570da01524d7bb74baa4249f4c89c15e7098275242274fe526",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 6.040972,
+          "minimum_ms": 0.136952,
+          "median_ms": 0.256483,
+          "maximum_ms": 1.577283
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f81a0f40ea559bd406ac2a3b4ec91d793557882b2c72a0f1d1928954f0a62bdf",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.363473,
+          "minimum_ms": 0.363473,
+          "median_ms": 0.363473,
+          "maximum_ms": 0.363473
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2ff5fe6c6a7628dc3e5f0c561afbc4a970711fadf31a38081364c4e41d1a044a",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 24,
+          "total_prepare_execute_ms": 14.856467,
+          "minimum_ms": 0.139952,
+          "median_ms": 0.3365935,
+          "maximum_ms": 6.366238
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "004ce1f7f3d703155c75d508f728c497996bbe9d729bb2ea2de8b1531e5d9957",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 68,
+            "function": "all"
+          },
+          "count": 24,
+          "total_prepare_execute_ms": 14.468067,
+          "minimum_ms": 0.195945,
+          "median_ms": 0.3661705,
+          "maximum_ms": 3.729086
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "4ffe03d7cfc217d2836f2ff741b18a528e04656102e49deadb16a1f6f6978f63",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 68,
+            "function": "all"
+          },
+          "count": 17,
+          "total_prepare_execute_ms": 7.2838020000000006,
+          "minimum_ms": 0.163566,
+          "median_ms": 0.27964,
+          "maximum_ms": 0.984581
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "e58f6977de5ed03e3b9f5505775b9aa73a97113cc4dcb1fd892d245b1d0d72cf",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 34,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.931133,
+          "minimum_ms": 0.289208,
+          "median_ms": 0.4655665,
+          "maximum_ms": 0.641925
+        },
+        {
+          "category": "lock.release",
+          "query_sha256": "dbe9fcf72d0d993f0cad81cdb30842cd34210716a4ee6b06972bf2b37ade5764",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 41,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.564558,
+          "minimum_ms": 0.104904,
+          "median_ms": 0.1421375,
+          "maximum_ms": 0.175379
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 14,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.2301450000000003,
+          "minimum_ms": 0.14034,
+          "median_ms": 0.247699,
+          "maximum_ms": 1.080653
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 15,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 2.984123,
+          "minimum_ms": 0.18302,
+          "median_ms": 0.640813,
+          "maximum_ms": 0.925321
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 6.10706,
+          "minimum_ms": 0.134273,
+          "median_ms": 0.2284065,
+          "maximum_ms": 1.450958
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "ea0d59ccab3ad162c62d8818f3da5fd93ae1013286eca8e710672073a5374d06",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 16,
+          "total_prepare_execute_ms": 6.771248,
+          "minimum_ms": 0.165106,
+          "median_ms": 0.364749,
+          "maximum_ms": 0.892339
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b95a63b1cf8840be871e4328a50bc456fe2a8db89c05b925c0d23c2210802533",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_views.php",
+            "line": 15,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.224145,
+          "minimum_ms": 0.224145,
+          "median_ms": 0.224145,
+          "maximum_ms": 0.224145
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "87b30feda66926dc2db4023e0a3431c583e38b4b68782db6c298920558eabd23",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 93,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.499945,
+          "minimum_ms": 0.46133,
+          "median_ms": 0.7499725,
+          "maximum_ms": 1.038615
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e59abec8d586c9be41cf2a5a57da9de1ab0ebedd787442622eec8c533127a9be",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 95,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.915084,
+          "minimum_ms": 0.34144,
+          "median_ms": 0.457542,
+          "maximum_ms": 0.573644
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "8e735e0cd44dd27d6880a2d69e472c2d60f4679a619dd0578747b67321b61699",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements.php",
+            "line": 13,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.7465830000000002,
+          "minimum_ms": 0.165134,
+          "median_ms": 0.8732915000000001,
+          "maximum_ms": 1.581449
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7eaaff106ef9eab279fdcad63558cbf8befcf241e94fdcceb76637987826a357",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements.php",
+            "line": 13,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.265785,
+          "minimum_ms": 0.118006,
+          "median_ms": 0.1328925,
+          "maximum_ms": 0.147779
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 48,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.44719,
+          "minimum_ms": 0.183073,
+          "median_ms": 0.223595,
+          "maximum_ms": 0.264117
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e73946a0e04c7507ea8cb48341334fdf770b12cfaf8f8b7b84722b33f199b1c4",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 50,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.524778,
+          "minimum_ms": 0.232565,
+          "median_ms": 0.262389,
+          "maximum_ms": 0.292213
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f5c0f846ef3a8e05a4d8a9941fad6f25d3d2b3eb363a849cf2e01723b6f6ef62",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 50,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.9331240000000001,
+          "minimum_ms": 0.263039,
+          "median_ms": 0.46656200000000003,
+          "maximum_ms": 0.670085
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.766891,
+          "minimum_ms": 0.19198,
+          "median_ms": 0.4011795,
+          "maximum_ms": 0.964851
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fed14b3ea481ccee17c0c8320a9fdbdb5a70958fd050b2c31afdb0f101e9b456",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 52,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.738514,
+          "minimum_ms": 0.190379,
+          "median_ms": 0.369257,
+          "maximum_ms": 0.548135
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c69b2d1be496255f24b28185af14a3d081450bafbfef7f778c93b24cb287abf3",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 52,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.8202780000000001,
+          "minimum_ms": 0.386536,
+          "median_ms": 0.41013900000000003,
+          "maximum_ms": 0.433742
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "1da66b6f7b5db70271e4bbd4aa047cbdb434c974d755c878374c1870887e0ce7",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 64,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.719354,
+          "minimum_ms": 0.286205,
+          "median_ms": 0.359677,
+          "maximum_ms": 0.433149
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 30,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.41072,
+          "minimum_ms": 0.12486,
+          "median_ms": 0.26670950000000004,
+          "maximum_ms": 1.068232
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 32,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 6.860144,
+          "minimum_ms": 0.397063,
+          "median_ms": 0.5872204999999999,
+          "maximum_ms": 1.436209
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.703195,
+          "minimum_ms": 0.143597,
+          "median_ms": 0.29198599999999997,
+          "maximum_ms": 0.880513
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 15,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 6.921786,
+          "minimum_ms": 0.342687,
+          "median_ms": 0.5209595,
+          "maximum_ms": 1.575052
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "e01832bb414c958510c8f15501da5ab794441d0ec93c0c78ed09d0cff86ed1ab",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 9.167387999999999,
+          "minimum_ms": 0.623134,
+          "median_ms": 0.888447,
+          "maximum_ms": 1.488462
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "4af2fd05bc527f926ba165a31bab795d243c9890c436661d01a14a24317ba71f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.649236,
+          "minimum_ms": 0.195481,
+          "median_ms": 0.40552900000000003,
+          "maximum_ms": 0.97606
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "e01832bb414c958510c8f15501da5ab794441d0ec93c0c78ed09d0cff86ed1ab",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 11.740683,
+          "minimum_ms": 0.56844,
+          "median_ms": 1.215944,
+          "maximum_ms": 2.005405
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "4af2fd05bc527f926ba165a31bab795d243c9890c436661d01a14a24317ba71f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.635157,
+          "minimum_ms": 0.193304,
+          "median_ms": 0.34553900000000004,
+          "maximum_ms": 1.539033
+        },
+        {
+          "category": "metadata.foreign_keys",
+          "query_sha256": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 22,
+            "function": "all"
+          },
+          "count": 40,
+          "total_prepare_execute_ms": 29.721821,
+          "minimum_ms": 0.380178,
+          "median_ms": 0.5836509999999999,
+          "maximum_ms": 2.790927
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "02b0da54a685dff87a9c3c9d217dc632ad4f2210f482e42b5031dd6d8e63e06f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 10.140198,
+          "minimum_ms": 0.628064,
+          "median_ms": 0.9182285,
+          "maximum_ms": 1.778885
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "e9e3af869a8b3adad383154703ad34f4923b389426af85e820b5cb038b8dc29f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 2.883829,
+          "minimum_ms": 0.16174,
+          "median_ms": 0.2399705,
+          "maximum_ms": 0.721548
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "02b0da54a685dff87a9c3c9d217dc632ad4f2210f482e42b5031dd6d8e63e06f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 8.363626,
+          "minimum_ms": 0.615131,
+          "median_ms": 0.7616085,
+          "maximum_ms": 1.436083
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "e9e3af869a8b3adad383154703ad34f4923b389426af85e820b5cb038b8dc29f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.220815,
+          "minimum_ms": 0.178832,
+          "median_ms": 0.259683,
+          "maximum_ms": 0.491903
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 15.317485,
+          "minimum_ms": 0.749897,
+          "median_ms": 1.0334045,
+          "maximum_ms": 4.779436
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 10.728465,
+          "minimum_ms": 0.700038,
+          "median_ms": 0.997712,
+          "maximum_ms": 1.831523
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "ef8e1295cf1544389b4d49f787af9b21b18fb4f815c367418b81544b0e95c92e",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.162531,
+          "minimum_ms": 0.200877,
+          "median_ms": 0.281041,
+          "maximum_ms": 0.608413
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 8.884272,
+          "minimum_ms": 0.569376,
+          "median_ms": 0.821959,
+          "maximum_ms": 1.41083
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "ef8e1295cf1544389b4d49f787af9b21b18fb4f815c367418b81544b0e95c92e",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.936563,
+          "minimum_ms": 0.201238,
+          "median_ms": 0.349035,
+          "maximum_ms": 0.881091
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 9.630539,
+          "minimum_ms": 0.66811,
+          "median_ms": 0.8611425,
+          "maximum_ms": 1.717797
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 13.909901999999999,
+          "minimum_ms": 0.665897,
+          "median_ms": 1.2121819999999999,
+          "maximum_ms": 3.174933
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "13267a08f0adbd14885bf25fdb584cc32814272e4aae0896ea87a6bc8294e4b9",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 6.536588,
+          "minimum_ms": 0.2123,
+          "median_ms": 0.409481,
+          "maximum_ms": 1.365917
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 10.268857,
+          "minimum_ms": 0.74011,
+          "median_ms": 0.9492989999999999,
+          "maximum_ms": 1.817037
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "13267a08f0adbd14885bf25fdb584cc32814272e4aae0896ea87a6bc8294e4b9",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.157717,
+          "minimum_ms": 0.224815,
+          "median_ms": 0.3604695,
+          "maximum_ms": 0.757879
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "aecf76901f830249e4537557be1c0ab28b48c4ba4396adfa2a99cb3aec8ae6d0",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 109,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.293536,
+          "minimum_ms": 0.221912,
+          "median_ms": 0.328052,
+          "maximum_ms": 0.41552
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "9e662248967ea97e67f07033b83565d3ccac0601b3088c16bed5238710b33193",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 49,
+            "function": "one"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 4.136598,
+          "minimum_ms": 0.157326,
+          "median_ms": 0.24264,
+          "maximum_ms": 1.188739
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "d27a87641c073415f66f00aff8d12355652ffe58ab0e56c66b45f142cc88893d",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 120,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 2.441748,
+          "minimum_ms": 0.21748,
+          "median_ms": 0.34828899999999996,
+          "maximum_ms": 0.821115
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "195f7d317a724470b879a482d265540ab2780987e3128b836419f0a05cc3cf38",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 121,
+            "function": "all"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 1.671233,
+          "minimum_ms": 0.185601,
+          "median_ms": 0.2067775,
+          "maximum_ms": 0.495551
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "0ae4ba9f3ab60e21daf971aa16a0b23c06a8e854c575cde0da54f0192d5ff5a7",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 26,
+            "function": "one"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 5.353777,
+          "minimum_ms": 0.197132,
+          "median_ms": 0.4366045,
+          "maximum_ms": 0.713898
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fb03273ba8a3edc264f45c487215ee71fa7b986740b0b3163932b583754cb996",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 87,
+            "function": "all"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 7.018491,
+          "minimum_ms": 0.24277,
+          "median_ms": 0.439077,
+          "maximum_ms": 1.701853
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "bfe9b0d8f03f93e1bee7127c0242c7b5081a407a8d84f52d00aa7a5b4de2587c",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 52,
+            "function": "all"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 5.90058,
+          "minimum_ms": 0.274015,
+          "median_ms": 0.365188,
+          "maximum_ms": 2.214355
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "652ce34234331ac4fcdfeb6088f44f51a686a533e771c147d5035cb952eb5b8b",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 94,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 3.063374,
+          "minimum_ms": 0.216502,
+          "median_ms": 0.365232,
+          "maximum_ms": 0.933485
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "aecf76901f830249e4537557be1c0ab28b48c4ba4396adfa2a99cb3aec8ae6d0",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 72,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.097281,
+          "minimum_ms": 0.222435,
+          "median_ms": 0.5486405,
+          "maximum_ms": 0.874846
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "f4b100573bb11e75b87ad5b47d41743069448f2c8bbc30f141eebb4f4f2f79d3",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 16,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.974033,
+          "minimum_ms": 0.197157,
+          "median_ms": 0.4870165,
+          "maximum_ms": 0.776876
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2e26bb104ef6aeff987d830457010407893e144d3033f9953c004a12504e6b38",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.805775,
+          "minimum_ms": 0.258416,
+          "median_ms": 0.4028875,
+          "maximum_ms": 0.547359
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "d28d281c5cc2818750762f89db2182d29c5a8ff176092e2f6ce38b45b0d855ff",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 22,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.816483,
+          "minimum_ms": 0.294342,
+          "median_ms": 0.4082415,
+          "maximum_ms": 0.522141
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "853c556d65f6f96b0fdea14180dcf75220304fd7ebbfff1a5a2e85ac5c705184",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 24,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.682086,
+          "minimum_ms": 0.266503,
+          "median_ms": 0.341043,
+          "maximum_ms": 0.415583
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 62,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.34477,
+          "minimum_ms": 0.123722,
+          "median_ms": 0.172385,
+          "maximum_ms": 0.221048
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 63,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.83926,
+          "minimum_ms": 0.26752,
+          "median_ms": 0.41963,
+          "maximum_ms": 0.57174
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "53219fa08225e05dae4a0c65f033572b47f93792dc36653b5db0afca439086ad",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 66,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.281388,
+          "minimum_ms": 0.492957,
+          "median_ms": 0.640694,
+          "maximum_ms": 0.788431
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 17,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 1.99425,
+          "minimum_ms": 0.116053,
+          "median_ms": 0.21452500000000002,
+          "maximum_ms": 0.425887
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 1.883072,
+          "minimum_ms": 0.186138,
+          "median_ms": 0.2355645,
+          "maximum_ms": 0.2999
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "108c06d71b0cd2bd20ac8f6cc04d523347ff009ff751cac0cc97a37a5c1a44bf",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 4.149843,
+          "minimum_ms": 0.19072,
+          "median_ms": 0.492623,
+          "maximum_ms": 1.111121
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e58f028d7540d19639f4bb52959c3be84b88349300e4a8633d639284aad4497c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 22,
+            "function": "query"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.334454,
+          "minimum_ms": 0.140331,
+          "median_ms": 0.219845,
+          "maximum_ms": 0.604133
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fe10da72c197a6b99695fbf5ea0b783e9c433612847ecd9a3076a47fde6f988b",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 23,
+            "function": "query"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 1.842253,
+          "minimum_ms": 0.089614,
+          "median_ms": 0.17996050000000002,
+          "maximum_ms": 0.52925
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e58f028d7540d19639f4bb52959c3be84b88349300e4a8633d639284aad4497c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 24,
+            "function": "query"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.352106,
+          "minimum_ms": 0.115029,
+          "median_ms": 0.224859,
+          "maximum_ms": 0.737784
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "a69bcb5656aa91f7bab05e31753034cf472f626758afd7e653589644edd6f904",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 26,
+            "function": "query"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.357799,
+          "minimum_ms": 0.112632,
+          "median_ms": 0.25199249999999995,
+          "maximum_ms": 0.612107
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c6b125405fb42d183d3e789c200950bfd01bd764e658a541683d98eccabdd2a3",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 26,
+            "function": "query"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.047961,
+          "minimum_ms": 0.156914,
+          "median_ms": 0.20460050000000002,
+          "maximum_ms": 0.438978
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "014e19526a7729159d93bba7d1f8050a5ec31b945f5b65b9ec93cbfc5cea9c6f",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 154,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.465678,
+          "minimum_ms": 0.112919,
+          "median_ms": 0.127972,
+          "maximum_ms": 0.224787
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "63ad854d8dd52806c32a7beeb6d33433dd473187282f44a22bdca3f13ff9e841",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 45,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.405029,
+          "minimum_ms": 0.179498,
+          "median_ms": 0.261241,
+          "maximum_ms": 0.379209
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7debba2f94d8d0bedd4e47ae887896784bd3a57a2f4e054d989763c186757e0e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 53,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.243746,
+          "minimum_ms": 0.190725,
+          "median_ms": 0.235675,
+          "maximum_ms": 0.310099
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f20fc8d5e51567ba5863bd49f48fad0d4aa1b96b6d0d00f409ef1edcaeeb66b7",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 55,
+            "function": "all"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.435284,
+          "minimum_ms": 0.163466,
+          "median_ms": 0.279459,
+          "maximum_ms": 0.456323
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 59,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.20386,
+          "minimum_ms": 0.138158,
+          "median_ms": 0.217213,
+          "maximum_ms": 0.352604
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 11,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.963311,
+          "minimum_ms": 0.225383,
+          "median_ms": 0.33294,
+          "maximum_ms": 0.613367
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "acd3bbfea76eb793b6f49a58b32c6eedc6e686b8616fa5c20d26d85a1eb0dff6",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 29,
+            "function": "one"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 1.332846,
+          "minimum_ms": 0.132718,
+          "median_ms": 0.193136,
+          "maximum_ms": 0.471076
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "573ffed2c0fd092a10c3203573bf246e0d9f156539bc54556f34428c8cc5378c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 84,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.668527,
+          "minimum_ms": 0.221436,
+          "median_ms": 0.3342635,
+          "maximum_ms": 0.447091
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/storage.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.989021,
+          "minimum_ms": 0.121942,
+          "median_ms": 0.43125349999999996,
+          "maximum_ms": 1.004572
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/storage.php",
+            "line": 20,
+            "function": "one"
+          },
+          "count": 7,
+          "total_prepare_execute_ms": 1.912843,
+          "minimum_ms": 0.190743,
+          "median_ms": 0.244579,
+          "maximum_ms": 0.368029
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "c4e09bcf00782a2dc2a27164b4133544e324a3fcf0844bc5ad0af8bed5f99d6a",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 33,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.746432,
+          "minimum_ms": 0.746432,
+          "median_ms": 0.746432,
+          "maximum_ms": 0.746432
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "a783c4a571fd9cbac9b2e31e6c07b42a3b20bf69fbd5c6aa517d2da4397044ae",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 12,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.087902,
+          "minimum_ms": 0.110389,
+          "median_ms": 0.202513,
+          "maximum_ms": 0.572487
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 191,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.390636,
+          "minimum_ms": 0.155059,
+          "median_ms": 0.195318,
+          "maximum_ms": 0.235577
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 194,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.312728,
+          "minimum_ms": 0.101673,
+          "median_ms": 0.2753145,
+          "maximum_ms": 0.625073
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 24,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.796238,
+          "minimum_ms": 0.20815,
+          "median_ms": 0.34416599999999997,
+          "maximum_ms": 0.547021
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2090885824e7a3fac622a13f095564c717234901a020adcdd0d370ba191a83d6",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 198,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.774586,
+          "minimum_ms": 0.338082,
+          "median_ms": 0.387293,
+          "maximum_ms": 0.436504
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "76274919071e493b3beb6671fd0a84cef6d0cef5b468f71d0a505a21d069c921",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 91,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.378876,
+          "minimum_ms": 0.378876,
+          "median_ms": 0.378876,
+          "maximum_ms": 0.378876
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "d5a8c915fe0c57117d47ab71d05a1ed32587823e2253c8631ae26a2e0436bd9d",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 101,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.188558,
+          "minimum_ms": 0.188558,
+          "median_ms": 0.188558,
+          "maximum_ms": 0.188558
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "85135ff34ebf189aa14e2c5cb90666500e9a56fa028e5e1ecf2b30666f86768f",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 101,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.30594,
+          "minimum_ms": 0.30594,
+          "median_ms": 0.30594,
+          "maximum_ms": 0.30594
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "577ea18ce3b10d133c9af6bff412a5d1a40b58904a93e80216264ca0086b87bd",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 35,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.316692,
+          "minimum_ms": 0.316692,
+          "median_ms": 0.316692,
+          "maximum_ms": 0.316692
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "ff16cdef10368e6fab314ec6125a4e9508e6fd5d8d84b9aa631d1bc599ba8948",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 87,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.196022,
+          "minimum_ms": 0.196022,
+          "median_ms": 0.196022,
+          "maximum_ms": 0.196022
+        },
+        {
+          "category": "data.insert",
+          "query_sha256": "4b5abddc438efc8d9083954b4de2e0a0daf9f7247a5c031092071587339915d2",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 95,
+            "function": "query"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.395613,
+          "minimum_ms": 0.395613,
+          "median_ms": 0.395613,
+          "maximum_ms": 0.395613
+        },
+        {
+          "category": "data.insert",
+          "query_sha256": "4c9747602df7dee7487274a8b1b17849cee26c8d555e9c416388319be2e5486c",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 43,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.898974,
+          "minimum_ms": 0.179755,
+          "median_ms": 0.449487,
+          "maximum_ms": 0.719219
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "6f3d4bc3c7364f513002a2beaae9cba3dc4ff609a9369735721d863189ad5ff3",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 48,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.399644,
+          "minimum_ms": 0.14281,
+          "median_ms": 0.199822,
+          "maximum_ms": 0.256834
+        },
+        {
+          "category": "data.insert",
+          "query_sha256": "a44c9271f2102833ded9754dae8d4cdb3e9063774efbc285b0913dc9eeeaaa5d",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 107,
+            "function": "query"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.225187,
+          "minimum_ms": 0.225187,
+          "median_ms": 0.225187,
+          "maximum_ms": 0.225187
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7debba2f94d8d0bedd4e47ae887896784bd3a57a2f4e054d989763c186757e0e",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 62,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.272964,
+          "minimum_ms": 0.272964,
+          "median_ms": 0.272964,
+          "maximum_ms": 0.272964
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "8523ea58e1071fed38c7770669a893b5171b9f9e0c6743212bd6ad71052bbcf6",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 61,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.189053,
+          "minimum_ms": 0.189053,
+          "median_ms": 0.189053,
+          "maximum_ms": 0.189053
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "87b30feda66926dc2db4023e0a3431c583e38b4b68782db6c298920558eabd23",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 67,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.699466,
+          "minimum_ms": 0.699466,
+          "median_ms": 0.699466,
+          "maximum_ms": 0.699466
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "query_count": 1301,
+      "categories_and_callsites": [
+        {
+          "category": "data.select",
+          "query_sha256": "573ffed2c0fd092a10c3203573bf246e0d9f156539bc54556f34428c8cc5378c",
+          "argument_free_callsite": {
+            "file": "includes/auth/admin.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 15,
+          "total_prepare_execute_ms": 4.399671,
+          "minimum_ms": 0.141219,
+          "median_ms": 0.261849,
+          "maximum_ms": 0.796879
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "310f4236b147bed638378fba05c25f2fabafbd28b6a2c4aaca48ef326b742ebf",
+          "argument_free_callsite": {
+            "file": "app/settings/store.php",
+            "line": 4,
+            "function": "all"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 1.012837,
+          "minimum_ms": 1.012837,
+          "median_ms": 1.012837,
+          "maximum_ms": 1.012837
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7339d8e8cf37b0a7b9da18c25d8702ab582efcd3fb54438c07575d8a21e718fd",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 83,
+          "total_prepare_execute_ms": 19.759782,
+          "minimum_ms": 0.095901,
+          "median_ms": 0.14853,
+          "maximum_ms": 2.225277
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e607e9336400d5cde3396a7f929268a1380870d7a20135c7a46e7619dbf158a4",
+          "argument_free_callsite": {
+            "file": "includes/layout/admin.php",
+            "line": 44,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.362818,
+          "minimum_ms": 0.362818,
+          "median_ms": 0.362818,
+          "maximum_ms": 0.362818
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 3.677303,
+          "minimum_ms": 0.099033,
+          "median_ms": 0.166641,
+          "maximum_ms": 0.519946
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 3.277702,
+          "minimum_ms": 0.098281,
+          "median_ms": 0.145185,
+          "maximum_ms": 0.543522
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 18,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 9.525712,
+          "minimum_ms": 0.356552,
+          "median_ms": 0.48027,
+          "maximum_ms": 1.058092
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 15,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 9.8484,
+          "minimum_ms": 0.294613,
+          "median_ms": 0.4589045,
+          "maximum_ms": 1.614397
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "41561a68ac8a7bac8ad5ee8ea7f57c2086680a9d5650ec36899780b9a96f465a",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 17.389846,
+          "minimum_ms": 0.574811,
+          "median_ms": 0.8403295,
+          "maximum_ms": 2.490637
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9bd88a0795073a852add5a8414722f801f5f707569cfdbd61db450066e6c73c3",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "one"
+          },
+          "count": 112,
+          "total_prepare_execute_ms": 43.461883,
+          "minimum_ms": 0.191122,
+          "median_ms": 0.3228845,
+          "maximum_ms": 2.295184
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "970e652ef891c18dfcbb1be2b53ff3ee4ee147d72f9aa872e797df66dce36da4",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 5.384033,
+          "minimum_ms": 0.159358,
+          "median_ms": 0.21443600000000002,
+          "maximum_ms": 0.744321
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "41561a68ac8a7bac8ad5ee8ea7f57c2086680a9d5650ec36899780b9a96f465a",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 21.062276,
+          "minimum_ms": 0.59326,
+          "median_ms": 0.9152735000000001,
+          "maximum_ms": 4.582275
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "970e652ef891c18dfcbb1be2b53ff3ee4ee147d72f9aa872e797df66dce36da4",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 7.502046,
+          "minimum_ms": 0.182052,
+          "median_ms": 0.323116,
+          "maximum_ms": 1.578213
+        },
+        {
+          "category": "metadata.foreign_keys",
+          "query_sha256": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 51,
+            "function": "all"
+          },
+          "count": 72,
+          "total_prepare_execute_ms": 65.856331,
+          "minimum_ms": 0.350207,
+          "median_ms": 0.49853250000000005,
+          "maximum_ms": 17.973081
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "b2c1e10546862d84bc773f6a34bbe73c8abb631761a3fa6757485c7fd5f7b47c",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 17.179898,
+          "minimum_ms": 0.596045,
+          "median_ms": 0.811579,
+          "maximum_ms": 1.737267
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "fcb1e22b10aef7f125541238300ddb7e3ee920fe347453f6176d2649504ecefb",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 5.102003,
+          "minimum_ms": 0.1411,
+          "median_ms": 0.24230249999999998,
+          "maximum_ms": 0.603518
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "b2c1e10546862d84bc773f6a34bbe73c8abb631761a3fa6757485c7fd5f7b47c",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 16.702958,
+          "minimum_ms": 0.542844,
+          "median_ms": 0.8053604999999999,
+          "maximum_ms": 2.580188
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "fcb1e22b10aef7f125541238300ddb7e3ee920fe347453f6176d2649504ecefb",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 5.965363,
+          "minimum_ms": 0.165196,
+          "median_ms": 0.29276349999999995,
+          "maximum_ms": 0.821934
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 18.476515,
+          "minimum_ms": 0.640235,
+          "median_ms": 0.988038,
+          "maximum_ms": 1.711927
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 17.243849,
+          "minimum_ms": 0.56639,
+          "median_ms": 0.90908,
+          "maximum_ms": 1.82094
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "8786b6163ae4cd821e5764630f4aae17a42095be7bd6e950da5602d6ef3e6e46",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 4.732771,
+          "minimum_ms": 0.172717,
+          "median_ms": 0.245327,
+          "maximum_ms": 0.457031
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "5fde968b09bfb1dd989ef56eac0eef727c879a0176174644fb553bc566482850",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 14.901909,
+          "minimum_ms": 0.561008,
+          "median_ms": 0.730452,
+          "maximum_ms": 1.816644
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "8786b6163ae4cd821e5764630f4aae17a42095be7bd6e950da5602d6ef3e6e46",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 5.962265,
+          "minimum_ms": 0.189584,
+          "median_ms": 0.32701,
+          "maximum_ms": 0.66445
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 17.407633,
+          "minimum_ms": 0.629239,
+          "median_ms": 0.9001574999999999,
+          "maximum_ms": 1.711062
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 15.773145,
+          "minimum_ms": 0.556491,
+          "median_ms": 0.7306805,
+          "maximum_ms": 2.169257
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "18b457b6c97059570da01524d7bb74baa4249f4c89c15e7098275242274fe526",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 7.70633,
+          "minimum_ms": 0.190152,
+          "median_ms": 0.33668600000000004,
+          "maximum_ms": 1.392905
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "2183a4a6756aac877efe8690e6f82213f67da30122bd8664e3ebfc9f9d90cd19",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 18.393106,
+          "minimum_ms": 0.579913,
+          "median_ms": 0.8809775,
+          "maximum_ms": 2.013037
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "18b457b6c97059570da01524d7bb74baa4249f4c89c15e7098275242274fe526",
+          "argument_free_callsite": {
+            "file": "database/migrations/service_plans_migrate.php",
+            "line": 34,
+            "function": "all"
+          },
+          "count": 18,
+          "total_prepare_execute_ms": 6.422021,
+          "minimum_ms": 0.180758,
+          "median_ms": 0.25037600000000004,
+          "maximum_ms": 1.150191
+        },
+        {
+          "category": "lock.acquire",
+          "query_sha256": "2d6e58c397c6ec878c6a2990f6185758e9d160095378f86fbb631d856a117a7a",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 40,
+            "function": "query"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 0.65545,
+          "minimum_ms": 0.094254,
+          "median_ms": 0.124256,
+          "maximum_ms": 0.170888
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f81a0f40ea559bd406ac2a3b4ec91d793557882b2c72a0f1d1928954f0a62bdf",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.169038,
+          "minimum_ms": 0.169038,
+          "median_ms": 0.169038,
+          "maximum_ms": 0.169038
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2ff5fe6c6a7628dc3e5f0c561afbc4a970711fadf31a38081364c4e41d1a044a",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 19,
+          "total_prepare_execute_ms": 6.5548839999999995,
+          "minimum_ms": 0.107811,
+          "median_ms": 0.258538,
+          "maximum_ms": 0.674433
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "004ce1f7f3d703155c75d508f728c497996bbe9d729bb2ea2de8b1531e5d9957",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 68,
+            "function": "all"
+          },
+          "count": 19,
+          "total_prepare_execute_ms": 5.426921,
+          "minimum_ms": 0.175425,
+          "median_ms": 0.275552,
+          "maximum_ms": 0.477896
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "4ffe03d7cfc217d2836f2ff741b18a528e04656102e49deadb16a1f6f6978f63",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 68,
+            "function": "all"
+          },
+          "count": 17,
+          "total_prepare_execute_ms": 6.580682,
+          "minimum_ms": 0.129198,
+          "median_ms": 0.272136,
+          "maximum_ms": 1.994949
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "e58f6977de5ed03e3b9f5505775b9aa73a97113cc4dcb1fd892d245b1d0d72cf",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 34,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.5373870000000001,
+          "minimum_ms": 0.195866,
+          "median_ms": 0.26869350000000003,
+          "maximum_ms": 0.341521
+        },
+        {
+          "category": "lock.release",
+          "query_sha256": "dbe9fcf72d0d993f0cad81cdb30842cd34210716a4ee6b06972bf2b37ade5764",
+          "argument_free_callsite": {
+            "file": "app/staff/accounts.php",
+            "line": 41,
+            "function": "query"
+          },
+          "count": 5,
+          "total_prepare_execute_ms": 0.749677,
+          "minimum_ms": 0.09245,
+          "median_ms": 0.112138,
+          "maximum_ms": 0.264455
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9bd88a0795073a852add5a8414722f801f5f707569cfdbd61db450066e6c73c3",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 17,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.789404,
+          "minimum_ms": 0.256534,
+          "median_ms": 0.894702,
+          "maximum_ms": 1.53287
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.316079,
+          "minimum_ms": 0.316079,
+          "median_ms": 0.316079,
+          "maximum_ms": 0.316079
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.432355,
+          "minimum_ms": 0.39033,
+          "median_ms": 0.7161775,
+          "maximum_ms": 1.042025
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b6703784c35be9f39fe76d8953a04356fbcda8dfd3479eb10280579aad4ce8ab",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.355077,
+          "minimum_ms": 0.355077,
+          "median_ms": 0.355077,
+          "maximum_ms": 0.355077
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "9a15e1163ff9f45902d2284873776df6ffd21796053247d4ec48939bab6179e1",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements_storage.php",
+            "line": 13,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.300246,
+          "minimum_ms": 0.300246,
+          "median_ms": 0.300246,
+          "maximum_ms": 0.300246
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 14,
+            "function": "one"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 4.444678,
+          "minimum_ms": 0.138205,
+          "median_ms": 0.259371,
+          "maximum_ms": 0.819733
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 15,
+            "function": "one"
+          },
+          "count": 7,
+          "total_prepare_execute_ms": 3.158086,
+          "minimum_ms": 0.113965,
+          "median_ms": 0.388612,
+          "maximum_ms": 1.113784
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 19,
+          "total_prepare_execute_ms": 4.987949,
+          "minimum_ms": 0.115718,
+          "median_ms": 0.256902,
+          "maximum_ms": 0.483139
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "ea0d59ccab3ad162c62d8818f3da5fd93ae1013286eca8e710672073a5374d06",
+          "argument_free_callsite": {
+            "file": "app/plans/records.php",
+            "line": 46,
+            "function": "one"
+          },
+          "count": 16,
+          "total_prepare_execute_ms": 3.865158,
+          "minimum_ms": 0.131133,
+          "median_ms": 0.23078900000000002,
+          "maximum_ms": 0.481503
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b95a63b1cf8840be871e4328a50bc456fe2a8db89c05b925c0d23c2210802533",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_views.php",
+            "line": 15,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.380263,
+          "minimum_ms": 0.380263,
+          "median_ms": 0.380263,
+          "maximum_ms": 0.380263
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "87b30feda66926dc2db4023e0a3431c583e38b4b68782db6c298920558eabd23",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 93,
+            "function": "all"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 2.006812,
+          "minimum_ms": 0.603123,
+          "median_ms": 0.645604,
+          "maximum_ms": 0.758085
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e59abec8d586c9be41cf2a5a57da9de1ab0ebedd787442622eec8c533127a9be",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 95,
+            "function": "all"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 1.439574,
+          "minimum_ms": 0.221952,
+          "median_ms": 0.328419,
+          "maximum_ms": 0.889203
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "8e735e0cd44dd27d6880a2d69e472c2d60f4679a619dd0578747b67321b61699",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements.php",
+            "line": 13,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.7789079999999999,
+          "minimum_ms": 0.175004,
+          "median_ms": 0.38945399999999997,
+          "maximum_ms": 0.603904
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7eaaff106ef9eab279fdcad63558cbf8befcf241e94fdcceb76637987826a357",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_agreements.php",
+            "line": 13,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.530748,
+          "minimum_ms": 0.096012,
+          "median_ms": 0.265374,
+          "maximum_ms": 0.434736
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 48,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.1146880000000001,
+          "minimum_ms": 0.133224,
+          "median_ms": 0.5573440000000001,
+          "maximum_ms": 0.981464
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e73946a0e04c7507ea8cb48341334fdf770b12cfaf8f8b7b84722b33f199b1c4",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 50,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 1.9893939999999999,
+          "minimum_ms": 0.163592,
+          "median_ms": 0.9946969999999999,
+          "maximum_ms": 1.825802
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f5c0f846ef3a8e05a4d8a9941fad6f25d3d2b3eb363a849cf2e01723b6f6ef62",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 50,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.365456,
+          "minimum_ms": 0.126326,
+          "median_ms": 0.182728,
+          "maximum_ms": 0.23913
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 2.935597,
+          "minimum_ms": 0.146505,
+          "median_ms": 0.29620799999999997,
+          "maximum_ms": 0.47484
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fed14b3ea481ccee17c0c8320a9fdbdb5a70958fd050b2c31afdb0f101e9b456",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 52,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.493826,
+          "minimum_ms": 0.170869,
+          "median_ms": 0.246913,
+          "maximum_ms": 0.322957
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c69b2d1be496255f24b28185af14a3d081450bafbfef7f778c93b24cb287abf3",
+          "argument_free_callsite": {
+            "file": "app/providers/domain_renewal_dispatch_storage.php",
+            "line": 52,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.63524,
+          "minimum_ms": 0.129329,
+          "median_ms": 0.31762,
+          "maximum_ms": 0.505911
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "1da66b6f7b5db70271e4bbd4aa047cbdb434c974d755c878374c1870887e0ce7",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 64,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.90985,
+          "minimum_ms": 0.307657,
+          "median_ms": 0.454925,
+          "maximum_ms": 0.602193
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 30,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 2.427663,
+          "minimum_ms": 0.121256,
+          "median_ms": 0.241899,
+          "maximum_ms": 0.471512
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 32,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 5.557403,
+          "minimum_ms": 0.374601,
+          "median_ms": 0.5278860000000001,
+          "maximum_ms": 0.912509
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 7,
+            "function": "one"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 2.866591,
+          "minimum_ms": 0.143144,
+          "median_ms": 0.2252655,
+          "maximum_ms": 0.737017
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "9338874e214e3ff985c4dc3d645c0ef9c9cd65cf22c474ab24be7bf123477761",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 15,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.92795,
+          "minimum_ms": 0.346819,
+          "median_ms": 0.4596785,
+          "maximum_ms": 0.797285
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "e01832bb414c958510c8f15501da5ab794441d0ec93c0c78ed09d0cff86ed1ab",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 12.382968,
+          "minimum_ms": 0.565453,
+          "median_ms": 1.0089205,
+          "maximum_ms": 3.540727
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "4af2fd05bc527f926ba165a31bab795d243c9890c436661d01a14a24317ba71f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 2.8399229999999998,
+          "minimum_ms": 0.190832,
+          "median_ms": 0.2491065,
+          "maximum_ms": 0.557866
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "e01832bb414c958510c8f15501da5ab794441d0ec93c0c78ed09d0cff86ed1ab",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 8.592293,
+          "minimum_ms": 0.623548,
+          "median_ms": 0.8668374999999999,
+          "maximum_ms": 1.074205
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "4af2fd05bc527f926ba165a31bab795d243c9890c436661d01a14a24317ba71f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.719482,
+          "minimum_ms": 0.204514,
+          "median_ms": 0.3074515,
+          "maximum_ms": 0.877212
+        },
+        {
+          "category": "metadata.foreign_keys",
+          "query_sha256": "d4a38bc0a4b22cbeb698fdf42366855c32502e2e21a8c66fa65b23174eaaf3ea",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 22,
+            "function": "all"
+          },
+          "count": 40,
+          "total_prepare_execute_ms": 26.827162,
+          "minimum_ms": 0.384352,
+          "median_ms": 0.5942335,
+          "maximum_ms": 1.181964
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "02b0da54a685dff87a9c3c9d217dc632ad4f2210f482e42b5031dd6d8e63e06f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 9.441927,
+          "minimum_ms": 0.666248,
+          "median_ms": 0.8137989999999999,
+          "maximum_ms": 1.633142
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "e9e3af869a8b3adad383154703ad34f4923b389426af85e820b5cb038b8dc29f",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.499133,
+          "minimum_ms": 0.167278,
+          "median_ms": 0.3114075,
+          "maximum_ms": 0.798904
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "02b0da54a685dff87a9c3c9d217dc632ad4f2210f482e42b5031dd6d8e63e06f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 8.886311000000001,
+          "minimum_ms": 0.615769,
+          "median_ms": 0.8119055,
+          "maximum_ms": 1.589108
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "e9e3af869a8b3adad383154703ad34f4923b389426af85e820b5cb038b8dc29f",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.437218,
+          "minimum_ms": 0.197323,
+          "median_ms": 0.300914,
+          "maximum_ms": 1.072172
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 9.76625,
+          "minimum_ms": 0.690022,
+          "median_ms": 0.953308,
+          "maximum_ms": 1.477426
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 9.01454,
+          "minimum_ms": 0.628901,
+          "median_ms": 0.853829,
+          "maximum_ms": 1.30745
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "ef8e1295cf1544389b4d49f787af9b21b18fb4f815c367418b81544b0e95c92e",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.50817,
+          "minimum_ms": 0.186446,
+          "median_ms": 0.2511505,
+          "maximum_ms": 0.802363
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "8c40a210c02001c64ba6aa847ba829bbb9bd65e97c5797bcdeafc58f690eccd2",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 7.707029,
+          "minimum_ms": 0.609249,
+          "median_ms": 0.690708,
+          "maximum_ms": 1.19831
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "ef8e1295cf1544389b4d49f787af9b21b18fb4f815c367418b81544b0e95c92e",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.06482,
+          "minimum_ms": 0.197313,
+          "median_ms": 0.24706100000000003,
+          "maximum_ms": 0.543329
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_checkout_migrate.php",
+            "line": 19,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 10.041711,
+          "minimum_ms": 0.72086,
+          "median_ms": 0.994313,
+          "maximum_ms": 1.347375
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 5,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 9.21116,
+          "minimum_ms": 0.669527,
+          "median_ms": 0.7754734999999999,
+          "maximum_ms": 1.83492
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "13267a08f0adbd14885bf25fdb584cc32814272e4aae0896ea87a6bc8294e4b9",
+          "argument_free_callsite": {
+            "file": "database/schema/catalog_validate_schema.php",
+            "line": 13,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 4.092486,
+          "minimum_ms": 0.20832,
+          "median_ms": 0.3168295,
+          "maximum_ms": 0.731439
+        },
+        {
+          "category": "metadata.columns",
+          "query_sha256": "7e83cd9cdaac79e6566c5b3b902f29a414bab162ce045db5831167c443e8be3c",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 7,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 8.552434,
+          "minimum_ms": 0.595192,
+          "median_ms": 0.9166030000000001,
+          "maximum_ms": 0.956739
+        },
+        {
+          "category": "metadata.indexes",
+          "query_sha256": "13267a08f0adbd14885bf25fdb584cc32814272e4aae0896ea87a6bc8294e4b9",
+          "argument_free_callsite": {
+            "file": "database/migrations/recurring_billing_migrate.php",
+            "line": 14,
+            "function": "all"
+          },
+          "count": 10,
+          "total_prepare_execute_ms": 3.064728,
+          "minimum_ms": 0.229077,
+          "median_ms": 0.290048,
+          "maximum_ms": 0.406635
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "aecf76901f830249e4537557be1c0ab28b48c4ba4396adfa2a99cb3aec8ae6d0",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 109,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.522054,
+          "minimum_ms": 0.27183,
+          "median_ms": 0.318495,
+          "maximum_ms": 0.613234
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "9e662248967ea97e67f07033b83565d3ccac0601b3088c16bed5238710b33193",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 49,
+            "function": "one"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 4.087489,
+          "minimum_ms": 0.129303,
+          "median_ms": 0.2275895,
+          "maximum_ms": 0.949611
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "d27a87641c073415f66f00aff8d12355652ffe58ab0e56c66b45f142cc88893d",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 120,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 1.565796,
+          "minimum_ms": 0.170181,
+          "median_ms": 0.200984,
+          "maximum_ms": 0.575296
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "195f7d317a724470b879a482d265540ab2780987e3128b836419f0a05cc3cf38",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 121,
+            "function": "all"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 1.807239,
+          "minimum_ms": 0.157631,
+          "median_ms": 0.186763,
+          "maximum_ms": 0.570415
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "0ae4ba9f3ab60e21daf971aa16a0b23c06a8e854c575cde0da54f0192d5ff5a7",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 26,
+            "function": "one"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 5.201885,
+          "minimum_ms": 0.188537,
+          "median_ms": 0.30366950000000004,
+          "maximum_ms": 0.933314
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fb03273ba8a3edc264f45c487215ee71fa7b986740b0b3163932b583754cb996",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing.php",
+            "line": 87,
+            "function": "all"
+          },
+          "count": 12,
+          "total_prepare_execute_ms": 3.362342,
+          "minimum_ms": 0.16888,
+          "median_ms": 0.226072,
+          "maximum_ms": 0.600198
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "bfe9b0d8f03f93e1bee7127c0242c7b5081a407a8d84f52d00aa7a5b4de2587c",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 52,
+            "function": "all"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 3.42337,
+          "minimum_ms": 0.24311,
+          "median_ms": 0.401443,
+          "maximum_ms": 0.696562
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "652ce34234331ac4fcdfeb6088f44f51a686a533e771c147d5035cb952eb5b8b",
+          "argument_free_callsite": {
+            "file": "app/billing/recurring_billing_invoices.php",
+            "line": 94,
+            "function": "one"
+          },
+          "count": 6,
+          "total_prepare_execute_ms": 1.81032,
+          "minimum_ms": 0.149556,
+          "median_ms": 0.24419249999999998,
+          "maximum_ms": 0.618958
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "aecf76901f830249e4537557be1c0ab28b48c4ba4396adfa2a99cb3aec8ae6d0",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 72,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.8743970000000001,
+          "minimum_ms": 0.342324,
+          "median_ms": 0.43719850000000005,
+          "maximum_ms": 0.532073
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "f4b100573bb11e75b87ad5b47d41743069448f2c8bbc30f141eebb4f4f2f79d3",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 16,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.7671410000000001,
+          "minimum_ms": 0.381923,
+          "median_ms": 0.38357050000000004,
+          "maximum_ms": 0.385218
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2e26bb104ef6aeff987d830457010407893e144d3033f9953c004a12504e6b38",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.7559640000000001,
+          "minimum_ms": 0.312053,
+          "median_ms": 0.37798200000000004,
+          "maximum_ms": 0.443911
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "d28d281c5cc2818750762f89db2182d29c5a8ff176092e2f6ce38b45b0d855ff",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 22,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.616668,
+          "minimum_ms": 0.260756,
+          "median_ms": 0.308334,
+          "maximum_ms": 0.355912
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "853c556d65f6f96b0fdea14180dcf75220304fd7ebbfff1a5a2e85ac5c705184",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 24,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.674141,
+          "minimum_ms": 0.240006,
+          "median_ms": 0.3370705,
+          "maximum_ms": 0.434135
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 62,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.298963,
+          "minimum_ms": 0.139571,
+          "median_ms": 0.1494815,
+          "maximum_ms": 0.159392
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 63,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.36013700000000004,
+          "minimum_ms": 0.173882,
+          "median_ms": 0.18006850000000002,
+          "maximum_ms": 0.186255
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "53219fa08225e05dae4a0c65f033572b47f93792dc36653b5db0afca439086ad",
+          "argument_free_callsite": {
+            "file": "app/billing/ledger_fulfillment.php",
+            "line": 66,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.401718,
+          "minimum_ms": 0.200053,
+          "median_ms": 0.200859,
+          "maximum_ms": 0.201665
+        },
+        {
+          "category": "data.row_lock",
+          "query_sha256": "c4e09bcf00782a2dc2a27164b4133544e324a3fcf0844bc5ad0af8bed5f99d6a",
+          "argument_free_callsite": {
+            "file": "app/hosting/orders.php",
+            "line": 33,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.9437040000000001,
+          "minimum_ms": 0.268484,
+          "median_ms": 0.47185200000000005,
+          "maximum_ms": 0.67522
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c7c4eb06190885e49281587ee505c7d3d7b799f0043d38a0b829452a3bfd8f06",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_link_views.php",
+            "line": 16,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 1.102329,
+          "minimum_ms": 1.102329,
+          "median_ms": 1.102329,
+          "maximum_ms": 1.102329
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/storage.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 2.623347,
+          "minimum_ms": 0.119105,
+          "median_ms": 0.22295750000000003,
+          "maximum_ms": 0.99698
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/storage.php",
+            "line": 20,
+            "function": "one"
+          },
+          "count": 14,
+          "total_prepare_execute_ms": 3.658092,
+          "minimum_ms": 0.138772,
+          "median_ms": 0.21903250000000002,
+          "maximum_ms": 0.620624
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f8cc0c9d0bc0e902e996b3d85298820de16c9ee0bf20b9577110a340e19f8efb",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_link_views.php",
+            "line": 24,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.147157,
+          "minimum_ms": 0.147157,
+          "median_ms": 0.147157,
+          "maximum_ms": 0.147157
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "a783c4a571fd9cbac9b2e31e6c07b42a3b20bf69fbd5c6aa517d2da4397044ae",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 12,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.833221,
+          "minimum_ms": 0.132256,
+          "median_ms": 0.1529345,
+          "maximum_ms": 0.395096
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 191,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.434898,
+          "minimum_ms": 0.119251,
+          "median_ms": 0.217449,
+          "maximum_ms": 0.315647
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 194,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 1.247771,
+          "minimum_ms": 0.094424,
+          "median_ms": 0.1203745,
+          "maximum_ms": 0.286783
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 24,
+            "function": "one"
+          },
+          "count": 8,
+          "total_prepare_execute_ms": 1.9543409999999999,
+          "minimum_ms": 0.141061,
+          "median_ms": 0.245472,
+          "maximum_ms": 0.355398
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "2090885824e7a3fac622a13f095564c717234901a020adcdd0d370ba191a83d6",
+          "argument_free_callsite": {
+            "file": "app/hosting/catalog_offers_storage.php",
+            "line": 198,
+            "function": "query"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.406907,
+          "minimum_ms": 0.152143,
+          "median_ms": 0.2034535,
+          "maximum_ms": 0.254764
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 17,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 2.071144,
+          "minimum_ms": 0.101017,
+          "median_ms": 0.5544365,
+          "maximum_ms": 0.861254
+        },
+        {
+          "category": "metadata.tables",
+          "query_sha256": "2ba9c0d99971ea71b897841236ca723eb122af3595eb5030c3d8bb8be61c6782",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 18,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.480561,
+          "minimum_ms": 0.180335,
+          "median_ms": 0.3514645,
+          "maximum_ms": 0.597297
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "108c06d71b0cd2bd20ac8f6cc04d523347ff009ff751cac0cc97a37a5c1a44bf",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.031902,
+          "minimum_ms": 0.149484,
+          "median_ms": 0.179121,
+          "maximum_ms": 0.524176
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e58f028d7540d19639f4bb52959c3be84b88349300e4a8633d639284aad4497c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 22,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.594203,
+          "minimum_ms": 0.130478,
+          "median_ms": 0.201378,
+          "maximum_ms": 1.060969
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "fe10da72c197a6b99695fbf5ea0b783e9c433612847ecd9a3076a47fde6f988b",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 23,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.876969,
+          "minimum_ms": 0.10483,
+          "median_ms": 0.2478265,
+          "maximum_ms": 1.276486
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "e58f028d7540d19639f4bb52959c3be84b88349300e4a8633d639284aad4497c",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 24,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.285545,
+          "minimum_ms": 0.136654,
+          "median_ms": 0.31928500000000004,
+          "maximum_ms": 0.510321
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "a69bcb5656aa91f7bab05e31753034cf472f626758afd7e653589644edd6f904",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 26,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.552782,
+          "minimum_ms": 0.120576,
+          "median_ms": 0.22124349999999998,
+          "maximum_ms": 0.989719
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c6b125405fb42d183d3e789c200950bfd01bd764e658a541683d98eccabdd2a3",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 26,
+            "function": "query"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 1.341253,
+          "minimum_ms": 0.13413,
+          "median_ms": 0.299061,
+          "maximum_ms": 0.609001
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "014e19526a7729159d93bba7d1f8050a5ec31b945f5b65b9ec93cbfc5cea9c6f",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 154,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.254466,
+          "minimum_ms": 0.114665,
+          "median_ms": 0.127233,
+          "maximum_ms": 0.139801
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "63ad854d8dd52806c32a7beeb6d33433dd473187282f44a22bdca3f13ff9e841",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 45,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.737112,
+          "minimum_ms": 0.305161,
+          "median_ms": 0.368556,
+          "maximum_ms": 0.431951
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7debba2f94d8d0bedd4e47ae887896784bd3a57a2f4e054d989763c186757e0e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 53,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.516066,
+          "minimum_ms": 0.217973,
+          "median_ms": 0.258033,
+          "maximum_ms": 0.298093
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f20fc8d5e51567ba5863bd49f48fad0d4aa1b96b6d0d00f409ef1edcaeeb66b7",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 55,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.914066,
+          "minimum_ms": 0.445264,
+          "median_ms": 0.457033,
+          "maximum_ms": 0.468802
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/plan_catalog.php",
+            "line": 59,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.463206,
+          "minimum_ms": 0.135243,
+          "median_ms": 0.231603,
+          "maximum_ms": 0.327963
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "7debba2f94d8d0bedd4e47ae887896784bd3a57a2f4e054d989763c186757e0e",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 62,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.322855,
+          "minimum_ms": 0.112436,
+          "median_ms": 0.1614275,
+          "maximum_ms": 0.210419
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "6f3d4bc3c7364f513002a2beaae9cba3dc4ff609a9369735721d863189ad5ff3",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 48,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.8036190000000001,
+          "minimum_ms": 0.178402,
+          "median_ms": 0.40180950000000004,
+          "maximum_ms": 0.625217
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "8523ea58e1071fed38c7770669a893b5171b9f9e0c6743212bd6ad71052bbcf6",
+          "argument_free_callsite": {
+            "file": "app/hosting/records.php",
+            "line": 61,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.40826,
+          "minimum_ms": 0.154011,
+          "median_ms": 0.20413,
+          "maximum_ms": 0.254249
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "87b30feda66926dc2db4023e0a3431c583e38b4b68782db6c298920558eabd23",
+          "argument_free_callsite": {
+            "file": "app/hosting/order_links.php",
+            "line": 67,
+            "function": "all"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.364005,
+          "minimum_ms": 0.179113,
+          "median_ms": 0.1820025,
+          "maximum_ms": 0.184892
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 11,
+            "function": "one"
+          },
+          "count": 4,
+          "total_prepare_execute_ms": 0.590178,
+          "minimum_ms": 0.128952,
+          "median_ms": 0.1477665,
+          "maximum_ms": 0.165693
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "acd3bbfea76eb793b6f49a58b32c6eedc6e686b8616fa5c20d26d85a1eb0dff6",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 29,
+            "function": "one"
+          },
+          "count": 2,
+          "total_prepare_execute_ms": 0.31434399999999996,
+          "minimum_ms": 0.137426,
+          "median_ms": 0.15717199999999998,
+          "maximum_ms": 0.176918
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "c3749fadb5a8f0d8a6c5c0a6a93ceb82be30596eebc7f7f76f58e7a1cd667deb",
+          "argument_free_callsite": {
+            "file": "app/providers/settings.php",
+            "line": 40,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.203609,
+          "minimum_ms": 0.203609,
+          "median_ms": 0.203609,
+          "maximum_ms": 0.203609
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "f8cc0c9d0bc0e902e996b3d85298820de16c9ee0bf20b9577110a340e19f8efb",
+          "argument_free_callsite": {
+            "file": "app/hosting/fulfillment_views.php",
+            "line": 38,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.233736,
+          "minimum_ms": 0.233736,
+          "median_ms": 0.233736,
+          "maximum_ms": 0.233736
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b481d4932e86807b532ec571d4ebd8b08273252ca4d362975e9d8206794be5ac",
+          "argument_free_callsite": {
+            "file": "app/hosting/fulfillment_views.php",
+            "line": 14,
+            "function": "one"
+          },
+          "count": 3,
+          "total_prepare_execute_ms": 0.430817,
+          "minimum_ms": 0.120426,
+          "median_ms": 0.144609,
+          "maximum_ms": 0.165782
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/hosting/fulfillment_views.php",
+            "line": 17,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.140886,
+          "minimum_ms": 0.140886,
+          "median_ms": 0.140886,
+          "maximum_ms": 0.140886
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "database/migrations/provider_operations_migrate.php",
+            "line": 55,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.124918,
+          "minimum_ms": 0.124918,
+          "median_ms": 0.124918,
+          "maximum_ms": 0.124918
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "b481d4932e86807b532ec571d4ebd8b08273252ca4d362975e9d8206794be5ac",
+          "argument_free_callsite": {
+            "file": "app/hosting/fulfillment_views.php",
+            "line": 19,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.510097,
+          "minimum_ms": 0.510097,
+          "median_ms": 0.510097,
+          "maximum_ms": 0.510097
+        },
+        {
+          "category": "data.select",
+          "query_sha256": "38d24bad7018c4a8cea5ed373a107ca08a02da651f01d77ef21baa1fcede3e1e",
+          "argument_free_callsite": {
+            "file": "app/providers/inventory.php",
+            "line": 54,
+            "function": "one"
+          },
+          "count": 1,
+          "total_prepare_execute_ms": 0.097045,
+          "minimum_ms": 0.097045,
+          "median_ms": 0.097045,
+          "maximum_ms": 0.097045
+        }
+      ]
+    }
+  ]
+}

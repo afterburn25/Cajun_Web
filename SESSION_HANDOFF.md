@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Publish/review the isolated FK metadata component against primary84, then await the unchanged PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 native routes before outer composition. Local execution is bound to c453b0eb; the final helper-only forwarded-port correction is separately bound and was not used for a repeated browser run. Both owned diagnostic servers are stopped with data/evidence retained. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Continue the active 22-command local segment on frozen source `5b478528`, started at 23:34:35 UTC; at 23:40:50 its first two commands passed and command 3 was active. Preserve the interrupted and failed-recovery evidence. Publish reviewed source `77cdbc92` plus documentation from `be75116e` and this checkpoint to the existing integration lane after rechecking the remote head. The successful single-blob write is not a branch publication. Keep the separately tested Account/Notifications fixture correction separate until review and combination. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

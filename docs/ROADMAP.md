@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+This performance component promotes no feature requirement or completion percentage. Its repeated schema checks remain fresh, and targeted local evidence passes. Remaining gates are the exact component matrices, independent binding review and integration acceptance; the original hosted timeout is not declared resolved. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Keep PR #317's reviewed acceptance correction pending publication and complete acceptance. Local database recovery adds no completed product requirement: two resumed commands passed, while the full browser journey remains pending. The separate Account/Notifications correction passes 54/54 checks in its isolated PHP 8.3/MariaDB/Chromium run; hosted matrix, review and combination remain gates. No implemented/tested/integrated/released status is promoted from the interrupted primary run. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

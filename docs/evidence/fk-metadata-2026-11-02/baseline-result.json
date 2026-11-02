@@ -1,0 +1,23 @@
+{
+  "scope": "One corrected diagnostic comparison of the unchanged saved-mapping block, not full acceptance",
+  "passed": true,
+  "failure": null,
+  "checks": [
+    {
+      "name": "Prepare from saved mapping uses the current session without another owner-password field",
+      "passed": true
+    },
+    {
+      "name": "Prepare from saved mapping retains a nonempty CSRF field",
+      "passed": true
+    },
+    {
+      "name": "Chromium catalog selection prepares an existing hosting record",
+      "passed": true
+    }
+  ],
+  "external_request_attempts": [],
+  "elapsed_ms": 6257.146744,
+  "source_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "source_binding": "source-binding.json"
+}

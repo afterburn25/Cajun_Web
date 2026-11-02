@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Preserved the ineffective query candidates and the initial preassertion fixture failure. The corrected local tree passed 172 supplemental, 219 service-plan, 721 recurring and 3 browser checks. The two original native report prefixes remain exact. Independent review then corrected only the new helper’s forwarded-port assumption; immutable workflow topology verifies that delta without another browser run. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 The old runner was absent after its last output at 23:15:27 UTC. A retained physical snapshot and scoped reset preceded an unchanged StackCP test failure with MariaDB 1050; both remain evidence. Logical restore retained 3,973 completed tables plus 78 successful inventory-retry tables. The replacement segment started at 23:34:35; its first two commands passed 103/103 and 49/49 by this checkpoint. GitHub successfully stored reviewed diagnostic blob `669e4a8f82ac831423479bc9cbfdc669a0071cb4`; branch publication remained pending. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

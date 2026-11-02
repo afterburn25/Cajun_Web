@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Unreleased component: scope the two service-plan/recurring foreign-key metadata inputs before joining, while preserving full constraint identity and every existing validation. Add portable native cases after existing assertions, retain a separate local cross-schema supplement, and correct its CI port-forwarding identity assumption. No cache, permission change, assertion removal or timeout increase is included. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Record the interrupted local runner, retained database snapshots, original StackCP recreation failure, and logical restoration of 4,051 completed synthetic fixture tables. The resumed original StackCP commands pass 103 and 49 checks respectively at this checkpoint. This documentation/evidence update changes no product code or acceptance assertion. GitHub accepted one exact reviewed diagnostic blob; candidate publication, full acceptance, main integration and release remain pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

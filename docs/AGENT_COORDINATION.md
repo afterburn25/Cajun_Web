@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+The FK metadata component is isolated on review/fk-metadata-scope-20261102 from exact primary84. Its shipping change is limited to two metadata calls/comments and canonical inventory refresh. Root owns publication/composition; the local runtime on 33316 is stopped, original 33314 is preserved, and no other worker source or runtime was changed. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 # Current coordination - Devin sole-owner execution
 
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication

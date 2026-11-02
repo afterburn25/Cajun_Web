@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+This is an unreleased component checkpoint on exact primary84. Local query/native/browser evidence and a source-reviewed fixture correction do not replace maintained-matrix acceptance, reviewed main integration, exact-main verification or publication checks. No release or live deployment is established by this record. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Latest observed publication remains v1.25.0. Reviewed local source `77cdbc92`, preceding docs `be75116e` and this recovery checkpoint await candidate publication; one successful GitHub blob write is not a release or branch integration. Segmented native passes on frozen `5b478528` and the separate Account/Notifications 54/54 local result do not replace clean current-source hosted acceptance, required review, exact-main verification or immutable asset checks. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

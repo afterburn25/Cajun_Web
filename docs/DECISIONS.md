@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+Use a filtered DISTINCT relation retaining complete constraint identity to keep metadata input scoped without merging separate constraints or outer column rows. Reject redundant predicates that did not alter the observed plan. Preserve current schema/authority checks and the original hosted failure; qualify the two local instrumented observations. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Preserve interrupted physical/SQL fixtures and the failed recovery before restoring readable completed fixtures into a fresh local database on the same port. Exclude only the original failed `pciu_` fixture and partial `sca_` fixture; explicitly retain the successful `pciu_retry_` tables. Resume unchanged native commands with their original assertions. A successful GitHub blob creation establishes that bounded write only; it does not explain earlier bulk errors or establish a published branch update. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

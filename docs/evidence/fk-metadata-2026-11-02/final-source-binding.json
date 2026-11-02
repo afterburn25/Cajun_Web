@@ -1,0 +1,44 @@
+{
+  "base_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "executed_local_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "final_component_commit": "Identified by the enclosing Git commit; not inferred from this local run",
+  "local_run_and_final_fixture_distinguished": true,
+  "final_helper_only_difference": "Port-forwarding-aware environment identity check and separately recorded port values; no product change or browser rerun",
+  "files": [
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "executed_sha256": "301208ac8439e037a2f527961181e572144127e4a24fa9bb9301ab348528b7f9",
+      "final_sha256": "301208ac8439e037a2f527961181e572144127e4a24fa9bb9301ab348528b7f9"
+    },
+    {
+      "path": "site/database/migrations/service_plans_migrate.php",
+      "executed_sha256": "e85836146e1b4a15656fe22e10e64c2e8845d5b6e797571a288f7171e90c6b15",
+      "final_sha256": "e85836146e1b4a15656fe22e10e64c2e8845d5b6e797571a288f7171e90c6b15"
+    },
+    {
+      "path": "site/install/inventory.generated.php",
+      "executed_sha256": "668be5ac0a961539bc7f7b37065f078b0a93e32f884b7c74ee739f2d685d3bba",
+      "final_sha256": "668be5ac0a961539bc7f7b37065f078b0a93e32f884b7c74ee739f2d685d3bba"
+    },
+    {
+      "path": "tests/foreign_key_metadata_native.php",
+      "executed_sha256": "09b9d1093ca74aa224d11bc4cba7dc8e58388c38bcc3100df36784df13efb3ec",
+      "final_sha256": "09b9d1093ca74aa224d11bc4cba7dc8e58388c38bcc3100df36784df13efb3ec"
+    },
+    {
+      "path": "tests/foreign_key_metadata_native_cases.php",
+      "executed_sha256": "3f1b9170cd64710dbd28f326579286bd65b8f188d742b586c73faa4da97f9df4",
+      "final_sha256": "d67295f7d85c1b5b1acf51421ec5a0179011beb54af8162ca1a59c5d5ba206fb"
+    },
+    {
+      "path": "tests/recurring_billing_native.php",
+      "executed_sha256": "174418e3f057224efd8b40787beb870d997d0db35242a0f5a59f4b67e7e24849",
+      "final_sha256": "174418e3f057224efd8b40787beb870d997d0db35242a0f5a59f4b67e7e24849"
+    },
+    {
+      "path": "tests/service_plans_native.php",
+      "executed_sha256": "2a9d10bb7e9562551c68c46adc3f89ac035bf92a6f63b64a896a18404ece2bd3",
+      "final_sha256": "2a9d10bb7e9562551c68c46adc3f89ac035bf92a6f63b64a896a18404ece2bd3"
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+NEEDS CORRECTION OR ACCEPTANCE: the isolated primary84 FK metadata component is implemented and locally checked; final forwarded-port fixture handling is source reviewed. Await the unchanged component matrices and finite source/evidence review, then compose the exact published head. It is not reported merged, released or fully accepted. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 PR #317: reviewed local correction `77cdbc92` plus docs `be75116e` and this checkpoint await publication/current-source checks; the primary full browser run is still pending. Account/Notifications: base `fc14b841` plus its isolated fixture correction passes 54/54 local checks, with its own review, publication and hosted acceptance pending; it is not merged into the primary candidate. Main and PR #317 were not updated by the successful diagnostic-blob save. Preserve both lanes and combine only through reviewed integration. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

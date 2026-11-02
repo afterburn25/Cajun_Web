@@ -1,0 +1,57 @@
+{
+  "scope": "Two single instrumented local observations; differing host time and other-schema population, not controlled causal or hosted performance proof",
+  "original_source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "corrected_source_tree": "c453b0eb96955e3a09cbb1fee4f784d170dfa2fb",
+  "same_browser_source_sha256": true,
+  "same_selected_ast_sha256": true,
+  "same_observer_sha256": true,
+  "original_browser_block_ms": 8922.066342,
+  "corrected_browser_block_ms": 4348.552336,
+  "original_query_count": 3382,
+  "corrected_query_count": 3382,
+  "requests": [
+    {
+      "method": "GET",
+      "status": 200,
+      "original_wall_ms": 2940.197324,
+      "corrected_wall_ms": 484.398745,
+      "original_queries": 886,
+      "corrected_queries": 886,
+      "original_schema_stage_calls": 14,
+      "corrected_schema_stage_calls": 14,
+      "original_fk_metadata_ms": 1137.0194329999995,
+      "corrected_fk_metadata_ms": 40.87362
+    },
+    {
+      "method": "POST",
+      "status": 303,
+      "original_wall_ms": 1513.439697,
+      "corrected_wall_ms": 803.143741,
+      "original_queries": 1195,
+      "corrected_queries": 1195,
+      "original_schema_stage_calls": 15,
+      "corrected_schema_stage_calls": 15,
+      "original_fk_metadata_ms": 581.2127439999999,
+      "corrected_fk_metadata_ms": 73.93146799999997
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "original_wall_ms": 1286.70136,
+      "corrected_wall_ms": 753.191463,
+      "original_queries": 1301,
+      "corrected_queries": 1301,
+      "original_schema_stage_calls": 18,
+      "corrected_schema_stage_calls": 18,
+      "original_fk_metadata_ms": 528.7750130000002,
+      "corrected_fk_metadata_ms": 92.683493
+    }
+  ],
+  "limitations": [
+    "Neither local observation reproduced the original hosted timeout.",
+    "Both selected application fixtures have94 tables; the corrected server additionally retains the explicitly separate synthetic native/foreign schemas.",
+    "Native source treec453b0eb has the local-only port equality assertion; the later helper-only forwarding correction is separately bound and does not alter application bytes.",
+    "Local PHP8.3.6/MariaDB10.11.14/Playwright1.56.0/Chromium141 differ from the hosted database/browser versions.",
+    "Timers and argument-free stacks add diagnostic overhead; no uninstrumented or repeated benchmark was run."
+  ]
+}

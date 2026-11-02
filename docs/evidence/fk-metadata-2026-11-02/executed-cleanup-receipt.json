@@ -1,0 +1,17 @@
+{
+  "completed_at_utc": "2026-11-02T03:00:35.879975+00:00",
+  "owned_database_port": 33316,
+  "owned_database_pid": 129190,
+  "identity_verified_before_shutdown": true,
+  "owned_table_counts_before_shutdown": {
+    "cwp_fk_metadata_foreign": 6,
+    "cwp_fk_metadata_test": 184,
+    "cwp_test": 651
+  },
+  "shutdown_exit_code": 0,
+  "owned_process_terminal_state": "absent",
+  "datadir_preserved": true,
+  "http8092_listener_absent": true,
+  "other_server_accessed_or_changed": false,
+  "original33314_unchanged": true
+}

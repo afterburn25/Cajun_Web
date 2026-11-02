@@ -1,3 +1,7 @@
+## 2026-11-02 — foreign-key metadata component checkpoint
+
+The exact-primary84 component narrows two repeated foreign-key metadata queries. Local results are 172/172 metadata, 219/219 service-plan native, 721/721 recurring native, and 3/3 for the saved-mapping browser block. The original hosted timeout remains preserved. Maintained matrices and integration acceptance remain pending; no full-site, merge, release or deployment claim is made. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Reviewed correction `77cdbc92` and preceding documentation `be75116e` remain pending publication to PR #317. A GitHub blob save succeeded with the exact reviewed object; no branch update or merge is implied. The interrupted local database and failed recovery are preserved. A fresh isolated database restored 4,051 completed fixture tables. At 23:40:50 UTC the remaining native segment had passed its first two commands (103/103 and 49/49 checks), with command 3 active; full browser acceptance remained pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

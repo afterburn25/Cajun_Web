@@ -1,0 +1,1941 @@
+{
+    "scope": "Read-only original-versus-filtered-distinct-relation metadata comparison; no product edit",
+    "source": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "snapshot": "owned-94-table-baseline",
+    "database_port": 33314,
+    "database_version": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+    "database_table_count": 94,
+    "prefix": "ci_",
+    "warmup_pairs": 1,
+    "measured_pairs": 7,
+    "timing_order": "Alternating original\/candidate then candidate\/original by pair; preparation and execution use native PDO prepares",
+    "tables": [
+        {
+            "table": "ci_service_plans",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_plans' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_plans' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_service_plans'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 23.319883,
+                            "fetch_ms": 0.018927,
+                            "total_ms": 23.33881
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.893491,
+                            "fetch_ms": 0.001785,
+                            "total_ms": 0.895276
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.598951,
+                            "fetch_ms": 0.001164,
+                            "total_ms": 0.600115
+                        },
+                        "original": {
+                            "prepare_execute_ms": 9.283879,
+                            "fetch_ms": 0.003871,
+                            "total_ms": 9.28775
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.373982,
+                            "fetch_ms": 0.003562,
+                            "total_ms": 7.377544
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.481347,
+                            "fetch_ms": 0.0012,
+                            "total_ms": 0.482547
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.332026,
+                            "fetch_ms": 0.001031,
+                            "total_ms": 0.333057
+                        },
+                        "original": {
+                            "prepare_execute_ms": 8.212599,
+                            "fetch_ms": 0.002568,
+                            "total_ms": 8.215167
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.498318,
+                            "fetch_ms": 0.003419,
+                            "total_ms": 7.501737
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.421246,
+                            "fetch_ms": 0.002032,
+                            "total_ms": 0.423278
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.552612,
+                            "fetch_ms": 0.00112,
+                            "total_ms": 0.553732
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.747428,
+                            "fetch_ms": 0.002733,
+                            "total_ms": 6.750161
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.24916,
+                            "fetch_ms": 0.002755,
+                            "total_ms": 7.251915
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.916342,
+                            "fetch_ms": 0.001607,
+                            "total_ms": 0.917949
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "created_by",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 1,
+            "sorted_rows_sha256": "bd92e2056dc201f03e036f5a3489ec8fdecd60b0564d6157c3098f9be16f5d78"
+        },
+        {
+            "table": "ci_service_plan_events",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_plan_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_plan_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_service_plan_events'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 9.966446,
+                            "fetch_ms": 0.003966,
+                            "total_ms": 9.970412
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.925557,
+                            "fetch_ms": 0.001946,
+                            "total_ms": 0.927503
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.797361,
+                            "fetch_ms": 0.00259,
+                            "total_ms": 0.799951
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.43066,
+                            "fetch_ms": 0.026627,
+                            "total_ms": 6.457287
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.82909,
+                            "fetch_ms": 0.003097,
+                            "total_ms": 6.832187
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.418318,
+                            "fetch_ms": 0.001431,
+                            "total_ms": 0.419749
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.618932,
+                            "fetch_ms": 0.00156,
+                            "total_ms": 0.620492
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.858097,
+                            "fetch_ms": 0.004113,
+                            "total_ms": 6.86221
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.079328,
+                            "fetch_ms": 0.004033,
+                            "total_ms": 8.083361
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.551195,
+                            "fetch_ms": 0.001522,
+                            "total_ms": 0.552717
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.429358,
+                            "fetch_ms": 0.001279,
+                            "total_ms": 0.430637
+                        },
+                        "original": {
+                            "prepare_execute_ms": 7.045843,
+                            "fetch_ms": 0.003594,
+                            "total_ms": 7.049437
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.498528,
+                            "fetch_ms": 0.002967,
+                            "total_ms": 7.501495
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.491852,
+                            "fetch_ms": 0.001458,
+                            "total_ms": 0.49331
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "actor_id",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "plan_id",
+                    "REFERENCED_TABLE_NAME": "ci_service_plans",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 2,
+            "sorted_rows_sha256": "0e1d540dd79cf7fc16b90ede5e67df01088ae0c2d8ef37adb8b47f45f0e28c50"
+        },
+        {
+            "table": "ci_service_subscriptions",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_subscriptions' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_subscriptions' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_service_subscriptions'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 5.767579,
+                            "fetch_ms": 0.003072,
+                            "total_ms": 5.770651
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.488414,
+                            "fetch_ms": 0.00258,
+                            "total_ms": 0.490994
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.414885,
+                            "fetch_ms": 0.001984,
+                            "total_ms": 0.416869
+                        },
+                        "original": {
+                            "prepare_execute_ms": 7.310031,
+                            "fetch_ms": 0.003503,
+                            "total_ms": 7.313534
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.448856,
+                            "fetch_ms": 0.005206,
+                            "total_ms": 6.454062
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.53581,
+                            "fetch_ms": 0.002802,
+                            "total_ms": 0.538612
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.589889,
+                            "fetch_ms": 0.001798,
+                            "total_ms": 0.591687
+                        },
+                        "original": {
+                            "prepare_execute_ms": 7.635713,
+                            "fetch_ms": 0.004128,
+                            "total_ms": 7.639841
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.00394,
+                            "fetch_ms": 0.015085,
+                            "total_ms": 7.019025
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.094359,
+                            "fetch_ms": 0.001919,
+                            "total_ms": 1.096278
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.648818,
+                            "fetch_ms": 0.001991,
+                            "total_ms": 0.650809
+                        },
+                        "original": {
+                            "prepare_execute_ms": 13.78063,
+                            "fetch_ms": 0.004952,
+                            "total_ms": 13.785582
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.655443,
+                            "fetch_ms": 0.003979,
+                            "total_ms": 8.659422
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.827583,
+                            "fetch_ms": 0.036855,
+                            "total_ms": 0.864438
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "client_id",
+                    "REFERENCED_TABLE_NAME": "ci_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "created_by",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "plan_id",
+                    "REFERENCED_TABLE_NAME": "ci_service_plans",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "a7ffa5260e18bc93e3e58fb186374e2b8f49634b84c4a956de72009520f7bcbf"
+        },
+        {
+            "table": "ci_service_subscription_events",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_subscription_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_service_subscription_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_service_subscription_events'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 5.633409,
+                            "fetch_ms": 0.005085,
+                            "total_ms": 5.638494
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.608471,
+                            "fetch_ms": 0.002357,
+                            "total_ms": 0.610828
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.524851,
+                            "fetch_ms": 0.002164,
+                            "total_ms": 0.527015
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.453519,
+                            "fetch_ms": 0.004385,
+                            "total_ms": 6.457904
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.62067,
+                            "fetch_ms": 0.003937,
+                            "total_ms": 8.624607
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.944503,
+                            "fetch_ms": 0.001778,
+                            "total_ms": 0.946281
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.411003,
+                            "fetch_ms": 0.001613,
+                            "total_ms": 0.412616
+                        },
+                        "original": {
+                            "prepare_execute_ms": 9.579299,
+                            "fetch_ms": 0.004094,
+                            "total_ms": 9.583393
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.289781,
+                            "fetch_ms": 0.003753,
+                            "total_ms": 8.293534
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.598666,
+                            "fetch_ms": 0.002275,
+                            "total_ms": 0.600941
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.059766,
+                            "fetch_ms": 0.002649,
+                            "total_ms": 1.062415
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.852394,
+                            "fetch_ms": 0.004483,
+                            "total_ms": 6.856877
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 9.008405,
+                            "fetch_ms": 0.004763,
+                            "total_ms": 9.013168
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.879508,
+                            "fetch_ms": 0.001877,
+                            "total_ms": 0.881385
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "actor_client_id",
+                    "REFERENCED_TABLE_NAME": "ci_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "actor_staff_id",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "subscription_id",
+                    "REFERENCED_TABLE_NAME": "ci_service_subscriptions",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "7e4e4b2521835654228187679cdb523817ec19929bb09b6ecc1e1b54f5e7d0fe"
+        },
+        {
+            "table": "ci_recurring_billing_sources",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_sources' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_sources' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_recurring_billing_sources'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.48388,
+                            "fetch_ms": 0.003033,
+                            "total_ms": 8.486913
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.472831,
+                            "fetch_ms": 0.001433,
+                            "total_ms": 0.474264
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.511109,
+                            "fetch_ms": 0.001272,
+                            "total_ms": 0.512381
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.10837,
+                            "fetch_ms": 0.002717,
+                            "total_ms": 6.111087
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.494646,
+                            "fetch_ms": 0.00367,
+                            "total_ms": 8.498316
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.89573,
+                            "fetch_ms": 0.001932,
+                            "total_ms": 0.897662
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.372848,
+                            "fetch_ms": 0.001639,
+                            "total_ms": 0.374487
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.843523,
+                            "fetch_ms": 0.002838,
+                            "total_ms": 6.846361
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.201822,
+                            "fetch_ms": 0.003525,
+                            "total_ms": 6.205347
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.518624,
+                            "fetch_ms": 0.002412,
+                            "total_ms": 0.521036
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.459157,
+                            "fetch_ms": 0.006663,
+                            "total_ms": 0.46582
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.25033,
+                            "fetch_ms": 0.060451,
+                            "total_ms": 6.310781
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.951937,
+                            "fetch_ms": 0.003572,
+                            "total_ms": 7.955509
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.556559,
+                            "fetch_ms": 0.001481,
+                            "total_ms": 0.55804
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "id",
+                    "REFERENCED_TABLE_NAME": "ci_service_subscriptions",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 1,
+            "sorted_rows_sha256": "a6b7d734f33f7b83f49596a44bae902efb9519781d1370cf75a7868be15227b7"
+        },
+        {
+            "table": "ci_recurring_billing_schedules",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_schedules' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_schedules' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_recurring_billing_schedules'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.974613,
+                            "fetch_ms": 0.005939,
+                            "total_ms": 7.980552
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.664538,
+                            "fetch_ms": 0.002888,
+                            "total_ms": 0.667426
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.047232,
+                            "fetch_ms": 0.004882,
+                            "total_ms": 1.052114
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.859866,
+                            "fetch_ms": 0.004549,
+                            "total_ms": 6.864415
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.001463,
+                            "fetch_ms": 0.005215,
+                            "total_ms": 8.006678
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.939289,
+                            "fetch_ms": 0.00447,
+                            "total_ms": 0.943759
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.427338,
+                            "fetch_ms": 0.002537,
+                            "total_ms": 0.429875
+                        },
+                        "original": {
+                            "prepare_execute_ms": 8.006654,
+                            "fetch_ms": 0.004625,
+                            "total_ms": 8.011279
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.451889,
+                            "fetch_ms": 0.005002,
+                            "total_ms": 6.456891
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.767685,
+                            "fetch_ms": 0.003118,
+                            "total_ms": 0.770803
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.952814,
+                            "fetch_ms": 0.003,
+                            "total_ms": 0.955814
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.468518,
+                            "fetch_ms": 0.005339,
+                            "total_ms": 6.473857
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.064564,
+                            "fetch_ms": 0.003977,
+                            "total_ms": 6.068541
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.464735,
+                            "fetch_ms": 0.013244,
+                            "total_ms": 0.477979
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "client_id",
+                    "REFERENCED_TABLE_NAME": "ci_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "created_by",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "job_id",
+                    "REFERENCED_TABLE_NAME": "ci_studio_jobs",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "subscription_id",
+                    "REFERENCED_TABLE_NAME": "ci_recurring_billing_sources",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 4,
+            "sorted_rows_sha256": "276cf67d96940d8e784998116bfe358bae22b65b4a0961a352c49a71efd05265"
+        },
+        {
+            "table": "ci_recurring_billing_events",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_events' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_recurring_billing_events'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 5.524265,
+                            "fetch_ms": 0.004442,
+                            "total_ms": 5.528707
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.508112,
+                            "fetch_ms": 0.002377,
+                            "total_ms": 0.510489
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.417956,
+                            "fetch_ms": 0.002631,
+                            "total_ms": 0.420587
+                        },
+                        "original": {
+                            "prepare_execute_ms": 5.937904,
+                            "fetch_ms": 0.003356,
+                            "total_ms": 5.94126
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.430171,
+                            "fetch_ms": 0.003803,
+                            "total_ms": 6.433974
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.775678,
+                            "fetch_ms": 0.001892,
+                            "total_ms": 0.77757
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.500073,
+                            "fetch_ms": 0.001517,
+                            "total_ms": 0.50159
+                        },
+                        "original": {
+                            "prepare_execute_ms": 10.113998,
+                            "fetch_ms": 0.005141,
+                            "total_ms": 10.119139
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 9.874106,
+                            "fetch_ms": 0.005015,
+                            "total_ms": 9.879121
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.610285,
+                            "fetch_ms": 0.002543,
+                            "total_ms": 0.612828
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.66738,
+                            "fetch_ms": 0.046812,
+                            "total_ms": 0.714192
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.34885,
+                            "fetch_ms": 0.003385,
+                            "total_ms": 6.352235
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 8.37585,
+                            "fetch_ms": 0.004814,
+                            "total_ms": 8.380664
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.838747,
+                            "fetch_ms": 0.001737,
+                            "total_ms": 0.840484
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "actor_client_id",
+                    "REFERENCED_TABLE_NAME": "ci_studio_clients",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "actor_staff_id",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "schedule_id",
+                    "REFERENCED_TABLE_NAME": "ci_recurring_billing_schedules",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "26bdf165633d3e8b2a9bb96a8d5f0a6861e83231c8a0b8ab1e6f01fdd20ef3b7"
+        },
+        {
+            "table": "ci_recurring_billing_invoices",
+            "plans": {
+                "original": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "SIMPLE",
+                            "table": "r",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": null,
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned all databases; Using join buffer (flat, BNL join)"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_invoices' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"block-nl-join\": {\n          \"table\": {\n            \"table_name\": \"r\",\n            \"access_type\": \"ALL\",\n            \"open_full_table\": true,\n            \"scanned_databases\": \"all\"\n          },\n          \"buffer_type\": \"flat\",\n          \"buffer_size\": \"14Kb\",\n          \"join_type\": \"BNL\",\n          \"attached_condition\": \"r.`CONSTRAINT_SCHEMA` = k.`CONSTRAINT_SCHEMA` and r.`CONSTRAINT_NAME` = k.`CONSTRAINT_NAME` and r.`TABLE_NAME` = k.`TABLE_NAME`\"\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                },
+                "filtered_distinct_relation": {
+                    "tabular": [
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "k",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "TABLE_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases"
+                        },
+                        {
+                            "id": 1,
+                            "select_type": "PRIMARY",
+                            "table": "<derived2>",
+                            "type": "ref",
+                            "possible_keys": "key0",
+                            "key": "key0",
+                            "key_len": "582",
+                            "ref": "information_schema.k.CONSTRAINT_SCHEMA,information_schema.k.CONSTRAINT_NAME,information_schema.k.TABLE_NAME",
+                            "rows": "2",
+                            "Extra": ""
+                        },
+                        {
+                            "id": 2,
+                            "select_type": "DERIVED",
+                            "table": "REFERENTIAL_CONSTRAINTS",
+                            "type": "ALL",
+                            "possible_keys": null,
+                            "key": "CONSTRAINT_SCHEMA,TABLE_NAME",
+                            "key_len": null,
+                            "ref": null,
+                            "rows": null,
+                            "Extra": "Using where; Open_full_table; Scanned 0 databases; Using temporary"
+                        }
+                    ],
+                    "json": [
+                        {
+                            "EXPLAIN": "{\n  \"query_block\": {\n    \"select_id\": 1,\n    \"nested_loop\": [\n      {\n        \"table\": {\n          \"table_name\": \"k\",\n          \"access_type\": \"ALL\",\n          \"key\": \"TABLE_SCHEMA,TABLE_NAME\",\n          \"attached_condition\": \"k.TABLE_SCHEMA = 'cwp_test' and k.`TABLE_NAME` = 'ci_recurring_billing_invoices' and k.REFERENCED_TABLE_NAME is not null\",\n          \"open_full_table\": true,\n          \"scanned_databases\": 0\n        }\n      },\n      {\n        \"table\": {\n          \"table_name\": \"<derived2>\",\n          \"access_type\": \"ref\",\n          \"possible_keys\": [\"key0\"],\n          \"key\": \"key0\",\n          \"key_length\": \"582\",\n          \"used_key_parts\": [\"CONSTRAINT_SCHEMA\", \"CONSTRAINT_NAME\", \"TABLE_NAME\"],\n          \"ref\": [\n            \"information_schema.k.CONSTRAINT_SCHEMA\",\n            \"information_schema.k.CONSTRAINT_NAME\",\n            \"information_schema.k.TABLE_NAME\"\n          ],\n          \"rows\": 2,\n          \"filtered\": 100,\n          \"materialized\": {\n            \"query_block\": {\n              \"select_id\": 2,\n              \"temporary_table\": {\n                \"nested_loop\": [\n                  {\n                    \"table\": {\n                      \"table_name\": \"REFERENTIAL_CONSTRAINTS\",\n                      \"access_type\": \"ALL\",\n                      \"key\": \"CONSTRAINT_SCHEMA,TABLE_NAME\",\n                      \"attached_condition\": \"information_schema.REFERENTIAL_CONSTRAINTS.`CONSTRAINT_SCHEMA` = 'cwp_test' and information_schema.REFERENTIAL_CONSTRAINTS.`TABLE_NAME` = 'ci_recurring_billing_invoices'\",\n                      \"open_full_table\": true,\n                      \"scanned_databases\": 0\n                    }\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}"
+                        }
+                    ]
+                }
+            },
+            "pairs": [
+                {
+                    "pair": 1,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 9.255171,
+                            "fetch_ms": 0.005293,
+                            "total_ms": 9.260464
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.167834,
+                            "fetch_ms": 0.004327,
+                            "total_ms": 1.172161
+                        }
+                    }
+                },
+                {
+                    "pair": 2,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.642518,
+                            "fetch_ms": 0.003241,
+                            "total_ms": 1.645759
+                        },
+                        "original": {
+                            "prepare_execute_ms": 8.085228,
+                            "fetch_ms": 0.003737,
+                            "total_ms": 8.088965
+                        }
+                    }
+                },
+                {
+                    "pair": 3,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 6.907953,
+                            "fetch_ms": 0.00483,
+                            "total_ms": 6.912783
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 1.112595,
+                            "fetch_ms": 0.002304,
+                            "total_ms": 1.114899
+                        }
+                    }
+                },
+                {
+                    "pair": 4,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.423287,
+                            "fetch_ms": 0.002479,
+                            "total_ms": 0.425766
+                        },
+                        "original": {
+                            "prepare_execute_ms": 8.648755,
+                            "fetch_ms": 0.004595,
+                            "total_ms": 8.65335
+                        }
+                    }
+                },
+                {
+                    "pair": 5,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 9.207173,
+                            "fetch_ms": 0.004945,
+                            "total_ms": 9.212118
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.629968,
+                            "fetch_ms": 0.001928,
+                            "total_ms": 0.631896
+                        }
+                    }
+                },
+                {
+                    "pair": 6,
+                    "order": [
+                        "filtered_distinct_relation",
+                        "original"
+                    ],
+                    "timings": {
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.650058,
+                            "fetch_ms": 0.001867,
+                            "total_ms": 0.651925
+                        },
+                        "original": {
+                            "prepare_execute_ms": 6.676805,
+                            "fetch_ms": 0.005825,
+                            "total_ms": 6.68263
+                        }
+                    }
+                },
+                {
+                    "pair": 7,
+                    "order": [
+                        "original",
+                        "filtered_distinct_relation"
+                    ],
+                    "timings": {
+                        "original": {
+                            "prepare_execute_ms": 7.147152,
+                            "fetch_ms": 0.003773,
+                            "total_ms": 7.150925
+                        },
+                        "filtered_distinct_relation": {
+                            "prepare_execute_ms": 0.561103,
+                            "fetch_ms": 0.001597,
+                            "total_ms": 0.5627
+                        }
+                    }
+                }
+            ],
+            "row_equality": true,
+            "rows": [
+                {
+                    "COLUMN_NAME": "invoice_id",
+                    "REFERENCED_TABLE_NAME": "ci_studio_invoices",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "schedule_id",
+                    "REFERENCED_TABLE_NAME": "ci_recurring_billing_schedules",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                },
+                {
+                    "COLUMN_NAME": "staff_id",
+                    "REFERENCED_TABLE_NAME": "ci_users",
+                    "REFERENCED_COLUMN_NAME": "id",
+                    "DELETE_RULE": "RESTRICT",
+                    "UPDATE_RULE": "RESTRICT"
+                }
+            ],
+            "row_count": 3,
+            "sorted_rows_sha256": "81d6c1d067de385dd2a76f836a7dfbccf56db306ff58b66836c1a699796a7c4c"
+        }
+    ],
+    "row_equality": true,
+    "started_at_utc": "2026-11-02T02:28:59Z",
+    "completed_at_utc": "2026-11-02T02:28:59Z"
+}
