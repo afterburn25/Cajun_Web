@@ -7,6 +7,7 @@ require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/mail/replies.php';
 require_once __DIR__.'/../site/app/mail/submissions.php';
 require_once __DIR__.'/../site/app/mail/submission_views.php';
+require_once __DIR__.'/current_owner_authority.php';
 use CajunWebPro\Foundation\MailCompose\{DraftContent,ReplyDraft,DraftOrigin};
 $prefix=getenv('CWP_TEST_PREFIX')?:'rpci_';if(!preg_match('/\Arp[a-z0-9_]{2,15}_\z/',$prefix))exit(2);
 $private=__DIR__.'/../test-runtime/'.$prefix.'private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
@@ -39,7 +40,7 @@ try{
     rp_actor(1);mail_accounts_migrate($password);mail_templates_migrate($password);mail_drafts_migrate($password);mail_messages_migrate($password);mail_submissions_migrate($password);
     $source=rp_account('Source mailbox');$sender=rp_account('Sending mailbox');$other=rp_account('Other sender');$key=file_get_contents($private.'/mail-master.key');
     rp_grant($source,1,true,true);rp_grant($sender,1,true,true);rp_grant($source,2,true,false);rp_grant($sender,2,false,true);rp_grant($other,2,false,true);rp_grant($source,3,true,true);rp_grant($sender,3,true,true);
-    rp_deny('Reply setup requires current owner password',fn()=>mail_replies_migrate('wrong'));
+    rp_deny('Reply setup refuses revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>mail_replies_migrate('')));
     rp_actor();rp_deny('Administrator grants do not confer reply setup',fn()=>mail_replies_migrate($password));rp_deny('Unprepared reply storage refuses lists',fn()=>mail_reply_drafts_list($sender));rp_actor(1);
     save_setting('mail_replies_schema_version','future');rp_deny('Future storage is not downgraded',fn()=>mail_replies_migrate($password));query('DELETE FROM '.table('settings').' WHERE name=?',['mail_replies_schema_version']);
     foreach(mail_replies_schema($prefix) as $sql)db()->exec($sql);
