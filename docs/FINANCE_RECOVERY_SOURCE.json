@@ -16,7 +16,7 @@
     "site/database/schema/license_finance_recovery_schema.php",
     "site/install/inventory.generated.php"
   ],
-  "verifier_sha256": "73ed103d3564b2112d5fe4fd80ff22e7128d8d254f843e53818dc24acaf6e2ed",
+  "verifier_sha256": "5e88dbb7062314e70ad289558c05e36512df483b5baba1dbe7aac5272e17b9e7",
   "files": {
     "site/admin/views/studio/licenses.php": {
       "before_sha256": "ecb1ed274ab43b72a442f288d107e4def377b7f3cdf87db8010d112bf17e055a",
@@ -1270,6 +1270,8 @@
     "docs/finance-recovery-evidence/review-checkpoints/finance-recovery-final-independent-review.md": "c20b15263d66a2f6bf6af4aea3679020f4b1f6f9aef9774cbbc31837436c6f3f",
     "docs/finance-recovery-evidence/review-checkpoints/finance-recovery-guard-chain-review.json": "894fcf0c99d0457379d364ad5c42e7b176bdea77fb5611fa57dff826250a281f",
     "docs/finance-recovery-evidence/review-checkpoints/finance-recovery-guard-chain-review.md": "ae2a522d88b0c0f1e03d89d9d35a719ff641fa4eef82fd6adf8ff2fc5880ba63",
+    "docs/finance-recovery-evidence/review-checkpoints/primary-finance-blocking-comments-extended.json": "9aa9b77cf3ba94c5fd066037b42c99313caf4a8323a223c6a610a62c9aa7e005",
+    "docs/finance-recovery-evidence/review-checkpoints/primary-finance-blocking-comments.json": "e841ef56df313db3a8918eefb9c986c3f8910b448957e8e9d5dda61a5ff1a7db",
     "docs/finance-recovery-evidence/review-checkpoints/primary-finance-review.json": "8c6eeeb25b0960d9a1570d48aec891324df9eaa5cd8c8e9412333ba3c0b199c7",
     "docs/finance-recovery-evidence/review-checkpoints/primary-finance-review.md": "f79433e6e29941d8203378f47f3cc347bbef88b354946077173b70228ac1c2a7",
     "docs/finance-recovery-evidence/safety-first/execution.json": "36b57763d3e0c41abae1718bad6f6f6691c6611e0636fcc557f2fa05ebb3ff07",

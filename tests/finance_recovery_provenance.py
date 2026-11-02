@@ -916,6 +916,8 @@ ADDED = {'docs/FINANCE_RECOVERY_CORRECTION.md': '5773f6fb9fcbfdb14a5f713ade6f27d
  'docs/finance-recovery-evidence/review-checkpoints/finance-recovery-final-independent-review.md': 'c20b15263d66a2f6bf6af4aea3679020f4b1f6f9aef9774cbbc31837436c6f3f',
  'docs/finance-recovery-evidence/review-checkpoints/finance-recovery-guard-chain-review.json': '894fcf0c99d0457379d364ad5c42e7b176bdea77fb5611fa57dff826250a281f',
  'docs/finance-recovery-evidence/review-checkpoints/finance-recovery-guard-chain-review.md': 'ae2a522d88b0c0f1e03d89d9d35a719ff641fa4eef82fd6adf8ff2fc5880ba63',
+ 'docs/finance-recovery-evidence/review-checkpoints/primary-finance-blocking-comments-extended.json': '9aa9b77cf3ba94c5fd066037b42c99313caf4a8323a223c6a610a62c9aa7e005',
+ 'docs/finance-recovery-evidence/review-checkpoints/primary-finance-blocking-comments.json': 'e841ef56df313db3a8918eefb9c986c3f8910b448957e8e9d5dda61a5ff1a7db',
  'docs/finance-recovery-evidence/review-checkpoints/primary-finance-review.json': '8c6eeeb25b0960d9a1570d48aec891324df9eaa5cd8c8e9412333ba3c0b199c7',
  'docs/finance-recovery-evidence/review-checkpoints/primary-finance-review.md': 'f79433e6e29941d8203378f47f3cc347bbef88b354946077173b70228ac1c2a7',
  'docs/finance-recovery-evidence/safety-first/execution.json': '36b57763d3e0c41abae1718bad6f6f6691c6611e0636fcc557f2fa05ebb3ff07',
