@@ -1,3 +1,13 @@
+## 2026-11-02 — PR #323 needs the reviewed settings correction
+
+| Candidate | State | Next action |
+| --- | --- | --- |
+| Draft PR #323 at `3cc10c1` | Four focused lanes passed; independently confirmed stale settings defect blocks acceptance of that behavior | Preserve the passing pre-fix checkpoint and original failures. |
+| `review/notification-pause-guard-20261102` | Two-module correction; 89/89 local native checks and retained source proofs pass; final frozen-tree review pending | Review, commit and run clean admission, then update the existing PR #323 source branch once through its normal event. |
+| PR #317 and main | Unchanged by this correction task | Preserve their separate acceptance and integration gates. |
+
+[Exact correction and evidence](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md). Neither local source proof nor the older passing matrix is corrected-source hosted/full acceptance or a main/release result.
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 Successful GitHub writes supersede the earlier publication blocker; the cause of the earlier connection/UI failure remains unknown. Preserve the old records below as historical evidence.

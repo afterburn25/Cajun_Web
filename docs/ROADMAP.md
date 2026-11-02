@@ -1,3 +1,11 @@
+## 2026-11-02 — P-07 notification settings acceptance gap
+
+| Requirement | Implemented | Tested | Integrated | Released | Live |
+| --- | --- | --- | --- | --- | --- |
+| P-07 bounded notification settings correction | Two-module correction on isolated source from `3cc10c1` | Original SQL failure retained; corrected local native 89/89 and source proofs pass; corrected hosted matrix pending | Pending reviewed PR #323 update and main integration | Not released | Not deployed |
+
+The pre-fix focused matrix passed but did not cover stale request-cache pauses. Preserve its evidence and all original assertions; this correction does not complete the broader notification/monitoring roadmap. [Details and remaining gates](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 The PR #317 correction and separate Account/Notifications fixture are now published as `84e1f4c6` and `ebcbbb56`; the previous connection failure's cause remains unknown. The primary full run has started. The combined candidate's read-only source admission, preserved matrix equivalence and automated team review are complete locally.

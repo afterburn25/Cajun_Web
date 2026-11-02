@@ -25,6 +25,8 @@ function notification_outbox_pump(int $limit=3,?callable $transport=null):array 
 /** Callable is an internal transport boundary used by CLI tests, never supplied by HTTP fields. */
 function notification_outbox_one(string $id,?callable $transport=null):string {
     return staff_locked(function()use($id,$transport):string {
+        // Another request can commit a pause while this request waits for the mutex.
+        unset($GLOBALS['cwp_settings']);
         $owner=notification_owner();notifications_feed_require();
         if(setting('notification_email_enabled','0')!=='1'||setting('email_mode','disabled')==='disabled')return 'paused';
         $claim=staff_transaction(function()use($id,$owner):?array {

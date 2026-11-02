@@ -1,0 +1,94 @@
+{
+    "candidate": "3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "tree": "e93332563bc365ef15d0e6676ad644c466302d43",
+    "scope": "Actual published settings and notification dispatcher functions; synthetic persistence, authorized-owner\/mutex dependencies and a recording transport callback. No database\/server\/network\/mail execution.",
+    "finding_reproduced": true,
+    "sources_sha256": {
+        "site\/app\/settings\/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
+        "site\/app\/notifications\/outbox.php": "4ed8d00ed7a4588c918df625ada0f9d024847ff87635a964bb0efe8536c61969",
+        "site\/includes\/foundation\/notifications\/DeliveryAttempt.php": "8c60ba6f020814f7d843f7c5066ede54068da6de8af9decd980ad55592996908",
+        "site\/includes\/foundation\/notifications\/NotificationPreferences.php": "93ce3255c86a38b7f4107a795e7b7557bb17eeb5d33bf553daf47dbbfc5b213f"
+    },
+    "scenarios": [
+        {
+            "name": "enabled control",
+            "concurrent_committed_settings": {
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "request_cache_at_lock": {
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_at_lock_by_probe": false,
+            "actual_dispatch_result": "sent",
+            "synthetic_transport_calls": 1,
+            "settings_database_reads": 1,
+            "final_delivery_state": "sent"
+        },
+        {
+            "name": "concurrent owner pause",
+            "concurrent_committed_settings": {
+                "notification_email_enabled": "0",
+                "email_mode": "smtp"
+            },
+            "request_cache_at_lock": {
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_at_lock_by_probe": false,
+            "actual_dispatch_result": "sent",
+            "synthetic_transport_calls": 1,
+            "settings_database_reads": 1,
+            "final_delivery_state": "sent"
+        },
+        {
+            "name": "concurrent outbound disable",
+            "concurrent_committed_settings": {
+                "notification_email_enabled": "1",
+                "email_mode": "disabled"
+            },
+            "request_cache_at_lock": {
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_at_lock_by_probe": false,
+            "actual_dispatch_result": "sent",
+            "synthetic_transport_calls": 1,
+            "settings_database_reads": 1,
+            "final_delivery_state": "sent"
+        },
+        {
+            "name": "pause with fresh-settings boundary control",
+            "concurrent_committed_settings": {
+                "notification_email_enabled": "0",
+                "email_mode": "smtp"
+            },
+            "request_cache_at_lock": {
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_at_lock_by_probe": true,
+            "actual_dispatch_result": "paused",
+            "synthetic_transport_calls": 0,
+            "settings_database_reads": 2,
+            "final_delivery_state": "pending"
+        },
+        {
+            "name": "disable with fresh-settings boundary control",
+            "concurrent_committed_settings": {
+                "notification_email_enabled": "1",
+                "email_mode": "disabled"
+            },
+            "request_cache_at_lock": {
+                "notification_email_enabled": "1",
+                "email_mode": "smtp"
+            },
+            "cache_cleared_at_lock_by_probe": true,
+            "actual_dispatch_result": "paused",
+            "synthetic_transport_calls": 0,
+            "settings_database_reads": 2,
+            "final_delivery_state": "pending"
+        }
+    ]
+}

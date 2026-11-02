@@ -1,3 +1,9 @@
+## 2026-11-02 — freeze and review the notification settings correction
+
+Continue from isolated `review/notification-pause-guard-20261102`, based exactly on published `3cc10c144e2cd4e78ff5952cee9f60710a07a9ff`. Two notification modules and canonical inventory change shipping bytes. A bounded reversible proof preserves the original source receipts/builders/workflows and every existing native assertion. The original stale-pause SQL failure is retained; corrected native acceptance passes 89/89 on the new disposable port 33309, with no real mail.
+
+The published 3cc focused result remains the pre-fix checkpoint. Complete separate review of the frozen tree, commit and clean source admission, then update the existing draft PR #323 branch through its normal event. Do not publish the staging branch or move frozen PR #317. Corrected hosted/full combined acceptance, main verification and release remain gates. [Exact scope, reports and handoff](docs/NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 The GitHub publication blocker is cleared: PR #317 now holds reviewed source `84e1f4c6`, and the separate fixture branch holds `ebcbbb56`; the earlier UI failure's cause is still unknown. Primary [full acceptance 41363630471](https://github.com/afterburn25/Cajun_Web/actions/runs/41363630471) started on `84e1f4c6` at 2026-11-01 23:54 UTC and remained active at the 23:55 UTC observation. Preserve that head and run; do not dispatch a duplicate.

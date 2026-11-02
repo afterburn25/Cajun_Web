@@ -1,3 +1,9 @@
+## 2026-11-02 — notification settings correction after focused acceptance
+
+Draft PR #323 at `3cc10c1` passed the four-lane focused matrix, including 65 notification native checks per lane and 54 browser checks on both PHP 8.4 lanes. Independent review then reproduced a request-cache gap: a completed owner pause could still allow dispatch or queue a future email. The isolated correction reloads settings under the dispatch mutex and directly reads the emission-time flag, retaining the portal event and all existing delivery logic.
+
+Original failure evidence is preserved. The corrected PHP 8.3/MariaDB native suite passes 89/89 with all original 65 checks intact, and current-source proofs/canonical refresh pass. Separate final review, commit admission and corrected hosted acceptance remain pending; PR #317, main and published releases are unchanged. [Correction, evidence and next gates](docs/NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 GitHub writes are now verified: PR #317 is published at `84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd`, and the reviewed Account/Notifications fixture is published at `ebcbbb56336249fee2073c8f02e9d6998740b64e`. Their exact trees match the retained reviewed snapshots. The cause of the earlier connection/UI failure remains unknown. At the 2026-11-01 23:55 UTC observation, [primary full acceptance 41363630471](https://github.com/afterburn25/Cajun_Web/actions/runs/41363630471) had started; it was not complete. Main remains `1c44ca120e7768998fafa720b3e1c4c85990c330`.

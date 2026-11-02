@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "tests/acceptance_artifacts_test.py",
+    "--report",
+    "/workspace/scratch/8cc2b4f257ab/notification-pause-local-evidence/source-checks/acceptance-helpers-recheck.json"
+  ],
+  "exit_code": 0,
+  "stderr_bytes": 0,
+  "report": {
+    "passed": true,
+    "checks": 575,
+    "error": null
+  },
+  "stdout_sha256": "fc765232d9d2e984cdcdaceb4c25fd170c99f656dcc691a73789f518a11d92a7"
+}

@@ -1,3 +1,9 @@
+## 2026-11-02 — read committed notification choices at admission
+
+Correct request-cache staleness at the two affected boundaries: clear the cache immediately inside the existing dispatch mutex, and query the owner email flag inside the existing emission transaction. Preserve claim/audit/retry semantics and portal events. Do not introduce an account mutex from inside that transaction or claim cancellation of already-started transport.
+
+Keep historical source proofs immutable. Add an exact reversible layer against published `3cc10c1`, verify current source first, and project predecessor bytes only for historical comparisons. The unchanged focused workflow executes the expanded current native suite. [Decision, original failures and verification](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 Retain the two actual published parents `84e1f4c6` and `ebcbbb56` in the combined candidate. Preserve original receipts, builders, complete matrix command blocks and the protected full-application sequence. Use a separate read-only current-source workflow with immutable checkout, both published ancestry checks and clean canonical-source admission; include every pinned workflow dependency in its bounded triggers.

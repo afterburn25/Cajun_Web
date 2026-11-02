@@ -1,3 +1,9 @@
+## 2026-11-02 — continue the notification candidate after independent review
+
+Following the owner's continuation request, review of the passing published `3cc10c1` candidate reproduced stale settings in dispatch and emission. Created a separate local worktree/branch, preserved original actual-function probes, and reproduced the dispatcher defect with real PDO and a second PHP process after the original 65 native checks. The original pending item became sent despite stored pause; corrected source passes all 89 checks with empty stderr on isolated PHP 8.3.6/MariaDB 10.11.14.
+
+Added a 43-check reversible source layer, retained original builders/workflows/receipts and assertions, and verified the existing admission proof commands and canonical refresh. Preserved the initial unprivileged seed failure and a local evidence-wrapper count-format error separately from application results. Final frozen-source review and publication are pending; no remote branch update, mail, provider, payment or deployment occurred in this correction task. [Complete record](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 Verified successful GitHub publication of PR #317 source `84e1f4c6` and Account/Notifications fixture `ebcbbb56`, preserving exact reviewed trees. The earlier generic rejection/connection UI failure remains unexplained. Primary full acceptance 41363630471 began at 2026-11-01 23:54 UTC; its 23:55 UTC observation was still running.

@@ -1,3 +1,7 @@
+## 2026-11-02 — notification settings correction remains unreleased
+
+The successful focused result on published `3cc10c1` is retained as a pre-fix checkpoint. A later independent review found a stale request-cache pause defect; its isolated correction passes 89 local native checks while preserving the original suite. This changes development source only. Final review, clean-source admission, corrected hosted/full combined acceptance, main integration and immutable release verification remain required. Existing release artifacts and live deployments are unchanged. [Source and evidence](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md).
+
 ## 2026-11-02 continuation — published sources and combined acceptance
 
 Latest observed publication remains v1.25.0. GitHub branch writes succeeded for reviewed development sources `84e1f4c6` and `ebcbbb56`; this supersedes earlier write-unverified notes but does not explain the prior connection error or constitute a release. The primary full application run has started, and the combined candidate's exact local source admission passes.

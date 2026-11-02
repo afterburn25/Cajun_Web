@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "tools/build.py",
+    "--refresh"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 109.078,
+  "stderr_bytes": 0,
+  "stdout_sha256": "ba976e209a189bbdaaf73c8e25419f0d43d46d1b27d94aa65a0763b66b96a3af",
+  "canonical_refresh_preserved_diff": true
+}

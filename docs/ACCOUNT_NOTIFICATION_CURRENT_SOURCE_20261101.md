@@ -1,3 +1,7 @@
+## 2026-11-02 — published focused checkpoint and follow-up correction
+
+The candidate described below was published as `3cc10c144e2cd4e78ff5952cee9f60710a07a9ff` and is now draft PR #323. Its focused run 41365339461 passed all four native combinations and both required installed browser lanes. Independent review then found stale request-cache handling after an owner pause. The [bounded correction and original evidence](NOTIFICATION_SETTINGS_FRESHNESS_20261102.md) retain that successful pre-fix checkpoint, every historical source proof and all original assertions. The corrected local native suite passes 89/89; final review, corrected hosted acceptance and delivery gates remain open. The earlier record below is preserved verbatim as history.
+
 # Account and Notifications: current-source integration acceptance
 
 ## Candidate and delivery state

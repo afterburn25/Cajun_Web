@@ -14,6 +14,7 @@ function nc_state():array {$s=[];foreach(['notification_feed','notification_pref
 function nc_denied(string $name,callable $work,string $message):void {$before=nc_state();$error=null;try{$work();}catch(Throwable $e){$error=$e;}nc_ok($name,$error!==null&&!($error instanceof PDOException)&&str_contains($error->getMessage(),$message));nc_ok($name.' retains exact records and closes transactions',nc_state()===$before&&!db()->inTransaction());}
 function nc_emit(string $key,string $audience='client',int $recipient=1):string {notification_emit($audience,$recipient,'project-update','job:1','Private project update','Open your account for the details.',$key);return substr(hash('sha256',json_encode([$audience,$recipient,'project-update','job:1',$key],JSON_THROW_ON_ERROR)),0,32);}
 function nc_delivery(string $id):array{return one('SELECT * FROM '.table('notification_deliveries')." WHERE notification_id=? AND channel='email'",[$id])??[];}
+require_once __DIR__.'/notification_settings_freshness_cases.php';
 if(isset($argv[1])&&str_starts_with($argv[1],'--worker=')){
     $id=substr($argv[1],9);if(!preg_match('/\A[a-f0-9]{32}\z/',$id))exit(2);nc_owner();
     try{$result=notification_outbox_one($id,static function()use($private):string{file_put_contents($private.'/transport-calls.log',"accepted\n",FILE_APPEND|LOCK_EX);usleep(150000);return 'accepted';});echo $result;exit(0);}catch(Throwable $e){fwrite(STDERR,get_class($e).': '.$e->getMessage());exit(1);}
@@ -71,6 +72,7 @@ try{
     save_setting('notification_feed_version','');nc_denied('Missing schema marker cannot adopt unknown notification history',fn()=>notification_feed_migrate(),'Unrecognized notification');save_setting('notification_feed_version','1');
     db()->exec('RENAME TABLE notifyci_notification_deliveries TO notifyci_saved_deliveries');$error=null;try{notification_feed_migrate();}catch(RuntimeException $e){$error=$e;}finally{db()->exec('RENAME TABLE notifyci_saved_deliveries TO notifyci_notification_deliveries');}nc_ok('Missing known history is not recreated as empty',$error!==null&&str_contains($error->getMessage(),'Restore the original'));
     nc_ok('Existing project metadata remains unchanged',one('SELECT title,summary,milestones FROM '.table('studio_jobs').' WHERE id=1')===['title'=>'Synthetic existing project','summary'=>'Retain this summary','milestones'=>'Retain milestones']);
+    nc_settings_freshness_cases();
     $complete=true;
 }catch(Throwable $e){$checks[]=['name'=>get_class($e).': '.$e->getMessage().' at '.basename($e->getFile()).':'.$e->getLine(),'passed'=>false];}
 $complete=$complete&&!in_array(false,array_column($checks,'passed'),true);

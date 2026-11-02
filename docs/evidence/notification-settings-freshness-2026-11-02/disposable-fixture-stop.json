@@ -1,0 +1,8 @@
+{
+  "port": 33309,
+  "datadir": "/tmp/cwp-notification-pause-8cc2b4f257ab/data/",
+  "shutdown_exit_code": 0,
+  "stderr_bytes": 0,
+  "stopped_at_utc": "2026-11-02T00:42:52.028333+00:00",
+  "scope": "Only the new correction fixture was stopped; its database files and original private snapshots are retained. No other database or HTTP process was touched."
+}

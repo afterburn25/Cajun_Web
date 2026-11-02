@@ -78,7 +78,9 @@ function notification_emit(string $audience,int $id,string $kind,string $ref,str
         if($old){if($old['audience']!==$audience||(int)$old['recipient_id']!==$id||$old['kind']!==$kind||$old['ref']!==$ref)throw new RuntimeException('Conflicting notification event identity.');return;}
         query('INSERT INTO '.table('notification_feed').' (id,audience,recipient_id,kind,ref,title,body,created_at) VALUES (?,?,?,?,?,?,?,?)',[$n->id,$audience,$id,$kind,$ref,$n->title,$n->body,gmdate('Y-m-d H:i:s',$n->createdAt)]);
         query('INSERT INTO '.table('notification_deliveries')." (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'portal','sent',1,'',?,NULL,?)",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);
-        if(setting('notification_email_enabled','0')==='1'&&notification_prefs_for($audience,$id)->emailEnabled($kind))query('INSERT INTO '.table('notification_deliveries')." (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'email','pending',0,'',NULL,?,?)",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);
+        // A prior page/request-cache read cannot authorize a future email projection.
+        $emailSetting=one('SELECT value FROM '.table('settings').' WHERE name=?',['notification_email_enabled']);
+        if(($emailSetting['value']??'0')==='1'&&notification_prefs_for($audience,$id)->emailEnabled($kind))query('INSERT INTO '.table('notification_deliveries')." (notification_id,channel,state,attempts,last_error,sent_at,next_at,updated_at) VALUES (?,'email','pending',0,'',NULL,?,?)",[$n->id,$n->createdAt,gmdate('Y-m-d H:i:s')]);
     });
 }
 function notification_feed(string $audience,int $id,int $limit=100):NotificationFeed {

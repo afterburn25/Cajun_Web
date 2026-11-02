@@ -1,0 +1,52 @@
+[
+  {
+    "id": 13107336563,
+    "name": "combined-account-notification-8.2-mariadb-3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "path": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13107336563.zip",
+    "sha256": "074bb76455d0c1191191904696ba001ad0160ea3794404555eab9c07cdaade24",
+    "bytes": 86348,
+    "entries": 106,
+    "verified": true,
+    "extracted_to": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13107336563"
+  },
+  {
+    "id": 13107251631,
+    "name": "combined-account-notification-8.2-mysql-3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "path": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13107251631.zip",
+    "sha256": "85f6e845005e5c03ed2df070bd90e4efda519c3e4300af0430aa56b887fef724",
+    "bytes": 86348,
+    "entries": 106,
+    "verified": true,
+    "extracted_to": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13107251631"
+  },
+  {
+    "id": 13107212594,
+    "name": "account-notification-current-source-3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "path": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13107212594.zip",
+    "sha256": "2a3abb95598270da7808fb2262fb47df77d4f970b2d8180204264771cb7fdd17",
+    "bytes": 15436226,
+    "entries": 18,
+    "verified": true,
+    "extracted_to": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13107212594"
+  },
+  {
+    "id": 13106977519,
+    "name": "combined-account-notification-8.4-mysql-3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "path": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13106977519.zip",
+    "sha256": "39198b0980eddb30e24441d0bebb13a0bfb56fc48c6822d0c4d4590eea6676da",
+    "bytes": 1810041,
+    "entries": 112,
+    "verified": true,
+    "extracted_to": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13106977519"
+  },
+  {
+    "id": 13106888969,
+    "name": "combined-account-notification-8.4-mariadb-3cc10c144e2cd4e78ff5952cee9f60710a07a9ff",
+    "path": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13106888969.zip",
+    "sha256": "f3ed6cc06822822e2b64684714c204964f744e2716b408452c4e92e7daf3a829",
+    "bytes": 1810034,
+    "entries": 112,
+    "verified": true,
+    "extracted_to": "/workspace/scratch/8cc2b4f257ab/combined-hosted-artifacts-41365339461/13106888969"
+  }
+]
