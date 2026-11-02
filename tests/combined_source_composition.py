@@ -41,6 +41,35 @@ REPAIRS = frozenset((
     'tests/owner_browser_forms_test.py',
     'tests/provider_force_ssl_controls_cases.py',
     'tests/provider_directory_listing_controls_cases.py',
+    '.github/workflows/recurring-billing-lifecycle.yml',
+    '.github/workflows/recurring-billing-terms.yml',
+    'docs/CLIENT_PORTAL_ROADMAP.md',
+    'docs/HOSTING_AND_BILLING_ROADMAP.md',
+    'site/admin/controllers/actions.php',
+    'site/admin/controllers/router.php',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio/clients.php',
+    'site/admin/views/studio/job.php',
+    'site/admin/views/studio/upgrade.php',
+    'site/app/activity/events.php',
+    'site/app/billing/attempts.php',
+    'site/app/billing/ledger.php',
+    'site/app/billing/recurring_billing_forms.php',
+    'site/app/billing/recurring_billing_views.php',
+    'site/app/staff/accounts.php',
+    'site/assets/css/growth.css',
+    'site/includes/layout/activity.php',
+    'site/portal/controllers/actions.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/workspace.php',
+    'tests/apache_acceptance.py',
+    'tests/browser_acceptance.py',
+    'tests/organized_update_cases.py',
+    'tests/organized_update_fixture.php',
+    'tests/recurring-billing/forms.php',
+    'tests/recurring_billing_upgrade_cases.py',
+    'tools/acceptance-contract.json',
+    'tools/build.py',
     'tools/acceptance-reports.json',
     'tests/acceptance_artifacts_test.py',
     'tests/cloud_site_requests_wiring.py',
@@ -66,7 +95,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tools/build.py': '50f9ede17d91eebc0f9c220968eea5d4a60b7c392f8f4b8ae68216efed5837d1', 'tools/acceptance-contract.json': '9005f101443931eeef0ba733dd42743e06d73cae89a29802df05d958347dda69', 'tests/recurring_billing_upgrade_cases.py': '099e7a0018e343e9f779a5d656877641b27898ce131070f6a065a80d1aa1b629', 'tests/recurring-billing/forms.php': '85281420f0671bdd2f24220477b933cb33e713499f4dae6cd7786799b75ddd14', 'tests/organized_update_fixture.php': 'e74e01397b46442e021c92072f1a4d0082477a24f008e85babd3d35d807b527d', 'tests/organized_update_cases.py': '0453281aaff456bda28af3c83cc605d4bd2a07a2a8897b5d1b31bf5dff79e7fe', 'tests/browser_acceptance.py': 'c6045635233ae7394b1cd6673e8f18a0c6dea331203158faea854d3e21bd7301', 'tests/apache_acceptance.py': '85edd762484780930eba627c2177f7200036cff8d2b5f4412097ee36bbcd3ef3', 'site/portal/views/workspace.php': 'd348cf6e1920d199a588036fb475d32ffb1c7070757d7e987e967a88c9ad67d6', 'site/portal/controllers/router.php': '06e174411d4a4b2f7e56ddf3e2d44d94c0b0bf13864bfffc8ff3f5702eb1c49b', 'site/portal/controllers/actions.php': 'd118d1c812a97eb94ee6556c3fb8f60755578feef643eba94912cba9e974475d', 'site/includes/layout/activity.php': '803128224aa00a4a0285cd322d7e834d12df048a49fc87dc42868add6a2f09c5', 'site/assets/css/growth.css': '19148c7260235074efb2878006730ef08de4804a57889e14fcd83ec5f45ff399', 'site/app/staff/accounts.php': 'eed88cc7763788d5de5ef7e431879e16f541f363de22818799e3029a16399a33', 'site/app/billing/recurring_billing_views.php': 'dc932060fbe149f35486229e904945268337227207dab365958b470953201351', 'site/app/billing/recurring_billing_forms.php': 'ca3853138574bb58b23ac3bc0b1d9981900b9256ec51e7e6eab39086a92cadb6', 'site/app/billing/ledger.php': '15c68c8ba90344e22c3e8d9a0494b572272b487c3fbf6317c0668443c01f2786', 'site/app/billing/attempts.php': '25b44e01b106ee784242a8a343c6f1f3bd2935156d7b827abd8f05dd5d753181', 'site/app/activity/events.php': '643ba81acf0bb387a40f9e62bc7b89816f99f158e499d5e764b22efa4455be0e', 'site/admin/views/studio/upgrade.php': 'a161b4d5a3d33bdfa7f854615e6432e793db9318b7d825b2b1cfdd9a6a60ecca', 'site/admin/views/studio/job.php': '0501e6dc10e6bc18f1885c252de1553907b7768bf9df61b0f108482efdc41c4b', 'site/admin/views/studio/clients.php': '529680438f99dfcf9a1973b8ca42648595a12ce49e5514024c0c5a10b2e0a8f0', 'site/admin/controllers/studio.php': 'bb30984c32ae8490a65982481be93367416440d771988fcbc166e19783265d1f', 'site/admin/controllers/router.php': '03c75e33abd02b2a9fa26a61af500bbf8c7efbadfbaa77246f8887a67e0c1d94', 'site/admin/controllers/actions.php': 'f77d49d76a156738dc0b0818d3d488d06c5d25399f4c81221d30888159c9a205', 'docs/HOSTING_AND_BILLING_ROADMAP.md': 'd7c65368dd4241a9bfa98c1e355a90558aecb4cc6a340c4a38eda09ef5e6518b', 'docs/CLIENT_PORTAL_ROADMAP.md': 'ebbfc4abca12b125fb7a7e99f750504f072127b04a0a5d4cc07a0540309ad2b8', 'CHANGELOG.md': '56099d47ee5fafde3bcf0aab1003f2dee8acab9b17ca99c89eb7a8c960af154b', '.github/workflows/recurring-billing-terms.yml': 'b902f503d4ec65ecbbe217c3a350da0b6e3d7b4535b25f9e745f9fd2e4316d9e', '.github/workflows/recurring-billing-lifecycle.yml': '07575b830d0aac9b94c180661a6086befbcfef13abde57d0ddb7f9a7d3aed5ef', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
