@@ -291,6 +291,8 @@ try:
             if os.environ.get('CWP_SOFTWARE_ACCEPTANCE_ONLY') != '1':
                 from license_financing_cases import run_browser as license_financing_browser
                 license_financing_browser(globals(),browser)
+            from pipeline_cases import run_browser as pipeline_browser
+            pipeline_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

@@ -2,10 +2,10 @@ name: Lead-pipeline model checks
 
 on:
   pull_request:
-    paths: ['foundation/pipeline/**', 'tests/pipeline/**', '.github/workflows/pipeline.yml']
+    paths: ['foundation/pipeline/**', 'tests/pipeline/**', 'site/app/marketing/pipeline.php', 'site/database/schema/pipeline_schema.php', 'site/database/migrations/pipeline_migrate.php', 'site/admin/views/studio/pipeline.php', 'site/admin/views/lead.php', 'tests/pipeline_native.php', 'tests/pipeline_cases.py', '.github/workflows/pipeline.yml']
   push:
     branches: [main, 'devin/non20i-*']
-    paths: ['foundation/pipeline/**', 'tests/pipeline/**', '.github/workflows/pipeline.yml']
+    paths: ['foundation/pipeline/**', 'tests/pipeline/**', 'site/app/marketing/pipeline.php', 'site/database/schema/pipeline_schema.php', 'site/database/migrations/pipeline_migrate.php', 'site/admin/views/studio/pipeline.php', 'site/admin/views/lead.php', 'tests/pipeline_native.php', 'tests/pipeline_cases.py', '.github/workflows/pipeline.yml']
   workflow_dispatch:
 
 permissions:
