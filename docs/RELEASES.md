@@ -1,3 +1,7 @@
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Latest observed publication remains v1.25.0. Reviewed local source `77cdbc92`, preceding docs `be75116e` and this recovery checkpoint await candidate publication; one successful GitHub blob write is not a release or branch integration. Segmented native passes on frozen `5b478528` and the separate Account/Notifications 54/54 local result do not replace clean current-source hosted acceptance, required review, exact-main verification or immutable asset checks. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

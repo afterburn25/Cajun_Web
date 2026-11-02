@@ -1,3 +1,7 @@
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Record the interrupted local runner, retained database snapshots, original StackCP recreation failure, and logical restoration of 4,051 completed synthetic fixture tables. The resumed original StackCP commands pass 103 and 49 checks respectively at this checkpoint. This documentation/evidence update changes no product code or acceptance assertion. GitHub accepted one exact reviewed diagnostic blob; candidate publication, full acceptance, main integration and release remain pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

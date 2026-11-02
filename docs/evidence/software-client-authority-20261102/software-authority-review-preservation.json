@@ -1,0 +1,14 @@
+{
+  "existing_native_source_exact_after_inverse_of_four_insertions": true,
+  "old_assertion_lines_unchanged": true,
+  "original272_stdout_labels_match": true,
+  "native_fast_exact_three_line_trigger_extension": true,
+  "native_fast_permissions_concurrency_jobs_byte_identical": true,
+  "protected_application_workflow_byte_identical": true,
+  "ordinary_native_workflow_byte_identical": true,
+  "new_test_files_sha256": {
+    "software_commerce_authority_boundaries.php": "53c23873ac815634ba3d93d70065fec0f66fe5c805d36944ba914baebd3af057",
+    "software_commerce_authority.php": "6eb139ba00638fea501c9a0a86670bf58f9888ef0e1ee0f66519a00eb6e7f6e7",
+    "software_commerce_authority_worker.php": "f68f4a9a62cbcf6df16d2aa5e3cd7ebaad1e9faf366e58bfbde636a6c22c26da"
+  }
+}

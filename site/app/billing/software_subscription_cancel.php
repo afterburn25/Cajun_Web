@@ -46,6 +46,7 @@ function software_subscription_cancel(array $client,int $invoice):string{
     software_anet_settings();
     db()->beginTransaction();
     try{
+        software_current_client((int)$client['id']);
         $sub=one('SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM '.table('software_subscriptions').' s JOIN '.table('software_orders').' o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE',
             [$invoice,(int)$client['id'],(int)$client['id']]);
         if(!$sub)throw new RuntimeException('This subscription does not belong to you.');

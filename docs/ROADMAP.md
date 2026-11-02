@@ -1,3 +1,7 @@
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Keep PR #317's reviewed acceptance correction pending publication and complete acceptance. Local database recovery adds no completed product requirement: two resumed commands passed, while the full browser journey remains pending. The separate Account/Notifications correction passes 54/54 checks in its isolated PHP 8.3/MariaDB/Chromium run; hosted matrix, review and combination remain gates. No implemented/tested/integrated/released status is promoted from the interrupted primary run. [Checkpoint and retained evidence](CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

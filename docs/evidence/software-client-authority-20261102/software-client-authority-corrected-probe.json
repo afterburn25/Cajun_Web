@@ -1,0 +1,413 @@
+{
+    "scope": "Actual initial software-authority correction application functions on exact84; synthetic persistence, locks, catalog policies, gateway settings and recording transport. Actual studio_client_save commits the modeled owner edit before admission; actual studio_client supplies fresh negative controls. This is not native SQL, concurrent-process, HTTP or provider evidence.",
+    "source_base_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+    "source_commit": null,
+    "source_state": "Uncommitted five-file application correction, each included application source SHA256 recorded below",
+    "source_sha256": {
+        "app/clients/identity.php": "42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9",
+        "app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+        "app/licenses/software_license_policy.php": "a369fe95acb531bf6756e055d7d8320e72a5467ccfd0bd047997ae2ada469497",
+        "app/billing/software_client.php": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7",
+        "app/billing/software_orders.php": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397",
+        "app/billing/software_charge_guard.php": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a",
+        "app/billing/software_charge.php": "6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c",
+        "app/billing/software_subscription_enroll.php": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+        "app/billing/software_subscription_cancel.php": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f"
+    },
+    "cases": [
+        {
+            "operation": "order",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": 102,
+            "exception": null,
+            "created_invoice_count": 1,
+            "created_order_count": 1,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE",
+                "SELECT * FROM probe_software_orders WHERE request_key=? FOR UPDATE",
+                "SELECT id FROM probe_studio_jobs WHERE client_id=? AND title=? ORDER BY id LIMIT 1"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_studio_jobs (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        7,
+                        "Software purchases",
+                        "Purchased software and license administration",
+                        "care",
+                        "",
+                        "2026-11-02 01:10:47",
+                        "2026-11-02 01:10:47"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_studio_invoices (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        101,
+                        "SW-0C9833E25E6F",
+                        "Synthetic software",
+                        1000,
+                        "USD",
+                        "Payment is required before license issuance. Checkout uses tokenized Authorize.net card submission.",
+                        "2026-11-02 01:10:47"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_orders (client_id,invoice_id,product_id,sku,quantity,domain,request_key,request_hash,snapshot,billing_term,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    "args": [
+                        7,
+                        102,
+                        11,
+                        "SOFTWARE-PROBE",
+                        1,
+                        "probe.example.invalid",
+                        "e96c4c75a15081b02540fdcc5f738c629582528b83694807fb6e00288f5c1587",
+                        "60f0ad23a0fe89819fc3e8574b3e152eae113df05093d2fa59d1457a662c64f2",
+                        "{\"sku\":\"SOFTWARE-PROBE\",\"family\":\"software\",\"term\":\"once\",\"title\":\"Synthetic software\",\"total_cents\":1000,\"setup_cents\":0,\"quantity\":1,\"software_policy\":{\"revision\":1,\"dependency_skus\":[],\"max_installations\":1,\"update_months\":0}}",
+                        "once",
+                        "2026-11-02 01:10:47"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "order",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "b72d7c61636b7f0fcef5268145ab96c2",
+            "client_active": 1,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "order",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "27c638146e5b64cca9142aa07ffd4185",
+            "client_active": 0,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "charge",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "createTransactionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE",
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE",
+                "SELECT * FROM probe_software_charges WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_charges (invoice_id,client_id,amount_cents,status,request_key,created_at,updated_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1000,
+                        "processing",
+                        "f685852921e151e38e72e14c7244c8554ef1dd1022bb8cde83fcc90fdeb69ab9",
+                        "2026-11-02 01:10:47",
+                        "2026-11-02 01:10:47"
+                    ]
+                },
+                {
+                    "sql": "INSERT INTO probe_software_charge_attempts (invoice_id,request_key,amount_cents,status,created_at,updated_at) VALUES (?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        "f685852921e151e38e72e14c7244c8554ef1dd1022bb8cde83fcc90fdeb69ab9",
+                        1000,
+                        "processing",
+                        "2026-11-02 01:10:47",
+                        "2026-11-02 01:10:47"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charge_attempts SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:10:47",
+                        "f685852921e151e38e72e14c7244c8554ef1dd1022bb8cde83fcc90fdeb69ab9",
+                        "processing"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_charges SET status=?,transaction_id=?,updated_at=? WHERE id=?",
+                    "args": [
+                        "uncertain",
+                        null,
+                        "2026-11-02 01:10:47",
+                        31
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "charge",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "452fd9588318d74f70934ee80f0cc98c",
+            "client_active": 1,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "charge",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "b48dda79b9db55bf50cc5e129ff970c2",
+            "client_active": 0,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "enroll",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCreateSubscriptionRequest",
+                    "payload": {
+                        "invoice": 22,
+                        "cents": 1000,
+                        "months": 1
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE",
+                "SELECT * FROM probe_software_orders WHERE invoice_id=? AND client_id=? FOR UPDATE",
+                "SELECT id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE",
+                "SELECT id,status,gateway_subscription_id FROM probe_software_subscriptions WHERE invoice_id=? FOR UPDATE"
+            ],
+            "application_writes": [
+                {
+                    "sql": "INSERT INTO probe_software_subscriptions (invoice_id,client_id,interval_months,amount_cents,status,consented_at,created_at) VALUES (?,?,?,?,?,?,?)",
+                    "args": [
+                        22,
+                        7,
+                        1,
+                        1000,
+                        "creating",
+                        "2026-11-02 00:00:00",
+                        "2026-11-02 01:10:47"
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "review",
+                        41
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "enroll",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "6c501a925d95b93917f16eba4edf9f18",
+            "client_active": 1,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "enroll",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "986139576a9d43774b53288a834fd91c",
+            "client_active": 0,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "cancel",
+            "change_committed_before_admission": "current",
+            "fresh_actual_studio_client_authorizes": true,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "client_active": 1,
+            "result": "review",
+            "exception": null,
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [
+                {
+                    "operation": "ARBCancelSubscriptionRequest",
+                    "payload": {
+                        "subscriptionId": "1234567"
+                    }
+                }
+            ],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE",
+                "SELECT s.*,o.created_at AS order_created_at,o.billing_term FROM probe_software_subscriptions s JOIN probe_software_orders o ON o.invoice_id=s.invoice_id WHERE s.invoice_id=? AND s.client_id=? AND o.client_id=? FOR UPDATE",
+                "SELECT status FROM probe_software_subscriptions WHERE id=?"
+            ],
+            "application_writes": [
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=?",
+                    "args": [
+                        "cancelling",
+                        41
+                    ]
+                },
+                {
+                    "sql": "UPDATE probe_software_subscriptions SET status=? WHERE id=? AND status=?",
+                    "args": [
+                        "review",
+                        41,
+                        "cancelling"
+                    ]
+                }
+            ],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "cancel",
+            "change_committed_before_admission": "revoked",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "12f72c626b379c78102d4b12fb0be67b",
+            "client_active": 1,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        },
+        {
+            "operation": "cancel",
+            "change_committed_before_admission": "disabled",
+            "fresh_actual_studio_client_authorizes": false,
+            "stale_snapshot_auth_version": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "current_auth_version": "9872e215fd01ced6e356c20c612b2db8",
+            "client_active": 0,
+            "result": null,
+            "exception": {
+                "class": "RuntimeException",
+                "message": "Your client session is no longer current. Sign in again."
+            },
+            "created_invoice_count": 0,
+            "created_order_count": 0,
+            "transport_calls": [],
+            "application_reads": [
+                "SELECT id,name,active,auth_version FROM probe_studio_clients WHERE id=? FOR UPDATE"
+            ],
+            "application_writes": [],
+            "transaction_open_after": false
+        }
+    ]
+}

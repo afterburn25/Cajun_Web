@@ -7,6 +7,7 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_license_policy.php';
 require_once CWP_CODE_ROOT.'/app/billing/catalog.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+require_once CWP_CODE_ROOT.'/app/billing/software_client.php';
 
 function software_order_offer(array $product):bool {
     $legacySku=preg_match('/^(SOFTWARE|WEBSITE|APP)-[A-Z0-9_-]+$/D',(string)($product['sku']??''))===1;
@@ -33,8 +34,7 @@ function software_order_place(array $client,int $productId,int $revision,int $qu
         db()->beginTransaction();
     }else throw new LogicException('Software checkout must own the transaction.');
     try{
-        $account=one('SELECT id,name FROM '.table('studio_clients').' WHERE id=? AND active=1 FOR UPDATE',[$clientId]);
-        if(!$account)throw new RuntimeException('Customer account no longer active.');
+        $account=software_current_client($clientId);
         if($policyRevision!==null&&$policyRevision<0)throw new InvalidArgumentException('Invalid software policy revision.');
         $hash=hash('sha256',json_encode([$clientId,$productId,$revision,$quantity,$domain,$subscribe,$policyRevision],JSON_THROW_ON_ERROR));
         $previous=one('SELECT * FROM '.table('software_orders').' WHERE request_key=? FOR UPDATE',[$key]);

@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-11-02T01:10:47.655904+00:00",
+  "scope": "Independent copied synthetic probe of the initial uncommitted software-client-authority correction; not native SQL, HTTP, concurrency or real provider evidence.",
+  "source_base_commit": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
+  "counts": {
+    "positive": 4,
+    "negative": 8,
+    "unexpected_admitted": 0,
+    "unexpected_refused": 0,
+    "open_transactions": 0
+  },
+  "source_sha256": {
+    "app/clients/identity.php": "42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9",
+    "app/clients/accounts.php": "03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e",
+    "app/licenses/software_license_policy.php": "a369fe95acb531bf6756e055d7d8320e72a5467ccfd0bd047997ae2ada469497",
+    "app/billing/software_client.php": "bc5c9e8b935da05315742d2868688874c35348184250602faad4cd18f2cfa2e7",
+    "app/billing/software_orders.php": "d875a9367664eebcc1cf74856270d50f7ba65a33dab70e998c361420c0b76397",
+    "app/billing/software_charge_guard.php": "41cb73561a53b324cc484f91125f1d1d8e1555de69e9898a9b3ce7352bd5285a",
+    "app/billing/software_charge.php": "6929b107ebf3fc9a2d8613f2b8696ef68ba9b8ee906d3afb78d3198f4f41379c",
+    "app/billing/software_subscription_enroll.php": "b6ed161e407e80fdb933fee0f126699a779433de30819c14ace662b4965ef025",
+    "app/billing/software_subscription_cancel.php": "74cd6b10fa88bba889f4d70aaab8bf13d8dcab833c93f0a22bcd9695b5406c0f"
+  },
+  "original_probe_preserved": true,
+  "probe_sha256": "a08e4224aea7e003d0e1799d35f5d88d9e4a63128d1e1e8b449ecc65d1f77399",
+  "output_sha256": "bb9c035e5516820c110ef6b9351a310a18772c789615974fef33e2a128b44ecb",
+  "exit_code": 0,
+  "stderr_bytes": 0
+}

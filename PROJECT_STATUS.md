@@ -1,3 +1,7 @@
+## 2026-11-02 — recheck current customers before software mutations
+
+SW-AUTH-01 adds a current account/session check under the owning transaction's client-row lock before software order, charge, enrollment and cancellation reservations. Original272 assertions are preserved; the unchanged published source fails111 of194 added checks, while the correction passes466 total with empty stderr. Independent source/evidence review is complete; final frozen review, hosted/combined acceptance, main integration and release remain pending. FIN-01/FIN-02 stay separate blockers. [Source, preserved failures and next gates](docs/SOFTWARE_CLIENT_AUTHORITY_20261102.md).
+
 ## 2026-11-01 23:40 UTC — preserved recovery and pending publication
 
 Reviewed correction `77cdbc92` and preceding documentation `be75116e` remain pending publication to PR #317. A GitHub blob save succeeded with the exact reviewed object; no branch update or merge is implied. The interrupted local database and failed recovery are preserved. A fresh isolated database restored 4,051 completed fixture tables. At 23:40:50 UTC the remaining native segment had passed its first two commands (103/103 and 49/49 checks), with command 3 active; full browser acceptance remained pending. [Checkpoint and retained evidence](docs/CONTINUATION_REVIEW_20261101.md#2340-utc-recovery-and-publication-checkpoint).

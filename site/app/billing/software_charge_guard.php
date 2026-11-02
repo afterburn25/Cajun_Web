@@ -13,6 +13,7 @@ function software_charge_prepare(int $invoice,int $clientId,string $requestKey):
     if(db()->inTransaction())throw new LogicException('Charge preparation requires its own transaction.');
     db()->beginTransaction();
     try{
+        software_current_client($clientId);
         $order=one('SELECT * FROM '.table('software_orders').' WHERE invoice_id=? AND client_id=? FOR UPDATE',[$invoice,$clientId]);
         if(!$order)throw new InvalidArgumentException('Order does not belong to this customer.');
         if($order['billing_term']!=='once')throw new RuntimeException('Recurring plans must use subscription checkout, not a single-payment charge.');
