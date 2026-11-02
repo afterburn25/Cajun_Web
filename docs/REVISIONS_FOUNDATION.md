@@ -1,6 +1,6 @@
 # Content revision-history foundation (A-02 contract layer)
 
-Canonical component: `foundation/revisions/`. Implementation status: **Implemented (local/source)** on `devin/non20i-revisions-foundation`. External gate: **Not required** for this contract layer — persistence, permissions wiring and admin compare/restore UI are application-integration work remaining in Devin's non-20i scope (Codex owns the complete 20i integration only).
+Canonical component: `foundation/revisions/`. Implementation status: **Runtime integrated (local/source)** on `devin/non20i-revisions-runtime` — the existing `studio_revisions` persistence and optimistic save/restore flow now renders `RevisionDiff` line-level added/removed sets in `Admin → Content history`, retaining full before/after values in a nested section. `ContentDocument`/`ApprovalContext` remain contract-only pending a dedicated document/approval surface. External gate: **Not required** (Codex owns the complete 20i integration only).
 
 This is the safe portion of [A-02](ROADMAP.md#a-02--content-revision-history): the version/restore/approval rules a content-history feature must satisfy, as a pure model with no storage assumptions.
 

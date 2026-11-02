@@ -2,10 +2,10 @@ name: Revision-history model checks
 
 on:
   pull_request:
-    paths: ['foundation/revisions/**', 'tests/revisions/**', '.github/workflows/revisions.yml']
+    paths: ['foundation/revisions/**', 'tests/revisions/**', 'site/app/settings/revisions.php', 'site/admin/views/studio/history.php', '.github/workflows/revisions.yml']
   push:
     branches: [main, 'devin/non20i-*']
-    paths: ['foundation/revisions/**', 'tests/revisions/**', '.github/workflows/revisions.yml']
+    paths: ['foundation/revisions/**', 'tests/revisions/**', 'site/app/settings/revisions.php', 'site/admin/views/studio/history.php', '.github/workflows/revisions.yml']
   workflow_dispatch:
 
 permissions:
