@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+NEEDS CORRECTION OR ACCEPTANCE: PR #325 c2f has a confirmed new MySQL fixture failure. Its reviewed action-preserving follow-up passes one local 172/172 supplement; publish that exact source, obtain the unchanged required matrices, and admit it to the outer composition. No ready-to-merge or delivered status is inferred. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 NEEDS CORRECTION OR ACCEPTANCE: the isolated primary84 FK metadata component is implemented and locally checked; final forwarded-port fixture handling is source reviewed. Await the unchanged component matrices and finite source/evidence review, then compose the exact published head. It is not reported merged, released or fully accepted. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).

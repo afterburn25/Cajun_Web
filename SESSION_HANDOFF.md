@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+Publish the reviewed rule-preserving helper follow-up to c2f, then use its unchanged service-plan/recurring matrices for exact component admission. Preserve the original MySQL failures and historical c453/d672 bindings. The fresh fkrule_ local supplement passed 172/172; owned 33316 is stopped with all prior fixture data retained. No browser replay is required for this fixture-only correction. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 Publish/review the isolated FK metadata component against primary84, then await the unchanged PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 native routes before outer composition. Local execution is bound to c453b0eb; the final helper-only forwarded-port correction is separately bound and was not used for a repeated browser run. Both owned diagnostic servers are stopped with data/evidence retained. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).

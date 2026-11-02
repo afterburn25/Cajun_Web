@@ -1,0 +1,618 @@
+{
+    "passed": false,
+    "scope": "Native MariaDB owner plans, exact-client consent\/history and current-authorized bounded projections; synthetic terms, no HTTP, invoice generation or payment authorization",
+    "checks": [
+        {
+            "name": "Existing installation does not silently activate service-plan storage",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Plan setup needs the current owner password",
+            "passed": true
+        },
+        {
+            "name": "Fully delegated administrator cannot prepare owner plan storage",
+            "passed": true
+        },
+        {
+            "name": "Support selector cannot prepare plan storage",
+            "passed": true
+        },
+        {
+            "name": "Plan setup refuses an inherited transaction",
+            "passed": true
+        },
+        {
+            "name": "Setup audit failure leaves additive tables unactivated",
+            "passed": true
+        },
+        {
+            "name": "Owner explicitly prepares empty plan and subscription storage",
+            "passed": true
+        },
+        {
+            "name": "Unexpected subscription index fails strict setup",
+            "passed": true
+        },
+        {
+            "name": "Case-folding journal hashes are refused",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner refuses: Draft creation requires the current password",
+            "passed": true
+        },
+        {
+            "name": "Administrator cannot author owner service plans",
+            "passed": true
+        },
+        {
+            "name": "Support selector cannot author a plan",
+            "passed": true
+        },
+        {
+            "name": "Active support context cannot author a plan",
+            "passed": true
+        },
+        {
+            "name": "Plan creation refuses an inherited transaction",
+            "passed": true
+        },
+        {
+            "name": "Caller retains its transaction after refusal",
+            "passed": true
+        },
+        {
+            "name": "Denied plan writes preserve rows and audit",
+            "passed": true
+        },
+        {
+            "name": "Creation audit failure rolls back the entire plan",
+            "passed": true
+        },
+        {
+            "name": "Owner cannot save an unsupported promise in a plan name",
+            "passed": true
+        },
+        {
+            "name": "Rejected plan name preserves every term consent and audit record",
+            "passed": true
+        },
+        {
+            "name": "Owner draft stores canonical reviewed terms",
+            "passed": true
+        },
+        {
+            "name": "Identical creation request is idempotent",
+            "passed": true
+        },
+        {
+            "name": "Changed creation identity cannot overwrite a plan",
+            "passed": true
+        },
+        {
+            "name": "Another owner cannot reuse a creation identity",
+            "passed": true
+        },
+        {
+            "name": "Draft cannot be offered before publication",
+            "passed": true
+        },
+        {
+            "name": "Draft revision preserves original creation terms",
+            "passed": true
+        },
+        {
+            "name": "Exact old edit replay does not add another event",
+            "passed": true
+        },
+        {
+            "name": "Stale draft revision cannot overwrite current terms",
+            "passed": true
+        },
+        {
+            "name": "Malformed draft terms fail as input instead of replacing state",
+            "passed": true
+        },
+        {
+            "name": "Publication audit failure retains editable draft",
+            "passed": true
+        },
+        {
+            "name": "Publication pins the reviewed price and terms",
+            "passed": true
+        },
+        {
+            "name": "Published plan terms cannot be edited",
+            "passed": true
+        },
+        {
+            "name": "Plan action cannot invoke arbitrary model methods",
+            "passed": true
+        },
+        {
+            "name": "An offer must use the reviewed plan fingerprint",
+            "passed": true
+        },
+        {
+            "name": "An offer cannot select stale draft terms",
+            "passed": true
+        },
+        {
+            "name": "Inactive client cannot receive a new offer",
+            "passed": true
+        },
+        {
+            "name": "Invalid offers preserve all plan records and audit",
+            "passed": true
+        },
+        {
+            "name": "Offer audit failure rolls back client assignment",
+            "passed": true
+        },
+        {
+            "name": "Offer stores pending consent and the exact active plan prefix",
+            "passed": true
+        },
+        {
+            "name": "Identical offer replay does not create duplicate enrollment",
+            "passed": true
+        },
+        {
+            "name": "Offer identity cannot be reassigned to another client",
+            "passed": true
+        },
+        {
+            "name": "Owner cannot record consent for a client",
+            "passed": true
+        },
+        {
+            "name": "Owner cannot activate before client agreement",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot read an offer",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot consent to an offer",
+            "passed": true
+        },
+        {
+            "name": "Caller cannot select a different session client",
+            "passed": true
+        },
+        {
+            "name": "Support selector cannot manufacture client consent",
+            "passed": true
+        },
+        {
+            "name": "Staff support impersonation cannot give client agreement",
+            "passed": true
+        },
+        {
+            "name": "Expired idle client session cannot consent",
+            "passed": true
+        },
+        {
+            "name": "Expired absolute client session cannot consent",
+            "passed": true
+        },
+        {
+            "name": "Revoked client session cannot consent",
+            "passed": true
+        },
+        {
+            "name": "Client must explicitly confirm the reviewed terms",
+            "passed": true
+        },
+        {
+            "name": "Client cannot agree to a different presented hash",
+            "passed": true
+        },
+        {
+            "name": "Consent audit failure rolls back event agreement and state",
+            "passed": true
+        },
+        {
+            "name": "Exact authenticated client owns the stored terms agreement",
+            "passed": true
+        },
+        {
+            "name": "Client consent uses client attribution instead of a staff identity",
+            "passed": true
+        },
+        {
+            "name": "Client audit uses existing non-staff actor and explicit client context",
+            "passed": true
+        },
+        {
+            "name": "Exact consent replay is a no-op",
+            "passed": true
+        },
+        {
+            "name": "A changed consent identity cannot rewrite the agreement",
+            "passed": true
+        },
+        {
+            "name": "Client cannot activate their own service without owner action",
+            "passed": true
+        },
+        {
+            "name": "Activation audit failure rolls back subscription state",
+            "passed": true
+        },
+        {
+            "name": "Owner can activate the exact agreed enrollment locally",
+            "passed": true
+        },
+        {
+            "name": "Old consent replay remains no-op after activation",
+            "passed": true
+        },
+        {
+            "name": "Retirement preserves existing enrollment and offer terms",
+            "passed": true
+        },
+        {
+            "name": "Retired plan refuses a new client offer",
+            "passed": true
+        },
+        {
+            "name": "An already offered pinned revision remains eligible after retirement",
+            "passed": true
+        },
+        {
+            "name": "Identical original offer replay remains stable after retirement",
+            "passed": true
+        },
+        {
+            "name": "New plan pricing cannot silently reprice an existing agreement",
+            "passed": true
+        },
+        {
+            "name": "Owner can pause an inactive client enrollment without charging it",
+            "passed": true
+        },
+        {
+            "name": "Inactive client cannot have service resumed",
+            "passed": true
+        },
+        {
+            "name": "Owner can cancel inactive enrollment with retained agreement",
+            "passed": true
+        },
+        {
+            "name": "Client can end only their own active service",
+            "passed": true
+        },
+        {
+            "name": "Client can decline an unactivated offer without consent",
+            "passed": true
+        },
+        {
+            "name": "Fresh process reconstructs the exact saved agreement and history",
+            "passed": true
+        },
+        {
+            "name": "Missing client consent event fails closed",
+            "passed": true
+        },
+        {
+            "name": "Ambiguous staff and client attribution is refused",
+            "passed": true
+        },
+        {
+            "name": "Tampered original plan invalidates dependent subscription reads",
+            "passed": true
+        },
+        {
+            "name": "Restoring original evidence restores the unchanged agreement",
+            "passed": true
+        },
+        {
+            "name": "Existing populated tables cannot be adopted by resetting readiness",
+            "passed": true
+        },
+        {
+            "name": "Unavailable storage marker blocks owner reads",
+            "passed": true
+        },
+        {
+            "name": "Competing draft editors reach the shared guard",
+            "passed": true
+        },
+        {
+            "name": "Exactly one competing draft revision wins",
+            "passed": true
+        },
+        {
+            "name": "Identical consent requests reach the shared guard",
+            "passed": true
+        },
+        {
+            "name": "Concurrent exact consent replay creates only one agreement",
+            "passed": true
+        },
+        {
+            "name": "Consent worker waits after reading its client session",
+            "passed": true
+        },
+        {
+            "name": "Client revocation while waiting prevents consent and preserves records",
+            "passed": true
+        },
+        {
+            "name": "Owner edit worker waits on current shared authority",
+            "passed": true
+        },
+        {
+            "name": "Revoked owner cannot edit after acquiring the guard",
+            "passed": true
+        },
+        {
+            "name": "Plan agreement records create no invoices or payment activity",
+            "passed": true
+        },
+        {
+            "name": "Audit excludes literal terms email passwords and consent hashes",
+            "passed": true
+        },
+        {
+            "name": "Owner plan list returns validated documents without writes",
+            "passed": true
+        },
+        {
+            "name": "Owner agreement detail identifies the recorded client and exact retained history",
+            "passed": true
+        },
+        {
+            "name": "Out-of-range pagination is refused",
+            "passed": true
+        },
+        {
+            "name": "Negative pagination is refused",
+            "passed": true
+        },
+        {
+            "name": "List refuses an inherited transaction",
+            "passed": true
+        },
+        {
+            "name": "Refused read preserves caller transaction",
+            "passed": true
+        },
+        {
+            "name": "Owner-only permission for service-plans",
+            "passed": true
+        },
+        {
+            "name": "Owner-only permission for service-plan",
+            "passed": true
+        },
+        {
+            "name": "Owner-only permission for service-agreements",
+            "passed": true
+        },
+        {
+            "name": "Owner-only permission for service-agreement",
+            "passed": true
+        },
+        {
+            "name": "Every service-plan action requires owner permission",
+            "passed": true
+        },
+        {
+            "name": "Delegated administrator cannot list owner plans",
+            "passed": true
+        },
+        {
+            "name": "Delegated administrator cannot read client agreement detail",
+            "passed": true
+        },
+        {
+            "name": "Delegated administrator cannot search client choices",
+            "passed": true
+        },
+        {
+            "name": "Support selector blocks owner lists",
+            "passed": true
+        },
+        {
+            "name": "Support selector blocks owner agreement detail",
+            "passed": true
+        },
+        {
+            "name": "Support selector blocks owner client choices",
+            "passed": true
+        },
+        {
+            "name": "Owner sees bounded active client identities only",
+            "passed": true
+        },
+        {
+            "name": "Client search treats wildcard characters as literal text",
+            "passed": true
+        },
+        {
+            "name": "Inactive clients are excluded from offer choices",
+            "passed": true
+        },
+        {
+            "name": "Malformed search UTF-8 is refused",
+            "passed": true
+        },
+        {
+            "name": "Oversized client search is refused",
+            "passed": true
+        },
+        {
+            "name": "Owner pagination is bounded stable and nonoverlapping",
+            "passed": true
+        },
+        {
+            "name": "Owner agreement list provides client attribution",
+            "passed": true
+        },
+        {
+            "name": "Empty later page does not claim more results",
+            "passed": true
+        },
+        {
+            "name": "Client sees only their own exact agreement without other client identifiers",
+            "passed": true
+        },
+        {
+            "name": "Client cannot choose another client list",
+            "passed": true
+        },
+        {
+            "name": "Client cannot list owner plans",
+            "passed": true
+        },
+        {
+            "name": "Client cannot request a plan list through client mode",
+            "passed": true
+        },
+        {
+            "name": "Client agreement pagination excludes foreign resources across pages",
+            "passed": true
+        },
+        {
+            "name": "Support query cannot list client agreements",
+            "passed": true
+        },
+        {
+            "name": "Support session cannot list client agreements",
+            "passed": true
+        },
+        {
+            "name": "Expired client session cannot list agreements",
+            "passed": true
+        },
+        {
+            "name": "Authorized and refused projections do not alter agreements or audit",
+            "passed": true
+        },
+        {
+            "name": "A corrupt displayed agreement fails the entire list closed",
+            "passed": true
+        },
+        {
+            "name": "Client list waits for shared current-authority guard",
+            "passed": true
+        },
+        {
+            "name": "Client revocation while waiting prevents data projection",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_plans disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_plans requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Restored service_plans retains exact original terms consent and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_plan_events disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_plan_events requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Restored service_plan_events retains exact original terms consent and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_subscriptions disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_subscriptions requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Restored service_subscriptions retains exact original terms consent and audit",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_subscription_events disables readiness",
+            "passed": true
+        },
+        {
+            "name": "Missing established service_subscription_events requires restore without empty recreation",
+            "passed": true
+        },
+        {
+            "name": "Restored service_subscription_events retains exact original terms consent and audit",
+            "passed": true
+        },
+        {
+            "name": "Connection selects only the explicit disposable native database",
+            "passed": true
+        },
+        {
+            "name": "Owned metadata prefix is empty in cwp_test",
+            "passed": true
+        },
+        {
+            "name": "Both validators expose the same source-bound metadata query",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plans preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plans passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plan_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_plan_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscriptions preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscriptions passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscription_events preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy service_subscription_events passes the actual validator",
+            "passed": true
+        },
+        {
+            "name": "legacy plans baseline preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans two named constraints on one column preserves the exact original row multiset",
+            "passed": true
+        },
+        {
+            "name": "legacy plans preserves both identical projected occurrences",
+            "passed": false
+        },
+        {
+            "name": "Unexpected failure: legacy plans preserves both identical projected occurrences",
+            "passed": false
+        }
+    ]
+}

@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+The c2f performance component and its new fixture follow-up remain unreleased. Local 172/172 coverage does not replace current-source MySQL/MariaDB matrices, integrated-main acceptance, publication checks or authorized deployment. Original hosted failures remain open evidence. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 This is an unreleased component checkpoint on exact primary84. Local query/native/browser evidence and a source-reviewed fixture correction do not replace maintained-matrix acceptance, reviewed main integration, exact-main verification or publication checks. No release or live deployment is established by this record. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).

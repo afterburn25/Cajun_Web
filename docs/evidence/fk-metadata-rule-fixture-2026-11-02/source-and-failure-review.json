@@ -1,0 +1,85 @@
+{
+  "base_commit": "c2f62c9ce95d47dfea509d87a1baa0b315a0723b",
+  "preserved_local_checkpoint": "15b81cf9483755cf833de83d843dddd22e04d358",
+  "ci_merge_commit": "b012a88cb8a40a7abb98e498c1775b876f93d0cd",
+  "ci_run": 41381237273,
+  "failure_observed": "Both MySQL lanes fail the identical-projected-occurrences assertion after original/candidate multiset equality passes; exact failing rule values are absent",
+  "cause_status": "Original-action spelling mismatch is supported by source and official MySQL default documentation, but is not a direct observation of the failed rows",
+  "source_before_sha256": "d67295f7d85c1b5b1acf51421ec5a0179011beb54af8162ca1a59c5d5ba206fb",
+  "source_after_sha256": "431cf8674c71201d8fbb6a16be63b6f3a9663c8001df9d3bd85ede2215e88085",
+  "patch_sha256": "af222bd04029fb54f0ebf27c32f0afaed5d41e61b48af2fd99d5836d1be66889",
+  "changes": [
+    "Read original DELETE_RULE/UPDATE_RULE from already compared baseline created_by row",
+    "Require explicit rule arguments at every FK recreation call",
+    "Admit only exact RESTRICT/NO ACTION/CASCADE keywords",
+    "Duplicate, restore and cross-schema substitution preserve both original rules",
+    "Wrong-target cases retain rules; wrong-rule cases change only their intended rule"
+  ],
+  "application_workflows_grants_timeouts_or_assertions_changed": false,
+  "reports": [
+    {
+      "artifact": 13113676305,
+      "engine_lane": "MySQL8.4",
+      "php": "8.2",
+      "passed": false,
+      "entries": 153,
+      "passing_entries": 151,
+      "false_entries": [
+        {
+          "name": "legacy plans preserves both identical projected occurrences",
+          "passed": false
+        },
+        {
+          "name": "Unexpected failure: legacy plans preserves both identical projected occurrences",
+          "passed": false
+        }
+      ],
+      "sha256": "65c881424be87d2966b16d9ad80739f72e76da4568b8edbe97c7fbfe79e1b14f",
+      "original138_passed": true
+    },
+    {
+      "artifact": 13113468520,
+      "engine_lane": "MySQL8.4",
+      "php": "8.4",
+      "passed": false,
+      "entries": 153,
+      "passing_entries": 151,
+      "false_entries": [
+        {
+          "name": "legacy plans preserves both identical projected occurrences",
+          "passed": false
+        },
+        {
+          "name": "Unexpected failure: legacy plans preserves both identical projected occurrences",
+          "passed": false
+        }
+      ],
+      "sha256": "65c881424be87d2966b16d9ad80739f72e76da4568b8edbe97c7fbfe79e1b14f",
+      "original138_passed": true
+    },
+    {
+      "artifact": 13113123367,
+      "engine_lane": "MariaDB10.11",
+      "php": "8.2",
+      "passed": true,
+      "entries": 219,
+      "passing_entries": 219,
+      "false_entries": [],
+      "sha256": "7495f0dd4482348e7439f77d48054005a4a225b9ccf07c8369a027764af7cf6e",
+      "original138_passed": true
+    },
+    {
+      "artifact": 13113318622,
+      "engine_lane": "MariaDB10.11",
+      "php": "8.4",
+      "passed": true,
+      "entries": 219,
+      "passing_entries": 219,
+      "false_entries": [],
+      "sha256": "7495f0dd4482348e7439f77d48054005a4a225b9ccf07c8369a027764af7cf6e",
+      "original138_passed": true
+    }
+  ],
+  "official_default_reference": "https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html",
+  "created_at_utc": "2026-11-02T03:23:40.615002+00:00"
+}

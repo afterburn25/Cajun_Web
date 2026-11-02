@@ -42,8 +42,8 @@ function fkm_fk_name(string $name,string $column):string {
     if(count($rows)!==1)throw new RuntimeException('Expected one unmodified fixture relationship');return $rows[0]['CONSTRAINT_NAME'];
 }
 function fkm_drop_fk(string $name,string $constraint):void {db()->exec('ALTER TABLE '.table($name).' DROP FOREIGN KEY '.fkm_identifier($constraint));}
-function fkm_add_fk(string $name,string $constraint,string $parentSchema,string $parentTable,string $parentColumn='id',string $delete='RESTRICT',string $update='RESTRICT'):void {
-    if(!in_array($delete,['RESTRICT','CASCADE'],true)||!in_array($update,['RESTRICT','CASCADE'],true))throw new LogicException('Unsupported fixture rule');
+function fkm_add_fk(string $name,string $constraint,string $parentSchema,string $parentTable,string $parentColumn,string $delete,string $update):void {
+    if(!in_array($delete,['RESTRICT','NO ACTION','CASCADE'],true)||!in_array($update,['RESTRICT','NO ACTION','CASCADE'],true))throw new LogicException('Unsupported fixture rule');
     db()->exec('ALTER TABLE '.table($name).' ADD CONSTRAINT '.fkm_identifier($constraint).' FOREIGN KEY (created_by) REFERENCES '.fkm_identifier($parentSchema).'.'.fkm_identifier($parentTable).' ('.fkm_identifier($parentColumn).') ON DELETE '.$delete.' ON UPDATE '.$update);
 }
 function fkm_run_native_cases(array $families,?string $foreign,string $namespace):array {
@@ -74,8 +74,12 @@ function fkm_run_native_cases(array $families,?string $foreign,string $namespace
                 if(!in_array($family,$families,true))continue;
                 [$name,$eventName,$compositeColumn,$compositeRevision]=$target;$schema=$schemas[$family];$query=$queries[$family];$label=$variant.' '.$family;
                 $constraint=fkm_fk_name($name,'created_by');$base=fkm_equal($label.' baseline',$name,$query);
+                $originalCreated=array_values(array_filter($base,static fn(array $row):bool=>$row['COLUMN_NAME']==='created_by'));
+                if(count($originalCreated)!==1)throw new RuntimeException('Expected one original created_by relationship');
+                // Preserve the original metadata rule spelling when duplicating or restoring it.
+                $originalDelete=$originalCreated[0]['DELETE_RULE'];$originalUpdate=$originalCreated[0]['UPDATE_RULE'];
                 $duplicate=$prefix.$family.'_duplicate';
-                fkm_add_fk($name,$duplicate,$local,$parent);
+                fkm_add_fk($name,$duplicate,$local,$parent,'id',$originalDelete,$originalUpdate);
                 $rows=fkm_equal($label.' two named constraints on one column',$name,$query);
                 $created=array_values(array_filter($rows,static fn(array $row):bool=>$row['COLUMN_NAME']==='created_by'));
                 fkm_ok($label.' preserves both identical projected occurrences',count($rows)===count($base)+1&&count($created)===2&&$created[0]===$created[1]);
@@ -91,21 +95,21 @@ function fkm_run_native_cases(array $families,?string $foreign,string $namespace
 
                 fkm_drop_fk($name,$constraint);fkm_equal($label.' missing relationship',$name,$query);
                 fkm_refused($label.' second validation sees a removed relationship',$family,$name,$schema,$checkout);
-                fkm_add_fk($name,$constraint,$local,$parent);fkm_valid($label.' third validation sees the restored relationship',$family,$name,$schema,$checkout);
-                foreach([['wrong target table',$prefix.'wrong_parent','id','RESTRICT','RESTRICT'],['wrong target column',$parent,'diagnostic_other_id','RESTRICT','RESTRICT'],['wrong delete rule',$parent,'id','CASCADE','RESTRICT'],['wrong update rule',$parent,'id','RESTRICT','CASCADE']] as [$case,$targetTable,$targetColumn,$delete,$update]){
+                fkm_add_fk($name,$constraint,$local,$parent,'id',$originalDelete,$originalUpdate);fkm_valid($label.' third validation sees the restored relationship',$family,$name,$schema,$checkout);
+                foreach([['wrong target table',$prefix.'wrong_parent','id',$originalDelete,$originalUpdate],['wrong target column',$parent,'diagnostic_other_id',$originalDelete,$originalUpdate],['wrong delete rule',$parent,'id','CASCADE',$originalUpdate],['wrong update rule',$parent,'id',$originalDelete,'CASCADE']] as [$case,$targetTable,$targetColumn,$delete,$update]){
                     fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$targetTable,$targetColumn,$delete,$update);
                     fkm_equal($label.' '.$case,$name,$query);fkm_refused($label.' refuses '.$case,$family,$name,$schema,$checkout);
-                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$parent);fkm_valid($label.' restoration after '.$case.' is current',$family,$name,$schema,$checkout);
+                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$parent,'id',$originalDelete,$originalUpdate);fkm_valid($label.' restoration after '.$case.' is current',$family,$name,$schema,$checkout);
                 }
 
                 if($foreign!==null){
-                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$foreign,$parent);
+                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$foreign,$parent,'id',$originalDelete,$originalUpdate);
                     $rows=fkm_equal($label.' cross-schema referenced parent',$name,$query);
                     fkm_ok($label.' cross-schema parent is still present',count($rows)===count($base)&&count(array_filter($rows,static fn(array $row):bool=>$row['COLUMN_NAME']==='created_by'&&$row['REFERENCED_TABLE_NAME']===$parent))===1);
                     // Preserve existing behavior: these validators compare target table/column,
                     // not referenced schema. The optimization must not silently hide this FK.
                     fkm_valid($label.' preserves existing cross-schema validator behavior',$family,$name,$schema,$checkout);
-                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$parent);
+                    fkm_drop_fk($name,$constraint);fkm_add_fk($name,$constraint,$local,$parent,'id',$originalDelete,$originalUpdate);
 
                     $foreignChild=$prefix.$name;
                     db()->exec('CREATE TABLE '.fkm_identifier($foreign).'.'.fkm_identifier($foreignChild).' (id INT UNSIGNED PRIMARY KEY,created_by INT UNSIGNED NOT NULL,CONSTRAINT '.fkm_identifier($constraint).' FOREIGN KEY (created_by) REFERENCES '.fkm_identifier($foreign).'.'.fkm_identifier($parent).' (id) ON DELETE CASCADE) ENGINE=InnoDB');

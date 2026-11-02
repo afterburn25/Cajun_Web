@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+Preserve the observed original FK actions when a test duplicates or restores a relationship. Do not substitute engine-specific action spelling, weaken the identical-occurrence assertion, or reinterpret original/candidate row equality as a failing query. Retain the failed MySQL reports and require the new exact-source matrix. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 Use a filtered DISTINCT relation retaining complete constraint identity to keep metadata input scoped without merging separate constraints or outer column rows. Reject redundant predicates that did not alter the observed plan. Preserve current schema/authority checks and the original hosted failure; qualify the two local instrumented observations. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).

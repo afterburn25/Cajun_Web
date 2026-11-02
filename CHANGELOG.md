@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+Unreleased fixture-only correction: duplicate and restore FK relationships using their observed original DELETE/UPDATE action spelling, including safe NO ACTION handling. Keep identical-occurrence and negative-rule assertions intact. Application queries, workflow bodies and timeouts are unchanged. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 Unreleased component: scope the two service-plan/recurring foreign-key metadata inputs before joining, while preserving full constraint identity and every existing validation. Add portable native cases after existing assertions, retain a separate local cross-schema supplement, and correct its CI port-forwarding identity assumption. No cache, permission change, assertion removal or timeout increase is included. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).

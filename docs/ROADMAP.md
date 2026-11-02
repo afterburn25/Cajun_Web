@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+No feature requirement or completion percentage changes. The component has a specific MySQL fixture blocker under correction; one reviewed local MariaDB supplement passes 172/172. Required current-source matrices and integrated acceptance remain open. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 This performance component promotes no feature requirement or completion percentage. Its repeated schema checks remain fresh, and targeted local evidence passes. Remaining gates are the exact component matrices, independent binding review and integration acceptance; the original hosted timeout is not declared resolved. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).

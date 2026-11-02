@@ -1,0 +1,25 @@
+{
+  "completed_at_utc": "2026-11-02T03:27:06.173279+00:00",
+  "owned_database_port": 33316,
+  "owned_database_pid": 152618,
+  "identity_verified_before_shutdown": true,
+  "table_counts": {
+    "cwp_fk_metadata_foreign": {
+      "new_namespace": 6,
+      "prior_namespaces": 6
+    },
+    "cwp_fk_metadata_test": {
+      "new_namespace": 184,
+      "prior_namespaces": 184
+    },
+    "cwp_test": {
+      "new_namespace": 0,
+      "prior_namespaces": 651
+    }
+  },
+  "prior_namespace_table_counts_unchanged": true,
+  "shutdown_exit_code": 0,
+  "terminal_process_state": "terminal zombie",
+  "datadir_preserved": true,
+  "other_servers_accessed_or_changed": false
+}

@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+Reviewed all four completed service-plan artifacts at c2f: MariaDB 219/219 each; MySQL 151 true and 2 false entries each. Implemented and independently reviewed one helper-only action-preservation correction, then ran exactly one fresh-prefix local supplement: 172/172. Prior evidence and database namespaces remain preserved; no browser/full-native replay occurred. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 Preserved the ineffective query candidates and the initial preassertion fixture failure. The corrected local tree passed 172 supplemental, 219 service-plan, 721 recurring and 3 browser checks. The two original native report prefixes remain exact. Independent review then corrected only the new helper’s forwarded-port assumption; immutable workflow topology verifies that delta without another browser run. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).

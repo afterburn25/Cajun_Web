@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+The isolated FK metadata worker preserved c2f and local 15b81, changed only the shared native helper, and completed the approved 172-check supplement in fresh fkrule_ tables on owned 33316. The server is stopped; prior namespaces and all other workers’ runtimes are untouched. Root owns publication, matrix monitoring and outer composition. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 The FK metadata component is isolated on review/fk-metadata-scope-20261102 from exact primary84. Its shipping change is limited to two metadata calls/comments and canonical inventory refresh. Root owns publication/composition; the local runtime on 33316 is stopped, original 33314 is preserved, and no other worker source or runtime was changed. [Source, evidence and continuation](FK_METADATA_QUERY_CHECKPOINT_20261102.md).

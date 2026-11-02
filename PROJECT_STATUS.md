@@ -1,3 +1,7 @@
+## 2026-11-02 — FK fixture rule follow-up
+
+PR #325 source c2f passed both MariaDB service-plan lanes and failed the new identical-occurrence fixture assertion in both MySQL lanes after the original 138 checks passed. The reviewed fixture-only follow-up preserves original FK actions and passes one local 172/172 supplement. Current-source maintained matrices and integration acceptance remain pending. [Current source, evidence and next gates](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
+
 ## 2026-11-02 — foreign-key metadata component checkpoint
 
 The exact-primary84 component narrows two repeated foreign-key metadata queries. Local results are 172/172 metadata, 219/219 service-plan native, 721/721 recurring native, and 3/3 for the saved-mapping browser block. The original hosted timeout remains preserved. Maintained matrices and integration acceptance remain pending; no full-site, merge, release or deployment claim is made. [Source, evidence and continuation](docs/FK_METADATA_QUERY_CHECKPOINT_20261102.md).
