@@ -41,10 +41,10 @@ function growth_package_defaults(): array {return [
  ['Custom systems','Build around how your business actually operates.','Workflow discovery\nInterface and data planning\nAgreed customer accounts or integrations\nPhased development and review']
  ];}
 function growth_sources(): array {return [
- ['Wix: hosting and exporting a site','https://support.wix.com/en/article/exporting-or-embedding-your-wix-site-elsewhere'],
- ['Wix Studio: design and development tools','https://www.wix.com/studio'],
- ['Squarespace: adding custom code','https://support.squarespace.com/hc/en-us/articles/205815928-Add-custom-code-to-your-site'],
- ['Squarespace: exporting site content','https://support.squarespace.com/hc/en-us/articles/206566687-Export-your-site-content']
+ ['Wix: hosting and exporting a site','https://support.wix.com/en/article/exporting-or-embedding-your-wix-site-elsewhere','2026-10-16','All plans; a Wix site must run on Wix hosting'],
+ ['Wix Studio: design and development tools','https://www.wix.com/studio','2026-10-16','Studio platform capability overview'],
+ ['Squarespace: adding custom code','https://support.squarespace.com/hc/en-us/articles/205815928-Add-custom-code-to-your-site','2026-10-16','JavaScript/iframes and code injection require Core, Plus, Advanced or some legacy plans'],
+ ['Squarespace: exporting site content','https://support.squarespace.com/hc/en-us/articles/206566687-Exporting-your-site','2026-10-16','All plans; XML export covers selected content only']
  ];}
 function growth_token(): string {$_SESSION['growth_tokens']=array_filter($_SESSION['growth_tokens']??[],fn($t)=>is_int($t)&&$t>time()-7200);if(count($_SESSION['growth_tokens'])>=20)array_shift($_SESSION['growth_tokens']);$t=bin2hex(random_bytes(24));$_SESSION['growth_tokens'][$t]=time();return $t;}
 function growth_submit(array $a): array {
