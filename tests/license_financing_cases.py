@@ -77,6 +77,9 @@ def run_browser(env,browser):
 
     initial=fixture('setup-initial','0')
     validate=base+'/existing/api/validate.php'
+    # The adjacent software suite shares this API's ten-request fixed-minute
+    # IP bucket. Let the unchanged 60-second window pass before these probes.
+    time.sleep(61)
     initial_denied=requests.post(validate,json={
         'license_key':initial['license_key'],
         'domain':initial['domain']
@@ -274,7 +277,11 @@ def run_browser(env,browser):
         or env['db']("SELECT value FROM ci_settings WHERE name='support_policy_confirmed'") != [{'value':'1'}]):
         support_setup=submit(admin,support_admin,'support_migrate',{'owner_password':'Synthetic owner passphrase 2026','confirm':'1'})
         check('Financing support acceptance prepares support storage when needed',
-              support_setup.status_code==200 and 'Support access is ready' in support_setup.text)
+              support_setup.status_code==200
+              and 'Owner account review is ready. Staff support access remains restricted until approved.' in support_setup.text
+              and soup(support_setup).select_one('[name=action][value=support_migrate]') is None
+              and env['db']("SELECT name,value FROM ci_settings WHERE name IN ('support_schema_version','support_policy_confirmed') ORDER BY name")
+                  ==[{'name':'support_policy_confirmed','value':'1'},{'name':'support_schema_version','value':'1'}])
     if env['db']('SELECT allowed FROM ci_support_clients WHERE client_id=1') != [{'allowed':1}]:
         chosen_form(admin,support_admin,'support_policy','client_id',1,
                     {'allowed':'1','owner_password':'Synthetic owner passphrase 2026'})
@@ -422,8 +429,8 @@ def run_browser(env,browser):
                                   and form.select_one('[name=license_id]') is not None
                                   and form.select_one('[name=license_id]').get('value')==str(license_id))]
     check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',
-          'payment status can no longer suspend this license' in paid_workspace.text.lower()
-          and 'owner license controls' in paid_workspace.text.lower()
+          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()
+          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()
           and not client_domain_deactivate
           and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)
     forged_domain=alice.post(base+'/existing/portal/index.php',data={

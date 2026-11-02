@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "b0d878e622e472b58512c9bddc9779f9f9d8b506a6bf193b8187aef365c194de",
+  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -238,6 +238,24 @@
         [
           "        match.group('indent') + 'from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser\\n'\n        + match.group('indent') + 'cloud_assignment_browser(globals(),browser)\\n'\n    )\n    check('Template browser acceptance remains in its reviewed local sequence',\n        following.startswith(next_hook))\n    reports = json.loads((root / 'tools/acceptance-reports.json').read_text())\n    names = ['password-reset-template-contract-results.json', 'password-reset-template-contract-minimal-results.json', 'password-reset-template-native-results.json']\n    for lane in ('browser', 'final'):\n        check('Template reports are required exactly once in '+lane, all(reports[lane].count(name) == 1 for name in names))\n        old = [name for name in reports[lane] if name not in names]\n        check('Template reports preserve every predecessor '+lane+' report', hashlib.sha256(json.dumps(old, separators=(',', ':')).encode()).hexdigest() == addition['predecessor_reports_sha256'][lane])\n",
           "        match.group('indent') + 'from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser\\n'\n        + match.group('indent') + 'cloud_assignment_browser(globals(),browser)\\n'\n    )\n    check('Template browser acceptance remains in its reviewed local sequence',\n        following.startswith(next_hook))\n    reports = json.loads(fixture_predecessor_source(root, 'tools/acceptance-reports.json'))\n    names = ['password-reset-template-contract-results.json', 'password-reset-template-contract-minimal-results.json', 'password-reset-template-native-results.json']\n    for lane in ('browser', 'final'):\n        check('Template reports are required exactly once in '+lane, all(reports[lane].count(name) == 1 for name in names))\n        old = [name for name in reports[lane] if name not in names]\n        check('Template reports preserve every predecessor '+lane+' report', hashlib.sha256(json.dumps(old, separators=(',', ':')).encode()).hexdigest() == addition['predecessor_reports_sha256'][lane])\n"
+        ]
+      ]
+    },
+    "tests/license_financing_cases.py": {
+      "original_sha256": "a999c6ccf78056a969fb582cc34af1615a776e5cf19eb9b4c9a3bda8f7da02c5",
+      "current_sha256": "7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1",
+      "edits": [
+        [
+          "    validate=base+'/existing/api/validate.php'\n    initial_denied=requests.post(validate,json={\n",
+          "    validate=base+'/existing/api/validate.php'\n    # The adjacent software suite shares this API's ten-request fixed-minute\n    # IP bucket. Let the unchanged 60-second window pass before these probes.\n    time.sleep(61)\n    initial_denied=requests.post(validate,json={\n"
+        ],
+        [
+          "        check('Financing support acceptance prepares support storage when needed',\n              support_setup.status_code==200 and 'Support access is ready' in support_setup.text)\n",
+          "        check('Financing support acceptance prepares support storage when needed',\n              support_setup.status_code==200\n              and 'Owner account review is ready. Staff support access remains restricted until approved.' in support_setup.text\n              and soup(support_setup).select_one('[name=action][value=support_migrate]') is None\n              and env['db'](\"SELECT name,value FROM ci_settings WHERE name IN ('support_schema_version','support_policy_confirmed') ORDER BY name\")\n                  ==[{'name':'support_policy_confirmed','value':'1'},{'name':'support_schema_version','value':'1'}])\n"
+        ],
+        [
+          "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
+          "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
         ]
       ]
     }
