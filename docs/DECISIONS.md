@@ -1,3 +1,7 @@
+## 2026-11-03 UTC — verified main and homepage reconciliation
+
+Use a distinct normal-merge integration branch from verified main and retain PR328 as a parent. Correct only finite reviewed proof identities/inverses; preserve strict checks and all original feature/test bytes. Narrative-only CHANGELOG content stays governed by the existing narrative policy. Current-main automatic acceptance, broader release qualification, publication and live deployment remain separate states. No other branch, old release, rate limit or safety boundary is altered.
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

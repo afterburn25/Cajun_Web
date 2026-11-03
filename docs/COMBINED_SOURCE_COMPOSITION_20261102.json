@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
+  "verifier_sha256": "930058b872d955547ebd64cbc6fd26b3898c8f8d6234866698c39367d2dfca99",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -256,6 +256,60 @@
         [
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
+        ]
+      ]
+    },
+    "site/assets/css/premium.css": {
+      "original_sha256": "bde2678d7a655d124491b3041a73bc6f474031c17f18396da0e8d3c994299380",
+      "current_sha256": "790097578fe9219d52a8581e3aae761c4646b5145590ae4b6e15d74a690d1743",
+      "edits": [
+        [
+          ".hero-visual img {width:100%;height:100%;max-width:none;object-fit:cover;object-position:70% center;filter:brightness(1.13) saturate(1.05);}\n.hero-visual:after {content:\"\";position:absolute;inset:0;background:linear-gradient(90deg,#030d19b3 0%,transparent 24%),linear-gradient(0deg,#03101d80,transparent 12%,transparent 96%,#05122555);}\n.cwp-site .hero-inner {min-height:610px;height:100%;position:relative;display:flex;align-items:center;pointer-events:none;}\n.cwp-site .hero-copy {position:relative;width:53%;max-width:780px;padding:42px 0 65px;pointer-events:auto;z-index:2;}\n",
+          ".hero-visual img {width:100%;height:100%;max-width:none;object-fit:cover;object-position:70% center;filter:brightness(1.13) saturate(1.05);}\n.hero-visual:after {content:\"\";position:absolute;inset:0;background:linear-gradient(90deg,#030d19b3 0%,transparent 24%),linear-gradient(0deg,#03101d80,transparent 12%,transparent 96%,#05122555);}\n.hero-devices {position:absolute;right:5%;bottom:10%;width:min(330px,28vw);height:205px;z-index:0;pointer-events:none;transform:translate3d(var(--scene-x,0px),var(--scene-y,0px),0);transition:transform .7s ease-out;filter:drop-shadow(0 19px 34px #000b);}\n.hero-device {position:absolute;border:1px solid #e8bf6678;border-radius:10px;background:linear-gradient(150deg,#0e2c4d,#050f1d 55%,#0b2238);box-shadow:inset 0 0 0 1px #0f2c4e,inset 0 1px 1px #9dccf526,0 0 19px #2d86de21;overflow:hidden;}\n.hero-device:before {content:\"\";position:absolute;inset:0;background:linear-gradient(118deg,transparent 30%,#ffe9b012 45%,transparent 61%);pointer-events:none;}\n.hero-device-desktop {left:0;bottom:0;width:232px;height:150px;}\n.hero-device-mobile {right:0;bottom:16px;width:94px;height:164px;border-radius:14px;border-color:#f0cd8b8f;box-shadow:inset 0 0 0 1px #103052,inset 0 1px 1px #ffe9b533,0 0 19px #e7b34a21;}\n.hero-device i {position:absolute;left:14px;right:14px;height:5px;border-radius:3px;background:linear-gradient(90deg,#75baf566,#eac77730);}\n.hero-device i:first-child {top:16px;right:62%;height:8px;background:linear-gradient(90deg,#ffe6a3,#eac777);box-shadow:0 0 8px #f0c75e55;}\n.hero-device i:nth-child(2) {top:35px;}\n.hero-device i:nth-child(3) {top:49px;right:40%;}\n.hero-device:after {content:\"\";position:absolute;left:14px;right:14px;bottom:14px;height:36px;border-radius:6px;border:1px solid #75baf540;background:linear-gradient(160deg,#12304f66,#030a14cc);}\n.hero-device-mobile i {left:12px;right:12px;}\n.hero-device-mobile i:first-child {right:40%;}\n.hero-device-mobile:after {left:12px;right:12px;bottom:12px;height:44px;}\n@media(max-width:1000px){.hero-devices{display:none;}}\n.cwp-site .hero-inner {min-height:610px;height:100%;position:relative;display:flex;align-items:center;pointer-events:none;}\n.cwp-site .hero-copy {position:relative;width:53%;max-width:780px;padding:42px 0 65px;pointer-events:auto;z-index:2;}\n"
+        ],
+        [
+          ".cwp-site.motion-off *, .cwp-site.motion-off *:before,.cwp-site.motion-off *:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;}\n.cwp-site.motion-off .reveal {opacity:1!important;transform:none!important;}\n.cwp-site.motion-off .hero-visual {transform:none!important;}\n@media(min-width:1650px) {\n    .cwp-site .hero,.cwp-site .hero-inner {min-height:675px;}\n",
+          ".cwp-site.motion-off *, .cwp-site.motion-off *:before,.cwp-site.motion-off *:after {animation:none!important;transition:none!important;scroll-behavior:auto!important;}\n.cwp-site.motion-off .reveal {opacity:1!important;transform:none!important;}\n.cwp-site.motion-off .hero-visual,.cwp-site.motion-off .hero-devices {transform:none!important;}\n@media(min-width:1650px) {\n    .cwp-site .hero,.cwp-site .hero-inner {min-height:675px;}\n"
+        ]
+      ]
+    },
+    "site/assets/js/site.js": {
+      "original_sha256": "e921356bf10d077eef22af69c82e8e63754e970e9c1130dfab97eb0b0f2a1e9e",
+      "current_sha256": "3da42a595a67d5b8fea689785267353f0424a90ac03bb9d80c4d8e6a160cef16",
+      "edits": [
+        [
+          "        });\n        const hero = document.querySelector('.hero');\n        const scene = document.querySelector('[data-parallax]');\n        if (hero && scene) {\n            hero.addEventListener('pointermove', e => {\n                if (paused() || document.hidden) return;\n                const rect = hero.getBoundingClientRect();\n                scene.style.setProperty('--scene-x', ((e.clientX - rect.left) / rect.width - .5) * 8 + 'px');\n                scene.style.setProperty('--scene-y', ((e.clientY - rect.top) / rect.height - .5) * 6 + 'px');\n            });\n            hero.addEventListener('pointerleave', () => { scene.style.setProperty('--scene-x', '0px'); scene.style.setProperty('--scene-y', '0px'); });\n        }\n    }\n",
+          "        });\n        const hero = document.querySelector('.hero');\n        const planes = [\n            {el: document.querySelector('[data-parallax]'), x: 8, y: 6},\n            {el: document.querySelector('[data-parallax-near]'), x: 17, y: 12},\n        ].filter(p => p.el);\n        if (hero && planes.length) {\n            hero.addEventListener('pointermove', e => {\n                if (paused() || document.hidden) return;\n                const rect = hero.getBoundingClientRect();\n                const nx = (e.clientX - rect.left) / rect.width - .5, ny = (e.clientY - rect.top) / rect.height - .5;\n                planes.forEach(p => { p.el.style.setProperty('--scene-x', nx * p.x + 'px'); p.el.style.setProperty('--scene-y', ny * p.y + 'px'); });\n            });\n            hero.addEventListener('pointerleave', () => planes.forEach(p => { p.el.style.setProperty('--scene-x', '0px'); p.el.style.setProperty('--scene-y', '0px'); }));\n        }\n    }\n"
+        ]
+      ]
+    },
+    "site/pages/home/body.php": {
+      "original_sha256": "c5e579de80c291c28c8df8ed113f600c2d1592fd70f6be6afde90a8fab165ed5",
+      "current_sha256": "77c19a7ae72842d9bb1a8cfe73d25de8c6c46f0f845adc1dd1266e210e11962c",
+      "edits": [
+        [
+          "    <div class=\"hero-visual\" aria-hidden=\"true\" data-parallax>\n        <img src=\"<?=esc(asset('hero-detail.webp'))?>\" width=\"770\" height=\"459\" alt=\"\" fetchpriority=\"high\" decoding=\"async\">\n    </div>\n    <div class=\"container hero-inner\">\n",
+          "    <div class=\"hero-visual\" aria-hidden=\"true\" data-parallax>\n        <img src=\"<?=esc(asset('hero-detail.webp'))?>\" width=\"770\" height=\"459\" alt=\"\" fetchpriority=\"high\" decoding=\"async\">\n    </div>\n    <div class=\"hero-devices\" aria-hidden=\"true\" data-parallax-near>\n        <div class=\"hero-device hero-device-desktop\"><i></i><i></i><i></i></div>\n        <div class=\"hero-device hero-device-mobile\"><i></i><i></i></div>\n    </div>\n    <div class=\"container hero-inner\">\n"
+        ]
+      ]
+    },
+    "tests/release_cases.py": {
+      "original_sha256": "d0f4474fa827f3a1c2c1be1256e3614476f522cb11dc3b905ac93024143f77bc",
+      "current_sha256": "235ba3512076d5231808bc0f32912534b4ac249852f1f5cb9d0209d0fa07f0f6",
+      "edits": [
+        [
+          "    check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no unexpected failed network requests',not unexpected_failed)\n    context.close()\n    # Regression for the original inquiry form, whose named action input also shadows form.action.\n    contact=browser.new_context();p=contact.new_page();p.goto(BASE+'/existing/index.php?page=contact')\n",
+          "    check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no unexpected failed network requests',not unexpected_failed)\n    context.close()\n    # Measured homepage evidence: real PerformanceObserver layout-shift/LCP/longtask capture.\n    perf=browser.new_context(viewport={'width':1440,'height':900})\n    pp=perf.new_page()\n    pp.add_init_script(\"window.__cls=0;window.__lcp=0;window.__longtasks=0;try{new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__cls+=e.value}).observe({type:'layout-shift',buffered:true});new PerformanceObserver(l=>{const es=l.getEntries();if(es.length)window.__lcp=es[es.length-1].startTime}).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver(l=>{window.__longtasks+=l.getEntries().length}).observe({type:'longtask',buffered:true});}catch(e){}\")\n    pp.goto(BASE+'/existing/',wait_until='networkidle')\n    pp.evaluate('window.scrollTo({top:document.documentElement.scrollHeight})');pp.wait_for_timeout(350);pp.evaluate('window.scrollTo(0,0)');pp.wait_for_timeout(350)\n    metrics=pp.evaluate('({cls:window.__cls,lcp:window.__lcp,longtasks:window.__longtasks,nav_ms:performance.getEntriesByType(\"navigation\")[0].duration,resources:performance.getEntriesByType(\"resource\").length,devices:!!document.querySelector(\".hero-devices\")})')\n    (QA/'homepage-performance.json').write_text(json.dumps({'viewport':'1440x900','measured':metrics,'evidence':'lab (Chromium loopback), not real-user data'},indent=2))\n    check('Layered device depth is present on desktop',metrics['devices'])\n    check('Homepage load is free of large layout shifts',metrics['cls']<=0.1)\n    check('Homepage renders inside a bounded lab budget',0<metrics['lcp']<10000 and 0<metrics['nav_ms']<15000)\n    perf.close()\n    # Regression for the original inquiry form, whose named action input also shadows form.action.\n    contact=browser.new_context();p=contact.new_page();p.goto(BASE+'/existing/index.php?page=contact')\n"
+        ]
+      ]
+    },
+    "tools/acceptance-contract.json": {
+      "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
+      "current_sha256": "3193759c2810ccea2d7ff4c17c1082729c42708cfe861f56e075d8c86bf09425",
+      "edits": [
+        [
+          "      \"tests/release_cases.py\": \"807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af\",\n",
+          "      \"tests/release_cases.py\": \"235ba3512076d5231808bc0f32912534b4ac249852f1f5cb9d0209d0fa07f0f6\",\n"
         ]
       ]
     }

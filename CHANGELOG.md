@@ -1,3 +1,11 @@
+## 2026-11-03 UTC — verified main and homepage reconciliation
+
+Preserve the existing homepage device-depth/performance increment from PR328 and repair its strict finite source evidence. No assertion, permission guard, workflow or application behavior is removed to obtain acceptance. The current main merge and its passed automatic acceptance are recorded separately from this unmerged candidate and pending stable release qualification.
+
+## Unreleased - 2026-11-02 reconcile port
+
+Port homepage device depth + measured performance evidence (PR199) onto the 1.26.1 consolidation base.
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.
