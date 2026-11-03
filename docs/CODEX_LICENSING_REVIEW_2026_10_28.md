@@ -1,0 +1,208 @@
+# Independent licensing integration review — 2026-10-28
+
+## Current integration addendum — 16:52 UTC
+
+GitHub `main` remains `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`.
+PR #266 advanced to exact head
+`d062bd5c3b78f3ec265ffc8a404e253013cfa924`, whose only shipping
+change is the direct `mail_drafts_account()` correction already present in the
+frozen integration tree. Prepared normal merge
+`ec6549713190c6a325c0ad4dd3e97f8885eb4053`, tree
+`608cb1a5c1e47ffad9eb7f422433eb434b151215`, has the prior prepared
+review head `bcfc2b5d` and Devin's exact head as its two parents. It retains the
+integration inventory because the integration licenses view includes the same
+bug fix plus the independently reviewed sender authorization work.
+
+The protected branch remains frozen at `74b5af3a` while sealed Application run
+`40705973907` completes. Build, Apache root/subfolder/rewrite, interrupted
+recovery and native database/upgrade/authorization jobs pass; the real HTTP and
+Chromium step is still running. All other 55 exact-candidate workflows pass,
+including the PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 recurring, domain-dispatch
+and WordPress matrices, both focused installed suites, and all package gates.
+No duplicate run was dispatched.
+
+The prepared refresh changes no shipping bytes from the frozen candidate. Its
+material delta is the owner-driven payment-schema preparation in six cumulative
+upgrade fixtures plus documentation and exact feature ancestry. Local 69 build
+guards, 283 artifact checks, canonical dependency/inventory locks, all 99
+workflow parses, documentation/link checks and whitespace pass. Fresh hosted
+CI remains mandatory after the ref moves; parent results are diagnostic only.
+
+PR #284's sandbox supply-chain hardening still conflicts with the candidate in
+exactly six files: the two sandbox workflows, their two Python runners, and the
+two status documents. Resolve the four security-sensitive files in favor of
+PR #284 and union the documents. No PR #266, #268 or #284 approval is recorded.
+Real Authorize.Net sandbox credentials/transactions, installed application
+recovery for those provider operations, a version above 1.25.0, actual
+published-v1.25-to-next-version upgrade/recovery, final retained artifacts,
+approved merge and exact-main acceptance remain release gates.
+
+## Current integration addendum — 14:46 UTC
+
+This addendum supersedes the older checkpoint values retained below. GitHub
+`main` remains `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`. The protected
+integration ref is frozen at `74b5af3a2f2dd50ad70f34ea211a5b5b973635af`,
+tree `3f13a533c139832d83e6fde057502e3d9d4e9e1f`. Its GitHub PR test
+merge `0c9f25e97c810eeb3fbca9eed784291d10530d78` has zero file changes
+from that head, so its results apply to the exact candidate tree.
+
+At this checkpoint 33 of 56 exact-candidate workflows are successful, 23 are
+queued/running and none has failed. Protected Application build is green;
+native/browser and Apache are running and recovery is queued. Exact-candidate
+software and financed-site focused installed suites pass 308 and 271 named
+HTTP/browser checks respectively, with empty PHP-diagnostic reports and clean
+fresh-install prerequisites. Downloaded evidence screenshots were inspected for
+desktop/mobile fit and legibility. No real provider request occurs in these
+suites.
+
+All three exact-candidate package workflows pass. FULL-PROJECT,
+COMPLETE-UPLOAD and UPDATE contain 6,120 / 2,956 / 2,943 members; direct
+extraction, CRC/member integrity, unsafe/case-colliding paths and nested ZIP
+refusal pass. The immutable published-v1.25 COMPLETE baseline hash verifies,
+and the candidate delta contains 104 changed-or-added shipping files with zero
+removed. These ephemeral development builds are not the final retained release
+assets.
+
+The integrated security corrections require product identity for modern
+software entitlements and restore the authorized finance-agreement sender
+lookup with CSRF, sender-grant, account-revision, tenant and unchanged-agreement
+regressions. The frozen predecessor run retained its original browser payment-
+schema and Apache mail-sender failures; the current run is the first combined
+hosted test of both fixes.
+
+PR #266 advanced during that run to test-only head
+`5326ecb8e6c33a3c4b77d8851e3d0c64d8ebace4`. An unattached normal
+two-parent refresh retains the integration's stronger published 1.5/1.6/1.7
+record-preservation helper and adds the missing current-install and 1.8/1.9/1.10
+owner-driven payment preparation. Its exact commit is
+`d43ce31e2ac60f4c9f01ef62c40c556d88426b08`, tree
+`aa475bf5449813fc2238f3ccde2b2d783ea08f28`. The integration ref will
+not move until the frozen protected run is terminal.
+
+Real Authorize.Net evidence remains blocked. The sandbox bootstrap sequence is
+PR #271 → #279 → #283 → #284. The final focused follow-up pins actions, keeps
+Playwright/Accept.js on a runner that never receives the transaction key, and
+uses a fresh standard-library-only transaction runner. The no-secret contracts
+pass locally; server-side `authorize-net-sandbox` main-only policy,
+environment-only credential scope, independent approval and real sandbox runs
+are unverified. No live charging, production switch or deployment is
+authorized.
+
+Remaining merge/release gates are the terminal frozen run, refreshed exact-
+candidate CI, independent approvals, real sandbox evidence, a version greater
+than 1.25.0, the actual populated published-v1.25 upgrade/recovery, retained
+final artifacts/checksums, approved merge, and post-merge `main` acceptance.
+
+## Ownership and source
+
+The owner assigned this review to support the existing PR #266 implementation. After discovering a second active chat, the owner explicitly kept **Complete Licensing Integration** as the integration writer. This correction uses `codex/licensing-webhook-isolation`; it does not write `codex/licensing-integration-review`, Devin's feature branch, or `main`.
+
+- Frozen review/build source: `6045b801fc7653125da5d11c0a8cd956ce58a26c`.
+- Refreshed PR #266 head: `5ba2a37da0bf8aa22b1162acb7f6dca142da969a`. The only intervening change is the financing browser fixture's `RecurringBillingTerms` import; it does not change shipping code.
+- Main: `fdf40a25be3b9a7c2e154a1fad17ab4c7ae55827`.
+- Latest published release: [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0), source `b79c67110829126916e3a65e616191542448bccc`.
+- PR #266 remains a draft; the review-submission API returned no submitted reviews at this checkpoint. This report is not a full security approval or merge authorization.
+
+## Reproduced defects and focused correction
+
+**P1 — optional financing prevents software capture handling.** `software_webhook_process()` checks financing before software one-time capture handling in both sandbox and production. `license_finance_charge_webhook_review()` previously queried `license_finance_charges` without checking preparation. A software-only installation therefore raised a missing-table error and returned HTTP 503 for an otherwise valid notification. The correction returns the existing unmatched result before querying unprepared finance storage, allowing the software handler to continue. It does not fulfill, credit, or ignore a matched financing payment.
+
+**P1 — independent finance activation prevents software reversal handling.** With finance storage prepared but financing production activation disabled, `license_finance_payment_reversal_review()` previously loaded finance gateway settings before identifying the original transaction. This caused unrelated software refunds and voids to fail on the finance production gate. The correction validates the transaction and identifies financing ownership first. A matched finance reversal still requires the existing production gate; software reversals continue to their own verified handler.
+
+The two service changes are deliberately narrow. No schema, customer identity, gateway credentials, production activation, ledger math, signature verification, or paid-transition policy changes. Installer hashes are regenerated for both changed files.
+
+`tests/finance_webhook_isolation.php` calls the real PHP services with strict read-only database doubles. On the frozen source it reproduces the absent-table query and both unrelated reversal failures. With the correction all 10 cases pass on local PHP 8.4.25, both normal configuration and `php -n`. Cases include recognized capture replay, amount mismatch, required finance production activation and exact reversal identity. The focused CI workflow runs this regression on PHP 8.2 and 8.4 with container networking disabled. Its results must be inspected independently; local doubles do not establish native SQL or actual gateway acceptance.
+
+## Executed local evidence
+
+### Continuing goal: actual SQL verification
+
+The next review increment adds `tests/license_finance_webhook_native_cases.php` to the existing signed zero-down native fixture. All 40 cases pass with PHP 8.2.35 and 8.4.25 against both MariaDB 10.11.19 and MySQL 8.4.13. These are real PDO connections, foreign-key-constrained InnoDB rows, prepared queries, transactions, triggers and separate processes, not database doubles. Replaying these cases against archived before-fix source reproduces the missing optional finance table PDO exception on `5ba2a37d`, and the cancelled-state overwrite on `f6d49812`; the failing reports are retained.
+
+Coverage includes absent optional finance tables (reversible rename), unrelated software refund/void routing while finance production is locked, five lifecycle events against all protected states, confirmed suspension, normal active transitions and exact audit counts. An audit trigger raises a real SQL error and proves the state update rolls back. A second process demonstrably waits in the database's user-lock state, then re-reads a newly set replacement reservation after acquiring the mutex. Snapshots prove licenses, domains, agreements, invoices, payments and retained receipt/reversal history remain unchanged. Temporary subscription rows are scoped to the disposable fixture and cleaned up.
+
+Local full recurring/financing runs on Windows pass 209 checks, including all 40 new cases, then fail at the existing `write_private_file()` requirement because Windows PHP does not retain POSIX 0600 permissions. The original run before the new tests stopped at the same boundary after 169 passing checks. Both failures are retained; neither full run is counted as passed. The private-file requirement is unchanged.
+
+Hosted verification completed for correction commit `168c49997959d0fd706d85204276951263f42bd9`: [native matrix 40651884715](https://github.com/afterburn25/Cajun_Web/actions/runs/40651884715) passes all four PHP/database combinations with 588 recurring checks and 68 form checks in each normal/no-INI mode. [Focused regression run 40651884698](https://github.com/afterburn25/Cajun_Web/actions/runs/40651884698) passes all 55 routing/lifecycle checks on both PHP versions. These runs predate the 40 new native cases; the enclosing test commit requires its own hosted run. Complete installed acceptance and real sandbox tests remain mandatory.
+
+The local database binaries were obtained from official distributions and run only on loopback, without registering system services or using customer data. MariaDB ZIP SHA-256: `398ea30e5036010bbebe01d2b1804280424dcc2626e36d8e95155c04d25a0490` ([official checksums](https://archive.mariadb.org/mariadb-10.11.19/winx64-packages/sha256sums.txt)). MySQL ZIP SHA-256: `e9cd98b1d23f122987b1afca26ad942efec5891481103d48ae3cde237fa3ea54`; its [published checksum](https://dev.mysql.com/downloads/mysql/8.4.html) matched and the server binary has a valid Oracle Authenticode signature. These runtime checks establish test provenance, not production deployment approval.
+
+### Follow-up: delayed financing lifecycle events
+
+**P1 — delayed lifecycle events can clear financing safeguards.** On `5ba2a37d` and routing correction `f6d49812`, the real lifecycle service accepts `cancelled + failed -> payment_failed`, `billing_suspended + failed -> payment_failed`, `reversal_recovery + suspended -> billing_suspended` and `replacing + suspended -> billing_suspended`. The first two remove catch-up eligibility. The latter two clear states that prohibit ordinary settlement; replacement finalization also rejects the overwritten reservation, and its exception handler only fences a row that is still `replacing`.
+
+The follow-up on `codex/licensing-lifecycle-ordering` preserves cancellation, reversal recovery and in-flight replacement states, alongside the existing review/payoff holds. Confirmed suspension survives a delayed failure. Normal active/failure transitions to suspension, cancellation and review still occur with the same transaction, lock and audit. No new state, schema, gateway call or ledger rule is introduced. This branch is stacked on [#269](https://github.com/afterburn25/Cajun_Web/pull/269) to keep the follow-up diff focused.
+
+`tests/finance_subscription_lifecycle.php` exercises the actual service with strict in-memory SQL doubles. Seventeen of 45 cases fail before the fix; all 45 pass after it, under PHP 8.4.25 normal and no-INI execution. Coverage includes all five lifecycle events against review/payoff/cancelled/reversal/replacement states, normal progression, duplicate delivery, archived/unknown IDs, unprepared storage, retained recovery eligibility and settlement fences. This is deterministic interleaving coverage, not a real concurrent database or gateway run.
+
+### Routing correction packages
+
+The focused [#269 CI run 40650392930](https://github.com/afterburn25/Cajun_Web/actions/runs/40650392930) passed both PHP 8.2 and 8.4 service-test jobs, including evidence uploads. Repository checks also passed at `f6d49812`. This result covers the routing correction; the lifecycle follow-up requires its own run.
+
+Exact [#269](https://github.com/afterburn25/Cajun_Web/pull/269) commit `f6d49812f5aafb03a85e4b0a3dc20f5bfbabbed5` built successfully. All three archives passed every-member SHA-256, manifest/CRC, path/collision, no-nested-ZIP and direct-extraction checks. Version remains the development label 1.25.0; these are not replacement published-release assets.
+
+| Correction artifact | Members | SHA-256 |
+|---|---:|---|
+| COMPLETE-UPLOAD | 2,956 | `e282a81a99cd1e1d205e0d647fa2aaa361bc450ae625155e921c0a8d00b35cf7` |
+| FULL-PROJECT | 6,101 | `2f0d7ea7787481153fb257721417b60404261f40789f7256b511594784c3b5be` |
+| UPDATE | 2,943 | `bbb583ab323c728ef9788d854e880843aa79b59984634bc274326a8cfddffbe8` |
+
+These hashes precede the lifecycle follow-up and must not be used to certify it.
+
+### Baseline and routing tests
+
+- The combined corrections also pass all 55 new actual-service cases and the 12 existing pure/source suites using PHP 8.2.35 with `-n`. The isolated Windows runtime came from the [official PHP release index](https://downloads.php.net/~windows/releases/releases.json); the archive SHA-256 was verified as `ebe75134c03869826cb1714d31fd5eb96afefa6d9fd35d786971c03020e7bce2`. This complements local PHP 8.4.25 and does not substitute for the Linux/database matrix.
+- PR #266 advanced to `937bec7f10ac24ddf4c60d8209aec2a6f9a05d4f` after the reviewed `5ba2a37d`: only the financing browser test's stale recovery-link wording changed. No shipping code changed. The first failure in run 40649494078 was that wording assertion after the entitlement checks; the newer run must be assessed separately.
+- On `937bec7f`, [finance run 40650664410](https://github.com/afterburn25/Cajun_Web/actions/runs/40650664410) now passes recovery-link generation/opening and support denial of agreement viewing, then fails `Staff support session cannot trigger financing payment actions`. The action controller rejects support mutations, but the finance renderer emits its own HTTP 403 message before rendering the controller error. The test checks the controller's message; response/audit evidence must confirm the denial without weakening the assertion. This diagnosis was handed to the existing fixture writer. Catch-up/replacement/payoff browser cases after this assertion have not executed in that run.
+
+- Twelve existing suites passed: software license policy; commerce contract; production gate; gateway amounts; payment CSP; payment reversal; subscription events, gateway and periods; signed webhooks; financing policy; financing source contract.
+- The payment-link view cases are an included native suite, not a standalone entry point. Direct invocation returned its expected CLI/bootstrap guard exit 2; it is **not** counted as passed.
+- Changed PHP files and the new regression pass syntax checks. The new workflow parses. Documentation continuity and local links pass.
+- Frozen source `6045b801` built successfully using `python tools/build.py --commit ...`, including all shipping PHP and JavaScript syntax checks and canonical dependency validation.
+- All three baseline packages passed CRC, exact manifest inventory, every member SHA-256, case-collision/path checks, no-nested-ZIP checks and direct extraction. These are development artifacts labeled 1.25.0, not replacement release assets.
+
+| Baseline artifact | Members | SHA-256 |
+|---|---:|---|
+| COMPLETE-UPLOAD | 2,956 | `d84600f92895cd88a55b67a02831fc302fbd37cf175db6d77390941bb212437d` |
+| FULL-PROJECT | 6,098 | `be94f49f21149f6d1091ca26b6844c6ea8a0bf169bf7c9d6108be54fd10a12f1` |
+| UPDATE | 2,943 | `24580d5a3c9b507d3640a73342f606a854c37474c8a31ceb0bdff270886c4622` |
+
+These hashes describe the baseline, **not** the corrected source. Correction and final integration artifacts need their own exact-commit evidence.
+
+## Historical failure classification
+
+Complete logs were fetched for the failing jobs below. Later results must remain tied to their own commits.
+
+| Historical run | First cause / observed result |
+|---|---|
+| [40615027920](https://github.com/afterburn25/Cajun_Web/actions/runs/40615027920) | Native: `Enable sandbox trials first.` after 69 sandbox checks. Apache: `rewrite 1.23.0 recurring upgrade requires explicit owner preparation`. Build and recovery jobs succeeded; browser was skipped after native failure. |
+| [40615027741](https://github.com/afterburn25/Cajun_Web/actions/runs/40615027741) | Renewal dispatch reported failure after six checks; preceding 588 recurring checks passed. The complete job log does not name the failing dispatch assertion; retained JSON evidence is needed to attribute that exact failure. |
+| [40615027779](https://github.com/afterburn25/Cajun_Web/actions/runs/40615027779) | All four native test steps passed. PHP 8.2/MariaDB failed later because GitHub's CreateArtifact service timed out after five attempts. This is evidence-upload infrastructure failure, not a WordPress assertion failure. |
+| [40615027824](https://github.com/afterburn25/Cajun_Web/actions/runs/40615027824) | Native: `Enable payment preparation first.` Schema-v2 fixture corrections are present in the reviewed source; historical failure is retained. |
+
+At `6045b801`, [finance run 40648391263](https://github.com/afterburn25/Cajun_Web/actions/runs/40648391263) passed agreement privacy, another-client denial, signature evidence, zero-down activation, domain replacement, owned bundle and project-release checks, then failed in the `late` fixture: `RecurringBillingTerms` was not imported. That exact cause was communicated on PR #266 and subsequently corrected by `5ba2a37d`. It does not prove the remaining finance cases passed.
+
+At refreshed head `5ba2a37d`, [finance run 40649494078](https://github.com/afterburn25/Cajun_Web/actions/runs/40649494078) is failed. Application [40649500122](https://github.com/afterburn25/Cajun_Web/actions/runs/40649500122) is pending, recurring [40649493682](https://github.com/afterburn25/Cajun_Web/actions/runs/40649493682) is in progress and renewal dispatch [40649500111](https://github.com/afterburn25/Cajun_Web/actions/runs/40649500111) is queued. Those are not passing acceptance results. No duplicate runs were dispatched for queue delay.
+
+## Integration matrix and remaining gates
+
+| Area | Evidence available from this review | Still required |
+|---|---|---|
+| Master/standard/trial/temporary, expiry, domains, dependencies, installation/update entitlements | Local pure policy and source-contract suites passed | Final native and installed authorization/download coverage |
+| One-time and recurring payment contracts, signatures, amounts, reversals, production safeguards | Local pure/source suites; two reproduced routing corrections | Native concurrency/replay and real sandbox execution |
+| Customer-specific finance agreements, signature evidence, zero-down, active downloads | Named installed checks passed before the frozen run's later failure | Entire overdue/grace/suspend/catch-up/payoff and independent-agreement run |
+| PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 | Both PHP versions pass the 55 isolated cases and 12 pure/source suites locally; no Docker/WSL/database service on this host | Complete current native integration matrix; do not transfer older passes |
+| Apache root/subfolder, rewrite/no rewrite | Historical Apache failure classified; package extraction checked | Passing final installed lanes |
+| Fresh install and populated v1.25 upgrade/recovery | Baseline package build and extraction passed | Real populated published-v1.25 → newly versioned candidate, including interrupted recovery |
+| Portal/identity, existing billing, domains/20i, email, installer | Corrections reuse existing services; no replacement subsystem | Full combined application acceptance and email retry evidence |
+| Security | Focused signature/amount/activation and module-routing review; no broad approval | Complete independent review of final combined source, including ZIP publication, tenant boundaries, concurrency and delayed lifecycle events |
+
+The green [published-v1.25 gate 40649500013](https://github.com/afterburn25/Cajun_Web/actions/runs/40649500013) is deferred while `VERSION` remains 1.25.0. The workflow skips the real install/update steps until the candidate is greater than 1.25.0. Do not count this as a real upgrade pass or bump/release the version merely to remove a status label.
+
+Repository secret-name metadata lists `TWENTYI_API_KEY` only. The manual sandbox workflows have no environment selection and require `ANET_SANDBOX_API_LOGIN_ID`, `ANET_SANDBOX_TRANSACTION_KEY` and `ANET_SANDBOX_PUBLIC_CLIENT_KEY` from approved secret storage. No values were retrieved or requested in comments. Actual Accept.js, charge/readback, ARB enrollment/cancellation/replacement, reversals and recovery remain unverified. Source-contract checks are not gateway transactions.
+
+The current PR also changes protected application-acceptance cancellation to supersede licensing runs, while AGENTS.md still requires that workflow to retain non-canceling evidence. The integration writer should reconcile this policy discrepancy without discarding required acceptance evidence; this focused payment correction does not change shared CI ownership.
+
+## Handoff
+
+Review/integrate the focused correction PR, rerun required acceptance on the combined candidate and retain both original failures. The integration writer owns current-head refresh, remaining financing failure diagnosis, full security review, version assignment, populated upgrade/recovery, final artifacts, approval, main merge and post-merge verification. Production deployment and live payments remain unauthorized. No merge, publication, deployment, customer message or live gateway operation was performed by this review.

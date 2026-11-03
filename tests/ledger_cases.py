@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'ledger-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.7.0',dest)
@@ -13,19 +14,17 @@ def upgrade():
     shutil.copyfile(ROOT/'test-runtime/ledger-upgrade-config.php',dest/'config.php');(dest/'.installed.php').write_text('<?php exit; ?>original guard');(dest/'unrelated.txt').write_text('Retain unrelated file')
     preserved={p:p.read_bytes() for p in [dest/'config.php',dest/'.installed.php',dest/'unrelated.txt',ROOT/'test-runtime/ledger-upgrade-private/media/retained.php',ROOT/'test-runtime/ledger-upgrade-private/payment-master.key']}
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','payment_gateways','payment_requests','payment_attempts','payment_attempt_events','payment_notifications','leads','projects']
-    columns={t:[row['Field'] for row in db('SHOW FULL COLUMNS FROM ledgerup_'+t)] for t in tables}
     before={t:db('SELECT * FROM ledgerup_'+t) for t in tables};settings=db('SELECT * FROM ledgerup_settings');users=db('SELECT * FROM ledgerup_users')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
     from structure_helpers import apply_file_update
     apply_file_update(globals(),dest)
     check('Actual 1.7 update preserves configuration locks private media and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/ledger-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
-    r=up.get(url+'?view=payments')
-    if 'Enable payment preparation' in r.text:r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
+    before,settings=prepare_retained_payments(globals(),up,url,'ledgerup_',before,settings,preserved)
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'wrong','confirm':'1'});check('Ledger upgrade requires owner reauthentication','current password' in r.text.lower())
     r=submit(up,url+'?view=invoice-payments','payments_ledger_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.7 ledger upgrade succeeds','Invoice payment history enabled' in r.text)
-    check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT '+','.join('`'+c+'`' for c in columns[t])+' FROM ledgerup_'+t)==v for t,v in before.items()))
-    after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings if s['name']!='payments_schema_version') and after['payments_schema_version']=='2')
+    check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT * FROM ledgerup_'+t)==v for t,v in before.items()))
+    after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings))
     check('Actual 1.7 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM ledgerup_users'),users)))
     rows=db('SELECT * FROM ledgerup_invoice_payments');check('Actual legacy paid import retains original amount and date without fabricated receipt',len(rows)==1 and rows[0]['kind']=='legacy' and rows[0]['amount_cents']==18050 and rows[0]['received_on']==before['studio_invoices'][1]['paid_at'][:10] and rows[0]['request_key'] is None)
     client=requests.Session();portal=BASE+'/ledger-upgrade/portal/index.php';submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'});r=client.get(portal+'?invoice=2');check('Legacy client statement is clearly imported and cannot print new receipt','Imported legacy paid balance' in r.text and 'Printable receipt' not in r.text and client.get(portal+'?receipt='+str(rows[0]['id'])).status_code==404)
@@ -39,7 +38,7 @@ def run_browser(env,browser):
     check('Fresh setup creates empty enabled real-payment ledger',db("SELECT value FROM fresh_settings WHERE name='invoice_ledger_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_invoice_payments')==[])
     admin=requests.Session();root=BASE+'/existing/admin/index.php';portal=BASE+'/existing/portal/index.php';url=root+'?view=invoice-payments';job=root+'?view=studio-job&id=1'
     submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
-    if 'Enable payment preparation' in admin.get(root+'?view=payments').text:r=submit(admin,root+'?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+    if 'Enable payment preparation' in admin.get(root+'?view=payments').text:submit(admin,root+'?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     original=db('SELECT * FROM ci_studio_invoices');r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Ledger enablement rejects forged CSRF',not db("SELECT value FROM ci_settings WHERE name='invoice_ledger_schema_version'") and 'session expired' in r.text.lower())
     r=submit(admin,url,'payments_ledger_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables ledger without editing prior invoices','Invoice payment history enabled' in r.text and db('SELECT * FROM ci_studio_invoices')==original)
     submit(admin,job,'studio_invoice',{'title':'Ledger design phase','amount':'1250.10','instructions':'Synthetic external payment instructions; do not send money.'});invoice=db("SELECT * FROM ci_studio_invoices WHERE title='Ledger design phase'")[0];iid=invoice['id'];target=url+'&invoice_id='+str(iid)

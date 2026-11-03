@@ -9,6 +9,15 @@ on:
       - 'site/install/bootstrap.generated.php'
       - 'tests/software_payment_csp_contract.php'
       - '.github/workflows/software-payment-csp.yml'
+  pull_request:
+    branches:
+      - feature/software-license-commerce-20261025
+    paths:
+      - 'site/includes/security/http.php'
+      - 'site/portal/views/software.php'
+      - 'site/install/bootstrap.generated.php'
+      - 'tests/software_payment_csp_contract.php'
+      - '.github/workflows/software-payment-csp.yml'
   workflow_dispatch:
 permissions:
   contents: read

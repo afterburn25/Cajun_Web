@@ -1,0 +1,3428 @@
+{
+  "base_pr": 300,
+  "base_sha": "07fa7caf8ebc06234bcd7257f2958186c8330cfa",
+  "branch": "codex/finance-replacement-ledger-guard",
+  "source_sha256": {
+    "site/app/billing/finance_subscription.php": "e3b05ecaaec95653ae8a9b63e68e11eb1769d11b9db6e37e451d6e7b0450b8e1",
+    "site/app/billing/finance_payment_review.php": "490728d01e5d0d04363b2f0ce48b314f55fa942a427e10da30dfe6bfb63b7295",
+    "site/app/licenses/finance_installments.php": "75c34c7c0806d3fd0435c711fa310151667d4510216702c3aad3e69cb98178ae",
+    "site/app/licenses/financing_policy.php": "696a21991d9392efae18ed2bbb6a02f225b28b3034e75c8e63cb4905046ec1d4",
+    "site/portal/views/financing.php": "b14796735afda020dff7f04f3cafb6513dea8083892b523071e9bcc91ef09ff8",
+    "tests/finance_subscription_lifecycle.php": "5dfbc58f2340483d43e5a89ebaf9ba365507e06e8fd5c4526c9880ebc0013534",
+    "tests/finance_replacement_pending_native.php": "a50d417723e0bcb2bbc008bd5ad7a20f00295865d63dc4745c108cb478e5297e",
+    "tests/finance_replacement_receipts_native.php": "2094d912d1bb9d57397a8f76334c84288e4aa1696a0a2be5e12d398891e58b98",
+    "tests/finance_replacement_payoff_boundaries.php": "5cc87de087a46a43d6acbd8525ed667b4b4ae68d643be7e45b7c70f573c30514",
+    "tests/finance_initial_receipts_native.php": "1daedeb016fe8ac777819e680f2d75901d70a7d81b838d83284dc7cee9c204ef",
+    "tests/finance_initial_receipts_boundaries.php": "587c3590d6cfcb4af4d5313cb2b26a5f6bd1215d0710e0b906a3e9aeb23f7d06",
+    ".github/workflows/recurring-billing-native.yml": "0d057f30d503a9a45a64ac3b0fc05acb3eada370b5ac71d78c7004dc09954ebe",
+    "site/admin/views/studio/licenses.php": "c83d686397b7b7dea178ec8c0b954441826f5de2c902449c25410081f7872b18",
+    "site/portal/controllers/actions.php": "5a8aabf03b887243345a0bf1b571b868a59b7f64b0ab78a4a3889e063df7a630"
+  },
+  "native_executions": 6136,
+  "focused_executions": 306,
+  "matrix": [
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 358,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-initial_receipts",
+      "diagnostics": 56,
+      "report_sha256": "77fc60c248c8c7a5c77d34763547591c1586cd4706b1367f607b1b0c9fc00835"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 230,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-replacement_receipts",
+      "diagnostics": 38,
+      "report_sha256": "3a334811d51f61961bdf4309fc572434b3bfb854bc1333b6538bd68746482d86"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 25,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-replacement_pending",
+      "diagnostics": 3,
+      "report_sha256": "8625bc1aba91464a14533165939d507d8a6a1f887f0e96d13526fe4f7801c629"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 138,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-replacement_payoff",
+      "diagnostics": 18,
+      "report_sha256": "9f25c4a6d0f16350da32e10bd262f87bcb1201ed29494694ee5a9529dd9f263b"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 290,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-payoff_retirement",
+      "diagnostics": 50,
+      "report_sha256": "cfe014f151bfedbde6c20f70d41cfa13d6f1706f683b8a909135c02cf95a5307"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 240,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-enrollment_payoff",
+      "diagnostics": 39,
+      "report_sha256": "3788e280edddc48bab5cffe2cf002b0a312d0fb5af7356d578a8a4e2cbb19821"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-initial_enrollment",
+      "diagnostics": 54,
+      "report_sha256": "3c83e85d92ab4c1895a165a4803e6e1b699b98a04917b27666fdb7cf5878f74f"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 5,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-owner",
+      "diagnostics": 1,
+      "report_sha256": "0a654bd11b8a26415b98b542970a7c61a9d3f611b18ecd1bbc5008813440aeaa"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 41,
+      "failed": 0,
+      "label": "8.2-mariadb-completion-settlement",
+      "diagnostics": 7,
+      "report_sha256": "603bb23500e51ebd5485415c41c15e8f807a68f40651addb544b97a401dab7c3"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 358,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-initial_receipts",
+      "diagnostics": 56,
+      "report_sha256": "697d2ec44d5f238c5c6c2f1e16ba5b4b68f18f0d2c7171fa285668ea1ab2ed1f"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 230,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-replacement_receipts",
+      "diagnostics": 38,
+      "report_sha256": "782932ec098f3262f3aefcf5f882c58f5c2dd8b149a50eccbc9b5d93c547490a"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 25,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-replacement_pending",
+      "diagnostics": 3,
+      "report_sha256": "6a65e0d273301d46b08de2bfcfcb2ae7d70795f01be1f974644bfbcbf460c57b"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 138,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-replacement_payoff",
+      "diagnostics": 18,
+      "report_sha256": "babdf752042e047a767b4e6d9fab49be7f1704bbe8db14828a2b535c0bf654dd"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 290,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-payoff_retirement",
+      "diagnostics": 50,
+      "report_sha256": "0dab0cbb9f2260a28d4bce4a090202ad31b57790d3ab0ee2ee2a9c8971ddc238"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 240,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-enrollment_payoff",
+      "diagnostics": 39,
+      "report_sha256": "d937ba76aa72a78a61d79c389a39bf32fbf9923a42904c868f8b91cad8de1ae9"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-initial_enrollment",
+      "diagnostics": 54,
+      "report_sha256": "1ac0d873063c992c168cb8752c70bc55d2eef2279808df119ae2def1ee2cfdb6"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 5,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-owner",
+      "diagnostics": 1,
+      "report_sha256": "5a7f2453c8a9ac052d53c6ddc4c605cff21084545e0c57356fc84769e6a67ba4"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 41,
+      "failed": 0,
+      "label": "8.4-mariadb-completion-settlement",
+      "diagnostics": 7,
+      "report_sha256": "c2b2ca415c626aeb20c9a458dfad2bc1c19dcabc41ecced44009ff765f84a9dd"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 358,
+      "failed": 0,
+      "label": "8.2-mysql-completion-initial_receipts",
+      "diagnostics": 56,
+      "report_sha256": "dfc577d7602a662bb378ba68ff8819583d365ef8f0359bbed33d580e16232727"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 230,
+      "failed": 0,
+      "label": "8.2-mysql-completion-replacement_receipts",
+      "diagnostics": 38,
+      "report_sha256": "c1645eabf408ff1f512825bd1693afa404c5f0e2d17da5bff52f2a910d2ac037"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 25,
+      "failed": 0,
+      "label": "8.2-mysql-completion-replacement_pending",
+      "diagnostics": 3,
+      "report_sha256": "8f82b4dce2810c05215300cae5b4c34033955cc7f0decd01e8c75629fd583a55"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 138,
+      "failed": 0,
+      "label": "8.2-mysql-completion-replacement_payoff",
+      "diagnostics": 18,
+      "report_sha256": "1022c103fe008d0e2d72c03e764ba92380c28f7523afb9b7204034cdf9d064e5"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 290,
+      "failed": 0,
+      "label": "8.2-mysql-completion-payoff_retirement",
+      "diagnostics": 50,
+      "report_sha256": "e0a1bf8e6b917cd37f9442cd8eedc8a5e36e83dfe9ea95903830a46c16eb9d0f"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 240,
+      "failed": 0,
+      "label": "8.2-mysql-completion-enrollment_payoff",
+      "diagnostics": 39,
+      "report_sha256": "3ece67e3eb4cbfb4d5126c473dec1db740b057c5174a4491475f703bb2a5c192"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 207,
+      "failed": 0,
+      "label": "8.2-mysql-completion-initial_enrollment",
+      "diagnostics": 54,
+      "report_sha256": "40b96ff95c06cb9637e0d557f950b231451f8c30c452fa27dc23515b85e4b84f"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 5,
+      "failed": 0,
+      "label": "8.2-mysql-completion-owner",
+      "diagnostics": 1,
+      "report_sha256": "56e1d6f827612035d96201da8f875089fd146a6a6e63af008aadf991269a2c47"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 41,
+      "failed": 0,
+      "label": "8.2-mysql-completion-settlement",
+      "diagnostics": 7,
+      "report_sha256": "77650fec73277b3aab8d9ddf96b9c8f70c4deaee1e25aadb53c101fe85a4c798"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 358,
+      "failed": 0,
+      "label": "8.4-mysql-completion-initial_receipts",
+      "diagnostics": 56,
+      "report_sha256": "d83dbb849ebec3ca65c541d65ee3008a64fc84a70060bb43ac58ab70413e85f3"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 230,
+      "failed": 0,
+      "label": "8.4-mysql-completion-replacement_receipts",
+      "diagnostics": 38,
+      "report_sha256": "6e8769269e892293463e5dea6691461369fbc1647161bce6cf8e697102c7b2f2"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 25,
+      "failed": 0,
+      "label": "8.4-mysql-completion-replacement_pending",
+      "diagnostics": 3,
+      "report_sha256": "345373a7c73a4438bd0d7b7978e58f0e7776cdf506a1fa5e6ae6296deb104c71"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 138,
+      "failed": 0,
+      "label": "8.4-mysql-completion-replacement_payoff",
+      "diagnostics": 18,
+      "report_sha256": "104ddc68d275abe27066189040649ecf9ede84176bee507f7e32d7956293d494"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 290,
+      "failed": 0,
+      "label": "8.4-mysql-completion-payoff_retirement",
+      "diagnostics": 50,
+      "report_sha256": "9753abb49f5d033dce549ff3e3310474857e9d732d10e925a9445cd1fa4f7d1c"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 240,
+      "failed": 0,
+      "label": "8.4-mysql-completion-enrollment_payoff",
+      "diagnostics": 39,
+      "report_sha256": "6bd50f614f0d2d0174c5f695847e4188f28c865e5870c768229bbe674d06fd04"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 207,
+      "failed": 0,
+      "label": "8.4-mysql-completion-initial_enrollment",
+      "diagnostics": 54,
+      "report_sha256": "c56ee027eafa4f75d168f61557e5024a72e9680aa9d8c7bdd1ef4cdb668453ac"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 5,
+      "failed": 0,
+      "label": "8.4-mysql-completion-owner",
+      "diagnostics": 1,
+      "report_sha256": "c16c38866d9cb30e54c8abb200d98f665ebba0e3254c8dd30fb3944057f14bd5"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 41,
+      "failed": 0,
+      "label": "8.4-mysql-completion-settlement",
+      "diagnostics": 7,
+      "report_sha256": "933a7bdae0af1ab0118e835d3c528190f9a153b2c6d54902024f3fa98a4a508f"
+    }
+  ],
+  "focused": {
+    "tests": [
+      {
+        "php": "8.2",
+        "test": "finance_initial_enrollment_handler",
+        "count": 22,
+        "sha256": "4d03eb7b5e7411cc29e28dc6a00ecec285ec781a9e0596cfdde55fafbe616224"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_subscription_lifecycle",
+        "count": 52,
+        "sha256": "c3214f2ea148df8e8ea649f141a9302d3a8f3dc8127d1b5cf5231878d372c6e2"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_enrollment_sandbox_boundary",
+        "count": 6,
+        "sha256": "ebefa352a046433f9d4b055dce8e38a108dbdc672e0988e2df98b8dec2356fc3"
+      },
+      {
+        "php": "8.2",
+        "test": "license_finance_replacement_contract",
+        "count": 9,
+        "sha256": "f414abbc810fb999c7c7f5f25e3d8be256f97dd2cc381877cbcecd1a0cd66191"
+      },
+      {
+        "php": "8.2",
+        "test": "license_finance_source_contract",
+        "count": 54,
+        "sha256": "0e9e7473c33d3ad0552f6820de85116a1acdbaaa555edfd08b9a45ab170e0e4a"
+      },
+      {
+        "php": "8.2",
+        "test": "finance_webhook_isolation",
+        "count": 10,
+        "sha256": "022c9cc980779a30ca7ca4b7b4a1e5562456743a2cde7e860053faad117c00df"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_initial_enrollment_handler",
+        "count": 22,
+        "sha256": "4d03eb7b5e7411cc29e28dc6a00ecec285ec781a9e0596cfdde55fafbe616224"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_subscription_lifecycle",
+        "count": 52,
+        "sha256": "c3214f2ea148df8e8ea649f141a9302d3a8f3dc8127d1b5cf5231878d372c6e2"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_enrollment_sandbox_boundary",
+        "count": 6,
+        "sha256": "ebefa352a046433f9d4b055dce8e38a108dbdc672e0988e2df98b8dec2356fc3"
+      },
+      {
+        "php": "8.4",
+        "test": "license_finance_replacement_contract",
+        "count": 9,
+        "sha256": "f414abbc810fb999c7c7f5f25e3d8be256f97dd2cc381877cbcecd1a0cd66191"
+      },
+      {
+        "php": "8.4",
+        "test": "license_finance_source_contract",
+        "count": 54,
+        "sha256": "0e9e7473c33d3ad0552f6820de85116a1acdbaaa555edfd08b9a45ab170e0e4a"
+      },
+      {
+        "php": "8.4",
+        "test": "finance_webhook_isolation",
+        "count": 10,
+        "sha256": "022c9cc980779a30ca7ca4b7b4a1e5562456743a2cde7e860053faad117c00df"
+      }
+    ],
+    "source_boundary": {
+      "unchanged": [
+        "license_finance_subscription_contract",
+        "license_finance_subscription_history_row",
+        "license_finance_subscription_known_gateway_id",
+        "license_finance_subscription_row",
+        "license_finance_subscription_payoff_due",
+        "license_finance_subscription_payoff_retire",
+        "license_finance_subscription_sandbox_initial",
+        "license_finance_subscription_enrollment_offer",
+        "license_finance_subscription_reserve",
+        "license_finance_subscription_replacement_review",
+        "license_finance_subscription_replacement_declined",
+        "license_finance_subscription_signed_remaining_contract",
+        "license_finance_subscription_charge_reconcile",
+        "license_finance_subscription_settle"
+      ],
+      "changed": [
+        "license_finance_subscription_replacement_contract",
+        "license_finance_subscription_mark_review",
+        "license_finance_subscription_finalize",
+        "license_finance_subscription_create_profile",
+        "license_finance_subscription_enroll_opaque",
+        "license_finance_subscription_replacement_reserve",
+        "license_finance_subscription_replacement_finalize",
+        "license_finance_subscription_reenroll_opaque",
+        "license_finance_subscription_reconcile",
+        "license_finance_subscription_lifecycle_review"
+      ],
+      "added": [
+        "license_finance_subscription_replacement_retire"
+      ]
+    },
+    "yaml_bash_steps": [
+      "Prepare official PHP with PDO MySQL",
+      "Allow isolated MySQL audit-failure fixture triggers",
+      "Preserve newer one-time finance outcomes under delayed captures",
+      "Bind delayed checkout results to their original finance attempt",
+      "Initial financing enrollment from verified ledger payments",
+      "Native consent and unique period invoices",
+      "Print retained native order and recurring reports",
+      "Scope"
+    ]
+  },
+  "preserved_failures": [
+    {
+      "report": "parent-84-mysql",
+      "count": 230,
+      "failed": 37,
+      "sha256": "ae829469677828e61e30f7dafcd141e979983dfc9e4cd6ab1cd18ac9cefab87d",
+      "failures": [
+        {
+          "name": "partial_first-before-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "paid_later-before-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "partial_later-before-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "partial_first-reservation-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "paid_later-reservation-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "partial_later-reservation-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "paid_first-reservation-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "partial_first-after_retirement-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "paid_later-after_retirement-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "partial_later-after_retirement-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "paid_first-after_retirement-normal refuses create when remaining receipts changed",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "paid_later-during_create-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_later-during_create-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "paid_first-during_create-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "paid_first-during_create-normal retains candidate identity and predecessor history",
+          "passed": false
+        },
+        {
+          "name": "paid_first-during_create-normal corrected next contract excludes paid prefix",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_readback-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "paid_later-during_readback-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_later-during_readback-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "paid_first-during_readback-normal retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "paid_first-during_readback-normal retains candidate identity and predecessor history",
+          "passed": false
+        },
+        {
+          "name": "paid_first-during_readback-normal corrected next contract excludes paid prefix",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-readback_timeout retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-readback_timeout retains candidate identity and predecessor history",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-readback_timeout owner can finish known-candidate retirement",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-wrong_readback retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-wrong_readback retains candidate identity and predecessor history",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-wrong_readback owner can finish known-candidate retirement",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-cancel_error retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-cancel_error scheduler can finish known-candidate retirement",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-cancel_timeout retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-cancel_timeout owner can finish known-candidate retirement",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-lost_cancel_reply retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-lost_cancel_reply scheduler can finish known-candidate retirement",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-still_active retires or visibly retains the obsolete candidate",
+          "passed": false
+        },
+        {
+          "name": "partial_first-during_create-still_active scheduler can finish known-candidate retirement",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "report": "pending-native-expanded-before",
+      "count": 22,
+      "failed": 11,
+      "sha256": "b43d3a45e5ece97e0fe40725fda087cc8c2842e79fe8a74e048f609ce24376b8",
+      "failures": [
+        {
+          "name": "Delayed failed cannot clear pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Delayed suspended cannot clear pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Delayed terminated cannot clear pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Delayed cancelled cannot clear pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Delayed expired cannot clear pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Automatic settlement explicitly refuses a pending candidate",
+          "passed": false
+        },
+        {
+          "name": "Owner settlement explicitly refuses a pending candidate",
+          "passed": false
+        },
+        {
+          "name": "Generic review cannot erase pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Partial refund preserves cancellation obligation",
+          "passed": false
+        },
+        {
+          "name": "Full refund preserves cancellation obligation and reopens accounting",
+          "passed": false
+        },
+        {
+          "name": "Verified void preserves cancellation obligation and reopens accounting",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "report": "initial-receipts-before",
+      "count": 44,
+      "failed": 6,
+      "sha256": "b814a19130e313394511815eaf7e8b07a191d109880ae092079505a1dac83e44",
+      "failures": [
+        {
+          "name": "opaque-partial retires the full ARB after a committed installment receipt",
+          "passed": false
+        },
+        {
+          "name": "opaque-one_paid retires the full ARB after a committed installment receipt",
+          "passed": false
+        },
+        {
+          "name": "opaque-prepared_gateway retires the full ARB after a committed installment receipt",
+          "passed": false
+        },
+        {
+          "name": "profile-partial retires the full ARB after a committed installment receipt",
+          "passed": false
+        },
+        {
+          "name": "profile-one_paid retires the full ARB after a committed installment receipt",
+          "passed": false
+        },
+        {
+          "name": "profile-prepared_gateway retires the full ARB after a committed installment receipt",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "report": "initial-finalizer-audit-rollback",
+      "count": 22,
+      "failed": 4,
+      "sha256": "c7b0de9ba9aec9c141f6ef4f9e42eea8cd2e9fca3587aacba0a9f6f7b3d817db",
+      "failures": [
+        {
+          "name": "opaque-partial-during_create-audit_failure retains the required cancellation or unknown-result state",
+          "passed": false
+        },
+        {
+          "name": "opaque-partial-during_create-audit_failure owner recovers the existing candidate safely",
+          "passed": false
+        },
+        {
+          "name": "profile-partial-during_create-audit_failure retains the required cancellation or unknown-result state",
+          "passed": false
+        },
+        {
+          "name": "profile-partial-during_create-audit_failure owner recovers the existing candidate safely",
+          "passed": false
+        }
+      ]
+    }
+  ],
+  "admin_visibility": {
+    "before": {
+      "count": 3,
+      "failed": 2,
+      "checks": [
+        {
+          "name": "Actual admin recovery query exposes pending cancellation",
+          "passed": false
+        },
+        {
+          "name": "Actual admin recovery query retains the exact gateway identity",
+          "passed": false
+        },
+        {
+          "name": "Isolated visibility probe leaves all subscription rows unchanged",
+          "passed": true
+        }
+      ],
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "admin_sha256": "f2e3d206b807b410e24ad7f2394ef4fd537192d97a445c6ec975a29ab1d786cc",
+      "scope": "Actual administrator selection SQL on retained synthetic native fixture; transaction rolled back. No browser render or customer data."
+    },
+    "after": {
+      "count": 3,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "Actual admin recovery query exposes pending cancellation",
+          "passed": true
+        },
+        {
+          "name": "Actual admin recovery query retains the exact gateway identity",
+          "passed": true
+        },
+        {
+          "name": "Isolated visibility probe leaves all subscription rows unchanged",
+          "passed": true
+        }
+      ],
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "admin_sha256": "c83d686397b7b7dea178ec8c0b954441826f5de2c902449c25410081f7872b18",
+      "scope": "Actual administrator selection SQL on retained synthetic native fixture; transaction rolled back. No browser render or customer data."
+    }
+  },
+  "corrected_initial_checks": [
+    {
+      "name": "opaque-partial-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal preserves paid charge and attempt identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_readback-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-one_paid-during_readback-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal preserves paid charge and attempt identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-prepared_gateway-during_readback-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-readback_timeout recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-wrong_readback recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_error recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-cancel_timeout recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_cancel_reply recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-still_active recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-audit_failure recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-missing_create_id recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-missing_create_id recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-partial-during_create-lost_create_reply recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-lost_create_reply recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "opaque-none-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal preserves paid charge and attempt identity",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_create-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_readback-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-one_paid-during_readback-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal preserves paid charge and attempt identity",
+      "passed": true
+    },
+    {
+      "name": "profile-prepared_gateway-during_readback-normal retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-readback_timeout recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-wrong_readback recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_error recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-cancel_timeout recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_cancel_reply recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-still_active recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-audit_failure recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-missing_create_id recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-missing_create_id recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-partial-during_create-lost_create_reply recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply retry cannot create another subscription",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply owner recovers the existing candidate safely",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply recovery preserves financial and license records",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-lost_create_reply recovery never creates an additional ARB",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal retains the required cancellation or unknown-result state",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal actual writer uses a different native connection",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal preserves the exact committed receipt",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal retains exactly the known gateway identity",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal preserves license identity and domains",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal does not claim full payoff",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal releases parent transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "profile-none-during_create-normal retry cannot create another subscription",
+      "passed": true
+    }
+  ],
+  "initial_writer_cases": [
+    {
+      "case": "opaque-partial-during_create-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-one_paid-during_create-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-prepared_gateway-during_create-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_readback-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-one_paid-during_readback-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-prepared_gateway-during_readback-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-readback_timeout",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-wrong_readback",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-cancel_error",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-cancel_timeout",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-lost_cancel_reply",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-still_active",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-audit_failure",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-partial-during_create-missing_create_id",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-none-during_create-missing_create_id",
+      "result": "review",
+      "separate_committed_connection": false
+    },
+    {
+      "case": "opaque-partial-during_create-lost_create_reply",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "opaque-none-during_create-lost_create_reply",
+      "result": "review",
+      "separate_committed_connection": false
+    },
+    {
+      "case": "opaque-none-during_create-normal",
+      "result": "pending_first_payment",
+      "separate_committed_connection": false
+    },
+    {
+      "case": "profile-partial-during_create-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-one_paid-during_create-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-prepared_gateway-during_create-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_readback-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-one_paid-during_readback-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-prepared_gateway-during_readback-normal",
+      "result": "billing_suspended",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-readback_timeout",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-wrong_readback",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-cancel_error",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-cancel_timeout",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-lost_cancel_reply",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-still_active",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-audit_failure",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-partial-during_create-missing_create_id",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-none-during_create-missing_create_id",
+      "result": "review",
+      "separate_committed_connection": false
+    },
+    {
+      "case": "profile-partial-during_create-lost_create_reply",
+      "result": "review",
+      "separate_committed_connection": true
+    },
+    {
+      "case": "profile-none-during_create-lost_create_reply",
+      "result": "review",
+      "separate_committed_connection": false
+    },
+    {
+      "case": "profile-none-during_create-normal",
+      "result": "pending_first_payment",
+      "separate_committed_connection": false
+    }
+  ],
+  "corrected_replacement_checks": [
+    {
+      "name": "untouched-before-normal admits only the untouched remaining contract",
+      "passed": true
+    },
+    {
+      "name": "untouched-before-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "untouched-before-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "untouched-before-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "untouched-before-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "untouched-before-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "prefix_one-before-normal admits only the untouched remaining contract",
+      "passed": true
+    },
+    {
+      "name": "prefix_one-before-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "prefix_one-before-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "prefix_one-before-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "prefix_one-before-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "prefix_one-before-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "prefix_two-before-normal admits only the untouched remaining contract",
+      "passed": true
+    },
+    {
+      "name": "prefix_two-before-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "prefix_two-before-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "prefix_two-before-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "prefix_two-before-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "prefix_two-before-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-before-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "partial_first-before-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-before-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-before-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-before-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-before-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_later-before-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "paid_later-before-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_later-before-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_later-before-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_later-before-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_later-before-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_later-before-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "partial_later-before-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_later-before-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_later-before-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_later-before-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_later-before-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-reservation-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "partial_first-reservation-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-reservation-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-reservation-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-reservation-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-reservation-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_later-reservation-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "paid_later-reservation-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_later-reservation-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_later-reservation-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_later-reservation-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_later-reservation-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_later-reservation-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "partial_later-reservation-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_later-reservation-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_later-reservation-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_later-reservation-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_later-reservation-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_first-reservation-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "paid_first-reservation-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_first-reservation-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_first-reservation-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_first-reservation-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_first-reservation-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-after_retirement-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "partial_first-after_retirement-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-after_retirement-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-after_retirement-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-after_retirement-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-after_retirement-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_later-after_retirement-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "paid_later-after_retirement-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_later-after_retirement-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_later-after_retirement-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_later-after_retirement-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_later-after_retirement-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_later-after_retirement-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "partial_later-after_retirement-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_later-after_retirement-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_later-after_retirement-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_later-after_retirement-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_later-after_retirement-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_first-after_retirement-normal refuses create when remaining receipts changed",
+      "passed": true
+    },
+    {
+      "name": "paid_first-after_retirement-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_first-after_retirement-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_first-after_retirement-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_first-after_retirement-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_first-after_retirement-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-normal prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_create-normal prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_create-normal prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_create-normal corrected next contract excludes paid prefix",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_readback-normal prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "paid_later-during_readback-normal prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_later-during_readback-normal prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "paid_first-during_readback-normal corrected next contract excludes paid prefix",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout incorrect owner password never reaches gateway",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout denied owner preserves retained candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout owner can finish known-candidate retirement",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout retry preserves receipts and payoff state",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-readback_timeout retry does not create another subscription",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback owner can finish known-candidate retirement",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback retry preserves receipts and payoff state",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-wrong_readback retry does not create another subscription",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error scheduler can finish known-candidate retirement",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error retry preserves receipts and payoff state",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_error retry does not create another subscription",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout owner can finish known-candidate retirement",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout retry preserves receipts and payoff state",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-cancel_timeout retry does not create another subscription",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply scheduler can finish known-candidate retirement",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply retry preserves receipts and payoff state",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-lost_cancel_reply retry does not create another subscription",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active retires or visibly retains the obsolete candidate",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active retains actual owner receipts",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active preserves license and domains",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active does not invent permanent payoff",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active never performs provider calls in a transaction",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active retains candidate identity and predecessor history",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active original subscription remains terminal",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active prevents duplicate create",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active scheduler can finish known-candidate retirement",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active retry preserves receipts and payoff state",
+      "passed": true
+    },
+    {
+      "name": "partial_first-during_create-still_active retry does not create another subscription",
+      "passed": true
+    }
+  ],
+  "corrected_pending_checks": [
+    {
+      "name": "Known candidate remains pending after uncertain cancellation",
+      "passed": true
+    },
+    {
+      "name": "Actual partial receipt remains recorded",
+      "passed": true
+    },
+    {
+      "name": "Delayed failed cannot clear pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "Delayed suspended cannot clear pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "Delayed terminated cannot clear pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "Delayed cancelled cannot clear pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "Delayed expired cannot clear pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "Automatic settlement explicitly refuses a pending candidate",
+      "passed": true
+    },
+    {
+      "name": "Owner settlement explicitly refuses a pending candidate",
+      "passed": true
+    },
+    {
+      "name": "Pending cancellation cannot open a second payment path",
+      "passed": true
+    },
+    {
+      "name": "Lifecycle observations never call the gateway",
+      "passed": true
+    },
+    {
+      "name": "Events preserve receipts, permanent-payoff evidence and license rights",
+      "passed": true
+    },
+    {
+      "name": "Event handling releases transaction and mutex",
+      "passed": true
+    },
+    {
+      "name": "Generic review cannot erase pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "Partial refund preserves cancellation obligation",
+      "passed": true
+    },
+    {
+      "name": "Duplicate partial refund remains idempotent",
+      "passed": true
+    },
+    {
+      "name": "Full refund preserves cancellation obligation and reopens accounting",
+      "passed": true
+    },
+    {
+      "name": "Duplicate full refund does not duplicate ledger reversal",
+      "passed": true
+    },
+    {
+      "name": "Verified void preserves cancellation obligation and reopens accounting",
+      "passed": true
+    },
+    {
+      "name": "Duplicate void does not duplicate ledger reversal",
+      "passed": true
+    },
+    {
+      "name": "Scheduler finishes verified cancellation after delayed events",
+      "passed": true
+    },
+    {
+      "name": "Verified cancellation does not grant payoff",
+      "passed": true
+    },
+    {
+      "name": "Ordinary partial refunds still enter review",
+      "passed": true
+    },
+    {
+      "name": "Ordinary full refunds still reopen recovery and accounting",
+      "passed": true
+    },
+    {
+      "name": "Ordinary voids still reopen recovery and accounting",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Producer self-review; independent approval remains required.",
+    "Synthetic provider transport/mode, signed future invoice fixtures and request-token metadata; no actual merchant transaction.",
+    "Initial receipt cases use actual separate PHP processes and native connections; lost responses are injected, not killed enrollment processes.",
+    "Unknown replacement create results across payoff and payments after an established active ARB remain separate audit items.",
+    "The initial known-ID distinction covers newly creating/null-ID reservations; no blanket remediation of historical ambiguous records is claimed.",
+    "No final combined browser, upgrade, package, main, release or production acceptance is claimed."
+  ]
+}

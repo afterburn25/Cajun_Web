@@ -10,8 +10,17 @@ def token(response):
     n=BeautifulSoup(response.text,'html.parser').select_one('input[name=csrf]')
     return n['value']
 
-def run(web,base,check,qa,php,label,prefix,version):
-    folder='organized-'+version;root=web/folder;url=base+'/'+folder;shutil.copytree(ROOT/('test-runtime/released-'+version),root)
+def prepare_baseline(web, base, version, *, at_root=False):
+    root = web if at_root else web / ('organized-' + version)
+    url = base if at_root else base + '/organized-' + version
+    if at_root and root.exists() and any(root.iterdir()):
+        raise AssertionError('Root upgrade fixture requires an empty web directory')
+    shutil.copytree(ROOT / ('test-runtime/released-' + version), root, dirs_exist_ok=at_root)
+    return root, url
+
+
+def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
+    root,url=prepare_baseline(web,base,version,at_root=at_root)
     label+=' '+version
     session=requests.Session();r=session.get(url+'/install.php')
     password='Synthetic organized upgrade passphrase'
@@ -22,7 +31,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     private=Path(r.json()['storage']);(private/'retained-customer.php').write_bytes(b'<?php exit; ?>private retained customer bytes')
     original={n:(root/n).read_bytes() for n in ['config.php','.installed.php','storage/.htaccess','upload/.htaccess','config/defaults.php','assets/css/site.css']}
     def records(action='snapshot'):
-        p=subprocess.run([php,str(ROOT/'tests/organized_update_fixture.php'),str(root),action],capture_output=True,text=True)
+        p=subprocess.run([php,str(ROOT/'tests/organized_update_fixture.php'),str(root),action,*([str(web)] if at_root else [])],capture_output=True,text=True)
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
@@ -61,7 +70,7 @@ def run(web,base,check,qa,php,label,prefix,version):
         check(label+' original 1.20 installation holds encrypted provider profile and nonempty check history','20i settings saved' in r.text and len(prior_provider['profiles'])==1 and len(prior_provider['history'])==1 and len(prior_provider['checks'])==2 and len(prior_provider['results'])==1 and secret not in prior_provider['profiles'][0]['credentials'] and secret not in r.text and len(prior_provider_key)==32 and prior_provider_key!=prior_key and (private/'provider-master.key').stat().st_mode&0o777==0o600)
     original_inventory = None
     def inventory_records(mode='snapshot'):
-        result = subprocess.run([php, str(ROOT/'tests/inventory_retention_124_fixture.php'), str(root), mode], capture_output=True, text=True)
+        result = subprocess.run([php, str(ROOT/'tests/inventory_retention_124_fixture.php'), str(root), mode, *([version] if version=='1.25.0' else [])], capture_output=True, text=True)
         assert result.returncode==0, result.stderr
         return json.loads(result.stdout)
     if version in ['1.24.0','1.25.0']:

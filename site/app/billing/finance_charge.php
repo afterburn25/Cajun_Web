@@ -58,22 +58,33 @@ function license_finance_charge_prepare(array $request,string $attemptKey):array
     });
     return $result;
 }
-function license_finance_charge_mark(int $invoice,string $state,?string $transactionId=null):void{
+function license_finance_charge_mark(int $invoice,string $state,?string $transactionId,string $attemptKey):bool{
     if(!in_array($state,['declined','uncertain','review','sandbox_test'],true))throw new InvalidArgumentException('Unsupported financing payment outcome.');
-    staff_locked(fn()=>staff_transaction(function()use($invoice,$state,$transactionId):void{
+    return staff_locked(fn()=>staff_transaction(function()use($invoice,$state,$transactionId,$attemptKey):bool{
         $charge=one('SELECT * FROM '.table('license_finance_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
-        if(!$charge||$charge['status']!=='processing')return;
+        if(!$charge||$charge['status']!=='processing'
+            ||!hash_equals((string)$charge['request_key'],$attemptKey)
+            ||($charge['transaction_id']!==null&&($transactionId===null||!hash_equals((string)$charge['transaction_id'],$transactionId))))return false;
         $now=gmdate('Y-m-d H:i:s');
         query('UPDATE '.table('license_finance_charge_attempts').' SET status=?,transaction_id=?,updated_at=? WHERE request_key=? AND status=?',
             [$state,$transactionId,$now,$charge['request_key'],'processing']);
         query('UPDATE '.table('license_finance_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
             [$state,$transactionId,$now,$charge['id']]);
+        return true;
     }));
 }
-function license_finance_charge_record_paid(int $invoice,string $transactionId,int $cents,?array $profiles=null):void{
-    staff_locked(fn()=>staff_transaction(function()use($invoice,$transactionId,$cents,$profiles):void{
+function license_finance_charge_record_paid(int $invoice,string $transactionId,int $cents,string $attemptKey,?array $profiles=null,
+    #[\SensitiveParameter]?string $ownerPassword=null):void{
+    staff_locked(fn()=>staff_transaction(function()use($invoice,$transactionId,$cents,$attemptKey,$profiles,$ownerPassword):void{
+        if($ownerPassword!==null)staff_owner($ownerPassword);
         $charge=one('SELECT * FROM '.table('license_finance_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
-        if(!$charge||!in_array((string)$charge['status'],['processing','uncertain','review'],true)||(int)$charge['amount_cents']!==$cents){
+        if(!$charge||!in_array((string)$charge['status'],['processing','uncertain','review'],true)||(int)$charge['amount_cents']!==$cents
+            ||!hash_equals((string)$charge['request_key'],$attemptKey)
+            ||($charge['transaction_id']!==null&&!hash_equals((string)$charge['transaction_id'],$transactionId))){
+            throw new RuntimeException('Financing gateway attempt no longer matches this payment.');
+        }
+        $origin=one('SELECT request_key FROM '.table('license_finance_charge_attempts').' WHERE transaction_id=? FOR UPDATE',[$transactionId]);
+        if($origin&&!hash_equals((string)$origin['request_key'],$attemptKey)){
             throw new RuntimeException('Financing gateway attempt no longer matches this payment.');
         }
         $i=ledger_invoice($invoice);$balance=ledger_balance($i);
@@ -104,12 +115,12 @@ function license_finance_charge_run(array $request,string $attemptKey,string $de
         $transactionId=software_anet_approved($reply);
         if($transactionId===null){
             $code=(string)($reply['transactionResponse']['responseCode']??'');
-            license_finance_charge_mark($invoice,$code==='2'?'declined':'review');
+            license_finance_charge_mark($invoice,$code==='2'?'declined':'review',null,$attemptKey);
             return $code==='2'?'declined':'review';
         }
         $details=license_finance_anet_execute('getTransactionDetailsRequest',['transId'=>$transactionId]);
         if(!software_anet_one_time_charge_confirmed($details,$transactionId,$invoice,$prepared['amount_cents'])){
-            license_finance_charge_mark($invoice,'uncertain',$transactionId);return 'review';
+            license_finance_charge_mark($invoice,'uncertain',$transactionId,$attemptKey);return 'review';
         }
         $profiles=null;
         if($prepared['create_profile']){
@@ -119,11 +130,12 @@ function license_finance_charge_run(array $request,string $attemptKey,string $de
             }
         }
         if($gateway['mode']==='sandbox'){
-            license_finance_charge_mark($invoice,'sandbox_test',$transactionId);
+            // A superseded response cannot authorize a recurring subscription.
+            if(!license_finance_charge_mark($invoice,'sandbox_test',$transactionId,$attemptKey))return 'review';
             if($prepared['create_profile']&&$profiles!==null)license_finance_subscription_create_profile((string)$offer['id'],$profiles);
             return 'sandbox';
         }
-        license_finance_charge_record_paid($invoice,$transactionId,$prepared['amount_cents'],$profiles);
+        license_finance_charge_record_paid($invoice,$transactionId,$prepared['amount_cents'],$attemptKey,$profiles);
         if($prepared['create_profile']){
             if($profiles===null){
                 license_audit(0,'financing.subscription.review','Finance agreement '.$offer['id'].' initial payment succeeded but reusable payment profile was not confirmed');
@@ -135,7 +147,7 @@ function license_finance_charge_run(array $request,string $attemptKey,string $de
         return 'paid';
     }catch(Throwable $e){
         try{license_finance_charge_mark($invoice,'uncertain',
-            is_string($transactionId)&&preg_match('/^[0-9]{5,30}$/D',$transactionId)?$transactionId:null);}catch(Throwable $markError){report_error($markError);}
+            is_string($transactionId)&&preg_match('/^[0-9]{5,30}$/D',$transactionId)?$transactionId:null,$attemptKey);}catch(Throwable $markError){report_error($markError);}
         report_error($e);return 'review';
     }
 }
@@ -167,7 +179,7 @@ function license_finance_charge_reconcile(int $invoice,string $transactionId,#[\
     if($needsSubscription&&$profiles===null){
         try{$profiles=license_finance_anet_profile_from_transaction($transactionId);}catch(Throwable $e){report_error($e);}
     }
-    license_finance_charge_record_paid($invoice,$transactionId,(int)$charge['amount_cents'],$profiles);
+    license_finance_charge_record_paid($invoice,$transactionId,(int)$charge['amount_cents'],(string)$charge['request_key'],$profiles,$password);
     $result='paid';
     if($needsSubscription){
         if($profiles===null)$result='paid_subscription_review';
@@ -182,6 +194,8 @@ function license_finance_charge_reconcile(int $invoice,string $transactionId,#[\
 
 function license_finance_charge_webhook_review(array $details,string $transactionId):string{
     if(!preg_match('/^[0-9]{5,30}$/D',$transactionId))throw new InvalidArgumentException('Invalid financing transaction ID.');
+    // Software-only installations have not prepared the optional finance tables.
+    if(!license_finance_gateway_ready()||!ledger_ready())return 'finance_payment_unmatched';
     $tx=$details['transaction']??null;if(!is_array($tx)||isset($tx['subscription']))return 'finance_payment_unmatched';
     $invoiceNumber=(string)($tx['order']['invoiceNumber']??'');
     if(!preg_match('/^CWP-([1-9][0-9]{0,14})$/D',$invoiceNumber,$m))return 'finance_payment_unmatched';
@@ -190,14 +204,19 @@ function license_finance_charge_webhook_review(array $details,string $transactio
     if(!software_anet_one_time_charge_confirmed($details,$transactionId,$invoice,(int)$charge['amount_cents']))return 'finance_payment_mismatch';
     if((string)$charge['status']==='paid'&&(string)$charge['transaction_id']===$transactionId)return 'finance_payment_replay';
     if(in_array((string)$charge['status'],['processing','uncertain','review'],true)){
-        staff_locked(fn()=>staff_transaction(function()use($charge,$transactionId):void{
+        return staff_locked(fn()=>staff_transaction(function()use($charge,$transactionId):string{
             $current=one('SELECT * FROM '.table('license_finance_charges').' WHERE id=? FOR UPDATE',[$charge['id']]);
-            if(!$current||$current['status']==='paid')return;
+            // A delayed capture cannot reopen a completed outcome or bind an older
+            // transaction to a newer attempt that reused this invoice's charge row.
+            if(!$current||!in_array((string)$current['status'],['processing','uncertain','review'],true)
+                ||!hash_equals((string)$current['request_key'],(string)$charge['request_key']))return 'finance_payment_replay';
+            $origin=one('SELECT request_key FROM '.table('license_finance_charge_attempts').' WHERE transaction_id=? FOR UPDATE',[$transactionId]);
+            if($origin&&!hash_equals((string)$origin['request_key'],(string)$current['request_key']))return 'finance_payment_replay';
             if($current['transaction_id']!==null&&!hash_equals((string)$current['transaction_id'],$transactionId))throw new RuntimeException('Financing charge retains a different gateway transaction.');
             query('UPDATE '.table('license_finance_charges').' SET status=?,transaction_id=?,updated_at=? WHERE id=?',
                 ['review',$transactionId,gmdate('Y-m-d H:i:s'),$current['id']]);
+            return 'finance_payment_review';
         }));
-        return 'finance_payment_review';
     }
     return 'finance_payment_replay';
 }

@@ -80,7 +80,7 @@ function provider_inventory_admin_action(string $action):void {
     }
 
     if($action==='provider_inventory_cloud_assignment_prepare'){
-        provider_cloud_assignment_prepare($password);flash('Cloud assignment history is ready. Refresh cloud inventory before approving assignments.');redirect(admin_url('provider-settings'));
+        provider_cloud_assignment_prepare($password);flash('Cloud assignment history is ready. Refresh cloud inventory before approving assignments.');redirect(admin_url('provider-settings',($_GET['focus']??null)==='cloud-assignment'?['focus'=>'cloud-assignment']:[]));
     }
     if($action==='provider_inventory_prepare'){
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
@@ -96,7 +96,7 @@ function provider_inventory_admin_action(string $action):void {
     if($action==='provider_inventory_cloud_refresh'){
         $code=provider_inventory_refresh($id,(int)$revision,$password,null,null,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::CLOUD_SERVERS_LIST);
         $message=match($code){'complete'=>'The observed cloud server list was saved.','partial'=>'A partial cloud observation was saved; some returned servers could not be validated.',default=>provider_inventory_message($code)};
-        flash($message,$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
+        flash($message,$code==='complete'?'success':'error');redirect(admin_url('provider-settings',($_GET['focus']??null)==='cloud-assignment'?['focus'=>'cloud-assignment']:[]));
     }
     if($action==='provider_inventory_link'){
         $client=(int)posted('client_id',10);$package=(int)posted('package_id',20);
@@ -124,7 +124,7 @@ function provider_inventory_admin_action(string $action):void {
         if($action==='provider_inventory_cloud_link')provider_cloud_link($id,$number('server_id',999999999999999999),$number('client_id'),$number('revision'),posted('refresh_id',32),$password);
         elseif($action==='provider_inventory_cloud_relink')provider_cloud_relink(posted('link_id',32),$number('link_revision'),$number('revision'),posted('refresh_id',32),$password);
         else provider_cloud_unlink(posted('link_id',32),$number('link_revision'),$password);
-        flash(match($action){'provider_inventory_cloud_link'=>'Cloud server linked to the client.','provider_inventory_cloud_relink'=>'Cloud assignment re-approved under the current settings.',default=>'Cloud assignment removed. The server and billing records are unchanged.'});redirect(admin_url('provider-settings'));
+        flash(match($action){'provider_inventory_cloud_link'=>'Cloud server linked to the client.','provider_inventory_cloud_relink'=>'Cloud assignment re-approved under the current settings.',default=>'Cloud assignment removed. The server and billing records are unchanged.'});redirect(admin_url('provider-settings',($_GET['focus']??null)==='cloud-assignment'?['focus'=>'cloud-assignment']:[]));
     }
     throw new InvalidArgumentException('Unknown provider inventory action.');
 }

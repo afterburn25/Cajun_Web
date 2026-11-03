@@ -22,6 +22,16 @@ on:
       - 'site/database/schema/license_financ*.php'
       - 'site/database/migrations/license_financ*.php'
       - '.github/workflows/license-financing-browser.yml'
+  pull_request:
+    branches: [feature/software-license-commerce-20261025]
+    paths:
+      - 'site/app/licenses/financing*.php'
+      - 'site/app/billing/finance_*.php'
+      - 'site/portal/views/financing.php'
+      - 'site/install/inventory.generated.php'
+      - 'tests/license_financing_browser_fixture.php'
+      - 'tests/license_financing_cases.py'
+      - '.github/workflows/license-financing-browser.yml'
   workflow_dispatch:
 permissions:
   contents: read

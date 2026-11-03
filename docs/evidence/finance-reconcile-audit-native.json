@@ -1,0 +1,176 @@
+{
+  "source_parent": "4f368547b667c3c0a0ce713f557f428e79e1ad5e",
+  "runs": [
+    {
+      "runtime": "8.2-mariadb",
+      "source": "parent287",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "checks": 75,
+      "failures": [
+        "audit_rollback_nonactive native row preserves concurrent or rolled-back state",
+        "audit_rollback_active native row preserves concurrent or rolled-back state"
+      ],
+      "report": "parent287-8.2-mariadb.json",
+      "source_sha256": "483799c99c0f2598ff85c52a23f3bce74f86fbfe87050cc166b434c0aedeb747"
+    },
+    {
+      "runtime": "8.2-mariadb",
+      "source": "atomic",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "checks": 75,
+      "failures": [],
+      "report": "atomic-8.2-mariadb.json",
+      "source_sha256": "8f023805639c0ad85f58ba91dcdf37f02224c6bd9468275d1effc645b62eac96"
+    },
+    {
+      "runtime": "8.2-mysql",
+      "source": "parent287",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "checks": 75,
+      "failures": [
+        "audit_rollback_nonactive native row preserves concurrent or rolled-back state",
+        "audit_rollback_active native row preserves concurrent or rolled-back state"
+      ],
+      "report": "parent287-8.2-mysql.json",
+      "source_sha256": "483799c99c0f2598ff85c52a23f3bce74f86fbfe87050cc166b434c0aedeb747"
+    },
+    {
+      "runtime": "8.2-mysql",
+      "source": "atomic",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "checks": 75,
+      "failures": [],
+      "report": "atomic-8.2-mysql.json",
+      "source_sha256": "8f023805639c0ad85f58ba91dcdf37f02224c6bd9468275d1effc645b62eac96"
+    },
+    {
+      "runtime": "8.4-mariadb",
+      "source": "parent287",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "checks": 75,
+      "failures": [
+        "audit_rollback_nonactive native row preserves concurrent or rolled-back state",
+        "audit_rollback_active native row preserves concurrent or rolled-back state"
+      ],
+      "report": "parent287-8.4-mariadb.json",
+      "source_sha256": "483799c99c0f2598ff85c52a23f3bce74f86fbfe87050cc166b434c0aedeb747"
+    },
+    {
+      "runtime": "8.4-mariadb",
+      "source": "atomic",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "checks": 75,
+      "failures": [],
+      "report": "canonical-atomic-84-mariadb.json",
+      "source_sha256": "8f023805639c0ad85f58ba91dcdf37f02224c6bd9468275d1effc645b62eac96"
+    },
+    {
+      "runtime": "8.4-mysql",
+      "source": "parent287",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "checks": 75,
+      "failures": [
+        "audit_rollback_nonactive native row preserves concurrent or rolled-back state",
+        "audit_rollback_active native row preserves concurrent or rolled-back state"
+      ],
+      "report": "parent287-8.4-mysql.json",
+      "source_sha256": "483799c99c0f2598ff85c52a23f3bce74f86fbfe87050cc166b434c0aedeb747"
+    },
+    {
+      "runtime": "8.4-mysql",
+      "source": "atomic",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "checks": 75,
+      "failures": [],
+      "report": "atomic-8.4-mysql.json",
+      "source_sha256": "8f023805639c0ad85f58ba91dcdf37f02224c6bd9468275d1effc645b62eac96"
+    }
+  ],
+  "contracts": [
+    {
+      "php": "8.2",
+      "contract": "finance_reconcile_snapshot",
+      "passed": true
+    },
+    {
+      "php": "8.2",
+      "contract": "finance_webhook_isolation",
+      "passed": true
+    },
+    {
+      "php": "8.2",
+      "contract": "finance_subscription_lifecycle",
+      "passed": true
+    },
+    {
+      "php": "8.2",
+      "contract": "license_financing_policy",
+      "passed": true
+    },
+    {
+      "php": "8.2",
+      "contract": "license_finance_source_contract",
+      "passed": true
+    },
+    {
+      "php": "8.2",
+      "contract": "license_finance_replacement_contract",
+      "passed": true
+    },
+    {
+      "php": "8.4",
+      "contract": "finance_reconcile_snapshot",
+      "passed": true
+    },
+    {
+      "php": "8.4",
+      "contract": "finance_webhook_isolation",
+      "passed": true
+    },
+    {
+      "php": "8.4",
+      "contract": "finance_subscription_lifecycle",
+      "passed": true
+    },
+    {
+      "php": "8.4",
+      "contract": "license_financing_policy",
+      "passed": true
+    },
+    {
+      "php": "8.4",
+      "contract": "license_finance_source_contract",
+      "passed": true
+    },
+    {
+      "php": "8.4",
+      "contract": "license_finance_replacement_contract",
+      "passed": true
+    }
+  ],
+  "fixture_sha256": "bce74a3a88b1c74b00070786ca73d66a14f9308f1f609d72f7fa91c393530b88",
+  "scope": "75 actual-SQL/mutex/transaction checks per PHP/database lane; 2 audit failures reproduced on each parent287 lane and all corrected checks pass. Auth, offer parent and provider readback are synthetic; no installed HTTP or real gateway execution.",
+  "retained_original_setup_and_harness_failures": "Preserved in the isolated task evidence; see docs/CODEX_FINANCE_RECONCILE_AUDIT.md for their exact scope.",
+  "database_shutdown": [
+    {
+      "Name": "mariadb",
+      "Port": 33447,
+      "graceful_shutdown": true,
+      "listener_absent": true
+    },
+    {
+      "Name": "mysql",
+      "Port": 33448,
+      "graceful_shutdown": true,
+      "listener_absent": true
+    }
+  ]
+}

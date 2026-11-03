@@ -1,0 +1,68 @@
+{
+  "parent": "81ae93c945c5d6b941c6dcbae6c230fcf14472d6",
+  "workflow_sha256": "86d1e0b486632b7616a96ed36ac2c202fb7a0a0a26987a2c8541fd2109e61f26",
+  "only_branch_admission_and_evidence_changes": true,
+  "branch_admission": [
+    {
+      "branch": "main",
+      "before": false,
+      "after": true
+    },
+    {
+      "branch": "feature/software-license-commerce-20261025",
+      "before": true,
+      "after": true
+    },
+    {
+      "branch": "codex/licensing-integration-review",
+      "before": false,
+      "after": true
+    },
+    {
+      "branch": "codex/software-domain-lifecycle-lock",
+      "before": false,
+      "after": true
+    },
+    {
+      "branch": "unrelated/branch",
+      "before": false,
+      "after": false
+    }
+  ],
+  "documentation_only_path_still_excluded": true,
+  "source_unchanged": [
+    {
+      "path": "site/app/licenses/software_grants.php",
+      "sha256": "bf9b1c12033edaa9fdb063c56398f3f1f1f1e584c4de17a295e87c6a13d0cd3f"
+    },
+    {
+      "path": "tests/software_commerce_native.php",
+      "sha256": "105cd69d362cff20f4438e728870b4e58afbe6f9cdb6a83997659a06bbe413b8"
+    },
+    {
+      "path": "tests/software_domain_lifecycle_concurrency.php",
+      "sha256": "caeb80b11ea73fb224a8cb2fcd7eacfca3cff59a30e52b77ee045ae974d1e2f6"
+    }
+  ],
+  "yaml_files": 99,
+  "bash_scripts": [
+    "step-1.sh",
+    "step-2.sh",
+    "step-3.sh",
+    "step-4.sh",
+    "step-6.sh"
+  ],
+  "pipeline_checks": [
+    {
+      "synthetic_exit": 0,
+      "observed_exit": 0,
+      "both_streams_retained": true
+    },
+    {
+      "synthetic_exit": 17,
+      "observed_exit": 17,
+      "both_streams_retained": true
+    }
+  ],
+  "scope": "Workflow admission and evidence retention only. Existing native service/test/helper bytes match PR285, whose local four-runtime 269-check evidence is reused. No new native execution, actual gateway, full combined application acceptance or independent approval is claimed."
+}

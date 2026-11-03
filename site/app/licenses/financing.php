@@ -213,34 +213,30 @@ function license_financing_sync(int $licenseId,?string $today=null,bool $payment
     $result=null;
     license_transaction(function()use($licenseId,$today,$paymentRecovery,&$result):void{
         license_lock($licenseId);
-        $plan=one('SELECT f.*,l.customer_id AS client_id,l.is_active AS license_active FROM '.table('license_financing').' f JOIN '.table('website_licenses').' l ON l.id=f.license_id WHERE f.license_id=? FOR UPDATE',[$licenseId]);
+        $plan=one('SELECT f.*,l.customer_id AS client_id FROM '.table('license_financing').' f JOIN '.table('website_licenses').' l ON l.id=f.license_id WHERE f.license_id=? FOR UPDATE',[$licenseId]);
         if(!$plan){$result=null;return;}
         if($plan['paid_off_at']!==null){
             if((string)$plan['state']!=='paid_off')throw new RuntimeException('Paid-off financing state is inconsistent.');
-            if((int)$plan['license_active']!==1){
-                $now=gmdate('Y-m-d H:i:s');
-                query('UPDATE '.table('website_licenses').' SET is_active=1,updated_at=? WHERE id=?',[$now,$licenseId]);
-                license_audit(0,'financing.unlock',
-                    'License '.$licenseId.' permanently reactivated from retained paid-off financing state');
-                $plan['license_active']=1;
-            }
             $result=$plan;return;
         }
         $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
             [config()['db']['prefix'].'license_finance_offers']);
+        if($offerTable)require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
         $signedOffer=$offerTable?one(
-            'SELECT activation_invoice_id,initial_payment_cents,status FROM '.table('license_finance_offers').
+            'SELECT * FROM '.table('license_finance_offers').
             ' WHERE license_id=? AND schedule_id=? ORDER BY created_at DESC LIMIT 1',
             [$licenseId,$plan['schedule_id']]
         ):null;
+        $initialPaid=null;
+        if($signedOffer&&(string)$signedOffer['status']==='signed'){
+            if((int)$signedOffer['client_id']!==(int)$plan['client_id'])throw new RuntimeException('Financing initial payment ownership changed.');
+            $initialPaid=license_finance_offer_initial_paid($signedOffer);
+        }
         if($signedOffer&&(string)$signedOffer['status']==='signed'&&(int)$signedOffer['initial_payment_cents']>0){
             if($signedOffer['activation_invoice_id']===null){
                 if((string)$plan['state']!=='pending_initial')throw new RuntimeException('Initial financing invoice history is incomplete.');
                 $result=$plan;return;
             }
-            $initial=ledger_invoice((int)$signedOffer['activation_invoice_id']);$initialBalance=ledger_balance($initial);
-            $initialPaid=$initial['status']==='paid'&&(int)$initialBalance['due_cents']===0
-                &&(int)$initialBalance['paid_cents']===(int)$initial['amount_cents'];
             if(!$initialPaid){
                 if((string)$plan['state']!=='pending_initial'){
                     $now=gmdate('Y-m-d H:i:s');
@@ -285,10 +281,9 @@ function license_financing_sync(int $licenseId,?string $today=null,bool $payment
         if($next==='paid_off'){
             query('UPDATE '.table('license_financing').' SET state=?,paid_off_at=?,updated_at=? WHERE license_id=? AND paid_off_at IS NULL',
                 ['paid_off',$now,$now,$licenseId]);
-            query('UPDATE '.table('website_licenses').' SET is_active=1,updated_at=? WHERE id=?',[$now,$licenseId]);
             license_audit(0,'financing.paid_off',
                 'License '.$licenseId.' completed all '.(int)$plan['installments'].
-                ' financing installments; key permanently activated and payment lock permanently removed');
+                ' financing installments; payment lock permanently removed without changing owner license controls');
         }elseif($next!==$old){
             query('UPDATE '.table('license_financing').' SET state=?,updated_at=? WHERE license_id=?',
                 [$next,$now,$licenseId]);
@@ -349,6 +344,13 @@ function license_financing_sync_by_invoice(int $invoiceId):void{
     $offerTable=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',
         [config()['db']['prefix'].'license_finance_offers']);
     if(!$gatewayTable||!$offerTable)return;
+    if((string)$plan['state']==='paid_off'){
+        require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+        $offer=one('SELECT id FROM '.table('license_finance_offers').' WHERE license_id=? AND schedule_id=? AND status=?',
+            [$row['license_id'],$plan['schedule_id'],'signed']);
+        if($offer)license_finance_subscription_payoff_retire((string)$offer['id']);
+        return;
+    }
     $recovery=one('SELECT s.id,s.status FROM '.table('recurring_billing_invoices').' r '.
         'JOIN '.table('license_finance_offers').' o ON o.schedule_id=r.schedule_id '.
         'JOIN '.table('license_finance_subscriptions').' s ON s.offer_id=o.id '.

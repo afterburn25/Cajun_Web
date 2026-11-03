@@ -1,0 +1,86 @@
+{
+  "base_pr": 289,
+  "base_sha": "deb99a8bcc52b89206d1852a3ada18ccc5c52cb8",
+  "branch": "codex/finance-reconcile-payoff-fixtures",
+  "combined_sha": "cc62bcc1316c1293ffee73d12e09b3c32055fb2b",
+  "matrix": {
+    "source_sha256": {
+      "parent": "8f023805639c0ad85f58ba91dcdf37f02224c6bd9468275d1effc645b62eac96",
+      "combined": "cc1408e6156e85973e87886a2160b3e90a57d070f4ed0e61813ed4d77e276195"
+    },
+    "tests_sha256": {
+      "finance_reconcile_snapshot.php": "33440173ad595bd029408e9ea8b56131dc31e0b0e25e314c2515d57a5534c4ed",
+      "license_finance_reconcile_native.php": "51448f66376845283988503cc9dde8f5f8aad79d3da82131ca1f1ec10b286df7"
+    },
+    "rows": [
+      {
+        "label": "8.2-parent-snapshot",
+        "count": 112,
+        "report_sha256": "4a51ce0ffa2e3c7a160f654a129db5ed8d74a135c1127014cde8f049ad58c4df"
+      },
+      {
+        "label": "8.2-combined-snapshot",
+        "count": 112,
+        "report_sha256": "91db9cf0ec428d0dac551297745b17d7193f61af8396539f84a5c005763fa710"
+      },
+      {
+        "label": "8.4-parent-snapshot",
+        "count": 112,
+        "report_sha256": "57f8e6fbd8bec375bfd89243e212d49353435961197e4c387ad19d850b71f932"
+      },
+      {
+        "label": "8.4-combined-snapshot",
+        "count": 112,
+        "report_sha256": "7ff8f271d46af6c00d2a9c5055be13b7092e604d3dc32a5e9292c2dd768bf67a"
+      },
+      {
+        "label": "8.4-parent-native",
+        "count": 75,
+        "report_sha256": "f6256b7a752b58872e354bf2740980d4f04835d867fb11a15a714a2b548d4767"
+      },
+      {
+        "label": "8.2-mariadb-native",
+        "count": 75,
+        "report_sha256": "a5e49d15aafabb92292b221153c7ca408a352cb5175d184464fbdb6f97f2c493"
+      },
+      {
+        "label": "8.4-mariadb-native",
+        "count": 75,
+        "report_sha256": "b01db0e44eda2a62c407eeb480cf72e1c3c79b96b0a690aeacfd42315dbd692f"
+      },
+      {
+        "label": "8.2-mysql-native",
+        "count": 75,
+        "report_sha256": "6c20006abf7d625520ab106495a605dc6be35bb3a30ad4b448d466df7524296f"
+      },
+      {
+        "label": "8.4-mysql-native",
+        "count": 75,
+        "report_sha256": "1a0063af25fffb5563d2f8d3ae7edd31c85dd42be28094459e33aed58595b2f1"
+      }
+    ],
+    "assertions_unchanged": true,
+    "native_executions": 375,
+    "focused_executions": 448
+  },
+  "syntax": [
+    {
+      "php": "8.2",
+      "file": "finance_reconcile_snapshot.php"
+    },
+    {
+      "php": "8.4",
+      "file": "finance_reconcile_snapshot.php"
+    },
+    {
+      "php": "8.2",
+      "file": "license_finance_reconcile_native.php"
+    },
+    {
+      "php": "8.4",
+      "file": "license_finance_reconcile_native.php"
+    }
+  ],
+  "original_failure": "Unmodified strict fixture on combined cc62bcc1 exits with Call to undefined function license_finance_subscription_payoff_due() before assertions.",
+  "scope": "Only strict fixture dependencies and an optional CLI source path change. Cases and assertion tails are byte-identical to #289. Production functions, real payoff readers and all shipping files are unchanged."
+}

@@ -1,0 +1,746 @@
+{
+  "parent": "3789bb50c90cb836530f2d5dc2400cee394763d0",
+  "source_sha256": "a0fc47eee4511a382df9f0a634c16150743a6a5c31f42a6e8c8bff799c880b7f",
+  "fixture_sha256": "299334636d5ffcc9402a6d54f2c166e3cd197aacd1b069bb8592411e0ee60c28",
+  "runs": [
+    {
+      "phase": "original",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "checks": 140,
+      "failed": 39,
+      "report": "original-8.2-mariadb.json",
+      "source_sha256": "43ac6a612360944879979ef23a9340a7868ec0d638d94cb3d00487661743d0cf",
+      "report_sha256": "2a747d215484d419d8226b9b340f79ca0aa4f4e1837542cffb3c39735fde9635"
+    },
+    {
+      "phase": "original",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "checks": 140,
+      "failed": 39,
+      "report": "original-8.2-mysql.json",
+      "source_sha256": "43ac6a612360944879979ef23a9340a7868ec0d638d94cb3d00487661743d0cf",
+      "report_sha256": "2413b4a62bd4cad6f6ecb7c46bef4967eb2cac1dd41dd17e4d2092fdd0cc3b7c"
+    },
+    {
+      "phase": "original",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "checks": 140,
+      "failed": 39,
+      "report": "original-8.4-mariadb.json",
+      "source_sha256": "43ac6a612360944879979ef23a9340a7868ec0d638d94cb3d00487661743d0cf",
+      "report_sha256": "4c9ed28c60e1f7b57b4ea18191f9cc8a4cb0815764d684cf15f8cef97bfefc44"
+    },
+    {
+      "phase": "original",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "checks": 140,
+      "failed": 39,
+      "report": "original-8.4-mysql.json",
+      "source_sha256": "43ac6a612360944879979ef23a9340a7868ec0d638d94cb3d00487661743d0cf",
+      "report_sha256": "b55255abef8859f4fbae86ae8e905bdc71feb5b567c62630adebaa5948ce5573"
+    },
+    {
+      "phase": "interim",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "checks": 140,
+      "failed": 6,
+      "report": "interim-8.2-mariadb.json",
+      "source_sha256": "e0aef115986857e0fac2ff219c56805f51fe3d551d7668800908722060e3ff44",
+      "report_sha256": "a365abc571fe08fe33835034063359632a466bce95b17e877f40de2fc969d2fb"
+    },
+    {
+      "phase": "interim",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "checks": 140,
+      "failed": 6,
+      "report": "interim-8.2-mysql.json",
+      "source_sha256": "e0aef115986857e0fac2ff219c56805f51fe3d551d7668800908722060e3ff44",
+      "report_sha256": "c17fa3d7cefba151188b7d5f7ba9c3c4ed68a78cbfd5d9526fc43061cc030bc8"
+    },
+    {
+      "phase": "interim",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "checks": 140,
+      "failed": 6,
+      "report": "interim-8.4-mariadb.json",
+      "source_sha256": "e0aef115986857e0fac2ff219c56805f51fe3d551d7668800908722060e3ff44",
+      "report_sha256": "2dba5e1ad6e08b4ff05d1670e3b6973c59e661c5dfb4a94500c5f6796b258fef"
+    },
+    {
+      "phase": "interim",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "checks": 140,
+      "failed": 6,
+      "report": "interim-8.4-mysql.json",
+      "source_sha256": "e0aef115986857e0fac2ff219c56805f51fe3d551d7668800908722060e3ff44",
+      "report_sha256": "74458fa3c0331604600b8ae7cdce1f82a0b0b5ce186166296d73e3571dd74e3f"
+    },
+    {
+      "phase": "corrected",
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "checks": 140,
+      "failed": 0,
+      "report": "corrected-8.2-mariadb.json",
+      "source_sha256": "a0fc47eee4511a382df9f0a634c16150743a6a5c31f42a6e8c8bff799c880b7f",
+      "report_sha256": "8aeaf6acaed16245f9335451839a7d895008ee0327192ae972c7d30776b4d001"
+    },
+    {
+      "phase": "corrected",
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "checks": 140,
+      "failed": 0,
+      "report": "corrected-8.2-mysql.json",
+      "source_sha256": "a0fc47eee4511a382df9f0a634c16150743a6a5c31f42a6e8c8bff799c880b7f",
+      "report_sha256": "183a4f5017d87700be3ffc5cda7c1f891794f144e7c10042a91d913676bba818"
+    },
+    {
+      "phase": "corrected",
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "checks": 140,
+      "failed": 0,
+      "report": "corrected-8.4-mariadb.json",
+      "source_sha256": "a0fc47eee4511a382df9f0a634c16150743a6a5c31f42a6e8c8bff799c880b7f",
+      "report_sha256": "84df14b1e11966d55e93f2f0c85979dc41d9e296cb48e55d0dcb5f7eddee2ce0"
+    },
+    {
+      "phase": "corrected",
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "checks": 140,
+      "failed": 0,
+      "report": "corrected-8.4-mysql.json",
+      "source_sha256": "a0fc47eee4511a382df9f0a634c16150743a6a5c31f42a6e8c8bff799c880b7f",
+      "report_sha256": "c61545a661fcdcad5904ebe6297a73e7f589374e0a8701fe26394e66f1b06a8a"
+    }
+  ],
+  "original_failed_assertions": [
+    "processing_to_refunded expected routing result",
+    "processing_to_refunded correct exact charge row",
+    "processing_to_voided expected routing result",
+    "processing_to_voided correct exact charge row",
+    "processing_to_declined expected routing result",
+    "processing_to_declined correct exact charge row",
+    "processing_to_sandbox_test expected routing result",
+    "processing_to_sandbox_test correct exact charge row",
+    "processing_to_paid expected routing result",
+    "processing_new_attempt expected routing result",
+    "processing_new_attempt correct exact charge row",
+    "processing_historical_capture expected routing result",
+    "processing_historical_capture correct exact charge row",
+    "uncertain_to_refunded expected routing result",
+    "uncertain_to_refunded correct exact charge row",
+    "uncertain_to_voided expected routing result",
+    "uncertain_to_voided correct exact charge row",
+    "uncertain_to_declined expected routing result",
+    "uncertain_to_declined correct exact charge row",
+    "uncertain_to_sandbox_test expected routing result",
+    "uncertain_to_sandbox_test correct exact charge row",
+    "uncertain_to_paid expected routing result",
+    "uncertain_new_attempt expected routing result",
+    "uncertain_new_attempt correct exact charge row",
+    "uncertain_historical_capture expected routing result",
+    "uncertain_historical_capture correct exact charge row",
+    "review_to_refunded expected routing result",
+    "review_to_refunded correct exact charge row",
+    "review_to_voided expected routing result",
+    "review_to_voided correct exact charge row",
+    "review_to_declined expected routing result",
+    "review_to_declined correct exact charge row",
+    "review_to_sandbox_test expected routing result",
+    "review_to_sandbox_test correct exact charge row",
+    "review_to_paid expected routing result",
+    "review_new_attempt expected routing result",
+    "review_new_attempt correct exact charge row",
+    "review_historical_capture expected routing result",
+    "review_historical_capture correct exact charge row"
+  ],
+  "corrected_assertions": [
+    {
+      "name": "processing_to_refunded expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_to_refunded correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_to_refunded retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_to_refunded actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_to_refunded competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_to_voided expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_to_voided correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_to_voided retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_to_voided actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_to_voided competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_to_declined expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_to_declined correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_to_declined retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_to_declined actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_to_declined competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_to_sandbox_test expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_to_sandbox_test correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_to_sandbox_test retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_to_sandbox_test actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_to_sandbox_test competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_to_paid expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_to_paid correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_to_paid retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_to_paid actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_to_paid competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_new_attempt expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_new_attempt correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_new_attempt retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_new_attempt actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_new_attempt competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_unchanged expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_unchanged correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_unchanged retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_unchanged actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_unchanged competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "processing_historical_capture expected routing result",
+      "passed": true
+    },
+    {
+      "name": "processing_historical_capture correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "processing_historical_capture retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "processing_historical_capture actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "processing_historical_capture competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_refunded expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_refunded correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_refunded retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_refunded actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_refunded competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_voided expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_voided correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_voided retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_voided actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_voided competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_declined expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_declined correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_declined retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_declined actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_declined competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_sandbox_test expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_sandbox_test correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_sandbox_test retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_sandbox_test actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_sandbox_test competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_paid expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_paid correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_paid retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_paid actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_to_paid competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_new_attempt expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_new_attempt correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_new_attempt retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_new_attempt actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_new_attempt competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_unchanged expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_unchanged correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_unchanged retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_unchanged actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_unchanged competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "uncertain_historical_capture expected routing result",
+      "passed": true
+    },
+    {
+      "name": "uncertain_historical_capture correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "uncertain_historical_capture retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "uncertain_historical_capture actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "uncertain_historical_capture competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_to_refunded expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_to_refunded correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_to_refunded retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_to_refunded actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_to_refunded competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_to_voided expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_to_voided correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_to_voided retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_to_voided actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_to_voided competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_to_declined expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_to_declined correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_to_declined retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_to_declined actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_to_declined competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_to_sandbox_test expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_to_sandbox_test correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_to_sandbox_test retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_to_sandbox_test actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_to_sandbox_test competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_to_paid expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_to_paid correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_to_paid retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_to_paid actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_to_paid competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_new_attempt expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_new_attempt correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_new_attempt retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_new_attempt actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_new_attempt competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_unchanged expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_unchanged correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_unchanged retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_unchanged actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_unchanged competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "review_historical_capture expected routing result",
+      "passed": true
+    },
+    {
+      "name": "review_historical_capture correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "review_historical_capture retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "review_historical_capture actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "review_historical_capture competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "new_attempt_current_capture expected routing result",
+      "passed": true
+    },
+    {
+      "name": "new_attempt_current_capture correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "new_attempt_current_capture retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "new_attempt_current_capture actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "new_attempt_current_capture competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "already_paid expected routing result",
+      "passed": true
+    },
+    {
+      "name": "already_paid correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "already_paid retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "already_paid actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "already_paid competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "wrong_amount expected routing result",
+      "passed": true
+    },
+    {
+      "name": "wrong_amount correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "wrong_amount retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "wrong_amount actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "wrong_amount competing writer used separate committed SQL connection",
+      "passed": true
+    },
+    {
+      "name": "conflicting_transaction expected routing result",
+      "passed": true
+    },
+    {
+      "name": "conflicting_transaction correct exact charge row",
+      "passed": true
+    },
+    {
+      "name": "conflicting_transaction retained parent and attempt rows unchanged",
+      "passed": true
+    },
+    {
+      "name": "conflicting_transaction actual mutex and transaction released",
+      "passed": true
+    },
+    {
+      "name": "conflicting_transaction competing writer used separate committed SQL connection",
+      "passed": true
+    }
+  ],
+  "scope": "Actual canonical charge/attempt DDL, PDO/InnoDB, account mutex, transactions, exact invoice/amount validator and separate-process competing commits. Synthetic parent records and gateway transaction details; no provider contact, installed HTTP or license-access claim.",
+  "limits": [
+    "Native fixture uses minimal parent tables and synthetic trusted gateway details; it does not exercise webhook signatures, actual provider traffic, installed HTTP or license access.",
+    "28 scenarios x5 assertions per lane; do not sum earlier overlapping 120-check exploratory runs.",
+    "Canonical charge/attempt DDL, indexes and foreign keys, real staff mutex/transaction helpers and actual one-time charge validation are exercised.",
+    "Required independent review, exact combined/main acceptance and unavailable real sandbox remain outstanding."
+  ],
+  "database_shutdown": {
+    "both_gracefully_stopped": true,
+    "retained_data": true,
+    "initial_confirmation": "Both mysqladmin shutdown calls returned success; immediate socket check was premature. Follow-up finds neither listener.",
+    "ports": [
+      33447,
+      33448
+    ]
+  }
+}

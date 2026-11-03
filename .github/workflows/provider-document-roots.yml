@@ -35,14 +35,13 @@ jobs:
           MYSQL_USER: cwp_test
           MYSQL_PASSWORD: local-ci-only
           MYSQL_ROOT_PASSWORD: synthetic-root-only
-        ports: ['33306:3306']
+        ports: ['3306/tcp']
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
-      CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
     steps:
@@ -59,6 +58,8 @@ jobs:
         if: matrix.database.label == 'mysql-8.4'
         run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
       - name: Native document root sharing and recovery tests
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
         run: |
           mkdir -p qa
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \

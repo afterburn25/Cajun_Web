@@ -53,7 +53,7 @@ $financeSchedulerLastSuccess=$financeOffersReady?(int)setting('finance_scheduler
 $financeSchedulerLastState=$financeOffersReady?(string)setting('finance_scheduler_last_state'):'';
 $financeSchedulerLastErrors=$financeOffersReady?(int)setting('finance_scheduler_last_errors'):0;
 $financeChargeReviews=$financeGatewayReady?all('SELECT ch.invoice_id,ch.status,ch.transaction_id,o.title,c.name FROM '.table('license_finance_charges').' ch JOIN '.table('license_finance_offers').' o ON o.id=ch.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE ch.status IN (?,?,?) ORDER BY ch.id DESC LIMIT 30',['processing','uncertain','review']):[];
-$financeSubscriptionReviews=$financeGatewayReady?all('SELECT s.offer_id,s.gateway_subscription_id,s.status,o.title,c.name FROM '.table('license_finance_subscriptions').' s JOIN '.table('license_finance_offers').' o ON o.id=s.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE s.status IN (?,?,?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',['creating','replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery']):[];
+$financeSubscriptionReviews=$financeGatewayReady?all('SELECT s.offer_id,s.gateway_subscription_id,s.status,o.title,c.name FROM '.table('license_finance_subscriptions').' s JOIN '.table('license_finance_offers').' o ON o.id=s.offer_id JOIN '.table('studio_clients').' c ON c.id=o.client_id WHERE s.status IN (?,?,?,?,?,?,?,?) ORDER BY s.id DESC LIMIT 30',['creating','replacing','review','payment_failed','billing_suspended','cancelled','reversal_recovery','retirement_pending']):[];
 $financeMailAccounts=[];
 try{
     if(mail_accounts_ready()&&mail_drafts_ready())foreach(array_slice(mail_accounts_assigned(1),0,20) as $a)if($a['can_send'])$financeMailAccounts[]=mail_drafts_account($a['id']);
@@ -544,8 +544,8 @@ $eligibleReleases=(int)($lic['is_master']??0)===1
 <?php else: ?>
 <?php if($lic['is_active']): ?><?php if(!(int)($lic['is_master']??0) && !$isSoftwareEntitlement): ?><form method="post"><?php admin_action('studio_license_bundle'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><label>Create bundle<select name="industry" required><option value="">Choose industry…</option><option value="restaurant">Restaurant</option><option value="salon">Salon</option><option value="generic">Generic Business</option></select></label><button class="btn gold">Generate bundle</button></form><?php endif; ?>
 <?php if($financePlan&&$financePlan['paid_off_at']!==null): ?>
-<p class="hint"><strong>Permanently unlocked:</strong> this financed license is fully paid and cannot be deactivated. Domain binding and commercial-rights restrictions still apply.</p>
-<?php else: ?><form method="post"><?php admin_action('studio_license_deactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Deactivate license</button></form><?php endif; ?>
+<p class="hint"><strong>Financing permanently paid:</strong> payment status can no longer suspend this license. Owner deactivation, domain binding and commercial-rights restrictions still apply independently.</p>
+<?php endif; ?><form method="post"><?php admin_action('studio_license_deactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Deactivate license</button></form>
 <?php else: ?><form method="post"><?php admin_action('studio_license_reactivate'); ?><input type="hidden" name="id" value="<?=esc($lic['id'])?>"><button class="btn outline">Reactivate license</button></form><?php endif; ?>
 <?php endif; ?></section>
 <?php endforeach; ?>

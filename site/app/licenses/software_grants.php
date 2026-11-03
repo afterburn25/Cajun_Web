@@ -138,6 +138,19 @@ function software_dependencies_satisfied(int $clientId,array $dependencySkus):bo
     return true;
 }
 
+/** New software entitlements must identify the product being activated.
+ *
+ * Legacy Website Core licenses predate product-bound validation and retain
+ * their existing {license_key, domain} wire contract. A v3 software key is
+ * commercially product-specific, however, so allowing its caller to omit the
+ * product would let the same valid key/domain authorize unrelated software.
+ */
+function software_grant_requires_product_identity(array $license):bool {
+    $licenseId=(int)($license['id']??0);
+    if($licenseId<1||!software_commerce_ready())return false;
+    return (bool)one('SELECT license_id FROM '.table('software_entitlements').' WHERE license_id=?',[$licenseId]);
+}
+
 /** Classify a mutable license without letting orphan software rows fall back to legacy behavior. */
 function software_grant_mutation_entitlement(int $licenseId):?array{
     if($licenseId<1)throw new InvalidArgumentException('License not found.');
@@ -163,7 +176,7 @@ function software_grant_mutation_entitlement(int $licenseId):?array{
 function software_grant_recent_deactivation_blocks_add(int $licenseId,string $newDomain):bool{
     $hours=software_domain_change_cooldown_hours();
     if($hours===0)return false;
-    $last=one('SELECT detail,created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+    $last=one('SELECT id,detail,created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
         ['license.domain.deactivate','License '.$licenseId.' domain %']);
     if(!$last||!is_string($last['created_at']??null)||!is_string($last['detail']??null))return false;
     $stamp=strtotime($last['created_at'].' UTC');
@@ -171,10 +184,11 @@ function software_grant_recent_deactivation_blocks_add(int $licenseId,string $ne
     $prefix='License '.$licenseId.' domain ';
     $old=str_starts_with($last['detail'],$prefix)?substr($last['detail'],strlen($prefix)):'';
     if($old!==''&&hash_equals($old,$newDomain))return false; // accidental same-domain reactivation.
-    $replace=one('SELECT created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
+    $replace=one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id DESC LIMIT 1',
         ['license.domain.replace','License '.$licenseId.' %']);
-    if($replace&&is_string($replace['created_at']??null)
-        &&(string)$replace['created_at']>=(string)$last['created_at'])return false;
+    // These mutations share the license lock. Audit IDs retain their order
+    // when a later standalone deactivation has the same second timestamp.
+    if($replace&&(int)$replace['id']>(int)$last['id'])return false;
     return true;
 }
 
@@ -291,10 +305,10 @@ function software_grant_register_domain(int $licenseId,string $domain,int $actor
     software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_register_domain($licenseId,$domain,$actor);return false;}
-    software_grant_require_customer_active($licenseId);
     $domain=license_canonical_domain($domain);
     license_transaction(function()use($licenseId,$domain,$actor):void{
         license_lock($licenseId);
+        software_grant_require_customer_active($licenseId);
         $existing=one('SELECT is_active FROM '.table('license_domains').' WHERE license_id=? AND domain=?',[$licenseId,$domain]);
         if(!$existing||!(int)$existing['is_active']){
             if(software_grant_recent_deactivation_blocks_add($licenseId,$domain)){
@@ -311,10 +325,10 @@ function software_grant_deactivate_domain(int $licenseId,string $domain,int $act
     software_grant_require_client_owner($licenseId,$actor);
     $entitlement=software_grant_mutation_entitlement($licenseId);
     if($entitlement===null){license_deactivate_domain($licenseId,$domain,$actor);return false;}
-    software_grant_require_customer_active($licenseId);
     $domain=license_canonical_domain($domain);
     license_transaction(function()use($licenseId,$domain,$actor):void{
         license_lock($licenseId);
+        software_grant_require_customer_active($licenseId);
         if(!one('SELECT id FROM '.table('license_domains').' WHERE license_id=? AND domain=? AND is_active=1',[$licenseId,$domain])){
             throw new InvalidArgumentException('Current domain is not active on this license.');
         }
@@ -338,12 +352,12 @@ function software_grant_replace_domain(int $licenseId,string $oldDomain,string $
         license_replace_domain($licenseId,$oldDomain,$newDomain,$actor);
         return;
     }
-    software_grant_require_customer_active($licenseId);
     $oldDomain=license_canonical_domain($oldDomain);
     $newDomain=license_canonical_domain($newDomain);
     if($oldDomain===$newDomain)throw new InvalidArgumentException('The new domain is the same as the current one.');
     license_transaction(function()use($licenseId,$oldDomain,$newDomain,$actor):void{
         license_lock($licenseId);
+        software_grant_require_customer_active($licenseId);
         if(software_grant_recent_deactivation_blocks_add($licenseId,$newDomain)){
             throw new RuntimeException('This license recently changed installations. Try again after the owner-configured cooldown.');
         }

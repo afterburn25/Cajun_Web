@@ -1,0 +1,41 @@
+{
+  "run_id": 40779590487,
+  "job_id": 123137571445,
+  "artifact_id": 12856671618,
+  "source": "d30c94b7d5e0441eae8e876ce4b561f3a617aa3f",
+  "ci_checkout": "036fc53ef9193671c26609dc516925c79296da36",
+  "equal_tree": "6799132a7e96c0b9f38449e5cbe7400e88625d6a",
+  "artifact_sha256": "a6ff3f6ba3caae0da7970686d4df0b00a25d9a38340c6801e3ea1c0879c1b3f0",
+  "conclusion": "failure",
+  "actual_installation_succeeded": true,
+  "checks_passed_before_exception": 2,
+  "baseline": "published 1.25.0",
+  "candidate": "1.26.0",
+  "first_failure": "CLI organized fixture seed rejected mail private storage because its legacy document-root default was the parent of the actual Apache web root.",
+  "repair": "Pass the existing validated document-root argument only for root-install fixture calls. Subfolder invocation and security checks remain unchanged.",
+  "offline_before": "8 tests; 1 failed actual-command argument contract",
+  "offline_after": "8 tests pass",
+  "actual_corrected_upgrade_pending": true,
+  "artifact_members": [
+    {
+      "path": "organized-software-1.25 root-rewrite 1.25.0-install.json",
+      "sha256": "8290447f04567273bbc8a8011b8900791d44b61682bbfdd3edeecade1eb2c4dc"
+    },
+    {
+      "path": "software-release125-root-rewrite-launcher.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "software-release125-progress.json",
+      "sha256": "2f3b1c21f6eb657591e00a88bbdcd4611307b1bbca2f53192715bc4e7d41e578"
+    },
+    {
+      "path": "software-release125-root-rewrite.log",
+      "sha256": "30810e401f190b8755a8f704ab937394211e38c82d2cd0f738831e486ece2726"
+    },
+    {
+      "path": "software-release125-upgrade.json",
+      "sha256": "7355c9df0312477e740fb648f1d0d4a1a87fc50c99259f13cc1f3bc880e6cef5"
+    }
+  ]
+}

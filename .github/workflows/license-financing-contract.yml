@@ -27,12 +27,20 @@ on:
       - 'site/admin/views/studio/licenses.php'
       - 'site/portal/controllers/actions.php'
       - 'site/api/handlers/license.php'
+      - 'tests/license_finance_replacement_contract.php'
       - 'tests/license_financing_policy.php'
       - 'tests/license_financing_native_cases.php'
       - 'tests/license_finance_source_contract.php'
       - 'tests/license_financing_browser_fixture.php'
       - 'tests/license_financing_cases.py'
       - 'tests/browser_acceptance.py'
+      - '.github/workflows/license-financing-contract.yml'
+  pull_request:
+    branches: [feature/software-license-commerce-20261025]
+    paths:
+      - 'site/app/licenses/financing_policy.php'
+      - 'site/app/billing/finance_*.php'
+      - 'tests/license_financ*.php'
       - '.github/workflows/license-financing-contract.yml'
   workflow_dispatch:
 permissions:
@@ -66,6 +74,7 @@ jobs:
           php -l site/database/migrations/license_finance_gateway_migrate.php
           php -l site/portal/views/financing.php
           php -l site/api/handlers/license.php
+          php -l tests/license_finance_replacement_contract.php
           php -l tests/license_financing_policy.php
           php -l tests/license_financing_native_cases.php
           php -l tests/license_finance_source_contract.php
@@ -75,3 +84,5 @@ jobs:
         run: php tests/license_financing_policy.php
       - name: Run financing integration source contract
         run: php tests/license_finance_source_contract.php
+      - name: Verify retired ARB cannot collect in parallel with replacement
+        run: php tests/license_finance_replacement_contract.php

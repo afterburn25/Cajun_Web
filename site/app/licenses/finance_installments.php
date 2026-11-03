@@ -114,9 +114,12 @@ function license_finance_scheduler_run(?int $at=null):array{
     if(!license_finance_offers_ready()||license_financing_feature_state()!==true)return ['state'=>'not_prepared','offers'=>0,'invoices'=>0,'suspended'=>0,'paid_off'=>0,'errors'=>0];
     $cursor=(string)setting('finance_scheduler_cursor','');
     if($cursor!==''&&!preg_match('/^[a-f0-9]{32}$/D',$cursor))$cursor='';
-    $rows=all('SELECT o.id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id WHERE o.status=? AND f.paid_off_at IS NULL AND o.id>? ORDER BY o.id LIMIT 100',['signed',$cursor]);
+    $unfinished='f.paid_off_at IS NULL';
+    if(license_finance_gateway_ready())$unfinished='('.$unfinished.' OR EXISTS (SELECT 1 FROM '.table('license_finance_subscriptions').
+        " s WHERE s.offer_id=o.id AND s.status NOT IN ('paid_off','cancelled','sandbox_test')))";
+    $rows=all('SELECT o.id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id WHERE o.status=? AND '.$unfinished.' AND o.id>? ORDER BY o.id LIMIT 100',['signed',$cursor]);
     if(!$rows&&$cursor!==''){
-        $cursor='';$rows=all('SELECT o.id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id WHERE o.status=? AND f.paid_off_at IS NULL ORDER BY o.id LIMIT 100',['signed']);
+        $cursor='';$rows=all('SELECT o.id FROM '.table('license_finance_offers').' o JOIN '.table('license_financing').' f ON f.license_id=o.license_id WHERE o.status=? AND '.$unfinished.' ORDER BY o.id LIMIT 100',['signed']);
     }
     $summary=['state'=>'complete','offers'=>0,'invoices'=>0,'suspended'=>0,'paid_off'=>0,'errors'=>0];
     $last=$cursor;
@@ -124,8 +127,24 @@ function license_finance_scheduler_run(?int $at=null):array{
         try{
             $result=license_finance_issue_due((string)$row['id'],$at);$summary['offers']++;$summary['invoices']+=count($result['issued']);
             if($result['state']==='suspended')$summary['suspended']++;
-            if($result['state']==='paid_off')$summary['paid_off']++;
+            if($result['state']==='paid_off'){
+                $summary['paid_off']++;
+                if(license_finance_gateway_ready()){
+                    require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+                    $sub=license_finance_subscription_row((string)$row['id']);
+                    if($sub&&!in_array((string)$sub['status'],['paid_off','cancelled','sandbox_test'],true)
+                        &&license_finance_subscription_payoff_retire((string)$row['id'])!=='paid_off'){
+                        $summary['errors']++;$summary['state']='partial';
+                    }
+                }
+            }
             if(license_finance_gateway_ready()){
+                require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+                $retiring=license_finance_subscription_row((string)$row['id']);
+                if($retiring&&(string)$retiring['status']==='retirement_pending'
+                    &&license_finance_subscription_replacement_retire((string)$row['id'])==='review'){
+                    $summary['errors']++;$summary['state']='partial';
+                }
                 $sub=one('SELECT status FROM '.table('license_finance_subscriptions').' WHERE offer_id=?',[$row['id']]);
                 if(license_financing_recovery_link_allowed((string)($sub['status']??''))){
                     $offer=license_finance_offer_row((string)$row['id']);

@@ -7,10 +7,7 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 
 function software_portal_render(?array $client,string $error=''):never{
-    if(!$client||support_current()){
-        if($error!=='')fail_page($error,403);
-        fail_page('Sign in to your own account to manage software.',403);
-    }
+    if(!$client||support_current())fail_page('Sign in to your own account to manage software.',403);
     header('Cache-Control: private, no-store');
     $gateway=null;
     if(software_commerce_ready()){
@@ -30,7 +27,7 @@ function software_portal_render(?array $client,string $error=''):never{
     }else{
         $clientId=(int)$client['id'];
         echo '<h2>My licenses</h2><div class="workspace-grid">';
-        $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at,e.updates_until,e.max_installations,e.invoice_id,s.status AS billing_status FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id LEFT JOIN '.table('software_subscriptions').' s ON s.invoice_id=e.invoice_id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
+        $licenses=all('SELECT l.*,e.license_type,e.licensee,e.expires_at,e.updates_until,e.max_installations,s.status AS billing_status FROM '.table('website_licenses').' l JOIN '.table('software_entitlements').' e ON e.license_id=l.id LEFT JOIN '.table('software_subscriptions').' s ON s.invoice_id=e.invoice_id WHERE l.customer_id=? AND l.is_master=0 ORDER BY l.id DESC LIMIT 100',[$clientId]);
         foreach($licenses as $lic){
             $expired=$lic['expires_at']!==null && $lic['expires_at']<=gmdate('Y-m-d H:i:s');
             $activeDomains=(int)query('SELECT COUNT(*) FROM '.table('license_domains').' WHERE license_id=? AND is_active=1',[$lic['id']])->fetchColumn();
@@ -71,7 +68,7 @@ function software_portal_render(?array $client,string $error=''):never{
                     echo '<button class="btn outline" type="submit">Deactivate installation</button></form>';
                 }
             }
-            if($canManageInstallations&&$lic['invoice_id']!==null&&$activeDomains<(int)$lic['max_installations']){
+            if($canManageInstallations&&$activeDomains<(int)$lic['max_installations']){
                 echo '<form method="post">'.support_csrf_field();
                 echo '<input type="hidden" name="action" value="license_domain_add">';
                 echo '<input type="hidden" name="license_id" value="'.(int)$lic['id'].'">';

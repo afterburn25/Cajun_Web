@@ -174,6 +174,23 @@ try{
     $unsafe->close();
     swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.2','Traversal ZIP must fail',$unsafePath,$password),
         'Software publisher rejects parent-directory ZIP paths');
+    swok(software_asset_member_name('folder/file.txt')==='folder/file.txt'
+        &&software_asset_member_name('folder/')==='folder/'
+        &&software_asset_member_name('C:/escape.txt')===null
+        &&software_asset_member_name('./relative.txt')===null
+        &&software_asset_member_name('folder//ambiguous.txt')===null
+        &&software_asset_member_name('folder/trailing. ')===null
+        &&software_asset_member_name('folder/CON.txt')===null
+        &&software_asset_member_name("control\nname.txt")===null,
+        'Software publisher accepts only canonical portable ZIP member names');
+    $collisionPath=$private.DIRECTORY_SEPARATOR.'synthetic-collision.zip';
+    $collision=new ZipArchive();
+    if($collision->open($collisionPath,ZipArchive::CREATE|ZipArchive::OVERWRITE)!==true)throw new RuntimeException('Collision ZIP fixture failed.');
+    $collision->addFromString('Readme.txt','first case');
+    $collision->addFromString('README.txt','second case');
+    $collision->close();
+    swdenied(fn()=>software_asset_publish('SOFTWARE-TEST','1.0.2','Case collision ZIP must fail',$collisionPath,$password),
+        'Software publisher rejects case-colliding extraction paths');
     swok((int)query('SELECT COUNT(*) FROM '.table('software_assets').' WHERE sku=?',['SOFTWARE-TEST'])->fetchColumn()===1,
         'Rejected package publications create no extra software asset rows');
 
@@ -203,6 +220,8 @@ try{
     $trial=software_grant_create(1,'SOFTWARE-TEST','trial','Synthetic Buyer','www.example.com',gmdate('Y-m-d H:i:s',time()+86400),1);
     db()->commit();
     $lic=license_get($trial['key']);
+    swok(software_grant_requires_product_identity($lic),
+        'Software entitlement requires product-bound runtime validation');
     swok(software_grant_verdict($lic,'example.com'),'Trial authorizes its registered domain');
     query('UPDATE '.table('software_entitlements').' SET expires_at=? WHERE license_id=?',
         [gmdate('Y-m-d H:i:s',time()-86400),$trial['id']]);
@@ -211,6 +230,9 @@ try{
         'Software entitlement is recognized by legacy-bundle guard');
     swdenied(fn()=>license_bundle_store((int)$trial['id'],$zipPath,'Legacy software bundle must fail'),
         'Software entitlement cannot be stored through legacy website bundle path');
+    $legacyCompatibilityKey=license_create(1,'restaurant',1,false,null);
+    swok(!software_grant_requires_product_identity(license_get($legacyCompatibilityKey)),
+        'Legacy website key preserves validation without a product field');
     db()->beginTransaction();
     try{
         software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,'',false,null,$password);
@@ -244,6 +266,8 @@ try{
     $master=software_grant_create(1,'SOFTWARE-TEST','master','Internal QA',null,null,1,null,null,
         'Owner-approved release validation',false,null,$password);
     db()->commit();
+    swok(software_grant_requires_product_identity(license_get($master['key'])),
+        'Internal master remains product-bound despite its any-domain authority');
     swok(software_grant_verdict(license_get($master['key']),'other.example.com'),'Owner master supports any domain');
     swdenied(fn()=>software_grant_staff_register_domain((int)$master['id'],'master-should-not-register.example.com',1),
         'Owner cannot attach installation domains to a software master license');
@@ -1009,5 +1033,7 @@ try{
         'Recurring payment reversal moves subscription to review');
     swok(one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$invoice])['status']==='review',
         'Recurring reversal review state is persisted');
+    require __DIR__.'/software_domain_lifecycle_concurrency.php';
+    software_domain_lifecycle_concurrency_checks(1,'SOFTWARE-TEST',1,'swok');
     echo 'Software commerce native: '.$n.' checks passed'.PHP_EOL;
 }catch(Throwable $e){fwrite(STDERR,'FAIL: '.get_class($e).': '.$e->getMessage().PHP_EOL);exit(1);}

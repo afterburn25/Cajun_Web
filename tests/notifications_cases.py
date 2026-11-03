@@ -4,6 +4,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER,STAFF
+from payment_upgrade_helpers import prepare_retained_payments
 
 def upgrade():
     dest=WEB/'notification-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.6.0',dest)
@@ -12,19 +13,17 @@ def upgrade():
     shutil.copyfile(ROOT/'test-runtime/notification-upgrade-config.php',dest/'config.php');(dest/'.installed.php').write_text('<?php exit; ?>original guard');(dest/'unrelated.txt').write_text('Retain unrelated file')
     preserved={p:p.read_bytes() for p in [dest/'config.php',dest/'.installed.php',dest/'unrelated.txt',ROOT/'test-runtime/notification-upgrade-private/media/retained.php',ROOT/'test-runtime/notification-upgrade-private/payment-master.key']}
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','payment_gateways','payment_requests','payment_attempts','payment_attempt_events','leads','projects']
-    columns={t:[row['Field'] for row in db('SHOW FULL COLUMNS FROM notifyup_'+t)] for t in tables}
     before={t:db('SELECT * FROM notifyup_'+t) for t in tables};settings=db('SELECT * FROM notifyup_settings')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
     from structure_helpers import apply_file_update
     apply_file_update(globals(),dest)
     check('Actual 1.6 update preserves config locks private files and master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/notification-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
-    r=up.get(url+'?view=payments')
-    if 'Enable payment preparation' in r.text:r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
+    before,settings=prepare_retained_payments(globals(),up,url,'notifyup_',before,settings,preserved)
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'wrong','confirm':'1'});check('Notification upgrade refuses wrong password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.6 additive notification upgrade succeeds','Sandbox notification inbox enabled' in r.text)
-    check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT '+','.join('`'+c+'`' for c in columns[t])+' FROM notifyup_'+t)==v for t,v in before.items()))
-    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings if s['name']!='payments_schema_version') and now['payments_schema_version']=='2')
+    check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT * FROM notifyup_'+t)==v for t,v in before.items()))
+    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings))
     check('Actual 1.6 upgraded inbox empty with receiver disabled',db('SELECT * FROM notifyup_payment_notifications')==[] and 'Disabled' in r.text)
     r=submit(up,url+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Actual 1.6 protected key still decrypts original saved credentials','Credentials protected and saved' in r.text and 'RetainedSandboxFixture' not in r.text)
 
@@ -33,7 +32,7 @@ def run_browser(env,browser):
     check('Fresh installer creates empty inbox and disabled receiver',db("SELECT value FROM fresh_settings WHERE name='payment_notifications_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_payment_notifications')==[] and db("SELECT * FROM fresh_settings WHERE name='sandbox_notification_receiver'")==[])
     admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=admin.get(url)
-    if 'Enable payment preparation' in admin.get(BASE+'/existing/admin/index.php?view=payments').text:r=submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
+    if 'Enable payment preparation' in admin.get(BASE+'/existing/admin/index.php?view=payments').text:submit(admin,BASE+'/existing/admin/index.php?view=payments','payments_migrate',{'owner_password':OWNER,'confirm':'1'})
     r=admin.get(url)
     if 'Enable sandbox inbox' in r.text:r=submit(admin,url,'payments_notification_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner notification page displays truthful sandbox boundary','Notification inbox' in r.text and 'Production and client checkout remain disabled' in r.text)

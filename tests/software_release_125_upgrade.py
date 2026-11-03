@@ -9,7 +9,6 @@ import getpass
 import grp
 import json
 import os
-import shutil
 import socket
 import subprocess
 import time
@@ -18,6 +17,7 @@ import requests
 
 from organized_update_cases import run as organized_update
 from release_version import VERSION
+from acceptance_environment import selected, php_matches, probe as probe_environment
 
 ROOT = Path(__file__).resolve().parents[1]
 QA = ROOT / 'qa'
@@ -39,7 +39,7 @@ def launch(work, web, rewrite):
                'alias', 'env', 'headers', 'autoindex']
     if rewrite:
         modules.append('rewrite')
-    php_version = '8.3'
+    php_version = selected()['php']
     config = (
         f'ServerRoot "{work}"\nServerName localhost\nListen 127.0.0.1:{port}\n'
         f'PidFile "{work / "httpd.pid"}"\nErrorLog "{QA / ("software-release125-" + work.name + ".log")}"\n'
@@ -59,10 +59,17 @@ def launch(work, web, rewrite):
     )
     config_path = work / 'httpd.conf'
     config_path.write_text(config, encoding='utf-8')
-    proc = subprocess.Popen(
-        ['/usr/sbin/apache2', '-f', str(config_path), '-DFOREGROUND'],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
-    )
+    ini = work / 'php-conf'
+    ini.mkdir()
+    (ini / '99-release.ini').write_text(
+        'opcache.enable=1\nopcache.validate_timestamps=0\nopcache.file_update_protection=0\n'
+        'opcache.memory_consumption=512\nopcache.max_accelerated_files=100000\n', encoding='utf-8')
+    env = {**os.environ, 'PHP_INI_SCAN_DIR': f'/etc/php/{php_version}/apache2/conf.d:' + str(ini)}
+    with (QA / ('software-release125-' + work.name + '-launcher.log')).open('wb') as launcher:
+        proc = subprocess.Popen(
+            ['/usr/sbin/apache2', '-f', str(config_path), '-DFOREGROUND'],
+            stdout=launcher, stderr=subprocess.STDOUT, env=env, start_new_session=True,
+        )
     return proc, f'http://127.0.0.1:{port}'
 
 
@@ -78,59 +85,89 @@ def main():
     if len(updates) != 1:
         raise AssertionError('Exactly one candidate UPDATE package is required')
     if RUNTIME.exists():
-        shutil.rmtree(RUNTIME)
+        raise AssertionError('Use a new test-runtime directory; preserve populated upgrade evidence')
     RUNTIME.mkdir(parents=True)
     QA.mkdir(exist_ok=True)
     checks = []
 
     def check(name, value):
         checks.append({'name': name, 'passed': bool(value)})
+        (QA / 'software-release125-progress.json').write_text(
+            json.dumps({'complete': False, 'checks': checks}, indent=2) + '\n', encoding='utf-8')
         if not value:
             raise AssertionError(name)
 
-    php = os.environ.get('PHP_BINARY', '/usr/bin/php8.3')
+    choice = selected()
+    php = os.environ.get('PHP_BINARY', '/usr/bin/php' + choice['php'])
     scopes = []
-    for rewrite in (True, False):
-        label = 'rewrite' if rewrite else 'no-rewrite'
-        work = RUNTIME / label
-        web = work / 'web'
-        web.mkdir(parents=True)
-        proc, base = launch(work, web, rewrite)
-        try:
-            ready = False
-            for _ in range(80):
-                if proc.poll() is not None:
-                    raise AssertionError('Apache exited before v1.25 gate could run')
+    complete = False
+    try:
+        probe_environment('native')
+        for rewrite in (True, False):
+            for at_root in (True, False):
+                label = ('root' if at_root else 'subfolder') + ('-rewrite' if rewrite else '-no-rewrite')
+                start = len(checks)
+                work = RUNTIME / label
+                web = work / 'web'
+                web.mkdir(parents=True)
+                probe = web / 'upgrade-gate-ready.txt'
+                probe.write_text('upgrade-gate-ready', encoding='utf-8')
+                proc, base = launch(work, web, rewrite)
                 try:
-                    response = requests.get(base + '/', timeout=2)
-                    if response.status_code in (200, 404):
-                        ready = True
-                        break
-                except requests.RequestException:
-                    time.sleep(.1)
-            check(label + ' Apache started', ready)
-            prefix = 'sw125_' + ('rw_' if rewrite else 'nr_')
-            result = organized_update(web, base, check, QA, php, 'software-1.25 '+label,
-                                      prefix, '1.25.0')
-            scopes.append({'label': label, 'checks': len(result) if result is not None else None})
-        finally:
-            proc.terminate()
-            try:
-                proc.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.wait()
-
-    report = {
-        'passed': all(item['passed'] for item in checks),
-        'baseline': 'published v1.25.0 COMPLETE-UPLOAD',
-        'candidate_version': VERSION,
-        'scope': 'Published baseline update/recovery with synthetic local data; no live provider, mail or payment transport',
-        'scopes': scopes,
-        'checks': checks,
-    }
-    (QA / 'software-release125-upgrade.json').write_text(
-        json.dumps(report, indent=2) + '\n', encoding='utf-8')
+                    ready = False
+                    for _ in range(80):
+                        if proc.poll() is not None:
+                            raise AssertionError('Apache exited before v1.25 gate could run: ' + label)
+                        try:
+                            response = requests.get(base + '/' + probe.name, timeout=2)
+                            if response.status_code == 200 and response.text == 'upgrade-gate-ready':
+                                ready = True
+                                break
+                        except requests.RequestException:
+                            time.sleep(.1)
+                    check(label + ' Apache started', ready)
+                    probe.unlink()
+                    runtime_probe = web / 'upgrade-gate-runtime.php'
+                    runtime_probe.write_text(
+                        "<?php header('Content-Type: application/json'); "
+                        "echo json_encode(['version'=>PHP_VERSION,'sapi'=>PHP_SAPI]);",
+                        encoding='utf-8')
+                    try:
+                        response = requests.get(base + '/' + runtime_probe.name, timeout=5)
+                        runtime = response.json()
+                        check(label + ' actual selected Apache PHP runtime',
+                              response.status_code == 200 and isinstance(runtime, dict)
+                              and set(runtime) == {'version', 'sapi'}
+                              and php_matches(runtime['version'], choice['php'])
+                              and runtime['sapi'] == 'apache2handler')
+                    finally:
+                        runtime_probe.unlink()
+                    prefix = 'sw125_' + ('r' if at_root else 's') + ('on_' if rewrite else 'off_')
+                    organized_update(web, base, check, QA, php, 'software-1.25 ' + label,
+                                     prefix, '1.25.0', at_root=at_root)
+                    scopes.append({'label': label, 'checks': len(checks) - start,
+                                   'apache_http': runtime})
+                finally:
+                    proc.terminate()
+                    try:
+                        proc.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        proc.kill()
+                        proc.wait()
+        complete = True
+    finally:
+        report = {
+            'passed': complete and len(scopes) == 4 and all(item['passed'] for item in checks),
+            'complete': complete,
+            'baseline': 'published v1.25.0 COMPLETE-UPLOAD',
+            'candidate_version': VERSION,
+            'selected': choice,
+            'scope': 'Published baseline update/recovery with synthetic local data; no live provider, mail or payment transport',
+            'scopes': scopes,
+            'checks': checks,
+        }
+        (QA / 'software-release125-upgrade.json').write_text(
+            json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print('PASS', len(checks), 'published v1.25 software release-gate checks')
 
 

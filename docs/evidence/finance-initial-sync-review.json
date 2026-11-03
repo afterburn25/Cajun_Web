@@ -1,0 +1,784 @@
+{
+  "base_pr": 296,
+  "base_sha": "17357a9d8baea2bad1799e154ccc94800d9ea1c7",
+  "branch": "codex/finance-initial-sync-binding",
+  "source_sha256": {
+    "site/app/licenses/financing.php": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+    "site/app/licenses/financing_offers.php": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+    "site/app/billing/finance_subscription.php": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+    "site/portal/views/financing.php": "0b253351603b887cf76055769364135cfd037f08bdcf8452dfe2e2970817faa9",
+    "tests/finance_initial_enrollment_native.php": "0632b77c78a78992c81505d9ec30e142373d4c42c2a1608dbb38f8e312d05de3",
+    "tests/finance_initial_sync_native_cases.php": "24eec6661f9da8345cddaab186d1ada888c8f2364de0765894262d1267eda483"
+  },
+  "matrix": [
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 22,
+      "subscription_sha256": "63c9f28a458c6a72ab2c10b908e786613a1d74dfc730204dfb7a5763e62b91f5",
+      "portal_sha256": "63566ba0f23f70b645f4f1a56f30f0f0058ad7e7a3edcec3d648b69fd854db21",
+      "financing_sha256": "635aa851fd075f20769bd4bc6cc351035ba7c6ede8b9c2fbfa5fe06a8861cb63",
+      "offers_sha256": "94394e3975bce5f8432cd7b637accbb7c84ddbf815c70b60f08ab7af6af97bc0",
+      "expected_preparation_diagnostics": 54,
+      "label": "before-8.2-mariadb",
+      "report_sha256": "6fcdf422a1d45e8c6a841ab32a5c0b50ab5458f7dd44e0bf735b7fe2f70510f3"
+    },
+    {
+      "php": "8.2.35",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 0,
+      "subscription_sha256": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+      "portal_sha256": "0b253351603b887cf76055769364135cfd037f08bdcf8452dfe2e2970817faa9",
+      "financing_sha256": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+      "offers_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "expected_preparation_diagnostics": 54,
+      "label": "after-8.2-mariadb",
+      "report_sha256": "6739db1b4c06312169512c4d911ae9bfbfa228b966c2219683c4562b54d638f9"
+    },
+    {
+      "php": "8.2.35",
+      "database": "8.4.13",
+      "count": 207,
+      "failed": 0,
+      "subscription_sha256": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+      "portal_sha256": "0b253351603b887cf76055769364135cfd037f08bdcf8452dfe2e2970817faa9",
+      "financing_sha256": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+      "offers_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "expected_preparation_diagnostics": 54,
+      "label": "after-8.2-mysql",
+      "report_sha256": "5eb1c61dadc94df09d9e11d52c055e76c0b987361f26aeff6f3891f2abf00078"
+    },
+    {
+      "php": "8.4.25",
+      "database": "10.11.19-MariaDB",
+      "count": 207,
+      "failed": 0,
+      "subscription_sha256": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+      "portal_sha256": "0b253351603b887cf76055769364135cfd037f08bdcf8452dfe2e2970817faa9",
+      "financing_sha256": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+      "offers_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "expected_preparation_diagnostics": 54,
+      "label": "after-8.4-mariadb",
+      "report_sha256": "18efdea47b32493036ecd514c9754d089dcce257b7d363a0c9167583efa5b7df"
+    },
+    {
+      "php": "8.4.25",
+      "database": "8.4.13",
+      "count": 207,
+      "failed": 0,
+      "subscription_sha256": "9e1b9ad14db035c8227e228f82780d0410e682ad3cccc1a938b5f02193aa1f1d",
+      "portal_sha256": "0b253351603b887cf76055769364135cfd037f08bdcf8452dfe2e2970817faa9",
+      "financing_sha256": "9f6160301f95f65d39449c63d4e8e8ad2f0d023902f5b91be972c206a61f45cd",
+      "offers_sha256": "4189367d50c4ca4ef73f4c40add881888e3b6f3d1bf05c1e91e8e61c64ac4ce4",
+      "expected_preparation_diagnostics": 54,
+      "label": "after-8.4-mysql",
+      "report_sha256": "45f97bad05837f44dfedfb9adfb993488c56f5937140fb1e8c2abfb67adbe4f8"
+    }
+  ],
+  "unchanged_shared_verifier_except_name": true,
+  "permanent_payoff_prefix_byte_identical": true,
+  "before_failures": [
+    {
+      "name": "sync_other_agreement expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_other_agreement access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_other_agreement preserves all other financial, license, domain and rights records",
+      "passed": false
+    },
+    {
+      "name": "sync_foreign_customer expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_foreign_customer access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_foreign_customer preserves all other financial, license, domain and rights records",
+      "passed": false
+    },
+    {
+      "name": "sync_wrong_amount expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_wrong_amount access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_wrong_amount preserves all other financial, license, domain and rights records",
+      "passed": false
+    },
+    {
+      "name": "sync_wrong_currency expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_wrong_currency access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_wrong_currency preserves all other financial, license, domain and rights records",
+      "passed": false
+    },
+    {
+      "name": "sync_signature expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_signature access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_signature preserves all other financial, license, domain and rights records",
+      "passed": false
+    },
+    {
+      "name": "sync_initial_scalar expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_initial_scalar access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_inactive_client expected verification outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_inactive_client access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_inactive_client preserves all other financial, license, domain and rights records",
+      "passed": false
+    },
+    {
+      "name": "sync_missing_ledger access state outcome",
+      "passed": false
+    },
+    {
+      "name": "sync_missing_ledger preserves all other financial, license, domain and rights records",
+      "passed": false
+    }
+  ],
+  "new_sync_checks": [
+    {
+      "name": "sync_paid expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_paid closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_zero expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_zero access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_zero preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_zero closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_other_agreement expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_other_agreement access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_other_agreement preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_other_agreement closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_foreign_customer expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_foreign_customer access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_foreign_customer preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_foreign_customer closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_amount expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_amount access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_amount preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_amount closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_currency expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_currency access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_currency preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_wrong_currency closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_status_only expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_status_only access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_status_only preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_status_only closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_signature expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_signature access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_signature preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_signature closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_initial_scalar expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_initial_scalar access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_initial_scalar preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_initial_scalar closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_inactive_client expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_inactive_client access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_inactive_client preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_inactive_client closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_owner_changed expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_owner_changed access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_owner_changed preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_owner_changed closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_ledger expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_ledger access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_ledger preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_ledger closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_invoice expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_invoice access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_invoice preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_missing_invoice closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_partial expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_partial access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_partial preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_partial closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_reversed expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_reversed access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_reversed preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_reversed closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_suspended expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_suspended access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_suspended preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_suspended closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_underpaid_recovery expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_underpaid_recovery access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_underpaid_recovery preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_underpaid_recovery closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_reversed expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_reversed access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_reversed preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_reversed closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_invoice expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_invoice access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_invoice preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_invoice closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_other_invoice expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_other_invoice access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_other_invoice preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_other_invoice closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_ledger expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_ledger access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_ledger preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_missing_ledger closes its transaction",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_owner_deactivated expected verification outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_owner_deactivated access state outcome",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_owner_deactivated preserves all other financial, license, domain and rights records",
+      "passed": true
+    },
+    {
+      "name": "sync_paid_off_owner_deactivated closes its transaction",
+      "passed": true
+    }
+  ],
+  "new_sync_cases": [
+    {
+      "name": "sync_paid",
+      "error": null,
+      "result_state": "active",
+      "expected_state": "active",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 36
+      }
+    },
+    {
+      "name": "sync_zero",
+      "error": null,
+      "result_state": "active",
+      "expected_state": "active",
+      "target_original_balance": null
+    },
+    {
+      "name": "sync_other_agreement",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 38
+      }
+    },
+    {
+      "name": "sync_foreign_customer",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 40
+      }
+    },
+    {
+      "name": "sync_wrong_amount",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 43
+      }
+    },
+    {
+      "name": "sync_wrong_currency",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 46
+      }
+    },
+    {
+      "name": "sync_status_only",
+      "error": "Invoice status and payment history do not agree. Ask an owner to investigate.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 48
+      }
+    },
+    {
+      "name": "sync_signature",
+      "error": "Signed financing terms are inconsistent.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 49
+      }
+    },
+    {
+      "name": "sync_initial_scalar",
+      "error": "Signed financing terms changed.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 50
+      }
+    },
+    {
+      "name": "sync_inactive_client",
+      "error": "Finance initial invoice no longer matches the signed agreement.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 51
+      }
+    },
+    {
+      "name": "sync_owner_changed",
+      "error": "Financing initial payment ownership changed.",
+      "result_state": null,
+      "expected_state": null,
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 52
+      }
+    },
+    {
+      "name": "sync_missing_ledger",
+      "error": null,
+      "result_state": "pending_initial",
+      "expected_state": "pending_initial",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 53
+      }
+    },
+    {
+      "name": "sync_missing_invoice",
+      "error": null,
+      "result_state": "pending_initial",
+      "expected_state": "pending_initial",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 54
+      }
+    },
+    {
+      "name": "sync_partial",
+      "error": null,
+      "result_state": "pending_initial",
+      "expected_state": "pending_initial",
+      "target_original_balance": {
+        "paid_cents": 250,
+        "due_cents": 250,
+        "revision": 56
+      }
+    },
+    {
+      "name": "sync_reversed",
+      "error": null,
+      "result_state": "pending_initial",
+      "expected_state": "pending_initial",
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 58
+      }
+    },
+    {
+      "name": "sync_suspended",
+      "error": null,
+      "result_state": "suspended",
+      "expected_state": "suspended",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 59
+      }
+    },
+    {
+      "name": "sync_underpaid_recovery",
+      "error": null,
+      "result_state": "pending_initial",
+      "expected_state": "pending_initial",
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 61
+      }
+    },
+    {
+      "name": "sync_paid_off_reversed",
+      "error": null,
+      "result_state": "paid_off",
+      "expected_state": "paid_off",
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 63
+      }
+    },
+    {
+      "name": "sync_paid_off_missing_invoice",
+      "error": null,
+      "result_state": "paid_off",
+      "expected_state": "paid_off",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 64
+      }
+    },
+    {
+      "name": "sync_paid_off_other_invoice",
+      "error": null,
+      "result_state": "paid_off",
+      "expected_state": "paid_off",
+      "target_original_balance": {
+        "paid_cents": 0,
+        "due_cents": 500,
+        "revision": 66
+      }
+    },
+    {
+      "name": "sync_paid_off_missing_ledger",
+      "error": null,
+      "result_state": "paid_off",
+      "expected_state": "paid_off",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 67
+      }
+    },
+    {
+      "name": "sync_paid_off_owner_deactivated",
+      "error": null,
+      "result_state": "paid_off",
+      "expected_state": "paid_off",
+      "target_original_balance": {
+        "paid_cents": 500,
+        "due_cents": 0,
+        "revision": 68
+      }
+    }
+  ],
+  "initial_native_probe": {
+    "initial_state": "pending_initial",
+    "result_state": "active",
+    "enrollment_denial": "Finance initial invoice no longer matches the signed agreement.",
+    "original_license_and_domains_unchanged": true,
+    "target_offer": "39975633e4b76a491b039dd504e10809",
+    "donor_offer": "9190e867fb814a5d107eeadab55dd98a",
+    "donor_invoice": 1,
+    "target_original_invoice": 4,
+    "target_original_balance": {
+      "paid_cents": 0,
+      "due_cents": 500,
+      "revision": 5
+    },
+    "source_sha256": "635aa851fd075f20769bd4bc6cc351035ba7c6ede8b9c2fbfa5fe06a8861cb63",
+    "scope": "Existing synthetic disposable fixture: target receipt is fully reversed with 500 cents due; committed wrong-agreement invoice pointer then actual license synchronization. No portal/client ability to change that pointer is claimed. Native altered records and audit remain retained."
+  },
+  "scope": "Actual application functions, canonical schema, signed offers, journal validation, session authority, ledger hashes/balances, SQL reservation and license synchronization/payoff boundary. Synthetic customer/receipt fixtures and a separate committed writer after preflight. Actual portal fragment with synthetic gateway display settings. No provider calls, HTTP, real payments or release approval."
+}

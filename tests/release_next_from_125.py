@@ -56,10 +56,15 @@ def inspect_zip(path:Path):
         names=z.namelist()
         if len(names)!=len(set(n.casefold() for n in names)):
             raise RuntimeError('Published v1.25 baseline contains duplicate/case-colliding members.')
+        # COMPLETE-UPLOAD carries the deployed runtime constant, not repository VERSION.
+        version_source='config/defaults.php'
+        defaults=z.read(version_source).decode('utf-8') if version_source in names else ''
+        versions=re.findall(r"^const CWP_VERSION = '([0-9]+\.[0-9]+\.[0-9]+)';\r?$",defaults,re.M)
         return {
             'members':len(names),
-            'contains_version': 'VERSION' in names,
-            'version_text': z.read('VERSION').decode('utf-8').strip() if 'VERSION' in names else None,
+            'contains_version': len(versions)==1,
+            'version_source': version_source,
+            'version_text': versions[0] if len(versions)==1 else None,
         }
 
 def main():

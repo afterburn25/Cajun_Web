@@ -41,6 +41,21 @@ function software_asset_resolve_path(string $stored):?string{
         &&strtolower(pathinfo($file,PATHINFO_EXTENSION))==='zip'?$file:null;
 }
 
+/** Return a canonical, portable ZIP member name or null for extraction-unsafe input. */
+function software_asset_member_name(string $entry):?string{
+    if($entry===''||strlen($entry)>4096||str_starts_with($entry,'/')||str_contains($entry,'\\')
+        ||str_contains($entry,':')||preg_match('/[\x00-\x1f\x7f]/D',$entry)===1
+        ||preg_match('//u',$entry)!==1)return null;
+    $directory=str_ends_with($entry,'/');
+    $name=$directory?substr($entry,0,-1):$entry;
+    if($name==='')return null;
+    foreach(explode('/',$name) as $part){
+        if($part===''||$part==='.'||$part==='..'||preg_match('/[. ]$/uD',$part)===1
+            ||preg_match('/^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)/iuD',$part)===1)return null;
+    }
+    return $name.($directory?'/':'');
+}
+
 function software_asset_publish(string $sku,string $version,string $title,string $path,#[\SensitiveParameter]string $password,bool $customerVisible=true):int{
     if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
     if(support_current())throw new RuntimeException('Leave support mode before software publication.');
@@ -65,7 +80,7 @@ function software_asset_publish(string $sku,string $version,string $title,string
     if($zip->open($file,ZipArchive::RDONLY)!==true)throw new InvalidArgumentException('Archive is not a readable ZIP.');
     try{
         if($zip->numFiles<1||$zip->numFiles>12000)throw new InvalidArgumentException('Unexpected software ZIP member count.');
-        $expanded=0;
+        $expanded=0;$members=[];
         for($i=0;$i<$zip->numFiles;$i++){
             $entry=$zip->getNameIndex($i);
             $stat=$zip->statIndex($i);
@@ -74,10 +89,14 @@ function software_asset_publish(string $sku,string $version,string $title,string
             $expanded+=$stat['size'];
             if($stat['size']>1024*1024*1024||$expanded>2*1024*1024*1024)
                 throw new InvalidArgumentException('ZIP expands beyond the supported software package limit.');
-            if(!is_string($entry)||str_starts_with($entry,'/')||str_contains($entry,'\\')
-                ||preg_match('~(^|/)\.\.(/|$)~',$entry)||preg_match('/\.zip$/i',rtrim($entry,'/'))){
+            $canonical=is_string($entry)?software_asset_member_name($entry):null;
+            if($canonical===null||preg_match('/\.zip$/i',rtrim($canonical,'/'))){
                 throw new InvalidArgumentException('ZIP contains an unsafe path or nested ZIP.');
             }
+            $member=rtrim($canonical,'/');
+            $collision=function_exists('mb_strtolower')?mb_strtolower($member,'UTF-8'):strtolower($member);
+            if(isset($members[$collision]))throw new InvalidArgumentException('ZIP contains duplicate or case-colliding paths.');
+            $members[$collision]=true;
             $ops=0;$attr=0;
             if($zip->getExternalAttributesIndex($i,$ops,$attr)){
                 $type=(($attr>>16)&0170000);

@@ -1,5 +1,6 @@
 """Create candidate-only agreement/recurring/license records AFTER the real1.24 upgrade."""
 import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -17,8 +18,19 @@ def one_record(response, key):
 
 def prepare(repo, installed, base, php, owner, client, other, client_id, job_id, password, fields, submit, snapshot, ok):
     admin, portal = base + '/admin/index.php', base + '/portal/index.php'
-    submit(owner, admin + '?view=payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'})
     before = snapshot()
+    # Published1.24 retains payment schema1. Recurring access correctly requires
+    # explicit owner preparation of schema2, even when no gateway is configured.
+    payment_marker = hashlib.sha256(json.dumps({'name': 'payments_schema_version'}, separators=(',', ':')).encode()).hexdigest()
+    response = submit(owner, admin + '?view=payments', 'payments_migrate',
+                      {'owner_password': password, 'confirm': '1'})
+    prepared = snapshot()
+    ok('Candidate owner upgrades retained payment preparation without changing original records',
+       response.status_code == 200 and 'Payment preparation enabled. Client checkout remains disabled.' in response.text
+       and before['tables']['settings']['rows'][payment_marker]['value'] == hashlib.sha256(b'"1"').hexdigest()
+       and prepared['tables']['settings']['rows'][payment_marker]['value'] == hashlib.sha256(b'"2"').hexdigest()
+       and retained(before, prepared, changed_cells=[('settings', payment_marker, 'value')]))
+    before = prepared
     plans = admin + '?view=service-plans'
     response = submit(owner, plans, 'service_plans_setup', {'current_password': password})
     ok('Candidate explicitly prepares agreements without changing original rows',

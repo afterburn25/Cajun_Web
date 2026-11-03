@@ -6,17 +6,53 @@ if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||getenv('CWP_TEST_DATABASE')!=='cwp_te
 require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
 require_once CWP_CODE_ROOT.'/app/licenses/finance_installments.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
+require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
 
 rb_staff();
 save_setting('license_schema_version','3');
 save_setting('license_invoice_cutover','0');
+
+// Simulate three process stops after the durable pending marker and one DDL
+// statement. Re-running owner setup must finish only these recognized,
+// still-empty preparations; unmarked pre-existing tables remain fail-closed.
+save_setting('license_financing_schema_pending','2');
+$financingSchema=license_financing_schema(config()['db']['prefix']);
+db()->exec($financingSchema['license_financing']);
 license_financing_prepare($password);
+
+save_setting('license_finance_offers_schema_pending','1');
+$offerSchema=license_finance_offers_schema(config()['db']['prefix']);
+db()->exec($offerSchema['license_finance_offers']);
 license_finance_offers_prepare($password);
+
+save_setting('license_finance_gateway_schema_pending','3');
+$gatewaySchema=license_finance_gateway_schema(config()['db']['prefix']);
+db()->exec($gatewaySchema['license_finance_charges']);
 license_finance_gateway_prepare($password);
 rb_ok('Financing native setup creates v3 gateway replacement and reversal storage',
     license_financing_feature_state()===true&&license_finance_offers_ready()&&license_finance_gateway_ready()
     &&setting('license_finance_gateway_schema_version')==='3'
     &&license_finance_gateway_table_present('license_finance_reversals'));
+rb_ok('Recognized empty interrupted financing setups resume and clear all durable pending markers',
+    setting('license_financing_schema_pending')===''&&setting('license_finance_offers_schema_pending')===''
+    &&setting('license_finance_gateway_schema_pending')==='');
+
+// A stale owner credential must be checked by the commit helper itself, before
+// looking up or mutating payment/subscription records after remote readback.
+foreach([
+    'One-time finance reconciliation reauthenticates inside its paid transaction'=>
+        fn()=>license_finance_charge_record_paid(0,'810001',1,str_repeat('a',64),null,'Incorrect owner credential'),
+    'Initial finance subscription reconciliation reauthenticates inside finalization'=>
+        fn()=>license_finance_subscription_finalize(str_repeat('a',32),'810001',[],[],'pending_first_payment','Incorrect owner credential'),
+    'Replacement reconciliation reauthenticates inside finalization'=>
+        fn()=>license_finance_subscription_replacement_finalize(str_repeat('a',32),'810001','810002',[],[],'pending_first_payment','canceled','Incorrect owner credential'),
+    'Review-clearing recurring settlement requires current owner credentials'=>
+        fn()=>license_finance_subscription_settle([],'810001',true,'Incorrect owner credential'),
+] as $reauthName=>$reauthAttempt){
+    $reauthDenied=false;
+    try{$reauthAttempt();}catch(InvalidArgumentException $e){$reauthDenied=str_contains($e->getMessage(),'current password');}
+    rb_ok($reauthName,$reauthDenied&&!db()->inTransaction());
+}
 
 db()->exec('ALTER TABLE '.table('license_financing_rights_grants').' DROP INDEX license_history, ADD INDEX license_history(license_id,created_at,id)');
 rb_deny('Financing setup rejects an expanded nonunique rights-history index',
@@ -74,6 +110,8 @@ rb_staff();
 $plan=license_financing_sync($licenseId);
 rb_ok('Signed zero-down financing begins active on the same website license',
     ($plan['state']??'')==='active'&&(int)license_get($licenseKey)['id']===$licenseId);
+
+require __DIR__.'/license_finance_webhook_native_cases.php';
 
 // A zero-down agreement has no initial invoice to collect. Signing it must
 // not depend on payment-link storage being enabled.
@@ -346,7 +384,7 @@ rb_ok('Suspended ARB identity is retained while replacement enrollment is reserv
     ($reserved['gateway_subscription_id']??'')==='810001'&&($reserved['status']??'')==='replacing');
 $replacementState=license_finance_subscription_replacement_finalize(
     (string)$offer['id'],'810001','810002',$replacement,
-    ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment'
+    ['customer_profile_id'=>'910002','payment_profile_id'=>'920002'],'pending_first_payment','canceled'
 );
 $currentSub=license_finance_subscription_row((string)$offer['id']);
 $oldSub=license_finance_subscription_history_row('810001');
@@ -355,7 +393,7 @@ rb_ok('Replacement ARB archives the suspended identity and activates only remain
     &&($currentSub['gateway_subscription_id']??'')==='810002'
     &&(int)$currentSub['period_offset']===1&&(int)$currentSub['total_occurrences']===3
     &&(int)$currentSub['replacement_count']===1
-    &&($oldSub['terminal_status']??'')==='billing_suspended'
+    &&($oldSub['terminal_status']??'')==='canceled'
     &&($oldSub['replaced_by_gateway_subscription_id']??'')==='810002');
 rb_ok('Delayed lifecycle event from retired ARB identity is historical and cannot mutate current billing',
     license_finance_subscription_lifecycle_review('net.authorize.customer.subscription.suspended','810001')==='historical_subscription');
@@ -376,20 +414,24 @@ $last=$terms->period(3);
 $afterLast=(new DateTimeImmutable($last['due'].'T00:00:00',new DateTimeZone('UTC')))
     ->modify('+6 days')->format('Y-m-d');
 license_deactivate($licenseId,1);
-rb_ok('Pre-payoff manual deactivation can exist only before permanent unlock',
+rb_ok('Pre-payoff manual owner deactivation is independent of financing state',
     (int)license_get($licenseKey)['is_active']===0);
 $paidOff=license_financing_sync($licenseId,$afterLast);
-rb_ok('All signed installments permanently unlock and reactivate the financed key',
+rb_ok('All signed installments permanently remove only the financing lock',
     ($paidOff['state']??'')==='paid_off'&&is_string($paidOff['paid_off_at'])&&$paidOff['paid_off_at']!==''
     &&license_financing_authorized($licenseId)===true
-    &&(int)license_get($licenseKey)['is_active']===1);
+    &&(int)license_get($licenseKey)['is_active']===0);
 $paidAccess=license_financing_access($licenseId);
 rb_ok('Paid-off financing exposes permanent authorization with no payment denial reason',
     $paidAccess===['authorized'=>true,'state'=>'paid_off','reason'=>null]);
-$paidDeactivateBlocked=false;
-try{license_deactivate($licenseId,1);}catch(RuntimeException $expected){$paidDeactivateBlocked=true;}
-rb_ok('Paid-off financed license cannot be disabled after the customer completes payment',
-    $paidDeactivateBlocked&&(int)license_get($licenseKey)['is_active']===1);
+license_reactivate($licenseId,1);
+rb_ok('Owner can explicitly reactivate a manually inactive paid-off license',
+    (int)license_get($licenseKey)['is_active']===1);
+license_deactivate($licenseId,1);
+rb_ok('Paid-off financing cannot override a later owner deactivation',
+    (int)license_get($licenseKey)['is_active']===0
+    &&license_financing_authorized($licenseId)===true);
+license_reactivate($licenseId,1);
 $paidDomainDeactivateBlocked=false;
 try{license_deactivate_domain($licenseId,'finance-native.example',1);}catch(RuntimeException $expected){$paidDomainDeactivateBlocked=true;}
 rb_ok('Paid-off financed license cannot be disabled by removing its active domain',

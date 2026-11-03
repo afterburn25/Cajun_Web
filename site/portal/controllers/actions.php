@@ -54,7 +54,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   flash(match($status){
       'pending_first_payment'=>'Automatic financing installments were restored for the remaining signed periods. The prior suspended subscription remains in history.',
       'sandbox_test'=>'Sandbox replacement subscription created for testing only. The prior suspended subscription remains in history and no real payment was settled.',
-      'billing_suspended'=>'The replacement subscription was not created. Your caught-up license remains active, but automatic billing is still suspended; you may retry with fresh payment details.',
+      'billing_suspended'=>'Automatic financing billing remains suspended. Review your recorded payments with the studio before restoring automatic installments.',
       default=>'Automatic financing replacement needs billing review. Do not submit another card until the studio confirms its status.'
   },in_array($status,['pending_first_payment','sandbox_test'],true)?'success':'warning');
   redirect(studio_url(['finance'=>$id]));
