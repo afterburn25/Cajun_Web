@@ -1,3 +1,7 @@
+## 2026-11-03 — contacts review correction is not a published release
+
+The local follow-up to PR340 `b3b2094a` has 533 passing recorded native checks and preserved original ticket-failure evidence. Independent source/evidence review and exact-source proof/regression/maintained helpers passed. It still requires exact-source hosted/installed acceptance, normal main integration and resulting-main verification. Development remains 1.26.1 and latest published remains v1.25.0. Existing release assets are unchanged; no new package or live deployment is certified by this checkpoint.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
 
 Development version remains 1.26.1 and latest published version remains v1.25.0. PR317 is merged at `d9e34d2f8483fcd7630d799725fac773561f5183`; its automatic main acceptance and independently downloaded final/build-input evidence passed. [Original-RC/finance/Windows run 41564404648](https://github.com/afterburn25/Cajun_Web/actions/runs/41564404648) passed on the same exact application source: each database records 524 owner/install/upgrade and 116 financial checks, and Windows reproduces all 12 accepted release files byte-for-byte. Artifact verification receipt SHA-256 `14ae21e16f5e4e2464efbe2aae0e89c0cbb23ec56ef637b8dd94eacabccd4b6a`.

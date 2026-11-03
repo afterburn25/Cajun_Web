@@ -1,3 +1,9 @@
+## 2026-11-03 — keep contact permissions separate from personal account state
+
+Contacts receive fresh project-grant checks at the existing ticket transaction boundary; invoice/subscription link context additionally requires billing permission. Ticket history retains the established client-account document format, with the acting contact ID added to audit detail. Contact views omit the primary client's personal read cursor, and attempts to read or change primary ticket notifications/read state fail. This avoids a schema expansion and preserves all existing primary/staff-support histories.
+
+Software mutation reservations already require the primary account. Contact software views now explain that boundary and omit those purchase/payment/subscription controls while retaining authorized software records and installation controls. No payment or provider authority was broadened. Independent source/evidence review cleared these branch corrections for publication scope; current hosted/installed acceptance and main integration remain pending.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
 
 Keep contact authority fresh at the existing transaction/mutex boundaries and preserve full original owner/system financial preparation. Treat an expired contact session as sign-in without protected data; reject authenticated contacts lacking the current billing grant. Successful primary login must clear every contact marker. Read the contacts schema marker freshly under the existing account mutex before reciprocal email uniqueness checks; cached pre-migration settings cannot bypass the constraint.

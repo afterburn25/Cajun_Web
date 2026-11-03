@@ -1,3 +1,10 @@
+## Unreleased — contact privacy and support authority follow-up (2026-11-03)
+
+- Scope activity, notification, software-read and download access to current contact grants; route project-contact replies to permitted staff notifications.
+- Require current project permission for support tickets, restrict linked billing context, preserve primary ticket read status and keep explicit contact audit attribution.
+- Show billing contacts readable software records while reserving software purchase, payment and subscription forms to the primary client.
+- Preserve existing authorization/recovery source and original failures; add native and HTTP permission, copied-form and revocation checks. Local native verification, exact-source proof/regression and all maintained acceptance helpers passed; independent source/evidence review cleared publication scope. Full hosted/installed acceptance remains pending.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
 
 Unreleased contacts integration retains PR331 and current verified main. It adds fresh contact-grant/session/parent checks at proposal, financing and service-plan boundaries; clears stale contact markers on successful primary login; prevents reciprocal primary/contact email collisions; and preserves current owner-session setup authorization. Existing tenant/version/signature/idempotency/payoff safeguards remain. Seventeen PHP lint checks, canonical build and 1,176 actual local native checks passed. Final source qualification passed 2,151 source checks, 110 actual-file/direct-helper regression cases, 13 genuine shallow-history checks and all 2,764 maintained acceptance helpers. The historical backup comparison was corrected without changing current browser execution or dropping its original guards. Required hosted contacts/browser acceptance, review, main integration and release publication remain pending. [Current evidence and scope](PROJECT_STATUS.md).

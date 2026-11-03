@@ -1,4 +1,5 @@
 """Scoped additional-contact HTTP/browser acceptance; synthetic identities only."""
+import hashlib
 import json
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -52,6 +53,13 @@ def run_browser(env,browser):
     r=submit(owner,upgrade,'studio_contacts_setup',{'confirm':'1'})
     check('Unknown contacts marker refuses to adopt data','Unrecognized contacts schema version' in r.text)
     db("UPDATE ci_settings SET value='1' WHERE name='contacts_schema_version'")
+    notifications=root+'?view=notifications'
+    if soup(owner.get(notifications)).select_one('[name=action][value=notifications_setup]'):
+        submit(owner,notifications,'notifications_setup',{'confirm':'1'})
+    check('Contact notification controls use explicitly prepared recipient storage',db("SELECT value FROM ci_settings WHERE name='notification_feed_version'")==[{'value':'1'}])
+    submit(owner,root+'?view=studio-job&id=1','studio_message',{'job_id':'1','body':'Primary-recipient contact boundary notice.'})
+    parent_notice=db("SELECT * FROM ci_notification_feed WHERE audience='client' AND recipient_id=? AND kind='project-update' ORDER BY created_at DESC,id DESC",[cid])
+    check('Contact privacy controls retain an actual parent-directed project notice',bool(parent_notice))
 
     # Create a project-review-only contact on Alice's account.
     data=add_form(cid);data.update(name='Review Only Contact',email='review-contact@example.invalid',**{'perms[]':'projects'})
@@ -104,8 +112,12 @@ def run_browser(env,browser):
     r=contact.get(portal+'?job=1');post={'csrf':token(r),'action':'license_domain_add','license_id':'1','domain':'forged.example.invalid'}
     r=contact.post(portal+'?job=1',data=post)
     check('Project-only contact cannot manage license domains','do not include billing' in r.text)
+    notification_before={n['id'] for n in db('SELECT id FROM ci_notification_feed')}
     r=contact.post(portal+'?job=1',data={'csrf':token(r),'action':'message','body':'Contact-scoped review message.'})
     check('Contact project message saved with contact attribution','Contact-scoped review message' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['author_type']=='contact')
+    staff_recipients=sorted(int(s['user_id']) for s in db('SELECT user_id,role,permissions FROM ci_staff_profiles WHERE enabled=1') if s['role']=='owner' or (s['role']=='administrator' and 'clients.manage' in json.loads(s['permissions'])))
+    contact_notices=[n for n in db('SELECT * FROM ci_notification_feed') if n['id'] not in notification_before]
+    check('Actual contact reply reaches permitted staff notifications without changing its author',bool(staff_recipients) and sorted(int(n['recipient_id']) for n in contact_notices)==staff_recipients and all(n['audience']=='staff' and n['kind']=='support-reply' and n['ref']=='job:1' for n in contact_notices) and db("SELECT author_type,author_id FROM ci_studio_messages WHERE body='Contact-scoped review message.'")==[{'author_type':'contact','author_id':ctid}])
     r=contact.get(portal+'?job=1')
     check('Contact attribution renders on the message','Review Only Contact' in r.text)
     with open(Path(__file__).resolve().parents[1]/'site/images/icons/favicon.png','rb') as f:
@@ -172,6 +184,116 @@ def run_browser(env,browser):
         result={t:db('SELECT * FROM ci_'+t+' ORDER BY id') for t in tables}
         result['license_financing']=db('SELECT * FROM ci_license_financing ORDER BY license_id')
         return result
+
+    def read_boundary_state():
+        result=commercial_state()
+        for table in ['website_licenses','license_domains','license_bundles','software_orders','software_entitlements','software_assets','software_charges','software_subscriptions','notification_feed','notification_prefs','notification_deliveries','activity_reads']:
+            order='license_id' if table=='software_entitlements' else 'id'
+            result[table]=db('SELECT * FROM ci_'+table+' ORDER BY '+order)
+        return result
+
+    private_keys=[row['license_key'] for row in db('SELECT license_key FROM ci_website_licenses WHERE customer_id=?',[cid])]
+    check('Contact read controls use actual retained parent license keys',bool(private_keys))
+    primary_software=alice.get(portal+'?software=1')
+    download_links=soup(primary_software).select('a[href*="/api/software-download.php?"]')
+    check('Primary software view retains an actual authorized asset download',primary_software.status_code==200 and bool(download_links) and 'Software orders and invoices' in primary_software.text)
+    software_download=download_links[0]['href']
+    asset_id=int(parse_qs(urlparse(software_download).query)['id'][0])
+    asset=db('SELECT byte_size,sha256 FROM ci_software_assets WHERE id=?',[asset_id])[0]
+    original_download=alice.get(software_download,timeout=30)
+    check('Software download control uses the real authorized archive bytes',original_download.status_code==200 and len(original_download.content)==int(asset['byte_size']) and hashlib.sha256(original_download.content).hexdigest()==asset['sha256'])
+    for label,session in [('Projects-only',contact),('Downloads-only',downloads)]:
+        before=read_boundary_state();workspace=session.get(portal);software=session.get(portal+'?software=1')
+        check(label+' workspace excludes parent license keys and financing status',workspace.status_code==200 and all(key not in workspace.text for key in private_keys) and 'Website licenses' not in workspace.text and 'License rights:' not in workspace.text and read_boundary_state()==before)
+        check(label+' cannot read software keys orders or invoices',software.status_code==403 and 'do not include billing' in software.text and all(key not in software.text for key in private_keys) and 'Software orders and invoices' not in software.text and read_boundary_state()==before)
+    for label,session in [('Primary client',alice),('Billing contact',billing)]:
+        response=session.get(portal+'?software=1')
+        check(label+' retains billing-scoped software read access',response.status_code==200 and 'Software orders and invoices' in response.text and any(key in response.text for key in private_keys))
+    software_actions=['software_order_buy','software_charge','software_subscription_enroll','software_subscription_cancel']
+    primary_software=alice.get(portal+'?software=1');billing_software=billing.get(portal+'?software=1')
+    check('Primary software account retains actual purchase controls',bool(soup(primary_software).select('[name=action][value=software_order_buy]')))
+    check('Billing contact receives an explicit primary-account software management explanation','managed by the primary client account' in billing_software.text and all(not soup(billing_software).select('[name=action][value='+action+']') for action in software_actions) and not soup(billing_software).select('form[data-authorize-net],script[src*="authorize.net/"]'))
+    for action in software_actions:
+        primary_form=soup(primary_software).select_one('form:has([name=action][value='+action+'])')
+        if primary_form is not None:
+            fields=form_data(primary_form);fields['csrf']=token(billing_software)
+            if action in ['software_charge','software_subscription_enroll']:fields.update(descriptor='COMMON.ACCEPT.INAPP.PAYMENT',payment_token='Synthetic-contact-authority-token')
+            before=read_boundary_state();response=billing.post(portal+'?software=1',data=fields)
+            check('Copied primary '+action+' form cannot create a billing-contact software mutation','primary client' in response.text and read_boundary_state()==before)
+    check('Billing-only software view offers no inherited asset downloads',not soup(billing.get(portal+'?software=1')).select('a[href*="/api/software-download.php?"]'))
+    for label,session in [('Projects-only',contact),('Billing-only',billing)]:
+        before=read_boundary_state();response=session.get(software_download,timeout=30)
+        check(label+' contact cannot use a copied valid software download URL',response.status_code==403 and response.content!=original_download.content and read_boundary_state()==before)
+    before_download=db("SELECT COUNT(*) AS total FROM ci_audit WHERE action='software.download'")[0]['total']
+    response=downloads.get(software_download,timeout=30)
+    check('Downloads-granted contact receives only the authorized software archive',response.status_code==200 and response.content==original_download.content and db("SELECT COUNT(*) AS total FROM ci_audit WHERE action='software.download'")[0]['total']==before_download+1)
+
+    primary_notifications=alice.get(portal+'?notifications=1')
+    check('Primary recipient retains its own notification center and preferences',primary_notifications.status_code==200 and 'Email preferences' in primary_notifications.text and bool(soup(primary_notifications).select('[data-notification]')))
+    for label,session in [('Projects-only',contact),('Billing-only',billing),('Downloads-only',downloads)]:
+        before=read_boundary_state();response=session.get(portal+'?notifications=1')
+        check(label+' contact cannot inherit the parent notification feed or preferences',response.status_code==403 and 'primary client account' in response.text and not soup(response).select('[data-notification]') and 'Email preferences' not in response.text and read_boundary_state()==before)
+        csrf=token(session.get(portal))
+        for action,fields in [('notification_client_mark',{'id':parent_notice[0]['id'],'read':'1'}),('notification_client_mark_all',{}),('notification_client_prefs',{'email_billing':'1'})]:
+            response=session.post(portal+'?notifications=1',data={'csrf':csrf,'action':action,**fields})
+            check(label+' contact cannot mutate parent '+action,response.status_code==403 and 'primary client account' in response.text and read_boundary_state()==before)
+
+    # Ticket grants and personal read state remain scoped even with copied valid URLs and forms.
+    ticket_admin=root+'?view=tickets'
+    if soup(owner.get(ticket_admin)).select_one('[name=action][value=tickets_setup]'):
+        submit(owner,ticket_admin,'tickets_setup',{'confirm':'1'})
+    check('Contact ticket controls use explicitly prepared real conversation storage',db("SELECT value FROM ci_settings WHERE name='support_tickets_schema_version'")==[{'value':'1'}])
+    ticket_new=portal+'?ticket_new=1'
+    ticket_page=contact.get(ticket_new)
+    check('Project contact can open a conversation without inherited billing selectors',ticket_page.status_code==200 and bool(soup(ticket_page).select('[name=action][value=client_tickets_create]')) and not soup(ticket_page).select('[name=related_invoice],[name=related_subscription]'))
+    response=submit(contact,ticket_new,'client_tickets_create',{'subject':'Contact project support','body':'Project-scoped support request.','related_project':'1'})
+    ticket=parse_qs(urlparse(response.url).query)['ticket'][0]
+    ticket_url=portal+'?ticket='+ticket
+    check('Project contact creates an owned ticket with explicit contact audit identity',db('SELECT client_id FROM ci_support_tickets WHERE id=?',[ticket])==[{'client_id':cid}] and 'contact '+str(ctid) in db("SELECT detail FROM ci_audit WHERE action='support_tickets.created' ORDER BY id DESC LIMIT 1")[0]['detail'])
+    check('Contact ticket view offers no primary-account read cursor',response.status_code==200 and 'read status is managed by the primary client account' in response.text and not soup(response).select('[name=action][value=client_tickets_read]'))
+    parent_ticket=alice.get(ticket_url)
+    ticket_reply=form_data(env['form_for'](parent_ticket,'client_tickets_reply'))
+    ticket_read=form_data(env['form_for'](parent_ticket,'client_tickets_read'))
+    ticket_create=form_data(env['form_for'](alice.get(ticket_new),'client_tickets_create'))
+    def ticket_state():
+        return {table:db('SELECT * FROM ci_'+table+' ORDER BY id') for table in ['support_tickets','support_ticket_events','support_ticket_staff_reads','support_ticket_client_reads','support_events','audit']}
+    for label,session in [('Billing-only',billing),('Downloads-only',downloads)]:
+        before=ticket_state();csrf=token(session.get(portal))
+        for query in ['?tickets=1','?ticket_new=1','?ticket='+ticket]:
+            response=session.get(portal+query)
+            check(label+' contact cannot read ticket route '+query,response.status_code==403 and 'Project-scoped support request.' not in response.text and ticket_state()==before)
+        for action,fields,url in [('client_tickets_create',dict(ticket_create,subject='Forbidden contact ticket',body='Forbidden contact opening'),ticket_new),('client_tickets_reply',dict(ticket_reply,body='Forbidden contact reply'),ticket_url),('client_tickets_read',ticket_read,ticket_url)]:
+            response=session.post(url,data=dict(fields,csrf=csrf))
+            check(label+' contact cannot submit copied '+action,response.status_code==403 and ticket_state()==before)
+    before=ticket_state();response=contact.post(ticket_url,data=dict(ticket_read,csrf=token(contact.get(ticket_url))))
+    check('Project contact cannot clear primary ticket read state through a copied valid form','primary client account' in response.text and ticket_state()==before)
+    before=ticket_state();fields=dict(ticket_create,csrf=token(contact.get(ticket_new)),subject='Forbidden contact billing link',body='Project contact cannot attach invoice',related_invoice=str(invoice))
+    response=contact.post(ticket_new,data=fields)
+    check('Project contact cannot attach copied invoice context to a ticket','do not include billing' in response.text and ticket_state()==before)
+    response=submit(contact,ticket_url,'client_tickets_reply',{'body':'Permitted project contact reply.'})
+    check('Project contact can reply without clearing primary ticket read state','Permitted project contact reply.' in response.text and db('SELECT * FROM ci_support_ticket_client_reads ORDER BY id')==before['support_ticket_client_reads'] and 'contact '+str(ctid) in db("SELECT detail FROM ci_audit WHERE action='support_tickets.changed' ORDER BY id DESC LIMIT 1")[0]['detail'])
+    saved_ticket_reply=form_data(env['form_for'](response,'client_tickets_reply'))
+    edit=find_form('studio_contact','id',ctid);edit['perms[]']='downloads';owner.post(clients,data=edit);before=ticket_state()
+    response=contact.post(ticket_url,data=dict(saved_ticket_reply,body='Revoked contact ticket reply.'))
+    check('Revoked project contact cannot replay an already-open ticket form',response.status_code==403 and ticket_state()==before)
+    edit=find_form('studio_contact','id',ctid);edit['perms[]']='projects';owner.post(clients,data=edit)
+    contact=requests.Session();submit(contact,portal,'login',{'email':'review-contact@example.invalid','password':CPASS})
+    response=submit(alice,ticket_url,'client_tickets_read',{})
+    check('Primary client retains its own explicit ticket read controls after contact use',response.status_code==200 and bool(db('SELECT * FROM ci_support_ticket_client_reads WHERE ticket_id=? AND client_id=?',[ticket,cid])))
+
+    before=read_boundary_state();activity=contact.get(portal+'?activity=1');visible=[node['data-event-key'] for node in soup(activity).select('[data-event-key]')]
+    check('Projects-only HTTP activity contains only permitted message and review events',activity.status_code==200 and bool(visible) and all(key.startswith(('message:','review:')) for key in visible) and read_boundary_state()==before)
+    hidden_invoice='invoice:'+str(invoice)
+    denied=contact.get(portal+'?activity=1&open='+hidden_invoice,allow_redirects=False)
+    check('Contact activity refuses a copied billing cursor without disclosing its destination',denied.status_code==403 and 'Location' not in denied.headers and read_boundary_state()==before)
+    denied=contact.post(portal+'?activity=1',data={'csrf':token(activity),'action':'activity_mark','keys':json.dumps([visible[0],hidden_invoice]),'state':'read'})
+    check('Mixed allowed and forbidden activity marks roll back without parent state changes','Activity changed or is unavailable' in denied.text and read_boundary_state()==before)
+    parent_reads=db("SELECT * FROM ci_activity_reads WHERE actor_type='client' ORDER BY id")
+    submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps([visible[0]]),'state':'read'})
+    check('HTTP contact activity marks only its own read identity',db("SELECT actor_type,actor_id,event_key FROM ci_activity_reads WHERE actor_type='contact' AND actor_id=? AND event_key=?",[ctid,visible[0]])==[{'actor_type':'contact','actor_id':ctid,'event_key':visible[0]}] and db("SELECT * FROM ci_activity_reads WHERE actor_type='client' ORDER BY id")==parent_reads)
+    for label,session in [('Billing-only',billing),('Downloads-only',downloads)]:
+        response=session.get(BASE+'/existing/api/activity.php?audience=client')
+        check(label+' contact cannot obtain project unread counts from the passive API',response.status_code==204 and not response.content)
 
     for label,session in [('Projects-only',contact),('Downloads-only',downloads)]:
         before=commercial_state()

@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/support/tickets.php';
 
 function support_tickets_read_state(SupportTicketDocument $doc,array $actor):array {
+    if(isset($actor['contact_id']))throw new RuntimeException('Conversation read status belongs to the primary client account.');
     if(!in_array($actor['type'],['staff','client'],true))throw new LogicException('Support sessions do not own client read state.');
     $staff=$actor['type']==='staff';$id=$staff?$actor['staff_id']:$actor['client_id'];$data=$doc->data();
     $name=$staff?'support_ticket_staff_reads':'support_ticket_client_reads';$field=$staff?'user_id':'client_id';

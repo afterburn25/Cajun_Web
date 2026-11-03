@@ -7,7 +7,7 @@ function notification_project_message(int $jobId,int $messageId,string $from):vo
     if(!notifications_feed_ready())return;
     try{$job=one('SELECT client_id FROM '.table('studio_jobs').' WHERE id=?',[$jobId]);if(!$job)return;
         if($from==='staff')notification_emit('client',(int)$job['client_id'],'project-update','job:'.$jobId,'New project message','Sign in to your project to review the latest studio message.','message:'.$messageId);
-        elseif($from==='client')foreach(notification_staff_ids('clients.manage') as $sid)notification_emit('staff',$sid,'support-reply','job:'.$jobId,'New client project reply','A client posted a reply to a project you can manage.','message:'.$messageId);
+        elseif(in_array($from,['client','contact'],true))foreach(notification_staff_ids('clients.manage') as $sid)notification_emit('staff',$sid,'support-reply','job:'.$jobId,'New client project reply','A client posted a reply to a project you can manage.','message:'.$messageId);
     }catch(Throwable $e){report_error($e);}
 }
 function notification_invoice_paid(int $invoice):void {

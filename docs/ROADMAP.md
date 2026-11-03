@@ -1,3 +1,7 @@
+## 2026-11-03 — P-05 integration correctness checkpoint
+
+P-05 scoped company contacts remains implemented on its candidate branch and pending complete integration acceptance. The review follow-up closes contact activity/notification/software privacy, staff reply routing, ticket grant and billing-link boundaries, and contact access to primary personal read state. Local native tests pass 533 recorded checks; exact-source proof/regression and all maintained acceptance helpers pass, with independent source/evidence review complete for publication scope. Supported hosted and installed-browser acceptance remain outstanding. Requirement credits and integrated/released/live status are unchanged.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
 
 No requirement credit or completion percentage changes. The audited branch-inclusive implementation total remains **61.5/105 credits (58.57142857%)**; it is not a main-only, release, live-readiness or elapsed-time percentage.

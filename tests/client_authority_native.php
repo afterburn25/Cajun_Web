@@ -32,6 +32,7 @@ function ca_client(int $id):array {return one('SELECT * FROM '.table('studio_cli
 function ca_version(int $id):string {return ca_client($id)['auth_version'];}
 function ca_token(string $url):string {parse_str((string)parse_url($url,PHP_URL_QUERY),$args);return $args['invite'];}
 function ca_client_session(int $id):void {$c=ca_client($id);$_SESSION['client_id']=$id;$_SESSION['client_auth']=$c['auth_version'];$_SESSION['client_last']=$_SESSION['client_login']=time();}
+function ca_contact_session(int $id):void {$contact=one('SELECT * FROM '.table('studio_contacts').' WHERE id=?',[$id]);$_SESSION=[];ca_client_session((int)$contact['client_id']);$_SESSION['contact_id']=$id;$_SESSION['contact_auth']=$contact['auth_version'];}
 if(($argv[1]??'')==='save-worker') {
     ca_actor((int)$argv[2]);echo "ready\n";fflush(STDOUT);
     try{studio_client_save((int)$argv[3],$argv[4],$argv[5],$argv[6],true);echo 'saved';}
@@ -53,6 +54,11 @@ if(($argv[1]??'')==='upload-worker') {
     echo "ready\n";fflush(STDOUT);
     try{studio_upload_write((int)$argv[2],'contact',['id'=>(int)$argv[3]],['id'=>(int)$argv[4]],$argv[7],$media.'/studio-'.$argv[7].'.php','worker-upload.png','image/png',strlen($bytes),$bytes);echo 'written';}
     catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
+if(($argv[1]??'')==='activity-worker') {
+    ca_contact_session((int)$argv[2]);echo "ready\n";fflush(STDOUT);
+    try{activity_mark('client',[$argv[3]],true);echo 'written';}
+    catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 try {
     foreach(schema_statements('caci_') as $sql)db()->exec($sql);
@@ -168,6 +174,65 @@ try {
     $_SESSION=[];studio_login('transition-contact@example.invalid',$contactPassword);$beforeSession=$_SESSION;$before=$identityState();
     ca_deny('Invalid primary credentials cannot clear an authenticated contact identity',fn()=>studio_login('transition-b@example.invalid','Incorrect synthetic primary password'));
     ca_ok('Failed primary login preserves the exact contact session and stored identities',$_SESSION===$beforeSession&&(int)studio_contact()['id']===$transitionContact&&!contact_can('billing')&&$identityState()===$before);
+
+    // Additional contacts must not inherit the parent's financial feed or personal read/preferences state.
+    require_once CWP_CODE_ROOT.'/app/notifications/events.php';
+    require_once CWP_CODE_ROOT.'/includes/layout/notifications.php';
+    foreach(notification_feed_schema('caci_') as $sql)db()->exec($sql);
+    foreach(['notification_feed_version','activity_schema_version','invoice_ledger_schema_version','delivery_schema_version'] as $marker)save_setting($marker,'1');
+    save_setting('notification_email_enabled','0');$now=gmdate('Y-m-d H:i:s');$events=[];
+    foreach([10001,10002] as $parent){
+        query('INSERT INTO '.table('studio_clients').' (id,name,email,password_hash,auth_version,active,created_at) VALUES (?,?,?,?,?,1,?)',[$parent,'Read boundary '.$parent,'read-parent-'.$parent.'@example.invalid',password_hash('Synthetic read boundary passphrase',PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);
+        query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$parent,'Private project '.$parent,'Private scope','Private milestone',$now,$now]);$jid=(int)db()->lastInsertId();
+        query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'admin\',1,?,?)',[$jid,'Private studio message '.$parent,$now]);$mid=(int)db()->lastInsertId();
+        query('INSERT INTO '.table('studio_versions').' (job_id,kind,version_no,title,body,decision,feedback,decided_by,decided_at,created_at) VALUES (?,\'design\',1,?,?,\'approved\',\'\',?,?,?)',[$jid,'Private review '.$parent,'Private review body',$parent,$now,$now]);$vid=(int)db()->lastInsertId();
+        $fid=ca_id($parent+20000);query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,\'admin\',?,?,\'application/pdf\',4,?,?)',[$fid,$jid,'Private file '.$parent.'.pdf','read-fixture-'.$parent,str_repeat('a',64),$now]);
+        query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,status,instructions,created_at,paid_at) VALUES (?,?,?,9000,\'paid\',\'Private billing instructions\',?,?)',[$jid,'PRIVATE-BILL-'.$parent,'Private invoice '.$parent,$now,$now]);$iid=(int)db()->lastInsertId();
+        query('INSERT INTO '.table('invoice_payments').' (invoice_id,job_id,client_id,actor_id,kind,amount_cents,currency,method,private_note,received_on,invoice_hash,invoice_reference,invoice_title,invoice_total_cents,client_name,created_at) VALUES (?,?,?,1,\'manual\',9000,\'USD\',\'other\',\'Private receipt note\',?,?,?,?,9000,?,?)',[$iid,$jid,$parent,gmdate('Y-m-d'),str_repeat('b',64),'PRIVATE-BILL-'.$parent,'Private invoice '.$parent,'Read boundary '.$parent,$now]);$pay=(int)db()->lastInsertId();
+        $rid=ca_id($parent+30000);query('INSERT INTO '.table('website_releases').' (id,job_id,client_id,release_no,version,title,scope,notes,source_revision,bytes,sha256,manifest,request_key,request_hash,status,created_by,created_at,published_by,published_at) VALUES (?,?,?,1,\'1.0\',?,\'static\',\'Private release notes\',\'fixture\',4,?,\'{}\',?,?,\'published\',1,?,1,?)',[$rid,$jid,$parent,'Private release '.$parent,str_repeat('c',64),hash('sha256','release-request-'.$parent),hash('sha256','release-hash-'.$parent),$now,$now]);
+        $events[$parent]=['job'=>$jid,'message'=>'message:'.$mid,'review'=>'review:'.$vid,'file'=>'file:'.$fid,'invoice'=>'invoice:'.$iid,'payment'=>'payment:'.$pay,'release'=>'release:'.$rid];
+    }
+    // Contact IDs deliberately overlap both parent IDs; read rows must use a distinct namespace.
+    foreach([10001,10002] as $contactId)query('INSERT INTO '.table('studio_contacts').' (id,client_id,name,email,permissions,enabled,auth_version,created_at) VALUES (?,10001,?,?,?,1,?,?)',[$contactId,'Read contact '.$contactId,'read-contact-'.$contactId.'@example.invalid','["projects"]',bin2hex(random_bytes(16)),$now]);
+    $readState=static function():string{$state=[];foreach(['studio_clients','studio_contacts','studio_jobs','studio_messages','studio_versions','studio_files','studio_invoices','invoice_payments','website_releases','activity_reads','notification_feed','notification_prefs','notification_deliveries','audit'] as $name)$state[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');return json_encode($state);};
+    query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'contact\',10001,?,?)',[$events[10001]['job'],'Scoped contact reply',$now]);$reply=(int)db()->lastInsertId();
+    $message=one('SELECT * FROM '.table('studio_messages').' WHERE id=?',[$reply]);$staffIds=notification_staff_ids('clients.manage');sort($staffIds);
+    notification_project_message($events[10001]['job'],$reply,'contact');$notices=all('SELECT * FROM '.table('notification_feed').' ORDER BY recipient_id');$recipients=array_map(static fn($row)=>(int)$row['recipient_id'],$notices);
+    ca_ok('Contact project reply notifies every currently permitted staff recipient and retains contact authorship',$recipients===$staffIds&&count($notices)>0&&!array_filter($notices,static fn($row)=>$row['audience']!=='staff'||$row['kind']!=='support-reply')&&one('SELECT * FROM '.table('studio_messages').' WHERE id=?',[$reply])===$message);
+    $before=$readState();notification_project_message($events[10001]['job'],$reply,'contact');ca_ok('Contact reply notification replay creates no duplicate feed delivery or business change',$readState()===$before);
+    notification_project_message($events[10001]['job'],(int)substr($events[10001]['message'],8),'staff');
+    $parentNotice=one('SELECT * FROM '.table('notification_feed')." WHERE audience='client' AND recipient_id=10001");
+    ca_ok('Original staff project message still reaches the primary client only',$parentNotice!==null&&$parentNotice['kind']==='project-update'&&count(all('SELECT * FROM '.table('notification_feed')." WHERE audience='client'"))===1);
+    ca_ok('Project notices remain local with email disabled',!all('SELECT * FROM '.table('notification_deliveries')." WHERE channel='email'")&&!is_file($private.'/mail-master.key'));
+    $keys=$events[10001];$otherKeys=$events[10002];$grants=[['projects'],['projects','billing'],['projects','downloads'],['projects','billing','downloads']];
+    foreach($grants as $permissions){
+        query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=10001',[json_encode($permissions)]);ca_contact_session(10001);$before=$readState();$feed=activity_feed('client');
+        $expected=['message','review'];if(in_array('billing',$permissions,true))array_push($expected,'invoice','payment');if(in_array('downloads',$permissions,true))array_push($expected,'file','release');sort($expected);$actual=array_column($feed['rows'],'kind');sort($actual);
+        ca_ok('Contact activity projects only its current grants: '.implode('+',$permissions),$actual===$expected&&!array_filter($feed['rows'],static fn($row)=>(int)$row['client_id']!==10001)&&activity_count('client')===count($expected)&&$readState()===$before);
+        foreach(['invoice','payment','file','release'] as $kind)if(!in_array($kind,$expected,true)){
+            ca_deny('Contact cannot resolve hidden '.$kind.' source with '.implode('+',$permissions),fn()=>activity_source('client',$keys[$kind]));
+            ca_deny('Contact cannot mark hidden '.$kind.' through mixed visible and forbidden keys with '.implode('+',$permissions),fn()=>activity_mark('client',[$keys['message'],$keys[$kind]],true));
+            ca_ok('Hidden '.$kind.' refusal preserves all business and personal state for '.implode('+',$permissions),$readState()===$before&&!db()->inTransaction());
+        }
+        ca_deny('Contact activity cannot resolve a different parent with '.implode('+',$permissions),fn()=>activity_source('client',$otherKeys['message']));
+        foreach(['feed'=>fn()=>notification_feed('client',10001),'mark'=>fn()=>notification_mark('client',10001,$parentNotice['id'],true),'mark all'=>fn()=>notification_mark_all('client',10001),'preference'=>fn()=>notification_pref_email('client',10001,'billing',false,'10001'),'preference form'=>fn()=>notification_prefs_save('client',10001)] as $operation=>$fn){
+            ca_deny('Contact cannot inherit primary notification '.$operation.' with '.implode('+',$permissions),$fn);
+            ca_ok('Denied primary notification '.$operation.' retains exact rows for '.implode('+',$permissions),$readState()===$before&&!db()->inTransaction());
+        }
+    }
+    foreach([['billing'],['downloads']] as $permissions){query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=10001',[json_encode($permissions)]);ca_contact_session(10001);$before=$readState();ca_deny('Non-project contact cannot call activity service for '.implode('+',$permissions),fn()=>activity_feed('client'));ca_ok('Non-project activity denial retains personal and business rows for '.implode('+',$permissions),$readState()===$before);}
+    query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id IN (10001,10002)',['["projects"]']);ca_contact_session(10001);activity_mark('client',[$keys['message']],true);
+    ca_ok('Contact activity read state is bound to its own namespace despite a matching parent ID',all('SELECT actor_type,actor_id,event_key FROM '.table('activity_reads'))===[['actor_type'=>'contact','actor_id'=>10001,'event_key'=>$keys['message']]]&&activity_count('client')===1);
+    ca_contact_session(10002);ca_ok('Another contact on the same parent retains an independent unread feed',activity_count('client')===2);activity_mark('client',[$keys['message']],true);
+    $_SESSION=[];ca_client_session(10001);ca_ok('Primary activity actor and all six original event categories remain unaffected',activity_actor('client')===['type'=>'client','id'=>10001]&&activity_count('client')===6&&count(activity_feed('client')['rows'])===6);activity_mark('client',[$keys['message']],true);
+    ca_ok('Parent and two contacts retain three independent read records',all('SELECT actor_type,actor_id,event_key FROM '.table('activity_reads').' ORDER BY actor_type,actor_id')===[['actor_type'=>'client','actor_id'=>10001,'event_key'=>$keys['message']],['actor_type'=>'contact','actor_id'=>10001,'event_key'=>$keys['message']],['actor_type'=>'contact','actor_id'=>10002,'event_key'=>$keys['message']]]);
+    ca_ok('Primary client keeps its own notification feed',notification_feed('client',10001)->unreadCount()===1);notification_mark('client',10001,$parentNotice['id'],true);notification_pref_email('client',10001,'billing',false,'10001');ca_ok('Primary notification read state and preferences remain writable',one('SELECT read_at FROM '.table('notification_feed').' WHERE id=?',[$parentNotice['id']])['read_at']!==null&&one('SELECT email FROM '.table('notification_prefs')." WHERE audience='client' AND recipient_id=10001 AND kind='billing'")===['email'=>0]);
+    ca_actor();ca_ok('Original staff activity and notification identities remain unaffected',activity_actor('admin')===['type'=>'admin','id'=>1]&&notification_feed('staff',1)->unreadCount()===1);
+    foreach(['removed project permission'=>"UPDATE ".table('studio_contacts')." SET permissions='[\"billing\"]' WHERE id=10001",'disabled contact'=>"UPDATE ".table('studio_contacts')." SET enabled=0 WHERE id=10001",'rotated contact credentials'=>"UPDATE ".table('studio_contacts')." SET auth_version='".str_repeat('e',32)."' WHERE id=10001"] as $reason=>$sql){
+        query('UPDATE '.table('studio_contacts').' SET permissions=?,enabled=1,auth_version=? WHERE id=10001',['["projects"]',bin2hex(random_bytes(16))]);
+        staff_locked(function()use($keys,$sql):void{$GLOBALS['activity_waiter']=ca_worker('activity-worker',['10001',$keys['review']]);if(trim(fgets($GLOBALS['activity_waiter'][1][1]))!=='ready')throw new RuntimeException('Activity writer did not reach the guard');query($sql);});$before=$readState();
+        ca_ok('Contact activity rechecks '.$reason.' after waiting for the write guard',ca_finish($GLOBALS['activity_waiter'])==='denied'&&$readState()===$before);
+    }
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/client-authority-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB current staff/client authority, strict audit and competing public activation fixtures; no real customer messaging or provider operation','checks'=>$checks],JSON_PRETTY_PRINT));
 echo ($ok?'PASS':'FAIL').': '.count($checks).' native client authority checks'.PHP_EOL;exit($ok?0:1);

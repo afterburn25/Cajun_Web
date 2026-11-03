@@ -1,3 +1,9 @@
+## 2026-11-03 — PR340 review correction checkpoint
+
+**NEEDS CORRECTION OR ACCEPTANCE:** PR340 parent `b3b2094ae8024aa44ce467cb97763122a590a219` has a locally corrected follow-up for its five contact privacy/notification review findings and the retained ticket grant/primary-only software-control gaps. The bounded ticket correction also filters billing links and preserves primary personal read state. Existing original branches and histories are retained.
+
+Local native 533/533, real touched-PHP lint and canonical refresh pass; the original ticket source fails the first new contact-grant check after 180 original passes. Exact-source proof 2,151, actual-file/direct-helper regression 122 and all 2,764 maintained acceptance helpers pass. Independent source/evidence review cleared the 19 authored paths and eight narrative prefixes for publication scope. New hosted matrix/browser acceptance and destination-main reconciliation remain required. This entry does not mark the work merged, released or live and does not change completion credit.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
 
 | Candidate | Current disposition | Exact remaining action |

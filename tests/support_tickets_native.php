@@ -20,6 +20,14 @@ function tn_change(int $id,int $event,string $command,array $args=[],?int $revis
 function tn_fail_audit(callable $work,string $name='audit'):bool {db()->exec('CREATE TRIGGER stkt_fail BEFORE INSERT ON '.table($name)." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic audit failure'");try{$work();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER stkt_fail');}return $failed;}
 function tn_worker(string $mode,array $args):array {$p=proc_open([PHP_BINARY,__FILE__,$mode,...$args],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);if(!is_resource($p))throw new RuntimeException('Cannot start ticket worker');foreach([1,2] as $stream)stream_set_timeout($pipes[$stream],15);return [$p,$pipes];}
 function tn_finish(array $worker):string {[$p,$pipes]=$worker;fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);if(proc_close($p)!==0||$err!=='')throw new RuntimeException('Worker failed: '.$err);return $out;}
+function tn_contact(int $id):void {$contact=one('SELECT * FROM '.table('studio_contacts').' WHERE id=?',[$id]);tn_client((int)$contact['client_id']);$_SESSION['contact_id']=$id;$_SESSION['contact_auth']=$contact['auth_version'];}
+if(in_array($argv[1]??'',['contact-read-worker','contact-write-worker'],true)){
+    tn_contact((int)$argv[2]);echo "ready\n";fflush(STDOUT);
+    try{
+        if($argv[1]==='contact-read-worker'){support_tickets_client_get(tn_id((int)$argv[3]),(int)$_SESSION['client_id']);echo 'read';}
+        else{support_tickets_client_change(tn_id((int)$argv[3]),(int)$_SESSION['client_id'],(int)$argv[4],tn_id((int)$argv[5]),'reply',['body'=>'Waiting contact reply']);echo 'saved';}
+    }catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 if(in_array($argv[1]??'',['staff-worker','client-worker','read-worker','assign-worker'],true)){
     $mode=$argv[1];if($mode==='client-worker'||$mode==='read-worker')tn_client((int)$argv[2]);else tn_staff((int)$argv[2]);echo "ready\n";fflush(STDOUT);
     try{
@@ -134,5 +142,57 @@ tn_staff(2);tn_ok('Ticket grant does not grant client administration or support 
     $audit=support_tickets_json(all('SELECT * FROM '.table('audit')));tn_ok('General audit excludes ticket body subject passwords and client emails',!str_contains($audit,'Opening literal')&&!str_contains($audit,'PRIVATE')&&!str_contains($audit,'Support café')&&!str_contains($audit,$password)&&!str_contains($audit,'ticket-client'));
     tn_ok('Tickets create no invoice or payment records',(int)query('SELECT COUNT(*) FROM '.table('studio_invoices'))->fetchColumn()===0);
     require __DIR__.'/support_ticket_screen_native_cases.php';
+    // Additional contacts must not inherit a primary account's unrestricted ticket authority or personal read state.
+    tn_staff();contacts_migrate('');$ticketContact=contact_save(0,1,'','Ticket project contact','ticket-contact@example.invalid',['projects'],true);
+    $foreignContact=contact_save(0,2,'','Foreign ticket contact','foreign-ticket-contact@example.invalid',['projects'],true);
+    tn_create(900);$ticketId=tn_id(900);$initialRevision=tn_doc(900)->publicRevision();
+    $ticketOperations=[
+        'queue'=>fn()=>support_tickets_client_page(1),
+        'detail'=>fn()=>support_tickets_client_get($ticketId,1),
+        'linked choices'=>fn()=>support_tickets_link_choices(1,false),
+        'create'=>fn()=>support_tickets_client_create(tn_id(901),1,'Contact opening',tn_id(10901),'Scoped contact request'),
+        'reply'=>fn()=>support_tickets_client_change($ticketId,1,$initialRevision,tn_id(902),'reply',['body'=>'Scoped contact reply']),
+        'status'=>fn()=>support_tickets_client_change($ticketId,1,$initialRevision,tn_id(903),'status',['status'=>'closed']),
+        'read cursor'=>fn()=>support_tickets_client_mark($ticketId,1,$initialRevision),
+        'personal notifications'=>fn()=>support_tickets_notification_page('client'),
+    ];
+    foreach([['billing'],['downloads'],['billing','downloads']] as $grants){
+        query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',[json_encode($grants),$ticketContact]);tn_contact($ticketContact);$before=tn_snapshot();
+        foreach($ticketOperations as $operation=>$work){tn_deny('Non-project contact cannot access ticket '.$operation.' with '.implode('+',$grants),$work);tn_ok('Denied ticket '.$operation.' retains exact account records with '.implode('+',$grants),tn_snapshot()===$before&&!db()->inTransaction());}
+    }
+    query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["projects"]',$ticketContact]);tn_contact($ticketContact);$before=tn_snapshot();
+    $contactView=support_tickets_client_get(tn_id(500),1);$choices=support_tickets_link_choices(1,false);$page=support_tickets_client_page(1);
+    tn_ok('Project contact can read owned public conversations without inheriting the primary read cursor',isset($contactView['events'])&&!isset($contactView['read'])&&!array_filter($page['items'],fn($item)=>isset($item['read']))&&tn_snapshot()===$before);
+    tn_ok('Project-only contact receives project links but no invoice or subscription choices',array_keys($choices)===['project']&&array_column($contactView['related'],'kind')===['project']&&tn_snapshot()===$before);
+    foreach(['invoice','subscription'] as $kind){tn_deny('Project-only contact cannot attach a copied '.$kind.' link',fn()=>support_tickets_client_create(tn_id(901),1,'Contact opening',tn_id(10901),'Scoped contact request',[['kind'=>$kind,'id'=>$kind==='invoice'?(string)$invoice:tn_id(901)]]));tn_ok('Denied copied '.$kind.' link preserves retained ticket and audit rows',tn_snapshot()===$before);}
+    tn_deny('Project contact cannot mark the primary conversation read',fn()=>support_tickets_client_mark($ticketId,1,$initialRevision));
+    tn_deny('Project contact cannot read the primary conversation notification feed',fn()=>support_tickets_notification_page('client'));
+    tn_ok('Contact personal-ticket refusals preserve primary read state',tn_snapshot()===$before&&!db()->inTransaction());
+    $projectUnread=activity_count('client');tn_ok('Contact combined activity bell includes only its own permitted project activity',workspace_activity_summary('client')['count']===$projectUnread&&tn_snapshot()===$before);
+    $created=support_tickets_client_create(tn_id(901),1,'Contact opening',tn_id(10901),'Scoped contact request',[['kind'=>'project','id'=>(string)$job]]);
+    tn_ok('Current project grant permits an owned contact conversation with retained contact audit identity',$created['subject']==='Contact opening'&&str_contains(one('SELECT detail FROM '.table('audit')." WHERE action='support_tickets.created' ORDER BY id DESC LIMIT 1")['detail'],' contact '.$ticketContact));
+    $reply=support_tickets_client_change($ticketId,1,$initialRevision,tn_id(902),'reply',['body'=>'Scoped contact reply']);
+    tn_ok('Current project grant permits a reply with explicit contact audit identity',$reply['public_revision']===$initialRevision+1&&str_contains(one('SELECT detail FROM '.table('audit')." WHERE action='support_tickets.changed' ORDER BY id DESC LIMIT 1")['detail'],' contact '.$ticketContact));
+    query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["projects","billing"]',$ticketContact]);tn_contact($ticketContact);$choices=support_tickets_link_choices(1,false);$view=support_tickets_client_get(tn_id(500),1);
+    tn_ok('Project-and-billing contact retains authorized invoice choices and related invoice detail',isset($choices['invoice'])&&array_column($view['related'],'kind')===['invoice','project']&&!isset($view['read']));
+    tn_contact($foreignContact);$before=tn_snapshot();tn_deny('Contact from another parent cannot read an existing conversation',fn()=>support_tickets_client_get($ticketId,2));tn_deny('Contact cannot borrow a different primary identity',fn()=>support_tickets_client_get($ticketId,1));tn_ok('Foreign-contact denials retain exact ticket rows',tn_snapshot()===$before);
+    foreach(['missing id','missing auth','string id','wrong parent'] as $kind){
+        tn_contact($ticketContact);if($kind==='missing id')unset($_SESSION['contact_id']);elseif($kind==='missing auth')unset($_SESSION['contact_auth']);elseif($kind==='string id')$_SESSION['contact_id']=(string)$ticketContact;else{$_SESSION['contact_id']=$foreignContact;$_SESSION['contact_auth']=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$foreignContact])['auth_version'];}
+        $before=tn_snapshot();tn_deny('Ticket authority refuses '.$kind.' contact markers',fn()=>support_tickets_client_get($ticketId,1));tn_ok('Malformed '.$kind.' contact authority changes no ticket state',tn_snapshot()===$before&&!db()->inTransaction());
+    }
+    foreach(['revoked project permission','disabled contact','rotated contact credentials'] as $reason){
+        foreach(['contact-read-worker','contact-write-worker'] as $mode){
+            query('UPDATE '.table('studio_contacts').' SET permissions=?,enabled=1,auth_version=? WHERE id=?',['["projects"]',bin2hex(random_bytes(16)),$ticketContact]);
+            query('SELECT GET_LOCK(?,5)',[$key]);$worker=tn_worker($mode,[(string)$ticketContact,'900',(string)tn_doc(900)->publicRevision(),'904']);
+            tn_ok('Contact ticket '.$mode.' reaches guard before '.$reason,trim(fgets($worker[1][1]))==='ready');
+            if($reason==='revoked project permission')query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["downloads"]',$ticketContact]);
+            elseif($reason==='disabled contact')query('UPDATE '.table('studio_contacts').' SET enabled=0 WHERE id=?',[$ticketContact]);
+            else query('UPDATE '.table('studio_contacts').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$ticketContact]);
+            $before=tn_snapshot();query('SELECT RELEASE_LOCK(?)',[$key]);tn_ok('Waiting ticket '.$mode.' rechecks '.$reason,tn_finish($worker)==='denied'&&tn_snapshot()===$before);
+        }
+    }
+    tn_client();$before=tn_snapshot();tn_ok('Primary client retains personal ticket read state after contact restrictions',isset(support_tickets_client_get($ticketId,1)['read'])&&tn_snapshot()===$before);support_tickets_client_mark($ticketId,1,tn_doc(900)->publicRevision());tn_ok('Primary client can still mark its own displayed conversation read',support_tickets_client_get($ticketId,1)['read']['unread']===0);
+    tn_staff(3);$support=support_start(1);$revision=tn_doc(900)->publicRevision();$supportReply=support_tickets_client_change($ticketId,1,$revision,tn_id(905),'reply',['body'=>'Audited staff support retains access'],$support);$event=one('SELECT * FROM '.table('support_ticket_events').' WHERE id=?',[tn_id(905)]);
+    tn_ok('Audited staff support still replies as its real staff identity after contact restrictions',$supportReply['public_revision']===$revision+1&&$event['audience']==='support'&&(int)$event['actor_staff_id']===3&&$event['actor_client_id']===null&&$event['support_session_id']===$support);support_end($support);tn_staff();
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e."\n");}
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/support-tickets-native-results.json',json_encode(['passed'=>$passed,'source_sha'=>getenv('CWP_SOURCE_SHA'),'scope'=>'Native disposable SQL ticket setup, current identities, retained history, privacy, viewer read state and competing processes; no route, browser, provider or notification delivery acceptance','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native support-ticket checks'.PHP_EOL;exit($passed?0:1);
