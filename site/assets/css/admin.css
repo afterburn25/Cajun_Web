@@ -19,6 +19,11 @@
 .admin-body #stackcp-access-observations .btn{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere}
 .admin-body #stackcp-access-observations form,.admin-body #stackcp-access-observations label{min-width:0;max-width:100%;overflow-wrap:anywhere}
 
+/* Long subdomain names and actions remain readable on narrow admin screens. */
+.admin-body #subdomain-requests{min-width:0;overflow-wrap:anywhere}
+.admin-body #subdomain-requests form,.admin-body #subdomain-requests label{min-width:0;max-width:100%}
+.admin-body #subdomain-requests .btn{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere}
+
 /* Administration navigation: native disclosure groups retain keyboard access without scripts. */
 .admin-sidebar{padding-top:24px;padding-bottom:20px;max-height:100dvh}
 .admin-sidebar>.brand{flex-shrink:0}

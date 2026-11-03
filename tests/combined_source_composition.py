@@ -41,6 +41,32 @@ REPAIRS = frozenset((
     'tests/owner_browser_forms_test.py',
     'tests/provider_force_ssl_controls_cases.py',
     'tests/provider_directory_listing_controls_cases.py',
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/provider-document-roots.yml',
+    'docs/AGENT_COORDINATION.md',
+    'docs/WORKSPACE_ACTIVITY.md',
+    'foundation/twentyi-operations/TwentyIOperationRegister.php',
+    'foundation/twentyi-operations/TwentyIRequestBuilder.php',
+    'foundation/twentyi/FixedHttpTransport.php',
+    'site/admin/controllers/actions.php',
+    'site/admin/controllers/providers.php',
+    'site/admin/controllers/router.php',
+    'site/app/activity/events.php',
+    'site/app/staff/accounts.php',
+    'site/assets/css/admin.css',
+    'site/assets/css/growth.css',
+    'site/includes/foundation/twentyi-operations/TwentyIOperationRegister.php',
+    'site/includes/foundation/twentyi-operations/TwentyIRequestBuilder.php',
+    'site/includes/foundation/twentyi/FixedHttpTransport.php',
+    'site/includes/layout/activity.php',
+    'site/includes/layout/admin.php',
+    'site/includes/layout/provider_services.php',
+    'site/portal/controllers/actions.php',
+    'site/portal/controllers/router.php',
+    'tests/browser_acceptance.py',
+    'tests/provider_http_server.py',
+    'tests/twentyi-operations/run.php',
+    'tools/acceptance-contract.json',
     'tools/acceptance-reports.json',
     'tests/acceptance_artifacts_test.py',
     'tests/cloud_site_requests_wiring.py',
@@ -66,7 +92,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tools/acceptance-reports.json': 'b0cdd73370dcc0806ebf198b858d4ff7892a115d45176cfe26d70df8ca39c360', 'tools/acceptance-contract.json': 'd6283dc6e3493cdd52b4a0413f78b7201686e827d2db32e95862b58ce7c907a6', 'tests/twentyi-operations/run.php': 'a60804e6da7b6f3c5d042b3d51949ea693cfa2640eefc58cfa3bff1b43b37a0d', 'tests/provider_http_server.py': 'bcd14a3e2336593afaf3a0c5010ccf854b88d6d98a09f043e47e0428cfbbce45', 'tests/browser_acceptance.py': '61f108de2507f47b059d6a47e8fb049a4ce4c9c9871dddaa98676f30528017b4', 'tests/acceptance_artifacts_test.py': 'dc5873e65bf765ed3118a2d5bd54b8d6f7e6c8b667e07203fbbf860b3b756fbe', 'site/portal/controllers/router.php': '4b8b0923ecbf27f8e899fcb41f95d5749cb989f185365829c118410d9a593816', 'site/portal/controllers/actions.php': '5d752291ebb1849d9da48627f8e8eb4ce43731eb98a3ea9cc9d1e9bb71737e5e', 'site/includes/layout/provider_services.php': 'a6c512ce67ad642a4813d8f7004821fcacafd417b0a8b6187e77156b6309c37e', 'site/includes/layout/admin.php': 'a4875f6a07dcacfd9f3bb326a48fc6ed7ace15e30b14b2c996820a0fdf1f94d0', 'site/includes/layout/activity.php': '1c995c3093ef227492f67d42391d80dda2b8742f3ddad0204518ce9a137aa9ab', 'site/includes/foundation/twentyi/FixedHttpTransport.php': 'c8155ec54ee5d3f660daea1eb69290e7484fbd04102a2d2f682823a3cfb8f884', 'site/includes/foundation/twentyi-operations/TwentyIRequestBuilder.php': '0702be07c06bffa303e3334071853a4f1506af1f3bef033e932e7744e0767ecd', 'site/includes/foundation/twentyi-operations/TwentyIOperationRegister.php': '4c949984d17fb26711965d462b6597c092bf13159b861be7aea5c6224cd942fd', 'site/assets/css/growth.css': '5c68d19bc3b0d018d79c5b344f9e1ccb2681d42d7c60275f523ed795a1ec4e7e', 'site/assets/css/admin.css': 'e40fbf2f5118a34084c570816af0cf42b3830f2944f217a3f91d7816e812d05e', 'site/app/staff/accounts.php': '26cb79ddb98dcaf639e3a97c60c4827f4709ff429e8db41fd64df7c694f0eb1e', 'site/app/activity/events.php': '432193c5df790d71b5854bbe1a4097d19365c41dfc3330f80b33b4222e9803c4', 'site/admin/controllers/router.php': '318f28a7a09a8137a490f2060019c7d28229ebcc2a43ea655fc480e375543154', 'site/admin/controllers/providers.php': '545a493d827bd370c8aa6218f8549f7db851d25c53664556d9159c3bb0dbabf9', 'site/admin/controllers/actions.php': 'e2feeab0557467cdcda8a6110b87bc0bb80e427dbeee6b29ea527cb099f0f4b6', 'foundation/twentyi/FixedHttpTransport.php': 'c8155ec54ee5d3f660daea1eb69290e7484fbd04102a2d2f682823a3cfb8f884', 'foundation/twentyi-operations/TwentyIRequestBuilder.php': '0702be07c06bffa303e3334071853a4f1506af1f3bef033e932e7744e0767ecd', 'foundation/twentyi-operations/TwentyIOperationRegister.php': '4c949984d17fb26711965d462b6597c092bf13159b861be7aea5c6224cd942fd', 'docs/WORKSPACE_ACTIVITY.md': '438cdf213e45ab00cb66f55171d9c1b28c044aa6e206be8238354021cfd5032d', 'docs/DECISIONS.md': '2e4c9e5610b9d80c8e1e1b6e9f1a705aedf2570a413787578418fcca0f4477fe', 'docs/AGENT_COORDINATION.md': 'c7cbb2b220ea549773990a48de7997ea8c6c46c63166fd48747a70bbfe1e24e3', '.github/workflows/provider-document-roots.yml': 'd1549d6cc59b672377fdac2ac5fa211efd005acfe6452e95a561302fa8366fdd', '.github/workflows/application-tests.yml': '8911cacb415b1742f663341d23a93f13b6921502ce2c32391eacc291074a571e', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}

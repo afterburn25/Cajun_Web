@@ -44,3 +44,10 @@
 .hosting-billing-selector p{font-size:14px;line-height:1.6;margin:12px 0 0;max-width:70ch}
 .hosting-billing-selector a:focus-visible,.hosting-billing-pages a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
 .hosting-billing-pages{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+/* Client subdomain review forms share readable controls in both workspaces. */
+.subdomain-requests .workspace-card,.subdomain-requests form,.subdomain-requests label{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.subdomain-requests label,.admin-body .subdomain-requests label,.subdomain-requests .btn,.subdomain-requests summary{font-size:14px}
+.subdomain-requests .hint{font-size:13px;line-height:1.6}
+.subdomain-requests .btn{white-space:normal;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.subdomain-requests button:disabled{opacity:.55;cursor:not-allowed}
+.subdomain-requests :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}

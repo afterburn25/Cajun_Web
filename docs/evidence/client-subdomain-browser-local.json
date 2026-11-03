@@ -1,0 +1,173 @@
+{
+  "parent": "af956844690b1ed3be93a9a83574f06127fa8763",
+  "branch": "codex/twentyi-client-subdomain-browser",
+  "enclosing_commit_subject": "test: cover installed client subdomain workflow",
+  "recorded_utc": "2026-10-19T04:13:31.253785+00:00",
+  "tests": [
+    {
+      "source": "tests/subdomain_requests_http_contract.py",
+      "source_sha256": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
+      "report": "client-subdomain-browser-root-validation/handler-root.json",
+      "report_sha256": "95de6c8e40a40e6551e8473a95e70f66f7753d3fdaa754b0401462278298ed78",
+      "checks": 90,
+      "passed": true,
+      "scope": "Actual extracted fixture Handler, in-memory HTTP streams; no listener, SQL or provider."
+    },
+    {
+      "source": "tests/provider_directory_controls_http_contract.py",
+      "source_sha256": "e3d8958bd04ee95086362be9fc2c7b4109afd72f46a33c4164936930d029e478",
+      "report": "client-subdomain-browser-root-validation/provider_directory_controls_http_contract-root.stdout",
+      "report_sha256": "c62e0b66fa6c8bb66a19aa82094e7b886100351c7f9d60169251c10ac251e3fc",
+      "checks": 19,
+      "passed": true,
+      "scope": "Actual extracted synthetic HTTP Handler only. No socket, TLS, database, provider, credentials or browser execution."
+    },
+    {
+      "source": "tests/domain_renewal_dispatch_http_contract.py",
+      "source_sha256": "369c63347f8cf1eb5e5dd16a0104294ff395313815c6865c0b94d993a824e706",
+      "report": "client-subdomain-browser-root-validation/domain_renewal_dispatch_http_contract-root.stdout",
+      "report_sha256": "fd78843af475a66cc353e6800c17dbacb1424f7a43673cca6844cd11706b6c6d",
+      "checks": 25,
+      "passed": true,
+      "scope": "Actual extracted synthetic POST Handler executed offline; no socket, TLS, database, real provider or browser execution."
+    },
+    {
+      "source": "tests/provider_wordpress_installed_http_contract.py",
+      "source_sha256": "cd9fc12e2db6ebea9fbc50a13b43e19f2aa87a49d5144f296d898041d35aedde",
+      "report": "client-subdomain-browser-root-validation/provider_wordpress_installed_http_contract-root.stdout",
+      "report_sha256": "5a86e035d4ee4152bb4540733fc1244be603a5d08bad1164c07b53f0edc5776e",
+      "checks": 17,
+      "passed": true,
+      "scope": "Actual extracted synthetic Handler executed offline; no socket, TLS, database, real provider or application browser execution."
+    },
+    {
+      "source": "tests/stackcp_access_http_contract.py",
+      "source_sha256": "875eb753adfd2a135ca4b26b231cf19d4366f1e890c992a019c3983630d6ea3b",
+      "report": "client-subdomain-browser-root-validation/stackcp_access_http_contract-root.stdout",
+      "report_sha256": "9d11ee30b09971f37fd8795eda63e3f2117ad6d949832fe41d6016ea8ec2d142",
+      "checks": 21,
+      "passed": true,
+      "scope": "Actual extracted loopback fixture Handler, no server/socket/database/application/provider execution."
+    },
+    {
+      "source": "tests/acceptance_artifacts_test.py",
+      "source_sha256": "0c1ca3e35c52f1f194133c47093d07774018050b1abc255043fed44852449ea4",
+      "report": "client-subdomain-browser-root-validation/acceptance-helper-root.json",
+      "report_sha256": "f878f48684ff2c88dcf35cf626649e04de6397a7d91fe639b66bd3b19ed02ad7",
+      "checks": 521,
+      "passed": true,
+      "scope": "Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution."
+    },
+    {
+      "source": "tests/provider_subdomain_requests_cases.py",
+      "source_sha256": "584a085859d179356123a021f6a88ce1820abc4d2c17ccc14bba16eb82710aff",
+      "report": "client-subdomain-browser-proposal/checks/source-results.json",
+      "report_sha256": "0269b84a23513b7441eaa28a9b6e65355c4cfe3fc5e694df83f5e9fde98e171d",
+      "checks": 14,
+      "passed": true,
+      "scope": "Source compilation and actual early failure/refusal branches with DB stub that always raises; no SQL/HTTP/Chromium"
+    }
+  ],
+  "source_sha256": {
+    ".github/workflows/application-tests.yml": "ab8687201fce8f033ae8486019e7d89443d82acc5114497022473d6e415569e5",
+    "tools/acceptance-contract.json": "b95fbc5df3bfe62a8f666ad7c6b1db54559ac7a2eaccb9260c162c318eaab2a3",
+    "tools/acceptance-reports.json": "d673f4bd8e3255ec923d99a0a3f937258ab648e50762b5983203cf7b57e59d04",
+    "tests/acceptance_artifacts_test.py": "0c1ca3e35c52f1f194133c47093d07774018050b1abc255043fed44852449ea4",
+    "tests/provider_http_server.py": "9be1a7c89427cf7098d1cc29385c42df9172f4bf6132ec6767fa00339a7eddec",
+    "tests/subdomain_requests_http_contract.py": "5c78d0747a2396670fcb902dac8550c75f44cb53943f4837da603bcebb31555a",
+    "tests/provider_subdomain_requests_cases.py": "584a085859d179356123a021f6a88ce1820abc4d2c17ccc14bba16eb82710aff",
+    "tests/browser_acceptance.py": "c30f8c9a72f4a99fc51ed22f72415e787a1988d143a1a30860ca4b19989cd04b"
+  },
+  "reviews": [
+    {
+      "receipt": "client-subdomain-browser-transport-proposal/source-review.json",
+      "sha256": "b3f8f56d37e2018c5a3bc2334438520b31b8509f37c5f29afecf66f0b8f875cd"
+    },
+    {
+      "receipt": "client-subdomain-browser-proposal/source-review.json",
+      "sha256": "1ed8a88c1d75bc24cccb6daf71d5dbd40afbde4876a926feab6d90c70003c6a2"
+    },
+    {
+      "receipt": "client-subdomain-browser-domain-review/review.json",
+      "sha256": "afab220724debafb5e807919c6c9039c5b408d6429289a1f5145c332fd726719"
+    },
+    {
+      "receipt": "client-subdomain-browser-acceptance-proposal/source-review.json",
+      "sha256": "1658c3ae87711a989380500e2982e552f574c6dc26332d731ce7965e1ffc608b"
+    },
+    {
+      "receipt": "client-subdomain-browser-root-validation/transport-root-review.json",
+      "sha256": "0ab68a32cbcc6c45880eee67c4c7b6a8d2c76f3cd0dbda607d7e5beb2d523117"
+    },
+    {
+      "receipt": "client-subdomain-browser-root-validation/acceptance-root-review.json",
+      "sha256": "c2677fc945446e5b1282cfa8f9902f9ebeeb0b1cdc07d7a05550d95882075d35"
+    }
+  ],
+  "acceptance_inventory": {
+    "native": 169,
+    "browser": 182,
+    "final": 226
+  },
+  "preserved_helper_outcomes": 429,
+  "current_source_pins": 41,
+  "exact_parent_inverses": 4,
+  "required_captures": [
+    "Subdomain-Requests-Client-Pending-Desktop.png",
+    "Subdomain-Requests-Client-Pending-Mobile.png",
+    "Subdomain-Requests-Owner-Review-Desktop.png",
+    "Subdomain-Requests-Owner-Review-Mobile.png",
+    "Subdomain-Requests-Client-Observed-Desktop.png",
+    "Subdomain-Requests-Client-Observed-Mobile.png"
+  ],
+  "shipping_source": {
+    "unchanged_from_parent": true,
+    "canonical_refresh": "Not rerun: no shipping or installer dependency changes."
+  },
+  "retained_failures": [
+    {
+      "receipt": "client-subdomain-browser-root-validation/retained-module-helper-draft.json",
+      "sha256": "bf9027408fdd3ff1365ca4bc4a07cdc5f50c5e04caac8bffe253c3e9a2a6ba25",
+      "reason": "Initial module-level helper was absent from unchanged Handler-only extraction; corrected by keeping the helper inside Handler."
+    },
+    {
+      "path": "client-subdomain-browser-transport-proposal/checks/patch-roundtrip-initial.json",
+      "reason": "External patch generation used a default locale for a Unicode fixture; explicit UTF-8 corrected the patch bytes."
+    },
+    {
+      "paths": [
+        "client-subdomain-browser-proposal/checks/initial-dependency-failure.txt",
+        "client-subdomain-browser-proposal/checks/second-dependency-failure.txt"
+      ],
+      "reason": "Local source-probe launches lacked requests/playwright; the existing browser test environment ran the final fourteen source/failure-path checks."
+    }
+  ],
+  "not_run": [
+    "Installed Linux SQL and authenticated HTTP/Chromium callback",
+    "Visual review of six actual installed captures",
+    "Combined candidate/main release acceptance and publication",
+    "Live provider, DNS, certificate, payment, email, SSH or target-host deployment"
+  ],
+  "original_parent_runs": [
+    {
+      "id": 39196497298,
+      "head": "af956844690b1ed3be93a9a83574f06127fa8763",
+      "attempt": 1,
+      "last_observed_status": "queued"
+    },
+    {
+      "id": 39196525941,
+      "head": "af956844690b1ed3be93a9a83574f06127fa8763",
+      "attempt": 1,
+      "last_observed_status": "queued"
+    }
+  ],
+  "documentation_check": {
+    "passed": true,
+    "required_documents": 12,
+    "markdown_files": 274,
+    "local_links": 1892,
+    "heading_links": 36,
+    "scope": "Documentation links and pinned dependency bundle consistency only; no application acceptance."
+  }
+}
