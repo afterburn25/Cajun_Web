@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
+  "verifier_sha256": "8f308e15ff33c3a04fa9897a98a374430905de5a028f898d26c9f3dca1739e48",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -257,6 +257,352 @@
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
         ]
+      ]
+    },
+    "docs/AGENT_COORDINATION.md": {
+      "original_sha256": "4cf6b114c0b414761ffb63d86c5c7112dbf0b6dde3e9deafc7e4b37c1446bcf2",
+      "current_sha256": "47c3d78340c3f53d83e007d2463f6158d47da953c2a748b5b885d2e98ca9989a",
+      "edits": [
+        {
+          "value": [
+            "## 2026-11-02 \u2014 FK fixture rule follow-up\n\n",
+            "## 2026-11-02 \u2014 FK fixture rule follow-up\n## Shared payment-link correction \u2014 2026-10-19\n\nRoot owns `codex/payment-link-view-isolation` from exact Devin PR202 source `750f1ab8`, the two view/runtime files, additive native coverage, installer inventory and delivery. Catalog independently reproduces and reviews the privacy/display correction; VPS prepares only additive `tests/payments_cases.py` evidence externally. Original PR202 and renewal PR252 source `632362f6` remain untouched. Devin retains non-20i feature ownership. Root integrates this small correction through the affected branch only after its actual acceptance. [Scope and evidence](PAYMENT_LINK_VIEW_REVIEW.md).\n\n## Post-publication coordination \u2014 2026-10-18\n\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "docs/HOSTING_AND_BILLING_ROADMAP.md": {
+      "original_sha256": "229306fe2b4c46dc035251814766c6402ca50d50c95bb0856700951942fc823b",
+      "current_sha256": "ed34c34b86cfb3764b2c08386f44c2c30a8609bbde5d30f39b3e18b111577e46",
+      "edits": [
+        {
+          "value": [
+            "**2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.\n\n",
+            "**2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.\n\n**2026-10-16 link checkpoint:** `devin/non20i-payment-links` adds the HC-11 shareable request link \u2014 a sealed 256-bit bearer token per prepared request (payments schema 2), resolved on a noindex/no-referrer public page with honest revoked/superseded/expired/paid/changed states. It grants no portal access and records no payment. Card checkout, tokenized forms, verified webhooks, receipts and refunds remain pending.\n\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "docs/PAYMENT_PREPARATION.md": {
+      "original_sha256": "7c156333312a07b985af2f06d68d133d27ac62b846ec05e3b648ed5a80fa9182",
+      "current_sha256": "19dabf1b1144e3effe52355d4e28fc02c6db5d58d4b66758d86d8958d2ff1c62",
+      "edits": [
+        {
+          "value": [
+            "Administrators see the latest 100 invoices/requests. The owning signed-in client can see the latest request within the existing project invoice, with a clear preparation-only notice. There is no guest payment link, card form or payment action. Client ownership is checked again for request display; a support view remains read-only. No automatic mail is sent.\n",
+            "Administrators see the latest 100 invoices/requests and can copy the current shareable link for a prepared request. The owning signed-in client can open the same link from the project invoice, with a clear preparation-only notice. There is still no card form or payment action. Client ownership is checked again for request display; a support view remains read-only. No automatic mail is sent.\n\n## Shareable payment links\n\nThe separate [view-isolation correction](PAYMENT_LINK_VIEW_REVIEW.md) limits invoice details and the amount due to a current prepared request with the original invoice/client/project binding. Terminal requests display only their status explanation; a paid notice never repeats the old amount due. Current native and installed-browser acceptance for this unreleased correction remain pending.\n\nEvery prepared request mints a 256-bit bearer token. The database stores only its SHA-256 hash plus the token sealed with the payment master key, so a database copy alone cannot redeem links. The public `index.php?page=pay&t=` page resolves the token without any portal session, is `noindex`/`no-referrer`/`no-store`, rate-limits lookups per IP, and shows the invoice reference, purpose, authoritative amount, expiry and the invoice's own instructions. Revoked, superseded, expired, already-paid, invoice-changed and unknown links each render an honest terminal state; the link records no payment. Requests prepared before schema 2 have no link \u2014 revoke and prepare a new request to issue one.\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "Next: tokenized sandbox checkout, payment attempts serialized across manual and gateway transitions, uncertain-response reconciliation, verified webhook signatures and replay protection, accurate receipts/refunds/balances, narrowly scoped expiring/revocable guest payment links and explicit subscription consent. HTTPS, merchant-specific PCI review and authorized provider tests are required before live activation. Hosted-form tradeoffs remain a merchant decision. No 20i provisioning, webmail, ZIP handover or SSH work is implied by this foundation.\n",
+            "Next: tokenized sandbox checkout, payment attempts serialized across manual and gateway transitions, uncertain-response reconciliation, verified webhook signatures and replay protection, accurate receipts/refunds/balances, and explicit subscription consent. Shareable expiring/revocable request links are delivered on `devin/non20i-payment-links`. HTTPS, merchant-specific PCI review and authorized provider tests are required before live activation. Hosted-form tradeoffs remain a merchant decision. No 20i provisioning, webmail, ZIP handover or SSH work is implied by this foundation.\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/admin/controllers/payments.php": {
+      "original_sha256": "b395961184407e01e6a9261a1e47ae325f5a3d3e06aa3bc597d64bf2c60f8569",
+      "current_sha256": "25a208d61785cc28cd8b22ff65e0f7410a2ff24a8f8b2881d85d82915c0f04c8",
+      "edits": [
+        {
+          "value": [
+            "    ?><p>Prepare one request for the remaining amount of an existing invoice. For a deposit, milestone or final balance, issue an invoice for that agreed amount first. These labels do not calculate a remaining project balance or create a subscription. Requests are visible only in the client\u2019s signed-in project; private payment links and checkout are pending.</p><?php\n",
+            "    ?><p>Prepare one request for the remaining amount of an existing invoice. For a deposit, milestone or final balance, issue an invoice for that agreed amount first. These labels do not calculate a remaining project balance or create a subscription. Each prepared request carries a shareable, revocable payment link; card checkout is still being enabled.</p><?php\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    ?><section class=\"workspace-card\"><h2>Unpaid invoices</h2><div class=\"table-wrap\"><table><thead><tr><th>Invoice / project / client</th><th>USD</th><th>Action</th></tr></thead><tbody><?php foreach(all('SELECT i.id,i.reference,i.title,i.amount_cents,j.title AS project,c.name FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').\" c ON c.id=j.client_id WHERE i.status='issued' AND i.currency='USD' AND c.active=1 ORDER BY i.id DESC LIMIT 100\") as $i){?><tr><td><?=esc($i['reference'].' \u00b7 '.$i['title'])?><br><?=esc($i['project'].' \u00b7 '.$i['name'])?></td><td>$<?=gmoney((int)$i['amount_cents'])?></td><td><a href=\"<?=esc(admin_url('payments',['invoice_id'=>$i['id']]))?>\">Review request</a></td></tr><?php }?></tbody></table></div></section><section class=\"workspace-card\"><h2>Request history</h2><p>Latest 100 requests. Expired, revoked and superseded records remain available for review. No record here is evidence that money was received.</p><?php foreach(all('SELECT r.*,i.reference FROM '.table('payment_requests').' r JOIN '.table('studio_invoices').' i ON i.id=r.invoice_id ORDER BY r.id DESC LIMIT 100') as $r){?><article class=\"workspace-version\"><h3><?=esc($r['reference'])?> \u00b7 Request <?=(int)$r['id']?></h3><p><?=esc(payments_purposes()[$r['purpose']]??$r['purpose'])?> \u00b7 $<?=gmoney((int)$r['amount_cents'])?> USD \u00b7 <strong><?=esc(payments_request_state($r))?></strong><br>Expires <?=esc(gmdate('Y-m-d H:i:s',(int)$r['expires_at']))?> UTC</p><?php if($r['status']==='prepared'){?><form method=\"post\"><?php admin_action('payments_revoke');studio_hidden('request_id',$r['id']);admin_check('confirm','Revoke this request; keep the invoice.',false);?><button class=\"btn outline\">Revoke request</button></form><?php }?></article><?php }?></section><?php admin_foot();exit;\n",
+            "    ?><section class=\"workspace-card\"><h2>Unpaid invoices</h2><div class=\"table-wrap\"><table><thead><tr><th>Invoice / project / client</th><th>USD</th><th>Action</th></tr></thead><tbody><?php foreach(all('SELECT i.id,i.reference,i.title,i.amount_cents,j.title AS project,c.name FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').\" c ON c.id=j.client_id WHERE i.status='issued' AND i.currency='USD' AND c.active=1 ORDER BY i.id DESC LIMIT 100\") as $i){?><tr><td><?=esc($i['reference'].' \u00b7 '.$i['title'])?><br><?=esc($i['project'].' \u00b7 '.$i['name'])?></td><td>$<?=gmoney((int)$i['amount_cents'])?></td><td><a href=\"<?=esc(admin_url('payments',['invoice_id'=>$i['id']]))?>\">Review request</a></td></tr><?php }?></tbody></table></div></section><section class=\"workspace-card\"><h2>Request history</h2><p>Latest 100 requests. Expired, revoked and superseded records remain available for review. No record here is evidence that money was received.</p><?php foreach(all('SELECT r.*,i.reference FROM '.table('payment_requests').' r JOIN '.table('studio_invoices').' i ON i.id=r.invoice_id ORDER BY r.id DESC LIMIT 100') as $r){?><article class=\"workspace-version\"><h3><?=esc($r['reference'])?> \u00b7 Request <?=(int)$r['id']?></h3><p><?=esc(payments_purposes()[$r['purpose']]??$r['purpose'])?> \u00b7 $<?=gmoney((int)$r['amount_cents'])?> USD \u00b7 <strong><?=esc(payments_request_state($r))?></strong><br>Expires <?=esc(gmdate('Y-m-d H:i:s',(int)$r['expires_at']))?> UTC</p><?php if($r['status']==='prepared'){try{$link=payments_link_url($r);}catch(RuntimeException){$link=null;}if($link!==null){?><p class=\"hint\">Payment link \u2014 private to this invoice; grants no portal access: <code><?=esc($link)?></code></p><?php }else{?><p class=\"hint\">No payment link on this request; revoke and prepare a new request to issue one.</p><?php }}?><?php if($r['status']==='prepared'){?><form method=\"post\"><?php admin_action('payments_revoke');studio_hidden('request_id',$r['id']);admin_check('confirm','Revoke this request; keep the invoice.',false);?><button class=\"btn outline\">Revoke request</button></form><?php }?></article><?php }?></section><?php admin_foot();exit;\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/database/schema/catalog_validate_schema.php": {
+      "original_sha256": "5edf333af9816fdcea4ecf56b8fa910483b58c1f591963150660b5061bec267f",
+      "current_sha256": "d6281979b33752acacaeff83c90a8c00ec1acae123f88df50ff46ec566fac1e9",
+      "edits": [
+        {
+          "value": [
+            "        if(in_array($c['Field'],['request_key','request_hash'],true)&&$c['Collation']!=='ascii_bin')throw new RuntimeException('Incompatible invoice request identifiers.');\n",
+            "        if(in_array($c['Field'],['request_key','request_hash','link_hash','link_secret'],true)&&$c['Collation']!=='ascii_bin')throw new RuntimeException('Incompatible invoice request identifiers.');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "site/install/actions/deploy.php": {
+      "original_sha256": "597b2cd32230f873e5858eba3d8297bb2edfe61d1211e974955b472882f5d833",
+      "current_sha256": "b55118a0c512923272f3bffe60d7eea36268032cea3dd1c828663522478cfcc8",
+      "edits": [
+        {
+          "value": [
+            "        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','1');save_setting('payment_attempts_schema_version','1');save_setting('payment_notifications_schema_version','1');save_setting('invoice_ledger_schema_version','1');save_setting('delivery_schema_version','1');save_setting('activity_schema_version','1');save_setting('mail_templates_schema_version','1');save_setting('mail_accounts_schema_version','1');save_setting('website_reviews_schema_version','1');appointments_seed();save_setting('appointments_schema_version','1');save_setting('mail_connections_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');save_setting('mail_notices_schema_version','1');save_setting('provider_settings_schema_version','1');save_setting('provider_inventory_schema_version','5');save_setting('provider_operations_schema_version','4');save_setting('mail_drafts_schema_version','1');save_setting('mail_submissions_schema_version','1');save_setting('license_schema_version','3');save_setting('license_invoice_cutover','0');\n",
+            "        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','2');save_setting('payment_attempts_schema_version','1');save_setting('payment_notifications_schema_version','1');save_setting('invoice_ledger_schema_version','1');save_setting('delivery_schema_version','1');save_setting('activity_schema_version','1');save_setting('mail_templates_schema_version','1');save_setting('mail_accounts_schema_version','1');save_setting('website_reviews_schema_version','1');appointments_seed();save_setting('appointments_schema_version','1');save_setting('mail_connections_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');save_setting('mail_notices_schema_version','1');save_setting('provider_settings_schema_version','1');save_setting('provider_inventory_schema_version','5');save_setting('provider_operations_schema_version','4');save_setting('mail_drafts_schema_version','1');save_setting('mail_submissions_schema_version','1');save_setting('license_schema_version','3');save_setting('license_invoice_cutover','0');\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/activity_cases.py": {
+      "original_sha256": "128a44cbcadc0d6ab31a033f8adf915f8e7ee6cd432bb7412d4cf88d702bac8a",
+      "current_sha256": "ece5f3a025611ccc37cd2b5de96569257c702c857fe78b59a44dc0b07ef8e89f",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.9 activity setup preserves retained business and delivery records',all(db('SELECT * FROM activityup_'+t)==rows for t,rows in before.items()))\n    after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings))\n",
+            "    after={t:db('SELECT * FROM activityup_'+t) for t in before};check('Actual 1.9 activity setup preserves retained business and delivery records',all(len(after[t])==len(rows) and all(row[k]==rows[i][k] for i,row in enumerate(after[t]) for k in rows[i]) for t,rows in before.items()))\n    after={s['name']:s['value'] for s in db('SELECT * FROM activityup_settings')};check('Actual 1.9 activity setup preserves every original setting',all(after[s['name']]==s['value'] for s in settings if s['name'] not in ('payments_schema_version','activity_schema_version')) and after['payments_schema_version']=='2' and after['activity_schema_version']=='1')\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/attempts_cases.py": {
+      "original_sha256": "364e216e0502cf1de8e96041873402b0fd713e18c20caf46da0dbb7d0944a116",
+      "current_sha256": "74164c1b70382e3516ccab126b5dd7268162aee7f2a56f7ed92cc439a6af3eae",
+      "edits": [
+        {
+          "value": [
+            "    check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))\n",
+            "    after={t:db('SELECT * FROM trialup_'+t) for t in tables}\n    check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(len(after[t])==len(v) and all(row[k]==v[i][k] for i,row in enumerate(after[t]) for k in v[i]) for t,v in before.items()))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/delivery_cases.py": {
+      "original_sha256": "cb5e76dc1e398b51eb7ef654e0a1d6ccd62492e2757b2ead7f66b357d9da2afb",
+      "current_sha256": "56bcef624a24f7788618e2dfab53c7643e408cb93d5fa441df19183ec6da112d",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.8 retains all prior billing notifications and client records',all(db('SELECT * FROM deliveryup_'+t)==rows for t,rows in before.items()))\n    after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings))\n",
+            "    after={t:db('SELECT * FROM deliveryup_'+t) for t in before};check('Actual 1.8 retains all prior billing notifications and client records',all(len(after[t])==len(rows) and all(row[k]==rows[i][k] for i,row in enumerate(after[t]) for k in rows[i]) for t,rows in before.items()))\n    after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings if s['name'] not in ('payments_schema_version','delivery_schema_version')) and after['payments_schema_version']=='2' and after['delivery_schema_version']=='1')\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/ledger_cases.py": {
+      "original_sha256": "01f3e2f8c590ef6377c13e9bb5ee133e9afd37534dedd1628cc4f16475717964",
+      "current_sha256": "e47c2384ed0d343323e7917ca4b5aa5b5692b6d02db2796e2c0e69afb287ac43",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.7 retains prior invoices requests trials notifications and data',all(db('SELECT * FROM ledgerup_'+t)==v for t,v in before.items()))\n    after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings))\n",
+            "    after={t:db('SELECT * FROM ledgerup_'+t) for t in before};check('Actual 1.7 retains prior invoices requests trials notifications and data',all(len(after[t])==len(v) and all(row[k]==v[i][k] for i,row in enumerate(after[t]) for k in v[i]) for t,v in before.items()))\n    after={s['name']:s['value'] for s in db('SELECT * FROM ledgerup_settings')};check('Actual 1.7 retains original settings',all(after[s['name']]==s['value'] for s in settings if s['name'] not in ('payments_schema_version','invoice_ledger_schema_version')) and after['payments_schema_version']=='2' and after['invoice_ledger_schema_version']=='1')\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/notifications_cases.py": {
+      "original_sha256": "32cfd8aa40001d4a5e0b84f5117f840d53ead5d8f18ee7cce40bad5f082bc771",
+      "current_sha256": "8acc89d78d5bebdbc57107723160c12ebae6e0210539a442697b8f69c98ebebf",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT * FROM notifyup_'+t)==v for t,v in before.items()))\n    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings))\n",
+            "    after={t:db('SELECT * FROM notifyup_'+t) for t in before};check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(len(after[t])==len(v) and all(row[k]==v[i][k] for i,row in enumerate(after[t]) for k in v[i]) for t,v in before.items()))\n    now={s['name']:s['value'] for s in db('SELECT * FROM notifyup_settings')};check('Actual 1.6 update preserves all original settings',all(now[s['name']]==s['value'] for s in settings if s['name'] not in ('payments_schema_version','payment_notifications_schema_version')) and now['payments_schema_version']=='2' and now['payment_notifications_schema_version']=='1')\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/organized_update_fixture.php": {
+      "original_sha256": "70d026111c4dffaefb31c4f6c8ec896ef725584e0566d223a7fec023ad9c6ade",
+      "current_sha256": "5f7363d51871347755b25921565f1031e626b148e090180b9b3d48213d674a03",
+      "edits": [
+        {
+          "value": [
+            "    echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;\n}\n",
+            "    echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;\n}\nif(($argv[2]??'')==='payments'){\n    $saved=['marker'=>(one('SELECT value FROM '.table('settings').\" WHERE name='payments_schema_version'\")['value']??null),'tables'=>[]];\n    foreach(['payment_gateways','payment_requests','invoice_payments'] as $name){\n        if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])){\n            $saved['tables'][$name]=all('SELECT * FROM '.table($name).' ORDER BY id');\n        }\n    }\n    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;\n}\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/payments_cases.py": {
+      "original_sha256": "297a99bf92e6d377e212444488cab85a777f2b49787adf481398aab23fff79d4",
+      "current_sha256": "8ec2227b053cab2c24d3bab38abf7df7abfd53c9f6f0dd1e3da23b069be599c9",
+      "edits": [
+        {
+          "value": [
+            "from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt\n\n",
+            "from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt\n\n# The additions below use only the installed synthetic fixture. They do not\n# prepare extra requests or change a request's captured invoice fingerprint.\nPAYMENT_LINK_CAPTURES = tuple(\n    'Payment-Link-' + state + '-' + viewport + '.png'\n    for state in ('Valid', 'Terminal') for viewport in ('Desktop', 'Mobile')\n)\n\n\ndef payment_link_local_url(link):\n    value = urlparse(link)\n    base = urlparse(BASE)\n    query = parse_qs(value.query, keep_blank_values=True)\n    if (value.scheme, value.netloc) != (base.scheme, base.netloc) or value.fragment or value.path != base.path.rstrip('/') + '/existing/index.php':\n        raise AssertionError('Payment link escaped the installed local fixture')\n    if set(query) != {'page', 't'} or query['page'] != ['pay'] or len(query['t']) != 1 or len(query['t'][0]) != 64 or any(c not in '0123456789abcdef' for c in query['t'][0]):\n        raise AssertionError('Payment link has an unexpected route or token shape')\n    return link\n\n\ndef payment_link_rows():\n    # These exact financial and binding tables must remain unchanged by a GET.\n    # Optional ledger/trial tables are absent before their original later setup.\n    tables = ('studio_invoices', 'studio_jobs', 'studio_clients', 'payment_requests',\n              'payment_gateways', 'audit', 'invoice_payments', 'payment_attempts',\n              'payment_notifications', 'catalog_invoice_snapshots')\n    present = {r['TABLE_NAME'] for r in db('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()')}\n    return {name: db('SELECT * FROM ci_' + name + ' ORDER BY id') if 'ci_' + name in present else None for name in tables}\n\n\ndef payment_link_terminal_page(response, state, forbidden, label):\n    page = soup(response)\n    cards = page.select('article.workspace-card')\n    status = cards[0].select_one('.workspace-status') if len(cards) == 1 else None\n    check(label + ' has the exact safe terminal state', response.status_code == 200 and status is not None and status.get_text(strip=True) == state)\n    body = page.get_text(' ', strip=True)\n    check(label + ' exposes no invoice metadata or stale amount', len(cards) == 1 and not cards[0].select('h2, .prose, strong') and '$' not in cards[0].get_text() and all(not value or value not in body for value in forbidden) and ' USD due' not in body and ' EUR due' not in body and 'request expires' not in body)\n\n\ndef payment_link_read_only_terminal(link, state, forbidden, label):\n    before = payment_link_rows()\n    response = requests.get(payment_link_local_url(link), allow_redirects=False)\n    payment_link_terminal_page(response, state, forbidden, label)\n    check(label + ' GET preserves financial and binding rows', payment_link_rows() == before)\n\n\ndef payment_link_http_isolation(link, request):\n    original = db('SELECT * FROM ci_studio_invoices WHERE id=?', [INVOICE['id']])[0]\n    job = db('SELECT * FROM ci_studio_jobs WHERE id=?', [original['job_id']])[0]\n    client = db('SELECT * FROM ci_studio_clients WHERE id=?', [job['client_id']])[0]\n    other = db('SELECT * FROM ci_studio_jobs WHERE id<>? AND client_id<>? ORDER BY id LIMIT 1', [job['id'], client['id']])[0]\n    before = payment_link_rows()\n    response = requests.get(payment_link_local_url(link), allow_redirects=False)\n    page = soup(response)\n    card = page.select_one('article.workspace-card')\n    expected_amount = '$' + format(request['amount_cents'] / 100, '.2f') + ' USD due'\n    check('Anonymous unchanged link renders exact captured invoice details', response.status_code == 200 and card is not None and card.select_one('h2').get_text() == original['reference'] + ' \u00b7 ' + original['title'] and card.select_one('.prose').get_text() == original['instructions'] and expected_amount in card.get_text(' ', strip=True) and 'Agreed milestone invoice' in card.get_text())\n    check('Anonymous unchanged link GET preserves financial and binding rows', payment_link_rows() == before)\n    cases = (\n        ('changed title', 'studio_invoices', original, 'title', 'Private changed payment title', 'invoice changed'),\n        ('changed reference', 'studio_invoices', original, 'reference', 'PRIVATE-LINK-REFERENCE', 'invoice changed'),\n        ('changed instructions', 'studio_invoices', original, 'instructions', 'Private changed invoice instructions', 'invoice changed'),\n        ('changed cost', 'studio_invoices', original, 'amount_cents', original['amount_cents'] + 123, 'invoice changed'),\n        ('changed currency', 'studio_invoices', original, 'currency', 'EUR', 'unavailable'),\n        ('moved invoice project', 'studio_invoices', original, 'job_id', other['id'], 'unavailable'),\n        ('moved project client', 'studio_jobs', job, 'client_id', other['client_id'], 'unavailable'),\n        ('inactive original client', 'studio_clients', client, 'active', 0, 'unavailable'),\n        ('paid invoice status', 'studio_invoices', original, 'status', 'paid', 'paid'),\n    )\n    for label, table, row, column, changed, state in cases:\n        # Fixed identifiers above only. The fixture fault does not rewrite any\n        # immutable payment request; restore the exact original cell even on failure.\n        original_rows = payment_link_rows()\n        try:\n            db('UPDATE ci_' + table + ' SET ' + column + '=? WHERE id=?', [changed, row['id']])\n            forbidden = [original['title'], original['reference'], original['instructions'], expected_amount,\n                         'Agreed milestone invoice', '$' + format((original['amount_cents'] + 123) / 100, '.2f')]\n            if column in ('title', 'reference', 'instructions'):\n                forbidden.append(changed)\n            payment_link_read_only_terminal(link, state, forbidden, 'Anonymous link after ' + label)\n        finally:\n            db('UPDATE ci_' + table + ' SET ' + column + '=? WHERE id=?', [row[column], row['id']])\n            check('Anonymous link restores exact fixture after ' + label, payment_link_rows() == original_rows)\n\n\ndef payment_link_browser_isolation(browser):\n    # The original browser flow has just prepared its legitimate deposit request.\n    request = db('SELECT * FROM ci_payment_requests WHERE invoice_id=? ORDER BY id DESC LIMIT 1', [INVOICE['id']])[0]\n    review = soup(admin.get(PAY + '&invoice_id=' + str(INVOICE['id'])))\n    cards = [node for node in review.select('article.workspace-version')\n             if node.select_one('[name=request_id]') is not None and node.select_one('[name=request_id]').get('value') == str(request['id'])]\n    check('Anonymous browser uses the exact rendered current request link', len(cards) == 1 and len(cards[0].select('code')) == 1 and request['status'] == 'prepared')\n    link = payment_link_local_url(cards[0].select_one('code').get_text(strip=True))\n    before = payment_link_rows()\n    context = browser.new_context(viewport={'width': 1440, 'height': 1000}, reduced_motion='reduce')\n    local = urlparse(BASE)\n    blocked = []\n    def local_only(route):\n        target = urlparse(route.request.url)\n        if (target.scheme, target.netloc) == (local.scheme, local.netloc):\n            route.continue_()\n        else:\n            blocked.append((target.scheme, target.netloc))\n            route.abort()\n    context.route('**/*', local_only)\n    check('Anonymous payment browser starts without an authenticated session', not context.cookies())\n    page = context.new_page()\n    errors = []\n    page.on('pageerror', lambda error: errors.append(str(error)))\n    try:\n        for state in ('Valid', 'Terminal'):\n            original_rows = payment_link_rows()\n            try:\n                if state == 'Terminal':\n                    db(\"UPDATE ci_payment_requests SET status='revoked' WHERE id=?\", [request['id']])\n                for viewport, width, height in (('Desktop', 1440, 1000), ('Mobile', 390, 844)):\n                    page.set_viewport_size({'width': width, 'height': height})\n                    response = page.goto(link, wait_until='networkidle')\n                    card = page.locator('article.workspace-card')\n                    expect(card).to_have_count(1)\n                    expect(card).to_be_visible()\n                    check('Anonymous payment link ' + state + ' ' + viewport + ' returns protected HTTP content', response is not None and response.status == 200 and 'no-store' in response.headers.get('cache-control', '') and response.headers.get('referrer-policy') == 'no-referrer')\n                    if state == 'Valid':\n                        expect(card.locator('h2')).to_have_text(INVOICE['reference'] + ' \u00b7 ' + INVOICE['title'])\n                        expect(card.locator('.prose')).to_have_text(INVOICE['instructions'])\n                        check('Anonymous payment link Valid ' + viewport + ' shows exact due amount', '$' + format(request['amount_cents'] / 100, '.2f') + ' USD due' in card.inner_text())\n                    else:\n                        expect(card.locator('.workspace-status')).to_have_text('revoked')\n                        check('Anonymous payment link Terminal ' + viewport + ' hides invoice details and due amount', card.locator('h2, .prose, strong').count() == 0 and '$' not in card.inner_text() and all(not value or value not in page.locator('body').inner_text() for value in (INVOICE['title'], INVOICE['reference'], INVOICE['instructions'], 'USD due', 'request expires')))\n                    check('Anonymous payment link ' + state + ' ' + viewport + ' fits viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))\n                    page.screenshot(path=str(QA / ('Payment-Link-' + state + '-' + viewport + '.png')), full_page=True)\n            finally:\n                if state == 'Terminal':\n                    db('UPDATE ci_payment_requests SET status=? WHERE id=?', [request['status'], request['id']])\n                check('Anonymous payment browser ' + state + ' restores financial and binding rows', payment_link_rows() == original_rows)\n        check('Anonymous payment browser has no uncaught errors', not errors)\n    finally:\n        context.close()\n    check('Anonymous payment browser preserves all original financial rows', payment_link_rows() == before)\n\n\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings))\n",
+            "    now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    r=alice.post(PAY,data={'action':'payments_prepare','csrf':token(r),**{k:v for k,v in review.items() if k not in ['action','csrf']}},allow_redirects=False);check('Client cannot prepare administrator request',r.status_code==303 and 'login' in r.headers.get('Location',''))\n",
+            "    pay=soup(r).select_one('a[href*=\"page=pay\"]');check('Client portal exposes own payment-request link',pay is not None)\n    link=pay['href'] if pay else '';r=requests.get(link);check('Shared payment link resolves invoice without a portal session',r.status_code==200 and 'SECURE PAYMENT REQUEST' in r.text and 'Agreed milestone invoice' in r.text and 'not available on this link yet' in r.text and 'noindex' in r.headers.get('X-Robots-Tag','') and 'no-referrer' in r.headers.get('Referrer-Policy',''))\n    check('Shared payment link never echoes secrets or other records','HttpFixture' not in r.text and 'ProductionHttpFixture' not in r.text)\n    payment_link_http_isolation(link, request)\n    check('Unknown payment link refused honestly',requests.get(BASE+'/existing/index.php?page=pay&t='+('0'*64)).status_code==404 and 'not valid' in requests.get(BASE+'/existing/index.php?page=pay&t='+('0'*64)).text)\n    check('Missing payment token refused',requests.get(BASE+'/existing/index.php?page=pay').status_code==404)\n    r=alice.post(PAY,data={'action':'payments_prepare','csrf':token(alice.get(BASE+'/existing/portal/index.php?job=1')),**{k:v for k,v in review.items() if k not in ['action','csrf']}},allow_redirects=False);check('Client cannot prepare administrator request',r.status_code==303 and 'login' in r.headers.get('Location',''))\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    r=submit(admin,target,'payments_prepare',{'confirm':'1','purpose':'final','days':'3'});check('New request supersedes old instead of enabling two',db('SELECT status FROM ci_payment_requests ORDER BY id')==[{'status':'superseded'},{'status':'prepared'}])\n    r=submit(admin,PAY,'payments_revoke',{'confirm':'1'});check('Revocation preserves invoice financial state',db('SELECT status FROM ci_payment_requests ORDER BY id DESC LIMIT 1')==[{'status':'revoked'}] and db('SELECT * FROM ci_studio_invoices WHERE id=?',[INVOICE['id']])[0]==INVOICE)\n",
+            "    r=submit(admin,target,'payments_prepare',{'confirm':'1','purpose':'final','days':'3'});check('New request supersedes old instead of enabling two',db('SELECT status FROM ci_payment_requests ORDER BY id')==[{'status':'superseded'},{'status':'prepared'}])\n    check('Superseded payment link stays honest','newer payment request replaced this link' in requests.get(link).text)\n    payment_link_read_only_terminal(link, 'superseded', [INVOICE['title'], INVOICE['reference'], INVOICE['instructions'], 'Agreed milestone invoice'], 'Superseded anonymous payment link')\n    link2=soup(alice.get(BASE+'/existing/portal/index.php?job=1')).select_one('a[href*=\"page=pay\"]')['href']\n    r=submit(admin,PAY,'payments_revoke',{'confirm':'1'});check('Revocation preserves invoice financial state',db('SELECT status FROM ci_payment_requests ORDER BY id DESC LIMIT 1')==[{'status':'revoked'}] and db('SELECT * FROM ci_studio_invoices WHERE id=?',[INVOICE['id']])[0]==INVOICE)\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    r=submit(admin,PAY,'payments_revoke',{'confirm':'1'});check('Revocation preserves invoice financial state',db('SELECT status FROM ci_payment_requests ORDER BY id DESC LIMIT 1')==[{'status':'revoked'}] and db('SELECT * FROM ci_studio_invoices WHERE id=?',[INVOICE['id']])[0]==INVOICE)\n    r=submit(admin,target,'payments_prepare',{'confirm':'1'});latest=db('SELECT id FROM ci_payment_requests ORDER BY id DESC LIMIT 1')[0]['id'];db('UPDATE ci_payment_requests SET expires_at=1 WHERE id=?',[latest]);check('Expired request displayed honestly','expired' in admin.get(PAY).text and 'expired' in alice.get(BASE+'/existing/portal/index.php?job=1').text)\n",
+            "    r=submit(admin,PAY,'payments_revoke',{'confirm':'1'});check('Revocation preserves invoice financial state',db('SELECT status FROM ci_payment_requests ORDER BY id DESC LIMIT 1')==[{'status':'revoked'}] and db('SELECT * FROM ci_studio_invoices WHERE id=?',[INVOICE['id']])[0]==INVOICE)\n    check('Revoked payment link refuses honestly','revoked this payment request' in requests.get(link2).text)\n    payment_link_read_only_terminal(link2, 'revoked', [INVOICE['title'], INVOICE['reference'], INVOICE['instructions'], 'Final balance invoice'], 'Revoked anonymous payment link')\n    r=submit(admin,target,'payments_prepare',{'confirm':'1'});latest=db('SELECT id FROM ci_payment_requests ORDER BY id DESC LIMIT 1')[0]['id'];db('UPDATE ci_payment_requests SET expires_at=1 WHERE id=?',[latest]);check('Expired request displayed honestly','expired' in admin.get(PAY).text and 'expired' in alice.get(BASE+'/existing/portal/index.php?job=1').text)\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    r=submit(admin,target,'payments_prepare',{'confirm':'1'});latest=db('SELECT id FROM ci_payment_requests ORDER BY id DESC LIMIT 1')[0]['id'];db('UPDATE ci_payment_requests SET expires_at=1 WHERE id=?',[latest]);check('Expired request displayed honestly','expired' in admin.get(PAY).text and 'expired' in alice.get(BASE+'/existing/portal/index.php?job=1').text)\n    # Existing clients permission must not silently receive newly introduced finance permission.\n",
+            "    r=submit(admin,target,'payments_prepare',{'confirm':'1'});latest=db('SELECT id FROM ci_payment_requests ORDER BY id DESC LIMIT 1')[0]['id'];db('UPDATE ci_payment_requests SET expires_at=1 WHERE id=?',[latest]);check('Expired request displayed honestly','expired' in admin.get(PAY).text and 'expired' in alice.get(BASE+'/existing/portal/index.php?job=1').text)\n    link3=[c.get_text() for c in soup(admin.get(PAY)).select('code') if 'page=pay' in c.get_text()];check('Expired payment link refuses honestly',link3 and 'This payment link expired' in requests.get(link3[0]).text)\n    payment_link_read_only_terminal(link3[0], 'expired', [INVOICE['title'], INVOICE['reference'], INVOICE['instructions']], 'Expired anonymous payment link')\n    # Existing clients permission must not silently receive newly introduced finance permission.\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    check('Payment browser has no uncaught errors',not errors);(QA/'payment-browser-diagnostics.json').write_text(json.dumps({'page_errors':errors,'provider_calls':'None; connection response parsing tested separately with CLI fixtures'},indent=2));ctx.close()\n",
+            "    check('Payment browser has no uncaught errors',not errors);(QA/'payment-browser-diagnostics.json').write_text(json.dumps({'page_errors':errors,'provider_calls':'None; connection response parsing tested separately with CLI fixtures'},indent=2));ctx.close()\n    payment_link_browser_isolation(browser)\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/payments_native.php": {
+      "original_sha256": "e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19",
+      "current_sha256": "e738d07c830ceb00acaca5945742741cb7673a0bc0cf51606c140bccc8338ed0",
+      "edits": [
+        {
+          "value": [
+            "    pay_ok('Additive repeated setup preserves existing invoice',payments_ready()&&one('SELECT * FROM '.table('studio_invoices'))===$original);\n    $creds=['api_login_id'=>'FixtureLogin','transaction_key'=>'FixtureKey123456','signature_key'=>str_repeat('a',128),'public_client_key'=>'FixturePublicClientKey'];\n",
+            "    pay_ok('Additive repeated setup preserves existing invoice',payments_ready()&&one('SELECT * FROM '.table('studio_invoices'))===$original);\n    query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (1,1,1,1,?,?,?,?,?,?,?,?,?)',[str_repeat('e',64),str_repeat('e',64),payments_invoice_hash(payments_invoice(1)),'full','superseded',12510,'USD',time()+86400,gmdate('Y-m-d H:i:s')]);\n    db()->exec('ALTER TABLE '.table('payment_requests').' DROP COLUMN link_secret, DROP COLUMN link_hash');save_setting('payments_schema_version','1');payments_migrate($password);\n    pay_ok('Version 1 requests gain sealed-link columns and rows survive',setting('payments_schema_version')==='2'&&one('SELECT link_hash,link_secret FROM '.table('payment_requests').' WHERE request_key=?',[str_repeat('e',64)])===['link_hash'=>null,'link_secret'=>null]);\n    query('DELETE FROM '.table('payment_requests').' WHERE request_key=?',[str_repeat('e',64)]);\n    $creds=['api_login_id'=>'FixtureLogin','transaction_key'=>'FixtureKey123456','signature_key'=>str_repeat('a',128),'public_client_key'=>'FixturePublicClientKey'];\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    pay_ok('Preparing request cannot mark invoice paid',one('SELECT * FROM '.table('studio_invoices'))===$original&&payments_request_state($r)==='prepared');\n    pay_ok('Identical retry creates one request',pay_request(str_repeat('1',64),'milestone')===$request&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()===1);\n",
+            "    pay_ok('Preparing request cannot mark invoice paid',one('SELECT * FROM '.table('studio_invoices'))===$original&&payments_request_state($r)==='prepared');\n    require_once __DIR__.'/payment_link_view_cases.php';pay_link_view_cases($r);\n    pay_ok('Identical retry creates one request',pay_request(str_repeat('1',64),'milestone')===$request&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()===1);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    $next=pay_request(str_repeat('2',64),'deposit');pay_ok('Replacement supersedes prior request without rewriting amount',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$request])['status']==='superseded');\n    payments_revoke($next);pay_ok('Revocation retains original invoice and request',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$next])['status']==='revoked'&&one('SELECT * FROM '.table('studio_invoices'))===$original);\n",
+            "    $next=pay_request(str_repeat('2',64),'deposit');pay_ok('Replacement supersedes prior request without rewriting amount',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$request])['status']==='superseded');\n    $linkRow=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$next]);\n    pay_ok('Prepared request carries a resolvable sealed link',$linkRow['link_hash']!==null&&$linkRow['link_hash']===hash('sha256',payments_link_open($linkRow))&&!str_contains($linkRow['link_secret'],payments_link_open($linkRow)));\n    $url=payments_link_url($linkRow);pay_ok('Payment link URL exposes only the share route',$url!==null&&str_contains($url,'page=pay&t=')&&!str_contains($url,$linkRow['request_key']));\n    pay_deny('Damaged link ciphertext fails closed',fn()=>payments_link_open(['request_key'=>$linkRow['request_key'],'link_secret'=>substr($linkRow['link_secret'],4)]));\n    pay_ok('Request without a link produces no URL',payments_link_url(['request_key'=>$linkRow['request_key'],'link_secret'=>''])===null);\n    $savedCreds=all('SELECT environment,credentials FROM '.table('payment_gateways'));query('UPDATE '.table('payment_gateways').\" SET credentials=''\");\n    rename($storage.'/payment-master.key',$storage.'/payment-master-held.key');\n    pay_deny('Sealed-link history refuses a replacement master key',fn()=>pay_request(str_repeat('9',64),'full'));\n    pay_ok('History and missing key left intact',!file_exists($storage.'/payment-master.key')&&one('SELECT link_secret FROM '.table('payment_requests').' WHERE id=?',[$linkRow['id']])['link_secret']===$linkRow['link_secret']&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()>0);\n    rename($storage.'/payment-master-held.key',$storage.'/payment-master.key');\n    pay_ok('Original key reopens the original link',payments_link_open($linkRow)!=='');\n    foreach($savedCreds as $row)query('UPDATE '.table('payment_gateways').' SET credentials=? WHERE environment=?',[$row['credentials'],$row['environment']]);\n    payments_revoke($next);pay_ok('Revocation retains original invoice and request',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$next])['status']==='revoked'&&one('SELECT * FROM '.table('studio_invoices'))===$original);\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    payments_revoke($next);pay_ok('Revocation retains original invoice and request',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$next])['status']==='revoked'&&one('SELECT * FROM '.table('studio_invoices'))===$original);\n    pay_deny('Revoked request cannot be revoked again',fn()=>payments_revoke($next));\n",
+            "    payments_revoke($next);pay_ok('Revocation retains original invoice and request',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$next])['status']==='revoked'&&one('SELECT * FROM '.table('studio_invoices'))===$original);\n    pay_ok('Revoked request keeps its link resolvable to the revoked state',payments_link_url(one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$next]))!==null);\n    pay_deny('Revoked request cannot be revoked again',fn()=>payments_revoke($next));\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/recurring_billing_upgrade_cases.py": {
+      "original_sha256": "8e411ec1a2bc922ca712b6a2651dddf54b9b68292e5c61a68103256b17e69a1a",
+      "current_sha256": "f793c7551bbd25b3296fd1631a4d685f5712baa375380310bb984c2ed2c873ed",
+      "edits": [
+        {
+          "value": [
+            "          'Prepare recurring billing' in owner.get(listing).text)\n    submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})\n",
+            "          'Prepare recurring billing' in owner.get(listing).text)\n    payments = records('payments')\n    check(label + ' organized upgrade retains payment marker 1 before owner migration',\n          payments['marker'] == '1' and 'payment_requests' in payments['tables']\n          and all('link_hash' not in row and 'link_secret' not in row\n                  for row in payments['tables']['payment_requests']))\n    response = submit(owner, admin + '?view=payments', 'payments_migrate',\n                      {'owner_password': password, 'confirm': '1'})\n    migrated = records('payments')\n    check(label + ' owner payment migration sets marker 2 retaining requests credentials receipts',\n          response.status_code == 200 and 'Payment preparation enabled' in response.text\n          and migrated['marker'] == '2'\n          and migrated['tables'].get('payment_gateways') == payments['tables'].get('payment_gateways')\n          and migrated['tables'].get('invoice_payments') == payments['tables'].get('invoice_payments')\n          and len(migrated['tables']['payment_requests']) == len(payments['tables']['payment_requests'])\n          and all(row['link_hash'] is None and row['link_secret'] is None\n                  and {k: v for k, v in row.items() if k not in ('link_hash', 'link_secret')}\n                      == payments['tables']['payment_requests'][i]\n                  for i, row in enumerate(migrated['tables']['payment_requests'])))\n    submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "                                               'inbox', 'mail-checks', 'appointments', 'reviews']}\n",
+            "                                               'inbox', 'mail-checks', 'appointments', 'reviews',\n                                               'payments']}\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/release_125_later_records.py": {
+      "original_sha256": "5c7e6d823b318c2e5f08cc0bbc5e45e10e00f090d4eef5b6eaae4a398b8e75c8",
+      "current_sha256": "e384c7498950142c1c31193edd203143e6638c2a3dc0364d2035e38bacf76531",
+      "edits": [
+        {
+          "value": [
+            "    client_project = portal + '?recurring=1&job=' + str(job_id)\n    response = submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})\n",
+            "    client_project = portal + '?recurring=1&job=' + str(job_id)\n    payment_marker = hashlib.sha256(json.dumps({'name': 'payments_schema_version'}, separators=(',', ':')).encode()).hexdigest()\n    marker_cell = ('settings', payment_marker, 'value')\n    pre_payment = snapshot()\n    requests_before = pre_payment['tables']['payment_requests']['rows']\n    ok('Retained upgrade still carries payment schema 1 before explicit owner migration',\n       pre_payment['tables']['settings']['rows'][payment_marker]['value'] == hashlib.sha256(b'\"1\"').hexdigest()\n       and all('link_hash' not in row and 'link_secret' not in row for row in requests_before.values()))\n    response = submit(owner, admin + '?view=payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'})\n    migrated = snapshot()\n    null_cell = hashlib.sha256(b'null').hexdigest()\n    requests_after = migrated['tables']['payment_requests']['rows']\n    ok('Owner payment migration sets schema 2 with nullable link fields and retained rows keys receipts',\n       response.status_code == 200 and 'Payment preparation enabled' in response.text\n       and migrated['tables']['settings']['rows'][payment_marker]['value'] == hashlib.sha256(b'\"2\"').hexdigest()\n       and retained(pre_payment, migrated, changed_cells=[marker_cell])\n       and all(requests_after[key]['link_hash'] == null_cell and requests_after[key]['link_secret'] == null_cell\n               for key in requests_before))\n    response = submit(owner, listing, 'recurring_setup', {'owner_password': password, 'confirm': '1'})\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "    ok('Candidate recurring preparation is explicit and keeps original invoices', response.status_code == 200 and retained(before, snapshot()))\n",
+            "    ok('Candidate recurring preparation is explicit and keeps original invoices', response.status_code == 200\n       and retained(before, snapshot(), changed_cells=[marker_cell]))\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tests/staff_cases.py": {
+      "original_sha256": "570d6d6d49a9b7b9bd693115c4996caedbad2beb112ae5b2784e39f4bffd8071",
+      "current_sha256": "df92cc0cb0c751b6be11d5c1bdac523568d027bd869711a87ceb99b81cf0f4c4",
+      "edits": [
+        {
+          "value": [
+            "    check('Actual 1.1.0 retains all original settings',all(after[r['name']]==r['value'] for r in before['settings']))\n",
+            "    check('Actual 1.1.0 retains all original settings',all(after[r['name']]==r['value'] for r in before['settings'] if r['name']!='staff_schema_version') and after['staff_schema_version']=='1')\n"
+          ],
+          "Count": 2
+        }
+      ]
+    },
+    "tools/acceptance-contract.json": {
+      "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
+      "current_sha256": "01ec6ac456118442f3caadcecda421f1670a5070f164a3e84830736943fa9d23",
+      "edits": [
+        {
+          "value": [
+            "      \"tests/staff_cases.py\": \"77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f\",\n",
+            "      \"tests/staff_cases.py\": \"62ee96e396e9baf9f1d657192e3abbc0cfe99bca6c0135952819d45dbdd86c4c\",\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "      \"tests/payments_cases.py\": \"ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821\",\n      \"tests/payments_native.php\": \"e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19\",\n",
+            "      \"tests/payments_cases.py\": \"8ec2227b053cab2c24d3bab38abf7df7abfd53c9f6f0dd1e3da23b069be599c9\",\n      \"tests/payments_native.php\": \"e738d07c830ceb00acaca5945742741cb7673a0bc0cf51606c140bccc8338ed0\",\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "      \"tests/delivery_cases.py\": \"d89f8b51e16cd95be0461010b005be6138b69cf07f5d05b083db423bbfa9b944\"\n",
+            "      \"tests/delivery_cases.py\": \"05cedfef283d7522c127710fccda797b909fe3f35d0c7d4d525882cede00ac4b\",\n      \"tests/payment_link_view_cases.php\": \"276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990\"\n"
+          ],
+          "Count": 2
+        },
+        {
+          "value": [
+            "      \"Licensing-Owner-Invoice-Review-Mobile.png\"\n",
+            "      \"Licensing-Owner-Invoice-Review-Mobile.png\",\n      \"Payment-Link-Valid-Desktop.png\",\n      \"Payment-Link-Valid-Mobile.png\",\n      \"Payment-Link-Terminal-Desktop.png\",\n      \"Payment-Link-Terminal-Mobile.png\"\n"
+          ],
+          "Count": 2
+        }
       ]
     }
   }

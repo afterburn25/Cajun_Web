@@ -1,4 +1,9 @@
 ## 2026-11-02 — FK fixture rule follow-up
+## Shared payment-link correction — 2026-10-19
+
+Root owns `codex/payment-link-view-isolation` from exact Devin PR202 source `750f1ab8`, the two view/runtime files, additive native coverage, installer inventory and delivery. Catalog independently reproduces and reviews the privacy/display correction; VPS prepares only additive `tests/payments_cases.py` evidence externally. Original PR202 and renewal PR252 source `632362f6` remain untouched. Devin retains non-20i feature ownership. Root integrates this small correction through the affected branch only after its actual acceptance. [Scope and evidence](PAYMENT_LINK_VIEW_REVIEW.md).
+
+## Post-publication coordination — 2026-10-18
 
 The isolated FK metadata worker preserved c2f and local 15b81, changed only the shared native helper, and completed the approved 172-check supplement in fresh fkrule_ tables on owned 33316. The server is stopped; prior namespaces and all other workers’ runtimes are untouched. Root owns publication, matrix monitoring and outer composition. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
 

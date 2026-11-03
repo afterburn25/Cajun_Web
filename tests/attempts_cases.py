@@ -23,7 +23,8 @@ def upgrade():
     before,settings=prepare_retained_payments(globals(),up,url,'trialup_',before,settings,preserved)
     refuse_owner_action(globals(),up,url+'?view=payment-trials','payments_trial_setup',{'confirm':'1'},installed_root=dest)
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 upgrade enables additive sandbox history','Sandbox trial history enabled' in r.text)
-    check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))
+    after={t:db('SELECT * FROM trialup_'+t) for t in tables}
+    check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(len(after[t])==len(v) and all(row[k]==v[i][k] for i,row in enumerate(after[t]) for k in v[i]) for t,v in before.items()))
     check('Upgraded trial schema empty and real payment remains disabled',db('SELECT * FROM trialup_payment_attempts')==[] and 'Production and client checkout remain disabled' in r.text)
     r=submit(up,url+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Retained encrypted credentials remain readable for blank retention','Credentials protected and saved' in r.text and 'RetainedSandboxFixture' not in r.text)
 

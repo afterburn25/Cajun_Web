@@ -500,11 +500,11 @@
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
       "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a",
       "tests/structure_helpers.py": "098ec99b5d254505d91bae51b2f34f2a89fd765d372ebdded751237f4e49c71a",
-      "tests/staff_cases.py": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
+      "tests/staff_cases.py": "62ee96e396e9baf9f1d657192e3abbc0cfe99bca6c0135952819d45dbdd86c4c",
       "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
       "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
-      "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
-      "tests/payments_native.php": "e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19",
+      "tests/payments_cases.py": "8ec2227b053cab2c24d3bab38abf7df7abfd53c9f6f0dd1e3da23b069be599c9",
+      "tests/payments_native.php": "e738d07c830ceb00acaca5945742741cb7673a0bc0cf51606c140bccc8338ed0",
       "tests/provider_package_wordpress_installed_native.php": "53f159d3e61c5a49bf8f415a2b3a749ea37b7ccd03a35333d7e07af30d72c2be",
       "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
       "tests/domain_expiry_native.php": "31692b8d8622eb152c41d6de04ccce35ba8acc5af491d237d1c59f025f32a545",
@@ -512,7 +512,8 @@
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
       "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
-      "tests/delivery_cases.py": "d89f8b51e16cd95be0461010b005be6138b69cf07f5d05b083db423bbfa9b944"
+      "tests/delivery_cases.py": "05cedfef283d7522c127710fccda797b909fe3f35d0c7d4d525882cede00ac4b",
+      "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990"
     },
     "additional_screenshots": [
       "Admin-Overview-Desktop.png",
@@ -524,7 +525,11 @@
       "Licensing-Customer-Downloads-Desktop.png",
       "Licensing-Customer-Downloads-Mobile.png",
       "Licensing-Owner-Invoice-Review-Desktop.png",
-      "Licensing-Owner-Invoice-Review-Mobile.png"
+      "Licensing-Owner-Invoice-Review-Mobile.png",
+      "Payment-Link-Valid-Desktop.png",
+      "Payment-Link-Valid-Mobile.png",
+      "Payment-Link-Terminal-Desktop.png",
+      "Payment-Link-Terminal-Mobile.png"
     ],
     "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
   },
