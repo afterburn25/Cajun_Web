@@ -7,11 +7,12 @@ $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GL
 $private=__DIR__.'/../test-runtime/proposals-native-private';if(!is_dir($private))mkdir($private,0700);$GLOBALS['cwp_config']['storage']=realpath($private);
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $password='Synthetic proposal owner passphrase';$checks=[];$complete=false;
-register_shutdown_function(static function()use(&$checks,&$complete):void {$out=__DIR__.'/../qa';if(!is_dir($out))mkdir($out,0700,true);file_put_contents($out.'/proposal-version-native.json',json_encode(['passed'=>$complete&&!in_array(false,array_column($checks,'passed'),true),'checks'=>$checks,'scope'=>'Actual disposable SQL proposal decision and exact-state preservation; no live customer operation'],JSON_PRETTY_PRINT));});
+if(($argv[1]??'')!=='contact-decision-worker')register_shutdown_function(static function()use(&$checks,&$complete):void {$out=__DIR__.'/../qa';if(!is_dir($out))mkdir($out,0700,true);file_put_contents($out.'/proposal-version-native.json',json_encode(['passed'=>$complete&&!in_array(false,array_column($checks,'passed'),true),'checks'=>$checks,'scope'=>'Actual disposable SQL proposal decision and exact-state preservation; no live customer operation'],JSON_PRETTY_PRINT));});
 function p_ok(string $name,bool $ok): void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function p_deny(string $name,callable $fn): void {try{$fn();}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;p_ok($name,true);return;}p_ok($name,false);}
 function p_actor(int $id=1): void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function p_client(int $id): array {$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION=['client_id'=>$id,'client_auth'=>$c['auth_version'],'client_last'=>time(),'client_login'=>time()];return $c;}
+function p_contact(int $contact,int $client=1):array {$row=p_client($client);$_SESSION['contact_id']=$contact;$_SESSION['contact_auth']=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];return $row;}
 function p_reviewed(string $id):array {$row=proposal_row($id);$v=proposal_version_row($row,(int)$row['current_version']);return [$v['id'],$v['content_hash']];}
 function p_fresh_decide(string $id,string $kind,string $note,array $client):void {proposal_decide($id,$kind,$note,$client,...p_reviewed($id));}
 function p_snapshot():array {$out=[];foreach(['proposals','proposal_versions','proposal_decisions','proposal_events'] as $t)$out[$t]=all('SELECT * FROM '.table($t).' ORDER BY id');return $out;}
@@ -24,6 +25,17 @@ function p_retained_denial(string $name,callable $work):void {
 }
 function p_input(string $title='Synthetic proposal'): array {return ['title'=>$title,'deliverables'=>"Design and build five-page site\nContent population",'exclusions'=>"Logo redesign",'milestones'=>"Design and build | 1200.00\nHosting year one | 95.88",'schedule_notes'=>'Design preview within three weeks of kickoff.'];}
 function p_event_failure(callable $fn): bool {db()->exec('CREATE TRIGGER propci_fail BEFORE INSERT ON '.table('proposal_events')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic history failure'");try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER propci_fail');}return $failed;}
+function p_contact_snapshot():array {return p_snapshot()+['audit'=>all('SELECT * FROM '.table('audit').' ORDER BY id'),'invoices'=>all('SELECT * FROM '.table('studio_invoices').' ORDER BY id'),'payments'=>all('SELECT * FROM '.table('payment_requests').' ORDER BY id'),'contacts'=>all('SELECT * FROM '.table('studio_contacts').' ORDER BY id')];}
+function p_contact_denied(string $name,callable $work,string $message='contact permissions do not include billing'):void {
+    $before=p_contact_snapshot();$session=$_SESSION;$error=null;try{$work();}catch(Throwable $e){$error=$e;}finally{$_SESSION=$session;}
+    p_ok($name,$error instanceof RuntimeException&&!($error instanceof PDOException)&&str_contains($error->getMessage(),$message));
+    p_ok($name.' preserves all proposal billing contact and audit records',p_contact_snapshot()===$before&&!db()->inTransaction());
+}
+if(($argv[1]??'')==='contact-decision-worker'){
+    $client=p_contact((int)$argv[2]);$reviewed=p_reviewed($argv[3]);echo "ready\n";fflush(STDOUT);
+    try{proposal_decide($argv[3],'approve','Reviewed before permission revocation',$client,...$reviewed);echo 'saved';}
+    catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'denied:'.$e->getMessage();}exit;
+}
 try{
     foreach(schema_statements('propci_') as $sql)db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('studio_schema_version','2');save_setting('staff_schema_version','1');
@@ -76,6 +88,37 @@ try{
     p_deny('Support sessions cannot manage proposals',fn()=>proposal_send($id));unset($GLOBALS['cwp_support']);p_actor(2);
     p_ok('History write failure rolls back proposal and version atomically',p_event_failure(fn()=>proposal_create(1,p_input('Atomic fail'),bin2hex(random_bytes(32))))&&!one('SELECT id FROM '.table('proposals')." WHERE title='Atomic fail'")&&(int)query('SELECT COUNT(*) FROM '.table('proposal_versions').' WHERE proposal_id NOT IN (SELECT id FROM '.table('proposals').')')->fetchColumn()===0);
     require __DIR__.'/proposals_staff_native_cases.php';
+    // Commercial proposals use billing authority; project review and downloads are distinct grants.
+    save_setting('contacts_schema_version','1');
+    foreach([['Billing','billing',1],['Projects','projects',1],['Downloads','downloads',1],['Foreign billing','billing',2]] as [$name,$permission,$parent])
+        query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,permissions,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$parent,$name,'proposal-contact-'.str_replace(' ','-',strtolower($name)).'@example.invalid',json_encode([$permission]),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
+    $contactIds=array_map('intval',array_column(all('SELECT id,name FROM '.table('studio_contacts')),'id','name'));
+    p_actor(2);$contactProposal=proposal_create(1,p_input('Contact billing scope'),bin2hex(random_bytes(32)));proposal_send($contactProposal);$reviewed=p_reviewed($contactProposal);
+    foreach(['Projects','Downloads'] as $name){$client=p_contact($contactIds[$name]);foreach(['approve','changes'] as $kind)
+        p_contact_denied($name.' contact cannot '.$kind.' a commercial proposal',fn()=>proposal_decide($contactProposal,$kind,'Requested terms',$client,...$reviewed));}
+    $client=p_contact($contactIds['Foreign billing']);p_contact_denied('Contact cannot use another parent client session',fn()=>proposal_decide($contactProposal,'approve','',$client,...$reviewed),'Current client authentication');
+    foreach([['contact_auth'=>str_repeat('a',32)],['contact_id'=>0,'contact_auth'=>str_repeat('a',32)],['contact_id'=>$contactIds['Billing']]] as $markers){$client=p_client(1);$_SESSION+=$markers;
+        p_contact_denied('Incomplete contact identity cannot become primary proposal authority',fn()=>proposal_decide($contactProposal,'approve','',$client,...$reviewed),isset($markers['contact_id'])&&$markers['contact_id']>0?'Current client authentication':'contact permissions do not include billing');}
+    foreach(['enabled','auth_version','permissions'] as $field){$client=p_contact($contactIds['Billing']);$old=one('SELECT * FROM '.table('studio_contacts').' WHERE id=?',[$contactIds['Billing']]);
+        $value=match($field){'enabled'=>0,'auth_version'=>bin2hex(random_bytes(16)),'permissions'=>'["downloads"]'};
+        query('UPDATE '.table('studio_contacts').' SET '.$field.'=? WHERE id=?',[$value,$contactIds['Billing']]);
+        try{p_contact_denied('Current '.$field.' revocation blocks an open proposal form',fn()=>proposal_decide($contactProposal,'approve','',$client,...$reviewed),$field==='permissions'?'contact permissions do not include billing':'Current client authentication');}
+        finally{query('UPDATE '.table('studio_contacts').' SET '.$field.'=? WHERE id=?',[$old[$field],$contactIds['Billing']]);}
+    }
+    $guard='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    query('SELECT GET_LOCK(?,5)',[$guard]);$worker=proc_open([PHP_BINARY,__FILE__,'contact-decision-worker',(string)$contactIds['Billing'],$contactProposal],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+    if(!is_resource($worker))throw new RuntimeException('Cannot start contact proposal worker');stream_set_timeout($pipes[1],15);stream_set_timeout($pipes[2],15);
+    try{p_ok('Contact proposal worker waits after capturing current identity and reviewed version',trim(fgets($pipes[1]))==='ready');query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["downloads"]',$contactIds['Billing']]);$before=p_contact_snapshot();}
+    finally{query('SELECT RELEASE_LOCK(?)',[$guard]);}
+    fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);$exit=proc_close($worker);
+    p_ok('Permission revoked while the decision waits denies without proposal billing or audit effects',$exit===0&&$err===''&&$out==='denied:Your contact permissions do not include billing.'&&p_contact_snapshot()===$before);
+    query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["billing"]',$contactIds['Billing']]);
+    $client=p_contact($contactIds['Billing']);proposal_decide($contactProposal,'changes','Billing contact requests revised commercial terms',$client,...$reviewed);
+    p_ok('Billing contact can request changes against the exact reviewed proposal',proposal_row($contactProposal)['status']==='changes-requested'&&(int)one('SELECT client_id FROM '.table('proposal_decisions').' WHERE proposal_id=?',[$contactProposal])['client_id']===1);
+    p_actor(2);proposal_revise($contactProposal,array_replace(p_input('Contact billing scope'),['schedule_notes'=>'Revised billing schedule.']));proposal_send($contactProposal);$client=p_contact($contactIds['Billing']);p_fresh_decide($contactProposal,'approve','Reviewed billing terms',$client);
+    p_ok('Billing contact approval retains both exact decisions and parent ownership',proposal_row($contactProposal)['status']==='approved'&&array_column(all('SELECT version FROM '.table('proposal_decisions').' WHERE proposal_id=? ORDER BY version',[$contactProposal]),'version')===[1,2]);
+    p_actor(2);$primaryProposal=proposal_create(1,p_input('Primary access after contact scopes'),bin2hex(random_bytes(32)));proposal_send($primaryProposal);$client=p_client(1);p_fresh_decide($primaryProposal,'approve','',$client);
+    p_ok('Primary client still approves a commercial proposal without contact markers',proposal_row($primaryProposal)['status']==='approved');
     $kept=all('SELECT * FROM '.table('proposals'));p_actor();proposals_migrate($password);p_ok('Re-running setup preserves every proposal record',all('SELECT * FROM '.table('proposals'))===$kept&&all('SELECT * FROM '.table('proposal_decisions'))!==[]);
 }catch(Throwable $e){echo 'FAILED: '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine()."\n";exit(1);}
 $complete=true;echo 'proposals native: '.count($checks).' checks, 0 failures'."\n";

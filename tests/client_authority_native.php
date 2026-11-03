@@ -47,6 +47,13 @@ if(($argv[1]??'')==='activate-worker') {
     try{studio_activate($argv[2],'Synthetic activated client passphrase');echo 'activated';}
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
+if(($argv[1]??'')==='upload-worker') {
+    $_SESSION=['client_auth'=>$argv[5],'contact_auth'=>$argv[6],'client_last'=>time(),'client_login'=>time()];
+    $media=$private.'/media';@mkdir($media,0700,true);$bytes=random_bytes(64);
+    echo "ready\n";fflush(STDOUT);
+    try{studio_upload_write((int)$argv[2],'contact',['id'=>(int)$argv[3]],['id'=>(int)$argv[4]],$argv[7],$media.'/studio-'.$argv[7].'.php','worker-upload.png','image/png',strlen($bytes),$bytes);echo 'written';}
+    catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 try {
     foreach(schema_statements('caci_') as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
@@ -98,8 +105,69 @@ try {
     staff_locked(function()use($id,$token,$row):void {$GLOBALS['activation_waiter']=ca_worker('activate-worker',[$token]);if(trim(fgets($GLOBALS['activation_waiter'][1][1]))!=='ready')throw new RuntimeException('Activation did not reach guard');usleep(500000);ca_ok('Public activation cannot bypass the shared hosting guard',ca_client($id)===$row);studio_client_save($id,$row['auth_version'],'Revoked while waiting','client@example.invalid',false);});$before=ca_snapshot();ca_ok('Client deactivated while activation waits cannot establish credentials',ca_finish($GLOBALS['activation_waiter'])==='denied'&&ca_snapshot()===$before);
     studio_client_save($id,ca_version($id),'Restored','client@example.invalid',true);$token=ca_token(studio_new_invite($id,ca_version($id)));
     staff_locked(function()use($id,$token):void {$GLOBALS['expired_waiter']=ca_worker('activate-worker',[$token]);if(trim(fgets($GLOBALS['expired_waiter'][1][1]))!=='ready')throw new RuntimeException('Expiry activation did not reach guard');query('UPDATE '.table('studio_clients').' SET invite_expires=? WHERE id=?',[time()-1,$id]);});$before=ca_snapshot();ca_ok('Token expiry is rechecked after waiting for shared guard',ca_finish($GLOBALS['expired_waiter'])==='denied'&&ca_snapshot()===$before);
+    save_setting('contacts_schema_version','1');
+    query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Upload boundary','s','m',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);$job=(int)db()->lastInsertId();
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,permissions,enabled,auth_version,created_at) VALUES (?,?,?,?,1,?,?)',[$id,'Boundary contact','boundary-contact@example.invalid',json_encode(['projects']),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);$contact=(int)db()->lastInsertId();
+    $clientAuth=ca_version($id);
+    $fileRows=fn()=>all('SELECT * FROM '.table('studio_files'));$contactAudit=fn()=>all('SELECT * FROM '.table('audit')." WHERE action='file.upload.contact'");$media=fn()=>glob($private.'/media/studio-*')?:[];
+    foreach([
+      'disabled contact'=>fn()=>query('UPDATE '.table('studio_contacts').' SET enabled=0 WHERE id=?',[$contact]),
+      'rotated contact credentials'=>fn()=>query('UPDATE '.table('studio_contacts').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$contact]),
+      'removed project permission'=>fn()=>query('UPDATE '.table('studio_contacts')." SET permissions='[\"billing\"]' WHERE id=?",[$contact]),
+      'deactivated client'=>fn()=>query('UPDATE '.table('studio_clients').' SET active=0,auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$id]),
+    ] as $label=>$revoke){
+        $contactAuth=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];
+        staff_locked(function()use($job,$id,$contact,$clientAuth,$contactAuth,$revoke,$label):void{
+            $GLOBALS['upload_waiter']=ca_worker('upload-worker',[(string)$job,(string)$id,(string)$contact,$clientAuth,$contactAuth,ca_id(9100+strlen($label))]);
+            if(trim(fgets($GLOBALS['upload_waiter'][1][1]))!=='ready')throw new RuntimeException('Upload writer did not reach the guard');
+            $revoke();
+        });
+        ca_ok('Contact upload denied after '.$label.' committed at the write boundary',ca_finish($GLOBALS['upload_waiter'])==='denied'&&$fileRows()===[]&&$contactAudit()===[]&&$media()===[]);
+        query('UPDATE '.table('studio_contacts')." SET enabled=1,permissions='[\"projects\"]' WHERE id=?",[$contact]);
+        query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=?',[$id]);$clientAuth=ca_version($id);
+    }
+    $contactAuth=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];
+    ca_ok('Permitted contact upload writes the file row with contact attribution',ca_finish(ca_worker('upload-worker',[(string)$job,(string)$id,(string)$contact,$clientAuth,$contactAuth,ca_id(9999)]))==="ready\nwritten"&&$fileRows()!==[]&&$fileRows()[0]['author_type']==='contact'&&$contactAudit()!==[]&&count($media())===1);
     $audit=json_encode(all('SELECT * FROM '.table('audit')));ca_ok('Client audit excludes names emails passwords raw invitations and password hashes',!str_contains($audit,'@example.invalid')&&!str_contains($audit,'Cajun')&&!str_contains($audit,$password)&&!str_contains($audit,$token)&&!str_contains($audit,ca_client($id)['password_hash']));
     ca_ok('Client account changes create no provider or email credentials',!is_file($private.'/provider-master.key')&&!is_file($private.'/mail-master.key')&&!all('SELECT * FROM '.table('provider_profiles'))&&!all('SELECT * FROM '.table('mail_accounts')));
+    // Primary-only upgrades do not require the optional contacts schema before it is explicitly prepared.
+    ca_actor();save_setting('contacts_schema_version','');db()->exec('RENAME TABLE '.table('studio_contacts').' TO '.table('unprepared_contacts'));
+    try{
+        $primaryA=studio_client_save(0,'','Transition primary A','transition-a@example.invalid',true);
+        studio_client_save($primaryA,ca_version($primaryA),'Updated transition primary A','transition-a@example.invalid',true);
+        $primaryB=studio_client_save(0,'','Transition primary B','transition-b@example.invalid',true);
+        ca_ok('Primary creation and update work before contacts schema activation',ca_client($primaryA)['name']==='Updated transition primary A'&&ca_client($primaryB)['email']==='transition-b@example.invalid');
+    }finally{db()->exec('RENAME TABLE '.table('unprepared_contacts').' TO '.table('studio_contacts'));save_setting('contacts_schema_version','1');}
+    $primaryPassword='Synthetic transition primary passphrase';$contactPassword='Synthetic transition contact passphrase';
+    query('UPDATE '.table('studio_clients').' SET password_hash=? WHERE id IN (?,?)',[password_hash($primaryPassword,PASSWORD_DEFAULT),$primaryA,$primaryB]);
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,password_hash,permissions,enabled,auth_version,created_at) VALUES (?,?,?,?,?,1,?,?)',[$primaryA,'Transition contact','transition-contact@example.invalid',password_hash($contactPassword,PASSWORD_DEFAULT),'["projects"]',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);$transitionContact=(int)db()->lastInsertId();
+    $identityState=static fn()=>[ca_snapshot(),all('SELECT * FROM '.table('studio_contacts').' ORDER BY id')];
+    foreach([1,0] as $enabled){
+        query('UPDATE '.table('studio_contacts').' SET enabled=? WHERE id=?',[$enabled,$transitionContact]);$before=$identityState();
+        foreach(['create','update'] as $operation){$error=null;
+            try{studio_client_save($operation==='create'?0:$primaryB,$operation==='create'?'':ca_version($primaryB),'Forbidden primary collision','TRANSITION-CONTACT@EXAMPLE.INVALID',true);}catch(Throwable $e){$error=$e;}
+            ca_ok('Primary '.$operation.' rejects '.($enabled?'enabled':'disabled').' contact email without changing any identity or audit record',$error instanceof InvalidArgumentException&&$error->getMessage()==='That email belongs to an additional client contact.'&&$identityState()===$before&&!db()->inTransaction());
+        }
+    }
+    query('UPDATE '.table('studio_contacts').' SET enabled=1 WHERE id=?',[$transitionContact]);
+    // Another request can prepare contacts after this request cached the old readiness marker.
+    save_setting('contacts_schema_version','');ca_ok('Primary-email race fixture captures contacts as not yet prepared',setting('contacts_schema_version')==='');
+    query('UPDATE '.table('settings').' SET value=? WHERE name=?',['1','contacts_schema_version']);$before=$identityState();
+    try{foreach(['create','update'] as $operation){$error=null;
+        try{studio_client_save($operation==='create'?0:$primaryB,$operation==='create'?'':ca_version($primaryB),'Stale-readiness collision','transition-contact@example.invalid',true);}catch(Throwable $e){$error=$e;}
+        ca_ok('Fresh transaction readiness blocks '.$operation.' collision after cached absent contacts marker',$error instanceof InvalidArgumentException&&$error->getMessage()==='That email belongs to an additional client contact.'&&$identityState()===$before&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['contacts_schema_version'])['value']??'')==='1'&&!db()->inTransaction());
+    }}finally{save_setting('contacts_schema_version','1');}
+    foreach(['idle'=>['client_last',1801],'absolute'=>['client_login',28801]] as $expiry=>[$clock,$elapsed])foreach(['same parent'=>$primaryA,'different parent'=>$primaryB] as $parentLabel=>$target){
+        $_SESSION=[];studio_login('transition-contact@example.invalid',$contactPassword);
+        ca_ok('Contact login installs scoped identity before '.$expiry.' expiry for '.$parentLabel,(int)studio_client()['id']===$primaryA&&(int)studio_contact()['id']===$transitionContact&&!contact_can('billing'));
+        $_SESSION[$clock]=time()-$elapsed;ca_ok('Contact '.$expiry.' expiry refuses the old session for '.$parentLabel,studio_client()===null);
+        $oldSession=session_id();$oldCsrf=$_SESSION['csrf'];$before=$identityState();$targetClient=ca_client($target);
+        studio_login($targetClient['email'],$primaryPassword);
+        ca_ok('Successful primary login after '.$expiry.' contact expiry selects '.$parentLabel.' without inherited contact scope',(int)studio_client()['id']===$target&&!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION)&&contact_can('projects')&&contact_can('billing')&&contact_can('downloads')&&session_id()!==$oldSession&&$_SESSION['csrf']!==$oldCsrf&&$identityState()===$before);
+    }
+    $_SESSION=[];studio_login('transition-contact@example.invalid',$contactPassword);$beforeSession=$_SESSION;$before=$identityState();
+    ca_deny('Invalid primary credentials cannot clear an authenticated contact identity',fn()=>studio_login('transition-b@example.invalid','Incorrect synthetic primary password'));
+    ca_ok('Failed primary login preserves the exact contact session and stored identities',$_SESSION===$beforeSession&&(int)studio_contact()['id']===$transitionContact&&!contact_can('billing')&&$identityState()===$before);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/client-authority-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB current staff/client authority, strict audit and competing public activation fixtures; no real customer messaging or provider operation','checks'=>$checks],JSON_PRETTY_PRINT));
 echo ($ok?'PASS':'FAIL').': '.count($checks).' native client authority checks'.PHP_EOL;exit($ok?0:1);

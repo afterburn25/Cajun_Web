@@ -1,3 +1,11 @@
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+Keep contact authority fresh at the existing transaction/mutex boundaries and preserve full original owner/system financial preparation. Treat an expired contact session as sign-in without protected data; reject authenticated contacts lacking the current billing grant. Successful primary login must clear every contact marker. Read the contacts schema marker freshly under the existing account mutex before reciprocal email uniqueness checks; cached pre-migration settings cannot bypass the constraint.
+
+Historical source contracts retain historical identities. Restore the mistaken PR331 browser predecessor pin to exact main; prove all current files first, reconstruct only the finite already-reviewed browser repair for comparison, and execute current browser source unchanged. Original backup guards, all 12 main repair rows and every original maintained helper assertion remain. Direct-boundary mutations test current browser/contract drift and missing guards. Independent author/reviewer roles and original failed attempts are recorded in [the handoff](../SESSION_HANDOFF.md).
+
+Keep full-main acceptance, the successful original-RC/Windows run and the missing dedicated checkout gate separate. No passing subset, old-source result or queue state establishes final release completion.
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

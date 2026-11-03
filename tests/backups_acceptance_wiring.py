@@ -1,8 +1,21 @@
 """Remove only the exact reviewed backup hook before historical byte contracts."""
 import hashlib
+import json
+import combined_source_composition as composition
 
 def predecessor_browser(root, contract):
     driver = (root / 'tests/browser_acceptance.py').read_text()
+    if composition.present(root):
+        # This is a historical byte comparison only. Prove every current file,
+        # then invert the finite reviewed driver repair before the old guards.
+        composition.verify_current(root)
+        actual_contract = json.loads(composition.ordinary(root, 'tools/acceptance-contract.json'))
+        if contract.get('backups_browser_extension') != actual_contract.get('backups_browser_extension'):
+            raise AssertionError('Unreviewed backup comparison contract')
+        receipt = json.loads(composition.ordinary(root, composition.RECEIPT))
+        driver = composition.reconstruct_repair(
+            receipt, 'tests/browser_acceptance.py',
+            composition.ordinary(root, 'tests/browser_acceptance.py')).decode('utf-8')
     item = contract.get('backups_browser_extension')
     if item is None:
         return driver

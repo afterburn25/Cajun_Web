@@ -1,3 +1,15 @@
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+| Candidate | Current disposition | Exact remaining action |
+| --- | --- | --- |
+| PR317 | ALREADY INTEGRATED at `d9e34d2f`; all 60 automatic workflows and full Application `41515697343` passed | Retain accepted main artifacts; complete separately required release matrix/checkout gates. |
+| Homepage PR339, `cd86092f` | NEEDS ACCEPTANCE; original PR328 history retained, four focused workflows pass, automated no-issues comment | Complete Application `41563766333`, inspect actual evidence/captures and required review, then recheck main and normal-merge. |
+| Contacts PR331 successor, this enclosing commit | NEEDS HOSTED ACCEPTANCE; original `ccbe7655` retained, independent source/native reviews and local 1,176 native checks pass | Publish separately reviewed exact tree; obtain current hosted contacts/browser checks and required review before normal merge. |
+| Actual-main original-RC/finance/Windows run `41564404648` | ACCEPTED IN ITS SCOPE; both database suites and all 12 cross-platform package files independently verified | Do not reuse as the remaining PHP 8.2/8.4 full matrix or dedicated checkout acceptance. |
+| Dedicated packaged checkout gate | NEEDS CORRECTION AND ACCEPTANCE on isolated source | Replace obsolete password-prompt fixture expectations with actual session-authority checks, preserve native79 and source/package guards, then execute current full suite. |
+
+At 02:33 UTC all four main matrix build/Apache/recovery jobs passed; native/browser and final aggregation remained running/pending. No duplicate dispatch or forced branch update was performed. Other retained candidates stay in their earlier dispositions. [Current evidence and next actions](../SESSION_HANDOFF.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

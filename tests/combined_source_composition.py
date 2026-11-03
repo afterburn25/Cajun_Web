@@ -1,8 +1,8 @@
 """Exact component composition for historical source checks, never runtime code.
 
 The live checkout must equal the finite union of the reviewed component trees,
-plus the canonical inventory, four reversible comparison adapters and the exact
-integration-test repairs bound to the retained failed acceptance checkpoint.
+plus the canonical inventory, four reversible comparison adapters, exact
+integration repairs and four contact files bound to the retained PR331 source.
 Unmodified standalone validators run in disposable exact-component checkouts;
 PHP, browser, migration and packaging commands continue to use the live checkout.
 """
@@ -33,19 +33,65 @@ REGRESSION = 'tests/combined_source_composition_test.py'
 INVENTORY = 'site/install/inventory.generated.php'
 REPAIR_BASE = '6247ab257ff8562afb317908cf5de9a602b34d9c'
 REPAIR_BASE_TREE = '9620a10bdd3be1876b7a994a14d739a76e5e3745'
+# These four paths did not exist in the original component union. Their exact
+# retained source and any reviewed corrections are verified separately; they
+# cannot replace an existing component, adapter, repair or proof path.
+ADDITION_SOURCE = 'ccbe765516e261f92d55acd65978262f3811e9bc'
+ADDITION_SOURCE_TREE = '8de0cd2602844f9d913bac80c2a82702f0745466'
+ADDITIONS = frozenset((
+    'site/app/clients/contacts.php',
+    'site/database/migrations/contacts_migrate.php',
+    'site/database/schema/contacts_schema.php',
+    'tests/contacts_cases.py',
+))
+# BEGIN GENERATED CONTACT ADDITION IDENTITIES
+ADDITION_SHA256 = {'site/app/clients/contacts.php': '73732cea46fc24532bfe95dedea72873210ffdf84f5cb226f4ab4424abcc335a', 'site/database/migrations/contacts_migrate.php': 'c4f447909a14ddfc870065b517c29f4be7786e96488d7aa1fca616d399c7aeea', 'site/database/schema/contacts_schema.php': 'a2fde85f75d286241a3642bf4f4fab0a7b4aa98c26705e9316552a9223974f0d', 'tests/contacts_cases.py': 'ac33b04e34e8a92c4f975f23bc5b7e499493a0bcf771c6e8e38b0ffd993fb2ab'}
+# END GENERATED CONTACT ADDITION IDENTITIES
 REPAIRS = frozenset((
+    'docs/CLIENT_PORTAL_ROADMAP.md',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio/clients.php',
+    'site/admin/views/studio/job.php',
+    'site/admin/views/studio/upgrade.php',
+    'site/api/bundle-download.php',
+    'site/app/activity/events.php',
+    'site/app/clients/accounts.php',
+    'site/app/clients/files.php',
+    'site/app/clients/identity.php',
+    'site/app/licenses/financing_offers.php',
+    'site/app/marketing/proposals.php',
+    'site/app/plans/records.php',
+    'site/app/staff/accounts.php',
+    'site/database/schema/base.php',
+    'site/includes/layout/admin.php',
+    'site/includes/layout/proposals.php',
+    'site/install/actions/deploy.php',
+    'site/portal/controllers/actions.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/auth.php',
+    'site/portal/views/financing.php',
+    'site/portal/views/workspace.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/backups_acceptance_wiring.py',
+    'tests/browser_acceptance.py',
+    'tests/client_authority_native.php',
+    'tests/cloud_site_requests_wiring.py',
     'tests/installed_owner_authority.php',
     'tests/installed_owner_authority.py',
     'tests/installed_owner_authority_test.py',
+    'tests/license_financing_cases.py',
+    'tests/license_financing_native_cases.php',
+    'tests/organized_update_cases.py',
     'tests/owner_browser_forms.py',
     'tests/owner_browser_forms_test.py',
-    'tests/provider_force_ssl_controls_cases.py',
+    'tests/proposal_version_binding.php',
+    'tests/proposals_native.php',
     'tests/provider_directory_listing_controls_cases.py',
-    'tools/acceptance-reports.json',
-    'tests/acceptance_artifacts_test.py',
-    'tests/cloud_site_requests_wiring.py',
+    'tests/provider_force_ssl_controls_cases.py',
     'tests/reset_template_acceptance_contract.py',
-    'tests/license_financing_cases.py',
+    'tests/service_plan_cases.py',
+    'tests/service_plans_native.php',
+    'tools/acceptance-reports.json',
 ))
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
@@ -62,11 +108,11 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849'
+REGRESSION_SHA256 = '6e7b342c64756d73c85303de72660b4e000bc8dbea8a546d7eae2f4edf052b48'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'docs/CLIENT_PORTAL_ROADMAP.md': '8e31a75b47ea79d8059bbaf9a8c530426c47a5299bd8fb6b65806d4ba42c75bd', 'site/admin/controllers/studio.php': 'b19f05cc44f88489523c53079f229b46c06419b27c68b1b6c367be01f92b4b26', 'site/admin/views/studio/clients.php': '5d42172fb9767e187564c4af59d75c519f5f2c942593f5c59d037b98358370b3', 'site/admin/views/studio/job.php': '87f17d26b213db3ae9b03d343f7a5afc4e215691b34d7507f206e372d9f92f5e', 'site/admin/views/studio/upgrade.php': 'ab60c55217f08d6fc021cea3a9e996feed1c1e289cac6b1f5717b9706d8c9239', 'site/api/bundle-download.php': 'abd65140460543c13b99d3c20e5454306664f084d505ea57b90e5752b17aa4bf', 'site/app/activity/events.php': '26276ed8df33217861ab2b69bdc5e7c48823e1b2f64386f6154f35bbec51a0e0', 'site/app/clients/accounts.php': '9535abe5b5688a82e630c5fc84d58b661c882082eb8358de5b1b9f928ea0e5cd', 'site/app/clients/files.php': 'e8bbd51f4c4b6baf518ff4ae7dab866f6b46bb59a3f434ef78f51df19f360db0', 'site/app/clients/identity.php': '61df7e8e02ca3362a27dfcdad7841df065d201d0d3dcc25a900f71ccdd5cecc7', 'site/app/licenses/financing_offers.php': '2b87d8cfc93cd31594eba6143390413d326e7f637393b22e4b243de869ddd447', 'site/app/marketing/proposals.php': '41f5e7afcc6d680ed801bcc685b3e5c5ac8450263bd945c30b7d84f8cf534bcb', 'site/app/plans/records.php': '985e2472db522bb70ccaa0205f95f21e4e5030bf5596b091864617f91c1e4b04', 'site/app/staff/accounts.php': 'b7d58ff6866f6ceae240f1325555d230b4a24ab291dd1dc01469031bdf8465ec', 'site/database/schema/base.php': 'b0de5962e671267dba3dde791a9f4bf90b2cfe3967d803038d663562a51c4cea', 'site/includes/layout/admin.php': '243d2ae7c1aed11fb82f2cdd504ae5424c75a636b713d0d92d2bbcaba49f0044', 'site/includes/layout/proposals.php': 'e4ed91ec5a436d05f0febbe4ab340f317a6205de9a6a5f5c47eb830daa223e17', 'site/install/actions/deploy.php': '1c5cd699653e278cc2e56bf336039b3765fc00e5c220040068e33487b426917a', 'site/portal/controllers/actions.php': 'e0bfb2c185492d09b43747f9cda83ad28f67c41211b126c60b6081bbe1de4226', 'site/portal/controllers/router.php': '1b83d6a85bf94c46762bf2c79a016bcc2c1bea224e842258b6b356625b08fcb2', 'site/portal/views/auth.php': '4d0a9b73b32ac6230f2ace6c0b822107ab0fd0d2a015c46023df9acf5aec4b95', 'site/portal/views/financing.php': '37f385593cb7fe34beb5e24020602b9c27b178062b6e704d86f72945356d045c', 'site/portal/views/workspace.php': '15110d51cf924a6c62486b13fe5fd12c1809cd5d8a574f81430ab602cfce1a0d', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/backups_acceptance_wiring.py': '525486323025784b00ffa7d347f6663a6a5aa6e86574830c77ba5b18f1116741', 'tests/browser_acceptance.py': '3b8f81333b9712eb8aa3a5c6bb4e5f28b4ab64687933e7f333016d6a2e053f80', 'tests/client_authority_native.php': '350356ceed40c46fb2299698e4130f1795fe75d3c260cc6456e03b6f7db11e31', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1', 'tests/license_financing_native_cases.php': '230a6a2ef6d39fcecff1a028b3941e7ef3e87e9154ceb17ab82f75d69cc5ff0d', 'tests/organized_update_cases.py': '9ffe696d822add3a7013e72cb6a99f5bbe44994d5fc83ebe9d2d8c5d15322674', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/proposal_version_binding.php': 'e2b01d643092b15eebc8cc8b2b22aa5b4eb22a4bb30bce4b970249c09c8bdbbd', 'tests/proposals_native.php': 'a3ab274887a5f4b6b65fd1bdef447adee9fbd820d467402f81bdc4ccddf8611d', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/service_plan_cases.py': 'c2304b4ac020168c0c01d13b25edd4852a890bc866fa22dc3dfb87ea8ddb9ea0', 'tests/service_plans_native.php': '45a2c1d888bee7b694b06f6f873fe0dc6874a4c3b0234d937e7d70abbc927058', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -246,9 +292,10 @@ def expected_union(root):
 def validate_receipt(data, verifier):
     require(isinstance(data, dict) and set(data) == {
         'format', 'base', 'base_tree', 'components', 'verifier_sha256', 'regression_sha256', 'adapters',
-        'repair_base', 'repair_base_tree', 'integration_repairs'},
+        'repair_base', 'repair_base_tree', 'integration_repairs',
+        'addition_source', 'addition_source_tree', 'additions'},
         'Unexpected composition receipt fields')
-    require(data['format'] == 2 and data['base'] == BASE and data['base_tree'] == BASE_TREE
+    require(data['format'] == 3 and data['base'] == BASE and data['base_tree'] == BASE_TREE
             and data['components'] == COMPONENTS, 'Unreviewed component source identity')
     require(data['verifier_sha256'] == digest(verifier), 'Composition verifier changed')
     require(data['regression_sha256'] == REGRESSION_SHA256, 'Composition regression identity changed')
@@ -280,6 +327,26 @@ def validate_receipt(data, verifier):
             require(isinstance(edit, list) and len(edit) == 2
                     and all(isinstance(part, str) and part for part in edit)
                     and edit[0] != edit[1], 'Malformed integration repair inverse: ' + path)
+    require(data['addition_source'] == ADDITION_SOURCE
+            and data['addition_source_tree'] == ADDITION_SOURCE_TREE,
+            'Unreviewed contact addition source')
+    require(isinstance(data['additions'], dict)
+            and set(data['additions']) == ADDITIONS and set(ADDITION_SHA256) == ADDITIONS,
+            'Unreviewed contact addition scope')
+    for path, row in data['additions'].items():
+        require(isinstance(row, dict) and set(row) == {'original_sha256', 'current_sha256', 'edits'},
+                'Malformed contact addition: ' + path)
+        require(row['current_sha256'] == ADDITION_SHA256[path]
+                and isinstance(row['original_sha256'], str)
+                and re.fullmatch('[0-9a-f]{64}', row['original_sha256']) is not None,
+                'Unreviewed contact addition identity: ' + path)
+        require(isinstance(row['edits'], list)
+                and (bool(row['edits']) or row['original_sha256'] == row['current_sha256']),
+                'Missing corrected contact addition inverse: ' + path)
+        for edit in row['edits']:
+            require(isinstance(edit, list) and len(edit) == 2
+                    and all(isinstance(part, str) and part for part in edit)
+                    and edit[0] != edit[1], 'Malformed contact addition inverse: ' + path)
     return data
 
 
@@ -317,6 +384,25 @@ def reconstruct_repair(data, path, current):
         require(text.count(before) == 1, 'Nonunique integration repair forward change: ' + path)
         text = text.replace(before, after, 1)
     require(text.encode('utf-8') == current, 'Integration repair is not reversible: ' + path)
+    return original
+
+
+def reconstruct_addition(data, path, current):
+    """Retain each exact new PR331 file while running its current reviewed bytes."""
+    require(path in ADDITIONS, 'Unknown contact addition')
+    row = data['additions'][path]
+    require(digest(current) == row['current_sha256'] == ADDITION_SHA256[path],
+            'Current contact addition changed: ' + path)
+    text = current.decode('utf-8')
+    for before, after in reversed(row['edits']):
+        require(text.count(after) == 1, 'Nonunique contact addition inverse: ' + path)
+        text = text.replace(after, before, 1)
+    original = text.encode('utf-8')
+    require(digest(original) == row['original_sha256'], 'Retained contact source differs: ' + path)
+    for before, after in row['edits']:
+        require(text.count(before) == 1, 'Nonunique contact addition forward change: ' + path)
+        text = text.replace(before, after, 1)
+    require(text.encode('utf-8') == current, 'Contact addition is not reversible: ' + path)
     return original
 
 
@@ -382,7 +468,15 @@ def verify_current(root):
     expected, changed = expected_union(root)
     require(REPAIRS <= set(expected) and not REPAIRS & ADAPTERS,
             'Integration repairs must retain existing component files')
-    allowed = set(expected) | ADAPTERS | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}
+    require(not ADDITIONS & (set(expected) | ADAPTERS | REPAIRS
+                            | NARRATIVES | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
+            'Contact additions cannot replace existing component or proof files')
+    require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
+            'Retained contact source tree changed')
+    git(root, 'merge-base', '--is-ancestor', ADDITION_SOURCE, 'HEAD')
+    addition_entries = entries(root, ADDITION_SOURCE)
+    require(ADDITIONS <= set(addition_entries), 'Missing contact addition in retained source')
+    allowed = set(expected) | ADAPTERS | ADDITIONS | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
@@ -394,6 +488,11 @@ def verify_current(root):
                     'Integration repair no longer retains its exact failed-checkpoint source: ' + path)
         blob = hashlib.sha1(b'blob ' + str(len(value)).encode() + b'\0' + value).hexdigest()
         require(blob == oid and mode(root, path) == permission, 'Current component source or mode differs: ' + path)
+    for path in sorted(ADDITIONS):
+        original = reconstruct_addition(data, path, ordinary(root, path))
+        require(mode(root, path) == addition_entries[path][0] == '100644'
+                and original == git(root, 'cat-file', 'blob', ADDITION_SOURCE + ':' + path),
+                'Contact addition no longer retains its exact original source or mode: ' + path)
     for path in sorted(ADAPTERS):
         original = reconstruct_adapter(data, path, ordinary(root, path))
         require(mode(root, path) == '100644'
@@ -406,6 +505,7 @@ def verify_current(root):
         {'name': 'Current or exactly reconstructed bytes and executable modes match the component union for ' + str(len(expected)) + ' retained files', 'passed': True},
         {'name': 'Four finite comparison adapters retain exact original assertions through reversible edits', 'passed': True},
         {'name': str(len(REPAIRS)) + ' exact integration-test repairs retain the failed checkpoint through reversible edits; runtime uses current bytes', 'passed': True},
+        {'name': 'Four exact contact additions retain their original PR331 source, ancestry and modes; runtime uses current reviewed bytes', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},

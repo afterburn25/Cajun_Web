@@ -40,7 +40,10 @@ function service_plans_current_client(int $id):array {
     if(!studio_ready() || support_current() || array_key_exists('support',$_GET) || (int)($_SESSION['client_id']??0)!==$id)throw new RuntimeException('Sign in as the selected client outside support access.');
     $client=service_plans_client_row($id);$now=time();
     if($now-(int)($_SESSION['client_last']??0)>1800 || $now-(int)($_SESSION['client_login']??0)>28800 || !hash_equals($client['auth_version'],(string)($_SESSION['client_auth']??'')))throw new RuntimeException('Your client session is no longer current. Sign in again.');
-    $_SESSION['client_last']=$now;return $client;
+    $_SESSION['client_last']=$now;
+    // The shared guard binds current contact authority to this parent client, including partial or revoked session markers.
+    contact_require_permission('billing',$id);
+    return $client;
 }
 function service_plans_row(string $id,bool $subscription=false,bool $lock=false):array {
     service_plans_id($id);$row=one('SELECT * FROM '.table($subscription?'service_subscriptions':'service_plans').' WHERE id=?'.($lock?' FOR UPDATE':''),[$id]);

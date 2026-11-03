@@ -251,6 +251,14 @@ function license_finance_offer_decline(string $id,int $clientId,string $reason):
     }));
 }
 
+/** Portal payment retry: keep current client/contact authority through all of the existing recovery transactions. */
+function license_finance_offer_client_payment_prepare(string $id,int $clientId):?array{
+    return staff_locked(function()use($id,$clientId):?array{
+        staff_transaction(fn()=>service_plans_current_client($clientId));
+        return license_finance_offer_payment_prepare($id,$clientId);
+    });
+}
+
 function license_finance_offer_payment_prepare(string $id,int $clientId):?array{
     $preview=license_finance_offer_row($id,$clientId,false);
     if((string)$preview['status']!=='signed')throw new RuntimeException('Sign the finance agreement before preparing payment.');
