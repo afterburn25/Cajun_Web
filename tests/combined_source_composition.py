@@ -46,6 +46,14 @@ REPAIRS = frozenset((
     'tests/cloud_site_requests_wiring.py',
     'tests/reset_template_acceptance_contract.py',
     'tests/license_financing_cases.py',
+    'site/includes/auth/admin.php',
+    'site/app/staff/accounts.php',
+    'site/app/plans/records.php',
+    'site/app/providers/settings.php',
+    'site/app/mail/accounts.php',
+    'site/app/providers/catalog_import.php',
+    'site/app/hosting/orders.php',
+    'site/install/bootstrap.generated.php',
 ))
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
@@ -66,7 +74,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1', 'site/includes/auth/admin.php': '5ac1be1e5b8fa784d01a1c26d1a41106f5111d49e3bdceec1e10bb96343bc12d', 'site/app/staff/accounts.php': 'd1f306420d549fcb93e07d98df18476c018f2ff42f886a033d0314b791542279', 'site/app/plans/records.php': 'b8d064099df55af24ccd35d1ad6ad736c6c6db2a0facee9d7a93eb391b2d9a3b', 'site/app/providers/settings.php': '14dafb2152fb23ffd928e274edce6205cbc238a3cff786da6b6f67dde46c9d7c', 'site/app/mail/accounts.php': '945978324bf38741c0c7b83084b7312f10396797620937ac89131c9af54315f3', 'site/app/providers/catalog_import.php': '6d4ea032dd2ac870105ab170fb3811e71566738e541dc5a140f6acbab2fa3c76', 'site/app/hosting/orders.php': '3d996a31f597b7e7eecd0d32d8b455b458c22088d3a2fd3c32676c76029183cb', 'site/install/bootstrap.generated.php': 'a0e2686d866797c390f080b82134f458d57a00b36145bc3cb8fb7f6cc5c5f080', }
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}

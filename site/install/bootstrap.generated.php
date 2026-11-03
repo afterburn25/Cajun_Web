@@ -132,6 +132,12 @@ function admin_session_matches(array $actor): bool {
     return \CajunWebPro\Foundation\Access\AuthorizationVersion::matches((string)$current['auth_version'], $version);
 }
 
+/** Step-up check behind owner-password fields; the collected value must match the actor's credential. */
+function admin_password_matches(array $actor, #[\SensitiveParameter] string $password): bool {
+    $hash = (string)($actor['password_hash'] ?? '');
+    return $password !== '' && $hash !== '' && password_verify($password, $hash);
+}
+
 // includes/database.php
 function db(): PDO {
     static $connection;

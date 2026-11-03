@@ -12,6 +12,7 @@ function provider_catalog_import_owner(#[\SensitiveParameter] ?string $password=
     $actor=provider_settings_manager(false);
     catalog_require();
     if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
+    if($password!==null&&!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct.');
     return $actor;
 }
 function provider_catalog_import_transaction(): void {

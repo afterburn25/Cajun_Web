@@ -35,6 +35,7 @@ function mail_accounts_manager(bool $ready=true): array {
 function mail_accounts_owner(#[\SensitiveParameter] string $password,bool $ready=true): array {
     $actor=mail_accounts_manager($ready);
     if (!admin_session_matches($actor)) throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
+    if (!admin_password_matches($actor,$password)) throw new InvalidArgumentException('Your current password is not correct.');
     return $actor;
 }
 function mail_accounts_audit(int $actor,string $action,string $detail): void {

@@ -23,6 +23,7 @@ function service_orders_owner(#[\SensitiveParameter] ?string $password=null,bool
     $actor=service_plans_owner();
     if(!staff_can('payments.manage',$actor))throw new RuntimeException('Current owner financial access is required.');
     if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
+    if($password!==null&&!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct.');
     if(!ledger_ready()||!payments_ready())throw new RuntimeException('Prepare payments and receipt history before hosting orders.');
     if($ready)service_orders_require();return $actor;
 }

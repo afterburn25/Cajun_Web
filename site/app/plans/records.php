@@ -27,7 +27,9 @@ function service_plans_owner(bool $ready=true):array {
     if($ready)service_plans_require_ready();return $actor;
 }
 function service_plans_password(#[\SensitiveParameter] string $password,bool $ready=true):array {
-    $actor=service_plans_owner($ready);if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');return $actor;
+    $actor=service_plans_owner($ready);if(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');
+    if(!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct.');
+    return $actor;
 }
 function service_plans_audit(int $actor,string $action,string $detail):void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'service_plans.'.$action,$detail,gmdate('Y-m-d H:i:s')]);}
 function service_plans_client_row(int $id,bool $active=true):array {

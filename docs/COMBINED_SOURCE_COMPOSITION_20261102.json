@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
+  "verifier_sha256": "25250029b68d3cbdfe792e3bfe08615ba2cf952cafd607ecbba7f237f3950fb3",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -188,8 +188,8 @@
           "    member = requests.Session(); submit(member, admin + '?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})\n    client = requests.Session(); submit(client, portal, 'login', {'email': 'alice@example.invalid', 'password': 'Synthetic client passphrase 2026'})\n    profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]\n    client_id = db('SELECT id FROM ci_studio_clients WHERE email=?', ['alice@example.invalid'])[0]['id']\n    prepare = 'provider_directory_indexing_control_prepare'; refresh = 'provider_inventory_directory_indexing_refresh'; share = 'provider_inventory_directory_indexing_share'\n    def refuse(action, match, *, actor_session=setup, actor_id=original_owner['id'], **fields):\n        def selected_form(response, selected_action):\n            forms = [form for form in soup(response).select('form')\n                     if form.select_one('input[name=action][value=\"' + selected_action + '\"]') is not None\n                     and all(form.select_one('input[name=\"' + name + '\"][value=\"' + str(value) + '\"]') is not None for name, value in match.items())]\n            if len(forms) != 1: raise AssertionError('Capture exactly one directory listing control form for the selected resource')\n            return forms[0]\n        return refuse_owner_action({**env, 'form_for': selected_form, 'check': check}, actor_session, url, action, fields, owner_id=actor_id)\n    def post(action, **fields):\n        action_url = inventory_url if action in ('provider_inventory_refresh', 'provider_inventory_link') else url\n        page = owner.get(action_url); forms = soup(page).select('form'); data = {'csrf': token(page), 'action': action, 'profile_id': profile['id'], 'revision': str(profile['revision'])}\n        for form in forms:\n            if form.select_one('input[name=action][value=\"' + action + '\"]'):\n"
         ],
         [
-          "    for label, changed, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),\n                                    ('revoked owner', {}, None),\n                                    ('confirmation', {'reviewed': '0'}, 'Review restoring this request\u2019s saved history first.'),\n                                    ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:\n        if label == 'revoked owner':\n            response = refuse(recovery_action, {'request_id': interrupted['id']}, reviewed='1')\n            refused = response.status_code == 403 or (response.status_code == 200 and 'Your account does not have access to this action.' in response.text)\n        else:\n            response = owner.post(url, data={**recovery_fields, **changed})\n            refused = response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]\n        check('Recovery HTTP refuses invalid ' + label + ' without a read write or local repair',\n",
-          "    for label, changed, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),\n                                    ('revoked owner', {}, None),\n                                    ('confirmation', {'reviewed': '0'}, 'Review restoring this request\u2019s saved history first.'),\n                                    ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:\n        if label == 'revoked owner':\n            response = refuse(recovery_action, {'request_id': interrupted['id']}, actor_session=owner, actor_id=directory_indexing_owner['id'], reviewed='1')\n            refused = response.status_code == 403 or (response.status_code == 200 and 'Your account does not have access to this action.' in response.text)\n        else:\n            response = owner.post(url, data={**recovery_fields, **changed})\n            refused = response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]\n        check('Recovery HTTP refuses invalid ' + label + ' without a read write or local repair',\n"
+          "    for label, changed, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),\n                                    ('revoked owner', {}, None),\n                                    ('confirmation', {'reviewed': '0'}, 'Review restoring this request’s saved history first.'),\n                                    ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:\n        if label == 'revoked owner':\n            response = refuse(recovery_action, {'request_id': interrupted['id']}, reviewed='1')\n            refused = response.status_code == 403 or (response.status_code == 200 and 'Your account does not have access to this action.' in response.text)\n        else:\n            response = owner.post(url, data={**recovery_fields, **changed})\n            refused = response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]\n        check('Recovery HTTP refuses invalid ' + label + ' without a read write or local repair',\n",
+          "    for label, changed, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),\n                                    ('revoked owner', {}, None),\n                                    ('confirmation', {'reviewed': '0'}, 'Review restoring this request’s saved history first.'),\n                                    ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:\n        if label == 'revoked owner':\n            response = refuse(recovery_action, {'request_id': interrupted['id']}, actor_session=owner, actor_id=directory_indexing_owner['id'], reviewed='1')\n            refused = response.status_code == 403 or (response.status_code == 200 and 'Your account does not have access to this action.' in response.text)\n        else:\n            response = owner.post(url, data={**recovery_fields, **changed})\n            refused = response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]\n        check('Recovery HTTP refuses invalid ' + label + ' without a read write or local repair',\n"
         ]
       ]
     },
@@ -256,6 +256,90 @@
         [
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
+        ]
+      ]
+    },
+    "site/includes/auth/admin.php": {
+      "original_sha256": "135ef101306e3b5dbffbe813b5a58e03652755892d4281960040d33547a3f09d",
+      "current_sha256": "5ac1be1e5b8fa784d01a1c26d1a41106f5111d49e3bdceec1e10bb96343bc12d",
+      "edits": [
+        [
+          "t['auth_version'], $version);\n}\n",
+          "t['auth_version'], $version);\n}\n\n/** Step-up check behind owner-password fields; the collected value must match the actor's credential. */\nfunction admin_password_matches(array $actor, #[\\SensitiveParameter] string $password): bool {\n    $hash = (string)($actor['password_hash'] ?? '');\n    return $password !== '' && $hash !== '' && password_verify($password, $hash);\n}\n"
+        ]
+      ]
+    },
+    "site/app/staff/accounts.php": {
+      "original_sha256": "770a254a1be25310872ae0f591c2d9ffa17f3c02538ee0f92ff36b88488ce21d",
+      "current_sha256": "d1f306420d549fcb93e07d98df18476c018f2ff42f886a033d0314b791542279",
+      "edits": [
+        [
+          "(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again",
+          "(!admin_session_matches($actor))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again.');\n    if(!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct"
+        ],
+        [
+          "=$id||!admin_session_matches($u))throw new InvalidArgumentException('Your administrator session is no longer valid. Sign in again",
+          "=$id||!admin_session_matches($u)||!admin_password_matches($u,$current))throw new InvalidArgumentException('Your current password is not correct"
+        ]
+      ]
+    },
+    "site/app/plans/records.php": {
+      "original_sha256": "2d9df2440c7ef3d21cea9b6d640006fa5a6545783ef90659c24555f74d04531c",
+      "current_sha256": "b8d064099df55af24ccd35d1ad6ad736c6c6db2a0facee9d7a93eb391b2d9a3b",
+      "edits": [
+        [
+          " longer valid. Sign in again.');",
+          " longer valid. Sign in again.');\n    if(!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct.');\n    "
+        ]
+      ]
+    },
+    "site/app/providers/settings.php": {
+      "original_sha256": "732c929b8196668afe95c47ea56014ee7c0c5a3f6c1a90b2e918435055d7873b",
+      "current_sha256": "14dafb2152fb23ffd928e274edce6205cbc238a3cff786da6b6f67dde46c9d7c",
+      "edits": [
+        [
+          "s no longer valid. Sign in again",
+          "s no longer valid. Sign in again.');\n    if (!admin_password_matches($actor,$password)) throw new InvalidArgumentException('Your current password is not correct"
+        ]
+      ]
+    },
+    "site/app/mail/accounts.php": {
+      "original_sha256": "0a7721735dadc99c814592f079303d7f478104a15adfb4153a0ccb3f98b781ac",
+      "current_sha256": "945978324bf38741c0c7b83084b7312f10396797620937ac89131c9af54315f3",
+      "edits": [
+        [
+          "s no longer valid. Sign in again",
+          "s no longer valid. Sign in again.');\n    if (!admin_password_matches($actor,$password)) throw new InvalidArgumentException('Your current password is not correct"
+        ]
+      ]
+    },
+    "site/app/providers/catalog_import.php": {
+      "original_sha256": "61d12498e56bb28be0a9c211bf0f06da9896a47d135e8bfc423ba2444d62ebf0",
+      "current_sha256": "6d4ea032dd2ac870105ab170fb3811e71566738e541dc5a140f6acbab2fa3c76",
+      "edits": [
+        [
+          "s no longer valid. Sign in again",
+          "s no longer valid. Sign in again.');\n    if($password!==null&&!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct"
+        ]
+      ]
+    },
+    "site/app/hosting/orders.php": {
+      "original_sha256": "eeb54f4621554762a0600f715601d8bd989522c8f56ba9e7946b2605edc637db",
+      "current_sha256": "3d996a31f597b7e7eecd0d32d8b455b458c22088d3a2fd3c32676c76029183cb",
+      "edits": [
+        [
+          "s no longer valid. Sign in again",
+          "s no longer valid. Sign in again.');\n    if($password!==null&&!admin_password_matches($actor,$password))throw new InvalidArgumentException('Your current password is not correct"
+        ]
+      ]
+    },
+    "site/install/bootstrap.generated.php": {
+      "original_sha256": "f7504c541b3bc5330cc4dee906bbbb2a4bc4839633aef284cc96a58e96b741ec",
+      "current_sha256": "a0e2686d866797c390f080b82134f458d57a00b36145bc3cb8fb7f6cc5c5f080",
+      "edits": [
+        [
+          "urrent['auth_version'], $version",
+          "urrent['auth_version'], $version);\n}\n\n/** Step-up check behind owner-password fields; the collected value must match the actor's credential. */\nfunction admin_password_matches(array $actor, #[\\SensitiveParameter] string $password): bool {\n    $hash = (string)($actor['password_hash'] ?? '');\n    return $password !== '' && $hash !== '' && password_verify($password, $hash"
         ]
       ]
     }
