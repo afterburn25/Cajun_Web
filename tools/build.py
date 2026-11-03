@@ -68,6 +68,15 @@ def safe(name):
     p=PurePosixPath(name)
     if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
 
+def source_only_agent_guidance(name):
+    # Local Cline instructions belong in Git for developer continuity, but
+    # not in customer deliveries or FULL-PROJECT archives. Recognize only
+    # single-level Markdown guidance. Unknown code/secret-shaped paths must
+    # still hit the strict full-project allowlist below and fail closed.
+    parts=PurePosixPath(name).parts
+    return (len(parts)==2 and parts[0]=='.clinerules'
+            and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*\\.md',parts[1]) is not None)
+
 def full_project_area(name):
     safe(name)
     allowed={'.github','docs','tests','tools','brand','foundation','site','ops'}
@@ -213,6 +222,7 @@ def main():
         for n in tracked:
             safe(n);p=ROOT/n
             if p.is_symlink():raise RuntimeError('Project contains symlink')
+            if source_only_agent_guidance(n):continue
             full_project_area(n)
             # Repository ZIP fixtures are useful for upgrade/installer tests but
             # must never be embedded inside a distributed archive. Keep them in
