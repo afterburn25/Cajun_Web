@@ -27,6 +27,8 @@ final class TwentyIOperationRegister
             new TwentyIOperation(
                 'reseller.passwordresettemplate', 'POST', '/reseller/{resellerId}/passwordResetEmail',
                 ['resellerId'], ['content'=>'string'], ['content'], shapeComplete: true,
+                'packages.phpversion', 'POST', '/package/{packageId}/web/phpVersion',
+                ['packageId'], ['value'=>'string'], ['value'], shapeComplete: true,
             ),
             new TwentyIOperation(
                 'packages.directoryindexing', 'POST', '/package/{packageId}/web/directoryIndexing',
