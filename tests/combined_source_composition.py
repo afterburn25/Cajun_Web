@@ -41,6 +41,24 @@ REPAIRS = frozenset((
     'tests/owner_browser_forms_test.py',
     'tests/provider_force_ssl_controls_cases.py',
     'tests/provider_directory_listing_controls_cases.py',
+    '.github/workflows/application-tests.yml',
+    'docs/AGENT_COORDINATION.md',
+    'docs/CLIENT_PORTAL_ROADMAP.md',
+    'docs/TWENTYI_REQUIREMENTS_EVIDENCE.md',
+    'docs/TWENTYI_STACKCP_HANDOFF_CONTRACT.md',
+    'foundation/access/PermissionPolicy.php',
+    'foundation/twentyi-support-handoff/StackCpSensitiveResponse.php',
+    'site/admin/controllers/actions.php',
+    'site/admin/controllers/providers.php',
+    'site/app/providers/stackcp_access_views.php',
+    'site/app/providers/stackcp_prerequisite_views.php',
+    'site/app/staff/accounts.php',
+    'site/includes/foundation/access/PermissionPolicy.php',
+    'site/includes/foundation/twentyi-support-handoff/StackCpSensitiveResponse.php',
+    'site/includes/layout/provider_services.php',
+    'site/portal/controllers/actions.php',
+    'site/portal/controllers/router.php',
+    'tools/acceptance-contract.json',
     'tools/acceptance-reports.json',
     'tests/acceptance_artifacts_test.py',
     'tests/cloud_site_requests_wiring.py',
@@ -66,7 +84,7 @@ REGRESSION_SHA256 = '05aef331b516865759c956d84236d950167c3862ca56162bf8bb7974680
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
-REPAIR_SHA256 = {'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
+REPAIR_SHA256 = {'tools/acceptance-contract.json': 'cbc95d1d111ba19838685483d652f5dd9eb3520e33d0345c5050fbef8fa58a7e', 'site/portal/controllers/router.php': 'fc8328a69aa437d75e34337cd6e299ce107064e5d38a09c51cc7d5b8dd037c2f', 'site/portal/controllers/actions.php': '883fc61a5b381b77817152ff7133cddeb12cf5f3d2ee13fc0792ae6e7c6858d8', 'site/includes/layout/provider_services.php': 'c2aeddebb8e959e4fa5671fcf1be3643574faaf86381ed4e39eb7cac85ebc315', 'site/includes/foundation/twentyi-support-handoff/StackCpSensitiveResponse.php': '4e89577ebdc549c8083c869f439e50f274ff4a1c800401ab3d9ff45f2682a9db', 'site/includes/foundation/access/PermissionPolicy.php': 'db675273c272a82f089795619cb37ec8a76a5b46311f1a1bbcfeea170056755c', 'site/app/staff/accounts.php': '13fda7f8f0c8279e26e788f0152dc2f31a4d5032ecba09f0a43bb3883be8082a', 'site/app/providers/stackcp_prerequisite_views.php': '01c500bf0e00126f8a0cf56e2553fa87ff8b2a264725be61e15ddcdbbbda1660', 'site/app/providers/stackcp_access_views.php': 'f3041096639ecb7c7acbd96965313c559fe73e325ca8f9ab21e16d39f6a1eeb0', 'site/admin/controllers/providers.php': '7714a83ea522b85e69ad8bdc9c1e08104786b251c747592f50d94c9f7796bb90', 'site/admin/controllers/actions.php': 'ca50b3603c95c85d5a9a352d8b220a139f90ad48b5a63d802808650cab27488f', 'foundation/twentyi-support-handoff/StackCpSensitiveResponse.php': '4e89577ebdc549c8083c869f439e50f274ff4a1c800401ab3d9ff45f2682a9db', 'foundation/access/PermissionPolicy.php': 'db675273c272a82f089795619cb37ec8a76a5b46311f1a1bbcfeea170056755c', 'docs/TWENTYI_STACKCP_HANDOFF_CONTRACT.md': '2719691bcac958825b4a9cccbe18b14dd58945d7df33db42e7a8bbc55528b17b', 'docs/TWENTYI_REQUIREMENTS_EVIDENCE.md': 'bfe6e268ddcb0cb6ef4f98b13ee597e269ce8d040c8e5b2bb7e1cdcf85f74145', 'docs/DECISIONS.md': '4336bce831f300c9879d1333a12a140f5fdfb2f12d6284333565d5e0efae9e39', 'docs/CLIENT_PORTAL_ROADMAP.md': 'e3b762170cd258aa41199068c1dcca0b62d944e9016ed4d09cd41d6b67f04097', 'docs/AGENT_COORDINATION.md': '845ff3e977033ca93734bde8ef05a17c7648f21ea2cf6a49b7608275fc5b33d8', '.github/workflows/application-tests.yml': 'c4fc836f52b4384d6c018e6b9412ef31d690ff6c518076f9cb1c52e0ab4d7161', 'tests/installed_owner_authority.php': 'bbc48036af794564a1b39b54eb218d3390f94a65861d355d5e4ccef4c7c69863', 'tests/installed_owner_authority.py': 'a9511d52459ac1a9d50d62b646198ab29258718491f0c53f339bf32d7f0e3b71', 'tests/installed_owner_authority_test.py': '48e1930aa6d3e0d8ea7d02a5001718e68c15463fb9b9c62e6cfb2513b69c8101', 'tests/owner_browser_forms.py': 'abb07881c43514fd6ac9241700fb2fe97a881095b122d3d092a4ef82924616a3', 'tests/owner_browser_forms_test.py': 'ae4cac11289a97e2d20cf4755ed924f7f438e01d8c5550994ff7b86a144a4b54', 'tests/provider_force_ssl_controls_cases.py': 'a764c99c984514afb9b9d6ac129fd272ead523a274ab9c8ebd29e6c6436e6d68', 'tests/provider_directory_listing_controls_cases.py': 'de983d82a43bfe75c1f01fa443be944451bd1fdba16ef9c77e4c0c161096f25f', 'tools/acceptance-reports.json': 'c50ee66cba8731b60877687fdc18d76146e67b8e3ffe7e532ad09d89bd52fa91', 'tests/acceptance_artifacts_test.py': '9c1da1c8bafbc2febe87d66d5c1d6368e8e0c159e848fd54a3a64ae2108763dc', 'tests/cloud_site_requests_wiring.py': 'ee50481194217b3c6f669347f6fd64275ef87b8b07b800939f2325af51eca27e', 'tests/reset_template_acceptance_contract.py': '7d9d58a4fafacddd8b3d9d62ffe5222a4099e297c8cf05aaf00e54e2f52bf3a9', 'tests/license_financing_cases.py': '7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1'}
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}

@@ -65,6 +65,9 @@ The approved administrator experience authorizes mutations through the current s
 The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
 
 Never replay an ambiguous cancellation. A preflight-only failure may be reconsidered in a new reviewed plan only when durable evidence proves no request occurred; absence of a request file alone is insufficient. Stop on observation failure and preserve uncertainty. Current runs, recorded originals, full application/capture/release/diagnostic work, and assigned/executed/artifact-bearing candidates stay excluded. No acceptance or production gate changes.
+## 2026-10-18 — deliver the bounded default StackCP handoff
+
+Continue from `f688f79e` with an executable owner-only exchange using the retained SDK contract. Read actual branding before creating a token, accept only its default destination subset and never synthesize brand data or rewrite custom destinations. Preserve whole-user disclosure and require current local authority throughout the exchange. Durable admission precedes network effects; history, including unknown outcomes, is never reset to permit a retry. A distinct new approval may proceed after an unknown result only when bound to that latest outcome and explicitly acknowledged. [Details and verification limits](TWENTYI_STACKCP_LAUNCH.md). This does not authorize live testing or deployment.
 
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 

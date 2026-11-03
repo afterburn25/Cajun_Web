@@ -40,7 +40,7 @@ function provider_stackcp_auth_render(array $view,array $history=[]): void {
 function provider_stackcp_assignment_render(array $view,array $history=[]): void {
     echo '<article class="workspace-card" data-stackcp-assignment><h3>Package '.(int)$view['package_id'].'</h3><p><strong>'.esc(provider_stackcp_assignment_label($view['status'])).'</strong></p>';
     if ($view['stack_identity']!=='') echo '<p>Recorded identity: '.esc($view['stack_identity']).' · Recorded client #'.(int)$view['client_id'].'</p>';
-    echo '<p>This records the owner’s local choice only. Remote membership and grants have not been verified. No StackCP login is available.</p>';
+    echo '<p>This records the owner’s local choice only. Saving a draft does not verify remote membership or grants and does not open StackCP. Complete the assignment checks, then review Open StackCP below.</p>';
     if ($view['can_save_draft']) {
         $defaults=['profile_id'=>$view['profile_id'],'package_id'=>(string)$view['package_id'],'link_id'=>$view['current_link_id'],'review_sha256'=>$view['review_sha256'],'stack_identity'=>$view['status']==='unverified'?$view['stack_identity']:''];$values=provider_stackcp_form_values('provider_inventory_stackcp_assignment_save',$defaults);$identity=$values['stack_identity'];unset($values['stack_identity']);
         echo '<form method="post" data-stackcp-assignment-save>';admin_action('provider_inventory_stackcp_assignment_save');provider_stackcp_hidden($values);admin_input('stack_identity','Allocated Stack-user identity',$identity,'text','required maxlength="32" placeholder="stack-user:123"');
