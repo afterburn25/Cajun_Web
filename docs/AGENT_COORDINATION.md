@@ -1,4 +1,17 @@
 ## 2026-11-02 — FK fixture rule follow-up
+## Installed subdomain workflow acceptance — 2026-10-18
+
+Root owns `codex/twentyi-client-subdomain-browser` from PR236 source `af956844690b1ed3be93a9a83574f06127fa8763`, the browser caller, documentation and Git integration. Catalog owns the installed owner/client callback, Domains the opt-in synthetic provider endpoint and offline Handler contract, and VPS the additive workflow/report bindings. Agents prepare proposals outside the shared checkout; root verifies and applies the frozen files. This increment changes tests and documentation only.
+
+Keep every predecessor test, original queued run, published 1.25.0 asset and Devin non-20i branch intact. [Acceptance scope](TWENTYI_CLIENT_SUBDOMAIN_BROWSER_ACCEPTANCE.md) separates actual offline checks from the installed Linux SQL/HTTP/Chromium execution still required. All six new captured views require visual review before browser acceptance is credited.
+
+## Client subdomain requests — 2026-10-18
+
+Root owns `codex/twentyi-client-subdomain-requests`, parent `b8c316b6fd138167b11c251d5db24a6d31f2bd88` from PR234, and shared routing, navigation, CSS, installer inventory, documentation and Git integration. Domains supplied the authenticated request history and owner-operation integration; Catalog supplied dedicated owner/client views and controller checks; VPS supplied the independent native fixture and additive acceptance wiring. Their proposals were prepared outside the shared checkout and applied by root after source/hash review. No agent changed another lane's checkout.
+
+This is an unreleased stacked candidate. Its [scope and verification](TWENTYI_CLIENT_SUBDOMAIN_REQUESTS.md) do not establish native SQL or installed browser acceptance. Keep PR234 and the other original queued runs, immutable 1.25.0 and Devin's separate non-20i branches intact. The first focused PR run and a single exact-head full application dispatch provide the next runtime evidence; do not duplicate queued work.
+
+## Post-publication coordination — 2026-10-18
 
 The isolated FK metadata worker preserved c2f and local 15b81, changed only the shared native helper, and completed the approved 172-check supplement in fresh fkrule_ tables on owned 33316. The server is stopped; prior namespaces and all other workers’ runtimes are untouched. Root owns publication, matrix monitoring and outer composition. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
 

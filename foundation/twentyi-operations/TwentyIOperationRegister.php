@@ -27,6 +27,9 @@ final class TwentyIOperationRegister
             new TwentyIOperation(
                 'reseller.passwordresettemplate', 'POST', '/reseller/{resellerId}/passwordResetEmail',
                 ['resellerId'], ['content'=>'string'], ['content'], shapeComplete: true,
+                'packages.subdomainadd', 'POST', '/package/{packageId}/web/subdomains',
+                ['packageId'], ['parentDomain'=>'hostname','subdomain'=>'hostname'],
+                ['parentDomain','subdomain'], shapeComplete: true, // Local parent context; dedicated typed builder emits only add/rem.
             ),
             new TwentyIOperation(
                 'packages.directoryindexing', 'POST', '/package/{packageId}/web/directoryIndexing',
