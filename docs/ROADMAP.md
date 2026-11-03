@@ -1,3 +1,9 @@
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+This increment repairs five measured acceptance-fixture assumptions: installed private media layout, two native disclosures, displayed status capitalization and a billing-read dependency. It adds no product feature, requirement completion or integrated/released/live credit. The complete fresh local checkout journey passes native 79, browser/harness 400 and all 32 captures, while corrected hosted acceptance and the main scheduler regression gate remain separate.
+
+Continue through the [integration queue](DEVIN_INTEGRATION_QUEUE.md): finish the main regression correction, then land independently accepted feature groups with exact combination and main verification. Preserve the existing product direction, all earlier evidence and the remaining roadmap.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
 
 This increment repairs acceptance mechanics only: three current owner-review selectors and per-PR/ref workflow concurrency. It adds no completed feature credit and does not promote integrated, released or live status. Current checkout, contact-scope and MySQL scheduler gates are recorded in the [integration queue](DEVIN_INTEGRATION_QUEUE.md).

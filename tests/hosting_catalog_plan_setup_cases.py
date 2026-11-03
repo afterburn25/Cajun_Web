@@ -284,6 +284,18 @@ def run_browser(env, browser):
               and not form(op, ACTION).locator('[name="confirm"]').is_checked()
               and not form(op, ACTION).locator('[name="reviewed_defaults"]').is_checked())
         unchanged('Confirmation failure leaves all plan and provider records unchanged', changed)
+        # Expand the native disclosure so the original capture checks exercise its seven real controls.
+        private_cost = form(op, ACTION).locator('details').filter(has=op.get_by_text('Optional private provider cost', exact=True))
+        cost_controls = private_cost.locator('input,select,textarea')
+        check('Guided setup optional private cost starts collapsed with all seven retained controls',
+              private_cost.count() == 1 and private_cost.locator('summary').count() == 1
+              and private_cost.evaluate('el => !el.open') is True
+              and tuple(cost_controls.evaluate_all('nodes => nodes.map(n => n.name)'))
+              == ('cost_known', 'cost_tax', 'cost_basis', 'cost_amount', 'cost_currency', 'cost_period', 'cost_reference'))
+        private_cost.locator('summary').click()
+        check('Guided setup opens optional private costs through the real summary',
+              private_cost.evaluate('el => el.open') is True
+              and cost_controls.evaluate_all('nodes => nodes.length === 7 && nodes.every(n => n.checkVisibility())') is True)
         for width, height, name in ((1440, 1050, CAPTURES[0]), (320, 740, CAPTURES[1])):
             capture(op, op.locator('[data-hosting-plan-setup]'), name, width, height)
         fill(op, selected)
@@ -314,6 +326,13 @@ def run_browser(env, browser):
               and publish['checkout_mode'] == 'invoice-on-confirmation'
               and re.fullmatch(r'[a-f0-9]{64}', publish['review_sha256']) is not None)
         review = op.locator('section.workspace-card').filter(has=op.get_by_role('heading', name='Review before publishing', exact=True))
+        plan_terms = review.locator('details').filter(has=op.get_by_text('Plan terms', exact=True))
+        check('Guided offer preview starts with the original Plan terms collapsed',
+              plan_terms.count() == 1 and plan_terms.locator('summary').count() == 1
+              and plan_terms.evaluate('el => !el.open') is True)
+        plan_terms.locator('summary').click()
+        check('Guided offer preview reveals terms through the real summary',
+              plan_terms.evaluate('el => el.open') is True)
         text = review.inner_text()
         check('New offer preview shows copied price service terms and retained local image',
               all(value in text for value in ('$27.00', 'One managed website', 'Studio email support', 'Domain registration', 'Email during stated studio hours'))

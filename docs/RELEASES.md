@@ -1,3 +1,9 @@
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+Published downloads remain v1.25.0; development remains 1.26.1. This checkout correction changes only four fixtures and two finite source-proof files, with eight historical-preserving narrative prefixes. The actual retained COMPLETE-UPLOAD ZIP is reused only after all 3,069 shipping members match current source; its SHA-256 is `a5e80b53cf67acfb0002986cb7e7510b03d97df9a4c6a0befa0fd99dcb53ccba`. This is local acceptance evidence, not a newly built or published release artifact.
+
+Fresh local native 79, browser/harness 400 and all 32 required captures pass. Supported hosted qualification, required full application and exact-main acceptance, independent release review, immutable package publication and downloaded-asset verification remain separate gates. Preserve all existing release assets. No live deployment, external provider action, customer message or real payment occurred. [Current source and evidence](../PROJECT_STATUS.md).
+
 ## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
 
 The current published version remains v1.25.0 and development remains 1.26.1. The checkout correction and MySQL scheduler fixture failure remain acceptance work; a passing native report is not a complete checkout/browser or release result. Preserve all prior published artifacts. [Current source and gates](../PROJECT_STATUS.md).

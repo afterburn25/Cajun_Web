@@ -140,7 +140,7 @@ def run_browser(env, browser):
             check('Inbox ' + actor + ' retains original terms and distinct setup state ' + request,
                   row['invoice_reference'] in text and '$25.00 USD' in text and status in text and setup in text and 'Active agreement' in text
                   and ('checkout.example' in text) == (request == PAID_REQUEST)
-                  and 'Hosting service active' not in text)
+                  and 'hosting service active' not in text.casefold())
         check('Inbox ' + actor + ' has no client mutation or private provider fields', wrapper.locator('form').count() == 0 and safe(page))
         return wrapper
 
@@ -239,8 +239,8 @@ def run_browser(env, browser):
                     elif phase == 'paid accepted':
                         order = page.locator('[data-service-order]')
                         progress = page.locator('[data-hosting-progress]')
-                        check('Inbox ' + actor + ' inherited hosting remains accepted and locally prepared', order.count() == 1 and 'checkout.example' in order.inner_text() and 'Hosting request accepted' in order.inner_text()
-                              and progress.count() == 1 and 'Hosting record prepared' in progress.inner_text() and 'Hosting service active' not in progress.inner_text())
+                        check('Inbox ' + actor + ' inherited hosting remains accepted and locally prepared', order.count() == 1 and 'checkout.example' in order.inner_text() and 'hosting request accepted' in order.inner_text().casefold()
+                              and progress.count() == 1 and 'hosting record prepared' in progress.inner_text().casefold() and 'hosting service active' not in progress.inner_text().casefold())
                         if is_owner:
                             policy = page.locator('[data-checkout-fulfillment-policy]')
                             check('Checkout owner uses verified-payment setup without legacy manual controls',
@@ -262,7 +262,7 @@ def run_browser(env, browser):
                               and bool(offer.locator('[name="csrf"]').input_value()) and not offer.locator('[name="confirm"]').is_checked())
                     else:
                         check('Unstarted client purchase does not invent a hosting offer or provider activation', page.locator('[data-service-order]').count() == 0 and page.locator('[data-hosting-progress]').count() == 0
-                              and 'Hosting service active' not in page.inner_text('body'))
+                              and 'hosting service active' not in page.inner_text('body').casefold())
         unchanged('All inbox invoice project agreement and setup links are commercially read-only')
         # Existing fixed pagination must remain real navigation, not rendered URL-only proof.
         check('Owner empty second page is explicit', goto(op, list_url(True, 2)) == 200 and op.locator('[data-hosting-purchase]').count() == 0 and 'No purchases on this page' in op.inner_text('body'))

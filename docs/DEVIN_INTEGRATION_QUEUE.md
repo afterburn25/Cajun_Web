@@ -1,3 +1,14 @@
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR341, parent `cb3ad767` | Enclosing six-file fixture/proof correction passes fresh local native 79, browser/harness 400 and all 32 captures; independent review recorded | Publish reviewed fast-forward; inspect corrected exact-source hosted checkout matrix and full acceptance before integration. Preserve all failures. |
+| Main `d9e34d2f` / scheduler PR342 `817826d9` | Main MySQL fixture regression corrected on isolated PR342; automatic default and all four supported full runs already dispatched | Finish current runs and independent review, land the regression fix, verify exact main before unrelated feature merges. |
+| PR339 `cd86092f` | Scoped default-runtime source/package/report/visual acceptance cleared | Recheck current main and preserve ordinary combination, merge and exact-main gates after regression repair. |
+| PR340 `c667661d` | Independently reviewed local 533 native + 379 bounded HTTP/browser, separate bootstrap 65; focused hosted account/notification accepted | Correct and requalify the separate failed full Application service-plan/contact fixture, then complete current integration gates while retaining original evidence. |
+
+[Exact evidence and next actions](../SESSION_HANDOFF.md). No new requirement, release or live-delivery credit is claimed. The scheduler and checkout finite receipt rows must both survive integration.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
 
 | Candidate | Current disposition | Next action |

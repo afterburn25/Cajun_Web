@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "3604088850d87aee1d3fb7947a2fa3cdc9e9be4d49d2ce62015bb267d7ce97cb",
+  "verifier_sha256": "68a927aaa2e744b64328266e3ff0b706cfc6d96acc2dd3819809d3d39eeaf464",
   "regression_sha256": "b6cb3f5cbfbe299e8532d8b926218a742e10464b001806886bbeb093923d8812",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -209,7 +209,7 @@
     },
     "tests/hosting_catalog_plan_setup_cases.py": {
       "original_sha256": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
-      "current_sha256": "05725f00efa35a450a1fef6cda20d7b772fb3001704be8af07aba718750c4173",
+      "current_sha256": "51bd299de65d61e40f2ec34bf7deccad452e14281761e0a0b2a38b54ca281508",
       "edits": [
         [
           "All mutations use actual authenticated forms. The existing read-only state bridge\nproves retained financial history and exact local setup counts. No provider read,\nfixture seed, session injection, timestamp edit or automatic publication occurs.\n\"\"\"\nimport hashlib\nimport math\n",
@@ -246,6 +246,14 @@
         [
           "              and urljoin(op.url, review.locator('.hosting-catalog-image').get_attribute('src')) == urljoin(product_url, image_url))\n        check('Preview contains no provider credentials private mapping or submitted password',\n              all(value not in review.inner_text() for value in ('SYNTHETIC_CHECKOUT_PROVIDER_KEY', 'PRIVATE_', 'credential_sha256', 'mapping_json', owner_password)))\n        check('Publication remains a separate unchecked password-confirmed action',\n              form(op, 'hosting_catalog_publish').locator('[name=\"current_password\"]').input_value() == ''\n              and not form(op, 'hosting_catalog_publish').locator('[name=\"confirm\"]').is_checked())\n        preview_image = review.locator('.hosting-catalog-image')\n        preview_image.scroll_into_view_if_needed()\n",
           "              and urljoin(op.url, review.locator('.hosting-catalog-image').get_attribute('src')) == urljoin(product_url, image_url))\n        check('Preview contains no provider credentials private mapping or submitted password',\n              all(value not in review.inner_text() for value in ('SYNTHETIC_CHECKOUT_PROVIDER_KEY', 'PRIVATE_', 'credential_sha256', 'mapping_json', owner_password)))\n        check('Publication remains a separate unchecked owner-session action',\n              form(op, 'hosting_catalog_publish').locator('[name=\"current_password\"],[name=\"owner_password\"]').count() == 0\n              and bool(form(op, 'hosting_catalog_publish').locator('[name=\"csrf\"]').input_value())\n              and not form(op, 'hosting_catalog_publish').locator('[name=\"confirm\"]').is_checked())\n        preview_image = review.locator('.hosting-catalog-image')\n        preview_image.scroll_into_view_if_needed()\n"
+        ],
+        [
+          "        unchanged('Confirmation failure leaves all plan and provider records unchanged', changed)\n        for width, height, name in ((1440, 1050, CAPTURES[0]), (320, 740, CAPTURES[1])):\n",
+          "        unchanged('Confirmation failure leaves all plan and provider records unchanged', changed)\n        # Expand the native disclosure so the original capture checks exercise its seven real controls.\n        private_cost = form(op, ACTION).locator('details').filter(has=op.get_by_text('Optional private provider cost', exact=True))\n        cost_controls = private_cost.locator('input,select,textarea')\n        check('Guided setup optional private cost starts collapsed with all seven retained controls',\n              private_cost.count() == 1 and private_cost.locator('summary').count() == 1\n              and private_cost.evaluate('el => !el.open') is True\n              and tuple(cost_controls.evaluate_all('nodes => nodes.map(n => n.name)'))\n              == ('cost_known', 'cost_tax', 'cost_basis', 'cost_amount', 'cost_currency', 'cost_period', 'cost_reference'))\n        private_cost.locator('summary').click()\n        check('Guided setup opens optional private costs through the real summary',\n              private_cost.evaluate('el => el.open') is True\n              and cost_controls.evaluate_all('nodes => nodes.length === 7 && nodes.every(n => n.checkVisibility())') is True)\n        for width, height, name in ((1440, 1050, CAPTURES[0]), (320, 740, CAPTURES[1])):\n"
+        ],
+        [
+          "        text = review.inner_text()\n",
+          "        plan_terms = review.locator('details').filter(has=op.get_by_text('Plan terms', exact=True))\n        check('Guided offer preview starts with the original Plan terms collapsed',\n              plan_terms.count() == 1 and plan_terms.locator('summary').count() == 1\n              and plan_terms.evaluate('el => !el.open') is True)\n        plan_terms.locator('summary').click()\n        check('Guided offer preview reveals terms through the real summary',\n              plan_terms.evaluate('el => el.open') is True)\n        text = review.inner_text()\n"
         ]
       ]
     },
@@ -277,9 +285,29 @@
         ]
       ]
     },
+    "tests/hosting_checkout_http_fixture.php": {
+      "original_sha256": "ce3dca3648eea10886691f9d4d60138f81bc54171c20a78e518a47ed1e74b220",
+      "current_sha256": "77d69fab3506b1e6a903318efdacfe168c1afb047b63bc7b7fe461099dce610d",
+      "edits": [
+        [
+          "if($operation==='billing-state'){\n",
+          "if($operation==='billing-state'){\n    require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers.php';\n"
+        ]
+      ]
+    },
+    "tests/hosting_checkout_native.php": {
+      "original_sha256": "65feb6c86a07ad4691815926cfaf32978f7117e2cfb701f4bd663d4bd026daba",
+      "current_sha256": "7690790bc095fca8f7690518390ab36e3f8ec83d53b40f10e4161f823f0aef97",
+      "edits": [
+        [
+          "    if(!mkdir($private,0700)||(!is_dir($qa)&&!mkdir($qa,0700,true)))throw new RuntimeException('Cannot create isolated fixture paths.');\n",
+          "    // Match the installed private-storage layout before its real multipart HTTP continuation.\n    if(!mkdir($private,0700)||!mkdir($private.'/media',0700)||(!is_dir($qa)&&!mkdir($qa,0700,true)))throw new RuntimeException('Cannot create isolated fixture paths.');\n"
+        ]
+      ]
+    },
     "tests/hosting_purchase_inbox_cases.py": {
       "original_sha256": "ad714d79c1dce6ba21f243c4d81fbe0e2349ba52375cda8a8a1ac75331d57600",
-      "current_sha256": "cab33bca20bbbed50a348d15b9b5504ea9e9da9c5e44577f88d08ca1d300f546",
+      "current_sha256": "c09947207bb3b996f325e630f0a57b419369626d2be5808747a30ceca75dfe89",
       "edits": [
         [
           "                        offer = form(page, 'service_plans_order_offer')\n                        values = offer.locator('[name=\"invoice_choice\"] option').evaluate_all('els=>els.map(el=>el.value).filter(Boolean)')\n                        check('Unpaid purchase opens existing owner setup form with only original invoice', offer.count() == 1 and len(values) == 1 and re.fullmatch(str(row['invoice_id']) + ':[a-f0-9]{64}', values[0]) is not None\n                              and offer.locator('[name=\"current_password\"]').input_value() == '' and not offer.locator('[name=\"confirm\"]').is_checked())\n                    else:\n                        check('Unstarted client purchase does not invent a hosting offer or provider activation', page.locator('[data-service-order]').count() == 0 and page.locator('[data-hosting-progress]').count() == 0\n                              and 'Hosting service active' not in page.inner_text('body'))\n",
@@ -288,6 +316,18 @@
         [
           "              and 'primary client outside support access' in cp.inner_text('body') and cp.locator('[data-hosting-purchase]').count() == 0)\n        check('Inbox support test reaches actual owner support controls', goto(op, admin + '?view=support') == 200)\n        support = form(op, 'support_start').filter(has=op.locator('input[name=\"client_id\"][value=\"1\"]'))\n        check('Inbox owner opens actual support session for the purchase client', support.count() == 1 and click(op, support.get_by_role('button', name='Open client portal', exact=True)) == 200\n              and op.get_by_role('complementary', name='Support session').count() == 1)\n        support_url = op.url\n        support_ids = parse_qs(urlparse(support_url).query).get('support', [])\n",
           "              and 'primary client outside support access' in cp.inner_text('body') and cp.locator('[data-hosting-purchase]').count() == 0)\n        check('Inbox support test reaches actual owner support controls', goto(op, admin + '?view=support') == 200)\n        support = form(op, 'support_start').filter(has=op.locator('input[name=\"client_id\"][value=\"1\"]'))\n        check('Inbox owner opens actual support session for the purchase client', support.count() == 1 and click(op, support.get_by_role('button', name='Open client portal (owner review)', exact=True)) == 200\n              and op.get_by_role('complementary', name='Support session').count() == 1)\n        support_url = op.url\n        support_ids = parse_qs(urlparse(support_url).query).get('support', [])\n"
+        ],
+        [
+          "                  and 'Hosting service active' not in text)\n",
+          "                  and 'hosting service active' not in text.casefold())\n"
+        ],
+        [
+          "                        check('Inbox ' + actor + ' inherited hosting remains accepted and locally prepared', order.count() == 1 and 'checkout.example' in order.inner_text() and 'Hosting request accepted' in order.inner_text()\n                              and progress.count() == 1 and 'Hosting record prepared' in progress.inner_text() and 'Hosting service active' not in progress.inner_text())\n",
+          "                        check('Inbox ' + actor + ' inherited hosting remains accepted and locally prepared', order.count() == 1 and 'checkout.example' in order.inner_text() and 'hosting request accepted' in order.inner_text().casefold()\n                              and progress.count() == 1 and 'hosting record prepared' in progress.inner_text().casefold() and 'hosting service active' not in progress.inner_text().casefold())\n"
+        ],
+        [
+          "                              and 'Hosting service active' not in page.inner_text('body'))\n",
+          "                              and 'hosting service active' not in page.inner_text('body').casefold())\n"
         ]
       ]
     },

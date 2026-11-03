@@ -1,3 +1,10 @@
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+- Repair dedicated checkout fixture setup: create checked private media storage and load the billing-state publication reader.
+- Exercise real optional-cost and Plan terms disclosures before the unchanged visibility, text, image and capture assertions.
+- Compare displayed hosting statuses case-insensitively while strengthening every existing active-service exclusion.
+- Retain all original failures and exact source inverses. Fresh local native 79, browser/harness 400 and all 32 captures pass; source and independent review are recorded in the current status. Corrected hosted acceptance and integration remain pending.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
 
 - Correct the three dedicated checkout owner-review button selectors without changing application behavior or authorization assertions.
