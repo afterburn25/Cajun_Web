@@ -1,3 +1,7 @@
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+The scheduler browser fixture now uses a real invited synthetic owner with its own unchanged read budget, explicitly revokes that owner's authority in both negative probes, and verifies inherited reads, outcomes, audit and original owner data remain intact. Unchanged parent code reproduces both hosted MySQL failures at 20 and 19 prior reads; the corrected focused installed browser and native suites pass. Shipping code and all original assertions remain unchanged. The correction is locally implemented and independently reviewed for publication; full corrected hosted acceptance remains pending. [Exact evidence and limits](../SESSION_HANDOFF.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

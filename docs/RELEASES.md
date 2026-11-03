@@ -1,3 +1,7 @@
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+PR #317 is integrated at `d9e34d2f8483fcd7630d799725fac773561f5183`, but the additional full MySQL Application lanes retain scheduler browser failures. The dedicated-owner fixture correction has focused local acceptance and completed independent source/runtime/narrative publication review; full corrected maintained-matrix acceptance and final integration clearance remain pending. The previously verified default main package/update evidence remains historical evidence for its exact source. No new version, release asset or live deployment is created by this fixture correction. [Current gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-01 continuation — current component composition
 
 The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.

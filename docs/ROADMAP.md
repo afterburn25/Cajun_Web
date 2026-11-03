@@ -1,3 +1,7 @@
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Current integration priority: publish the reviewed scheduler fixture correction and complete full hosted acceptance, normally merge it, then verify exact main before unrelated feature integration. Parent failures and successful focused correction are recorded; no roadmap feature is counted as released by this test-only repair. [Source and remaining gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-01 continuation — current component composition
 
 The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.
