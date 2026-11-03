@@ -1,4 +1,9 @@
 ## 2026-11-02 — FK fixture rule follow-up
+## Staff StackCP support — 2026-10-19
+
+Root owns `codex/twentyi-support-stackcp` from frozen client source51938fc8/PR243. Catalog owns support documents/storage/permissions/schema; Domains owns executor/native acceptance; VPS owns support context/shared union/closed browser checks; root owns actual routes/forms/navigation, acceptance wiring, installer inventory and Git delivery. [Exact scope and limits](TWENTYI_SUPPORT_STACKCP.md). Preserve parent branches, separate PR253/254 and all Devin non-20i work. Full acceptance and release are pending; no live provider activation is authorized.
+
+## Post-publication coordination — 2026-10-18
 
 The isolated FK metadata worker preserved c2f and local 15b81, changed only the shared native helper, and completed the approved 172-check supplement in fresh fkrule_ tables on owned 33316. The server is stopped; prior namespaces and all other workers’ runtimes are untouched. Root owns publication, matrix monitoring and outer composition. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
 

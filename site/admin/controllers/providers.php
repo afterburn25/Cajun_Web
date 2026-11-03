@@ -7,6 +7,9 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_password_reset_template.
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_schedule.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_prerequisites.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_access.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_launch.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_client_stackcp.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_support_stackcp.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
@@ -51,6 +54,8 @@ function provider_inventory_message(?string $code):string {
 
 function provider_inventory_admin_action(string $action):void {
     if(str_starts_with($action,'provider_inventory_cloud_request_')){provider_cloud_site_requests_admin_action($action);return;}
+    if (str_starts_with($action,'provider_inventory_client_stackcp_')) provider_client_stackcp_admin_action($action);
+    if (str_starts_with($action,'provider_inventory_stackcp_launch_')) provider_stackcp_launch_admin_action($action);
     if (str_starts_with($action,'provider_inventory_stackcp_access_')) provider_stackcp_access_admin_action($action);
     if (str_starts_with($action,'provider_inventory_stackcp_')) provider_stackcp_admin_action($action);
     if(str_starts_with($action,'provider_inventory_contract_'))domain_contracts_admin_action($action);
@@ -155,6 +160,7 @@ function provider_settings_admin_render(string $error):void {
     header('Referrer-Policy: no-referrer');
     try{$actor=provider_settings_manager(false);}
     catch(RuntimeException $e){if($e instanceof PDOException)throw $e;http_response_code(403);admin_head('20i access unavailable','security',require_admin());echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';admin_foot();exit;}
+    provider_stackcp_launch_page_headers();
     admin_head('20i workspace','provider-settings',$actor);
     if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
     if(!provider_settings_ready()){

@@ -1,3 +1,7 @@
+## 2026-10-19 — primary-client hosting control panel candidate
+
+[Client StackCP access](TWENTYI_CLIENT_STACKCP.md) now has owner delegation, actual primary-client launch, fresh permission reads, one-use approvals and protected browser handoff in a separate candidate. Local portable/HTTP verification does not complete installed database, combined acceptance or release gates. Contacts, support sessions, custom brands and interactive SSH remain outside this increment.
+
 # Unified client portal: hosting, design projects, updates and website downloads
 
 Current ownership and priority: [Codex complete20i takeover](TWENTYI_CODEX_TAKEOVER.md). Earlier allocations/progress summaries below are historical; the complete requirements remain in force.

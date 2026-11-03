@@ -1,0 +1,112 @@
+name: Owner StackCP launch
+on:
+  push:
+    branches: [main]
+    paths: ["foundation/**", "site/app/**", "site/includes/**", "site/config/**", "site/database/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_launch.php", "site/admin/views/providers.php", "tests/stackcp_*", "tests/invitations/Dockerfile", "tools/build.py", ".github/workflows/provider-stackcp-launch.yml"]
+  pull_request:
+    paths: ["foundation/**", "site/app/**", "site/includes/**", "site/config/**", "site/database/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_launch.php", "site/admin/views/providers.php", "tests/stackcp_*", "tests/invitations/Dockerfile", "tools/build.py", ".github/workflows/provider-stackcp-launch.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: stackcp-launch-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-launch:
+    name: StackCP launch ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify canonical deployment mirrors and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-stackcp-launch -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Exact transport, views and isolated owner lifecycle
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-stackcp-launch sh -ec '
+              php tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-default.json
+              php -n tests/stackcp_launch_transport.php > qa/stackcp-launch-transport-minimal.json
+              php tests/stackcp_launch_views.php qa/stackcp-launch-views-default.json
+              php -n tests/stackcp_launch_views.php qa/stackcp-launch-views-minimal.json
+              CWP_TEST_STACKCP_LAUNCH=1 php tests/stackcp_launch_native.php
+            '
+      - name: Preserve finite native reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stackcp-launch-native-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/stackcp-launch-transport-default.json
+            qa/stackcp-launch-transport-minimal.json
+            qa/stackcp-launch-views-default.json
+            qa/stackcp-launch-views-minimal.json
+            qa/stackcp-launch-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
+  browser-contract:
+    name: StackCP launch PHP8.3 HTTP and Chromium
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare local PHP and closed browser fixture
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php8.3-cli python3-venv
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Actual redirect helpers through synthetic TLS proxy
+        run: .ci-venv/bin/python tests/stackcp_launch_browser.py --php /usr/bin/php8.3 --report qa/stackcp-launch-browser-results.json
+      - name: Preserve finite browser report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stackcp-launch-browser-php8.3-${{ github.sha }}
+          path: qa/stackcp-launch-browser-results.json
+          if-no-files-found: warn
+          retention-days: 14

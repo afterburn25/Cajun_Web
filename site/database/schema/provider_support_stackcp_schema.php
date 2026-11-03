@@ -1,0 +1,8 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) {http_response_code(404);exit;}
+function provider_support_stackcp_schema(string $prefix):array {
+    if (preg_match('/\A[a-zA-Z][a-zA-Z0-9_]{1,19}\z/',$prefix)!==1) throw new InvalidArgumentException('Invalid database prefix.');
+    $ascii=' CHARACTER SET ascii COLLATE ascii_bin';$id='CHAR(32)'.$ascii;$hash='CHAR(64)'.$ascii;
+    return ['provider_support_stackcp_events'=>'CREATE TABLE `'.$prefix.'provider_support_stackcp_events` (id '.$id.' PRIMARY KEY,ordinal INT UNSIGNED NOT NULL,permission_id '.$id.' NOT NULL,admission_id '.$id.' NOT NULL,profile_id '.$id.' NOT NULL,package_id INT UNSIGNED NOT NULL,client_id INT UNSIGNED NOT NULL,staff_id INT UNSIGNED NOT NULL,actor_staff_id INT UNSIGNED NOT NULL,kind VARCHAR(16)'.$ascii.' NOT NULL,phase VARCHAR(16)'.$ascii.' NOT NULL,document_json LONGTEXT'.$ascii.' NOT NULL,document_sha256 '.$hash.' NOT NULL,proof '.$hash.' NOT NULL,UNIQUE KEY support_stackcp_ordinal(ordinal),INDEX support_stackcp_permission(permission_id),INDEX support_stackcp_admission(admission_id),INDEX support_stackcp_resource(profile_id,package_id,staff_id),INDEX support_stackcp_client(client_id),INDEX support_stackcp_staff(actor_staff_id),INDEX support_stackcp_delegate(staff_id),FOREIGN KEY (profile_id) REFERENCES `'.$prefix.'provider_profiles` (id) ON DELETE RESTRICT,FOREIGN KEY (client_id) REFERENCES `'.$prefix.'studio_clients` (id) ON DELETE RESTRICT,FOREIGN KEY (actor_staff_id) REFERENCES `'.$prefix.'users` (id) ON DELETE RESTRICT,FOREIGN KEY (staff_id) REFERENCES `'.$prefix.'users` (id) ON DELETE RESTRICT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'];
+}

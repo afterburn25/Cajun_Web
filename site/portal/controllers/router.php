@@ -21,6 +21,10 @@ if($softwareRequested||$financeRequested){
 }
 require_once CWP_CODE_ROOT.'/portal/controllers/tickets.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/client_stackcp.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/support_stackcp.php';
+provider_support_stackcp_route_preflight();
+provider_client_stackcp_route_preflight();
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_registration_drafts.php';
@@ -68,6 +72,7 @@ if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_acc
 master_portal_dispatch();
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
+if(provider_support_stackcp_requested())provider_support_stackcp_staff_render($supportId,$error);
 if(isset($_GET['activity']))activity_render('client',$error);
 if(isset($_GET['download_release']))delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');
 if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
@@ -84,6 +89,7 @@ if($financeRequested){require_once CWP_CODE_ROOT.'/portal/views/financing.php';l
 
 if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
 if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
+if(provider_client_stackcp_requested())provider_client_stackcp_client_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);
