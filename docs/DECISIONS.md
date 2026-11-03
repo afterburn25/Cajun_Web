@@ -1,3 +1,7 @@
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Give the bounded scheduled-refresh browser scenario its own normally invited and activated owner. Preserve the shared setup owner's immutable read history, audit and authority, and keep the production 20/hour budget and 30-second cooldown. The two negative permission probes must revoke the same dedicated identity that submits the protected action. Existing scenarios remain preserved through one exact reversible source-receipt addition. [Controlled reproductions and acceptance scope](../SESSION_HANDOFF.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

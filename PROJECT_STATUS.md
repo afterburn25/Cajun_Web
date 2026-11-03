@@ -1,3 +1,11 @@
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+PR #317 is merged at `d9e34d2f8483fcd7630d799725fac773561f5183`; the verified default main Application run 41515697343 is retained. The additional full PHP 8.2/8.4 × MySQL 8.4/MariaDB 10.11 matrix has two MySQL scheduler browser failures, while both MariaDB workflows report success. The unchanged scheduler fixture reproduces the first-run and second-run failures under preserved 20-read and 19-read synthetic owner histories respectively. This identifies a shared-owner quota precondition in the fixture; the original hosted hourly counts are not available in its artifacts.
+
+A test-only correction now creates a dedicated owner through the existing real invitation/activation boundary and uses the same owner in both permission-refusal probes and Chromium. Every original assertion and production limit remains intact. The corrected isolated PHP 8.3.6/MySQL 8.0.46/Chromium journey passed 68 fixture checks plus four separately identified harness checks; the unchanged native suite passed 102. Source proof 2,150, source-mutation checks 57 and owner-helper checks 102 also passed. Four actual captures were inspected. Independent source/runtime/narrative review is complete for publication; full corrected hosted acceptance remains pending.
+
+The correction is implemented locally on the exact main parent, not merged, released or deployed. Repair this main acceptance regression before integrating unrelated features. [Exact failures, source, test scopes and remaining gates](SESSION_HANDOFF.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The owner’s requested normal merge of [PR #317](https://github.com/afterburn25/Cajun_Web/pull/317) remains the priority. The preserved published parent is `6ac15c40242c152b784b3c476ac2a3c0a731483b`, tree `9643d0d41b1e768305209a71949d9510391308bd`. Its [Application run 41404331266](https://github.com/afterburn25/Cajun_Web/actions/runs/41404331266) passed build, native database/upgrade/authorization, recovery and Apache. The other 59 Actions workflows succeeded. Its HTTP/browser report records 3,879 passing checks and one failure at #3,880: `Financed domain move deauthorizes old site and authorizes new site on same key`. PR317 is not merged.

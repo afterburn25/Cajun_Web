@@ -1,3 +1,9 @@
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Main is `d9e34d2f8483fcd7630d799725fac773561f5183` after PR #317. Its default acceptance and release-candidate update evidence are retained, but the separate full MySQL browser lanes fail in the scheduler fixture. The dedicated-owner correction is implemented locally with actual parent failure reproduction and successful corrected focused browser/native evidence. Independent source/runtime/narrative review is complete for publication. Normal hosted acceptance, normal merge and exact-main verification remain required.
+
+Treat this main regression as the current integration blocker. Preserve existing homepage, checkout and contacts candidates for separate review; this correction does not certify those branches or authorize live operations. [Exact scheduler evidence and next action](../SESSION_HANDOFF.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.
