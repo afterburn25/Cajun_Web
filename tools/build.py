@@ -75,7 +75,7 @@ def source_only_agent_guidance(name):
     # still hit the strict full-project allowlist below and fail closed.
     parts=PurePosixPath(name).parts
     return (len(parts)==2 and parts[0]=='.clinerules'
-            and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*\\.md',parts[1]) is not None)
+            and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*\.md',parts[1]) is not None)
 
 def full_project_area(name):
     safe(name)
