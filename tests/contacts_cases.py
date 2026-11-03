@@ -136,6 +136,15 @@ def run_browser(env,browser):
     visitor.post(blink,data=activation)
     billing=requests.Session()
     submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})
+    # Recurring navigation is tested only after the maintained billing preparation.
+    check('Contact billing navigation uses prepared service-plan and recurring storage',
+          db("SELECT name,value FROM ci_settings WHERE name IN ('service_plans_schema_version','recurring_billing_schema_version') ORDER BY name")==[
+              {'name':'recurring_billing_schema_version','value':'1'},
+              {'name':'service_plans_schema_version','value':'1'}])
+    r=billing.get(portal)
+    check('Billing-enabled contact sees billing navigation', 'agreements=1' in r.text and 'recurring=1' in r.text and 'registration_drafts=1' in r.text)
+    r=contact.get(portal+'?recurring=1')
+    check('Prepared recurring billing remains unavailable to a projects-only contact',r.status_code==403)
     r=billing.get(portal+'?job=1')
     check('Billing contact sees invoices not project material','Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text and 'Designs & proposals' not in r.text and 'Private project files' not in r.text)
     r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'message','body':'Billing contact must not post.'})

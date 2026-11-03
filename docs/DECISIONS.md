@@ -1,3 +1,13 @@
+## 2026-11-03 — test current authority and readiness at the actual public boundary
+
+Contacts preparation uses the reviewed owner session, valid CSRF and an explicit unchecked backup confirmation. The service-plan fixture now first replays the obsolete password-only submission and proves refusal without storage or agreement changes, then submits the real confirmation. Restoring a removed password prompt would change shipping behavior to satisfy a stale fixture and is not part of this correction.
+
+Keep the original full three-link billing-navigation assertion verbatim at the existing freshly invited billing contact after actual service-plan and recurring readiness. At the earlier service-plan phase, require agreement/registration navigation while recurring is unprepared and absent. Keep a prepared projects-only denial and leave every original recurring setup/refusal assertion unchanged.
+
+Distinguish invalidated credentials from current identities without billing permission. The identity guard returns a revoked session to the real 200 sign-in form before agreement rendering. A reauthenticated nonbilling contact reaches the separate generic 403 public refusal. The corrected predicates require the actual login controls or generic refusal, absence of private terms and, for attempted consent, unchanged records in service_plans, service_plan_events, service_subscriptions and service_subscription_events. Internal exception text is not the public agreement response.
+
+All 149 original check sites remain, including 145 exact calls, four strengthened corrected predicates and one verbatim relocated positive; six checks are additive. Proof changes admit only the two exact fixture identities and their existing finite inverses. All component identities, 56 repair paths, four additions, four adapters and verifier functions remain. The successful local 476-record chain and separate 65-record bootstrap do not stand in for hosted full-suite, matrix, main or release qualification. Preserve the hosted failure and three local failed checkpoints, including the earlier static lookahead that missed the identity-before-render path.
+
 ## 2026-11-03 — keep contact permissions separate from personal account state
 
 Contacts receive fresh project-grant checks at the existing ticket transaction boundary; invoice/subscription link context additionally requires billing permission. Ticket history retains the established client-account document format, with the acting contact ID added to audit detail. Contact views omit the primary client's personal read cursor, and attempts to read or change primary ticket notifications/read state fail. This avoids a schema expansion and preserves all existing primary/staff-support histories.

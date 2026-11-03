@@ -1,3 +1,9 @@
+## 2026-11-03 — P-05 acceptance fixture continuation
+
+P-05 scoped company contacts remains implemented on its candidate branch and awaiting completed integration acceptance. This follow-up corrects fixture confirmation, readiness-phase navigation and actual public session/permission refusal expectations while retaining all original test sites and shipping authority behavior. The complete local maintained four-module chain passes 476 recorded HTTP/browser checks with a separate 65-record bootstrap and eight captures; current source composition passes 2,151 checks.
+
+The earlier draft-v2 122-case regression is retained with independently verified unchanged proof implementation and path sets; it is not relabeled as a final-draft execution. Hosted full-application/current-source acceptance, candidate reconciliation, normal merge, resulting-main checks, release and live operation remain distinct. Requirement credit and completion percentages do not change for fixture repair or repeated verification. [Evidence and remaining work](../PROJECT_STATUS.md).
+
 ## 2026-11-03 — P-05 integration correctness checkpoint
 
 P-05 scoped company contacts remains implemented on its candidate branch and pending complete integration acceptance. The review follow-up closes contact activity/notification/software privacy, staff reply routing, ticket grant and billing-link boundaries, and contact access to primary personal read state. Local native tests pass 533 recorded checks; exact-source proof/regression and all maintained acceptance helpers pass, with independent source/evidence review complete for publication scope. Supported hosted and installed-browser acceptance remain outstanding. Requirement credits and integrated/released/live status are unchanged.

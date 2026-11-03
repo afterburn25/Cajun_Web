@@ -1,3 +1,15 @@
+## 2026-11-03 — contacts fixture follow-up and separate candidate gates
+
+| Candidate | Verified checkpoint | Next gate |
+| --- | --- | --- |
+| PR340 contacts, enclosing follow-up to `c667661d` | Local complete service-plan/software/financing/contacts chain 476/476, separate native bootstrap 65, eight captures; exact finite source composition 2,151 | Publish the exact independently reviewed ordinary follow-up, obtain corrected current-source hosted acceptance, then reconcile/main-integrate normally. |
+| PR341 checkout `f98a26f3` | Independently reviewed local native 79 / full checkout-browser 400 / 32 captures; exact-head Devin review success observed at 09:12 UTC | Hosted acceptance remains separate; all seven automatic runs were still queued at the 09:19:26 observation. |
+| PR342 scheduler `817826d9` | Five native/browser jobs reported success at 09:09; two MySQL native partitions, each with 3,944 HTTP records, passed archive/report inspection and scoped visual self-review | Complete remaining artifact/capture inspection and final aggregates (all five queued at 09:19:26); independent adapter/source review is separate from the artifact self-review, and successful partial partitions are not final acceptance. |
+| PR352 scheduler `6b431c80` | Separate overlapping candidate | Keep separate ownership/source; qualify and reconcile before any combined integration. |
+| PR343–351 | Read-only 09:03 inventory: nine open drafts targeting main, shared finite composition metadata and some shared contacts authority/router paths | Content/ancestry review, current-source acceptance and deliberate combined reconciliation; path overlap alone gives no merge order or clearance. |
+
+Main was `d9e34d2f8483fcd7630d799725fac773561f5183` at the 09:19:26 checkpoint. The contacts follow-up adds no shipping changes relative to its published parent. Checkout adds no shipping-path changes relative to that main, which does not establish semantic independence. Preserve all receipts, original failures and independent ownership. No candidate is marked merged, released or live by this checkpoint. Current details and evidence are in [the handoff](../SESSION_HANDOFF.md).
+
 ## 2026-11-03 — PR340 review correction checkpoint
 
 **NEEDS CORRECTION OR ACCEPTANCE:** PR340 parent `b3b2094ae8024aa44ce467cb97763122a590a219` has a locally corrected follow-up for its five contact privacy/notification review findings and the retained ticket grant/primary-only software-control gaps. The bounded ticket correction also filters billing links and preserves primary personal read state. Existing original branches and histories are retained.

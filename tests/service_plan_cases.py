@@ -148,7 +148,27 @@ def run_browser(env, browser):
     check('Client may decline an unactivated offer without agreeing', 'Declined offer' in r.text and 'Service terms accepted' not in r.text)
 
     # Additional contacts share the parent client identity; their own current billing authority is rechecked inside the guard.
-    submit(owner, admin+'?view=studio-upgrade', 'studio_contacts_setup', {'current_password': OWNER})
+    contacts_upgrade = admin+'?view=studio-upgrade'
+    setup_form = form_for(owner.get(contacts_upgrade), 'studio_contacts_setup')
+    setup_confirmation = setup_form.select_one('input[name=confirm][type=checkbox][value="1"]')
+    setup_fields = form_data(setup_form)
+    check('Service-plan contact setup retains unchecked backup confirmation and current-owner authority',
+          setup_confirmation is not None and not setup_confirmation.has_attr('checked')
+          and 'confirm' not in setup_fields and bool(setup_fields.get('csrf'))
+          and not setup_form.select('[name=current_password],[name=owner_password]'))
+    contacts_before = db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")
+    contact_tables_before = db("SHOW TABLES LIKE 'ci_studio_contacts'")
+    agreements_before = snapshot()
+    r = submit(owner, contacts_upgrade, 'studio_contacts_setup', {'current_password': OWNER})
+    check('Service-plan contact setup refuses the obsolete password-only request without preparing storage',
+          r.status_code==200 and not r.history and 'Confirm that you saved' in r.text
+          and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==contacts_before
+          and db("SHOW TABLES LIKE 'ci_studio_contacts'")==contact_tables_before and snapshot()==agreements_before)
+    r = submit(owner, contacts_upgrade, 'studio_contacts_setup', {'confirm': '1'})
+    check('Service-plan owner explicitly prepares contacts before exercising scoped agreement access',
+          r.status_code==200 and len(r.history)==1 and r.history[0].status_code==303
+          and 'contacts storage prepared' in r.text
+          and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value': '1'}])
 
     def contact_form(action, field, value):
         for f in soup(owner.get(admin+'?view=studio-clients')).select('form'):
@@ -177,7 +197,9 @@ def run_browser(env, browser):
     r = billing_session.get(portal+'?agreements=1')
     check('Billing-enabled contact can open the agreements index', r.status_code==200)
     r = billing_session.get(portal)
-    check('Billing-enabled contact sees billing navigation', 'agreements=1' in r.text and 'recurring=1' in r.text and 'registration_drafts=1' in r.text)
+    check('Billing contact sees agreement and registration navigation before recurring setup',
+          'agreements=1' in r.text and 'registration_drafts=1' in r.text and 'recurring=1' not in r.text
+          and not db("SELECT value FROM ci_settings WHERE name='recurring_billing_schema_version'"))
     consent_c = data(billing_session, turl, 'service_agreements_consent')
     r = billing_session.post(turl, data=dict(consent_c, confirm='1'))
     check('Billing contact consent is recorded under the parent client identity', 'agreement to these service terms was recorded' in r.text and db('SELECT actor_client_id,actor_staff_id FROM ci_service_subscription_events WHERE subscription_id=?', [third])==[{'actor_client_id': cid, 'actor_staff_id': None}])
@@ -196,24 +218,40 @@ def run_browser(env, browser):
     check('Projects-only contact sees no billing navigation', 'agreements=1' not in r.text and 'recurring=1' not in r.text and 'registration_drafts=1' not in r.text)
     forged = dict(data(client, furl, 'service_agreements_consent'), confirm='1', csrf=env['token'](projects_session.get(portal)))
     r = projects_session.post(furl, data=forged)
-    check('Projects-only contact POST cannot consent under the shared session', 'do not include billing' in r.text and snapshot()==denied)
+    check('Projects-only contact POST cannot consent under the shared session',
+          r.status_code==403 and 'Service agreements are unavailable for this session.' in r.text
+          and 'Reviewed care plan' not in r.text and snapshot()==denied)
     downloads_session, _ = add_contact('Agreement Downloads Contact', 'agreement-downloads@example.invalid', 'downloads')
     r = downloads_session.get(furl)
     check('Downloads-only contact cannot read offered terms', r.status_code==403 and 'Reviewed care plan' not in r.text)
     r = downloads_session.post(furl, data=dict(data(client, furl, 'service_agreements_consent'), confirm='1', csrf=env['token'](downloads_session.get(portal))))
-    check('Downloads-only contact POST cannot consent under the shared session', 'do not include billing' in r.text and snapshot()==denied)
+    check('Downloads-only contact POST cannot consent under the shared session',
+          r.status_code==403 and 'Service agreements are unavailable for this session.' in r.text
+          and 'Reviewed care plan' not in r.text and snapshot()==denied)
 
     # Editing permissions rotates the contact credential; a re-authenticated non-billing contact stays denied.
     edit = contact_form('studio_contact', 'id', billing_ctid); edit['perms[]'] = 'projects'
     r = owner.post(admin+'?view=studio-clients', data=edit)
     check('Contact permission edit saves', 'Contact saved' in r.text)
     r = billing_session.get(turl)
-    check('Revoked contact permission ends the billing session', r.status_code==403)
+    revoked_login_actions = soup(r).select('form input[name=action][value=login]')
+    revoked_login_form = revoked_login_actions[0].find_parent('form') if len(revoked_login_actions)==1 else None
+    revoked_login_fields = form_data(revoked_login_form) if revoked_login_form is not None else {}
+    check('Revoked contact permission ends the billing session',
+          r.status_code==200 and revoked_login_form is not None
+          and revoked_login_fields.get('action')=='login' and bool(revoked_login_fields.get('csrf'))
+          and revoked_login_form.select_one('input[name=email][type=email]') is not None
+          and revoked_login_form.select_one('input[name=password][type=password]') is not None
+          and all(value not in r.text for value in ['Reviewed care plan', '$129.00 USD', 'Reviewed website updates'])
+          and soup(r).select_one('[name=action][value=service_agreements_consent]') is None)
     submit(billing_session, portal, 'login', {'email': 'agreement-billing@example.invalid', 'password': 'Synthetic contact passphrase 2026'})
     r = billing_session.get(turl)
     check('Re-authenticated contact without billing cannot read terms', r.status_code==403 and 'Reviewed care plan' not in r.text)
+    revoked_before = snapshot()
     r = billing_session.post(furl, data=dict(data(client, furl, 'service_agreements_consent'), confirm='1', csrf=env['token'](billing_session.get(portal))))
-    check('Re-authenticated contact without billing cannot consent', 'do not include billing' in r.text)
+    check('Re-authenticated contact without billing cannot consent',
+          r.status_code==403 and 'Service agreements are unavailable for this session.' in r.text
+          and 'Reviewed care plan' not in r.text and snapshot()==revoked_before)
     r = client.get(turl)
     check('Primary client access is unchanged by contact permission edits', r.status_code==200 and 'Reviewed care plan' in r.text)
 

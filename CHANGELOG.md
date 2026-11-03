@@ -1,3 +1,11 @@
+## Unreleased — contacts acceptance fixture correction (2026-11-03)
+
+- Exercise the actual unchecked contacts backup confirmation using current owner authority, and retain a negative replay of the obsolete password-only request.
+- Check agreement/registration navigation before recurring preparation, then retain the original three-link positive assertion under a real billing contact after preparation. Keep projects-only recurring access denied.
+- Require the public 403 response, absence of private plan terms and unchanged agreement records for denied consent attempts. Verify that a revoked session shows a real sign-in form before testing denial again after reauthentication.
+- Preserve every original check site, all recurring setup/refusal gates, historical source inverses and failed executions. No shipping application behavior changes in this follow-up.
+- The complete local four-module chain passed 476 HTTP/browser records, with 65 separate native bootstrap records and eight captures. Current source composition passed 2,151 checks. Corrected hosted acceptance, review and normal main integration remain required.
+
 ## Unreleased — contact privacy and support authority follow-up (2026-11-03)
 
 - Scope activity, notification, software-read and download access to current contact grants; route project-contact replies to permitted staff notifications.
