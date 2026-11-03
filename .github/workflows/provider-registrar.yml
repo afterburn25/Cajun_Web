@@ -1,10 +1,10 @@
 name: Native registered domain checks
 on:
   push:
-    branches: [main, codex/twentyi-domain-controls]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_registrar_native.php', '.github/workflows/provider-registrar.yml']
+    branches: [main, codex/twentyi-domain-controls, codex/twentyi-registrar-nameservers]
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_registrar_native.php', 'foundation/twentyi-registrar-nameservers/**', 'site/includes/foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-domain-contracts/**', 'tests/twentyi-operations/**', 'tests/registered_nameservers_reader.php', 'tests/registered_nameservers_native.php', 'tests/registered_nameservers_views.php', '.github/workflows/provider-registrar.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_registrar_native.php', '.github/workflows/provider-registrar.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_registrar_native.php', 'foundation/twentyi-registrar-nameservers/**', 'site/includes/foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-domain-contracts/**', 'tests/twentyi-operations/**', 'tests/registered_nameservers_reader.php', 'tests/registered_nameservers_native.php', 'tests/registered_nameservers_views.php', '.github/workflows/provider-registrar.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
   native-registrar:
     name: Registered domains PHP ${{ matrix.php }} and ${{ matrix.database.label }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -69,6 +69,13 @@ jobs:
               php tests/twentyi-inventory-reader/registrar.php > qa/registrar-reader-results.json
               php -n tests/twentyi-inventory-reader/registrar.php > qa/registrar-reader-no-ini-results.json
               php tests/provider_registrar_native.php
+              php tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-results.json
+              php -n tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-no-ini-results.json
+              php tests/twentyi-operations/run.php qa/registered-nameservers-operation-guards-results.json
+              php -n tests/twentyi-operations/run.php qa/registered-nameservers-operation-guards-no-ini-results.json
+              php tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json
+              php -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json
+              php tests/registered_nameservers_native.php
             '
       - name: Preserve named storage evidence
         if: always()
@@ -79,6 +86,13 @@ jobs:
             qa/provider-registrar-native-results.json
             qa/registrar-reader-results.json
             qa/registrar-reader-no-ini-results.json
+            qa/registered-nameservers-reader-results.json
+            qa/registered-nameservers-reader-no-ini-results.json
+            qa/registered-nameservers-operation-guards-results.json
+            qa/registered-nameservers-operation-guards-no-ini-results.json
+            qa/registered-nameservers-views-results.json
+            qa/registered-nameservers-views-no-ini-results.json
+            qa/registered-nameservers-native-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope

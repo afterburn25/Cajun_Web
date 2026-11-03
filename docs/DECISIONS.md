@@ -65,6 +65,15 @@ The approved administrator experience authorizes mutations through the current s
 The owner's standing GitHub testing/integration authorization supports bounded maintenance of superseded, unexecuted automatic component work. This is the agent's operational judgment, not blanket permission to cancel arbitrary evidence. Require an explicit reviewed scope, ancestor and identical-workflow proof, an exact-current-head replacement, fresh PR/run/job/artifact checks, sequential ordinary cancellation and separate terminal verification. [Actual scope and limits](CI_SUPERSEDED_QUEUE_CLEANUP.md).
 
 Never replay an ambiguous cancellation. A preflight-only failure may be reconsidered in a new reviewed plan only when durable evidence proves no request occurred; absence of a request file alone is insufficient. Stop on observation failure and preserve uncertainty. Current runs, recorded originals, full application/capture/release/diagnostic work, and assigned/executed/artifact-bearing candidates stay excluded. No acceptance or production gate changes.
+## 2026-10-18 — client nameserver request candidate
+
+Preserve the original diagnostic paths and workflow references through an exact four-file development-package exception. Do not open the entire `ops` directory or omit tracked source from FULL-PROJECT. Existing private-file, symlink, immutable-blob and deployment-file boundaries stay intact. This fixes the inherited clean-build refusal without changing application behavior.
+
+Acceptance additions retain the complete predecessor command/report inventory and all 334 helper outcomes. Current source hashes are checked before finite predecessor reconstruction. The sole earlier-command correction loads tokenizer/PDO for distro PHP minimal mode; no original test or release gate is removed.
+
+Enable local nameserver intake through explicit owner setup plus the active primary client's exact registrar-domain assignment, without a separate per-client provider capability. This grants no provider-send authority. Bind static original assignment/account/owner facts so aging or failure of a later read does not remove local intake; require fresh complete observations independently at owner approval.
+
+Use v2 owner approvals that pin the original client request SHA, plus a reciprocal dispatch event pinning the owner approval SHA. Save both and the consumed grant atomically under the existing staff mutex before the unchanged one-send path. Keep graph validation acyclic and preserve v1 direct-owner history; origin loss cannot downgrade an approval. [Rationale, limits and actual tests](TWENTYI_CLIENT_NAMESERVER_REQUESTS.md). Runtime/release acceptance remains pending.
 
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 

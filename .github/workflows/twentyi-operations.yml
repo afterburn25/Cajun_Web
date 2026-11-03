@@ -2,10 +2,10 @@ name: 20i write-boundary checks
 
 on:
   pull_request:
-    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'foundation/twentyi-inventory/**', 'tests/registered_nameservers_reader.php', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   push:
-    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls]
-    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls, codex/twentyi-registrar-nameservers]
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'foundation/twentyi-inventory/**', 'tests/registered_nameservers_reader.php', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   workflow_dispatch:
 
 permissions:
@@ -40,13 +40,15 @@ jobs:
           mkdir -p "$RUNNER_TEMP/twentyi-ops-results"
           mkdir -p qa
           docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-ops-results:/workspace/qa" -w /workspace cwp-twentyi-ops:${{ matrix.php }} sh -ec '
-            for source in foundation/provider/*.php foundation/twentyi-operations/*.php tests/twentyi-operations/*.php; do php -l "$source"; done
+            for source in foundation/provider/*.php foundation/twentyi-operations/*.php foundation/twentyi-registrar-nameservers/*.php tests/registered_nameservers_reader.php tests/twentyi-operations/*.php; do php -l "$source"; done
             php tests/twentyi-operations/run.php qa/operations-default-results.json
             php -n tests/twentyi-operations/run.php qa/operations-no-ini-results.json
             php tests/twentyi-operations/mailboxes.php qa/mailbox-default-results.json
             php -n tests/twentyi-operations/mailboxes.php qa/mailbox-no-ini-results.json
             php tests/twentyi-operations/cloud-sites.php qa/cloud-sites-default-results.json
             php -n tests/twentyi-operations/cloud-sites.php qa/cloud-sites-no-ini-results.json
+            php tests/registered_nameservers_reader.php > qa/registrar-nameservers-default-results.json
+            php -n tests/registered_nameservers_reader.php > qa/registrar-nameservers-no-ini-results.json
             cat qa/operations-default-results.json
             cat qa/operations-no-ini-results.json
           '
@@ -60,4 +62,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Synthetic contracts, shared gateway/file-ledger mailbox replay and fixed transport admission only. Docker --network none; no real HTTP, production credential/database, native application UI or provider call. Production mailbox authority/storage/forms remain separate implementation and acceptance requirements.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Synthetic contracts, shared gateway/file-ledger mailbox replay and fixed transport admission only. Docker --network none; no real HTTP, production credential/database, native application UI or provider call. Production mailbox and registrar nameserver authority/storage/forms remain separate implementation and acceptance requirements. Registrar nameserver cases prove only the restricted full-set request shape and typed read with synthetic transport.' >> "$GITHUB_STEP_SUMMARY"
