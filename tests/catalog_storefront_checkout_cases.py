@@ -178,7 +178,9 @@ def run_browser(env, browser):
         image_form.locator('[name="product_image"]').set_input_files({
             'name': 'synthetic-storefront.png', 'mimeType': 'image/png', 'buffer': SYNTHETIC_PNG,
         })
-        image_form.locator('[name="owner_password"]').fill(owner_password)
+        check('Storefront image form uses the current owner session and CSRF',
+              image_form.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(image_form.locator('[name="csrf"]').input_value()))
         click(op, 'catalog_import_image', 'Save image')
         uploaded_image = op.locator('img[alt="Uploaded draft product image"]')
         check('Storefront owner saves local artwork through the actual multipart form',
@@ -202,7 +204,10 @@ def run_browser(env, browser):
         click(op, 'hosting_catalog_preview', 'Preview offer')
         publish = values(op, 'hosting_catalog_publish')
         unchanged('Storefront owner preview performs no commercial write', uploaded)
-        form(op, 'hosting_catalog_publish').locator('[name="current_password"]').fill(owner_password)
+        check('Storefront publication uses the current owner session with explicit confirmation',
+              form(op, 'hosting_catalog_publish').locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(form(op, 'hosting_catalog_publish').locator('[name="csrf"]').input_value())
+              and not form(op, 'hosting_catalog_publish').locator('[name="confirm"]').is_checked())
         form(op, 'hosting_catalog_publish').locator('[name="confirm"]').check()
         click(op, 'hosting_catalog_publish', 'Publish hosting offer')
         published = fixture('state')

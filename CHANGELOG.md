@@ -1,3 +1,7 @@
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+Restore the dedicated packaged checkout acceptance gate across PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4. Existing fixtures now assert current owner-session authorization, actual revoked-owner refusal, current CSRF and separate explicit confirmation. Preserve the unchanged native79 producer, package/bridge/source guards and all 32 captures. Make historical callback comparison finite and normalize Python AST serialization while keeping its original fixed checksum. Local 2,150 source checks, 88 real-file/direct-boundary cases, 12 genuine shallow-history checks, 2,763 maintained acceptance helpers and 128 standalone billing-source/output contracts passed; actual hosted native/browser acceptance remains pending. [Current evidence and integration state](PROJECT_STATUS.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

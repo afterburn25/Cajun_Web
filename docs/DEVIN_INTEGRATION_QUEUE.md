@@ -1,3 +1,14 @@
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+| Candidate | Current state | Next gate |
+| --- | --- | --- |
+| PR317, main d9e34d2f | ALREADY INTEGRATED; automatic full main acceptance passed | Finish four additional full compatibility browser runs and distinct checkout/release qualification. |
+| Homepage PR339, cd86092f | NEEDS ACCEPTANCE; local/focused checks pass, automated no-issues comment, full run41563766333 in browser phase | Actual final reports/captures, required review, fresh main comparison and normal merge. |
+| Contacts PR340, b3b2094a | NEEDS CORRECTION; earlier local/source checks retained, nine hosted workflows successful at02:54UTC | Correct confirmed activity/software/license/notification scope and related download boundary in isolated follow-up, add real regressions and independently review before publication. |
+| Dedicated checkout candidate, enclosing commit | NEEDS HOSTED ACCEPTANCE; current portable/source checks and independent reviews complete | Publish exact tree, run four PR environments and full Application, inspect actual captures, then normal merge and exact-main verification. |
+
+No queued/running check or earlier source result counts as current acceptance. Original retained branches and failed reports remain. [Current evidence](../PROJECT_STATUS.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.

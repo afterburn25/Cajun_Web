@@ -1,3 +1,16 @@
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+No requirement status or percentage is promoted by test/integration maintenance. The audited branch-inclusive total remains **61.5/105 credits (58.57142857%)**, distinct from main integration, release and live readiness.
+
+| Work | Implemented/tested scope | Delivery state |
+| --- | --- | --- |
+| PR317 group | Exact automatic main acceptance passed; additional release environments still executing | Merged atd9; no newer published release |
+| Homepage PR339 | Current source/focused checks pass; full browser running | Unmerged/unreleased |
+| P-05 contacts PR340 | Earlier local/source checks retained; confirmed additional read/notification gaps under correction | Unmerged/unreleased; earlier passes do not cover new findings |
+| Dedicated checkout gate | Existing fixtures and explicit matrix reviewed; portable/current-source checks pass | Actual native/packaged browser matrix and later main acceptance pending |
+
+Use the retained stable requirement IDs and evidence scopes; do not convert repeated report entries or source assertion sites into completed feature credits. [Current evidence](../PROJECT_STATUS.md).
+
 ## 2026-11-01 continuation — current component composition
 
 The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.

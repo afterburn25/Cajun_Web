@@ -72,10 +72,14 @@ def run_browser(env, browser):
         f.get_by_role('button', name='Preview offer', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
         publish = data(op, 'hosting_catalog_publish'); before = fixture('state')
         check('Owner preview retains exact checkout policy without publishing', publish['checkout_mode'] == 'invoice-on-confirmation' and publish['billing_timezone'] == 'UTC' and before['counts'] == initial['counts'])
-        response = post(owner, owner_url, {**publish, 'csrf': 'invalid', 'current_password': owner_password, 'confirm': '1'})
+        response = post(owner, owner_url, {**publish, 'csrf': 'invalid', 'confirm': '1'})
         check('Owner publication rejects invalid CSRF', response.status in (200, 400, 403) and 'Your session expired.' in response.text())
         unchanged('Owner invalid CSRF leaves commercial state unchanged', before)
-        f = form(op, 'hosting_catalog_publish'); f.locator('[name="current_password"]').fill(owner_password); f.locator('[name="confirm"]').check()
+        f = form(op, 'hosting_catalog_publish')
+        check('Owner publication uses the current session with CSRF and explicit confirmation',
+              f.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(f.locator('[name="csrf"]').input_value()) and not f.locator('[name="confirm"]').is_checked())
+        f.locator('[name="confirm"]').check()
         f.get_by_role('button', name='Publish hosting offer', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
         published = fixture('state'); pub = published['latest_publication']
         check('Real owner POST publishes exactly the reviewed invoice checkout', 'Primary clients can review the terms and create their first invoice.' in op.content() and pub['id'] == publish['publication_id'] and published['counts']['publications'] == initial['counts']['publications'] + 1)

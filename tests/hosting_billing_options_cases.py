@@ -264,14 +264,14 @@ def run_browser(env, browser):
               and selected['checkout_mode'] == 'invoice-on-confirmation'
               and '$' + format(amount / 100, '.2f') in review.inner_text()
               and ('per month' if cadence == 'monthly' else 'per year') in review.inner_text()
-              and form(page, 'hosting_catalog_publish').locator('[name="current_password"]').input_value() == ''
+              and form(page, 'hosting_catalog_publish').locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(form(page, 'hosting_catalog_publish').locator('[name="csrf"]').input_value())
               and not form(page, 'hosting_catalog_publish').locator('[name="confirm"]').is_checked())
         image_ready(page, review.locator('.hosting-catalog-image'), image_url, cadence + ' publication preview')
         if stage:
             review.locator('details').get_by_text('Plan terms', exact=True).click()
             capture(page, review, stage)
         unchanged('Installed ' + cadence + ' preview and captures perform no commercial writes', before)
-        form(page, 'hosting_catalog_publish').locator('[name="current_password"]').fill(owner_password)
         form(page, 'hosting_catalog_publish').locator('[name="confirm"]').check()
         submit(page, 'hosting_catalog_publish', 'Publish hosting offer')
         after = state()
@@ -316,7 +316,9 @@ def run_browser(env, browser):
               and form(op, 'catalog_import_variant_prepare').count() == 1)
         unchanged('Opening installed billing preparation is read-only', before)
         prepare = form(op, 'catalog_import_variant_prepare')
-        prepare.locator('[name="owner_password"]').fill(owner_password)
+        check('Installed billing preparation uses the current owner session and explicit confirmation',
+              prepare.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(prepare.locator('[name="csrf"]').input_value()) and not prepare.locator('[name="confirm"]').is_checked())
         prepare.locator('[name="confirm"]').check()
         submit(op, 'catalog_import_variant_prepare', 'Enable billing options')
         prepared = state()
@@ -328,7 +330,9 @@ def run_browser(env, browser):
         variant = form(op, 'catalog_import_variant_create')
         variant.locator('[name="sku"]').fill(ANNUAL_SKU)
         variant.locator('[name="term"]').select_option('year')
-        variant.locator('[name="owner_password"]').fill(owner_password)
+        check('Installed billing option uses the current owner session and explicit confirmation',
+              variant.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(variant.locator('[name="csrf"]').input_value()) and not variant.locator('[name="confirm"]').is_checked())
         variant.locator('[name="confirm"]').check()
         # HTML serialization retains default values; preserve real hidden identities
         # and explicitly copy the same owner choices used by the visible form.
@@ -358,7 +362,9 @@ def run_browser(env, browser):
         counts('Annual commercial edits create no invoice publication or new product', created, edited, {})
         image = form(op, 'catalog_import_image')
         image.locator('[name="product_image"]').set_input_files({'name': 'synthetic-annual-option.png', 'mimeType': 'image/png', 'buffer': annual_png()})
-        image.locator('[name="owner_password"]').fill(owner_password)
+        check('Annual image upload uses the current owner session and CSRF',
+              image.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(image.locator('[name="csrf"]').input_value()))
         submit(op, 'catalog_import_image', 'Save image')
         imaged = state()
         counts('Annual image upload creates one independent local media row', edited, imaged, {'media': 1})
@@ -367,7 +373,7 @@ def run_browser(env, browser):
               imaged['products'][str(annual_id)]['amount_cents'] == ANNUAL_PRICE
               and imaged['products'][str(annual_id)]['title'] == ANNUAL_TITLE
               and annual_image != monthly_image and imaged['products'][str(monthly_id)] == monthly_product)
-        replay = owner.request.post(product_url, form={**original_variant, 'owner_password': owner_password, 'confirm': '1'}, max_redirects=0, timeout=30000)
+        replay = owner.request.post(product_url, form={**original_variant, 'confirm': '1'}, max_redirects=0, timeout=30000)
         check('Exact installed variant retry returns the original edited child', replay.status == 303
               and parse_qs(urlparse(urljoin(admin, replay.headers.get('location', ''))).query) == {'view': ['catalog'], 'id': [str(annual_id)]})
         unchanged('Variant retry preserves its independent price image and all original rows', imaged)
@@ -379,7 +385,10 @@ def run_browser(env, browser):
         for key in ('inclusions', 'exclusions', 'limits', 'support', 'reseller_id', 'package_label', 'package_region', 'review_days',
                     'limit_websites', 'limit_disk_mb', 'limit_bandwidth_mb', 'limit_mailboxes', 'limit_databases'):
             target.locator('[name="' + key + '"]').fill(selected[key])
-        target.locator('[name="current_password"]').fill(owner_password)
+        check('Annual guided plan uses the current owner session and reviewed confirmations',
+              target.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(target.locator('[name="csrf"]').input_value())
+              and not target.locator('[name="reviewed_defaults"]').is_checked() and not target.locator('[name="confirm"]').is_checked())
         target.locator('[name="reviewed_defaults"]').check()
         target.locator('[name="confirm"]').check()
         submit(op, SETUP_ACTION, 'Create matching plan')

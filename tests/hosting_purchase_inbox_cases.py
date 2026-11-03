@@ -258,7 +258,8 @@ def run_browser(env, browser):
                         offer = form(page, 'service_plans_order_offer')
                         values = offer.locator('[name="invoice_choice"] option').evaluate_all('els=>els.map(el=>el.value).filter(Boolean)')
                         check('Unpaid purchase opens existing owner setup form with only original invoice', offer.count() == 1 and len(values) == 1 and re.fullmatch(str(row['invoice_id']) + ':[a-f0-9]{64}', values[0]) is not None
-                              and offer.locator('[name="current_password"]').input_value() == '' and not offer.locator('[name="confirm"]').is_checked())
+                              and offer.locator('[name="current_password"],[name="owner_password"]').count() == 0
+                              and bool(offer.locator('[name="csrf"]').input_value()) and not offer.locator('[name="confirm"]').is_checked())
                     else:
                         check('Unstarted client purchase does not invent a hosting offer or provider activation', page.locator('[data-service-order]').count() == 0 and page.locator('[data-hosting-progress]').count() == 0
                               and 'Hosting service active' not in page.inner_text('body'))

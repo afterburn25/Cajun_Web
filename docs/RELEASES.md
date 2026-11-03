@@ -1,3 +1,9 @@
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+The latest published release remains v1.25.0 and development remains1.26.1. Actual main d9 has passed its automatic full acceptance and the separately downloaded original-RC/finance/Windows evidence. At02:54UTC the four additional PHP/database runs remained in full browser execution. Their completion must be verified from actual sealed artifacts.
+
+The dedicated checkout gate is now explicitly represented by this candidate's four-environment workflow; portable source contracts do not establish its installed journey. Homepage PR339, contacts PR340 correction and this checkout candidate retain separate exact-source review/merge/main gates. Publish immutable packages/manifests/checksums/reports/migration instructions only after required release qualification and draft/public download equality. No current branch build is a new release or live deployment. [Current source and remaining gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-01 continuation — current component composition
 
 The current integration combines exact PR #317 `84e1f4c6`, account/notifications #323 `fb8b5627`, software authority #324 `8e93c2a7`, metadata performance #325 `4668c7d9`, and corrected finance #326 `2dfe7697`. The 47 non-inventory shipping differences equal their component sources. Local native installation/account/notification/software/service-plan/finance suites pass, including 729 combined recurring checks. See [current status](../PROJECT_STATUS.md) and [the bounded finance fixture correction](FINANCE_RECURRING_FIXTURE_20261102.md) for exact results and limits.

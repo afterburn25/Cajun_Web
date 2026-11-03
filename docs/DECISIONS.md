@@ -1,3 +1,9 @@
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+A green full Application registry does not cover a standalone checkout producer that it never invokes. Add that existing producer as an explicit dedicated matrix, retaining exact GitHub event source, attempt1, selected environment, clean package identity and native-to-browser state continuity. Preserve historical workflow jobs and avoid duplicate candidate push/PR matrices. Install the selected PHP before lint/build; canonical refresh alone does not create archives.
+
+Keep the original historical callback/checksum pins. Verify current source before finite comparison inverses, and normalize only empty-list AST serialization on a deep copy to match the documented Python3.14 pin. Hash every meaningful nonempty field, retain the original failure and prove direct rejection of altered check bodies/order/count/arguments. Portable tests remain separate from actual SQL/browser execution. [Review and next gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-02 — PR317 financing acceptance correction
 
 The complete `6ac15c4` Application run passed the earlier recovery and report-inventory corrections, then failed check #3,880 after 3,879 passes. The software and financing fixtures made twelve validation requests in one fixed-minute/IP bucket; both domain-move probes correctly received HTTP 429. The preceding domain mutation retained the same key and financing bindings. The failed artifact and both failed source heads remain preserved.
