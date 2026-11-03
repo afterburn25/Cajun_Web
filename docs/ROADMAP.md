@@ -1,3 +1,11 @@
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+Scheduler #342 is verified on main53. Continue the reviewed homepage combination, then contacts and checkout, preserving the normal validate/review/merge/verify-main cycle for each. This update advances the integration checkpoint; it does not change requirement IDs, scope, outcome weights or release/live completion credits. The prior main and candidate evidence remain source-specific. Stable publication follows accepted groups after their required release gates. [Current handoff](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Current integration priority: publish the reviewed scheduler fixture correction and complete full hosted acceptance, normally merge it, then verify exact main before unrelated feature integration. Parent failures and successful focused correction are recorded; no roadmap feature is counted as released by this test-only repair. [Source and remaining gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-03 UTC — verified main and homepage reconciliation
 
 PR317 reached main and passed its original automatic acceptance. Homepage depth remains an unmerged retained feature with a corrected source proof; contacts and other reconciliation families remain under correction/review. This checkpoint changes integration/evidence state, not the fixed scope, outcome weights or completion credits.

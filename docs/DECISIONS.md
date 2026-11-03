@@ -1,3 +1,11 @@
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+Retain both reviewed histories through a normal two-parent homepage integration after main53 artifact clearance. Reconcile the existing finite proof as the exact 18-row union; do not replace its verifier logic, component sources, inverse edits or assertion boundaries. Preserve both narrative prefixes above their shared historical suffix. Full combined-source validation and required review remain gates before normal merge. [Evidence and sequence](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Give the bounded scheduled-refresh browser scenario its own normally invited and activated owner. Preserve the shared setup owner's immutable read history, audit and authority, and keep the production 20/hour budget and 30-second cooldown. The two negative permission probes must revoke the same dedicated identity that submits the protected action. Existing scenarios remain preserved through one exact reversible source-receipt addition. [Controlled reproductions and acceptance scope](../SESSION_HANDOFF.md).
+
 ## 2026-11-03 UTC — verified main and homepage reconciliation
 
 Use a distinct normal-merge integration branch from verified main and retain PR328 as a parent. Correct only finite reviewed proof identities/inverses; preserve strict checks and all original feature/test bytes. Narrative-only CHANGELOG content stays governed by the existing narrative policy. Current-main automatic acceptance, broader release qualification, publication and live deployment remain separate states. No other branch, old release, rate limit or safety boundary is altered.

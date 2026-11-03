@@ -1,3 +1,15 @@
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+[Scheduler PR #342](https://github.com/afterburn25/Cajun_Web/pull/342) is normally merged and verified on main `53a324fcfb684e0475d1486f3f19319d48ee1069`, tree `424f1b071341082d6004e6481d4e8634bb3b6845`. All 13 automatic workflows passed, including [full Application 41697207068](https://github.com/afterburn25/Cajun_Web/actions/runs/41697207068), attempt 1. Actual main artifacts, packages, runtime/diagnostics, source-bound authority and four new scheduler captures are qualified. This supersedes the historical pending-main statements below; their original failures remain preserved.
+
+The latest observed published release remains v1.25.0. The main53 development packages have been verified against immutable Git, with all three organized archives and 11 checksums passing. Those CI artifacts are not newly published release assets. The five full scheduler candidate runtime qualifications and new exact-main default run retain their separate source identities.
+
+The homepage combination requires its own acceptance, review, normal merge and resulting-main verification. Current-source release compatibility, original-installed RC upgrade orchestration, immutable release assets and downloaded-public-byte verification remain distinct release gates; no release publication or live deployment is claimed. [Detailed evidence](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+PR #317 is integrated at `d9e34d2f8483fcd7630d799725fac773561f5183`, but the additional full MySQL Application lanes retain scheduler browser failures. The dedicated-owner fixture correction has focused local acceptance and completed independent source/runtime/narrative publication review; full corrected maintained-matrix acceptance and final integration clearance remain pending. The previously verified default main package/update evidence remains historical evidence for its exact source. No new version, release asset or live deployment is created by this fixture correction. [Current gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-03 UTC — verified main and homepage reconciliation
 
 Main is `d9e34d2f8483fcd7630d799725fac773561f5183` (tree `870c2253474ec2a71770def99700751207b7025e`), the normal merge of [PR317](https://github.com/afterburn25/Cajun_Web/pull/317). Its [original Application run41515697343, attempt1](https://github.com/afterburn25/Cajun_Web/actions/runs/41515697343) and all59 other automatic workflows passed. All five Application jobs completed successfully. This supersedes earlier unmerged/queued statements below; their original failed evidence remains preserved. Published stable downloads remain [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0).

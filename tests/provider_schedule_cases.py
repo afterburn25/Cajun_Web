@@ -10,6 +10,7 @@ from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER, STAFF
 from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
+from cloud_assignment_fixture import dedicated_cloud_owner
 
 
 def schedule_projection_privacy(markup, approval):
@@ -78,15 +79,25 @@ def run_browser(env, browser):
     admin = base+'/existing/admin/index.php'
     url = admin+'?view=provider-settings&section=services'
     connection_url = admin+'?view=provider-settings&section=connection'
-    owner = requests.Session()
-    submit(owner, admin+'?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    setup = requests.Session()
+    submit(setup, admin+'?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    original_owner = db('SELECT * FROM ci_users WHERE email=?', ['owner@example.invalid'])[0]
+    original_authority = db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']])
+    inherited_intents = db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
+    inherited_results = db('SELECT r.* FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id ORDER BY f.seq')
+    inherited_audits = db('SELECT * FROM ci_audit ORDER BY id')
+    # Earlier provider scenarios can consume the shared owner's real 20/hour budget.
+    # Use a real invited owner; retain every prior intent, outcome, audit and limit.
+    owner_email = 'schedule-owner@example.invalid'
+    owner, owner_id = dedicated_cloud_owner(env, setup, owner_email, 'Scheduled inventory fixture')
+    setup.close()
     db('DELETE FROM ci_rate_limits')
     calls, posts = provider.calls, list(provider.posts)
     prefix = 'provider_inventory_schedule_'
     response = owner.get(url)
     check('Schedule HTTP GET does not create storage or call provider', soup(response).select_one('[data-schedule-prepare]') is not None and not db('SHOW TABLES LIKE "ci_provider_schedule_events"') and provider.calls == calls)
     for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({}, 'owner permission')]:
-        rejected = (refuse_owner_action(env, owner, url, prefix+'prepare', {}) if label == 'owner permission'
+        rejected = (refuse_owner_action(env, owner, url, prefix+'prepare', {}, owner_id=owner_id) if label == 'owner permission'
                     else submit(owner, url, prefix+'prepare', changes))
         check('Schedule preparation rejects '+label, not db('SHOW TABLES LIKE "ci_provider_schedule_events"') and provider.calls == calls and OWNER not in rejected.text)
     submit(owner, url, prefix+'prepare', {})
@@ -94,7 +105,7 @@ def run_browser(env, browser):
     fields = form_data(form_for(owner.get(url), prefix+'enable'))
     valid = {'schedule_interval': '900', 'schedule_reviewed': '1'}
     for delta, label in [({}, 'owner permission'), ({'csrf': 'bad'}, 'CSRF'), ({'schedule_reviewed': '0'}, 'explicit approval'), ({'revision': '0'}, 'profile version'), ({'schedule_interval': '30'}, 'unsafe frequency'), ({'schedule_interval': [], 'schedule_interval[]': '900'}, 'malformed fields')]:
-        rejected = (refuse_owner_action(env, owner, url, prefix+'enable', valid) if label == 'owner permission'
+        rejected = (refuse_owner_action(env, owner, url, prefix+'enable', valid, owner_id=owner_id) if label == 'owner permission'
                     else owner.post(url, data={**fields, **valid, **delta}))
         check('Schedule approval refuses '+label, rejected.status_code == (403 if label == 'owner permission' else 200) and len(db('SELECT * FROM ci_provider_schedule_events')) == 1 and provider.calls == calls and OWNER not in rejected.text)
     member = requests.Session()
@@ -127,7 +138,7 @@ def run_browser(env, browser):
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.goto(admin+'?view=login')
-    page.locator('[name=email]').fill('owner@example.invalid')
+    page.locator('[name=email]').fill(owner_email)
     page.locator('[name=password]').fill(OWNER)
     page.locator('form button').first.click()
     page.wait_for_url(admin+'?view=dashboard')
@@ -190,4 +201,13 @@ def run_browser(env, browser):
     for path in ['app/jobs/run.php', 'app/providers/schedule.php', 'app/providers/schedule_storage.php', 'app/providers/schedule_document.php', 'admin/controllers/provider_schedule.php', 'admin/views/provider_schedule.php', 'database/schema/provider_schedule_schema.php']:
         check('Scheduled task internal HTTP denial '+path, requests.get(base+'/existing/'+path).status_code == 404)
     check('Scheduled read browser flow has no script or provider fixture errors', not errors and not provider.errors)
+    check('Scheduled fixture preserves inherited reads outcomes and audit bytes',
+          db('SELECT * FROM ci_provider_refreshes WHERE actor_id<>? ORDER BY seq', [owner_id]) == inherited_intents
+          and db('SELECT r.* FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.actor_id<>? ORDER BY f.seq', [owner_id]) == inherited_results
+          and db('SELECT * FROM ci_audit WHERE id<=? ORDER BY id', [inherited_audits[-1]['id'] if inherited_audits else 0]) == inherited_audits)
+    check('Scheduled fixture retains original owner account and authority',
+          db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner]
+          and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == original_authority)
+    own_reads = db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [owner_id])
+    check('Scheduled fixture attributes exactly two reads to its invited owner', own_reads == [{'operation': 'packages.list'}, {'operation': 'packages.list'}])
     context.close()
