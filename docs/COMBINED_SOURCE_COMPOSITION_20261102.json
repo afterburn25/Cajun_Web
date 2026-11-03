@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9f0a34152770bde7250b2a92d22fc69bf82cc9d1b0057b687952167b4cd9a9f6",
+  "verifier_sha256": "83672045cda353d84b6ec8e5864a356edbdada5618f89d8909019178ece09a57",
   "regression_sha256": "05aef331b516865759c956d84236d950167c3862ca56162bf8bb797468054849",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -256,6 +256,16 @@
         [
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
+        ]
+      ]
+    },
+    "site/app/billing/software_subscription_settle.php": {
+      "original_sha256": "072fb05aeb15189eee3f9e5d546a04c3fd172517265a056f68bbccbf12e04246",
+      "current_sha256": "48a7d19ac805d5b85f96a1cb4c12584e2ff3ff7b3e634f0cca54542a74abdd11",
+      "edits": [
+        [
+          "        if(($event['entity']??'')!=='subscription')throw new InvalidArgumentException('Invalid subscription event entity.');\n",
+          "        if(($event['entity']??'')!=='subscription'||!preg_match('/^[0-9]{1,25}$/D',$event['resource_id']))\n            throw new InvalidArgumentException('Invalid subscription event entity.');\n"
         ]
       ]
     }
