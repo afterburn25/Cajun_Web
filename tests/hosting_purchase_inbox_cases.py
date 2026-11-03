@@ -280,7 +280,7 @@ def run_browser(env, browser):
               and 'primary client outside support access' in cp.inner_text('body') and cp.locator('[data-hosting-purchase]').count() == 0)
         check('Inbox support test reaches actual owner support controls', goto(op, admin + '?view=support') == 200)
         support = form(op, 'support_start').filter(has=op.locator('input[name="client_id"][value="1"]'))
-        check('Inbox owner opens actual support session for the purchase client', support.count() == 1 and click(op, support.get_by_role('button', name='Open client portal', exact=True)) == 200
+        check('Inbox owner opens actual support session for the purchase client', support.count() == 1 and click(op, support.get_by_role('button', name='Open client portal (owner review)', exact=True)) == 200
               and op.get_by_role('complementary', name='Support session').count() == 1)
         support_url = op.url
         support_ids = parse_qs(urlparse(support_url).query).get('support', [])

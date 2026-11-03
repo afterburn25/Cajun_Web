@@ -1,3 +1,9 @@
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+- Correct the three dedicated checkout owner-review button selectors without changing application behavior or authorization assertions.
+- Scope checkout workflow cancellation to superseded non-main runs while preserving main acceptance.
+- Retain all four original failed checkout reports and refresh only the affected finite source identities. Corrected runtime acceptance remains pending.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
 
 Restore the dedicated packaged checkout acceptance gate across PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4. Existing fixtures now assert current owner-session authorization, actual revoked-owner refusal, current CSRF and separate explicit confirmation. Preserve the unchanged native79 producer, package/bridge/source guards and all 32 captures. Make historical callback comparison finite and normalize Python AST serialization while keeping its original fixed checksum. Local 2,150 source checks, 88 real-file/direct-boundary cases, 12 genuine shallow-history checks, 2,763 maintained acceptance helpers and 128 standalone billing-source/output contracts passed; actual hosted native/browser acceptance remains pending. [Current evidence and integration state](PROJECT_STATUS.md).

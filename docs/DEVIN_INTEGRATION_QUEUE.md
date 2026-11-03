@@ -1,3 +1,14 @@
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR341 `c70228af` | Needs bounded fixture/concurrency correction; all four native lanes passed and all four browser lanes stopped at the same obsolete owner selector | Review/publish this follow-up, then inspect actual corrected hosted matrix; retain the original failure. |
+| Main `d9e34d2f` | Default and additional MariaDB acceptance passed; both additional MySQL browser lanes failed in scheduler fixture | Finish isolated scheduler diagnosis/correction before unrelated main merges. |
+| PR339 `cd86092f` | Default-runtime source/package/report/visual review passed | Hold main integration for current regression gate; recheck base before ordinary merge. |
+| PR340 `b3b2094a` | Contact-scope review corrections in progress | Preserve follow-up work and require fresh native/browser/source acceptance. |
+
+[Full current checkpoint](../PROJECT_STATUS.md). No new completed requirement is claimed.
+
 ## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
 
 | Candidate | Current state | Next gate |

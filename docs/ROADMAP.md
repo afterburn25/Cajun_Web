@@ -1,3 +1,7 @@
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+This increment repairs acceptance mechanics only: three current owner-review selectors and per-PR/ref workflow concurrency. It adds no completed feature credit and does not promote integrated, released or live status. Current checkout, contact-scope and MySQL scheduler gates are recorded in the [integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
 ## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
 
 No requirement status or percentage is promoted by test/integration maintenance. The audited branch-inclusive total remains **61.5/105 credits (58.57142857%)**, distinct from main integration, release and live readiness.

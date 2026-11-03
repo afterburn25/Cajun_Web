@@ -1,3 +1,7 @@
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+The dedicated checkout fixtures must use the exact current owner-review control while keeping staff wording and support-session permissions unchanged. Development checkout runs follow the standing per-PR/ref cancellation policy; this workflow is not added to the protected exception list. Receipt edits preserve the original twenty repair paths, original functions and every runtime assertion. [Current evidence and gates](../PROJECT_STATUS.md).
+
 ## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
 
 A green full Application registry does not cover a standalone checkout producer that it never invokes. Add that existing producer as an explicit dedicated matrix, retaining exact GitHub event source, attempt1, selected environment, clean package identity and native-to-browser state continuity. Preserve historical workflow jobs and avoid duplicate candidate push/PR matrices. Install the selected PHP before lint/build; canonical refresh alone does not create archives.

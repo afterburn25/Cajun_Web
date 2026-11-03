@@ -8,9 +8,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: combined-backups-${{ github.ref }}
-  # Preserve every new checkout/main release attempt; retain historical branch behavior.
-  cancel-in-progress: ${{ github.ref == 'refs/heads/chatgpt/1261-main-reconcile-20261030' }}
+  group: combined-backups-${{ github.event.pull_request.number || github.ref }}
+  # Supersede development runs for this PR/ref; retain every main acceptance run.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   assemble:
     if: github.ref == 'refs/heads/chatgpt/1261-main-reconcile-20261030'

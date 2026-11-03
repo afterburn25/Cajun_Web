@@ -126,7 +126,7 @@ def run_browser(env, browser):
         goto(op, admin + '?view=support')
         support = form(op, 'support_start').filter(has=op.locator('input[name="client_id"][value="1"]'))
         check('Owner uses the actual support-start form for this client', support.count() == 1)
-        support.get_by_role('button', name='Open client portal', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
+        support.get_by_role('button', name='Open client portal (owner review)', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
         check('Real support session banner is visible', op.get_by_role('complementary', name='Support session').count() == 1)
         support_id = parse_qs(urlparse(op.url).query)['support'][0]; support_data = data(op, 'support_end')
         response = post(owner, portal + '?' + urlencode({'support': support_id, 'hosting': 'checkout'}), {**confirm, 'csrf': support_data['csrf'], 'confirm': '1'})

@@ -1,3 +1,7 @@
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+The current published version remains v1.25.0 and development remains 1.26.1. The checkout correction and MySQL scheduler fixture failure remain acceptance work; a passing native report is not a complete checkout/browser or release result. Preserve all prior published artifacts. [Current source and gates](../PROJECT_STATUS.md).
+
 ## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
 
 The latest published release remains v1.25.0 and development remains1.26.1. Actual main d9 has passed its automatic full acceptance and the separately downloaded original-RC/finance/Windows evidence. At02:54UTC the four additional PHP/database runs remained in full browser execution. Their completion must be verified from actual sealed artifacts.

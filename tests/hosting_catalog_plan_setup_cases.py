@@ -217,7 +217,7 @@ def run_browser(env, browser):
         sp = owner.new_page()
         check('Guided setup uses the real support start page', goto(sp, admin + '?view=support') == 200)
         support = form(sp, 'support_start').filter(has=sp.locator('input[name="client_id"][value="1"]'))
-        support.get_by_role('button', name='Open client portal', exact=True).click()
+        support.get_by_role('button', name='Open client portal (owner review)', exact=True).click()
         sp.wait_for_load_state('load', timeout=30000)
         check('Guided setup support denial uses an actual active support session', sp.get_by_role('complementary', name='Support session').count() == 1)
         support_id = parse_qs(urlparse(sp.url).query)['support'][0]
