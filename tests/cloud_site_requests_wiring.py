@@ -16,7 +16,7 @@ def predecessor_bytes(root, path, contract):
     return value
 
 
-def verify(root, contract, workflow, commands, check):
+def verify(root, contract, workflow, commands, check, reports=None):
     item = contract['cloud_site_requests']
     additions = item['additions']
     check('Client cloud requests retain the exact expanded native recipe', commands == contract['native_commands'])
