@@ -96,6 +96,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   redirect(studio_url(['software'=>1]));
  }
  elseif(str_starts_with($action,'hosting_catalog_')){if(!$client)throw new RuntimeException('Sign in to continue.');hosting_catalog_portal_action($action,$client);}
+ elseif(str_starts_with($action,'php_controls_')){if(!$client)throw new RuntimeException('Sign in to continue.');$phpControlsReview=provider_php_controls_client_action($action,$client);return;}
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}
