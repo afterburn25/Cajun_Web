@@ -171,6 +171,9 @@
     "\"$PHP_BINARY\" tests/hosting_reconciliation_native.php",
     "\"$PHP_BINARY\" tests/client_authority_native.php",
     "\"$PHP_BINARY\" tests/license_native.php",
+    "\"$PHP_BINARY\" tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json",
+    "\"$PHP_BINARY\" -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json",
+    "CWP_TEST_RENEWAL_INVOICING=1 \"$PHP_BINARY\" tests/domain_renewal_invoice_create_native.php",
     "\"$PHP_BINARY\" tests/software_commerce_native.php"
   ],
   "native_command_baseline": {
@@ -694,5 +697,22 @@
     "hook": "            from backups_cases import run_browser as backups_browser\n            backups_browser(globals(),browser)\n",
     "source_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
     "predecessor_sha256": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10"
+  },
+  "domain_renewal_invoicing": {
+    "source_base": "a86f6f4fa592e6f715a9420aec8de4622258642e",
+    "predecessor_native_count": 152,
+    "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
+    "additions_after": "\"$PHP_BINARY\" tests/license_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-default.json",
+      "\"$PHP_BINARY\" -n tests/domain_renewal_invoice_create.php > qa/domain-renewal-invoicing-minimal.json",
+      "CWP_TEST_RENEWAL_INVOICING=1 \"$PHP_BINARY\" tests/domain_renewal_invoice_create_native.php"
+    ],
+    "reports": [
+      "domain-renewal-invoicing-default.json",
+      "domain-renewal-invoicing-minimal.json",
+      "domain-renewal-invoicing-native-results.json"
+    ],
+    "scope": "Atomic local accepted-renewal invoice creation, retained original manual allocation, native recovery and packaged browser flow; synthetic provider only."
   }
 }
