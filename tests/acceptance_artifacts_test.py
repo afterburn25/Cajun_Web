@@ -280,6 +280,21 @@ def software_authority_report_checks(tmp):
             else:
                 check('Malformed authority outcome is rejected in ' + mode,
                       any(error.startswith('Report/package validation: Malformed named result') for error in result['errors']))
+def baseline_driver_predecessor(path, data, contract):
+    delta = contract['published125_input_driver_delta'][path]
+    a.require(set(delta) == {'predecessor_sha256', 'current_sha256', 'append', 'replacements'}, 'Unexpected baseline driver delta fields')
+    a.require(hashlib.sha256(data).hexdigest() == delta['current_sha256'], 'Changed current baseline driver bytes')
+    if delta['append']:
+        suffix = delta['append'].encode()
+        a.require(data.endswith(suffix) and data.count(suffix) == 1, 'Missing exact baseline preparation suffix')
+        data = data[:-len(suffix)]
+    for edit in reversed(delta['replacements']):
+        a.require(set(edit) == {'before', 'after', 'count'} and type(edit['count']) is int and edit['count'] == 1, 'Invalid finite baseline driver edit')
+        before, after = edit['before'].encode(), edit['after'].encode()
+        a.require(before and after and data.count(after) == edit['count'], 'Missing exact baseline driver extension')
+        data = data.replace(after, before)
+    a.require(hashlib.sha256(data).hexdigest() == delta['predecessor_sha256'] == contract['unchanged_test_sha256'][path], 'Baseline driver predecessor changed')
+    return data
 
 
 def run(tmp):
@@ -553,6 +568,77 @@ def run(tmp):
     contract={**contract,'native_commands':native_commands}
     from reset_template_acceptance_contract import predecessor_contract
     contract,native_commands=predecessor_contract(ROOT,contract,native_commands,check)
+    from registered_nameserver_requests_acceptance import verify as nameserver_requests_acceptance
+    requests_predecessor = nameserver_requests_acceptance(a, ROOT, tmp, check, deny, contract)
+    contract = requests_predecessor['contract']
+    from registered_nameserver_changes_acceptance import verify as nameserver_changes_acceptance
+    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract, requests_predecessor['source'], requests_predecessor['reports'])
+    driver_paths = {'tests/prepare_legacy.py'}
+    check('Published1.25 input inverse is limited to the original preparation source', set(contract['published125_input_driver_delta']) == driver_paths)
+    for driver in sorted(driver_paths):
+        data = ROOT.joinpath(driver).read_bytes().replace(b'\r\n', b'\n')
+        check('Published1.25 input extension reverses exactly ' + driver,
+              hashlib.sha256(baseline_driver_predecessor(driver, data, contract)).hexdigest() == contract['unchanged_test_sha256'][driver])
+        deny('Changed preparation bytes cannot bypass baseline inverse',
+             lambda p=driver,d=data: baseline_driver_predecessor(p, d + b'\n# changed', contract))
+        wrong = copy.deepcopy(contract); wrong['published125_input_driver_delta'][driver]['append'] += '# missing exact suffix'
+        deny('Changed preparation inverse description is refused',
+             lambda p=driver,d=data,c=wrong: baseline_driver_predecessor(p, d, c))
+    for path,expected_hash in contract['unchanged_test_sha256'].items():
+        original_bytes=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+        if path in driver_paths: original_bytes=baseline_driver_predecessor(path, original_bytes, contract)
+        if path=='tests/browser_acceptance.py':
+            nameserver_addition=contract['registered_nameservers']['browser_addition'].encode()
+            check('Nameserver browser callback occurs once',original_bytes.count(nameserver_addition)==1)
+            original_bytes=original_bytes.replace(nameserver_addition,b'',1)
+        check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
+    workflow=changes_predecessor['workflow']
+    native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
+    native_commands=[line.strip() for line in native.splitlines()]
+    # New write controls extend the recipe without changing predecessor assertions.
+    write_contract=contract['registered_nameserver_changes'];write_commands=write_contract['additions']
+    check('Nameserver change extension retains complete164-command recipe',len(native_commands)==164 and native_commands==contract['native_commands'])
+    write_position=native_commands.index(write_contract['additions_after'])+1
+    check('Seven nameserver change commands occur once after original reader native fixture',len(write_commands)==len(set(write_commands))==7 and native_commands[write_position:write_position+7]==write_commands and all(native_commands.count(command)==1 for command in write_commands))
+    native_commands=[command for command in native_commands if command not in write_commands]
+    check('Nameserver changes retain exact157 predecessor commands',len(native_commands)==write_contract['predecessor_native_count']==157 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==write_contract['predecessor_native_sha256'])
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in write_commands]
+    for path,expected_hash in write_contract['source_sha256'].items():
+        check('Nameserver change producer source retained '+path,hashlib.sha256(requests_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))).hexdigest()==expected_hash)
+    write_original_sources={}
+    check('Nameserver change predecessor test delta is limited to the existing renderer',set(write_contract['predecessor_source_delta'])=={'tests/registered_nameservers_views.php'})
+    for path,delta in write_contract['predecessor_source_delta'].items():
+        data=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n').decode('utf-8')
+        check('Nameserver change pending status test addition is finite '+path,data.count(delta['after'])==1)
+        original=data.replace(delta['after'],delta['before'],1).encode('utf-8')
+        check('Nameserver change test addition preserves all predecessor assertions '+path,hashlib.sha256(original).hexdigest()==delta['predecessor_sha256']==contract['registered_nameservers']['source_sha256'][path])
+        write_original_sources[path]=original
+    write_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Nameserver change reports are required once in both aggregates',len(write_contract['reports'])==len(set(write_contract['reports']))==7 and all(write_reports['browser'].count(name)==write_reports['final'].count(name)==1 for name in write_contract['reports']))
+    nameserver_contract=contract['registered_nameservers'];nameserver_commands=nameserver_contract['additions']
+    check('Nameserver extension retains complete157-command recipe',len(native_commands)==157 and native_commands==contract['native_commands'])
+    nameserver_position=native_commands.index(nameserver_contract['additions_after'])+1
+    check('Five nameserver commands occur once in the intended position',len(nameserver_commands)==len(set(nameserver_commands))==5 and native_commands[nameserver_position:nameserver_position+5]==nameserver_commands and all(native_commands.count(command)==1 for command in nameserver_commands))
+    native_commands=[command for command in native_commands if command not in nameserver_commands]
+    check('Nameserver extension preserves exact152 predecessor commands',len(native_commands)==nameserver_contract['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==nameserver_contract['predecessor_native_sha256'])
+    for path,expected_hash in nameserver_contract['source_sha256'].items():
+        check('Nameserver fixture source retained '+path,hashlib.sha256(write_original_sources.get(path,changes_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')))).hexdigest()==expected_hash)
+    nameserver_server=changes_predecessor['source']['tests/provider_http_server.py'].decode('utf-8')
+    for index,change in enumerate(reversed(nameserver_contract['server_changes'])):
+        check('Nameserver synthetic GET addition is finite '+str(index),nameserver_server.count(change['after'])==change['count'])
+        nameserver_server=nameserver_server.replace(change['after'],change['before'])
+    check('Nameserver synthetic GET preserves all prior provider fixture bytes',hashlib.sha256(nameserver_server.encode('utf-8')).hexdigest()==nameserver_contract['server_predecessor_sha256'])
+    nameserver_upgrade=nameserver_contract['upgrade']
+    nameserver_apache_header='      - name: Apache protection with and without rewriting\n        id: test\n        run: |\n'
+    nameserver_apache=[line.strip() for line in workflow.split(nameserver_apache_header,1)[1].split('      - name:',1)[0].splitlines()]
+    check('Nameserver upgrade appends exactly two Apache commands',len(nameserver_upgrade['commands'])==2 and nameserver_apache==nameserver_upgrade['predecessor_commands']+nameserver_upgrade['commands'] and len(nameserver_apache)==len(set(nameserver_apache))==6)
+    check('Nameserver upgrade preserves all four prior Apache commands',hashlib.sha256(json.dumps(nameserver_apache[:-2],separators=(',',':')).encode()).hexdigest()==nameserver_upgrade['predecessor_sha256'])
+    for path,expected_hash in nameserver_upgrade['source_sha256'].items():
+        check('Nameserver upgrade fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+    nameserver_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Nameserver native reports required in both aggregates',all(name in nameserver_reports['browser'] and name in nameserver_reports['final'] for name in nameserver_contract['reports']))
+    check('Nameserver Apache reports required only in final aggregate',all(name in nameserver_reports['final'] and name not in nameserver_reports['browser'] for name in nameserver_upgrade['reports']))
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in nameserver_commands]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1

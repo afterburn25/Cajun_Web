@@ -55,6 +55,8 @@ try:
     check('Negative checks restore the original shipping copy',build.inventory()=={p.relative_to(ROOT/'site').as_posix():build.sha(p.read_bytes()) for p in (ROOT/'site').rglob('*') if p.is_file()})
     from build_git_blob_batch import run as batch_checks
     batch_checks(build,WORK,check)
+    from build_project_paths import run as project_path_checks
+    project_path_checks(build,WORK,check)
 finally:
     QA.mkdir(exist_ok=True);(QA/'build-guards-results.json').write_text(json.dumps({'passed':sum(c['passed'] for c in checks),'checks':checks},indent=2)+'\n')
 print('PASS:',len(checks),'build rejection checks')

@@ -29,6 +29,9 @@ Actual source verification: 82 producer checks, 44 independent review checks, th
 Read-only policy preflight found main unprotected (HTTP404), no repository rulesets and no effective main rules. No policy is changed. GitHub documents that a path-filtered workflow used as a required check can leave unrelated PRs pending; review these filters when adding required checks. See [GitHub workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) and [required-check troubleshooting](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks). Do not work around future protection rules or weaken release gates.
 
 This increment affects future PR scheduling only. Existing queued and failed runs remain original evidence; no cancellation, deletion, retry or duplicate dispatch is part of this change. Hosting3042 and nameserver024 remain separate, unpublished candidates awaiting their acceptance. Published1.25 stays immutable.
+## 2026-10-18 — closed diagnostic source packaging
+
+FULL-PROJECT includes the four tracked Python sources under `ops/twentyi-catalog-schema` and `ops/twentyi-cloud-root` by exact path. The broader `ops` area remains excluded. These scripts and their tests are development source; they are not executed by packaging and are absent from COMPLETE-UPLOAD and UPDATE. Existing private-file, symlink and exact-Git-byte checks remain mandatory. The actual builder path-policy checks append to the existing build guard report. Preserve the original63444bcd failed build as evidence of the inherited allowlist omission.
 
 ## 2026-10-18 — dependency-aware pull-request triggers
 

@@ -291,6 +291,60 @@ try:
             if os.environ.get('CWP_SOFTWARE_ACCEPTANCE_ONLY') != '1':
                 from license_financing_cases import run_browser as license_financing_browser
                 license_financing_browser(globals(),browser)
+        from provider_cloud_sites_cases import run_browser as cloud_sites_browser
+        cloud_sites_browser(globals(),browser)
+        from service_observations_cases import run_browser as service_history_browser
+        service_history_browser(globals(),browser)
+        from mail_drafts_cases import run_browser as drafts_browser
+        drafts_browser(globals(),browser)
+        from mail_submissions_cases import run_browser as submissions_browser
+        submissions_browser(globals(),browser)
+        from client_authority_cases import run_browser as client_authority_browser
+        client_authority_browser(globals(),browser)
+        from service_plan_cases import run_browser as service_plan_browser
+        service_plan_browser(globals(),browser)
+        from recurring_billing_cases import run_browser as recurring_browser
+        recurring_browser(globals(),browser)
+        from domain_contracts_cases import run_browser as domain_contracts_browser
+        domain_contracts_browser(globals(),browser)
+        from provider_cloud_providers_cases import run_browser as cloud_providers_browser
+        cloud_providers_browser(globals(),browser)
+        from provider_registration_periods_cases import run_browser as registration_periods_browser
+        registration_periods_browser(globals(),browser)
+        from provider_package_php_cases import run_browser as package_php_browser
+        package_php_browser(globals(),browser)
+        from domain_expiry_cases import run_browser as domain_expiry_browser
+        domain_expiry_browser(globals(),browser)
+        from provider_document_roots_cases import run_browser as document_roots_browser
+        document_roots_browser(globals(),browser)
+        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
+        package_force_ssl_browser(globals(),browser)
+        from provider_directory_listing_cases import run_browser as directory_listing_browser
+        directory_listing_browser(globals(),browser)
+        from provider_force_ssl_controls_cases import run_browser as force_ssl_controls_browser
+        force_ssl_controls_browser(globals(),browser)
+        from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
+        renewal_agreements_browser(globals(),browser)
+        from provider_package_wordpress_installed_cases import run_browser as wordpress_installed_browser
+        wordpress_installed_browser(globals(),browser)
+        from domain_renewal_dispatch_cases import run_browser as renewal_dispatch_browser
+        renewal_dispatch_browser(globals(),browser)
+        from provider_directory_listing_controls_cases import run_browser as directory_controls_browser
+        directory_controls_browser(globals(),browser)
+        from stackcp_prerequisites_cases import run_browser as stackcp_prerequisites_browser
+        stackcp_prerequisites_browser(globals(),browser)
+        from domain_registration_drafts_cases import run_browser as registration_drafts_browser
+        registration_drafts_browser(globals(),browser)
+        from stackcp_access_cases import run_browser as stackcp_access_browser
+        stackcp_access_browser(globals(),browser)
+        from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
+        cloud_assignment_browser(globals(),browser)
+        from license_release_cases import run_browser as license_release_browser
+        license_release_browser(globals(),browser)
+        from provider_schedule_cases import run_browser as schedule_browser
+        schedule_browser(globals(),browser)
+        from registered_nameservers_cases import run_browser as registered_nameservers_browser
+        registered_nameservers_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
