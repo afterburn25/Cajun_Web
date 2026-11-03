@@ -97,6 +97,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  }
  elseif(str_starts_with($action,'hosting_catalog_')){if(!$client)throw new RuntimeException('Sign in to continue.');hosting_catalog_portal_action($action,$client);}
  elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
+ elseif(str_starts_with($action,'folder_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_document_root_requests_client_action($action,$client);}
  elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'cloud_website_request_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_cloud_site_requests_client_action($action,$client);}
  elseif(str_starts_with($action,'domain_renewal_')){if(!$client)throw new RuntimeException('Sign in to continue.');domain_renewals_client_action($action,$client);}

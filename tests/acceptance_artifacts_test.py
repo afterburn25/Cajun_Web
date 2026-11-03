@@ -553,6 +553,13 @@ def run(tmp):
     contract={**contract,'native_commands':native_commands}
     from reset_template_acceptance_contract import predecessor_contract
     contract,native_commands=predecessor_contract(ROOT,contract,native_commands,check)
+    from document_root_controls_acceptance_contract import predecessor, run as folder_control_checks
+    for path,expected_hash in contract['unchanged_test_sha256'].items():
+        check('Original test source retained '+path, hashlib.sha256(predecessor(path,contract).encode()).hexdigest()==expected_hash)
+    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
+    native_commands=[line.strip() for line in native.splitlines()]
+    native_commands=folder_control_checks(check,contract,workflow,native_commands)
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1
@@ -636,6 +643,13 @@ def run(tmp):
         start=workflow.index('  '+job+':\n');pos=workflow.index('      CWP_TEST_HOST: 127.0.0.1\n',start)+len('      CWP_TEST_HOST: 127.0.0.1\n')
         original_bug=workflow[:pos]+'      CWP_TEST_PORT: ${{ job.services.mariadb.ports[3306] }}\n'+workflow[pos:]
         check('Original invalid job-level service context is rejected for '+job, not valid_port_context(original_bug))
+
+
+_run_before_client_document_root_requests = run
+
+def run(tmp):
+    from document_root_requests_acceptance import run as client_folder_acceptance
+    client_folder_acceptance(globals(), tmp, _run_before_client_document_root_requests)
 
 
 def main():
