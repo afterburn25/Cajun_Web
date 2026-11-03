@@ -59,6 +59,9 @@ Recovered local commit `5b478528` on PR #317 source `366d53b`, verified 535 help
 ## 2026-11-01 — preserve meaningful denials when repeated passwords are removed
 
 The approved administrator experience authorizes mutations through the current session. A negative test that supplies a wrong value to a removed repeated-password field no longer tests that boundary. Capture the actual valid form, withdraw the same original owner's current authority, submit with its real CSRF and bound identifiers, and prove exact database/schema/private-file/profile retention. Keep initial sign-in, actual credentials, consent, CSRF, tenant/revision/replay and provider-budget coverage. Reach each form in its actual allowlisted 20i workspace. Preserve earlier source hashes by explicit reversible fixture receipts; do not overwrite historical pins or weaken the full driver to obtain a pass. [Implementation and evidence](CONTINUATION_2026_11_01.md).
+## 2026-10-19 — independent client folder journal and reciprocal approval
+
+Keep client website-folder requests in `provider_website_folder_requests_events`, outside the owner's closed document-root lifecycle namespace. Preserve direct owner v1 documents, existing terminal/check formats and compact grant schema. A client-origin owner v2 approval commits atomically with a reciprocal dispatch event before the existing single-send path. Original sharing/client authority remains binding even when the owner reviews a newer map. Either missing journal refuses actions and preparation rather than reconstructing lost consent. This extends the documented owner workflow without inventing another20i request format. [Implementation and verification scope](TWENTYI_CLIENT_DOCUMENT_ROOT_REQUESTS.md).
 
 ## 2026-10-19 — superseded component queue checkpoint
 

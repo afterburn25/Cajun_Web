@@ -22,6 +22,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_php.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_roots.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_root_controls.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_force_ssl.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_force_ssl_controls.php';
