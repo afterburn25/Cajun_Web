@@ -1,0 +1,363 @@
+name: Fixed main RC upgrade, finance and Windows packages
+
+# Orchestration only. Every job tests the immutable main commit below, while
+# receipts retain the distinct workflow commit, run and attempt. The historical
+# 1261-owner-release.yml and every application/test/helper byte stay unchanged.
+on:
+  push:
+    branches: [chatgpt/release-1261-main-validation-20261103]
+    paths: [.github/workflows/current-main-release-validation.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: current-main-release-validation-${{ github.ref }}
+  # Frozen exact-main release evidence retains every original attempt.
+  cancel-in-progress: false
+
+env:
+  CWP_SOURCE_SHA: d9e34d2f8483fcd7630d799725fac773561f5183
+  CWP_SOURCE_TREE: 870c2253474ec2a71770def99700751207b7025e
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  original-rc-financial-upgrade:
+    if: github.ref == 'refs/heads/chatgpt/release-1261-main-validation-20261103'
+    name: Original RC and finance (${{ matrix.database.label }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MARIADB_ROOT_HOST: '%'
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['3306/tcp']
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_APACHE_PHP: '8.3'
+      CWP_RECURRING_TEST_PREFIX: rbill_rel_
+      CWP_DATABASE: ${{ matrix.database.label }}
+      PHP_BINARY: /usr/bin/php8.3
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: d9e34d2f8483fcd7630d799725fac773561f5183
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable main and unchanged original drivers
+        id: source
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          python3 - <<'PY'
+          import ast,hashlib,json,os,re,subprocess
+          from pathlib import Path
+          source=os.environ['CWP_SOURCE_SHA']; tree=os.environ['CWP_SOURCE_TREE']
+          assert os.geteuid()!=0 and source=='d9e34d2f8483fcd7630d799725fac773561f5183'
+          assert tree=='870c2253474ec2a71770def99700751207b7025e'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==source
+          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()==tree
+          assert not subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],text=True).strip()
+          assert Path('VERSION').read_text()=='1.26.1\n'
+          expected={
+              'tests/owner_release_apache.py':'4ab52599648a8ad679458d7ab4e78f9dede5ae329c95c94d811f303a8cb0c7c7',
+              'tests/owner_release_finance_probe.php':'f8f2ae151fdc290ec4cbd8703f2238b5ea2b93b09faa88097ea0c3eb71a4bd67',
+              'tests/release_finance_native.php':'e5d7ff560310199dc17620217f9006909b65214ca0cbac10310be426348ae914',
+              'tests/release_finance_fixture.php':'08bb0d250098ae3e7d511bb4a7b8dda560f18126a5604313068a503e935b1a65',
+              'tests/license_financing_native_cases.php':'219aa4f1e49e0b87a2dbcea85656c8689c1f3c0cabbe4a65080e0915ffdb9d88',
+              'tools/integration/rc126_baseline.py':'58de18837c3afa2a328490034aa22a7d28620840fc5a845a9f890d336e0d1ae0',
+              'tools/build.py':'a88a208e86e5522e0eefb8beb665ab5ac7c1d7fcbc47d7c033b54181ebf41772',
+              'tests/build_guards.py':'8e693091535224bac2a4f1b20da4a5d95e3f997d9af42b34cb72e2a43d91e975',
+              'tools/integration/portable_checks.py':'edd7d839c4bba23b091ca4c014b64699e998f756d10f1de0f4f36413cef2ba81',
+              'tests/master_portal_policy.php':'9f5c70ecebcfd4afe2b49fbb97d92a7bdf1ee28de8102a0ff7d53d3d32ee4ba9',
+              'tests/licensing_workspace_contract.php':'b7fe98528df3833846ccd86604f7f0ab4e32a9441d99a83f05af6b2648e4a23c',
+              'tests/licensing_action_boundary.php':'f863801b48ca5d24ec303a254e9eaf9617732a5a943ad82826882eb3afbf8c0e',
+          }
+          for name,digest in expected.items():
+              raw=Path(name).read_bytes()
+              assert raw==subprocess.check_output(['git','cat-file','blob',source+':'+name]),name
+              assert hashlib.sha256(raw).hexdigest()==digest,name
+          ast.parse(Path('tests/owner_release_apache.py').read_text())
+          port=os.environ['CWP_ASSIGNED_PORT']
+          assert re.fullmatch('[1-9][0-9]{0,4}',port) and int(port)<=65535
+          with open(os.environ['GITHUB_ENV'],'a') as f: f.write('CWP_TEST_PORT='+port+'\n')
+          out=Path('qa/main-release-validation'); out.mkdir(parents=True)
+          receipt={'source_sha':source,'source_tree':tree,'workflow_commit':os.environ['GITHUB_SHA'],
+                   'workflow_ref':os.environ['GITHUB_WORKFLOW_REF'],'workflow_sha':os.environ['GITHUB_WORKFLOW_SHA'],
+                   'run_id':os.environ['GITHUB_RUN_ID'],'attempt':os.environ['GITHUB_RUN_ATTEMPT'],
+                   'database':os.environ['CWP_DATABASE'],'source_files':expected,
+                   'scope':'Fixed actual-main source under separate orchestration; not a new main push or full Application result.'}
+          (out/'source.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+
+      - name: Prepare actual Apache and disposable SQL runtime
+        id: setup
+        run: |
+          sudo apt-get -o Acquire::Retries=3 update -qq
+          sudo apt-get -o Acquire::Retries=3 install -y apache2-bin libapache2-mod-php8.3 php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv
+          sudo update-alternatives --set php /usr/bin/php8.3
+          test -s /usr/lib/apache2/modules/libphp8.3.so
+          php -l tests/owner_release_finance_probe.php
+          node --version
+          php8.3 -r 'for($i=0;$i<90;$i++){try{$p=new PDO("mysql:host=127.0.0.1;port=".getenv("CWP_TEST_PORT").";dbname=cwp_test","root","synthetic-root-only",[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$p->exec("SET GLOBAL log_bin_trust_function_creators=1");file_put_contents("qa/main-release-validation/environment.json",json_encode(["php"=>PHP_VERSION,"database"=>$p->getAttribute(PDO::ATTR_SERVER_VERSION),"selected_database"=>getenv("CWP_DATABASE"),"extensions"=>get_loaded_extensions(),"source_sha"=>getenv("CWP_SOURCE_SHA")],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+          python3 -m venv "$RUNNER_TEMP/owner-venv"
+          "$RUNNER_TEMP/owner-venv/bin/pip" install --disable-pip-version-check requests beautifulsoup4
+
+      - name: Build exact main and retain original portable guards
+        id: build
+        run: |
+          mkdir -p qa/owner-build
+          python3 tools/build.py --commit "$CWP_SOURCE_SHA" > qa/owner-build/build.log 2>&1
+          python3 tests/build_guards.py > qa/owner-build/guards.log 2>&1
+          python3 tools/integration/portable_checks.py --root . --out qa/owner-build/portable
+          php tests/master_portal_policy.php > qa/owner-build/master-portal-policy.log 2>&1
+          php tests/licensing_workspace_contract.php > qa/owner-build/licensing-contract.json
+          php tests/licensing_action_boundary.php > qa/owner-build/licensing-boundary.json
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Reconstruct exact original installed RC without live access
+        id: baseline
+        run: python3 tools/integration/rc126_baseline.py --snapshot test-runtime/rc126-original > qa/main-release-validation/baseline.stdout.log 2> qa/main-release-validation/baseline.stderr.log
+
+      - name: Original four-layout Apache installs and populated financial upgrades
+        id: apache
+        run: |
+          "$RUNNER_TEMP/owner-venv/bin/python" tests/owner_release_apache.py > qa/main-release-validation/apache.stdout.log 2> qa/main-release-validation/apache.stderr.log
+
+      - name: Original complete financial lifecycle and retained preparation
+        id: finance
+        run: |
+          mkdir -p qa/release-finance
+          php tests/release_finance_native.php > qa/release-finance/stdout.log 2> qa/release-finance/stderr.log
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('qa/release-finance-native-results.json').read_text())
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA'] and r['passed'] is True
+          assert len(r['checks'])>=108 and all(c['passed'] is True for c in r['checks'])
+          assert Path('qa/release-finance/stderr.log').read_text()==''
+          r=json.loads(Path('qa/owner-release/results.json').read_text())
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA'] and r['passed'] is True
+          assert len(r['scopes'])==4 and all(c['passed'] is True for c in r['checks'])
+          PY
+
+      - name: Verify all tested source remains the immutable main checkout
+        id: mutation
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$CWP_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CWP_SOURCE_TREE"
+          git diff --exit-code
+          git diff --cached --exit-code
+          python3 tools/acceptance_artifacts.py guard
+
+      - name: Seal actual source and required outcomes without hiding failures
+        id: receipt
+        if: always()
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"source":"${{ steps.source.outcome }}","setup":"${{ steps.setup.outcome }}","build":"${{ steps.build.outcome }}","baseline":"${{ steps.baseline.outcome }}","apache":"${{ steps.apache.outcome }}","finance":"${{ steps.finance.outcome }}","mutation":"${{ steps.mutation.outcome }}"}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          out=Path('qa/main-release-validation');out.mkdir(parents=True,exist_ok=True)
+          steps=json.loads(os.environ['CWP_STEP_OUTCOMES']); errors=[]; reports={}
+          if set(steps)!={'source','setup','build','baseline','apache','finance','mutation'} or any(v!='success' for v in steps.values()):errors.append('A required original stage did not succeed')
+          for name in ['qa/owner-release/results.json','qa/release-finance-native-results.json']:
+              try:
+                  raw=Path(name).read_bytes();r=json.loads(raw);checks=r['checks']
+                  assert r['passed'] is True and r['source_sha']==os.environ['CWP_SOURCE_SHA']
+                  assert isinstance(checks,list) and checks and all(c['passed'] is True for c in checks)
+                  if name.endswith('owner-release/results.json'):
+                      assert r['version']=='1.26.1'
+                      assert {s['scope'] for s in r['scopes']}=={'rewrite-root','rewrite-subfolder','no-rewrite-root','no-rewrite-subfolder'}
+                      assert len(r['scopes'])==4 and all(s['passed'] is True for s in r['scopes'])
+                  else:
+                      assert len(checks)>=108 and Path('qa/release-finance/stderr.log').read_bytes()==b''
+                  reports[name]={'checks':len(checks),'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}
+              except Exception as error:errors.append(name+': '+type(error).__name__+': '+str(error))
+          report={'source_sha':os.environ['CWP_SOURCE_SHA'],'source_tree':os.environ['CWP_SOURCE_TREE'],
+                  'workflow_commit':os.environ['GITHUB_SHA'],'workflow_sha':os.environ['GITHUB_WORKFLOW_SHA'],
+                  'run_id':os.environ['GITHUB_RUN_ID'],'attempt':os.environ['GITHUB_RUN_ATTEMPT'],
+                  'database':os.environ['CWP_DATABASE'],'step_outcomes':steps,'reports':reports,'errors':errors,'passed':not errors,
+                  'full_application_acceptance':False,'published_release':False,
+                  'scope':'Original RC four-layout Apache financial preservation and original native finance on fixed main; synthetic loopback data, no live provider/merchant/mail operations.'}
+          (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'passed':not errors,'reports':reports,'errors':errors}))
+          raise SystemExit(1 if errors else 0)
+          PY
+
+      - name: Preserve original evidence and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: main-rc-finance-${{ matrix.database.label }}-${{ github.run_id }}-${{ github.run_attempt }}-d9e34d2f8483fcd7630d799725fac773561f5183
+          path: qa/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Preserve standalone packages only after required acceptance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: main-rc-packages-${{ matrix.database.label }}-${{ github.run_id }}-${{ github.run_attempt }}-d9e34d2f8483fcd7630d799725fac773561f5183
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-package-comparison:
+    if: github.ref == 'refs/heads/chatgpt/release-1261-main-validation-20261103'
+    name: Windows packages equal accepted main Linux bytes
+    runs-on: windows-2022
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Preserve raw Git bytes and long paths on this disposable runner
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: d9e34d2f8483fcd7630d799725fac773561f5183
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Official pinned PHP setup with no Composer or coverage
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.3'
+          extensions: curl, dom, fileinfo, gd, mbstring, openssl, pdo_mysql, zip
+          coverage: none
+          tools: none
+        env:
+          fail-fast: 'true'
+
+      - name: Bind exact main source and actual Windows build runtime
+        id: source
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,platform,subprocess,sys
+          from pathlib import Path
+          source=os.environ['CWP_SOURCE_SHA'];tree=os.environ['CWP_SOURCE_TREE']
+          assert sys.platform=='win32' and source=='d9e34d2f8483fcd7630d799725fac773561f5183'
+          assert tree=='870c2253474ec2a71770def99700751207b7025e'
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==source
+          assert subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()==tree
+          assert not subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],text=True).strip()
+          assert Path('VERSION').read_bytes()==b'1.26.1\n'
+          assert hashlib.sha256(Path('tools/build.py').read_bytes()).hexdigest()=='a88a208e86e5522e0eefb8beb665ab5ac7c1d7fcbc47d7c033b54181ebf41772'
+          php=subprocess.check_output(['php','-r','echo PHP_VERSION;'],text=True).strip()
+          assert php.startswith('8.3.')
+          out=Path('qa/windows-main-packages');out.mkdir(parents=True)
+          r={'source_sha':source,'source_tree':tree,'workflow_commit':os.environ['GITHUB_SHA'],
+             'workflow_sha':os.environ['GITHUB_WORKFLOW_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],
+             'attempt':os.environ['GITHUB_RUN_ATTEMPT'],'platform':platform.platform(),'python':sys.version,
+             'php':php,'node':subprocess.check_output(['node','--version'],text=True).strip(),
+             'setup_php':'shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240'}
+          (out/'source.json').write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8',newline='\n')
+          PY
+
+      - name: Build unchanged exact-commit packages on Windows
+        id: build
+        run: python tools/build.py --commit "$CWP_SOURCE_SHA" > qa/windows-main-packages/build.stdout.log 2> qa/windows-main-packages/build.stderr.log
+
+      - name: Compare every distribution byte with verified main Linux output
+        id: compare
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,zipfile
+          from pathlib import Path
+          # Downloaded and independently verified Application41515697343/attempt1.
+          # These are exact inner distribution bytes, not transport ZIP hashes.
+          expected = {
+              "CajunWebPro-1.26.1-COMPLETE-UPLOAD.directories.txt": {"sha256":"c509f8d2e1f7ec74a856ee3c0cb38f01838848a0ff540651f1e78c2bd6009ae5","size":21932},
+              "CajunWebPro-1.26.1-COMPLETE-UPLOAD.manifest.json": {"sha256":"f95c401821daabc5ee84c3b2f12026662fa5fb38c614d0ca265ec07d49c41e59","size":482108},
+              "CajunWebPro-1.26.1-COMPLETE-UPLOAD.zip": {"sha256":"a5e80b53cf67acfb0002986cb7e7510b03d97df9a4c6a0befa0fd99dcb53ccba","size":17396773},
+              "CajunWebPro-1.26.1-FULL-PROJECT.directories.txt": {"sha256":"23c61fb50483f98901de64c15ad347cfcb33c9400bc37eaf32ce5c7c27d25761","size":75382},
+              "CajunWebPro-1.26.1-FULL-PROJECT.manifest.json": {"sha256":"df715c363011d192718e5bf45dcd10e0aad221d180f2b6d92c48ed6607c3b778","size":1267328},
+              "CajunWebPro-1.26.1-FULL-PROJECT.zip": {"sha256":"3156f82e8c37c0635fa24f108397cc51f2f4a81a7cb0b737f80a5a47a45ee81e","size":78391039},
+              "CajunWebPro-1.26.1-UPDATE.directories.txt": {"sha256":"eabf4d8c9b8afdb1aa4ed09c0b14ce1c48b8be5557843f769282ea4fca0f5adc","size":30358},
+              "CajunWebPro-1.26.1-UPDATE.manifest.json": {"sha256":"faf367e1b07c1b594c0a461eebbd1d5755e0c1d0319f789a42220065f70acbab","size":559465},
+              "CajunWebPro-1.26.1-UPDATE.zip": {"sha256":"cd2cdc7f79e08d6f86c1748b181d49562d1382e85f9438c511087a4348018968","size":21919974},
+              "SHA256SUMS.txt": {"sha256":"023022b6fbc66aeba2857c40347fcc6e72ad8a9e3448102ce20a170bd1d74d5c","size":1136},
+              "START-HERE.txt": {"sha256":"759298ea408fd9e830020633b53281154436f407becaea4149c869bbf1ad29d7","size":4908},
+              "manifest.json": {"sha256":"09d8a03e9a75521bc9f2cbd9e2ab3f649a78c1c81369f636b921f61d23783367","size":607225},
+          }
+          actual={};errors=[];dist=Path('dist')
+          entries=list(dist.iterdir())
+          if {p.name for p in entries}!=set(expected) or any(p.is_symlink() or not p.is_file() for p in entries):errors.append('Exact distribution inventory differs')
+          for name,fact in expected.items():
+              try:
+                  raw=(dist/name).read_bytes();got={'size':len(raw),'sha256':hashlib.sha256(raw).hexdigest()};actual[name]=got
+                  if got!=fact:errors.append('Byte identity differs: '+name)
+                  if name.endswith('.zip'):
+                      with zipfile.ZipFile(dist/name) as z:
+                          assert z.testzip() is None
+                          assert not any(n.lower().endswith('.zip') for n in z.namelist())
+                  if name.endswith('.manifest.json') or name=='manifest.json':
+                      manifest=json.loads(raw);assert manifest['source_commit']==os.environ['CWP_SOURCE_SHA'] and manifest['version']=='1.26.1'
+              except Exception as error:errors.append(name+': '+type(error).__name__+': '+str(error))
+          r={'passed':not errors,'source_sha':os.environ['CWP_SOURCE_SHA'],'source_tree':os.environ['CWP_SOURCE_TREE'],
+             'workflow_commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'attempt':os.environ['GITHUB_RUN_ATTEMPT'],
+             'linux_baseline':{'run_id':41515697343,'attempt':1,'artifact_id':13194488417,
+                               'outer_sha256':'8963ed17d2a44540663ddbc0274bef4503805178a90120a064acf24811f1672a'},
+             'expected':expected,'actual':actual,'errors':errors,'full_application_acceptance':False,'published_release':False,
+             'scope':'Actual Windows clean-source deterministic build; every shipping ZIP, manifest, directory inventory, START-HERE and checksum file must equal the verified exact-main Linux bytes.'}
+          Path('qa/windows-main-packages/comparison.json').write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8',newline='\n')
+          print(json.dumps({'passed':not errors,'files':len(actual),'errors':errors}))
+          raise SystemExit(1 if errors else 0)
+          PY
+
+      - name: Verify Windows build preserved all source
+        id: mutation
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$CWP_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CWP_SOURCE_TREE"
+          git diff --exit-code
+          git diff --cached --exit-code
+          python tools/acceptance_artifacts.py guard
+
+      - name: Preserve actual Windows evidence including any failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: main-windows-package-evidence-${{ github.run_id }}-${{ github.run_attempt }}-d9e34d2f8483fcd7630d799725fac773561f5183
+          path: qa/windows-main-packages/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Preserve Windows packages only after exact byte comparison
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: main-windows-packages-${{ github.run_id }}-${{ github.run_attempt }}-d9e34d2f8483fcd7630d799725fac773561f5183
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
