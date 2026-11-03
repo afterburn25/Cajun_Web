@@ -21,6 +21,17 @@ def temporary(name,data,test):
         else:p.write_bytes(old)
 try:
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+    check('Cline Markdown instructions stay in Git but out of distributable archives',
+        build.source_only_agent_guidance('.clinerules/01-cajunwebpro-continuity.md'))
+    for forbidden in [
+        '.clinerules/runtime.php', '.clinerules/secret.key',
+        '.clinerules/config.json', '.clinerules/deep/agent.md',
+        '.other-agent/01-continuity.md',
+    ]:
+        check('Builder does not exclude unreviewed source path '+forbidden,
+            not build.source_only_agent_guidance(forbidden))
+    rejects('Builder still refuses unknown agent-code paths',
+        lambda:build.full_project_area('.clinerules/runtime.php'))
     long_name='site/includes/foundation/mail-receiving/vendor/zbateson/mail-mime-parser/src/Header/Consumer/QuotedStringMimeLiteralPartTokenSplitPatternTrait.php'
     check('Builder reads the exact long dependency Git blob without filesystem path ambiguity',build.source_bytes(commit,long_name)==(ROOT/long_name).read_bytes())
     version_root=WORK/'version-check';version_root.mkdir();(version_root/'VERSION').write_text((ROOT/'VERSION').read_text())
