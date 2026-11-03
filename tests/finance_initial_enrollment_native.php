@@ -60,6 +60,21 @@ function fie_portal(array $row,array $financePlan):string{
 try{
     foreach(schema_statements($prefix)+service_plans_schema($prefix)+recurring_billing_schema($prefix)+license_financing_schema($prefix)+license_finance_offers_schema($prefix)+license_finance_gateway_schema($prefix) as $sql)query($sql);
     foreach(['studio_schema_version'=>'2','staff_schema_version'=>'1','payments_schema_version'=>'2','support_schema_version'=>'1','service_plans_schema_version'=>'1','recurring_billing_schema_version'=>'1','invoice_ledger_schema_version'=>'1','license_financing_schema_version'=>'2','license_finance_offers_schema_version'=>'1','license_finance_gateway_schema_version'=>'3'] as $k=>$v)save_setting($k,$v);
+    // Regression for the financing-offer CI failure: payment readiness also
+    // depends on staff and studio schema markers. Verify both their negative
+    // and recovered states in the actual isolated native database fixture.
+    fie_ok('Financing fixture initializes staff, studio and payments readiness',
+        payments_ready() && staff_ready() && studio_ready());
+    save_setting('staff_schema_version','');
+    fie_ok('Payments fail closed without staff schema readiness', !payments_ready());
+    save_setting('staff_schema_version','1');
+    save_setting('studio_schema_version','');
+    fie_ok('Payments fail closed without studio schema readiness', !payments_ready());
+    save_setting('studio_schema_version','2');
+    save_setting('payments_schema_version','');
+    fie_ok('Payments fail closed without payment schema readiness', !payments_ready());
+    save_setting('payments_schema_version','2');
+    fie_ok('Financing fixture recovers all readiness prerequisites', payments_ready());
     $password='Synthetic enrollment owner passphrase';$now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Synthetic owner','owner@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('a',32),$now]);staff_seed_owner(1);
     for($id=1;$id<=2;$id++){
