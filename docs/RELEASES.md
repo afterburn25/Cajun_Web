@@ -1,3 +1,7 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+The checkout correction changes one shipping router entry point and its canonical inventory/source bindings. It is not yet accepted or merged into main and creates no release tag or published download. Development remains 1.26.1; the last retained published-release check was v1.25.0. Preserve the existing release, upgrade and artifact-verification gates after fresh checkout/full Application acceptance and resulting-main verification. [Current source and original failure](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 Contacts #340 is verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The enclosing checkout reconciliation reuses published preparation and awaits its own fresh runtime, full Application and integration gates. Development remains **1.26.1** and the latest published release remains **v1.25.0**, rechecked before this continuation. No release tag or published download is created here. Retain the established upgrade, package and publication gates after accepted checkout main integration. [Current source and evidence](../SESSION_HANDOFF.md).

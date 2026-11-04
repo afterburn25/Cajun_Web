@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+Checkout #341 is **awaiting correction validation and fresh acceptance**. Its original [attempt 1](https://github.com/afterburn25/Cajun_Web/actions/runs/41812110862) passed source admission and the native step in all four lanes, then failed the same packaged-browser contact-context refusal assertion. The combined contacts identity cleanup removed the malformed contact markers before checkout's more specific primary-client refusal could run.
+
+The enclosing candidate is a normal child of published `cde638ecdf0af24247de8930bcc183673fd2bbb5`. It adds an early guard limited to checkout GET and the exact preview/confirm POST actions, preserves the original tests, and refreshes the existing source/inventory bindings. Contacts remains verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`; this shipping correction has its own local, independent-review, hosted and resulting-main gates. [Current handoff](SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 Contacts is now **verified on main** at `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`, tree `a399181494942dd71c6ec2bbc218719e5350de77`. Its 49 expected main-push workflows completed successfully; the [full Application run](https://github.com/afterburn25/Cajun_Web/actions/runs/41789311730), focused matrices and actual artifact, authority, diagnostic and visual reviews are cleared.

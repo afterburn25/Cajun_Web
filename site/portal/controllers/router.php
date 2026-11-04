@@ -66,6 +66,14 @@ if($supportRequested){
 }
 if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}
 master_portal_dispatch();
+// Preserve checkout contact provenance before identity normalization can discard stale keys.
+if(!$supportRequested&&!support_current()&&(
+    (($_SERVER['REQUEST_METHOD']??'GET')==='GET'&&($_GET['hosting']??null)==='checkout')
+    ||(($_SERVER['REQUEST_METHOD']??'GET')==='POST'&&in_array($_POST['action']??null,['hosting_catalog_checkout_preview','hosting_catalog_checkout_confirm'],true))
+)){
+    require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout.php';
+    try{hosting_checkout_reject_contact();}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
+}
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity'])){if($client&&!contact_can('projects'))fail_page('Your contact permissions do not include project access.',403);activity_render('client',$error);}

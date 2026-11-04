@@ -1,3 +1,7 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+Contacts remains verified on main. Packaged checkout now has a concrete integration correction: preserve raw contact-session provenance until the primary-client-only checkout refusal runs. The original negative probe and all existing acceptance requirements remain. No new feature or completion credit is claimed; local validation, independent review, fresh checkout/full Application acceptance and main verification remain the delivery gates. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 Scoped contacts has reached verified main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The saved packaged-checkout preparation is now normally reconciled with that accepted source, with fresh checkout/runtime review, full Application acceptance and resulting-main verification still pending. Existing requirement IDs, roadmap credit and historical completion figures are preserved. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).

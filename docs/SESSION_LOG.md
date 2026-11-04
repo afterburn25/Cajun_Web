@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+Preserved all four original checkout attempt-1 job logs and artifact ZIPs and verified their official byte counts/digests, exact CI source bindings and ordered native reports. All four lanes failed the same browser contact-context assertion; the missing response body and unreached post-denial state comparison remain explicit limits. The unchanged source showed identity normalization clearing malformed contact keys before the specific checkout refusal.
+
+After independent static review, prepared a new isolated child of published `cde638ecdf0af24247de8930bcc183673fd2bbb5` with the exact eight-line router guard, its existing reversible proof/pin updates and canonical refreshed inventory. Preserved every original fixture, assertion, verifier body and old narrative byte. The enclosing candidate still requires its exact local execution receipts, independent final review and new hosted/main acceptance. [Complete identities and next gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 After contacts completed its own-main Application, focused, authority, diagnostic and visual qualification, created an isolated checkout worktree from public preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` and normally merged accepted main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The pre-prefix tree remained exactly `97c076c476218e04b8cedaaa77d1a03e30fcfd25` without conflicts. Added current-state prefixes to the same eight histories while preserving every other source byte and mode.

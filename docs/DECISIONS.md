@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+Retain the original checkout negative-session probe and exact refusal assertion. The integration failure exposed an ordering gap: current contact identity cleanup can remove invalid contact markers before the existing checkout-specific primary-client guard sees them. Refuse at the checkout entry point using that existing guard, after master dispatch and before normalization, for checkout GET and the two exact preview/confirm POST actions. Exclude support context so its existing audited denial remains authoritative; leave login/logout and ordinary portal behavior unchanged.
+
+Treat this as an explicit shipping correction on a new child of published checkout `cde638ecdf0af24247de8930bcc183673fd2bbb5`. Extend the existing router inverse, preserve all old proof rules and test assertions, and regenerate the installer inventory. Keep the original frozen source inspector unchanged and review a separately pinned correction contract. [Original failure, limits and required acceptance](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 Advance checkout from the saved public preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` only after contacts main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee` receives its own full clearance. Preserve that preparation as first parent and accepted main as second parent in a normal merge. Accepted main has the same tree as the preparation's published contacts parent, so the pre-prefix checkout tree stays `97c076c476218e04b8cedaaa77d1a03e30fcfd25` without changing proof pins, repair rows or executable source.

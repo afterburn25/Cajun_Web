@@ -1,3 +1,12 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Contacts #340 | ALREADY INTEGRATED and verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee` | Preserve accepted source and evidence |
+| Checkout #341 | NEEDS CORRECTION OR ACCEPTANCE; original four-lane attempt 1 failed the same packaged-browser contact refusal after native success | Validate and independently review this narrow router correction, then qualify a fresh exact-source four-lane attempt 1 and full Application run; normal-merge and verify resulting main |
+
+The enclosing correction is a normal child of public `cde638ecdf0af24247de8930bcc183673fd2bbb5`. Original failures, all test/fixture assertions and the earlier source inspector remain intact. [Diagnosis and evidence limits](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 | Candidate | Current disposition | Next action |

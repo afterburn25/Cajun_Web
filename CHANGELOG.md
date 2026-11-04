@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+- Preserve contact-session provenance at checkout entry so the existing primary-client guard refuses checkout before identity cleanup can discard invalid contact keys. Master portal, support, login/logout and primary-client CSRF paths retain their existing behavior.
+- Keep the original negative-session fixture, native/browser assertions and failed [four-lane attempt 1](https://github.com/afterburn25/Cajun_Web/actions/runs/41812110862). Update only the router's exact composition inverse/hash and canonical installer inventory.
+- This correction is prepared on a new child of published checkout source `cde638ecdf0af24247de8930bcc183673fd2bbb5`; independent review, fresh checkout/full Application acceptance and main verification remain required. [Evidence and next gates](SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout reconciled with verified contacts main
 
 - [Contacts #340](https://github.com/afterburn25/Cajun_Web/pull/340) is verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`, including its own-main Application and focused acceptance reviews.
