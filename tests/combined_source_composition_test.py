@@ -385,7 +385,7 @@ def run(root=ROOT):
 
 
 def shallow_acceptance(root=ROOT):
-    """Use the unchanged protected-workflow helper in a genuine depth-one clone."""
+    """Use the finite protected-workflow repair in a genuine depth-one clone."""
     checks = []
 
     def check(name, condition):
@@ -407,15 +407,21 @@ def shallow_acceptance(root=ROOT):
               proof.git(fixture, 'rev-parse', '--is-shallow-repository').strip() == b'true')
         missing = subprocess.run(['git', 'cat-file', '-e', proof.BASE + '^{tree}'], cwd=fixture, capture_output=True)
         check('Required historical component ancestry is genuinely absent before hydration', missing.returncode != 0)
-        check('Protected complete application workflow remains its original exact bytes',
-              proof.ordinary(fixture, '.github/workflows/application-tests.yml')
-              == proof.git(root, 'cat-file', 'blob', proof.BASE + ':.github/workflows/application-tests.yml'))
+        workflow_path = '.github/workflows/application-tests.yml'
+        current_workflow = proof.ordinary(fixture, workflow_path)
+        predecessor_workflow = proof.reconstruct_repair(
+            json.loads(proof.ordinary(fixture, proof.RECEIPT)), workflow_path, current_workflow)
+        check('Protected complete application workflow retains its original exact bytes through the finite repair',
+              predecessor_workflow
+              == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':' + workflow_path)
+              == proof.git(root, 'cat-file', 'blob', proof.BASE + ':' + workflow_path))
         command = [sys.executable, '-B', 'tests/acceptance_artifacts_test.py', '--report', str(output / 'helpers.json')]
         with (output / 'stdout.log').open('wb') as stdout, (output / 'stderr.log').open('wb') as stderr:
             execution = subprocess.run(command, cwd=fixture, stdout=stdout, stderr=stderr)
         after = proof.history_state(fixture)
         record = {'command': command, 'exit_code': execution.returncode, 'before': before, 'after': after,
-                  'protected_workflow_sha256': proof.digest(proof.ordinary(fixture, '.github/workflows/application-tests.yml'))}
+                  'protected_workflow_sha256': proof.digest(current_workflow),
+                  'protected_workflow_predecessor_sha256': proof.digest(predecessor_workflow)}
         (output / 'execution.json').write_text(json.dumps(record, indent=2) + '\n')
         check('Unchanged maintained acceptance helper succeeds from genuine shallow source', execution.returncode == 0)
         check('The unchanged helper has no source-proof stderr', not (output / 'stderr.log').read_bytes())

@@ -4,6 +4,7 @@
 - Added malformed and boundary identity contract cases without weakening signature or lifecycle checks.
 - Wired the existing payment-link native privacy cases into maintained execution and added installed anonymous HTTP/browser isolation, terminal-state non-disclosure, read-only financial snapshots and responsive capture requirements.
 - Refreshed the canonical installer inventory, acceptance contract and finite reversible source-composition proof. This is implemented on a local candidate pending independent review, hosted acceptance, merge and resulting-main verification; it is not yet released or live.
+- Corrected hosted acceptance wiring so main-target changes run the focused webhook contract and the full Application build executes the unchanged finite composition mutation suite.
 
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 

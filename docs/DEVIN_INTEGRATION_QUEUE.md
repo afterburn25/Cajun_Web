@@ -5,11 +5,13 @@
 | Candidate | Current disposition | Next action |
 | --- | --- | --- |
 | Exact main `ce1803bb`, 1.26.1 | Release qualification in progress; default Application and source-bound original-RC/finance/Windows gates passed, four additional supported-runtime Application runs remain active | Let existing runs finish, map submitted environments from authenticated evidence, inspect all partitions/artifacts/captures, and complete independent release review |
-| Webhook #353 successor | Implemented locally with one strict production/sandbox identity boundary, contract cases, inventory and finite proof; independent bounded review found no issue | Full Linux/installed acceptance; publish the exact small successor and inspect evidence |
+| Webhook #353 successor | Implemented locally with one strict production/sandbox identity boundary, contract cases, inventory and finite proof; first PR head exposed a hosted workflow branch-filter gap | Qualify the corrected head with the newly reachable focused webhook job plus full Linux/installed acceptance |
 | Payment-link #346/#253 successor | Shipping privacy fix already on main; maintained native/HTTP/browser acceptance ported locally onto current source; independent bounded review found no issue | Linux composition, actual database/browser execution and capture inspection |
 | Release publication | BLOCKED on accepted successor, full exact-source evidence and missing release-layer documents/assets | Merge and verify accepted successor first; then prepare and verify immutable 1.26.1 draft/public assets without live deployment |
 
 Do not merge stale PR353 or PR346 wholesale, duplicate active runs, weaken tests, or claim branch/source-bound evidence as ordinary resulting-main acceptance. Continue independent queue work after this release blocker in the issue's dependency order.
+
+PR361 first head `fad6e41e` is preserved but cannot qualify the successor because the focused webhook and complete composition-mutation callers were absent. The enclosing workflow-only correction keeps all existing assertions and protected Application behavior, adds exact callers, and must receive its own independent review and exact-head evidence.
 
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 

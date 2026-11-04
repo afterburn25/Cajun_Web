@@ -2,6 +2,8 @@
 
 Development remains 1.26.1 at main `ce1803bb106713ef28dc260282a01105e7019118`; v1.25.0 remains the latest published release. A local successor addresses subscription webhook identity validation and makes the existing payment-link privacy behavior part of maintained native/installed/browser acceptance. It is not merged, accepted, tagged, packaged or published. Preserve the existing four exact-main runtime runs and the successful source-bound original-RC/finance/Windows evidence while retaining their distinct source/run identities. Final release scope, migration instructions, test report, immutable asset verification and fresh public-download comparison remain required.
 
+The successor's first PR head lacked two hosted callers and is not release evidence. The corrected enclosing head must pass the newly reachable focused webhook contract and full composition mutation suite in addition to complete Application acceptance before normal merge.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 The checkout correction changes one shipping router entry point and its canonical inventory/source bindings. It is not yet accepted or merged into main and creates no release tag or published download. Development remains 1.26.1; the last retained published-release check was v1.25.0. Preserve the existing release, upgrade and artifact-verification gates after fresh checkout/full Application acceptance and resulting-main verification. [Current source and original failure](../SESSION_HANDOFF.md).
