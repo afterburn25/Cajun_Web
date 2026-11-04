@@ -128,6 +128,7 @@ function proposal_decide(string $id,string $kind,string $note,array $client,stri
         if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Support sessions cannot decide proposals.');
         $current=studio_client();
         if(!proposals_ready()||!$current||(int)$current['id']!==(int)($client['id']??0)||!hash_equals((string)$current['auth_version'],(string)($client['auth_version']??'')))throw new RuntimeException('Current client authentication is required to decide this proposal.');
+        contact_require_permission('billing',(int)$current['id']);
         $row=proposal_client_row($id,$current,true);$version=proposal_version_row($row,(int)$row['current_version']);
         if(!hash_equals((string)$version['id'],$versionId)||!hash_equals((string)$version['content_hash'],$contentHash))throw new RuntimeException('This proposal changed after you reviewed it. Reload and review the current version.');
         $pv=proposal_model_version($version);

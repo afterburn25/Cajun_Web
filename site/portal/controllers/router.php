@@ -66,16 +66,16 @@ if($supportRequested){
 }
 if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}
 master_portal_dispatch();
-$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
+$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
-if(isset($_GET['activity']))activity_render('client',$error);
-if(isset($_GET['download_release']))delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');
-if(isset($_GET['downloads'])||isset($_GET['release']))delivery_portal_render();
-if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
-if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
+if(isset($_GET['activity'])){if($client&&!contact_can('projects'))fail_page('Your contact permissions do not include project access.',403);activity_render('client',$error);}
+if(isset($_GET['download_release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');}
+if(isset($_GET['downloads'])||isset($_GET['release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_portal_render();}
+if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);if(!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
+if(isset($_GET['invoice'])||isset($_GET['receipt'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);ledger_portal_render();}
 if(isset($_GET['proposal']))proposals_portal_render($error);
 if(array_key_exists('notifications',$_GET))notification_center_portal_render($error);
-if(isset($_GET['services']))provider_services_portal_render();
+if(isset($_GET['services'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);provider_services_portal_render();}
 if(array_key_exists('tickets',$_GET)||array_key_exists('ticket',$_GET)||array_key_exists('ticket_new',$_GET))support_tickets_portal_render($client,$error);
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if($accountRequested){require CWP_CODE_ROOT.'/portal/views/account.php';}

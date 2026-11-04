@@ -198,6 +198,8 @@ function staff_action_permission(string $action): ?string {
     if($action==='delivery_upload')return 'clients.manage';
     if($action==='proposal_setup')return 'staff.manage';
     if(str_starts_with($action,'proposal_'))return 'clients.manage';
+    if($action==='studio_contacts_setup')return 'staff.manage';
+    if(in_array($action,['studio_contact','studio_contact_invite'],true))return 'clients.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';

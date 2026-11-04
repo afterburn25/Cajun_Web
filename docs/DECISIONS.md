@@ -1,3 +1,51 @@
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+Join the checkout and contacts histories through a normal merge using the published contacts parent. Keep the contacts format-3 verifier's 25 function bodies and 89 `require` calls, exact addition ancestry and all original refusal rules. Resolve only the finite repair identities into their 72-row union, rebind the unchanged verifier implementation to the combined regression identity, and retain both regression additions verbatim.
+
+The complete resolved tree was reproduced with the actual remote contacts ancestry before this narrative update. Source-equivalent local preparation remains provisional until contacts is accepted on main and the actual combined checkout receives its dedicated runtime and full Application evidence. [Current checkpoint and gates](../SESSION_HANDOFF.md).
+
+## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
+
+The contacts format-3 verifier keeps all 25 function bodies, four original component pins, four adapters, four exact PR331 additions and its regression source. The proof contains the exact 62-row union of 56 contacts repairs and 18 main repairs, with all 12 shared rows identical. Every inverse still restores its immutable recorded source; no verification rule, workflow, timeout, assertion or package-builder policy is relaxed.
+
+Use the contacts format-3 implementation when joining the homepage/scheduler repair rows; an older format-2 verifier would discard the already reviewed contact additions. Preserve all narrative content from both parents rather than selecting either side wholesale. A passing earlier component run cannot certify a changed integration tree. [Execution state](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — test current authority and readiness at the actual public boundary
+
+Contacts preparation uses the reviewed owner session, valid CSRF and an explicit unchecked backup confirmation. The service-plan fixture now first replays the obsolete password-only submission and proves refusal without storage or agreement changes, then submits the real confirmation. Restoring a removed password prompt would change shipping behavior to satisfy a stale fixture and is not part of this correction.
+
+Keep the original full three-link billing-navigation assertion verbatim at the existing freshly invited billing contact after actual service-plan and recurring readiness. At the earlier service-plan phase, require agreement/registration navigation while recurring is unprepared and absent. Keep a prepared projects-only denial and leave every original recurring setup/refusal assertion unchanged.
+
+Distinguish invalidated credentials from current identities without billing permission. The identity guard returns a revoked session to the real 200 sign-in form before agreement rendering. A reauthenticated nonbilling contact reaches the separate generic 403 public refusal. The corrected predicates require the actual login controls or generic refusal, absence of private terms and, for attempted consent, unchanged records in service_plans, service_plan_events, service_subscriptions and service_subscription_events. Internal exception text is not the public agreement response.
+
+All 149 original check sites remain, including 145 exact calls, four strengthened corrected predicates and one verbatim relocated positive; six checks are additive. Proof changes admit only the two exact fixture identities and their existing finite inverses. All component identities, 56 repair paths, four additions, four adapters and verifier functions remain. The successful local 476-record chain and separate 65-record bootstrap do not stand in for hosted full-suite, matrix, main or release qualification. Preserve the hosted failure and three local failed checkpoints, including the earlier static lookahead that missed the identity-before-render path.
+
+## 2026-11-03 — keep contact permissions separate from personal account state
+
+Contacts receive fresh project-grant checks at the existing ticket transaction boundary; invoice/subscription link context additionally requires billing permission. Ticket history retains the established client-account document format, with the acting contact ID added to audit detail. Contact views omit the primary client's personal read cursor, and attempts to read or change primary ticket notifications/read state fail. This avoids a schema expansion and preserves all existing primary/staff-support histories.
+
+Software mutation reservations already require the primary account. Contact software views now explain that boundary and omit those purchase/payment/subscription controls while retaining authorized software records and installation controls. No payment or provider authority was broadened. Independent source/evidence review cleared these branch corrections for publication scope; current hosted/installed acceptance and main integration remain pending.
+
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+Keep contact authority fresh at the existing transaction/mutex boundaries and preserve full original owner/system financial preparation. Treat an expired contact session as sign-in without protected data; reject authenticated contacts lacking the current billing grant. Successful primary login must clear every contact marker. Read the contacts schema marker freshly under the existing account mutex before reciprocal email uniqueness checks; cached pre-migration settings cannot bypass the constraint.
+
+Historical source contracts retain historical identities. Restore the mistaken PR331 browser predecessor pin to exact main; prove all current files first, reconstruct only the finite already-reviewed browser repair for comparison, and execute current browser source unchanged. Original backup guards, all 12 main repair rows and every original maintained helper assertion remain. Direct-boundary mutations test current browser/contract drift and missing guards. Independent author/reviewer roles and original failed attempts are recorded in [the handoff](../SESSION_HANDOFF.md).
+
+Keep full-main acceptance, the successful original-RC/Windows run and the missing dedicated checkout gate separate. No passing subset, old-source result or queue state establishes final release completion.
+
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+Retain both reviewed histories through a normal two-parent homepage integration after main53 artifact clearance. Reconcile the existing finite proof as the exact 18-row union; do not replace its verifier logic, component sources, inverse edits or assertion boundaries. Preserve both narrative prefixes above their shared historical suffix. Full combined-source validation and required review remain gates before normal merge. [Evidence and sequence](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Give the bounded scheduled-refresh browser scenario its own normally invited and activated owner. Preserve the shared setup owner's immutable read history, audit and authority, and keep the production 20/hour budget and 30-second cooldown. The two negative permission probes must revoke the same dedicated identity that submits the protected action. Existing scenarios remain preserved through one exact reversible source-receipt addition. [Controlled reproductions and acceptance scope](../SESSION_HANDOFF.md).
+
+## 2026-11-03 UTC — verified main and homepage reconciliation
+
+Use a distinct normal-merge integration branch from verified main and retain PR328 as a parent. Correct only finite reviewed proof identities/inverses; preserve strict checks and all original feature/test bytes. Narrative-only CHANGELOG content stays governed by the existing narrative policy. Current-main automatic acceptance, broader release qualification, publication and live deployment remain separate states. No other branch, old release, rate limit or safety boundary is altered.
+
 ## 2026-11-03 UTC — checkout fixture acceptance correction
 
 The actual multipart upload exposed a fixture-only missing `private/media` directory; checked mode-0700 creation now follows the already path-validated fresh-private-root guard. Two later fixtures inspected intentionally collapsed native disclosures: the optional private-cost fields retained nonzero rectangles while not rendered, and Plan terms were absent from visible text while correctly saved in the DOM. Both fixtures now click the real summary and assert the closed/open states before their unchanged capture and text/image predicates. The inbox statuses are rendered uppercase by the existing `.workspace-status` CSS; comparison now preserves the required meaning across presentation case and strengthens all three inactive-service guards. Finally, the actual packaged billing bridge lacked `hosting_catalog_publication()` until its existing `catalog_offers.php` dependency was loaded; one scoped `require_once` fixes the read bridge. Real saved HTML, visible text, geometry, computed style, exact image URL and before/after commercial-state evidence establish these causes. No shipping correction was needed.

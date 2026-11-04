@@ -18,7 +18,10 @@ function notification_actor(string $audience,int $id):array {
     notifications_feed_require();
     if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Return to your own account before opening notifications.');
     if($audience==='staff'){$actor=admin_user();if(!$actor||!admin_session_matches($actor))throw new RuntimeException('Sign in to your notification center.');}
-    elseif($audience==='client')$actor=studio_client();else throw new InvalidArgumentException('Unknown notification audience.');
+    elseif($audience==='client'){
+        $actor=studio_client();
+        if(array_key_exists('contact_id',$_SESSION)||array_key_exists('contact_auth',$_SESSION))throw new RuntimeException('Notifications belong to the primary client account.');
+    }else throw new InvalidArgumentException('Unknown notification audience.');
     if(!$actor||$id<1||(int)$actor['id']!==$id)throw new RuntimeException('Notifications belong to the currently signed-in recipient.');
     return $actor;
 }

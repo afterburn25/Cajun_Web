@@ -20,6 +20,8 @@ function studio_client_save(int $id,string $expected,string $name,string $email,
     return staff_locked(fn()=>staff_transaction(function()use($id,$expected,$name,$email,$active):int {
         $actor=studio_client_manager();$name=trim($name);$email=strtolower(trim($email));
         if($id<0 || $id>2147483647 || $name==='' || strlen($name)>120 || preg_match('//u',$name)!==1 || preg_match('/[\x00-\x1F\x7F]/',$name) || strlen($email)>190 || !filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Enter a client name up to 120 bytes and a valid email.');
+        // Primary and additional-contact logins share one email namespace, including disabled contacts. Older primary-only installations have no contact table to query.
+        if((one('SELECT value FROM '.table('settings').' WHERE name=?',['contacts_schema_version'])['value']??'')==='1'&&one('SELECT id FROM '.table('studio_contacts').' WHERE email=?',[$email]))throw new InvalidArgumentException('That email belongs to an additional client contact.');
         if($id){
             $client=one('SELECT id,auth_version FROM '.table('studio_clients').' WHERE id=? FOR UPDATE',[$id]);
             if(!$client)throw new InvalidArgumentException('Client not found.');

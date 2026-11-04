@@ -20,8 +20,9 @@ function support_tickets_link_choices(int $client,bool $staff):array {
         else {$actor=support_tickets_portal_identity($client);if($actor['type']!=='client')throw new RuntimeException('Choose related work from your own client account.');}
         $result=[];
         $result['project']=all('SELECT id,title FROM '.table('studio_jobs').' WHERE client_id=? ORDER BY id DESC LIMIT 26',[$client]);
-        $result['invoice']=all('SELECT i.id,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE j.client_id=? ORDER BY i.id DESC LIMIT 26',[$client]);
-        if((!$staff||$user['role']==='owner')&&function_exists('service_plans_ready')&&service_plans_ready()){
+        $billing=$staff||!isset($actor['contact_id'])||$actor['contact_billing'];
+        if($billing)$result['invoice']=all('SELECT i.id,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE j.client_id=? ORDER BY i.id DESC LIMIT 26',[$client]);
+        if($billing&&(!$staff||$user['role']==='owner')&&function_exists('service_plans_ready')&&service_plans_ready()){
             $result['subscription']=[];
             foreach(all('SELECT * FROM '.table('service_subscriptions').' WHERE client_id=? ORDER BY created_epoch DESC,id DESC LIMIT 26',[$client]) as $row){$doc=service_plans_validate($row,true);$result['subscription'][]=['id'=>$row['id'],'title'=>$doc->model()->plan->name];}
         }

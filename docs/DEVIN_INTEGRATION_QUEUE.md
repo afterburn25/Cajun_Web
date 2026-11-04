@@ -1,3 +1,83 @@
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Contacts #340, published head `f6c1aa2fe5d420a0e6b3b9785c9e1a319203c050` | Homepage/scheduler reconciliation published; new hosted qualification and main integration pending | Inspect the original combined-source runs and required review, then normal merge and verify main |
+| Checkout #341 | Local normal merge with the published contacts parent; 72 repairs/four additions and local source/build/portable gates pass | Root resolution review; recheck accepted contacts main, qualify four checkout runtime lanes and full Application, then normal merge and verify main |
+
+Frozen checkout f98 evidence is preserved. Four checkout source dependencies changed through contacts, so prior native/browser evidence does not certify this combination. The preliminary local contacts ancestor is retained only on a separate evidence branch; the prepared merge uses published contacts ancestry. Broader drafts keep their previously recorded blockers. [Detailed checkpoint](../SESSION_HANDOFF.md).
+
+## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
+
+[Homepage PR #339](https://github.com/afterburn25/Cajun_Web/pull/339) is merged into main `44d6563923b455f9d9494cc4394cb61b9cea796a`, tree `ed0c8235b60ee9b9d4847a2dba299b852465c0be`. All 13 automatic main workflows report success, including [Application 41752311110](https://github.com/afterburn25/Cajun_Web/actions/runs/41752311110) and [account/notification 41752311123](https://github.com/afterburn25/Cajun_Web/actions/runs/41752311123). This supersedes earlier pending-homepage statements; actual artifact inspection is tracked separately from workflow status.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Homepage #339 / scheduler #342 | Merged into main44; all 13 automatic workflows passed | Finish bounded actual-main artifact qualification |
+| Contacts #340 | Normal main44 reconciliation locally validated; prior head retained as first parent | Independent conflict review, publish existing branch, new hosted acceptance, normal merge and main verification |
+| Checkout #341 | Retained at `f98a26f316c34734f00d3dbef6a52d3f693bdc8b`; prior evidence remains source-scoped | Reconcile and retest after accepted contacts main, especially shared fixture/proof paths |
+| Cline/financing drafts #355–#357 | Separate documented source-provenance/packaging blockers | Reviewed bounded integration only; do not bypass their failing guards |
+
+The contacts format-3 verifier keeps all 25 function bodies, four original component pins, four adapters, four exact PR331 additions and its regression source. The proof contains the exact 62-row union of 56 contacts repairs and 18 main repairs, with all 12 shared rows identical. Every inverse still restores its immutable recorded source; no verification rule, workflow, timeout, assertion or package-builder policy is relaxed.
+
+See the [current handoff](../SESSION_HANDOFF.md) for local result scopes and retained wrapper failure. No candidate is promoted to ready-to-merge from local checks alone.
+
+## 2026-11-03 — contacts fixture follow-up and separate candidate gates
+
+| Candidate | Verified checkpoint | Next gate |
+| --- | --- | --- |
+| PR340 contacts, enclosing follow-up to `c667661d` | Local complete service-plan/software/financing/contacts chain 476/476, separate native bootstrap 65, eight captures; exact finite source composition 2,151 | Publish the exact independently reviewed ordinary follow-up, obtain corrected current-source hosted acceptance, then reconcile/main-integrate normally. |
+| PR341 checkout `f98a26f3` | Independently reviewed local native 79 / full checkout-browser 400 / 32 captures; exact-head Devin review success observed at 09:12 UTC | Hosted acceptance remains separate; all seven automatic runs were still queued at the 09:19:26 observation. |
+| PR342 scheduler `817826d9` | Five native/browser jobs reported success at 09:09; two MySQL native partitions, each with 3,944 HTTP records, passed archive/report inspection and scoped visual self-review | Complete remaining artifact/capture inspection and final aggregates (all five queued at 09:19:26); independent adapter/source review is separate from the artifact self-review, and successful partial partitions are not final acceptance. |
+| PR352 scheduler `6b431c80` | Separate overlapping candidate | Keep separate ownership/source; qualify and reconcile before any combined integration. |
+| PR343–351 | Read-only 09:03 inventory: nine open drafts targeting main, shared finite composition metadata and some shared contacts authority/router paths | Content/ancestry review, current-source acceptance and deliberate combined reconciliation; path overlap alone gives no merge order or clearance. |
+
+Main was `d9e34d2f8483fcd7630d799725fac773561f5183` at the 09:19:26 checkpoint. The contacts follow-up adds no shipping changes relative to its published parent. Checkout adds no shipping-path changes relative to that main, which does not establish semantic independence. Preserve all receipts, original failures and independent ownership. No candidate is marked merged, released or live by this checkpoint. Current details and evidence are in [the handoff](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — PR340 review correction checkpoint
+
+**NEEDS CORRECTION OR ACCEPTANCE:** PR340 parent `b3b2094ae8024aa44ce467cb97763122a590a219` has a locally corrected follow-up for its five contact privacy/notification review findings and the retained ticket grant/primary-only software-control gaps. The bounded ticket correction also filters billing links and preserves primary personal read state. Existing original branches and histories are retained.
+
+Local native 533/533, real touched-PHP lint and canonical refresh pass; the original ticket source fails the first new contact-grant check after 180 original passes. Exact-source proof 2,151, actual-file/direct-helper regression 122 and all 2,764 maintained acceptance helpers pass. Independent source/evidence review cleared the 19 authored paths and eight narrative prefixes for publication scope. New hosted matrix/browser acceptance and destination-main reconciliation remain required. This entry does not mark the work merged, released or live and does not change completion credit.
+
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+| Candidate | Current disposition | Exact remaining action |
+| --- | --- | --- |
+| PR317 | ALREADY INTEGRATED at `d9e34d2f`; all 60 automatic workflows and full Application `41515697343` passed | Retain accepted main artifacts; complete separately required release matrix/checkout gates. |
+| Homepage PR339, `cd86092f` | NEEDS ACCEPTANCE; original PR328 history retained, four focused workflows pass, automated no-issues comment | Complete Application `41563766333`, inspect actual evidence/captures and required review, then recheck main and normal-merge. |
+| Contacts PR331 successor, this enclosing commit | NEEDS HOSTED ACCEPTANCE; original `ccbe7655` retained, independent source/native reviews and local 1,176 native checks pass | Publish separately reviewed exact tree; obtain current hosted contacts/browser checks and required review before normal merge. |
+| Actual-main original-RC/finance/Windows run `41564404648` | ACCEPTED IN ITS SCOPE; both database suites and all 12 cross-platform package files independently verified | Do not reuse as the remaining PHP 8.2/8.4 full matrix or dedicated checkout acceptance. |
+| Dedicated packaged checkout gate | NEEDS CORRECTION AND ACCEPTANCE on isolated source | Replace obsolete password-prompt fixture expectations with actual session-authority checks, preserve native79 and source/package guards, then execute current full suite. |
+
+At 02:33 UTC all four main matrix build/Apache/recovery jobs passed; native/browser and final aggregation remained running/pending. No duplicate dispatch or forced branch update was performed. Other retained candidates stay in their earlier dispositions. [Current evidence and next actions](../SESSION_HANDOFF.md).
+
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+[Scheduler PR #342](https://github.com/afterburn25/Cajun_Web/pull/342) is normally merged and verified on main `53a324fcfb684e0475d1486f3f19319d48ee1069`, tree `424f1b071341082d6004e6481d4e8634bb3b6845`. All 13 automatic workflows passed, including [full Application 41697207068](https://github.com/afterburn25/Cajun_Web/actions/runs/41697207068), attempt 1. Actual main artifacts, packages, runtime/diagnostics, source-bound authority and four new scheduler captures are qualified. This supersedes the historical pending-main statements below; their original failures remain preserved.
+
+Current queue: scheduler #342 is VERIFIED ON MAIN. Homepage #339 is the next combined-source candidate; its earlier cd860 acceptance remains exact-head evidence only. Contacts #340 (04313d4198830dc9b93df5ef64ed80249c6d8074) and checkout #341 (f98a26f316c34734f00d3dbef6a52d3f693bdc8b) retain their reviewed heads and follow verified homepage main. The protected commerce and licensing-review branches remain untouched. Broader port PR failures and the separate webhook boundary-test gap remain recorded in the retained integration handoff; they are not newly accepted here.
+
+This continuation reconciles [homepage PR #339](https://github.com/afterburn25/Cajun_Web/pull/339) with verified main through a normal two-parent integration: retained homepage `cd86092f0d228659bd6694015176e3c7f3765798` first, main53 second. The complete shipping site, generated inventory, performance fixture and acceptance contract retain the previously qualified homepage bytes; the scheduler fixture retains verified main bytes. The eight narrative histories are retained, and the finite composition proof joins 12 unchanged common repairs, five homepage repairs and one scheduler repair. All 24 verifier functions, four component pins, four comparison adapters and the original regression implementation remain unchanged.
+
+The enclosing combined candidate is not yet accepted or merged into main. Complete exact-source local validation, independent resolution review and naturally triggered full hosted acceptance; inspect its actual artifacts and homepage captures, then recheck main and required review before a normal merge. Verify the resulting main before contacts #340 and checkout #341 integration. Do not duplicate pending Actions runs; retain the approximately ten-minute polling cadence. Published downloads remain [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0); stable release qualification/publication and live deployment are separate.
+
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Main is `d9e34d2f8483fcd7630d799725fac773561f5183` after PR #317. Its default acceptance and release-candidate update evidence are retained, but the separate full MySQL browser lanes fail in the scheduler fixture. The dedicated-owner correction is implemented locally with actual parent failure reproduction and successful corrected focused browser/native evidence. Independent source/runtime/narrative review is complete for publication. Normal hosted acceptance, normal merge and exact-main verification remain required.
+
+Treat this main regression as the current integration blocker. Preserve existing homepage, checkout and contacts candidates for separate review; this correction does not certify those branches or authorize live operations. [Exact scheduler evidence and next action](../SESSION_HANDOFF.md).
+
+## 2026-11-03 UTC — verified main and homepage reconciliation
+
+Main is `d9e34d2f8483fcd7630d799725fac773561f5183` (tree `870c2253474ec2a71770def99700751207b7025e`), the normal merge of [PR317](https://github.com/afterburn25/Cajun_Web/pull/317). Its [original Application run41515697343, attempt1](https://github.com/afterburn25/Cajun_Web/actions/runs/41515697343) and all59 other automatic workflows passed. All five Application jobs completed successfully. This supersedes earlier unmerged/queued statements below; their original failed evidence remains preserved. Published stable downloads remain [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0).
+
+The first bounded integration candidate preserves [PR328](https://github.com/afterburn25/Cajun_Web/pull/328) head `1c1a42f4296b0db55fcfab03c7211050b9e711d1` on the separate `chatgpt/homepage-integration-20261103` branch. The local reviewed merge `6687919a6a7e007a5987c3c784741148129dd71b` has ordered parents main and the retained PR head. All retained homepage shipping, installer and browser-fixture bytes are unchanged; only the composition verifier identities and receipt are corrected. Narrative updates in this commit record the actual state. No other worker branch was overwritten.
+
+The correction removes the narrative-only CHANGELOG entry from repair metadata, adds the exact acceptance-contract hash change, and replaces malformed receipt objects with nonempty-context reversible pairs. All24 verifier functions, all12 original repair rows, four components, four adapters and rejection rules remain unchanged. Independent root review reconstructed all17 current repair paths byte-for-byte to the recorded repair base. Source2,150 checks, filesystem61 rejection/compatibility checks, maintained helper2,763 checks, JavaScript syntax and diff checks passed. The initial scope failure and malformed-inverse failure are retained. The initial local build-refresh failed because the restarted environment lacked PHP; that failure is retained. After restoring an isolated PHP 8.3 CLI from signature- and checksum-verified official Ubuntu packages, the actual PHP lint and canonical build-refresh passed with empty stderr and no source or inventory drift on local commit `9ad8ba1d1cdf6de44e6c521306b8fb5b134cd541`. The build addendum has SHA-256 `715b2affd723d18051e6d2b91bdf301d72c4abd4239ccac94949f67babef784d`. Hosted exact-candidate full acceptance and new visual review remain mandatory.
+
+Next: complete the homepage candidate hosted gates and actual capture review, recheck destination/source and normal-merge only accepted code. Contacts PR331 is being corrected in another isolated branch for fresh billing permissions, duplicate test-table setup and session-only owner setup; its source proof and full acceptance remain pending. Other retained reconciliation PRs remain unmerged and need their own exact-source review. Do not count merged histories twice or increase roadmap percentages for this checkpoint.
+
 ## 2026-11-03 UTC — checkout fixture acceptance correction
 
 | Candidate | Current disposition | Next action |

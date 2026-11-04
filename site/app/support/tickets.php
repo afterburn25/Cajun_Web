@@ -44,9 +44,16 @@ function support_tickets_portal_identity(int $client,?string $support=null,bool 
         if((int)($_SESSION['client_id']??0)!==$client)throw new RuntimeException('Sign in as this ticket client.');
         $row=support_tickets_client_row($client);$now=time();
         if($now-(int)($_SESSION['client_last']??0)>1800||$now-(int)($_SESSION['client_login']??0)>28800||!hash_equals($row['auth_version'],(string)($_SESSION['client_auth']??'')))throw new RuntimeException('Your client session is no longer current.');
+        contact_require_permission('projects',$client);
         if($touch)$_SESSION['client_last']=$now;
-        return ['type'=>'client','ref'=>'client:'.$client,'staff_id'=>null,'client_id'=>$client,'support_id'=>null];
+        return ['type'=>'client','ref'=>'client:'.$client,'staff_id'=>null,'client_id'=>$client,'support_id'=>null]
+            +(isset($_SESSION['contact_id'])?['contact_id'=>(int)$_SESSION['contact_id'],'contact_billing'=>contact_can('billing')]:[]);
     },$touch);
+}
+/** Contact grants limit linked billing context; immutable ticket history stays intact. */
+function support_tickets_visible_links(array $links,array $actor):array {
+    return isset($actor['contact_id'])&&!$actor['contact_billing']
+        ?array_values(array_filter($links,static fn($link)=>$link['kind']==='project')):$links;
 }
 function support_tickets_audit(int $actor,string $action,string $detail):void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'support_tickets.'.$action,$detail,gmdate('Y-m-d H:i:s')]);}
 function support_tickets_row(string $id):array {
@@ -104,11 +111,12 @@ function support_tickets_create_locked(string $id,int $client,array $actor,strin
     $old=one('SELECT * FROM '.table('support_tickets').' WHERE id=? FOR UPDATE',[$id]);
     $doc=SupportTicketDocument::create($id,$client,$actor['ref'],$old?(int)$old['created_epoch']:time(),$subject,$message,$body,$links);
     if($actor['type']==='staff'&&$links){$user=admin_user();if(!$user||!staff_can('clients.manage',$user)||($user['role']!=='owner'&&array_filter($links,fn($link)=>$link['kind']==='subscription')))throw new RuntimeException('Current access to related client work is required.');}
+    if(support_tickets_visible_links($doc->data()['links'],$actor)!==$doc->data()['links'])throw new RuntimeException('Your contact permissions do not include billing.');
     support_tickets_related($client,$doc->data()['links'],true);
     if($old){$current=support_tickets_validate($old);if($old['initial_json']!==$doc->json())throw new RuntimeException('This ticket request identity was already used.');return $current;}
     $at=$doc->data()['created_at'];
     query('INSERT INTO '.table('support_tickets').' (id,client_id,created_staff_id,created_client_id,created_epoch,initial_json,journal_json,journal_sha256,revision,public_revision,status,assignee_id,public_updated_epoch,staff_updated_epoch) VALUES (?,?,?,?,?,?,?,?,0,1,\'open\',NULL,?,?)',[$id,$client,$actor['staff_id'],$actor['client_id'],$at,$doc->json(),$doc->json(),$doc->fingerprint(),$at,$at]);
-    support_tickets_audit($actor['staff_id']??0,'created','Ticket '.$id.' client '.$client.' author '.$actor['ref']);return $doc;
+    support_tickets_audit($actor['staff_id']??0,'created','Ticket '.$id.' client '.$client.' author '.$actor['ref'].(isset($actor['contact_id'])?' contact '.$actor['contact_id']:''));return $doc;
 }
 function support_tickets_staff_create(string $id,int $client,string $subject,string $message,string $body,array $links=[]):SupportTicketDocument {
     return support_tickets_locked(function()use($id,$client,$subject,$message,$body,$links):SupportTicketDocument {$actor=support_tickets_staff_identity(support_tickets_staff());return support_tickets_create_locked($id,$client,$actor,$subject,$message,$body,$links);});
@@ -136,7 +144,7 @@ function support_tickets_append_locked(array $row,array $actor,int $revision,str
     query('INSERT INTO '.table('support_ticket_events').' (id,ticket_id,actor_staff_id,actor_client_id,support_session_id,audience,revision,public_revision,submitted_revision,recorded_epoch,input_json,before_sha256,after_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$id,$row['id'],$actor['staff_id'],$actor['client_id'],$actor['support_id'],$actor['type'],$updated['revision'],$updated['public_revision'],$revision,$event['at'],$input,$doc->fingerprint(),$next->fingerprint()]);
     $changed=query('UPDATE '.table('support_tickets').' SET journal_json=?,journal_sha256=?,revision=?,public_revision=?,status=?,assignee_id=?,public_updated_epoch=?,staff_updated_epoch=? WHERE id=? AND revision=? AND journal_sha256=?',[$next->json(),$next->fingerprint(),...array_values($updated),$row['id'],$doc->revision(),$doc->fingerprint()]);
     if($changed->rowCount()!==1)throw new RuntimeException('This ticket changed.');
-    support_tickets_audit($actor['staff_id']??0,'changed','Ticket '.$row['id'].' request '.$id.' author '.$actor['ref'].' '.$command.' revision '.$updated['revision'].($actor['support_id']?' support '.$actor['support_id']:''));
+    support_tickets_audit($actor['staff_id']??0,'changed','Ticket '.$row['id'].' request '.$id.' author '.$actor['ref'].' '.$command.' revision '.$updated['revision'].($actor['support_id']?' support '.$actor['support_id']:'').(isset($actor['contact_id'])?' contact '.$actor['contact_id']:''));
     if($actor['support_id'])support_audit(['id'=>$actor['support_id'],'actor_id'=>$actor['staff_id'],'client_id'=>$row['client_id']],'ticket.reply','ticket',$row['id']);
     return $next;
 }

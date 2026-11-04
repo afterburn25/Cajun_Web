@@ -14,6 +14,7 @@ if(function_exists('support_ready')&&function_exists('support_binding')&&support
         [support_binding()]);
 }
 if(!$client||support_current()||$activeSupport||!software_commerce_ready()){http_response_code(403);exit;}
+try{contact_require_permission('downloads',(int)$client['id']);}catch(PDOException $e){throw $e;}catch(RuntimeException){http_response_code(403);exit;}
 $id=$_GET['id']??null;$licenseId=$_GET['license']??null;
 if(!is_string($id)||!preg_match('/^[1-9][0-9]{0,18}$/D',$id)
     ||!is_string($licenseId)||!preg_match('/^[1-9][0-9]{0,9}$/D',$licenseId)){http_response_code(404);exit;}
