@@ -1,3 +1,20 @@
+## 2026-11-04 17:16 UTC — Codex-owned master queue checkpoint
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) is the authoritative queue; the owner's Codex assignment supersedes older Devin-only ownership while preserving every product, evidence, review, data and release requirement.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Exact main `ce1803bb`, 1.26.1 | Release qualification in progress; default Application and source-bound original-RC/finance/Windows gates passed, four additional supported-runtime Application runs remain active | Let existing runs finish, map submitted environments from authenticated evidence, inspect all partitions/artifacts/captures, and complete independent release review |
+| Webhook #353 successor | Implemented locally with one strict production/sandbox identity boundary, contract cases, inventory and finite proof; first PR head exposed a hosted workflow branch-filter gap | Qualify the corrected head with the newly reachable focused webhook job plus full Linux/installed acceptance |
+| Payment-link #346/#253 successor | Shipping privacy fix already on main; maintained native/HTTP/browser acceptance ported locally onto current source; independent bounded review found no issue | Linux composition, actual database/browser execution and capture inspection |
+| Release publication | BLOCKED on accepted successor, full exact-source evidence and missing release-layer documents/assets | Merge and verify accepted successor first; then prepare and verify immutable 1.26.1 draft/public assets without live deployment |
+
+Do not merge stale PR353 or PR346 wholesale, duplicate active runs, weaken tests, or claim branch/source-bound evidence as ordinary resulting-main acceptance. Continue independent queue work after this release blocker in the issue's dependency order.
+
+PR361 first head `fad6e41e` is preserved but cannot qualify the successor because the focused webhook and complete composition-mutation callers were absent. The enclosing workflow-only correction keeps all existing assertions and protected Application behavior, adds exact callers, and must receive its own independent review and exact-head evidence.
+
+PR361 second head `0630c2d6` is also preserved but nonqualifying: review found decoded numeric/boolean subscription IDs were normalized into routable strings and focused main runs could cancel. The enclosing correction refuses those authentic-but-malformed payloads before normalization, retains every main run, and requires a new review/CI cycle. Do not merge or count either earlier head.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 | Candidate | Current disposition | Next action |

@@ -375,6 +375,18 @@ def run(root=ROOT):
         assert historical_reports == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':tools/acceptance-reports.json')
         assert historical_reports != proof.ordinary(fixture, 'tools/acceptance-reports.json')
         passed('Historical report comparison is exact while runtime retains the new required evidence')
+        payment_path = 'tests/payments_cases.py'
+        current_payment = proof.ordinary(fixture, payment_path)
+        historical_payment = proof.account_call(
+            fixture, 'account_notification_fixture_provenance', 'core_input',
+            path=payment_path, value=current_payment)
+        assert historical_payment == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':' + payment_path)
+        assert historical_payment == proof.git(root, 'cat-file', 'blob', proof.COMPONENTS['account']['commit'] + ':' + payment_path)
+        assert historical_payment != current_payment
+        passed('Core browser comparison uses the exact receipted payment predecessor while runtime keeps current privacy checks')
+        refuses('Core browser comparison refuses unrelated current payment input', lambda: proof.account_call(
+            fixture, 'account_notification_fixture_provenance', 'core_input',
+            path=payment_path, value=current_payment + b'\n# unreviewed payment comparison\n'))
         refuses('Historical projection cannot dispatch an arbitrary callback', lambda: proof.projected_validation(
             fixture, lambda root: [], ('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)))
         proof.verify_current(fixture)
@@ -385,7 +397,7 @@ def run(root=ROOT):
 
 
 def shallow_acceptance(root=ROOT):
-    """Use the unchanged protected-workflow helper in a genuine depth-one clone."""
+    """Use the finite protected-workflow repair in a genuine depth-one clone."""
     checks = []
 
     def check(name, condition):
@@ -407,15 +419,21 @@ def shallow_acceptance(root=ROOT):
               proof.git(fixture, 'rev-parse', '--is-shallow-repository').strip() == b'true')
         missing = subprocess.run(['git', 'cat-file', '-e', proof.BASE + '^{tree}'], cwd=fixture, capture_output=True)
         check('Required historical component ancestry is genuinely absent before hydration', missing.returncode != 0)
-        check('Protected complete application workflow remains its original exact bytes',
-              proof.ordinary(fixture, '.github/workflows/application-tests.yml')
-              == proof.git(root, 'cat-file', 'blob', proof.BASE + ':.github/workflows/application-tests.yml'))
+        workflow_path = '.github/workflows/application-tests.yml'
+        current_workflow = proof.ordinary(fixture, workflow_path)
+        predecessor_workflow = proof.reconstruct_repair(
+            json.loads(proof.ordinary(fixture, proof.RECEIPT)), workflow_path, current_workflow)
+        check('Protected complete application workflow retains its original exact bytes through the finite repair',
+              predecessor_workflow
+              == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':' + workflow_path)
+              == proof.git(root, 'cat-file', 'blob', proof.BASE + ':' + workflow_path))
         command = [sys.executable, '-B', 'tests/acceptance_artifacts_test.py', '--report', str(output / 'helpers.json')]
         with (output / 'stdout.log').open('wb') as stdout, (output / 'stderr.log').open('wb') as stderr:
             execution = subprocess.run(command, cwd=fixture, stdout=stdout, stderr=stderr)
         after = proof.history_state(fixture)
         record = {'command': command, 'exit_code': execution.returncode, 'before': before, 'after': after,
-                  'protected_workflow_sha256': proof.digest(proof.ordinary(fixture, '.github/workflows/application-tests.yml'))}
+                  'protected_workflow_sha256': proof.digest(current_workflow),
+                  'protected_workflow_predecessor_sha256': proof.digest(predecessor_workflow)}
         (output / 'execution.json').write_text(json.dumps(record, indent=2) + '\n')
         check('Unchanged maintained acceptance helper succeeds from genuine shallow source', execution.returncode == 0)
         check('The unchanged helper has no source-proof stderr', not (output / 'stderr.log').read_bytes())

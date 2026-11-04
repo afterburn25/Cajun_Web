@@ -22,6 +22,42 @@ ensure(!software_anet_signature_matches(str_repeat('x', 131073), $signature, $ke
 $details = software_anet_event_details($event);
 ensure($details['transaction_id'] === '123456789', 'transaction extracted');
 ensure($details['event_id'] === 'evt-test', 'event id extracted');
+ensure(software_anet_subscription_event_id(['entity'=>'subscription','resource_id'=>'1'])==='1',
+    'short subscription identity accepted');
+ensure(software_anet_subscription_event_id(['entity'=>'subscription','resource_id'=>str_repeat('9',25)])===str_repeat('9',25),
+    'maximum subscription identity accepted');
+foreach([
+    ['entity'=>'transaction','resource_id'=>'123'],
+    ['entity'=>'subscription','resource_id'=>123],
+    ['entity'=>'subscription','resource_id'=>true],
+    ['entity'=>'subscription','resource_id'=>''],
+    ['entity'=>'subscription','resource_id'=>'12x'],
+    ['entity'=>'subscription','resource_id'=>str_repeat('9',26)],
+    ['entity'=>'subscription'],
+] as $invalid){
+    try{
+        software_anet_subscription_event_id($invalid);
+        throw new RuntimeException('Malformed subscription identity unexpectedly accepted');
+    }catch(InvalidArgumentException $expected){
+        // Every malformed production/sandbox subscription event stops before lifecycle routing.
+    }
+}
+foreach([123,true] as $rawId){
+    $malformed=json_encode([
+        'notificationId'=>'evt-malformed-subscription',
+        'eventType'=>'net.authorize.customer.subscription.updated',
+        'payload'=>['entityName'=>'subscription','id'=>$rawId],
+    ],JSON_THROW_ON_ERROR);
+    $malformedSignature='sha512='.strtoupper(hash_hmac('sha512',$malformed,hex2bin($key)));
+    ensure(software_anet_signature_matches($malformed,$malformedSignature,$key),
+        'signed malformed subscription event reaches parser');
+    try{
+        software_anet_event_details($malformed);
+        throw new RuntimeException('Non-string signed subscription identity unexpectedly accepted');
+    }catch(InvalidArgumentException $expected){
+        // Authenticity does not make a malformed provider identity routable.
+    }
+}
 try {
     software_anet_event_details('{"payload":{}}');
     throw new RuntimeException('Malformed event unexpectedly accepted');
