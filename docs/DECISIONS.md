@@ -1,3 +1,9 @@
+## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
+
+The contacts format-3 verifier keeps all 25 function bodies, four original component pins, four adapters, four exact PR331 additions and its regression source. The proof contains the exact 62-row union of 56 contacts repairs and 18 main repairs, with all 12 shared rows identical. Every inverse still restores its immutable recorded source; no verification rule, workflow, timeout, assertion or package-builder policy is relaxed.
+
+Use the contacts format-3 implementation when joining the homepage/scheduler repair rows; an older format-2 verifier would discard the already reviewed contact additions. Preserve all narrative content from both parents rather than selecting either side wholesale. A passing earlier component run cannot certify a changed integration tree. [Execution state](../SESSION_HANDOFF.md).
+
 ## 2026-11-03 — test current authority and readiness at the actual public boundary
 
 Contacts preparation uses the reviewed owner session, valid CSRF and an explicit unchecked backup confirmation. The service-plan fixture now first replays the obsolete password-only submission and proves refusal without storage or agreement changes, then submits the real confirmation. Restoring a removed password prompt would change shipping behavior to satisfy a stale fixture and is not part of this correction.
@@ -21,6 +27,18 @@ Keep contact authority fresh at the existing transaction/mutex boundaries and pr
 Historical source contracts retain historical identities. Restore the mistaken PR331 browser predecessor pin to exact main; prove all current files first, reconstruct only the finite already-reviewed browser repair for comparison, and execute current browser source unchanged. Original backup guards, all 12 main repair rows and every original maintained helper assertion remain. Direct-boundary mutations test current browser/contract drift and missing guards. Independent author/reviewer roles and original failed attempts are recorded in [the handoff](../SESSION_HANDOFF.md).
 
 Keep full-main acceptance, the successful original-RC/Windows run and the missing dedicated checkout gate separate. No passing subset, old-source result or queue state establishes final release completion.
+
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+Retain both reviewed histories through a normal two-parent homepage integration after main53 artifact clearance. Reconcile the existing finite proof as the exact 18-row union; do not replace its verifier logic, component sources, inverse edits or assertion boundaries. Preserve both narrative prefixes above their shared historical suffix. Full combined-source validation and required review remain gates before normal merge. [Evidence and sequence](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — main scheduler acceptance fixture correction
+
+Give the bounded scheduled-refresh browser scenario its own normally invited and activated owner. Preserve the shared setup owner's immutable read history, audit and authority, and keep the production 20/hour budget and 30-second cooldown. The two negative permission probes must revoke the same dedicated identity that submits the protected action. Existing scenarios remain preserved through one exact reversible source-receipt addition. [Controlled reproductions and acceptance scope](../SESSION_HANDOFF.md).
+
+## 2026-11-03 UTC — verified main and homepage reconciliation
+
+Use a distinct normal-merge integration branch from verified main and retain PR328 as a parent. Correct only finite reviewed proof identities/inverses; preserve strict checks and all original feature/test bytes. Narrative-only CHANGELOG content stays governed by the existing narrative policy. Current-main automatic acceptance, broader release qualification, publication and live deployment remain separate states. No other branch, old release, rate limit or safety boundary is altered.
 
 ## 2026-11-02 — PR317 financing acceptance correction
 
