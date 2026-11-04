@@ -15,8 +15,13 @@ function software_anet_event_details(string $body):array{
     catch(JsonException $e){throw new InvalidArgumentException('Invalid gateway event JSON.',0,$e);}
     if(!is_array($event)||!is_string($event['eventType']??null)||
         !is_array($event['payload']??null))throw new InvalidArgumentException('Invalid gateway event.');
-    $entity=(string)($event['payload']['entityName']??'');
-    $resource=(string)($event['payload']['id']??'');
+    $rawEntity=$event['payload']['entityName']??null;
+    $rawResource=$event['payload']['id']??null;
+    if($rawEntity==='subscription'&&!is_string($rawResource)){
+        throw new InvalidArgumentException('Invalid subscription event identity.');
+    }
+    $entity=(string)($rawEntity??'');
+    $resource=(string)($rawResource??'');
     return ['type'=>$event['eventType'],'event_id'=>(string)($event['notificationId']??''),
         'entity'=>$entity,'resource_id'=>$resource,
         // Backward-compatible alias used by payment reconciliation.

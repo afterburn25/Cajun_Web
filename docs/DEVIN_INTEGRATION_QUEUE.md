@@ -13,6 +13,8 @@ Do not merge stale PR353 or PR346 wholesale, duplicate active runs, weaken tests
 
 PR361 first head `fad6e41e` is preserved but cannot qualify the successor because the focused webhook and complete composition-mutation callers were absent. The enclosing workflow-only correction keeps all existing assertions and protected Application behavior, adds exact callers, and must receive its own independent review and exact-head evidence.
 
+PR361 second head `0630c2d6` is also preserved but nonqualifying: review found decoded numeric/boolean subscription IDs were normalized into routable strings and focused main runs could cancel. The enclosing correction refuses those authentic-but-malformed payloads before normalization, retains every main run, and requires a new review/CI cycle. Do not merge or count either earlier head.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 | Candidate | Current disposition | Next action |

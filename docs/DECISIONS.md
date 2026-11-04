@@ -6,6 +6,8 @@ Treat payment-link privacy as an acceptance gap rather than a new shipping imple
 
 Run the focused webhook contract for main push/PR changes to either webhook routing file or its contract, while retaining branch-scoped concurrency. Execute the unchanged full composition mutation suite inside the full Application build and append its output to the already registered build report; do not create an unregistered acceptance artifact or relax the mode-sensitive proof.
 
+Validate a subscription payload's decoded `id` as a JSON string before the shared parser normalizes gateway identifiers. A valid signature establishes authenticity, not schema correctness; signed numeric and boolean IDs remain unroutable. Apply newest-wins cancellation to pull-request and feature refs only. Every main push keeps its own focused webhook evidence as required by the repository CI policy.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Retain the original checkout negative-session probe and exact refusal assertion. The integration failure exposed an ordering gap: current contact identity cleanup can remove invalid contact markers before the existing checkout-specific primary-client guard sees them. Refuse at the checkout entry point using that existing guard, after master dispatch and before normalization, for checkout GET and the two exact preview/confirm POST actions. Exclude support context so its existing audited denial remains authoritative; leave login/logout and ordinary portal behavior unchanged.

@@ -4,6 +4,8 @@ Development remains 1.26.1 at main `ce1803bb106713ef28dc260282a01105e7019118`; v
 
 The successor's first PR head lacked two hosted callers and is not release evidence. The corrected enclosing head must pass the newly reachable focused webhook contract and full composition mutation suite in addition to complete Application acceptance before normal merge.
 
+The second PR head also remains nonqualifying after review found pre-normalization identity typing and main-run cancellation gaps. Only the enclosing successor with signed numeric/boolean refusal and retained exact-main focused runs can proceed to release qualification, and it still requires fresh exact-head/resulting-main evidence.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 The checkout correction changes one shipping router entry point and its canonical inventory/source bindings. It is not yet accepted or merged into main and creates no release tag or published download. Development remains 1.26.1; the last retained published-release check was v1.25.0. Preserve the existing release, upgrade and artifact-verification gates after fresh checkout/full Application acceptance and resulting-main verification. [Current source and original failure](../SESSION_HANDOFF.md).

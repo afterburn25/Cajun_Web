@@ -4,6 +4,8 @@ No feature credit or completion percentage changes. Before publishing 1.26.1, th
 
 The successor also carries two verification-only workflow corrections required by acceptance review: focused webhook coverage on main-target changes and hosted execution of the existing composition mutation suite. They earn no product credit and must qualify on the corrected exact head.
 
+Exact-head review additionally required raw JSON identity-type refusal and main-run preservation. These are release-blocker corrections, not new roadmap credit; only the final enclosing head may satisfy the release gate.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Contacts remains verified on main. Packaged checkout now has a concrete integration correction: preserve raw contact-session provenance until the primary-client-only checkout refusal runs. The original negative probe and all existing acceptance requirements remain. No new feature or completion credit is claimed; local validation, independent review, fresh checkout/full Application acceptance and main verification remain the delivery gates. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
