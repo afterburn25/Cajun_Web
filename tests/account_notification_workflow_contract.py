@@ -16,7 +16,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
-PROTECTED_SHA256 = '9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c'
+PROTECTED_SHA256 = '5db94d83c68397a964baae19329fa7522fe4d8e2204ca3de0270c40a65ab0ef6'
 IMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'
 PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')

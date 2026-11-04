@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "f971ad7f8f12581a0a19daa112c4d404827668fcea5597de668be154d2db95a6",
+  "verifier_sha256": "78f596dee2451c0c75d7996434edef844cb738afc79512d12372210de2a72871",
   "regression_sha256": "e8247a44a637eae4a0696adf0c59d0f7d744fd88afaf033be427d49c4e33c5a5",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1184,6 +1184,16 @@
         [
           "    $request=pay_request(str_repeat('1',64),'milestone');$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$request]);\n    pay_ok('Request uses authoritative existing invoice identity and amount',$r['amount_cents']===12510&&$r['client_id']===1&&$r['job_id']===1&&$r['purpose']==='milestone');\n    pay_ok('Preparing request cannot mark invoice paid',one('SELECT * FROM '.table('studio_invoices'))===$original&&payments_request_state($r)==='prepared');\n    pay_ok('Identical retry creates one request',pay_request(str_repeat('1',64),'milestone')===$request&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()===1);\n    pay_deny('Same request key with changed payload rejected',fn()=>pay_request(str_repeat('1',64),'deposit'));\n    foreach([0,31] as $days)pay_deny('Invalid expiry '.$days,fn()=>pay_request(str_repeat('2',64),'full',$days));\n",
           "    $request=pay_request(str_repeat('1',64),'milestone');$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$request]);\n    pay_ok('Request uses authoritative existing invoice identity and amount',$r['amount_cents']===12510&&$r['client_id']===1&&$r['job_id']===1&&$r['purpose']==='milestone');\n    pay_ok('Preparing request cannot mark invoice paid',one('SELECT * FROM '.table('studio_invoices'))===$original&&payments_request_state($r)==='prepared');\n    require_once __DIR__.'/payment_link_view_cases.php';pay_link_view_cases($r);\n    pay_ok('Identical retry creates one request',pay_request(str_repeat('1',64),'milestone')===$request&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()===1);\n    pay_deny('Same request key with changed payload rejected',fn()=>pay_request(str_repeat('1',64),'deposit'));\n    foreach([0,31] as $days)pay_deny('Invalid expiry '.$days,fn()=>pay_request(str_repeat('2',64),'full',$days));\n"
+        ]
+      ]
+    },
+    "tests/account_notification_workflow_contract.py": {
+      "original_sha256": "92a0c02dc2108b6a1c913e9334caab7e6accb248b3222a3019fe0679d9fa49a5",
+      "current_sha256": "9f32e3e4e6e64d0b36a8afc9da2d7ae09f1c3a3c995e9246671cb484447ac8c1",
+      "edits": [
+        [
+          "LEGACY = '.github/workflows/account-notifications-combined.yml'\nPROTECTED = '.github/workflows/application-tests.yml'\nLEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'\nPROTECTED_SHA256 = '9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\nPARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',\n           'ebcbbb56336249fee2073c8f02e9d6998740b64e')\n",
+          "LEGACY = '.github/workflows/account-notifications-combined.yml'\nPROTECTED = '.github/workflows/application-tests.yml'\nLEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'\nPROTECTED_SHA256 = '5db94d83c68397a964baae19329fa7522fe4d8e2204ca3de0270c40a65ab0ef6'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\nPARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',\n           'ebcbbb56336249fee2073c8f02e9d6998740b64e')\n"
         ]
       ]
     },
