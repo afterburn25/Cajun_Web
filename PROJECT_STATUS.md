@@ -1,3 +1,13 @@
+## 2026-11-04 — Codex takes ownership; release candidate remains frozen
+
+The owner has transferred all CajunWebPro implementation, integration and release coordination to **Codex for now**, covering both 20i and non-20i. This supersedes older Devin-only ownership instructions while preserving product, review, source-verification and live-operation requirements. The current execution queue and worker boundaries are in [master assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157).
+
+Observed main is `ce1803bb106713ef28dc260282a01105e7019118`, tree `bd75d1f814434fdfed0abc626afbe1c8750a7728`, development **1.26.1**. Consolidation #317, scheduler #342, homepage #339, contacts #340 and checkout #341 are already integrated. Latest published downloads remain **v1.25.0**. Exact-main release qualification, verified publication and live deployment are distinct.
+
+The final artifact for [Application 41842956617](https://github.com/afterburn25/Cajun_Web/actions/runs/41842956617) is available and its original 254,130,651-byte ZIP matches GitHub SHA-256 `918c403783f5054f338cdfdf62da6fa98843ae2f91b18519ad30b0bdde0319c5`. Its aggregate declares complete for exact main; terminal workflow metadata and final independent qualification remain separate. Fresh checkout [41849153257](https://github.com/afterburn25/Cajun_Web/actions/runs/41849153257) succeeded, and the separate [upgrade/finance/Windows run 41849478731](https://github.com/afterburn25/Cajun_Web/actions/runs/41849478731) passed all three jobs. Four additional full-runtime Application runs are active at handoff. Preserve all original failures and do not duplicate these runs.
+
+This continuation changes only eight permitted narrative prefixes. It leaves the release source, application, workflows, protected source proof and all historical document bytes intact on a separate handoff branch. Both related ChatGPT automations were observed paused; a Codex task still needs to be started or resumed. [Detailed next actions](SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Checkout #341 is **awaiting correction validation and fresh acceptance**. Its original [attempt 1](https://github.com/afterburn25/Cajun_Web/actions/runs/41812110862) passed source admission and the native step in all four lanes, then failed the same packaged-browser contact-context refusal assertion. The combined contacts identity cleanup removed the malformed contact markers before checkout's more specific primary-client refusal could run.

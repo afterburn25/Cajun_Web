@@ -1,3 +1,11 @@
+## 2026-11-04 — Codex release handoff; 1.26.1 remains unpublished
+
+Codex now owns release completion under the owner's latest assignment. Observed main is ce1803bb106713ef28dc260282a01105e7019118, tree bd75d1f814434fdfed0abc626afbe1c8750a7728; latest published release remains [v1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0). The 1.26.1 candidate is integrated but still needs the remaining exact-main full-runtime, final artifact/visual and publication gates.
+
+The original final Application artifact13341719821 has been downloaded and transport-hash/CRC checked; the three actual standalone package hashes match release-validation run41849478731. Fresh checkout run41849153257 is successful. Four additional full Application runs remain active at handoff. These separate evidence scopes do not establish a published release.
+
+Keep accepted ce1803bb packages immutable while completing the gates. Before publication, triage #353 and #346/#253 against this source and resolve any applicable release blocker through reviewed source and required acceptance. Prepare final reports/migration notes as attachments, verify draft assets, publish an immutable tag/release only after qualification, then download and verify public assets. Deliver the separate FULL-PROJECT, COMPLETE-UPLOAD and UPDATE ZIPs, never an outer ZIP of ZIPs. The [master queue #157](https://github.com/afterburn25/Cajun_Web/issues/157) contains original run/artifact/package identities and remaining actions. This documentation branch publishes no release and performs no deployment.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 The checkout correction changes one shipping router entry point and its canonical inventory/source bindings. It is not yet accepted or merged into main and creates no release tag or published download. Development remains 1.26.1; the last retained published-release check was v1.25.0. Preserve the existing release, upgrade and artifact-verification gates after fresh checkout/full Application acceptance and resulting-main verification. [Current source and original failure](../SESSION_HANDOFF.md).

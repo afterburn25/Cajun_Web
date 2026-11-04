@@ -1,3 +1,11 @@
+## 2026-11-04 — One Codex integration lead and bounded parallel work
+
+The owner requests that all CajunWebPro work be handed to Codex for now and organized for the most completed integration. Codex therefore owns the combined 20i/non-20i queue, shared-file reconciliation, final merges and verified incremental releases; older Devin-only ownership is superseded. Existing work, review requirements and operation-specific permissions remain.
+
+Use one lead with separate bounded correction, feature and review tasks when parallel execution is available. The lead owns shared auth/router/schema/billing, source-composition proofs, generated inventory and report registries. Reuse existing candidates, land accepted increments and verify resulting main before advancing. The first delivery is the already-frozen ce1803bb/1.26.1 release candidate. Preserve exact-source evidence instead of restarting completed work. [Execution queue](https://github.com/afterburn25/Cajun_Web/issues/157).
+
+Current ownership notes use only the eight already permitted narrative paths. Protected agent-file or builder/test changes need deliberate reviewed composition integration; this handoff does not alter or bypass those checks.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Retain the original checkout negative-session probe and exact refusal assertion. The integration failure exposed an ordering gap: current contact identity cleanup can remove invalid contact markers before the existing checkout-specific primary-client guard sees them. Refuse at the checkout entry point using that existing guard, after master dispatch and before normalization, for checkout GET and the two exact preview/confirm POST actions. Exclude support context so its existing audited denial remains authoritative; leave login/logout and ordinary portal behavior unchanged.
