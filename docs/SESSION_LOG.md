@@ -1,3 +1,9 @@
+## 2026-11-04 18:23 UTC — frozen-main matrix complete; successor proof corrected
+
+Accepted the fourth and final supported-runtime Application lane on exact main `ce1803bb`: PHP 8.4/MariaDB 10.11 run `41858541488`, attempt 1. All five jobs passed. Fresh artifact `13350637380` matched GitHub's 254,092,309-byte SHA-256 `0592fba994d9480990eba8848edc192b77741beee57d3c51f36b875e63818105`; its source/environment receipt, 753 entries, 333 JSON reports, 757 recorded files, complete partition and 1.26.1 manifest all verify. Together with runs `41858117519`, `41858373526` and `41858733063`, the frozen-main four-environment matrix is complete.
+
+PR361 exact head `6726328d` then retained a real account/notification source failure in run `41884914784`: the historical core-browser proof received current repaired payment-fixture bytes. Added a narrow comparison-only projection through the existing reversible `tests/payments_cases.py` repair, requiring exact current input and exact immutable account-component output. No runtime or shipping byte changed. Added positive immutable-identity and negative drift coverage; refreshed only the verifier/regression receipt hashes. Direct projection/refusal, all 80 receipt rows, Python compilation, workflow-contract checks and diff checks pass; independent review found no issue. The failed run remains nonqualifying and a new exact head must earn fresh hosted evidence.
+
 ## 2026-11-04 17:16 UTC — Codex takes release qualification lead
 
 Refreshed main to `ce1803bb106713ef28dc260282a01105e7019118`, confirmed version 1.26.1 and latest release v1.25.0, read the repository handoff and renewed the expired PR340 coordinator marker. Audited the open webhook and payment-link candidates against exact main. Implemented one shared strict subscription identity boundary and current-main payment-link privacy acceptance wiring, preserving all prior shipping privacy bytes and historical failures.

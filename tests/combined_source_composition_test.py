@@ -375,6 +375,18 @@ def run(root=ROOT):
         assert historical_reports == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':tools/acceptance-reports.json')
         assert historical_reports != proof.ordinary(fixture, 'tools/acceptance-reports.json')
         passed('Historical report comparison is exact while runtime retains the new required evidence')
+        payment_path = 'tests/payments_cases.py'
+        current_payment = proof.ordinary(fixture, payment_path)
+        historical_payment = proof.account_call(
+            fixture, 'account_notification_fixture_provenance', 'core_input',
+            path=payment_path, value=current_payment)
+        assert historical_payment == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':' + payment_path)
+        assert historical_payment == proof.git(root, 'cat-file', 'blob', proof.COMPONENTS['account']['commit'] + ':' + payment_path)
+        assert historical_payment != current_payment
+        passed('Core browser comparison uses the exact receipted payment predecessor while runtime keeps current privacy checks')
+        refuses('Core browser comparison refuses unrelated current payment input', lambda: proof.account_call(
+            fixture, 'account_notification_fixture_provenance', 'core_input',
+            path=payment_path, value=current_payment + b'\n# unreviewed payment comparison\n'))
         refuses('Historical projection cannot dispatch an arbitrary callback', lambda: proof.projected_validation(
             fixture, lambda root: [], ('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)))
         proof.verify_current(fixture)
