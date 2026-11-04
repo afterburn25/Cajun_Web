@@ -1,3 +1,29 @@
+## 2026-11-03 — Financing and Cline continuity release-gate findings
+
+**Protected baseline:** `main` at `53a324fcfb684e0475d1486f3f19319d48ee1069`. This is evidence and a handoff only; no production payment processing, hosting changes, license activation, source-composition overrides, or release deployment were authorized.
+
+### Financing readiness — observed, not speculative
+
+- `site/app/billing/payments.php` defines `payments_ready()` as `staff_ready() && studio_ready() && setting('payments_schema_version')==='2'`.
+- `tests/finance_initial_enrollment_native.php` already sets `studio_schema_version='2'`, `staff_schema_version='1'`, `payments_schema_version='2'` and the additional native financing prerequisites before enrollment.
+- [Native recurring/finance run 41598295924](https://github.com/afterburn25/Cajun_Web/actions/runs/41598295924) succeeded on the feature branch in all four PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 combinations. Each job's **Initial financing enrollment from verified ledger payments** step was green.
+- [PR #356](https://github.com/afterburn25/Cajun_Web/pull/356) added *only* negative/restore assertions to that exact native test file. Its [four-lane native run 41739702130](https://github.com/afterburn25/Cajun_Web/actions/runs/41739702130) passed all four jobs, including every new readiness assertion.
+- However [Application acceptance 41739701988](https://github.com/afterburn25/Cajun_Web/actions/runs/41739701988) and [account/notification source acceptance 41739701946](https://github.com/afterburn25/Cajun_Web/actions/runs/41739701946) refused the modification: `Current component source or mode differs: tests/finance_initial_enrollment_native.php`. The acceptance contract `tests/combined_source_composition.py` verifies exact retained historical component bytes, not just PHP behavior. The draft is **not merge-ready**; merely updating/checkpointing a new hash or weakening those checks would bypass intended source evidence. The last successful [main Application acceptance 41697207068](https://github.com/afterburn25/Cajun_Web/actions/runs/41697207068) is independent and does not establish a fresh four-lane native run on main.
+
+### Cline packaging — separate from payments
+
+- [Cline continuity draft PR #355](https://github.com/afterburn25/Cajun_Web/pull/355) tracks developer-local `.clinerules/01-cajunwebpro-continuity.md`. Its [RC package run 41723487380](https://github.com/afterburn25/Cajun_Web/actions/runs/41723487380) failed in `tools/build.py` with `Unapproved full-project area: .clinerules/01-cajunwebpro-continuity.md`, not `payments_ready()`.
+- [Draft PR #357](https://github.com/afterburn25/Cajun_Web/pull/357) narrowly omits single-level Cline Markdown instruction files from customer archives. Its [RC package run 41741053067](https://github.com/afterburn25/Cajun_Web/actions/runs/41741053067) passed, but [Application acceptance 41741053062](https://github.com/afterburn25/Cajun_Web/actions/runs/41741053062) and [account/notification source acceptance 41741052996](https://github.com/afterburn25/Cajun_Web/actions/runs/41741052996) rejected modifications to protected `tests/build_guards.py`. Both draft PRs #356/#357 remain unmerged with blocker comments.
+- Do **not** whitelist an entire `.clinerules/` tree for commercial packages, ship Markdown instructions with embedded secrets, bypass the source-composition receipt, or place ZIP files within ZIP files. A reviewed, explicitly recorded source-composition integration is required if the builder or a protected historical test is to change.
+
+### Safe next execution and decisions
+
+1. On GitHub, explicitly dispatch `Native recurring agreement and period invoice checks` for current `main` with its default 4-lane matrix (or use a connected GitHub Actions write-enabled automation). Record the resulting exact main SHA, job IDs, all initial-financing steps, final job conclusions and evidence artifacts. The current GitHub connector can inspect/rerun jobs but does not expose workflow dispatch; do not claim a new main run happened until GitHub provides it.
+2. Review draft PRs #355–#357 under the authorized composition/integration ownership process. Keep any test-only addition and a developer-only documentation exclusion independent; do not merge on a green narrow matrix when historical source-composition acceptance is red.
+3. No production deploy or live payment processing; only authorized sandbox/isolated fixtures are within this acceptance scope.
+
+---
+
 ## 2026-11-03 — main scheduler acceptance fixture correction
 
 [PR #317](https://github.com/afterburn25/Cajun_Web/pull/317) is merged at `d9e34d2f8483fcd7630d799725fac773561f5183` (tree `870c2253474ec2a71770def99700751207b7025e`). The verified default [main Application run 41515697343](https://github.com/afterburn25/Cajun_Web/actions/runs/41515697343) retains 3,937 passing HTTP/browser checks and complete artifact integrity review. The separate four-lane full Application matrix exposed a scheduler fixture dependency: [PHP 8.2/MySQL 41562206710](https://github.com/afterburn25/Cajun_Web/actions/runs/41562206710) fails `Actual failed scheduled read persists finite outcome and backoff`; [PHP 8.4/MySQL 41562299843](https://github.com/afterburn25/Cajun_Web/actions/runs/41562299843) fails the first `Refresh complete` expectation. Their build, native SQL, recovery and Apache partitions passed. The MariaDB lanes [41562094984](https://github.com/afterburn25/Cajun_Web/actions/runs/41562094984) and [41562254164](https://github.com/afterburn25/Cajun_Web/actions/runs/41562254164) report successful jobs; that status is separate from full raw artifact verification. The MySQL failures remain release blockers.
