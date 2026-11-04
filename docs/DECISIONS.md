@@ -1,3 +1,21 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+Retain the original checkout negative-session probe and exact refusal assertion. The integration failure exposed an ordering gap: current contact identity cleanup can remove invalid contact markers before the existing checkout-specific primary-client guard sees them. Refuse at the checkout entry point using that existing guard, after master dispatch and before normalization, for checkout GET and the two exact preview/confirm POST actions. Exclude support context so its existing audited denial remains authoritative; leave login/logout and ordinary portal behavior unchanged.
+
+Treat this as an explicit shipping correction on a new child of published checkout `cde638ecdf0af24247de8930bcc183673fd2bbb5`. Extend the existing router inverse, preserve all old proof rules and test assertions, and regenerate the installer inventory. Keep the original frozen source inspector unchanged and review a separately pinned correction contract. [Original failure, limits and required acceptance](../SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Advance checkout from the saved public preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` only after contacts main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee` receives its own full clearance. Preserve that preparation as first parent and accepted main as second parent in a normal merge. Accepted main has the same tree as the preparation's published contacts parent, so the pre-prefix checkout tree stays `97c076c476218e04b8cedaaa77d1a03e30fcfd25` without changing proof pins, repair rows or executable source.
+
+Prefix the existing eight narratives and retain every old byte as a suffix. Contacts-main acceptance and the new checkout's pending review/runtime/main gates remain separate evidence states. [Source, clearance and next gates](../SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+Join the checkout and contacts histories through a normal merge using the published contacts parent. Keep the contacts format-3 verifier's 25 function bodies and 89 `require` calls, exact addition ancestry and all original refusal rules. Resolve only the finite repair identities into their 72-row union, rebind the unchanged verifier implementation to the combined regression identity, and retain both regression additions verbatim.
+
+The complete resolved tree was reproduced with the actual remote contacts ancestry before this narrative update. Source-equivalent local preparation remains provisional until contacts is accepted on main and the actual combined checkout receives its dedicated runtime and full Application evidence. [Current checkpoint and gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
 
 The contacts format-3 verifier keeps all 25 function bodies, four original component pins, four adapters, four exact PR331 additions and its regression source. The proof contains the exact 62-row union of 56 contacts repairs and 18 main repairs, with all 12 shared rows identical. Every inverse still restores its immutable recorded source; no verification rule, workflow, timeout, assertion or package-builder policy is relaxed.
@@ -39,6 +57,26 @@ Give the bounded scheduled-refresh browser scenario its own normally invited and
 ## 2026-11-03 UTC — verified main and homepage reconciliation
 
 Use a distinct normal-merge integration branch from verified main and retain PR328 as a parent. Correct only finite reviewed proof identities/inverses; preserve strict checks and all original feature/test bytes. Narrative-only CHANGELOG content stays governed by the existing narrative policy. Current-main automatic acceptance, broader release qualification, publication and live deployment remain separate states. No other branch, old release, rate limit or safety boundary is altered.
+
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+The actual multipart upload exposed a fixture-only missing `private/media` directory; checked mode-0700 creation now follows the already path-validated fresh-private-root guard. Two later fixtures inspected intentionally collapsed native disclosures: the optional private-cost fields retained nonzero rectangles while not rendered, and Plan terms were absent from visible text while correctly saved in the DOM. Both fixtures now click the real summary and assert the closed/open states before their unchanged capture and text/image predicates. The inbox statuses are rendered uppercase by the existing `.workspace-status` CSS; comparison now preserves the required meaning across presentation case and strengthens all three inactive-service guards. Finally, the actual packaged billing bridge lacked `hosting_catalog_publication()` until its existing `catalog_offers.php` dependency was loaded; one scoped `require_once` fixes the read bridge. Real saved HTML, visible text, geometry, computed style, exact image URL and before/after commercial-state evidence establish these causes. No shipping correction was needed.
+
+The correction preserves application behavior and the existing acceptance predicates. Disclosure controls are opened with real user interactions so all seven optional cost fields and all saved terms are positively exercised; there is no visibility filter, DOM rewrite or dropped candidate. Inbox comparisons use actual visible text with `casefold()`, including all three negative active-service guards. The billing bridge loads only the existing dependency in its bounded read operation. Fresh private storage remains strict and refuses reuse.
+
+The six changed source/proof paths are `tests/hosting_checkout_native.php`, `tests/hosting_catalog_plan_setup_cases.py`, `tests/hosting_purchase_inbox_cases.py`, `tests/hosting_checkout_http_fixture.php`, `tests/combined_source_composition.py`, and `docs/COMBINED_SOURCE_COMPOSITION_20261102.json`. Application, CSS, workflow, installer and shipping package bytes are unchanged. The receipt admits 22 finite exact inverses to checkpoint `6247ab257ff8562afb317908cf5de9a602b34d9c`; the verifier functions and regression source remain unchanged. All 79 native assertions remain; all 50 original plan assertion calls and the entire capture helper remain exact, with four positive disclosure assertions added; all 45 original inbox assertion sites remain, with only two positive and three negative status phrase comparisons made case-insensitive. The bridge adds its exact publication-reader dependency before the unchanged guarded read transaction.
+
+Local fresh acceptance, copied-state diagnostic continuation and hosted matrix evidence remain separate. Only the 22 exact reversible source repairs are admitted; source proof and regression behavior remain unchanged. Eight new narrative prefixes preserve all previous document bytes. [Current results and gates](../PROJECT_STATUS.md).
+
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+The dedicated checkout fixtures must use the exact current owner-review control while keeping staff wording and support-session permissions unchanged. Development checkout runs follow the standing per-PR/ref cancellation policy; this workflow is not added to the protected exception list. Receipt edits preserve the original twenty repair paths, original functions and every runtime assertion. [Current evidence and gates](../PROJECT_STATUS.md).
+
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+A green full Application registry does not cover a standalone checkout producer that it never invokes. Add that existing producer as an explicit dedicated matrix, retaining exact GitHub event source, attempt1, selected environment, clean package identity and native-to-browser state continuity. Preserve historical workflow jobs and avoid duplicate candidate push/PR matrices. Install the selected PHP before lint/build; canonical refresh alone does not create archives.
+
+Keep the original historical callback/checksum pins. Verify current source before finite comparison inverses, and normalize only empty-list AST serialization on a deep copy to match the documented Python3.14 pin. Hash every meaningful nonempty field, retain the original failure and prove direct rejection of altered check bodies/order/count/arguments. Portable tests remain separate from actual SQL/browser execution. [Review and next gates](../SESSION_HANDOFF.md).
 
 ## 2026-11-02 — PR317 financing acceptance correction
 

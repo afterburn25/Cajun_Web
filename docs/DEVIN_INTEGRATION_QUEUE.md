@@ -1,3 +1,30 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Contacts #340 | ALREADY INTEGRATED and verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee` | Preserve accepted source and evidence |
+| Checkout #341 | NEEDS CORRECTION OR ACCEPTANCE; original four-lane attempt 1 failed the same packaged-browser contact refusal after native success | Validate and independently review this narrow router correction, then qualify a fresh exact-source four-lane attempt 1 and full Application run; normal-merge and verify resulting main |
+
+The enclosing correction is a normal child of public `cde638ecdf0af24247de8930bcc183673fd2bbb5`. Original failures, all test/fixture assertions and the earlier source inspector remain intact. [Diagnosis and evidence limits](../SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Contacts #340 | ALREADY INTEGRATED and verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`; own-main Application, focused and artifact reviews cleared | Retain accepted source and original evidence |
+| Checkout #341 | NEEDS CORRECTION OR ACCEPTANCE; published preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` normally reconciled with accepted contacts main in this local candidate | Complete exact-current source/docs and independent review, then fresh four-lane checkout attempt 1 and full Application acceptance; recheck main, normal-merge and verify the resulting main |
+
+The saved checkout source and all historical proofs are reused. This continuation changes only the eight narrative prefixes. [Exact source and acceptance boundaries](../SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Contacts #340, published head `f6c1aa2fe5d420a0e6b3b9785c9e1a319203c050` | Homepage/scheduler reconciliation published; new hosted qualification and main integration pending | Inspect the original combined-source runs and required review, then normal merge and verify main |
+| Checkout #341 | Local normal merge with the published contacts parent; 72 repairs/four additions and local source/build/portable gates pass | Root resolution review; recheck accepted contacts main, qualify four checkout runtime lanes and full Application, then normal merge and verify main |
+
+Frozen checkout f98 evidence is preserved. Four checkout source dependencies changed through contacts, so prior native/browser evidence does not certify this combination. The preliminary local contacts ancestor is retained only on a separate evidence branch; the prepared merge uses published contacts ancestry. Broader drafts keep their previously recorded blockers. [Detailed checkpoint](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
 
 [Homepage PR #339](https://github.com/afterburn25/Cajun_Web/pull/339) is merged into main `44d6563923b455f9d9494cc4394cb61b9cea796a`, tree `ed0c8235b60ee9b9d4847a2dba299b852465c0be`. All 13 automatic main workflows report success, including [Application 41752311110](https://github.com/afterburn25/Cajun_Web/actions/runs/41752311110) and [account/notification 41752311123](https://github.com/afterburn25/Cajun_Web/actions/runs/41752311123). This supersedes earlier pending-homepage statements; actual artifact inspection is tracked separately from workflow status.
@@ -68,6 +95,39 @@ The first bounded integration candidate preserves [PR328](https://github.com/aft
 The correction removes the narrative-only CHANGELOG entry from repair metadata, adds the exact acceptance-contract hash change, and replaces malformed receipt objects with nonempty-context reversible pairs. All24 verifier functions, all12 original repair rows, four components, four adapters and rejection rules remain unchanged. Independent root review reconstructed all17 current repair paths byte-for-byte to the recorded repair base. Source2,150 checks, filesystem61 rejection/compatibility checks, maintained helper2,763 checks, JavaScript syntax and diff checks passed. The initial scope failure and malformed-inverse failure are retained. The initial local build-refresh failed because the restarted environment lacked PHP; that failure is retained. After restoring an isolated PHP 8.3 CLI from signature- and checksum-verified official Ubuntu packages, the actual PHP lint and canonical build-refresh passed with empty stderr and no source or inventory drift on local commit `9ad8ba1d1cdf6de44e6c521306b8fb5b134cd541`. The build addendum has SHA-256 `715b2affd723d18051e6d2b91bdf301d72c4abd4239ccac94949f67babef784d`. Hosted exact-candidate full acceptance and new visual review remain mandatory.
 
 Next: complete the homepage candidate hosted gates and actual capture review, recheck destination/source and normal-merge only accepted code. Contacts PR331 is being corrected in another isolated branch for fresh billing permissions, duplicate test-table setup and session-only owner setup; its source proof and full acceptance remain pending. Other retained reconciliation PRs remain unmerged and need their own exact-source review. Do not count merged histories twice or increase roadmap percentages for this checkpoint.
+
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR341, parent `cb3ad767` | Enclosing six-file fixture/proof correction passes fresh local native 79, browser/harness 400 and all 32 captures; independent review recorded | Publish reviewed fast-forward; inspect corrected exact-source hosted checkout matrix and full acceptance before integration. Preserve all failures. |
+| Main `d9e34d2f` / scheduler PR342 `817826d9` | Main MySQL fixture regression corrected on isolated PR342; automatic default and all four supported full runs already dispatched | Finish current runs and independent review, land the regression fix, verify exact main before unrelated feature merges. |
+| PR339 `cd86092f` | Scoped default-runtime source/package/report/visual acceptance cleared | Recheck current main and preserve ordinary combination, merge and exact-main gates after regression repair. |
+| PR340 `c667661d` | Independently reviewed local 533 native + 379 bounded HTTP/browser, separate bootstrap 65; focused hosted account/notification accepted | Correct and requalify the separate failed full Application service-plan/contact fixture, then complete current integration gates while retaining original evidence. |
+
+[Exact evidence and next actions](../SESSION_HANDOFF.md). No new requirement, release or live-delivery credit is claimed. The scheduler and checkout finite receipt rows must both survive integration.
+
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR341 `c70228af` | Needs bounded fixture/concurrency correction; all four native lanes passed and all four browser lanes stopped at the same obsolete owner selector | Review/publish this follow-up, then inspect actual corrected hosted matrix; retain the original failure. |
+| Main `d9e34d2f` | Default and additional MariaDB acceptance passed; both additional MySQL browser lanes failed in scheduler fixture | Finish isolated scheduler diagnosis/correction before unrelated main merges. |
+| PR339 `cd86092f` | Default-runtime source/package/report/visual review passed | Hold main integration for current regression gate; recheck base before ordinary merge. |
+| PR340 `b3b2094a` | Contact-scope review corrections in progress | Preserve follow-up work and require fresh native/browser/source acceptance. |
+
+[Full current checkpoint](../PROJECT_STATUS.md). No new completed requirement is claimed.
+
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+| Candidate | Current state | Next gate |
+| --- | --- | --- |
+| PR317, main d9e34d2f | ALREADY INTEGRATED; automatic full main acceptance passed | Finish four additional full compatibility browser runs and distinct checkout/release qualification. |
+| Homepage PR339, cd86092f | NEEDS ACCEPTANCE; local/focused checks pass, automated no-issues comment, full run41563766333 in browser phase | Actual final reports/captures, required review, fresh main comparison and normal merge. |
+| Contacts PR340, b3b2094a | NEEDS CORRECTION; earlier local/source checks retained, nine hosted workflows successful at02:54UTC | Correct confirmed activity/software/license/notification scope and related download boundary in isolated follow-up, add real regressions and independently review before publication. |
+| Dedicated checkout candidate, enclosing commit | NEEDS HOSTED ACCEPTANCE; current portable/source checks and independent reviews complete | Publish exact tree, run four PR environments and full Application, inspect actual captures, then normal merge and exact-main verification. |
+
+No queued/running check or earlier source result counts as current acceptance. Original retained branches and failed reports remain. [Current evidence](../PROJECT_STATUS.md).
 
 ## 2026-11-02 — PR317 financing acceptance correction
 

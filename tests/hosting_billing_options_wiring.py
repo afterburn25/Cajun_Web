@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import re
 import tempfile
+import combined_source_composition as composition
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,8 +46,34 @@ def source(root, path):
     return (root / path).read_bytes().replace(b'\r\n', b'\n')
 
 
+def predecessor_sources(root):
+    """Restore only four pinned historical comparisons; runtime reads stay current."""
+    receipt = None
+    if composition.present(root):
+        composition.verify_current(root)
+        receipt = json.loads(composition.ordinary(root, composition.RECEIPT))
+    result = {}
+    for path in PREDECESSORS:
+        current = source(root, path)
+        if receipt is not None and path in composition.REPAIRS:
+            current = composition.reconstruct_repair(
+                receipt, path, composition.ordinary(root, path)).replace(b'\r\n', b'\n')
+        result[path] = current
+    return result
+
+
 def digest(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def portable_check_dump(node):
+    """Keep the original Python314 empty-list-omitting checksum convention."""
+    current = copy.deepcopy(node)
+    for child in ast.walk(current):
+        for field, value in list(ast.iter_fields(child)):
+            if isinstance(value, list) and not value:
+                delattr(child, field)
+    return ast.dump(current, include_attributes=False)
 
 
 def definitions(tree, names, environment):
@@ -72,9 +99,10 @@ def run(root, work, check, deny):
     case_raw = source(root, CASES)
     cases = ast.parse(case_raw)
     bridge = source(root, BRIDGE)
+    predecessors = predecessor_sources(root)
     for path, expected in PREDECESSORS.items():
         check('Original installed callback remains byte-identical: ' + Path(path).name,
-              digest(source(root, path)) == expected)
+              digest(predecessors[path]) == expected)
     old_tail = bridge[bridge.rindex(b'\n$result=hosting_checkout_locked(function():array{') + 1:]
     check('Original state operation retains its exact complete response and validation',
           digest(old_tail) == OLD_STATE_SHA256)
@@ -96,7 +124,7 @@ def run(root, work, check, deny):
           and "['exists'=>false,'rows'=>[]]" in body and "['exists'=>true,'rows'=>$hashes]" in body
           and "throw new RuntimeException('Original provider read history missing')" in body
           and 'strlen($encoded)>262144' in body and '$total>1500' in body)
-    old_checks = [ast.dump(node, include_attributes=False) for node in ast.walk(runner)
+    old_checks = [portable_check_dump(node) for node in ast.walk(runner)
                   if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
                   and node.func.id == 'check' and not (node.args and isinstance(node.args[0], ast.Constant)
                                                       and node.args[0].value == RESULT_CHECK)]

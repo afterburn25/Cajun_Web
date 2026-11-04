@@ -60,7 +60,8 @@ try {
     hcc_paths($runtime);hcc_paths($qa);hcc_paths($private);
     if(file_exists($private)||is_link($private))throw new RuntimeException('Preserve existing checkout fixture storage; use a clean runtime.');
     if(!is_dir($runtime)&&!mkdir($runtime,0700,true))throw new RuntimeException('Cannot create runtime.');
-    if(!mkdir($private,0700)||(!is_dir($qa)&&!mkdir($qa,0700,true)))throw new RuntimeException('Cannot create isolated fixture paths.');
+    // Match the installed private-storage layout before its real multipart HTTP continuation.
+    if(!mkdir($private,0700)||!mkdir($private.'/media',0700)||(!is_dir($qa)&&!mkdir($qa,0700,true)))throw new RuntimeException('Cannot create isolated fixture paths.');
     $reportPathReady=true;
     $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-checkout','storage'=>realpath($private),'key'=>str_repeat('synthetic-checkout-local-',4),
         'db'=>['host'=>'127.0.0.1','port'=>$port,'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hcc_']];

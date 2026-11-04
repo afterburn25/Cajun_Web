@@ -1,3 +1,21 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+- Preserve contact-session provenance at checkout entry so the existing primary-client guard refuses checkout before identity cleanup can discard invalid contact keys. Master portal, support, login/logout and primary-client CSRF paths retain their existing behavior.
+- Keep the original negative-session fixture, native/browser assertions and failed [four-lane attempt 1](https://github.com/afterburn25/Cajun_Web/actions/runs/41812110862). Update only the router's exact composition inverse/hash and canonical installer inventory.
+- This correction is prepared on a new child of published checkout source `cde638ecdf0af24247de8930bcc183673fd2bbb5`; independent review, fresh checkout/full Application acceptance and main verification remain required. [Evidence and next gates](SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+- [Contacts #340](https://github.com/afterburn25/Cajun_Web/pull/340) is verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`, including its own-main Application and focused acceptance reviews.
+- Reuse published checkout preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` through a normal merge with that accepted main. This continuation adds eight current-state prefixes while preserving all prior source and history.
+- [Checkout #341](https://github.com/afterburn25/Cajun_Web/pull/341) still requires review, fresh dedicated checkout and full Application acceptance, normal main integration and resulting-main verification. [Exact source and evidence](SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+- Prepare a normal checkout/contacts reconciliation with 72 exact reversible repairs, four retained contact additions and both complete source-regression continuations.
+- Preserve the contacts application, homepage and scheduler bytes, the existing checkout fixtures and every verifier function. Canonical refresh and local source/portable checks pass.
+- This is a local preflight awaiting root review, accepted contacts main and fresh combined hosted acceptance. [Current scope and next gates](SESSION_HANDOFF.md).
+
 ## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
 
 - Reconcile the reviewed contacts candidate with merged homepage/scheduler main while retaining both source histories and the full 62-row reversible proof.
@@ -41,6 +59,23 @@ Preserve the existing homepage device-depth/performance increment from PR328 and
 ## Unreleased - 2026-11-02 reconcile port
 
 Port homepage device depth + measured performance evidence (PR199) onto the 1.26.1 consolidation base.
+
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+- Repair dedicated checkout fixture setup: create checked private media storage and load the billing-state publication reader.
+- Exercise real optional-cost and Plan terms disclosures before the unchanged visibility, text, image and capture assertions.
+- Compare displayed hosting statuses case-insensitively while strengthening every existing active-service exclusion.
+- Retain all original failures and exact source inverses. Fresh local native 79, browser/harness 400 and all 32 captures pass; source and independent review are recorded in the current status. Corrected hosted acceptance and integration remain pending.
+
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+- Correct the three dedicated checkout owner-review button selectors without changing application behavior or authorization assertions.
+- Scope checkout workflow cancellation to superseded non-main runs while preserving main acceptance.
+- Retain all four original failed checkout reports and refresh only the affected finite source identities. Corrected runtime acceptance remains pending.
+
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+Restore the dedicated packaged checkout acceptance gate across PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4. Existing fixtures now assert current owner-session authorization, actual revoked-owner refusal, current CSRF and separate explicit confirmation. Preserve the unchanged native79 producer, package/bridge/source guards and all 32 captures. Make historical callback comparison finite and normalize Python AST serialization while keeping its original fixed checksum. Local 2,150 source checks, 88 real-file/direct-boundary cases, 12 genuine shallow-history checks, 2,763 maintained acceptance helpers and 128 standalone billing-source/output contracts passed; actual hosted native/browser acceptance remains pending. [Current evidence and integration state](PROJECT_STATUS.md).
 
 ## 2026-11-02 — PR317 financing acceptance correction
 

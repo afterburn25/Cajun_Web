@@ -72,10 +72,14 @@ def run_browser(env, browser):
         f.get_by_role('button', name='Preview offer', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
         publish = data(op, 'hosting_catalog_publish'); before = fixture('state')
         check('Owner preview retains exact checkout policy without publishing', publish['checkout_mode'] == 'invoice-on-confirmation' and publish['billing_timezone'] == 'UTC' and before['counts'] == initial['counts'])
-        response = post(owner, owner_url, {**publish, 'csrf': 'invalid', 'current_password': owner_password, 'confirm': '1'})
+        response = post(owner, owner_url, {**publish, 'csrf': 'invalid', 'confirm': '1'})
         check('Owner publication rejects invalid CSRF', response.status in (200, 400, 403) and 'Your session expired.' in response.text())
         unchanged('Owner invalid CSRF leaves commercial state unchanged', before)
-        f = form(op, 'hosting_catalog_publish'); f.locator('[name="current_password"]').fill(owner_password); f.locator('[name="confirm"]').check()
+        f = form(op, 'hosting_catalog_publish')
+        check('Owner publication uses the current session with CSRF and explicit confirmation',
+              f.locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(f.locator('[name="csrf"]').input_value()) and not f.locator('[name="confirm"]').is_checked())
+        f.locator('[name="confirm"]').check()
         f.get_by_role('button', name='Publish hosting offer', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
         published = fixture('state'); pub = published['latest_publication']
         check('Real owner POST publishes exactly the reviewed invoice checkout', 'Primary clients can review the terms and create their first invoice.' in op.content() and pub['id'] == publish['publication_id'] and published['counts']['publications'] == initial['counts']['publications'] + 1)
@@ -122,7 +126,7 @@ def run_browser(env, browser):
         goto(op, admin + '?view=support')
         support = form(op, 'support_start').filter(has=op.locator('input[name="client_id"][value="1"]'))
         check('Owner uses the actual support-start form for this client', support.count() == 1)
-        support.get_by_role('button', name='Open client portal', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
+        support.get_by_role('button', name='Open client portal (owner review)', exact=True).click(); op.wait_for_load_state('load', timeout=30000)
         check('Real support session banner is visible', op.get_by_role('complementary', name='Support session').count() == 1)
         support_id = parse_qs(urlparse(op.url).query)['support'][0]; support_data = data(op, 'support_end')
         response = post(owner, portal + '?' + urlencode({'support': support_id, 'hosting': 'checkout'}), {**confirm, 'csrf': support_data['csrf'], 'confirm': '1'})

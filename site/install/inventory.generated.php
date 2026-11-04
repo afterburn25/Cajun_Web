@@ -3034,7 +3034,7 @@ function setup_expected_files(): array { return [
     'portal/controllers/package_wordpress_installed.php'=>'62c52535a762b706b3a81c1630f875c156c59f1ce73756195818b7212fca71a3',
     'portal/controllers/plans.php'=>'5795b748e25723c373e9d036881e50e9ae5e991978c118aeec7fb5df886cf567',
     'portal/controllers/recurring_billing.php'=>'7dd29b09617f490eca60e93137ae33d91d79db981822d9be109e94880a1e6ee3',
-    'portal/controllers/router.php'=>'1b83d6a85bf94c46762bf2c79a016bcc2c1bea224e842258b6b356625b08fcb2',
+    'portal/controllers/router.php'=>'3d00beebce20b6c700232e091b60ecee9766c34751a0496ec5dc1806a0720a63',
     'portal/controllers/service_observations.php'=>'18fc9463d08585d85660d4d1a401c90a3988319b40d9595be326e0250782f18c',
     'portal/controllers/tickets.php'=>'8092cfdaa8cc0c424db9212c110cca65a7cbb113a8cbf2b6dfe41fbb01a197f6',
     'portal/index.php'=>'2f2c2bdbb10a089c0853ad3b2102f0f9aeef5c9809fcf22e5e5e3f53586521a4',

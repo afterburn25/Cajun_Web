@@ -1,3 +1,15 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+The checkout correction changes one shipping router entry point and its canonical inventory/source bindings. It is not yet accepted or merged into main and creates no release tag or published download. Development remains 1.26.1; the last retained published-release check was v1.25.0. Preserve the existing release, upgrade and artifact-verification gates after fresh checkout/full Application acceptance and resulting-main verification. [Current source and original failure](../SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Contacts #340 is verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The enclosing checkout reconciliation reuses published preparation and awaits its own fresh runtime, full Application and integration gates. Development remains **1.26.1** and the latest published release remains **v1.25.0**, rechecked before this continuation. No release tag or published download is created here. Retain the established upgrade, package and publication gates after accepted checkout main integration. [Current source and evidence](../SESSION_HANDOFF.md).
+
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+The checkout/contacts continuation is locally prepared and source/portable validated, with root review and new combined hosted acceptance still required. It is not yet merged into main. Development remains 1.26.1 and the latest published release remains v1.25.0. This checkpoint creates no release tag or download asset. Retain the existing compatibility, upgrade, package and publication gates after accepted main integration. [Current source scope](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
 
 Development source remains 1.26.1. Homepage/scheduler work is merged in main44 with 13 passing automatic workflows. The contacts combination has local build/source acceptance only; hosted integration, merge and resulting-main gates remain. No version tag, release asset, installation ZIP or live deployment is created by this checkpoint. Preserve prior published downloads and the separate release compatibility/upgrade/package requirements. [Current source and next action](../SESSION_HANDOFF.md).
@@ -37,6 +49,22 @@ Main is `d9e34d2f8483fcd7630d799725fac773561f5183` (tree `870c2253474ec2a71770de
 The actual-main final artifact13194488417 (252,444,594 bytes; SHA256 `8963ed17d2a44540663ddbc0274bef4503805178a90120a064acf24811f1672a`) and input artifact13176481159 were downloaded and matched GitHub transport hashes. The frozen independently reviewed verifier passed its main mode:751 final files,219 named final reports,173 native/browser reports,25,600 input files, exact source/tree/run/attempt and complete sealed partition union. The actual HTTP report contains3,937 passing checks. Its raw cross-report entry count is not a deduplicated execution total. Independent package review matched FULL7,955, COMPLETE3,069 and UPDATE3,056 members to exact main and the approved generated updater semantics;11 distribution checksum entries, direct-root layout and no nested shipping ZIPs passed. Final/input outer archives were verified; other partition outer archives remain metadata-only.
 
 Stable release qualification also requires the full supported-environment runs, which are separately pending on the frozen main source: [PHP8.2/MariaDB41562094984](https://github.com/afterburn25/Cajun_Web/actions/runs/41562094984), [PHP8.2/MySQL41562206710](https://github.com/afterburn25/Cajun_Web/actions/runs/41562206710), [PHP8.4/MariaDB41562254164](https://github.com/afterburn25/Cajun_Web/actions/runs/41562254164), and [PHP8.4/MySQL41562299843](https://github.com/afterburn25/Cajun_Web/actions/runs/41562299843). Each was requested once with checkpoint-only disabled. Do not redispatch these pending runs. The current original-installed1.26RC financial-upgrade gate needs a new orchestration bound to main; the historical owner workflow remains pinned to its old source and must not be counted as current-main evidence. Draft/public release assets, final reports and downloaded-public-byte verification remain pending. No1.26.1 stable release or live deployment is claimed.
+
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+Published downloads remain v1.25.0; development remains 1.26.1. This checkout correction changes only four fixtures and two finite source-proof files, with eight historical-preserving narrative prefixes. The actual retained COMPLETE-UPLOAD ZIP is reused only after all 3,069 shipping members match current source; its SHA-256 is `a5e80b53cf67acfb0002986cb7e7510b03d97df9a4c6a0befa0fd99dcb53ccba`. This is local acceptance evidence, not a newly built or published release artifact.
+
+Fresh local native 79, browser/harness 400 and all 32 required captures pass. Supported hosted qualification, required full application and exact-main acceptance, independent release review, immutable package publication and downloaded-asset verification remain separate gates. Preserve all existing release assets. No live deployment, external provider action, customer message or real payment occurred. [Current source and evidence](../PROJECT_STATUS.md).
+
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+The current published version remains v1.25.0 and development remains 1.26.1. The checkout correction and MySQL scheduler fixture failure remain acceptance work; a passing native report is not a complete checkout/browser or release result. Preserve all prior published artifacts. [Current source and gates](../PROJECT_STATUS.md).
+
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+The latest published release remains v1.25.0 and development remains1.26.1. Actual main d9 has passed its automatic full acceptance and the separately downloaded original-RC/finance/Windows evidence. At02:54UTC the four additional PHP/database runs remained in full browser execution. Their completion must be verified from actual sealed artifacts.
+
+The dedicated checkout gate is now explicitly represented by this candidate's four-environment workflow; portable source contracts do not establish its installed journey. Homepage PR339, contacts PR340 correction and this checkout candidate retain separate exact-source review/merge/main gates. Publish immutable packages/manifests/checksums/reports/migration instructions only after required release qualification and draft/public download equality. No current branch build is a new release or live deployment. [Current source and remaining gates](../SESSION_HANDOFF.md).
 
 ## 2026-11-01 continuation — current component composition
 

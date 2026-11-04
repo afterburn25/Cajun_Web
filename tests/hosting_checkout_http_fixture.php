@@ -83,6 +83,7 @@ if($operation==='prepare'){
 }
 if(!is_file($marker)||is_link($marker))throw new RuntimeException('Prepare first');
 if($operation==='billing-state'){
+    require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers.php';
     // Separate bounded read contract; the original state response below is unchanged.
     $result=hosting_checkout_locked(function():array{
         hosting_checkout_require();

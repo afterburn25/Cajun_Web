@@ -3,6 +3,8 @@
 All mutations use actual authenticated forms. The existing read-only state bridge
 proves retained financial history and exact local setup counts. No provider read,
 fixture seed, session injection, timestamp edit or automatic publication occurs.
+The authority negative temporarily revokes the real owner through the maintained
+disposable-install helper, which requires exact protected-state restoration.
 """
 import hashlib
 import math
@@ -12,6 +14,7 @@ from types import SimpleNamespace
 from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 
 from playwright.sync_api import expect
+from installed_owner_authority import revoked_owner
 
 
 CAPTURES = tuple('Hosting-Plan-Setup-' + stage + '-' + size + '.png'
@@ -113,12 +116,11 @@ def run_browser(env, browser):
         check(name, after['business_sha256'] == before['business_sha256']
               and setup_counts(after) == setup_counts(before))
 
-    def fill(page, selected, password=''):
+    def fill(page, selected):
         target = form(page, ACTION)
         for key in ('inclusions', 'exclusions', 'limits', 'support', 'reseller_id', 'package_label', 'package_region', 'review_days',
                     'limit_websites', 'limit_disk_mb', 'limit_bandwidth_mb', 'limit_mailboxes', 'limit_databases'):
             target.locator('[name="' + key + '"]').fill(selected[key])
-        target.locator('[name="current_password"]').fill(password)
         target.locator('[name="reviewed_defaults"]').check()
         target.locator('[name="confirm"]').check()
 
@@ -205,17 +207,17 @@ def run_browser(env, browser):
               and changed['results'] == initial['results'] and setup_counts(changed) == initial_setup
               and changed['business_sha256'] != initial['business_sha256'])
         check('Product edit keeps the original uploaded local image', op.locator('img[alt="Uploaded draft product image"]').get_attribute('src') == image_url)
-        response = post(owner, owner_url, {**stale, 'current_password': owner_password})
+        response = post(owner, owner_url, stale)
         stale_fields = response_fields(response, ACTION)
         check('Stale setup review is refused with original entries and digest retained',
               response.status == 200 and 'These details changed or are unavailable.' in response.text()
               and all(stale_fields[k] == stale[k] for k in IDENTITIES + ('inclusions', 'exclusions', 'limits', 'support', 'package_region'))
-              and stale_fields['current_password'] == '')
+              and 'current_password' not in stale_fields and 'owner_password' not in stale_fields)
         unchanged('Stale setup refusal creates no plan mapping invoice or provider intent', changed)
         sp = owner.new_page()
         check('Guided setup uses the real support start page', goto(sp, admin + '?view=support') == 200)
         support = form(sp, 'support_start').filter(has=sp.locator('input[name="client_id"][value="1"]'))
-        support.get_by_role('button', name='Open client portal', exact=True).click()
+        support.get_by_role('button', name='Open client portal (owner review)', exact=True).click()
         sp.wait_for_load_state('load', timeout=30000)
         check('Guided setup support denial uses an actual active support session', sp.get_by_role('complementary', name='Support session').count() == 1)
         support_id = parse_qs(urlparse(sp.url).query)['support'][0]
@@ -223,7 +225,7 @@ def run_browser(env, browser):
         owner_review = owner.request.get(owner_url, max_redirects=0, timeout=30000)
         check('Support refusal obtains a genuine current owner form token', owner_review.status == 200)
         support_csrf = response_fields(owner_review, ACTION)['csrf']
-        response = post(owner, owner_url + '&' + urlencode({'support': support_id}), {**stale, 'csrf': support_csrf, 'current_password': owner_password})
+        response = post(owner, owner_url + '&' + urlencode({'support': support_id}), {**stale, 'csrf': support_csrf})
         check('Active support cannot finish an owner hosting plan', response.status in (200, 403)
               and 'outside client support' in response.text() and 'Your session expired.' not in response.text())
         unchanged('Support setup refusal leaves business history unchanged', changed)
@@ -235,11 +237,11 @@ def run_browser(env, browser):
         check('Fresh review changes digest and setup identities only after explicit reload',
               selected['review_sha256'] != stale['review_sha256']
               and all(selected[k] != stale[k] for k in ('plan_id', 'activation_event_id', 'mapping_id')))
-        response = post(owner, owner_url, {**selected, 'csrf': 'invalid-csrf', 'current_password': owner_password})
+        response = post(owner, owner_url, {**selected, 'csrf': 'invalid-csrf'})
         check('Invalid CSRF is refused by the installed setup route', response.status in (200, 403) and 'Your session expired.' in response.text())
         unchanged('CSRF refusal leaves complete commercial and provider history unchanged', changed)
         for key in ('confirm', 'reviewed_defaults'):
-            response = post(owner, owner_url, {**selected, key: '', 'current_password': owner_password})
+            response = post(owner, owner_url, {**selected, key: ''})
             check('Installed setup requires explicit ' + key, response.status == 200 and 'Create matching plan' in response.text() and 'role="alert"' in response.text())
             unchanged('Missing ' + key + ' leaves all business rows unchanged', changed)
         check('Other client uses the actual installed portal login', goto(cp, portal) == 200 and form(cp, 'login').count() == 1)
@@ -250,21 +252,53 @@ def run_browser(env, browser):
         cp.wait_for_load_state('load', timeout=30000)
         check('Other client is authenticated without an owner session', form(cp, 'login').count() == 0 and cp.locator('input[name="csrf"]').count() > 0)
         client_csrf = cp.locator('input[name="csrf"]').first.get_attribute('value')
-        response = post(client, owner_url, {**selected, 'csrf': client_csrf, 'current_password': owner_password})
+        response = post(client, owner_url, {**selected, 'csrf': client_csrf})
         check('Authenticated client cannot use the owner setup action', response.status == 303 and parse_qs(urlparse(response.headers.get('location', '')).query).get('view') == ['login'])
         unchanged('Client setup attempt creates no local or provider record', changed)
-        fill(op, selected, 'deliberately-wrong-password')
-        click(op, ACTION, 'Create matching plan')
-        retried = fields(op, ACTION)
-        check('Password error keeps original setup choices and clears password and consent',
-              op.get_by_role('alert').filter(has_text='Your current password is not correct.').count() == 1
-              and all(retried[k] == selected[k] for k in IDENTITIES + ('inclusions', 'exclusions', 'limits', 'support', 'package_label', 'package_region', 'reseller_id'))
-              and retried['current_password'] == '' and not form(op, ACTION).locator('[name="confirm"]').is_checked()
+        revocation_fields = owner_fields(fields(op, ACTION))
+        check('Guided setup uses the current owner session with CSRF and unchecked consent',
+              form(op, ACTION).locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(revocation_fields['csrf']) and revocation_fields == selected
+              and not form(op, ACTION).locator('[name="confirm"]').is_checked()
               and not form(op, ACTION).locator('[name="reviewed_defaults"]').is_checked())
-        unchanged('Password failure leaves all plan and provider records unchanged', changed)
+        with revoked_owner(env['SITE'], env['PHP'], owner_id=1):
+            response = post(owner, owner_url, revocation_fields)
+            denied = env['soup'](SimpleNamespace(text=response.text(), url=response.url))
+            check('Revoked owner cannot finish a plan through the same session and valid CSRF',
+                  response.status == 403 and 'Your account does not have access to this section.' in response.text()
+                  and 'Your session expired.' not in response.text()
+                  and not denied.select('input[name="action"][value="' + ACTION + '"]'))
+        unchanged('Revoked-owner refusal restores all protected state and leaves plan records unchanged', changed)
+        fill(op, selected)
+        form(op, ACTION).locator('[name="confirm"]').uncheck()
+        # Submit the actual form to test server confirmation validation despite
+        # the browser's required checkbox; no controls or source are altered.
+        with op.expect_navigation(wait_until='load', timeout=30000):
+            form(op, ACTION).evaluate('element => element.submit()')
+        retried = fields(op, ACTION)
+        check('Confirmation error keeps original setup choices and clears consent without password fields',
+              op.get_by_role('alert').filter(has_text='Review the details and explicitly confirm this action.').count() == 1
+              and all(retried[k] == selected[k] for k in IDENTITIES + ('inclusions', 'exclusions', 'limits', 'support', 'package_label', 'package_region', 'reseller_id'))
+              and 'current_password' not in retried and 'owner_password' not in retried
+              and form(op, ACTION).locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and not form(op, ACTION).locator('[name="confirm"]').is_checked()
+              and not form(op, ACTION).locator('[name="reviewed_defaults"]').is_checked())
+        unchanged('Confirmation failure leaves all plan and provider records unchanged', changed)
+        # Expand the native disclosure so the original capture checks exercise its seven real controls.
+        private_cost = form(op, ACTION).locator('details').filter(has=op.get_by_text('Optional private provider cost', exact=True))
+        cost_controls = private_cost.locator('input,select,textarea')
+        check('Guided setup optional private cost starts collapsed with all seven retained controls',
+              private_cost.count() == 1 and private_cost.locator('summary').count() == 1
+              and private_cost.evaluate('el => !el.open') is True
+              and tuple(cost_controls.evaluate_all('nodes => nodes.map(n => n.name)'))
+              == ('cost_known', 'cost_tax', 'cost_basis', 'cost_amount', 'cost_currency', 'cost_period', 'cost_reference'))
+        private_cost.locator('summary').click()
+        check('Guided setup opens optional private costs through the real summary',
+              private_cost.evaluate('el => el.open') is True
+              and cost_controls.evaluate_all('nodes => nodes.length === 7 && nodes.every(n => n.checkVisibility())') is True)
         for width, height, name in ((1440, 1050, CAPTURES[0]), (320, 740, CAPTURES[1])):
             capture(op, op.locator('[data-hosting-plan-setup]'), name, width, height)
-        fill(op, selected, owner_password)
+        fill(op, selected)
         click(op, ACTION, 'Create matching plan')
         created = fixture('state')
         check('Owner creates exactly one plan activation and mapping through the real form',
@@ -275,7 +309,7 @@ def run_browser(env, browser):
         preview_form = form(op, 'hosting_catalog_preview')
         check('Created exact active plan is selected before separate preview', preview_form.locator('[name="plan_id"]').input_value() == selected['plan_id'])
         selected_url = op.url
-        response = post(owner, owner_url, {**selected, 'current_password': owner_password})
+        response = post(owner, owner_url, selected)
         check('Exact setup retry redirects to the same created plan', response.status == 303 and urljoin(admin, response.headers.get('location', '')) == selected_url)
         unchanged('Exact setup retry never creates another plan activation or mapping', created)
         check('Exact newly created plan remains selectable outside the matching search page',
@@ -292,14 +326,22 @@ def run_browser(env, browser):
               and publish['checkout_mode'] == 'invoice-on-confirmation'
               and re.fullmatch(r'[a-f0-9]{64}', publish['review_sha256']) is not None)
         review = op.locator('section.workspace-card').filter(has=op.get_by_role('heading', name='Review before publishing', exact=True))
+        plan_terms = review.locator('details').filter(has=op.get_by_text('Plan terms', exact=True))
+        check('Guided offer preview starts with the original Plan terms collapsed',
+              plan_terms.count() == 1 and plan_terms.locator('summary').count() == 1
+              and plan_terms.evaluate('el => !el.open') is True)
+        plan_terms.locator('summary').click()
+        check('Guided offer preview reveals terms through the real summary',
+              plan_terms.evaluate('el => el.open') is True)
         text = review.inner_text()
         check('New offer preview shows copied price service terms and retained local image',
               all(value in text for value in ('$27.00', 'One managed website', 'Studio email support', 'Domain registration', 'Email during stated studio hours'))
               and urljoin(op.url, review.locator('.hosting-catalog-image').get_attribute('src')) == urljoin(product_url, image_url))
         check('Preview contains no provider credentials private mapping or submitted password',
               all(value not in review.inner_text() for value in ('SYNTHETIC_CHECKOUT_PROVIDER_KEY', 'PRIVATE_', 'credential_sha256', 'mapping_json', owner_password)))
-        check('Publication remains a separate unchecked password-confirmed action',
-              form(op, 'hosting_catalog_publish').locator('[name="current_password"]').input_value() == ''
+        check('Publication remains a separate unchecked owner-session action',
+              form(op, 'hosting_catalog_publish').locator('[name="current_password"],[name="owner_password"]').count() == 0
+              and bool(form(op, 'hosting_catalog_publish').locator('[name="csrf"]').input_value())
               and not form(op, 'hosting_catalog_publish').locator('[name="confirm"]').is_checked())
         preview_image = review.locator('.hosting-catalog-image')
         preview_image.scroll_into_view_if_needed()

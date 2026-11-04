@@ -1,3 +1,15 @@
+## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
+
+Contacts remains verified on main. Packaged checkout now has a concrete integration correction: preserve raw contact-session provenance until the primary-client-only checkout refusal runs. The original negative probe and all existing acceptance requirements remain. No new feature or completion credit is claimed; local validation, independent review, fresh checkout/full Application acceptance and main verification remain the delivery gates. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Scoped contacts has reached verified main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The saved packaged-checkout preparation is now normally reconciled with that accepted source, with fresh checkout/runtime review, full Application acceptance and resulting-main verification still pending. Existing requirement IDs, roadmap credit and historical completion figures are preserved. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
+## 2026-11-04 UTC — checkout and contacts local integration preflight
+
+Packaged checkout acceptance is locally reconciled with the scoped-contacts candidate and its homepage/scheduler ancestry. All existing proof and regression guards remain. The integration still requires root review, accepted contacts main, four runtime checkout lanes, full Application acceptance and resulting-main verification. No completion credit or percentage changes. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
 ## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
 
 P-05 company contacts: the accepted contact permissions, attribution, notification isolation and fixture work is now reconciled locally with homepage/scheduler main44. It remains pending combined hosted acceptance and integration. All current safeguards and roadmap scope remain; no completion percentage changes. [Queue and next gates](DEVIN_INTEGRATION_QUEUE.md).
@@ -37,6 +49,29 @@ Current integration priority: publish the reviewed scheduler fixture correction 
 PR317 reached main and passed its original automatic acceptance. Homepage depth remains an unmerged retained feature with a corrected source proof; contacts and other reconciliation families remain under correction/review. This checkpoint changes integration/evidence state, not the fixed scope, outcome weights or completion credits.
 
 Stable release qualification also requires the full supported-environment runs, which are separately pending on the frozen main source: [PHP8.2/MariaDB41562094984](https://github.com/afterburn25/Cajun_Web/actions/runs/41562094984), [PHP8.2/MySQL41562206710](https://github.com/afterburn25/Cajun_Web/actions/runs/41562206710), [PHP8.4/MariaDB41562254164](https://github.com/afterburn25/Cajun_Web/actions/runs/41562254164), and [PHP8.4/MySQL41562299843](https://github.com/afterburn25/Cajun_Web/actions/runs/41562299843). Each was requested once with checkpoint-only disabled. Do not redispatch these pending runs. The current original-installed1.26RC financial-upgrade gate needs a new orchestration bound to main; the historical owner workflow remains pinned to its old source and must not be counted as current-main evidence. Draft/public release assets, final reports and downloaded-public-byte verification remain pending. No1.26.1 stable release or live deployment is claimed.
+
+## 2026-11-03 UTC — checkout fixture acceptance correction
+
+This increment repairs five measured acceptance-fixture assumptions: installed private media layout, two native disclosures, displayed status capitalization and a billing-read dependency. It adds no product feature, requirement completion or integrated/released/live credit. The complete fresh local checkout journey passes native 79, browser/harness 400 and all 32 captures, while corrected hosted acceptance and the main scheduler regression gate remain separate.
+
+Continue through the [integration queue](DEVIN_INTEGRATION_QUEUE.md): finish the main regression correction, then land independently accepted feature groups with exact combination and main verification. Preserve the existing product direction, all earlier evidence and the remaining roadmap.
+
+## 2026-11-02 CST / 2026-11-03 UTC — checkout owner-review continuation
+
+This increment repairs acceptance mechanics only: three current owner-review selectors and per-PR/ref workflow concurrency. It adds no completed feature credit and does not promote integrated, released or live status. Current checkout, contact-scope and MySQL scheduler gates are recorded in the [integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
+## 2026-11-02 CST / 2026-11-03 UTC — dedicated checkout acceptance and active integration
+
+No requirement status or percentage is promoted by test/integration maintenance. The audited branch-inclusive total remains **61.5/105 credits (58.57142857%)**, distinct from main integration, release and live readiness.
+
+| Work | Implemented/tested scope | Delivery state |
+| --- | --- | --- |
+| PR317 group | Exact automatic main acceptance passed; additional release environments still executing | Merged atd9; no newer published release |
+| Homepage PR339 | Current source/focused checks pass; full browser running | Unmerged/unreleased |
+| P-05 contacts PR340 | Earlier local/source checks retained; confirmed additional read/notification gaps under correction | Unmerged/unreleased; earlier passes do not cover new findings |
+| Dedicated checkout gate | Existing fixtures and explicit matrix reviewed; portable/current-source checks pass | Actual native/packaged browser matrix and later main acceptance pending |
+
+Use the retained stable requirement IDs and evidence scopes; do not convert repeated report entries or source assertion sites into completed feature credits. [Current evidence](../PROJECT_STATUS.md).
 
 ## 2026-11-01 continuation — current component composition
 

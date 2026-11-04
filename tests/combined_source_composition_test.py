@@ -1,6 +1,8 @@
 """Exercise the composition boundary by mutating real disposable source files."""
 from pathlib import Path
 import argparse
+import ast
+import copy
 import importlib.util
 import json
 import py_compile
@@ -164,6 +166,97 @@ def run(root=ROOT):
                 repair.write_bytes(old_repair)
                 receipt.write_bytes(old_receipt)
         refuses('Refuses simultaneous runtime fixture code and repair-receipt hash substitution', forged_repair_and_receipt)
+
+        from hosting_billing_options_wiring import (
+            PREDECESSORS, RUNNER, BRIDGE, CASES, predecessor_sources, source as billing_source)
+        billing_paths = set(PREDECESSORS) | {RUNNER, BRIDGE, CASES}
+        billing_before = {path: proof.ordinary(fixture, path) for path in billing_paths}
+        predecessors = predecessor_sources(fixture)
+        assert set(predecessors) == set(PREDECESSORS)
+        for path, expected in PREDECESSORS.items():
+            assert predecessors[path] == proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':' + path)
+            assert proof.digest(predecessors[path]) == expected
+            assert predecessors[path] != billing_before[path]
+            passed('Billing predecessor comparison retains its original fixed bytes: ' + path)
+        assert all(billing_source(fixture, path) == billing_before[path].replace(b'\r\n', b'\n')
+                   for path in (RUNNER, BRIDGE, CASES))
+        passed('Billing runner, bridge and validators continue to read actual current source')
+        assert all(proof.ordinary(fixture, path) == raw for path, raw in billing_before.items())
+        passed('Billing historical comparison leaves every current callback and runtime input unchanged')
+
+        from hosting_billing_options_wiring import (
+            OLD_CHECKS_SHA256, RESULT_CHECK, portable_check_dump)
+        historical_runner = proof.git(root, 'cat-file', 'blob', proof.REPAIR_BASE + ':' + RUNNER)
+        assert proof.digest(historical_runner) == '823c245252be66f5286bb59edabfecddcae00f2b38a38088858b08d7d18a25e3'
+
+        def runner_checks(raw):
+            return [node for node in ast.walk(ast.parse(raw))
+                    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id == 'check' and not (node.args and isinstance(node.args[0], ast.Constant)
+                                                        and node.args[0].value == RESULT_CHECK)]
+
+        old_nodes, current_nodes = runner_checks(historical_runner), runner_checks(billing_before[RUNNER])
+        snapshots = [ast.dump(node, include_attributes=True) for node in current_nodes]
+        assert [ast.dump(node, include_attributes=False) for node in old_nodes] == [
+            ast.dump(node, include_attributes=False) for node in current_nodes]
+        passed('All twelve current runner check bodies and their original traversal order equal the exact retained runner')
+
+        def require_original_runner_checks(nodes):
+            values = [portable_check_dump(node) for node in nodes]
+            assert len(values) == 12 and proof.digest(json.dumps(values, separators=(',', ':')).encode()) == OLD_CHECKS_SHA256
+
+        require_original_runner_checks(old_nodes)
+        require_original_runner_checks(current_nodes)
+        assert snapshots == [ast.dump(node, include_attributes=True) for node in current_nodes]
+        passed('Portable serialization retains the original fixed checksum and leaves the current runner AST untouched')
+        altered = copy.deepcopy(current_nodes)
+        altered[0].args[1] = ast.Constant(value=True)
+        refuses('Original runner checksum refuses a changed check body', lambda: require_original_runner_checks(altered))
+        reordered = list(current_nodes)
+        reordered[0], reordered[1] = reordered[1], reordered[0]
+        refuses('Original runner checksum refuses reordered checks', lambda: require_original_runner_checks(reordered))
+        refuses('Original runner checksum refuses an omitted check', lambda: require_original_runner_checks(current_nodes[:-1]))
+        refuses('Original runner checksum refuses a duplicate additional check', lambda: require_original_runner_checks(current_nodes + [current_nodes[-1]]))
+        keywords = copy.deepcopy(current_nodes)
+        keywords[0].keywords.append(ast.keyword(arg='unreviewed', value=ast.Constant(value=True)))
+        refuses('Portable serialization retains and refuses nonempty keyword changes', lambda: require_original_runner_checks(keywords))
+        conditions = copy.deepcopy(current_nodes)
+        comprehension = next(node for call in conditions for node in ast.walk(call)
+                             if isinstance(node, ast.comprehension) and not node.ifs)
+        comprehension.ifs.append(ast.Constant(value=True))
+        refuses('Portable serialization retains and refuses nonempty comprehension conditions', lambda: require_original_runner_checks(conditions))
+        arguments = copy.deepcopy(current_nodes)
+        empty_call = next(node for call in arguments for node in ast.walk(call)
+                          if isinstance(node, ast.Call) and not node.args)
+        empty_call.args.append(ast.Constant(value='unreviewed'))
+        refuses('Portable serialization retains and refuses nonempty positional arguments', lambda: require_original_runner_checks(arguments))
+
+        def changed_billing_input(path, operation):
+            target = fixture / path
+            original = target.read_bytes()
+            permission = target.stat().st_mode & 0o777
+            try:
+                operation(target)
+                # Call the real boundary directly: no outer verify_current may
+                # mask a missing admission check inside predecessor_sources.
+                predecessor_sources(fixture)
+            finally:
+                target.write_bytes(original)
+                target.chmod(permission)
+
+        for path in sorted(billing_paths):
+            refuses('Billing comparison refuses altered actual current source: ' + path,
+                    lambda path=path: changed_billing_input(
+                        path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed billing source\n')))
+        refuses('Billing comparison refuses altered predecessor executable mode',
+                lambda: changed_billing_input(next(iter(PREDECESSORS)), lambda target: target.chmod(0o755)))
+
+        def forged_billing_receipt(target):
+            data = json.loads(target.read_bytes())
+            data['integration_repairs'][next(iter(PREDECESSORS))]['current_sha256'] = '0' * 64
+            target.write_text(json.dumps(data))
+        refuses('Billing comparison refuses forged current predecessor admission',
+                lambda: changed_billing_input(proof.RECEIPT, forged_billing_receipt))
 
         # Invoke the backup boundary itself after changing real current inputs;
         # do not let modified()'s own verification manufacture a refusal.

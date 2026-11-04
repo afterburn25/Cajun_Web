@@ -36,6 +36,7 @@ SOURCE_PATHS = [
     'site/admin/controllers/router.php', 'site/portal/controllers/router.php',
     'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_order_links.php', 'site/app/hosting/order_views.php',
     'tests/hosting_catalog_plan_setup_cases.py',
+    'tests/installed_owner_authority.py', 'tests/installed_owner_authority.php',
     'site/app/hosting/catalog_offer_setup.php', 'site/app/hosting/catalog_offer_setup_document.php',
     'site/app/hosting/catalog_offer_setup_views.php', 'site/app/hosting/catalog_offer_views.php', 'site/app/plans/records.php',
     'tests/catalog_storefront_checkout_cases.py',
@@ -187,7 +188,7 @@ def main(full_suite=False):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             try:
-                browser_env = {**helpers, 'BASE': BASE, 'QA': qa, 'check': check, 'fixture': fixture, 'seed': seed}
+                browser_env = {**helpers, 'BASE': BASE, 'QA': qa, 'SITE': SITE, 'PHP': php, 'check': check, 'fixture': fixture, 'seed': seed}
                 result = run_browser(browser_env, browser)
                 result['catalog_storefront'] = storefront_browser(browser_env, browser)
                 check('Installed storefront completes the selected-plan login and invoice journey',
