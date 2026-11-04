@@ -503,8 +503,9 @@
       "tests/staff_cases.py": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
       "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
       "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
-      "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
-      "tests/payments_native.php": "e6338398dabd138d53243b7950bdf79de3b5488a9d8a4d9876bc8374d3363b19",
+      "tests/payments_cases.py": "e445a3a65c19bdf02ee3f1027e17b4d8f3bed39ecb0a995609af57e82800c3ad",
+      "tests/payments_native.php": "e732ca439d3bb460cc530714dcd03b70f332282c2681f75ed2324a114e3c6316",
+      "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990",
       "tests/provider_package_wordpress_installed_native.php": "53f159d3e61c5a49bf8f415a2b3a749ea37b7ccd03a35333d7e07af30d72c2be",
       "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
       "tests/domain_expiry_native.php": "31692b8d8622eb152c41d6de04ccce35ba8acc5af491d237d1c59f025f32a545",
@@ -524,9 +525,13 @@
       "Licensing-Customer-Downloads-Desktop.png",
       "Licensing-Customer-Downloads-Mobile.png",
       "Licensing-Owner-Invoice-Review-Desktop.png",
-      "Licensing-Owner-Invoice-Review-Mobile.png"
+      "Licensing-Owner-Invoice-Review-Mobile.png",
+      "Payment-Link-Valid-Desktop.png",
+      "Payment-Link-Valid-Mobile.png",
+      "Payment-Link-Terminal-Desktop.png",
+      "Payment-Link-Terminal-Mobile.png"
     ],
-    "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
+    "scope": "Additive landing-page and payment-link privacy captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
   },
   "stackcp_access_snapshot_native_command_baseline": {
     "source": "60c053b5c9f5a5fded943930500ea57cddd20ff8",

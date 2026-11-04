@@ -1,3 +1,9 @@
+## 2026-11-04 17:16 UTC — one subscription identity boundary and current-main privacy acceptance
+
+Use a single Authorize.Net subscription-event identity helper for sandbox and production. It requires the exact subscription entity and a string of 1–25 decimal digits before any finance/software lifecycle lookup. This removes environment drift without broadening provider authority.
+
+Treat payment-link privacy as an acceptance gap rather than a new shipping implementation: current main already contains the safe terminal rendering. Reuse the existing native helper and port the prior isolation tests to the real current client-portal link, bind requests to the local installed fixture, forbid external browser traffic, and snapshot all relevant financial/binding rows. Keep the full Linux composition guard; the Windows mode mismatch is an environment limitation, not grounds to alter it.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Retain the original checkout negative-session probe and exact refusal assertion. The integration failure exposed an ordering gap: current contact identity cleanup can remove invalid contact markers before the existing checkout-specific primary-client guard sees them. Refuse at the checkout entry point using that existing guard, after master dispatch and before normalization, for checkout GET and the two exact preview/confirm POST actions. Exclude support context so its existing audited denial remains authoritative; leave login/logout and ordinary portal behavior unchanged.

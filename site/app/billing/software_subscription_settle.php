@@ -227,9 +227,8 @@ function software_webhook_process(string $raw,string $signature):string{
             return 'sandbox_reversal_verified';
         }
         if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
-            if(($event['entity']??'')!=='subscription'||!preg_match('/^[0-9]{1,25}$/D',$event['resource_id']))
-                throw new InvalidArgumentException('Invalid subscription event entity.');
-            if(license_finance_subscription_known_gateway_id($event['resource_id'])){
+            $subscriptionId=software_anet_subscription_event_id($event);
+            if(license_finance_subscription_known_gateway_id($subscriptionId)){
                 return 'sandbox_finance_subscription_event';
             }
             return 'sandbox_subscription_event';
@@ -271,11 +270,11 @@ function software_webhook_process(string $raw,string $signature):string{
     }
 
     if(str_starts_with($event['type'],'net.authorize.customer.subscription.')){
-        if(($event['entity']??'')!=='subscription')throw new InvalidArgumentException('Invalid subscription event entity.');
-        if(license_finance_subscription_known_gateway_id($event['resource_id'])){
-            return license_finance_subscription_lifecycle_review($event['type'],$event['resource_id']);
+        $subscriptionId=software_anet_subscription_event_id($event);
+        if(license_finance_subscription_known_gateway_id($subscriptionId)){
+            return license_finance_subscription_lifecycle_review($event['type'],$subscriptionId);
         }
-        return software_subscription_lifecycle_review($event['type'],$event['resource_id']);
+        return software_subscription_lifecycle_review($event['type'],$subscriptionId);
     }
 
     if(!in_array($event['type'],[

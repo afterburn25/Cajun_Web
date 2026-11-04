@@ -1,3 +1,10 @@
+## 2026-11-04 — 1.26.1 webhook identity and payment-link privacy qualification
+
+- Added one strict Authorize.Net subscription-event identity parser and applied it before both sandbox and production lifecycle routing.
+- Added malformed and boundary identity contract cases without weakening signature or lifecycle checks.
+- Wired the existing payment-link native privacy cases into maintained execution and added installed anonymous HTTP/browser isolation, terminal-state non-disclosure, read-only financial snapshots and responsive capture requirements.
+- Refreshed the canonical installer inventory, acceptance contract and finite reversible source-composition proof. This is implemented on a local candidate pending independent review, hosted acceptance, merge and resulting-main verification; it is not yet released or live.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 - Preserve contact-session provenance at checkout entry so the existing primary-client guard refuses checkout before identity cleanup can discard invalid contact keys. Master portal, support, login/logout and primary-client CSRF paths retain their existing behavior.

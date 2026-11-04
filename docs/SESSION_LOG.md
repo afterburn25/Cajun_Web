@@ -1,3 +1,9 @@
+## 2026-11-04 17:16 UTC — Codex takes release qualification lead
+
+Refreshed main to `ce1803bb106713ef28dc260282a01105e7019118`, confirmed version 1.26.1 and latest release v1.25.0, read the repository handoff and renewed the expired PR340 coordinator marker. Audited the open webhook and payment-link candidates against exact main. Implemented one shared strict subscription identity boundary and current-main payment-link privacy acceptance wiring, preserving all prior shipping privacy bytes and historical failures.
+
+Canonical refresh, PHP lint, webhook contract, Python compilation, 69 builder rejection cases, documentation/dependency guards and diff checks pass. The acceptance-helper run records 257 passes before the unchanged Windows/POSIX mode gate; Linux CI remains required. Bounded independent no-edit review found no actionable issue and reconstructed every changed finite repair in both directions with matching hashes. The four pending exact-main supported-runtime runs were observed still in progress and not redispatched. No merge, release, payment, customer message, provisioning, SSH, deployment or destructive action occurred.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Preserved all four original checkout attempt-1 job logs and artifact ZIPs and verified their official byte counts/digests, exact CI source bindings and ordered native reports. All four lanes failed the same browser contact-context assertion; the missing response body and unreached post-denial state comparison remain explicit limits. The unchanged source showed identity normalization clearing malformed contact keys before the specific checkout refusal.

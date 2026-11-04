@@ -22,3 +22,12 @@ function software_anet_event_details(string $body):array{
         // Backward-compatible alias used by payment reconciliation.
         'transaction_id'=>$resource];
 }
+
+/** Return the exact gateway subscription identity or refuse the event before routing. */
+function software_anet_subscription_event_id(array $event):string{
+    $id=$event['resource_id']??null;
+    if(($event['entity']??'')!=='subscription'||!is_string($id)||!preg_match('/^[0-9]{1,25}$/D',$id)){
+        throw new InvalidArgumentException('Invalid subscription event entity.');
+    }
+    return $id;
+}

@@ -1,3 +1,9 @@
+## 2026-11-04 17:16 UTC — 1.26.1 security/privacy successor in qualification
+
+Current main remains `ce1803bb106713ef28dc260282a01105e7019118`, development version 1.26.1, with v1.25.0 still the latest published release. The current local successor closes the applicable pre-publication webhook gap by validating subscription `resource_id` identically before sandbox or production routing, and promotes the already-shipping payment-link privacy behavior into the maintained native, installed HTTP and browser acceptance contract. It changes no live payment, provisioning or deployment authority.
+
+PHP 8.4 syntax, the signed webhook contract, 69 build rejection checks, canonical inventory refresh, documentation checks and diff checks pass. The finite composition receipt is updated with reversible exact-source edits; its Windows run reaches the unchanged POSIX-mode gate and requires Linux CI for final execution. Independent bounded review found no actionable issue and reproduced every new repair forward/reverse with matching hashes. Full installed database/browser acceptance, candidate CI, merge and resulting-main verification remain pending. The four existing exact-`ce1803bb` supported-runtime Application runs remain in progress and were not duplicated. [Current handoff](SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Checkout #341 is **awaiting correction validation and fresh acceptance**. Its original [attempt 1](https://github.com/afterburn25/Cajun_Web/actions/runs/41812110862) passed source admission and the native step in all four lanes, then failed the same packaged-browser contact-context refusal assertion. The combined contacts identity cleanup removed the malformed contact markers before checkout's more specific primary-client refusal could run.
