@@ -1,6 +1,18 @@
+## 2026-11-03 21:33 UTC — verified main and homepage combination
+
+Reconcile the retained homepage device-depth and measured-performance work with the now-verified scheduler main. Preserve navy/gold styling, desktop device panels, mobile/reduced-motion behavior and all existing acceptance assertions. Resolve only the finite source proof and current narrative prefixes; the original homepage shipping files and main scheduler fixture remain exact. The combined candidate still requires acceptance and normal integration. [Current evidence and gates](SESSION_HANDOFF.md).
+
 ## 2026-11-03 — main scheduler acceptance fixture correction
 
 The scheduler browser fixture now uses a real invited synthetic owner with its own unchanged read budget, explicitly revokes that owner's authority in both negative probes, and verifies inherited reads, outcomes, audit and original owner data remain intact. Unchanged parent code reproduces both hosted MySQL failures at 20 and 19 prior reads; the corrected focused installed browser and native suites pass. Shipping code and all original assertions remain unchanged. The correction is locally implemented and independently reviewed for publication; full corrected hosted acceptance remains pending. [Exact evidence and limits](SESSION_HANDOFF.md).
+
+## 2026-11-03 UTC — verified main and homepage reconciliation
+
+Preserve the existing homepage device-depth/performance increment from PR328 and repair its strict finite source evidence. No assertion, permission guard, workflow or application behavior is removed to obtain acceptance. The current main merge and its passed automatic acceptance are recorded separately from this unmerged candidate and pending stable release qualification.
+
+## Unreleased - 2026-11-02 reconcile port
+
+Port homepage device depth + measured performance evidence (PR199) onto the 1.26.1 consolidation base.
 
 ## 2026-11-02 — PR317 financing acceptance correction
 
