@@ -1,3 +1,23 @@
+## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
+
+Development source remains 1.26.1. Homepage/scheduler work is merged in main44 with 13 passing automatic workflows. The contacts combination has local build/source acceptance only; hosted integration, merge and resulting-main gates remain. No version tag, release asset, installation ZIP or live deployment is created by this checkpoint. Preserve prior published downloads and the separate release compatibility/upgrade/package requirements. [Current source and next action](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — contacts fixture evidence remains pre-integration
+
+The ordinary follow-up to PR340 `c667661d` changes acceptance fixtures and finite source identities, with no shipping application changes. Its complete local four-module chain records 476 passes, separate native bootstrap records 65, and eight actual captures are retained. The retained COMPLETE-UPLOAD package has all 3,072 members checked against unchanged current shipping bytes; this is installed local evidence, not a newly published release artifact.
+
+Corrected current-source hosted/full-suite acceptance, supported runtime matrix qualification, required independent review, normal main integration and resulting-main release checks remain separate gates. Development remains 1.26.1 and the latest published release remains v1.25.0 at this checkpoint. No tag, asset, deployment, charge, customer message or provider operation is changed by this fixture work. Earlier 533/379 contacts results, local checkout 79/400 and scheduler partial artifact results retain their own source/runtime scopes. See [the current handoff](../SESSION_HANDOFF.md).
+
+## 2026-11-03 — contacts review correction is not a published release
+
+The local follow-up to PR340 `b3b2094a` has 533 passing recorded native checks and preserved original ticket-failure evidence. Independent source/evidence review and exact-source proof/regression/maintained helpers passed. It still requires exact-source hosted/installed acceptance, normal main integration and resulting-main verification. Development remains 1.26.1 and latest published remains v1.25.0. Existing release assets are unchanged; no new package or live deployment is certified by this checkpoint.
+
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+Development version remains 1.26.1 and latest published version remains v1.25.0. PR317 is merged at `d9e34d2f8483fcd7630d799725fac773561f5183`; its automatic main acceptance and independently downloaded final/build-input evidence passed. [Original-RC/finance/Windows run 41564404648](https://github.com/afterburn25/Cajun_Web/actions/runs/41564404648) passed on the same exact application source: each database records 524 owner/install/upgrade and 116 financial checks, and Windows reproduces all 12 accepted release files byte-for-byte. Artifact verification receipt SHA-256 `14ae21e16f5e4e2464efbe2aae0e89c0cbb23ec56ef637b8dd94eacabccd4b6a`.
+
+The four additional full PHP/database matrix runs and separate dedicated installed-checkout gate remain required. Homepage PR339 and this contacts successor are unreleased and need their own exact-source hosted acceptance, required review, normal merge and actual-main verification. Current package evidence is not publication, and publication is not live deployment. Preserve existing tags/assets; publish immutable owner-ready packages/manifests/checksums/reports/migration instructions only after release qualification and actual draft/public download equality checks. [Current status](../PROJECT_STATUS.md).
+
 ## 2026-11-03 21:33 UTC — verified main and homepage combination
 
 [Scheduler PR #342](https://github.com/afterburn25/Cajun_Web/pull/342) is normally merged and verified on main `53a324fcfb684e0475d1486f3f19319d48ee1069`, tree `424f1b071341082d6004e6481d4e8634bb3b6845`. All 13 automatic workflows passed, including [full Application 41697207068](https://github.com/afterburn25/Cajun_Web/actions/runs/41697207068), attempt 1. Actual main artifacts, packages, runtime/diagnostics, source-bound authority and four new scheduler captures are qualified. This supersedes the historical pending-main statements below; their original failures remain preserved.

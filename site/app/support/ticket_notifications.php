@@ -7,7 +7,9 @@ function support_tickets_notification_actor(string $audience):array {
     if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Return to your own activity outside client support.');
     if($audience==='admin')return support_tickets_staff_identity(support_tickets_staff(true,false));
     if($audience!=='client')throw new InvalidArgumentException('Invalid ticket activity audience.');
-    return support_tickets_portal_identity((int)($_SESSION['client_id']??0),null,false,false);
+    $actor=support_tickets_portal_identity((int)($_SESSION['client_id']??0),null,false,false);
+    if(isset($actor['contact_id']))throw new RuntimeException('Conversation notifications belong to the primary client account.');
+    return $actor;
 }
 function support_tickets_notification_event(SupportTicketDocument $doc,string $id,array $actor):array {
     $data=$doc->data();if($actor['type']==='client'){

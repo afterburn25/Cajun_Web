@@ -18,8 +18,9 @@ function support_tickets_client_get(string $id,int $client,?string $support=null
         $doc=support_tickets_validate($row);$result=$doc->forClient($client);
         // Agreement viewing/consent is reserved to the actual client in the existing portal.
         $links=$doc->data()['links'];if($actor['type']==='support')$links=array_values(array_filter($links,fn($link)=>$link['kind']!=='subscription'));
+        $links=support_tickets_visible_links($links,$actor);
         $result['related']=support_tickets_related($client,$links);
-        if($actor['type']==='client')$result['read']=support_tickets_read_state($doc,$actor);
+        if($actor['type']==='client'&&!isset($actor['contact_id']))$result['read']=support_tickets_read_state($doc,$actor);
         return $result;
     });
 }
@@ -47,7 +48,7 @@ function support_tickets_client_page(int $client,int $page=0,?string $status=nul
         $rows=all('SELECT id FROM '.table('support_tickets').' WHERE client_id=?'.($status!==null?' AND status=?':'').' ORDER BY public_updated_epoch DESC,id DESC LIMIT 11 OFFSET '.($page*10),$args);$items=[];
         foreach(array_slice($rows,0,10) as $row){
             $doc=support_tickets_validate(support_tickets_row($row['id']));$item=$doc->forClient($client);unset($item['events']);
-            if($actor['type']==='client')$item['read']=support_tickets_read_state($doc,$actor);$items[]=$item;
+            if($actor['type']==='client'&&!isset($actor['contact_id']))$item['read']=support_tickets_read_state($doc,$actor);$items[]=$item;
         }
         return ['items'=>$items,'more'=>count($rows)>10,'page'=>$page];
     });

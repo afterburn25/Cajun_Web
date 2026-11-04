@@ -8,9 +8,11 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 
 function software_portal_render(?array $client,string $error=''):never{
     if(!$client||support_current())fail_page('Sign in to your own account to manage software.',403);
+    try{contact_require_permission('billing',(int)$client['id']);}catch(PDOException $e){throw $e;}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
+    $canPurchase=!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION);
     header('Cache-Control: private, no-store');
     $gateway=null;
-    if(software_commerce_ready()){
+    if(software_commerce_ready()&&$canPurchase){
         try{
             require_once CWP_CODE_ROOT.'/app/billing/authorize_net_client.php';
             $gateway=software_anet_settings();
@@ -22,6 +24,7 @@ function software_portal_render(?array $client,string $error=''):never{
     echo '<p><a href="'.esc(studio_url()).'">Client workspace</a> / My Software</p><h1>Software & Licenses</h1>';
     show_flash();
     if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
+    if(!$canPurchase)echo '<p class="notice info">Software purchases, payments and recurring billing changes are managed by the primary client account. You can review existing licenses and invoices here.</p>';
     if(!software_commerce_ready()){
         echo '<p>Software purchases have not been enabled. Your existing hosting, domains and project records remain available.</p>';
     }else{
@@ -98,7 +101,8 @@ function software_portal_render(?array $client,string $error=''):never{
         }
         if(!$licenses)echo '<p>No issued software licenses yet.</p>';
         echo '</div><h2>Purchased downloads</h2>';
-        $assets=all('SELECT a.id,a.sku,a.version,a.title,a.released_at,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND a.released_at IS NOT NULL AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.released_at<=e.updates_until) ORDER BY a.sku,a.released_at DESC,a.id DESC,(e.invoice_id IS NULL),l.id LIMIT 250',[$clientId]);
+        $canSoftwareDownloads=contact_can('downloads');
+        $assets=$canSoftwareDownloads?all('SELECT a.id,a.sku,a.version,a.title,a.released_at,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND a.released_at IS NOT NULL AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.released_at<=e.updates_until) ORDER BY a.sku,a.released_at DESC,a.id DESC,(e.invoice_id IS NULL),l.id LIMIT 250',[$clientId]):[];
         $shown=[];$downloadCount=0;
         foreach($assets as $asset){
             if(isset($shown[(int)$asset['id']]))continue;
@@ -109,7 +113,7 @@ function software_portal_render(?array $client,string $error=''):never{
                 :' · owner-issued license #'.(int)$asset['license_id'];
             echo '<p><a href="'.esc(site_url('api/software-download.php?id='.$asset['id'].'&license='.$asset['license_id'])).'">'.esc($asset['title'].' · v'.$asset['version']).' — Download ZIP</a>'.esc($source).'</p>';
         }
-        if($downloadCount===0)echo '<p>No eligible software downloads yet.</p>';
+        if($downloadCount===0)echo $canSoftwareDownloads?'<p>No eligible software downloads yet.</p>':'<p>Your contact permissions do not include downloads.</p>';
         echo '<h2>Software orders and invoices</h2>';
         $orders=all('SELECT o.*,i.status,i.amount_cents,i.reference FROM '.table('software_orders').' o JOIN '.table('studio_invoices').' i ON i.id=o.invoice_id WHERE o.client_id=? ORDER BY o.id DESC LIMIT 100',[$clientId]);
         foreach($orders as $order){
@@ -158,7 +162,7 @@ function software_portal_render(?array $client,string $error=''):never{
                     };
                     echo '<p class="hint">Subscription: '.esc($subscriptionLabel).'</p>';
                 }
-                if($sub && in_array($sub['status'],['pending_first_payment','active','payment_failed','billing_suspended','sandbox_test'],true)){
+                if($canPurchase && $sub && in_array($sub['status'],['pending_first_payment','active','payment_failed','billing_suspended','sandbox_test'],true)){
                     echo '<form method="post">'.support_csrf_field();
                     echo '<input type="hidden" name="action" value="software_subscription_cancel">';
                     echo '<input type="hidden" name="invoice_id" value="'.(int)$order['invoice_id'].'">';
@@ -166,7 +170,7 @@ function software_portal_render(?array $client,string $error=''):never{
                     echo '<button class="btn outline" type="submit">Cancel future renewal payments</button></form>';
                 }
             }
-            if($order['status']==='issued' && $gateway && $gateway['client_key']!==''){
+            if($canPurchase && $order['status']==='issued' && $gateway && $gateway['client_key']!==''){
                 $recurring=in_array($order['billing_term'],['month','year'],true);
                 $prior=$recurring?
                     one('SELECT status FROM '.table('software_subscriptions').' WHERE invoice_id=?',[$order['invoice_id']]):
@@ -192,12 +196,12 @@ function software_portal_render(?array $client,string $error=''):never{
                     echo '<p role="alert" data-payment-error></p>';
                     echo '<button class="btn gold" type="submit">'.($recurring?'Enroll in recurring billing':'Pay invoice securely').'</button></form>';
                 }
-            }elseif($order['status']==='issued'){
+            }elseif($order['status']==='issued'&&$canPurchase){
                 echo '<p class="hint">Online card checkout is currently disabled. Your invoice remains available.</p>';
             }
             echo '</article>';
         }
-        echo '<h2>Purchase software</h2>';
+        if($canPurchase){echo '<h2>Purchase software</h2>';
         foreach(catalog_public() as $offer){
             if(!software_order_offer($offer))continue;
             $policy=software_product_policy((int)$offer['id']);
@@ -216,6 +220,7 @@ function software_portal_render(?array $client,string $error=''):never{
             echo '<label>Licenses<input name="quantity" type="number" min="1" max="25" value="1" required></label>';
             if($offer['term']!=='once')echo '<label><input name="subscribe" type="checkbox" value="1" required> I authorize the '.esc($offer['term']).' subscription and understand recurring charges and cancellation terms.</label>';
             echo '<button class="btn gold" type="submit">Create invoice</button></form></article>';
+        }
         }
     }
     echo '</div></section>';

@@ -1,3 +1,31 @@
+## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
+
+- Reconcile the reviewed contacts candidate with merged homepage/scheduler main while retaining both source histories and the full 62-row reversible proof.
+- Canonical refresh, source verification and existing helper/regression checks pass locally; new combined hosted acceptance and merge remain pending. This is development 1.26.1, not a new published release.
+
+## Unreleased — contacts acceptance fixture correction (2026-11-03)
+
+- Exercise the actual unchecked contacts backup confirmation using current owner authority, and retain a negative replay of the obsolete password-only request.
+- Check agreement/registration navigation before recurring preparation, then retain the original three-link positive assertion under a real billing contact after preparation. Keep projects-only recurring access denied.
+- Require the public 403 response, absence of private plan terms and unchanged agreement records for denied consent attempts. Verify that a revoked session shows a real sign-in form before testing denial again after reauthentication.
+- Preserve every original check site, all recurring setup/refusal gates, historical source inverses and failed executions. No shipping application behavior changes in this follow-up.
+- The complete local four-module chain passed 476 HTTP/browser records, with 65 separate native bootstrap records and eight captures. Current source composition passed 2,151 checks. Corrected hosted acceptance, review and normal main integration remain required.
+
+## Unreleased — contact privacy and support authority follow-up (2026-11-03)
+
+- Scope activity, notification, software-read and download access to current contact grants; route project-contact replies to permitted staff notifications.
+- Require current project permission for support tickets, restrict linked billing context, preserve primary ticket read status and keep explicit contact audit attribution.
+- Show billing contacts readable software records while reserving software purchase, payment and subscription forms to the primary client.
+- Preserve existing authorization/recovery source and original failures; add native and HTTP permission, copied-form and revocation checks. Local native verification, exact-source proof/regression and all maintained acceptance helpers passed; independent source/evidence review cleared publication scope. Full hosted/installed acceptance remains pending.
+
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+Unreleased contacts integration retains PR331 and current verified main. It adds fresh contact-grant/session/parent checks at proposal, financing and service-plan boundaries; clears stale contact markers on successful primary login; prevents reciprocal primary/contact email collisions; and preserves current owner-session setup authorization. Existing tenant/version/signature/idempotency/payoff safeguards remain. Seventeen PHP lint checks, canonical build and 1,176 actual local native checks passed. Final source qualification passed 2,151 source checks, 110 actual-file/direct-helper regression cases, 13 genuine shallow-history checks and all 2,764 maintained acceptance helpers. The historical backup comparison was corrected without changing current browser execution or dropping its original guards. Required hosted contacts/browser acceptance, review, main integration and release publication remain pending. [Current evidence and scope](PROJECT_STATUS.md).
+
+## Unreleased - 2026-11-02 reconcile port
+
+Port scoped additional company contacts P-05 (PR203) onto the 1.26.1 consolidation base.
+
 ## 2026-11-03 21:33 UTC — verified main and homepage combination
 
 Reconcile the retained homepage device-depth and measured-performance work with the now-verified scheduler main. Preserve navy/gold styling, desktop device panels, mobile/reduced-motion behavior and all existing acceptance assertions. Resolve only the finite source proof and current narrative prefixes; the original homepage shipping files and main scheduler fixture remain exact. The combined candidate still requires acceptance and normal integration. [Current evidence and gates](SESSION_HANDOFF.md).

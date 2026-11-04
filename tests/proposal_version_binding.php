@@ -6,6 +6,7 @@ require CWP_CODE_ROOT.'/app/marketing/proposals.php';
 $checks=[];$insideLock=false;$inTx=false;$lockHook=null;$current=['id'=>1,'auth_version'=>str_repeat('a',32)];$support=false;$failAudit=false;
 function staff_ready():bool{return true;}function studio_ready():bool{return true;}function setting(string $key):string{return $key==='proposals_schema_version'?'1':'';}
 function studio_client():?array{if(!$GLOBALS['insideLock']||!$GLOBALS['inTx'])throw new LogicException('Authentication must be revalidated under the mutation lock');return $GLOBALS['current'];}
+function contact_require_permission(string $permission,int $clientId):void{if(!$GLOBALS['insideLock']||!$GLOBALS['inTx']||$permission!=='billing'||$clientId!==$GLOBALS['current']['id'])throw new LogicException('Contact billing authority must be checked under the mutation lock');if(!$GLOBALS['contactAllowed'])throw new RuntimeException('Your contact permissions do not include billing.');}
 function support_current():mixed{return $GLOBALS['support']?['synthetic'=>true]:null;}
 function table(string $name):string{return '`proposal_binding_'.$name.'`';}
 function staff_locked(callable $work):mixed{$GLOBALS['insideLock']=true;try{if($GLOBALS['lockHook'])($GLOBALS['lockHook'])();return $work();}finally{$GLOBALS['insideLock']=false;}}
@@ -29,7 +30,7 @@ function query(string $sql,array $args=[]):void{
  throw new LogicException('Unexpected synthetic write: '.$sql);
 }
 function binding_seed():array{
- $GLOBALS['current']=['id'=>1,'auth_version'=>str_repeat('a',32)];$GLOBALS['support']=false;$GLOBALS['failAudit']=false;$GLOBALS['lockHook']=null;$_GET=[];
+ $GLOBALS['current']=['id'=>1,'auth_version'=>str_repeat('a',32)];$GLOBALS['contactAllowed']=true;$GLOBALS['support']=false;$GLOBALS['failAudit']=false;$GLOBALS['lockHook']=null;$_GET=[];
  $id=str_repeat('c',32);$at='2026-01-01T12:00:00Z';$v=[];
  foreach([1,2] as $n){$input=['deliverables'=>['Site v'.$n],'exclusions'=>[],'schedule_notes'=>'Synthetic schedule '.$n,'milestones'=>[['label'=>'Design','amountCents'=>100000*$n]]];$v[$n]=['id'=>str_repeat((string)$n,32),'proposal_id'=>$id,'version'=>$n,'title'=>'Synthetic scope '.$n,'deliverables'=>json_encode($input['deliverables']),'exclusions'=>'[]','schedule_notes'=>$input['schedule_notes'],'milestones'=>json_encode($input['milestones']),'content_hash'=>proposal_content_hash($input),'created_by'=>2,'created_at'=>$at];}
  $events=[];foreach([['version-added','staff',2],['sent','staff',2],['changes-requested','client',1],['revised','staff',2],['sent','staff',2]] as [$event,$type,$actor])$events[]=['event'=>$event,'actor_type'=>$type,'actor_id'=>$actor,'created_at'=>$at];
@@ -50,6 +51,8 @@ try{
  [$id,$client,$v1,$v2]=binding_seed();$GLOBALS['current']['id']=2;$foreign=$GLOBALS['current'];binding_deny('Other authenticated customer',fn()=>proposal_decide($id,'approve','',$foreign,$v2['id'],$v2['content_hash']),'Proposal not found');
  foreach(['actual','selector','late'] as $mode){[$id,$client,$v1,$v2]=binding_seed();if($mode==='actual')$GLOBALS['support']=true;elseif($mode==='selector')$_GET['support']='invalid';else $GLOBALS['lockHook']=static function(){$GLOBALS['support']=true;};binding_deny('Support context '.$mode,fn()=>proposal_decide($id,'approve','',$client,$v2['id'],$v2['content_hash']),'Support sessions');}
  [$id,$client,$v1,$v2]=binding_seed();$GLOBALS['lockHook']=static function(){$GLOBALS['current']=null;};binding_deny('Authority revoked while acquiring lock',fn()=>proposal_decide($id,'approve','',$client,$v2['id'],$v2['content_hash']),'Current client authentication');
+ foreach(['approve','changes'] as $kind){[$id,$client,$v1,$v2]=binding_seed();$GLOBALS['contactAllowed']=false;binding_deny('Non-billing contact '.$kind,fn()=>proposal_decide($id,$kind,'Reviewed terms',$client,$v2['id'],$v2['content_hash']),'contact permissions do not include billing');}
+ [$id,$client,$v1,$v2]=binding_seed();$GLOBALS['lockHook']=static function(){$GLOBALS['contactAllowed']=false;};binding_deny('Contact grant revoked while acquiring lock',fn()=>proposal_decide($id,'approve','',$client,$v2['id'],$v2['content_hash']),'contact permissions do not include billing');
  [$id,$client,$v1,$v2]=binding_seed();$GLOBALS['failAudit']=true;binding_deny('History failure after writes',fn()=>proposal_decide($id,'approve','',$client,$v2['id'],$v2['content_hash']),'Synthetic history');
  foreach(['approve'=>'approved','changes'=>'changes-requested'] as $kind=>$status){[$id,$client,$v1,$v2]=binding_seed();proposal_decide($id,$kind,'Reviewed v2',$client,$v2['id'],$v2['content_hash']);$last=end($GLOBALS['rows']['decisions']);binding_ok('Exact v2 '.$kind.' succeeds',$GLOBALS['rows']['proposal']['status']===$status&&$last['version']===2&&$last['client_id']===1&&$last['decision']===$status);binding_deny('Repeated '.$kind.' cannot duplicate decision',fn()=>proposal_decide($id,$kind,'Repeat',$client,$v2['id'],$v2['content_hash']),'Cannot perform that action');}
 }catch(Throwable $e){$failure=get_class($e).': '.$e->getMessage();}

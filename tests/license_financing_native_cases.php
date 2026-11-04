@@ -192,6 +192,22 @@ rb_ok('Down-payment agreement stays signed when payment-link storage is temporar
     ]);
 rb_staff();
 save_setting('payments_schema_version','2');
+save_setting('contacts_schema_version','1');
+query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,permissions,auth_version,created_at) VALUES (1,?,?,?,?,?)',
+    ['Finance contact','finance-scope@example.invalid','["projects"]',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
+$financeContact=(int)db()->lastInsertId();
+$financeContactSession=static function()use($financeContact):void{rb_client();$_SESSION['contact_id']=$financeContact;$_SESSION['contact_auth']=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$financeContact])['auth_version'];};
+$financePaymentState=static function():array{$out=[];foreach(['license_finance_offers','license_financing','recurring_billing_schedules','recurring_billing_events','studio_invoices','invoice_payments','payment_requests','audit'] as $tableName)$out[$tableName]=all('SELECT * FROM '.table($tableName));return $out;};
+foreach(['projects','downloads'] as $permission){
+    query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',[json_encode([$permission]),$financeContact]);$financeContactSession();$before=$financePaymentState();$denied=false;
+    try{license_finance_offer_client_payment_prepare((string)$downOffer['id'],1);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$denied=$e->getMessage()==='Your contact permissions do not include billing.';}
+    rb_ok(ucfirst($permission).' contact cannot prepare a signed financing payment or change retained records',$denied&&!db()->inTransaction()&&$financePaymentState()===$before);
+}
+query('UPDATE '.table('studio_contacts').' SET permissions=? WHERE id=?',['["billing"]',$financeContact]);$financeContactSession();
+query('UPDATE '.table('studio_contacts').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$financeContact]);$before=$financePaymentState();$denied=false;
+try{license_finance_offer_client_payment_prepare((string)$downOffer['id'],1);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$denied=$e->getMessage()==='Your contact permissions do not include billing.';}
+rb_ok('Revoked billing contact cannot prepare financing payment from an open form',$denied&&!db()->inTransaction()&&$financePaymentState()===$before);
+rb_staff();
 $downPayment=license_finance_offer_payment_prepare((string)$downOffer['id'],1);
 $downPaymentReplay=license_finance_offer_payment_prepare((string)$downOffer['id'],1);
 $downOfferRow=license_finance_offer_row((string)$downOffer['id']);
@@ -203,6 +219,13 @@ rb_ok('Delayed down-payment setup creates one exact initial invoice and one reus
     &&(int)query('SELECT COUNT(*) FROM '.table('studio_invoices').' WHERE id=?',[(int)$downInvoice['id']])->fetchColumn()===1
     &&(int)query('SELECT COUNT(*) FROM '.table('payment_requests').' WHERE invoice_id=? AND purpose=?',
         [(int)$downInvoice['id'],'financing'])->fetchColumn()===1);
+
+$financeReplayState=static function()use($financePaymentState,$downOffer):array{$state=$financePaymentState();foreach($state['license_finance_offers'] as &$offer)if($offer['id']===$downOffer['id'])unset($offer['updated_at']);unset($offer);return $state;};
+$financeContactSession();$before=$financeReplayState();$contactPayment=license_finance_offer_client_payment_prepare((string)$downOffer['id'],1);
+rb_ok('Current billing contact can recover the same signed financing link without another invoice or request',$contactPayment===$downPayment&&$financeReplayState()===$before);
+rb_client();$primaryPayment=license_finance_offer_client_payment_prepare((string)$downOffer['id'],1);
+rb_ok('Primary client retains signed financing payment access without contact markers',$primaryPayment===$downPayment&&$financeReplayState()===$before);
+rb_staff();
 
 $downReceipt=ledger_insert($downInvoice,1,'manual',2000,'synthetic',
     'Synthetic verified financing down payment',gmdate('Y-m-d'),null,null,

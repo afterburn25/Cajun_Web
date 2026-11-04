@@ -12,22 +12,29 @@ function activity_actor(string $audience): array {
     elseif($audience==='client'){$u=studio_client();if(!$u)throw new RuntimeException('Sign in to view your activity.');}
     else throw new InvalidArgumentException('Invalid activity audience.');
     if(!studio_ready()||!activity_ready())throw new RuntimeException('Workspace activity has not been enabled.');
+    if($audience==='client'&&(array_key_exists('contact_id',$_SESSION)||array_key_exists('contact_auth',$_SESSION))){
+        contact_require_permission('projects',(int)$u['id']);$contact=studio_contact();
+        $permissions=$contact?contact_perms_decode($contact['permissions']):[];
+        if(!$contact||!in_array('projects',$permissions,true))throw new RuntimeException('Your contact permissions do not include project access.');
+        return ['type'=>'contact','id'=>(int)$contact['id'],'client_id'=>(int)$u['id'],'permissions'=>$permissions];
+    }
     return ['type'=>$audience,'id'=>(int)$u['id']];
 }
 /** Internal SQL projection. Never contains message bodies, payment notes or draft deliveries. */
 function activity_projection(array $actor): array {
-    $parts=[];$args=[];$client=$actor['type']==='client';
+    $parts=[];$args=[];$contact=$actor['type']==='contact';$client=$actor['type']==='client'||$contact;
+    $can=static fn(string $permission):bool=>!$contact||in_array($permission,$actor['permissions'],true);
     $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id') use(&$parts,&$args,$actor,$client): void {
         $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($client?' AND j.client_id=?':'');
-        if($client)$args[]=$actor['id'];
+        if($client)$args[]=$actor['client_id']??$actor['id'];
     };
-    $add('studio_messages','message','s.created_at',"''","s.author_type='".($client?'admin':'client')."'");
-    $add('studio_files','file','s.created_at','s.original_name',"s.author_type='".($client?'admin':'client')."'");
+    $add('studio_messages','message','s.created_at',"''","s.author_type".($client?"='admin'":" IN ('client','contact')"));
+    if($can('downloads'))$add('studio_files','file','s.created_at','s.original_name',"s.author_type".($client?"='admin'":" IN ('client','contact')"));
     if($client){
         $add('studio_versions','review','s.created_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.title)",'1=1');
-        $add('studio_invoices','invoice','s.created_at',"CONCAT(s.reference,' · ',s.title)",'1=1');
-        if(ledger_ready())$add('invoice_payments','payment','s.created_at',"CASE WHEN s.kind='reversal' THEN 'Recording corrected' ELSE 'Payment recorded' END","s.kind IN ('manual','reversal') AND s.client_id=j.client_id AND EXISTS (SELECT 1 FROM ".table('studio_invoices').' i WHERE i.id=s.invoice_id AND i.job_id=j.id)','s.invoice_id');
-        if(delivery_ready())$add('website_releases','release','s.published_at',"CONCAT(s.version,' · ',s.title)","s.status='published' AND s.published_at IS NOT NULL AND s.client_id=j.client_id");
+        if($can('billing'))$add('studio_invoices','invoice','s.created_at',"CONCAT(s.reference,' · ',s.title)",'1=1');
+        if($can('billing')&&ledger_ready())$add('invoice_payments','payment','s.created_at',"CASE WHEN s.kind='reversal' THEN 'Recording corrected' ELSE 'Payment recorded' END","s.kind IN ('manual','reversal') AND s.client_id=j.client_id AND EXISTS (SELECT 1 FROM ".table('studio_invoices').' i WHERE i.id=s.invoice_id AND i.job_id=j.id)','s.invoice_id');
+        if($can('downloads')&&delivery_ready())$add('website_releases','release','s.published_at',"CONCAT(s.version,' · ',s.title)","s.status='published' AND s.published_at IS NOT NULL AND s.client_id=j.client_id");
     }else $add('studio_versions','decision','s.decided_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.decision,' · ',s.title)","s.decision IN ('approved','changes') AND s.decided_at IS NOT NULL AND s.decided_by=j.client_id");
     return [implode(' UNION ALL ',$parts),$args];
 }

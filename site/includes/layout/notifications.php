@@ -79,6 +79,7 @@ function notification_center_portal_render(string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     if(!notifications_feed_ready())fail_page('Notifications are not enabled yet.',404);
     if(support_current()||array_key_exists('support',$_GET)||!($client=studio_client()))fail_page('Sign in to your own account to view notifications.',403);
+    if(array_key_exists('contact_id',$_SESSION)||array_key_exists('contact_auth',$_SESSION))fail_page('Notifications belong to the primary client account.',403);
     $feed=notification_feed('client',(int)$client['id']);site_head('Your notifications','portal');
     echo '<section class="page-hero compact"><div class="container"><span class="eyebrow">PRIVATE ACCOUNT UPDATES</span><h1>Your notifications</h1><a class="btn outline" href="'.esc(studio_url()).'">Back to your workspace</a></div></section><section class="section"><div class="container">';show_flash();
     if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';

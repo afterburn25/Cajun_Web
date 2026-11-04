@@ -1,3 +1,29 @@
+## 2026-11-04 04:15 UTC — contacts reconciled with homepage main
+
+P-05 company contacts: the accepted contact permissions, attribution, notification isolation and fixture work is now reconciled locally with homepage/scheduler main44. It remains pending combined hosted acceptance and integration. All current safeguards and roadmap scope remain; no completion percentage changes. [Queue and next gates](DEVIN_INTEGRATION_QUEUE.md).
+
+## 2026-11-03 — P-05 acceptance fixture continuation
+
+P-05 scoped company contacts remains implemented on its candidate branch and awaiting completed integration acceptance. This follow-up corrects fixture confirmation, readiness-phase navigation and actual public session/permission refusal expectations while retaining all original test sites and shipping authority behavior. The complete local maintained four-module chain passes 476 recorded HTTP/browser checks with a separate 65-record bootstrap and eight captures; current source composition passes 2,151 checks.
+
+The earlier draft-v2 122-case regression is retained with independently verified unchanged proof implementation and path sets; it is not relabeled as a final-draft execution. Hosted full-application/current-source acceptance, candidate reconciliation, normal merge, resulting-main checks, release and live operation remain distinct. Requirement credit and completion percentages do not change for fixture repair or repeated verification. [Evidence and remaining work](../PROJECT_STATUS.md).
+
+## 2026-11-03 — P-05 integration correctness checkpoint
+
+P-05 scoped company contacts remains implemented on its candidate branch and pending complete integration acceptance. The review follow-up closes contact activity/notification/software privacy, staff reply routing, ticket grant and billing-link boundaries, and contact access to primary personal read state. Local native tests pass 533 recorded checks; exact-source proof/regression and all maintained acceptance helpers pass, with independent source/evidence review complete for publication scope. Supported hosted and installed-browser acceptance remain outstanding. Requirement credits and integrated/released/live status are unchanged.
+
+## 2026-11-02 CST / 2026-11-03 UTC — contacts integration and verified main evidence
+
+No requirement credit or completion percentage changes. The audited branch-inclusive implementation total remains **61.5/105 credits (58.57142857%)**; it is not a main-only, release, live-readiness or elapsed-time percentage.
+
+| Work | Implemented | Tested | Integrated | Released | Live |
+| --- | --- | --- | --- | --- | --- |
+| PR317 component group | Retained approved source | Exact-main automatic suite passed; remaining release matrix/checkout gates separate | Main `d9e34d2f` | Not in a new published release | No new deployment |
+| Homepage PR328 successor PR339 | Exact retained homepage source plus finite proof correction | Local source/build pass; full hosted Application pending | Pending PR339 | No | No |
+| P-05 contacts successor of PR331 | Retained scoped contacts plus current authority/session/email fixes | Independent source review, 1,176 local native checks and final source/helper gates pass; hosted browser/matrix pending | Pending new reviewed successor PR | No | No |
+
+Current verification and integration improve delivery confidence without adding unearned feature credit. The separate checkout acceptance correction closes a coverage gap only when its actual current-source run passes. [Evidence and remaining gates](../PROJECT_STATUS.md).
+
 ## 2026-11-03 21:33 UTC — verified main and homepage combination
 
 Scheduler #342 is verified on main53. Continue the reviewed homepage combination, then contacts and checkout, preserving the normal validate/review/merge/verify-main cycle for each. This update advances the integration checkpoint; it does not change requirement IDs, scope, outcome weights or release/live completion credits. The prior main and candidate evidence remain source-specific. Stable publication follows accepted groups after their required release gates. [Current handoff](../SESSION_HANDOFF.md).

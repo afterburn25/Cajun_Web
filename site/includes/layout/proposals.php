@@ -83,6 +83,7 @@ function proposals_admin_render(string $view,array $user,string $error): never {
 /** Portal list of proposals on the workspace landing. */
 function proposals_portal_section(array $client): void {
     if(support_current()||array_key_exists('support',$_GET))return;
+    try{contact_require_permission('billing',(int)$client['id']);}catch(RuntimeException){return;}
     $rows=proposals_for_client((int)$client['id']);if(!$rows)return;
     echo '<div class="workspace-card"><h2>Studio proposals</h2>';foreach($rows as $r)echo '<p><a class="btn outline" href="'.esc(studio_url(['proposal'=>$r['id']])).'">'.esc($r['title']).' — '.esc(proposal_status($r['status'])).' →</a></p>';echo '</div>';
 }
@@ -92,6 +93,7 @@ function proposals_portal_render(string $error): never {
     if(support_current()||array_key_exists('support',$_GET))fail_page('Leave client support before reviewing proposals.',403);
     if(!proposals_ready())fail_page('Proposal not found.',404);
     if(!$client=studio_client())fail_page('Sign in to review proposals.',403);
+    try{contact_require_permission('billing',(int)$client['id']);}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
     try{$row=proposal_client_row(is_string($_GET['proposal']??null)?$_GET['proposal']:'',$client);}catch(InvalidArgumentException){fail_page('Proposal not found.',404);}
     if(!in_array($row['status'],['sent','changes-requested','approved'],true))fail_page('Proposal not found.',404);
     $versions=proposal_versions($row['id']);$current=proposal_version_row($row,(int)$row['current_version']);
