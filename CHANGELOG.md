@@ -1,3 +1,7 @@
+## 2026-11-04 — Codex ownership and integration handoff
+
+Document the owner's transfer of all CajunWebPro 20i/non-20i implementation, integration and release coordination to Codex. Record the actual merged ce1803bb candidate, existing release evidence, ordered candidate families, one-writer/shared-file boundaries and paused ChatGPT automations in the existing handoff and [master issue #157](https://github.com/afterburn25/Cajun_Web/issues/157). Preserve all earlier document text. This documentation-only continuation changes no application, test, workflow, source-verification rule, package, version or live service.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 - Preserve contact-session provenance at checkout entry so the existing primary-client guard refuses checkout before identity cleanup can discard invalid contact keys. Master portal, support, login/logout and primary-client CSRF paths retain their existing behavior.

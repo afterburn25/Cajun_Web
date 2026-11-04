@@ -1,3 +1,21 @@
+## 2026-11-04 — Current Codex-owned integration queue
+
+The owner has transferred all 20i and non-20i integration/completion to **Codex for now**. This historical filename remains the existing shared queue; its old Devin-only ownership is superseded. [Master assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157) holds current task boundaries and evidence links.
+
+| Priority | Candidate family | Disposition / next action |
+| --- | --- | --- |
+| P0 | #317, #342, #339, #340, #341 | Already integrated into main `ce1803bb`; complete existing exact-main full-runtime/artifact/visual release gates and deliver verified 1.26.1. |
+| P0 triage / P1 integration | #353; #346 / #253 | Before publication, determine whether an applicable release-blocking security/privacy defect exists in ce1803bb; resolve any such blocker through reviewed source and required acceptance. |
+| P1 | #356 | Added financing-readiness assertions passed their old native matrix but failed historical source admission. Preserve checks and integrate exact reversible provenance. |
+| P1 | #355 + #357 | Continuity/package-exclusion candidates; narrow package evidence exists but build-guard source admission failed. Preserve developer-file exclusion and original assertions; no broad allowlist. |
+| P2 | #332, #335, #333, #337 | Project/customer workflow and ticket captures; reconcile dependencies with current contacts and authorization. |
+| P2 | #336, #338, #329 | Pipeline, revision mirrors/styles and comparison registry; qualify bounded existing implementation. |
+| P2 | #330 then #334 | Reply/forward prerequisite and remaining mail family; current mailbox permissions and actual installed acceptance. |
+| P2 | #343–#345, #347–#351 | Cloud intake, renewals and native hosting controls; one writer resolves shared proof/routes/schema/report changes. |
+| P3 | Remaining roadmap and older open histories | Classify as already integrated, ready, named blocker or incomplete; reuse accepted successors and preserve evidence. |
+
+This is a prioritized candidate inventory, not merge approval. One lead owns main and shared files; bounded workers return exact heads, tests and blockers. Keep ce1803bb release source stable while active acceptance finishes. Both related ChatGPT automations are paused; externally running sessions must still be reconciled. No new requirement completion or release credit is claimed by this documentation change.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 | Candidate | Current disposition | Next action |

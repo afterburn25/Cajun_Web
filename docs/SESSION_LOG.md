@@ -1,3 +1,11 @@
+## 2026-11-04 — GitHub review and Codex takeover preparation
+
+The owner asked to continue CajunWebPro, then explicitly transferred all work to Codex for now to maximize integration. GitHub readback found main ce1803bb/tree bd75d1f8, with #317/#342/#339/#340/#341 integrated and latest publication v1.25.0. The current source remains stable.
+
+Downloaded Application final artifact 13341719821 from run41842956617 and verified its official 254,130,651-byte size/SHA-256 and ZIP CRC before inspection. Its 753-file aggregate declares complete for exact main; final terminal-state and independent qualification remain separate. Rehashed the actual FULL/COMPLETE/UPDATE ZIPs; their identities match the separate release-validation evidence. A separate bounded review verified all three release-validation jobs in run41849478731 and original small Windows/MariaDB/MySQL evidence archives. Four full-runtime Application runs remain active at this checkpoint.
+
+The existing coordinator marker was located in merged PR340, with observed lease expiry15:54 UTC. Both CajunWebPro ChatGPT automations were observed paused. No external runner was started/stopped and no application, CI, merchant, provider or live operation was changed. Prepared a prefix-only eight-document continuation and the updated existing [master queue #157](https://github.com/afterburn25/Cajun_Web/issues/157), preserving every original narrative byte. Final local documentation/scope checks and publication readback are recorded in the enclosing PR.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Preserved all four original checkout attempt-1 job logs and artifact ZIPs and verified their official byte counts/digests, exact CI source bindings and ordered native reports. All four lanes failed the same browser contact-context assertion; the missing response body and unreached post-denial state comparison remain explicit limits. The unchanged source showed identity normalization clearing malformed contact keys before the specific checkout refusal.

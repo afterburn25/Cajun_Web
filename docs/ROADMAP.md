@@ -1,3 +1,9 @@
+## 2026-11-04 — Codex completion order; no inflated completion credit
+
+The owner has handed all CajunWebPro 20i and non-20i work to Codex for now. Preserve the full requirements below. The current [master queue #157](https://github.com/afterburn25/Cajun_Web/issues/157) prioritizes finishing the ce1803bb/1.26.1 release candidate, including triage and resolution of any applicable security/privacy release blockers before publication, then remaining mature fixes, explicit source/packaging blockers, and preserved customer/admin/mail/provider feature families.
+
+Measure each existing requirement separately as implemented, tested, merged, verified on main, released and live-verified, with evidence and a concrete remaining blocker. Open PR count is not unfinished-feature count; previously integrated ancestors must not be rebuilt or counted twice. Use one integration lead and bounded workers, keep shared seams serialized, and continue independent work while exact external gates wait. This handoff changes ownership/sequencing only, with no new completed roadmap requirement, published release or production claim.
+
 ## 2026-11-04 UTC — checkout refuses contact sessions before identity cleanup
 
 Contacts remains verified on main. Packaged checkout now has a concrete integration correction: preserve raw contact-session provenance until the primary-client-only checkout refusal runs. The original negative probe and all existing acceptance requirements remain. No new feature or completion credit is claimed; local validation, independent review, fresh checkout/full Application acceptance and main verification remain the delivery gates. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
