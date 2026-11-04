@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+- [Contacts #340](https://github.com/afterburn25/Cajun_Web/pull/340) is verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`, including its own-main Application and focused acceptance reviews.
+- Reuse published checkout preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` through a normal merge with that accepted main. This continuation adds eight current-state prefixes while preserving all prior source and history.
+- [Checkout #341](https://github.com/afterburn25/Cajun_Web/pull/341) still requires review, fresh dedicated checkout and full Application acceptance, normal main integration and resulting-main verification. [Exact source and evidence](SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout and contacts local integration preflight
 
 - Prepare a normal checkout/contacts reconciliation with 72 exact reversible repairs, four retained contact additions and both complete source-regression continuations.

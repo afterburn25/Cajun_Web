@@ -1,3 +1,7 @@
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Contacts #340 is verified on main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The enclosing checkout reconciliation reuses published preparation and awaits its own fresh runtime, full Application and integration gates. Development remains **1.26.1** and the latest published release remains **v1.25.0**, rechecked before this continuation. No release tag or published download is created here. Retain the established upgrade, package and publication gates after accepted checkout main integration. [Current source and evidence](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout and contacts local integration preflight
 
 The checkout/contacts continuation is locally prepared and source/portable validated, with root review and new combined hosted acceptance still required. It is not yet merged into main. Development remains 1.26.1 and the latest published release remains v1.25.0. This checkpoint creates no release tag or download asset. Retain the existing compatibility, upgrade, package and publication gates after accepted main integration. [Current source scope](../SESSION_HANDOFF.md).

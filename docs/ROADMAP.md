@@ -1,3 +1,7 @@
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Scoped contacts has reached verified main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`. The saved packaged-checkout preparation is now normally reconciled with that accepted source, with fresh checkout/runtime review, full Application acceptance and resulting-main verification still pending. Existing requirement IDs, roadmap credit and historical completion figures are preserved. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).
+
 ## 2026-11-04 UTC — checkout and contacts local integration preflight
 
 Packaged checkout acceptance is locally reconciled with the scoped-contacts candidate and its homepage/scheduler ancestry. All existing proof and regression guards remain. The integration still requires root review, accepted contacts main, four runtime checkout lanes, full Application acceptance and resulting-main verification. No completion credit or percentage changes. [Current integration queue](DEVIN_INTEGRATION_QUEUE.md).

@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Advance checkout from the saved public preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` only after contacts main `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee` receives its own full clearance. Preserve that preparation as first parent and accepted main as second parent in a normal merge. Accepted main has the same tree as the preparation's published contacts parent, so the pre-prefix checkout tree stays `97c076c476218e04b8cedaaa77d1a03e30fcfd25` without changing proof pins, repair rows or executable source.
+
+Prefix the existing eight narratives and retain every old byte as a suffix. Contacts-main acceptance and the new checkout's pending review/runtime/main gates remain separate evidence states. [Source, clearance and next gates](../SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout and contacts local integration preflight
 
 Join the checkout and contacts histories through a normal merge using the published contacts parent. Keep the contacts format-3 verifier's 25 function bodies and 89 `require` calls, exact addition ancestry and all original refusal rules. Resolve only the finite repair identities into their 72-row union, rebind the unchanged verifier implementation to the combined regression identity, and retain both regression additions verbatim.

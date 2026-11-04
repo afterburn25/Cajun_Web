@@ -1,3 +1,9 @@
+## 2026-11-04 UTC — checkout reconciled with verified contacts main
+
+Contacts is now **verified on main** at `ac5ffa0d4fbc7caa3aa5969b6cc50270c4b801ee`, tree `a399181494942dd71c6ec2bbc218719e5350de77`. Its 49 expected main-push workflows completed successfully; the [full Application run](https://github.com/afterburn25/Cajun_Web/actions/runs/41789311730), focused matrices and actual artifact, authority, diagnostic and visual reviews are cleared.
+
+Checkout remains **awaiting acceptance and review**. The enclosing local candidate normally merges published preparation `067d90b5bb0e410894ad1621b8780e5b9776ddcc` first and verified contacts main second. Its only new file changes are these eight narrative prefixes; the reviewed checkout implementation, source proofs and retained regression protections remain exact. Fresh four-lane checkout acceptance on attempt 1 and separate full Application acceptance must qualify the new source before normal main merge and verification. [Current handoff](SESSION_HANDOFF.md).
+
 ## 2026-11-04 UTC — checkout and contacts local integration preflight
 
 [Checkout PR #341](https://github.com/afterburn25/Cajun_Web/pull/341) is prepared locally as a normal merge of retained checkout `f98a26f316c34734f00d3dbef6a52d3f693bdc8b` and published [contacts PR #340](https://github.com/afterburn25/Cajun_Web/pull/340) head `f6c1aa2fe5d420a0e6b3b9785c9e1a319203c050`. Local checkpoint `34fd8822cf5b1022eccb7f1eca90c47ed6ad8565` reproduces validated tree `be4132e1361e1b96dbec7028782ba3001f60d015`. The contacts candidate includes homepage/scheduler main44 and still requires its new hosted acceptance and main integration.
