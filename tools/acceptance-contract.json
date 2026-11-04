@@ -503,7 +503,7 @@
       "tests/staff_cases.py": "77787df91dbdbbda10d1f61ede67ff397498ee38a87a86b0ee2fe8f6c003fd8f",
       "tests/support_cases.py": "d9e21c111374d7a021c5c968949df258cc7a41e237afa3bef3ec6bc355e5ed28",
       "tests/catalog_cases.py": "e3703d4ce26d6b4f52b9da711a37581efd8f7c318b66865bc368291c3fc8aab7",
-      "tests/payments_cases.py": "e445a3a65c19bdf02ee3f1027e17b4d8f3bed39ecb0a995609af57e82800c3ad",
+      "tests/payments_cases.py": "b5b4f3e9e3fd23474f298832a22a14672c0f61e50d55b0c57b21d4c0e06755e6",
       "tests/payments_native.php": "e732ca439d3bb460cc530714dcd03b70f332282c2681f75ed2324a114e3c6316",
       "tests/payment_link_view_cases.php": "276c52ec3c047c8c8a1960ab7d833678df19a7335cb7dcae8b0971be25867990",
       "tests/provider_package_wordpress_installed_native.php": "53f159d3e61c5a49bf8f415a2b3a749ea37b7ccd03a35333d7e07af30d72c2be",
