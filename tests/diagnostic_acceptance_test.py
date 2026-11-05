@@ -202,10 +202,18 @@ def main():
             'kind': 'diagnostic-results', 'source_sha': 'd' * 40, 'source_tree': 'e' * 40,
             'identity': identity, 'selection': {'groups': ['portal'], 'modules': ['contacts']},
             'totals': {}, 'not_reached': [], 'units': [absent]}))
+        skipped = dict(absent, status='skipped', error=None, assignment='billing lane')
+        (tmp / 'diagnostic-billing-results.json').write_text(json.dumps({
+            'kind': 'diagnostic-results', 'source_sha': 'd' * 40, 'source_tree': 'e' * 40,
+            'identity': identity, 'selection': {'groups': ['billing'], 'modules': ['payments']},
+            'totals': {}, 'not_reached': [], 'units': [skipped]}))
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
-                               '--expect=portal', str(tmp), str(tmp / 'absent')],
+                               '--expect=portal,billing', str(tmp), str(tmp / 'absent')],
                               capture_output=True, text=True)
         ok('Selected absent module fails combined report', code.returncode == 1)
+        combined_absent = json.loads((tmp / 'absent.json').read_text())
+        ok('Selected absent module outranks another group skipped placeholder',
+           [u['status'] for u in combined_absent['units'] if u['key'] == 'contacts'] == ['absent'])
         ok('Absent module appears in human report', 'contacts' in (tmp / 'absent.md').read_text())
 
     strict_source = (ROOT / 'tests/browser_acceptance.py').read_text(encoding='utf-8')
