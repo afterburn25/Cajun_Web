@@ -77,9 +77,9 @@ DIAGNOSTIC_ADDITION_SHA256 = {
     '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '65e693be3083f87568ecfcaf3a016d8ff3537b4edc44e0845bbc72c7c9b57be1', 'delta': '68cb1ab9407cc138dd54670ff7c35f515b249689f4b97aed66c71b03750dfe82'},
     'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'f1f21e36ada3fb0cf1277bbbc87893afd5b77416f20e198b3eb2a2cdb5f581cb', 'delta': '2693630c2c296723914f2adf39c9b47ec4df89280c5a7abec30da97500dd67cb'},
     'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': 'bbba00447bec612e832cc93cb402829abac98ff0a380a802f73e0dba11705c3f', 'delta': 'edf8969a13cd910ab2e9a872731a5399fce3dd17496b05f57d81279293b06379'},
-    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': '9cd87d8932170bc325a50beef52abd8d1208653f8ae76e73df64b1083bf82650', 'delta': '0fc827b2fc4e331bb2a4e785f4b54ea0604c4440b919082ca8fbe14a60fd846a'},
+    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'd0b4f604424e31f6b893dae6009ded67b1e7fa71a892ab63987d612cc7ece995', 'delta': 'dafb41e3699b9ce4e187d77dd5172e6194ef9203e960daacb417df8a7f588d68'},
     'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '21e4d7ee1f08a351d693e3523c8b7d8b4541a387cb3c93beb41a0b8664b73144', 'delta': 'ec8eedeca6c58e5f5735e26cee42e36d122381a4cd156d0be1f50f3f5d953fac'},
-    'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': '8bae6e4b113c6b486b0802ba4425033ca437530207310fa513f46b6e34cb8781', 'delta': 'c816a66757d7a91f70b262c1cccd72d4d450eb81c4ff3678590235ef47a6fcb9'},
+    'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': '4400c0e129e8889dfa881bed4cd5ced2e74893adb228b19895621a6295689afd', 'delta': '1189e5c207bed21fc1352aa46df9b8e9b5293949d2a4fa7faf64dfd560c7b5d0'},
 }
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
