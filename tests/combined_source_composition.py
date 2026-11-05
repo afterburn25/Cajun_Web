@@ -74,10 +74,10 @@ DIAGNOSTIC_ADDITIONS = frozenset((
     'tests/diagnostic_report.py',
 ))
 DIAGNOSTIC_ADDITION_SHA256 = {
-    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '65e693be3083f87568ecfcaf3a016d8ff3537b4edc44e0845bbc72c7c9b57be1', 'delta': '68cb1ab9407cc138dd54670ff7c35f515b249689f4b97aed66c71b03750dfe82'},
+    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '1ae506dc7b3b86f7e9e220b5ff1bb116e01f5d8670fcc15853535676c87a715d', 'delta': '8b0bc3938935f2bba11260e330537faed845abc55b9c8e5765061e086ac9700b'},
     'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'f1f21e36ada3fb0cf1277bbbc87893afd5b77416f20e198b3eb2a2cdb5f581cb', 'delta': '2693630c2c296723914f2adf39c9b47ec4df89280c5a7abec30da97500dd67cb'},
     'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': 'bbba00447bec612e832cc93cb402829abac98ff0a380a802f73e0dba11705c3f', 'delta': 'edf8969a13cd910ab2e9a872731a5399fce3dd17496b05f57d81279293b06379'},
-    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'd0b4f604424e31f6b893dae6009ded67b1e7fa71a892ab63987d612cc7ece995', 'delta': 'dafb41e3699b9ce4e187d77dd5172e6194ef9203e960daacb417df8a7f588d68'},
+    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'aed1260ecf7f1e0b5ee517fcb5d6e85104c7fea32140678fab71aeb27b9d51bd', 'delta': '9c61ac21ee5d8d3012b8303c3f0047ca77d1e3c2c13f9444e4641067110517a7'},
     'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '21e4d7ee1f08a351d693e3523c8b7d8b4541a387cb3c93beb41a0b8664b73144', 'delta': 'ec8eedeca6c58e5f5735e26cee42e36d122381a4cd156d0be1f50f3f5d953fac'},
     'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': '4400c0e129e8889dfa881bed4cd5ced2e74893adb228b19895621a6295689afd', 'delta': '1189e5c207bed21fc1352aa46df9b8e9b5293949d2a4fa7faf64dfd560c7b5d0'},
 }
