@@ -1,5 +1,5 @@
 {
-  "format": 4,
+  "format": 5,
   "base": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
   "base_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
   "components": {
@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "b4ebccb2d2740ff1ef78a72c0beb288d133e646f11a66d54ff40589bb59f74ec",
-  "regression_sha256": "4ab67e939584cb4d652eed883424b795955f38ba96150e6e677176985f20611e",
+  "verifier_sha256": "5b3602a46cdec61a8b7b4cba403af3b2ba8018ee7d60e994c82818d85846fe26",
+  "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",
@@ -1307,6 +1307,46 @@
   "ticket_additions": {
     "tests/ticket_screenshot.py": {
       "sha256": "2ff95ddef50e9acd3ddf9f5a865ad54f029c58aebddc2ab9c5ba46749014419d",
+      "mode": "100644"
+    }
+  },
+  "diagnostic_addition_source": "dfda440c70dbda178a23b0dcca7b17941e1965ea",
+  "diagnostic_addition_source_tree": "b8f4b46a63871e852e92e90e0422d34d4785da51",
+  "diagnostic_additions": {
+    ".github/workflows/diagnostic-tests.yml": {
+      "source_sha256": "4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c",
+      "current_sha256": "0d2e14043a03b6ddf84529464a5c51d44d88c54133310c26633e9c29ff1918c8",
+      "delta_sha256": "23e0b17018a5da508da4b6fad01f7493ff084243a1e6b10abcc445451a1c513b",
+      "mode": "100644"
+    },
+    "docs/DIAGNOSTIC_ACCEPTANCE.md": {
+      "source_sha256": "2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593",
+      "current_sha256": "f1f21e36ada3fb0cf1277bbbc87893afd5b77416f20e198b3eb2a2cdb5f581cb",
+      "delta_sha256": "2693630c2c296723914f2adf39c9b47ec4df89280c5a7abec30da97500dd67cb",
+      "mode": "100644"
+    },
+    "tests/diagnostic_acceptance.py": {
+      "source_sha256": "aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad",
+      "current_sha256": "bbba00447bec612e832cc93cb402829abac98ff0a380a802f73e0dba11705c3f",
+      "delta_sha256": "edf8969a13cd910ab2e9a872731a5399fce3dd17496b05f57d81279293b06379",
+      "mode": "100644"
+    },
+    "tests/diagnostic_acceptance_test.py": {
+      "source_sha256": "ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655",
+      "current_sha256": "b413b0427fa8abe47b679fb9e073e2cf990e36f0922bae46804d3c6ecabecc3e",
+      "delta_sha256": "2d2ff6198d92a1f372c6afc5a9f1c0c3dda0cc5c91e25bc8283cee9bfc7d2efd",
+      "mode": "100644"
+    },
+    "tests/diagnostic_registry.py": {
+      "source_sha256": "1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34",
+      "current_sha256": "21e4d7ee1f08a351d693e3523c8b7d8b4541a387cb3c93beb41a0b8664b73144",
+      "delta_sha256": "ec8eedeca6c58e5f5735e26cee42e36d122381a4cd156d0be1f50f3f5d953fac",
+      "mode": "100644"
+    },
+    "tests/diagnostic_report.py": {
+      "source_sha256": "cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33",
+      "current_sha256": "f0808663f91b29a300c3143c1b90fa91d21b414136087ee3ecda32f4b597ea7c",
+      "delta_sha256": "6461e3c9278a9b93723966be1753b06584534046e989e711b424b486a1214548",
       "mode": "100644"
     }
   }

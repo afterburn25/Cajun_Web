@@ -59,6 +59,28 @@ TICKET_SOURCE_PATHS = TICKET_ADDITIONS | {'tests/ticket_cases.py'}
 TICKET_ADDITION_SHA256 = {
     'tests/ticket_screenshot.py': '2ff95ddef50e9acd3ddf9f5a865ad54f029c58aebddc2ab9c5ba46749014419d',
 }
+# The diagnostic runner is a second finite addition source.  It changes no
+# shipping, schema, authorization or billing path.  Its exact six-file source
+# commit remains an ancestor, while reviewed current bytes and their complete
+# source-to-current Git deltas are independently pinned below.
+DIAGNOSTIC_ADDITION_SOURCE = 'dfda440c70dbda178a23b0dcca7b17941e1965ea'
+DIAGNOSTIC_ADDITION_SOURCE_TREE = 'b8f4b46a63871e852e92e90e0422d34d4785da51'
+DIAGNOSTIC_ADDITIONS = frozenset((
+    '.github/workflows/diagnostic-tests.yml',
+    'docs/DIAGNOSTIC_ACCEPTANCE.md',
+    'tests/diagnostic_acceptance.py',
+    'tests/diagnostic_acceptance_test.py',
+    'tests/diagnostic_registry.py',
+    'tests/diagnostic_report.py',
+))
+DIAGNOSTIC_ADDITION_SHA256 = {
+    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '0d2e14043a03b6ddf84529464a5c51d44d88c54133310c26633e9c29ff1918c8', 'delta': '23e0b17018a5da508da4b6fad01f7493ff084243a1e6b10abcc445451a1c513b'},
+    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'f1f21e36ada3fb0cf1277bbbc87893afd5b77416f20e198b3eb2a2cdb5f581cb', 'delta': '2693630c2c296723914f2adf39c9b47ec4df89280c5a7abec30da97500dd67cb'},
+    'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': 'bbba00447bec612e832cc93cb402829abac98ff0a380a802f73e0dba11705c3f', 'delta': 'edf8969a13cd910ab2e9a872731a5399fce3dd17496b05f57d81279293b06379'},
+    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'b413b0427fa8abe47b679fb9e073e2cf990e36f0922bae46804d3c6ecabecc3e', 'delta': '2d2ff6198d92a1f372c6afc5a9f1c0c3dda0cc5c91e25bc8283cee9bfc7d2efd'},
+    'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '21e4d7ee1f08a351d693e3523c8b7d8b4541a387cb3c93beb41a0b8664b73144', 'delta': 'ec8eedeca6c58e5f5735e26cee42e36d122381a4cd156d0be1f50f3f5d953fac'},
+    'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'f0808663f91b29a300c3143c1b90fa91d21b414136087ee3ecda32f4b597ea7c', 'delta': '6461e3c9278a9b93723966be1753b06584534046e989e711b424b486a1214548'},
+}
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
     'docs/CLIENT_PORTAL_ROADMAP.md',
@@ -158,7 +180,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '4ab67e939584cb4d652eed883424b795955f38ba96150e6e677176985f20611e'
+REGRESSION_SHA256 = 'b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -231,6 +253,11 @@ def entries(root, ref):
     return result
 
 
+def diagnostic_delta(root, path):
+    return git(root, 'diff', '--binary', '--no-ext-diff', '--no-renames',
+               DIAGNOSTIC_ADDITION_SOURCE, 'HEAD', '--', path)
+
+
 def github_origin(value):
     if value == 'git@github.com:afterburn25/Cajun_Web.git':
         return True
@@ -265,6 +292,7 @@ def hydration_origin(root, head):
     for commit, tree, label in (
         (ADDITION_SOURCE, ADDITION_SOURCE_TREE, 'contact addition'),
         (TICKET_ADDITION_SOURCE, TICKET_ADDITION_SOURCE_TREE, 'ticket addition'),
+        (DIAGNOSTIC_ADDITION_SOURCE, DIAGNOSTIC_ADDITION_SOURCE_TREE, 'diagnostic addition'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -355,9 +383,10 @@ def validate_receipt(data, verifier):
         'format', 'base', 'base_tree', 'components', 'verifier_sha256', 'regression_sha256', 'adapters',
         'repair_base', 'repair_base_tree', 'integration_repairs',
         'addition_source', 'addition_source_tree', 'additions',
-        'ticket_addition_source', 'ticket_addition_source_tree', 'ticket_additions'},
+        'ticket_addition_source', 'ticket_addition_source_tree', 'ticket_additions',
+        'diagnostic_addition_source', 'diagnostic_addition_source_tree', 'diagnostic_additions'},
         'Unexpected composition receipt fields')
-    require(data['format'] == 4 and data['base'] == BASE and data['base_tree'] == BASE_TREE
+    require(data['format'] == 5 and data['base'] == BASE and data['base_tree'] == BASE_TREE
             and data['components'] == COMPONENTS, 'Unreviewed component source identity')
     require(data['verifier_sha256'] == digest(verifier), 'Composition verifier changed')
     require(data['regression_sha256'] == REGRESSION_SHA256, 'Composition regression identity changed')
@@ -421,6 +450,23 @@ def validate_receipt(data, verifier):
                 and row['sha256'] == TICKET_ADDITION_SHA256[path]
                 and re.fullmatch('[0-9a-f]{64}', row['sha256']) is not None
                 and row['mode'] == '100644', 'Unreviewed ticket addition identity: ' + path)
+    require(data['diagnostic_addition_source'] == DIAGNOSTIC_ADDITION_SOURCE
+            and data['diagnostic_addition_source_tree'] == DIAGNOSTIC_ADDITION_SOURCE_TREE,
+            'Unreviewed diagnostic addition source')
+    require(isinstance(data['diagnostic_additions'], dict)
+            and set(data['diagnostic_additions']) == DIAGNOSTIC_ADDITIONS
+            and set(DIAGNOSTIC_ADDITION_SHA256) == DIAGNOSTIC_ADDITIONS,
+            'Unreviewed diagnostic addition scope')
+    for path, row in data['diagnostic_additions'].items():
+        pins = DIAGNOSTIC_ADDITION_SHA256[path]
+        require(isinstance(row, dict)
+                and set(row) == {'source_sha256', 'current_sha256', 'delta_sha256', 'mode'}
+                and row['source_sha256'] == pins['source']
+                and row['current_sha256'] == pins['current']
+                and row['delta_sha256'] == pins['delta']
+                and all(re.fullmatch('[0-9a-f]{64}', row[name]) is not None
+                        for name in ('source_sha256', 'current_sha256', 'delta_sha256'))
+                and row['mode'] == '100644', 'Unreviewed diagnostic addition identity: ' + path)
     return data
 
 
@@ -548,6 +594,10 @@ def verify_current(root):
     require(not TICKET_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
                                    | NARRATIVES | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
             'Ticket additions cannot replace existing component, contact or proof files')
+    require(not DIAGNOSTIC_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
+                                       | TICKET_ADDITIONS | NARRATIVES
+                                       | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
+            'Diagnostic additions cannot replace existing component, repair, addition or proof files')
     require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
             'Retained contact source tree changed')
     git(root, 'merge-base', '--is-ancestor', ADDITION_SOURCE, 'HEAD')
@@ -567,11 +617,24 @@ def verify_current(root):
     require(ordinary(root, 'tests/ticket_cases.py')
             == git(root, 'cat-file', 'blob', TICKET_ADDITION_SOURCE + ':tests/ticket_cases.py'),
             'Current ticket cases do not match the exact retained functional source')
+    require(git(root, 'rev-parse', DIAGNOSTIC_ADDITION_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ADDITION_SOURCE_TREE, 'Retained diagnostic source tree changed')
+    git(root, 'merge-base', '--is-ancestor', DIAGNOSTIC_ADDITION_SOURCE, 'HEAD')
+    diagnostic_entries = entries(root, DIAGNOSTIC_ADDITION_SOURCE)
+    require(DIAGNOSTIC_ADDITIONS <= set(diagnostic_entries),
+            'Missing diagnostic addition in retained source')
+    diagnostic_source_parent = git(root, 'rev-parse', DIAGNOSTIC_ADDITION_SOURCE + '^').decode().strip()
+    diagnostic_source_paths = set(git(root, 'diff-tree', '--no-commit-id', '--name-only', '-r',
+                                      diagnostic_source_parent, DIAGNOSTIC_ADDITION_SOURCE).decode().splitlines())
+    require(diagnostic_source_paths == DIAGNOSTIC_ADDITIONS,
+            'Retained diagnostic source changed a different path set')
     for identity in (BASE, REPAIR_BASE, ADDITION_SOURCE,
                      *(source['commit'] for source in COMPONENTS.values())):
         require(not TICKET_ADDITIONS & set(entries(root, identity)),
                 'Ticket helper existed in an earlier admitted source: ' + identity)
-    allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS
+        require(not DIAGNOSTIC_ADDITIONS & set(entries(root, identity)),
+                'Diagnostic source existed in an earlier admitted source: ' + identity)
+    allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
@@ -596,6 +659,16 @@ def verify_current(root):
                 and mode(root, path) == row['mode'] == ticket_addition_entries[path][0] == '100644'
                 and value == git(root, 'cat-file', 'blob', TICKET_ADDITION_SOURCE + ':' + path),
                 'Ticket addition no longer matches its exact source bytes or mode: ' + path)
+    for path in sorted(DIAGNOSTIC_ADDITIONS):
+        value = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', DIAGNOSTIC_ADDITION_SOURCE + ':' + path)
+        row = data['diagnostic_additions'][path]
+        pins = DIAGNOSTIC_ADDITION_SHA256[path]
+        require(digest(source) == row['source_sha256'] == pins['source']
+                and digest(value) == row['current_sha256'] == pins['current']
+                and digest(diagnostic_delta(root, path)) == row['delta_sha256'] == pins['delta']
+                and mode(root, path) == row['mode'] == diagnostic_entries[path][0] == '100644',
+                'Diagnostic addition source/current/delta bytes or mode changed: ' + path)
     for path in sorted(ADAPTERS):
         original = reconstruct_adapter(data, path, ordinary(root, path))
         require(mode(root, path) == '100644'
@@ -610,6 +683,7 @@ def verify_current(root):
         {'name': str(len(REPAIRS)) + ' exact integration-test repairs retain the failed checkpoint through reversible edits; runtime uses current bytes', 'passed': True},
         {'name': 'Four exact contact additions retain their original PR331 source, ancestry and modes; runtime uses current reviewed bytes', 'passed': True},
         {'name': 'The exact two-path ticket source retains its commit, tree, ancestry and path equality; the helper bytes and mode are a disjoint addition', 'passed': True},
+        {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
