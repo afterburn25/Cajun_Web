@@ -243,6 +243,10 @@ def main():
     ok('Combined report survives missing group artifacts',
        'continue-on-error: true' in combine and
        '- name: Build combined report\n        if: always()' in combine)
+    ok('Historical fixture downloads retain bounded retry evidence',
+       'for attempt in 1 2 3; do' in workflow and
+       'tee -a qa/legacy-preparation.txt' in workflow and
+       'sleep "$((attempt * 10))"' in workflow)
     ok('Workflow never interpolates group input into Python source', "raw = '${{ inputs.groups" not in workflow)
     ok('Workflow retains always-run diagnostic mutation guard',
        'if: always()' in workflow and 'tools/acceptance_artifacts.py guard' in workflow)
