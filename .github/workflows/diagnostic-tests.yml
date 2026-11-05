@@ -6,7 +6,14 @@ name: Diagnostic acceptance (multi-failure collection)
 on:
   push:
     branches: [main, 'codex/diagnostic-acceptance-*']
-    paths: ['tests/diagnostic_*', '.github/workflows/diagnostic-tests.yml', 'docs/DIAGNOSTIC_ACCEPTANCE.md']
+    paths:
+      - '.github/workflows/diagnostic-tests.yml'
+      - 'CHANGELOG.md'
+      - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
+      - 'docs/DIAGNOSTIC_ACCEPTANCE.md'
+      - 'tests/combined_source_composition.py'
+      - 'tests/combined_source_composition_test.py'
+      - 'tests/diagnostic_*'
   workflow_dispatch:
     inputs:
       groups:

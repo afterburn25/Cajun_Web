@@ -74,7 +74,7 @@ DIAGNOSTIC_ADDITIONS = frozenset((
     'tests/diagnostic_report.py',
 ))
 DIAGNOSTIC_ADDITION_SHA256 = {
-    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '0d2e14043a03b6ddf84529464a5c51d44d88c54133310c26633e9c29ff1918c8', 'delta': '23e0b17018a5da508da4b6fad01f7493ff084243a1e6b10abcc445451a1c513b'},
+    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '664bd302bc4af4bc138216b6ccb429183bbcee2cc5a346419cae94aa8e47035d', 'delta': 'b1e5e1b323968401507d8cea9774a491b638249d7778abdf79d114ee61271aa7'},
     'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'f1f21e36ada3fb0cf1277bbbc87893afd5b77416f20e198b3eb2a2cdb5f581cb', 'delta': '2693630c2c296723914f2adf39c9b47ec4df89280c5a7abec30da97500dd67cb'},
     'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': 'bbba00447bec612e832cc93cb402829abac98ff0a380a802f73e0dba11705c3f', 'delta': 'edf8969a13cd910ab2e9a872731a5399fce3dd17496b05f57d81279293b06379'},
     'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'b413b0427fa8abe47b679fb9e073e2cf990e36f0922bae46804d3c6ecabecc3e', 'delta': '2d2ff6198d92a1f372c6afc5a9f1c0c3dda0cc5c91e25bc8283cee9bfc7d2efd'},
