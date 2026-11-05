@@ -38,7 +38,9 @@ combined report additionally lists `not_reached` modules and synthesizes a
 `group:<name>` blocked unit in both JSON and Markdown when an expected group
 job produced no results at all (infrastructure failure), so a crashed worker
 can never look green. A selected `absent` module also fails its lane and the
-combined report.
+combined report. When billing is selected, the exact named PHP 8.4/MySQL
+target is also required: a missing target is a distinct blocked unit and
+cannot be hidden by a successful baseline billing worker.
 
 ## Groups and parallelism
 
@@ -81,14 +83,20 @@ selected it also runs one separately named target lane on PHP 8.4/MySQL 8.4;
 the target artifact is additional evidence and is never substituted for the
 required PHP 8.3/MariaDB billing result. The combined report keeps one common
 source/tree/run/attempt identity plus both allowlisted execution environments.
+It deduplicates replayed prerequisites only within the same environment;
+baseline and target units retain separate statuses, errors and check counts.
+The `release-browser` module additionally requires the successful installer
+stage because it reads the fresh installation configuration.
 
 ## Workflow
 
 `.github/workflows/diagnostic-tests.yml` runs on the bounded
 `codex/diagnostic-acceptance-*` successor branch, on `main`, and by manual
-dispatch. Manual group text is passed only through an environment variable to
-the shared allowlisting registry CLI; it is never interpolated into Python or
-shell source. Development runs use PR/ref-scoped newest-wins concurrency,
+dispatch. Every `main` commit starts the workflow, including ordinary shipping
+or browser-test-only changes, so no exact-main source can inherit diagnostic
+evidence from an earlier commit. Manual group text is passed only through an
+environment variable to the shared allowlisting registry CLI; it is never
+interpolated into Python or shell source. Development runs use PR/ref-scoped newest-wins concurrency,
 while every main run is retained. The workflow reuses the acceptance build
 job's immutable inputs (`tools/acceptance_artifacts.py
 pack-inputs` / `receive`): receipt verification is explicitly scoped to the
@@ -98,11 +106,11 @@ runtime is restored for execution. It seeds the isolated `ci_` fixture with
 MD, screenshots, `http-server.log`, `php-diagnostics.json`) uploads per
 group; the `combine` job merges all results via `tests/diagnostic_report.py`
 and fails the workflow when anything failed, was blocked, was selected but
-absent, or a group never reported. Every result binds source commit, tree,
-run, attempt, ref, event, PHP and database; the combiner requires common
-source/run identity and admits only the baseline runtime plus the exact named
-billing target pair. An always-run mutation guard verifies the received
-shipping source even when the diagnostic runner fails.
+absent, or an expected baseline/target worker never reported. Every result
+binds source commit, tree, run, attempt, ref, event, PHP and database; the
+combiner requires common source/run identity and admits only the baseline
+runtime plus the exact named billing target pair. An always-run mutation guard
+verifies the received shipping source even when the diagnostic runner fails.
 
 ## Running locally / on a branch
 

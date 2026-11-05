@@ -25,7 +25,7 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tests'))
-from diagnostic_registry import (GROUPS, STAGES, MODULES, MODULE_STAGE_REQUIRES,
+from diagnostic_registry import (GROUPS, STAGES, MODULES, module_stage_requires,
                                  ASSIGNMENTS, resolve_groups)
 
 BASE = 'http://127.0.0.1:8091'; WEB = ROOT / 'test-runtime/web'; QA = ROOT / 'qa'; QA.mkdir(exist_ok=True)
@@ -433,7 +433,7 @@ def main():
             run_unit(key, 'stage', group, stage_fns[key])
 
         for key, stem, attr, group, extra_requires in selected:
-            requires = list(MODULE_STAGE_REQUIRES) + list(extra_requires)
+            requires = list(module_stage_requires(key)) + list(extra_requires)
             missing = [r for r in requires if status_of.get(r) != 'passed']
             if missing:
                 results.append(placeholder((key, stem, attr, group, extra_requires), 'blocked', 'PrerequisiteBlocked',

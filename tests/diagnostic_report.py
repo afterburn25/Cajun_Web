@@ -18,7 +18,11 @@ TARGET_ENVIRONMENTS = {
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--expect=')]
-    expected = {g for a in sys.argv[1:] if a.startswith('--expect=') for g in a[9:].split(',') if g}
+    expected_groups = {g for a in sys.argv[1:] if a.startswith('--expect=')
+                       for g in a[9:].split(',') if g}
+    expected = set(expected_groups)
+    expected.update(tag for tag, target in TARGET_ENVIRONMENTS.items()
+                    if target[0] in expected_groups)
     if len(args) != 2:
         raise SystemExit('usage: diagnostic_report.py [--expect=g1,g2] <results-dir> <out-prefix>')
     src, out = Path(args[0]), Path(args[1])
@@ -60,12 +64,15 @@ def main():
     seen = {}
     for u in units:
         # Prerequisite modules are replayed as 'preparation' units inside
-        # dependent groups, so one unit legitimately appears in several files.
-        # Keep the worst status so a duplicate can never soften a result, and
-        # retain every reporting file as provenance.
+        # dependent groups in the same runtime, so one unit legitimately
+        # appears in several baseline files. Keep the worst status within one
+        # environment, but never merge the named target into the baseline:
+        # both environments retain their own status, errors and check counts.
         worst = {'skipped': 0, 'passed': 1, 'absent': 2, 'blocked': 3, 'failed': 4}
-        if u['key'] in seen:
-            kept = seen[u['key']]
+        environment = u['execution_environment']
+        unique = (u['key'], environment['php_version'], environment['database'])
+        if unique in seen:
+            kept = seen[unique]
             kept['reported_in'].append(u['result_file'])
             kept['other_statuses'].append(u['status'])
             kept['reported_environments'].append(u['execution_environment'])
@@ -76,15 +83,25 @@ def main():
         else:
             u['reported_in'] = [u['result_file']]; u['other_statuses'] = []
             u['reported_environments'] = [u['execution_environment']]
-        seen[u['key']] = u
+        seen[unique] = u
     units = list(seen.values())
     for g in missing:
-        units.append({'key': 'group:' + g, 'kind': 'group', 'group': g, 'status': 'blocked', 'checks': 0,
-                      'failed_checks': [], 'error': {'class': 'GroupMissing',
-                      'message': 'Group job produced no results (infrastructure failure before the runner completed)', 'site': None},
+        target = TARGET_ENVIRONMENTS.get(g)
+        group = target[0] if target else g
+        kind = 'target' if target else 'group'
+        units.append({'key': kind + ':' + g, 'kind': kind, 'group': group,
+                      'status': 'blocked', 'checks': 0,
+                      'failed_checks': [], 'error': {
+                      'class': 'TargetMissing' if target else 'GroupMissing',
+                      'message': ('Named target job produced no results'
+                                  if target else 'Group job produced no results') +
+                                 ' (infrastructure failure before the runner completed)', 'site': None},
                       'elapsed_s': 0, 'after_failures': [], 'captures': [],
                       'assignment': 'runner infrastructure', 'result_file': None,
-                      'reported_environments': []})
+                      'reported_environments': [],
+                      'expected_execution_environment': ({'php_version': target[1],
+                                                          'database': target[2]}
+                                                         if target else None)})
     counts = {s: 0 for s in STATUS}
     for u in units: counts[u['status']] += 1
     failures = [u for u in units if u['status'] in ('failed', 'absent')]
@@ -119,6 +136,11 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.with_suffix('.json').write_text(json.dumps(combined, indent=2) + '\n', encoding='utf-8')
 
+    def environment_label(unit):
+        environment = unit.get('execution_environment') or unit.get('expected_execution_environment')
+        return ((environment['php_version'] + '/' + environment['database'])
+                if environment else 'not started')
+
     lines = ['# Combined diagnostic report', '',
              'Diagnostic collection only — this is **not** release acceptance.', '',
              '## Totals', '',
@@ -128,18 +150,21 @@ def main():
              'Checks executed: ' + str(combined['totals']['checks']) + '  •  failed assertions: ' + str(combined['totals']['failed_assertions']), '']
     if failures or blocked:
         lines += ['## Failures, absent modules, and blocked units', '',
-                  '| unit | group | status | failed assertions | error | repair lane |',
-                  '|---|---|---|---|---|---|']
+                  '| unit | group | environment | status | failed assertions | error | repair lane |',
+                  '|---|---|---|---|---|---|---|']
         for u in failures + blocked:
             err = (u['error']['class'] + ': ' + u['error']['message'][:120]) if u['error'] else ''
-            lines.append('| ' + u['key'] + ' | ' + u['group'] + ' | ' + u['status'] + ' | ' +
+            lines.append('| ' + u['key'] + ' | ' + u['group'] + ' | ' + environment_label(u) +
+                         ' | ' + u['status'] + ' | ' +
                          '; '.join(u['failed_checks'])[:160] + ' | ' + err + ' | ' + u['assignment'] + ' |')
         lines.append('')
     if not_reached:
         lines += ['## Not reached', '', ', '.join(sorted(set(not_reached))), '']
     lines += ['## Per-unit detail', '',
-              '| unit | group | status | checks | captures |', '|---|---|---|---|---|'] + \
-             ['| ' + u['key'] + ' | ' + u['group'] + ' | ' + u['status'] + ' | ' + str(u['checks']) + ' | ' + ', '.join(u['captures'][:6]) + ' |' for u in units]
+              '| unit | group | environment | status | checks | captures |', '|---|---|---|---|---|---|'] + \
+             ['| ' + u['key'] + ' | ' + u['group'] + ' | ' + environment_label(u) + ' | ' +
+              u['status'] + ' | ' + str(u['checks']) + ' | ' + ', '.join(u['captures'][:6]) + ' |'
+              for u in units]
     out.with_suffix('.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print(json.dumps({'units': len(units), 'counts': counts, 'not_reached': len(set(not_reached))}))
     return 0 if counts['failed'] == 0 and counts['blocked'] == 0 and counts['absent'] == 0 else 1

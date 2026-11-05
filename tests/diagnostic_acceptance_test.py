@@ -44,6 +44,10 @@ def main():
         ok('Stage %s requires resolve to stages' % s[0], all(r in dict((x[0], x) for x in reg.STAGES) for r in s[3]))
     for st in reg.MODULE_STAGE_REQUIRES:
         ok('Module stage requirement %s exists' % st, st in {s[0] for s in reg.STAGES})
+    ok('Release browser requires the fresh installer stage',
+       reg.module_stage_requires('release-browser') == ('installer', 'release', 'browser'))
+    ok('Unrelated modules keep the shared release/browser prerequisites',
+       reg.module_stage_requires('catalog') == reg.MODULE_STAGE_REQUIRES)
     ok('Every group has a repair assignment', all(g in reg.ASSIGNMENTS for g in reg.GROUPS))
     required_groups = {'website', 'installer', 'portal', 'billing', 'mail', 'stackcp', 'security'}
     ok('Required categories are covered', required_groups <= set(reg.GROUPS))
@@ -177,28 +181,28 @@ def main():
                 'after_failures': [], 'captures': [], 'assignment': 'studio/portal lane'}
         a = dict(base, selection={'groups': ['portal'], 'modules': ['staff']},
                  units=[dict(unit, status='passed', role='home')])
-        b = dict(base, selection={'groups': ['billing'], 'modules': ['catalog'], 'preparation': ['staff']},
+        b = dict(base, selection={'groups': ['mail'], 'modules': ['notifications'], 'preparation': ['staff']},
                  units=[dict(unit, status='failed', role='preparation',
                              error={'class': 'AssertionError', 'message': 'm', 'site': None})])
         (tmp / 'diagnostic-portal-results.json').write_text(json.dumps(a))
-        (tmp / 'diagnostic-billing-results.json').write_text(json.dumps(b))
+        (tmp / 'diagnostic-mail-results.json').write_text(json.dumps(b))
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
-                               '--expect=portal,billing', str(tmp), str(tmp / 'dup')],
+                                '--expect=portal,mail', str(tmp), str(tmp / 'dup')],
                               capture_output=True, text=True, env=report_env)
         merged = json.loads((tmp / 'dup.json').read_text())
         kept = [u for u in merged['units'] if u['key'] == 'staff']
         ok('Replayed prerequisite keeps worst status', len(kept) == 1 and kept[0]['status'] == 'failed')
         ok('Provenance records both group reports',
-           sorted(kept[0]['reported_in']) == ['diagnostic-billing-results.json', 'diagnostic-portal-results.json'])
+           sorted(kept[0]['reported_in']) == ['diagnostic-mail-results.json', 'diagnostic-portal-results.json'])
         ok('Baseline provenance retains its execution environment',
            kept[0]['reported_environments'] == [
                {'php_version': '8.3', 'database': 'mariadb-10.11'},
                {'php_version': '8.3', 'database': 'mariadb-10.11'}])
         ok('Duplicate-status run still exits non-zero', code.returncode == 1)
         b['units'] = [dict(unit, status='skipped', role='preparation')]
-        (tmp / 'diagnostic-billing-results.json').write_text(json.dumps(b))
+        (tmp / 'diagnostic-mail-results.json').write_text(json.dumps(b))
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
-                               '--expect=portal,billing', str(tmp), str(tmp / 'dup-passed')],
+                                '--expect=portal,mail', str(tmp), str(tmp / 'dup-passed')],
                               capture_output=True, text=True, env=report_env)
         merged = json.loads((tmp / 'dup-passed.json').read_text())
         ok('Passed home result outranks another group skipped placeholder',
@@ -231,7 +235,52 @@ def main():
            merged['identity'] == common and merged['execution_environments'] == [
                {'php_version': '8.3', 'database': 'mariadb-10.11'},
                {'php_version': '8.4', 'database': 'mysql-8.4'}])
+        target_units = [u for u in merged['units'] if u['key'] == 'catalog']
+        ok('Baseline and target unit results remain separate',
+           len(target_units) == 2 and
+           {tuple(sorted(u['execution_environment'].items())) for u in target_units} == {
+               (('database', 'mariadb-10.11'), ('php_version', '8.3')),
+               (('database', 'mysql-8.4'), ('php_version', '8.4'))})
+        ok('Combined totals include checks from both billing environments',
+           merged['totals']['checks'] == 4)
+        baseline_path = tmp / 'diagnostic-billing-results.json'
         target_path = tmp / 'diagnostic-target-billing-php84-mysql-results.json'
+        baseline_original = baseline_path.read_text()
+        target_original = target_path.read_text()
+        target_path.unlink()
+        missing_target = subprocess.run([
+            sys.executable, str(ROOT / 'tests/diagnostic_report.py'), '--expect=billing',
+            str(tmp), str(tmp / 'missing-target')], capture_output=True, text=True, env=report_env)
+        missing_payload = json.loads((tmp / 'missing-target.json').read_text())
+        missing_units = [u for u in missing_payload['units']
+                         if u['key'] == 'target:target-billing-php84-mysql']
+        ok('Missing named target is synthesized as blocked and fails combine',
+           missing_target.returncode == 1 and len(missing_units) == 1 and
+           missing_units[0]['status'] == 'blocked' and
+           missing_units[0]['error']['class'] == 'TargetMissing')
+        target_path.write_text(target_original)
+
+        baseline_payload = json.loads(baseline_path.read_text())
+        target_payload = json.loads(target_path.read_text())
+        for path, payload, error, checks in [
+                (baseline_path, baseline_payload, 'BaselineFailure', 3),
+                (target_path, target_payload, 'TargetFailure', 4)]:
+            payload['units'][0].update(status='failed', checks=checks,
+                                       failed_checks=[error],
+                                       error={'class': error, 'message': error, 'site': None})
+            path.write_text(json.dumps(payload))
+        failed_both = subprocess.run([
+            sys.executable, str(ROOT / 'tests/diagnostic_report.py'), '--expect=billing',
+            str(tmp), str(tmp / 'failed-both')], capture_output=True, text=True, env=report_env)
+        failed_payload = json.loads((tmp / 'failed-both.json').read_text())
+        failed_units = [u for u in failed_payload['units'] if u['key'] == 'catalog']
+        ok('Baseline and target failures retain both errors and check counts',
+           failed_both.returncode == 1 and len(failed_units) == 2 and
+           {u['error']['class'] for u in failed_units} == {'BaselineFailure', 'TargetFailure'} and
+           failed_payload['totals']['checks'] == 7)
+
+        baseline_path.write_text(baseline_original)
+        target_path.write_text(target_original)
         changed = json.loads(target_path.read_text())
         changed['identity']['database'] = 'mariadb-10.11'
         target_path.write_text(json.dumps(changed))
@@ -277,6 +326,9 @@ def main():
            assertion in strict_source and assertion in diagnostic_source)
 
     workflow = (ROOT / '.github/workflows/diagnostic-tests.yml').read_text(encoding='utf-8')
+    push = workflow.split('  workflow_dispatch:\n', 1)[0]
+    ok('Every main commit receives exact-source diagnostic evidence',
+       "branches: [main, 'codex/diagnostic-acceptance-*']" in push and '\n    paths:' not in push)
     plan = workflow.split('\n  plan:\n', 1)[1].split('\n  diagnose:\n', 1)[0]
     combine = workflow.split('\n  combine:\n', 1)[1]
     ok('Diagnostic plan still runs when build fails', '\n    needs: build\n' not in plan)

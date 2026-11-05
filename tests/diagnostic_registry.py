@@ -160,6 +160,16 @@ MODULES = [
     for stem in STRICT_MODULES
 ]
 MODULE_STAGE_REQUIRES = ('release', 'browser')
+MODULE_STAGE_REQUIRES_BY_KEY = {
+    # release_cases.run_browser reads the fresh-install configuration written
+    # by the installer stage; a failed installer must block this module rather
+    # than letting the missing file appear as an independent browser failure.
+    'release-browser': ('installer', 'release', 'browser'),
+}
+
+
+def module_stage_requires(key):
+    return MODULE_STAGE_REQUIRES_BY_KEY.get(key, MODULE_STAGE_REQUIRES)
 
 ASSIGNMENTS = {
     'website': 'site-www lane',
