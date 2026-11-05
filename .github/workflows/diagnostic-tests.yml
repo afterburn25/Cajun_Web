@@ -287,6 +287,13 @@ jobs:
           path: .acceptance/download
       - name: Verify and materialize exact same-attempt inputs
         id: input
+        # The artifact envelope records the build producer's runtime. The
+        # extracted dist/fixture bytes are reusable by the separately named
+        # target runtime, which is restored from the job environment for all
+        # following steps.
+        env:
+          CWP_PHP_VERSION: '8.3'
+          CWP_DATABASE: mariadb-10.11
         run: python3 tools/acceptance_artifacts.py receive --lane native-browser
       - name: Seed the isolated acceptance fixture database
         id: native

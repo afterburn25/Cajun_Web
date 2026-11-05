@@ -2,6 +2,7 @@
 
 - Retain the six-file diagnostic source from historical PR #327 as an explicit merge parent, then bind its registry to all 58 modules in the current strict non-focused browser runner through AST discovery.
 - Run ten isolated PHP 8.3/MariaDB group lanes plus a separately named PHP 8.4/MySQL billing target, with exact source/tree/run/attempt/config identity and always-run source mutation guards.
+- Verify reusable build inputs against their recorded PHP 8.3/MariaDB producer before restoring the target runtime, and retain both allowlisted execution environments under one common exact run/source identity in the combined report.
 - Refuse unallowlisted manual group input, fail selected absent modules and missing group workers in both JSON and Markdown, and restore the current strict cross-client/GD prelude assertions without changing the authoritative strict runner.
 - This is diagnostic collection only, not release acceptance. Full Application, RC, review, normal merge and exact-main diagnostic verification remain required; no live operation is authorized or performed.
 

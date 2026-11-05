@@ -78,7 +78,9 @@ group job replays its transitive closure as
 stage- and module-level blocking keeps dependents honest inside each job.
 The matrix runs each selected group on PHP 8.3/MariaDB 10.11. When billing is
 selected it also runs one separately named target lane on PHP 8.4/MySQL 8.4;
-the target artifact is not substituted into the ten-group combined report.
+the target artifact is additional evidence and is never substituted for the
+required PHP 8.3/MariaDB billing result. The combined report keeps one common
+source/tree/run/attempt identity plus both allowlisted execution environments.
 
 ## Workflow
 
@@ -89,14 +91,18 @@ the shared allowlisting registry CLI; it is never interpolated into Python or
 shell source. Development runs use PR/ref-scoped newest-wins concurrency,
 while every main run is retained. The workflow reuses the acceptance build
 job's immutable inputs (`tools/acceptance_artifacts.py
-pack-inputs` / `receive`), seeds the isolated `ci_` fixture with
+pack-inputs` / `receive`): receipt verification is explicitly scoped to the
+PHP 8.3/MariaDB producer recorded in that envelope, then the worker's selected
+runtime is restored for execution. It seeds the isolated `ci_` fixture with
 `tests/native.php`, then runs one job per group. `qa/` (results JSON, report
 MD, screenshots, `http-server.log`, `php-diagnostics.json`) uploads per
 group; the `combine` job merges all results via `tests/diagnostic_report.py`
 and fails the workflow when anything failed, was blocked, was selected but
-absent, or a group never reported. Every lane binds source commit, tree, run,
-attempt, ref, event, PHP and database; an always-run mutation guard verifies
-the received shipping source even when the diagnostic runner fails.
+absent, or a group never reported. Every result binds source commit, tree,
+run, attempt, ref, event, PHP and database; the combiner requires common
+source/run identity and admits only the baseline runtime plus the exact named
+billing target pair. An always-run mutation guard verifies the received
+shipping source even when the diagnostic runner fails.
 
 ## Running locally / on a branch
 

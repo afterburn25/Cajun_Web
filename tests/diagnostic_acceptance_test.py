@@ -190,6 +190,10 @@ def main():
         ok('Replayed prerequisite keeps worst status', len(kept) == 1 and kept[0]['status'] == 'failed')
         ok('Provenance records both group reports',
            sorted(kept[0]['reported_in']) == ['diagnostic-billing-results.json', 'diagnostic-portal-results.json'])
+        ok('Baseline provenance retains its execution environment',
+           kept[0]['reported_environments'] == [
+               {'php_version': '8.3', 'database': 'mariadb-10.11'},
+               {'php_version': '8.3', 'database': 'mariadb-10.11'}])
         ok('Duplicate-status run still exits non-zero', code.returncode == 1)
         b['units'] = [dict(unit, status='skipped', role='preparation')]
         (tmp / 'diagnostic-billing-results.json').write_text(json.dumps(b))
@@ -200,6 +204,42 @@ def main():
         ok('Passed home result outranks another group skipped placeholder',
            code.returncode == 0 and
            [u['status'] for u in merged['units'] if u['key'] == 'staff'] == ['passed'])
+
+    # The exact named billing target is additional evidence from the same
+    # source/run, not a replacement for the baseline billing worker.
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        common = {'source_sha': 'f' * 40, 'source_tree': '1' * 40, 'run_id': '4',
+                  'run_attempt': '1', 'ref': 'refs/heads/test', 'event': 'push'}
+        unit = {'key': 'catalog', 'kind': 'module', 'group': 'billing', 'status': 'passed',
+                'checks': 2, 'failed_checks': [], 'error': None, 'elapsed_s': 1,
+                'after_failures': [], 'captures': [], 'assignment': 'billing lane'}
+        for tag, php, database in [('billing', '8.3', 'mariadb-10.11'),
+                                   ('target-billing-php84-mysql', '8.4', 'mysql-8.4')]:
+            identity = dict(common, php_version=php, database=database)
+            (tmp / ('diagnostic-' + tag + '-results.json')).write_text(json.dumps({
+                'kind': 'diagnostic-results', 'source_sha': common['source_sha'],
+                'source_tree': common['source_tree'], 'identity': identity,
+                'selection': {'groups': ['billing'], 'modules': ['catalog']},
+                'totals': {}, 'not_reached': [], 'units': [unit]}))
+        code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
+                               '--expect=billing', str(tmp), str(tmp / 'target')],
+                              capture_output=True, text=True, env=report_env)
+        merged = json.loads((tmp / 'target.json').read_text())
+        ok('Exact named PHP8.4/MySQL billing target combines with its baseline', code.returncode == 0)
+        ok('Combined identity keeps common run fields and both execution environments',
+           merged['identity'] == common and merged['execution_environments'] == [
+               {'php_version': '8.3', 'database': 'mariadb-10.11'},
+               {'php_version': '8.4', 'database': 'mysql-8.4'}])
+        target_path = tmp / 'diagnostic-target-billing-php84-mysql-results.json'
+        changed = json.loads(target_path.read_text())
+        changed['identity']['database'] = 'mariadb-10.11'
+        target_path.write_text(json.dumps(changed))
+        refused = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
+                                  '--expect=billing', str(tmp), str(tmp / 'refused')],
+                                 capture_output=True, text=True, env=report_env)
+        ok('Named target refuses a different runtime pair',
+           refused.returncode != 0 and 'wrong named target group/environment' in refused.stderr)
 
     # A selected module that disappears is an explicit failing outcome.
     with tempfile.TemporaryDirectory() as tmp:
@@ -250,6 +290,11 @@ def main():
     ok('Workflow never interpolates group input into Python source', "raw = '${{ inputs.groups" not in workflow)
     ok('Workflow retains always-run diagnostic mutation guard',
        'if: always()' in workflow and 'tools/acceptance_artifacts.py guard' in workflow)
+    receive = workflow.split('- name: Verify and materialize exact same-attempt inputs', 1)[1].split('- name: Seed the isolated acceptance fixture database', 1)[0]
+    ok('Reusable input envelope is verified under its exact build producer runtime',
+       "CWP_PHP_VERSION: '8.3'" in receive and
+       'CWP_DATABASE: mariadb-10.11' in receive and
+       'acceptance_artifacts.py receive --lane native-browser' in receive)
 
     print(json.dumps({'checks': len(results), 'passed': sum(1 for _, p in results if p)}))
     return 0

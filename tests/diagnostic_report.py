@@ -10,6 +10,10 @@ import json, os, sys
 from pathlib import Path
 
 STATUS = ['passed', 'failed', 'blocked', 'skipped', 'absent']
+BASELINE_ENVIRONMENT = ('8.3', 'mariadb-10.11')
+TARGET_ENVIRONMENTS = {
+    'target-billing-php84-mysql': ('billing', '8.4', 'mysql-8.4'),
+}
 
 
 def main():
@@ -24,19 +28,35 @@ def main():
     if not files and not missing:
         raise SystemExit('No diagnostic-*-results.json files under ' + str(src))
     units, not_reached, shas, trees, identities = [], [], set(), set(), []
+    environments = set()
     for path in files:
         payload = json.loads(path.read_text(encoding='utf-8'))
         if payload.get('kind') != 'diagnostic-results':
             raise SystemExit(str(path) + ' is not a diagnostic results file')
+        report_units = []
         for unit in payload['units']:
-            unit = dict(unit); unit['result_file'] = path.name; units.append(unit)
+            unit = dict(unit); unit['result_file'] = path.name; report_units.append(unit)
         not_reached += payload.get('not_reached', [])
         shas.add(payload.get('source_sha') or 'unknown')
         trees.add(payload.get('source_tree') or 'unknown')
         identity = payload.get('identity')
         if not isinstance(identity, dict):
             raise SystemExit(str(path) + ' has no exact diagnostic identity')
+        tag = path.name[len('diagnostic-'):-len('-results.json')]
+        groups = payload.get('selection', {}).get('groups')
+        environment = (str(identity.get('php_version', '')), str(identity.get('database', '')))
+        target = TARGET_ENVIRONMENTS.get(tag)
+        if target:
+            if groups != [target[0]] or environment != target[1:]:
+                raise SystemExit(str(path) + ' has the wrong named target group/environment')
+        elif environment != BASELINE_ENVIRONMENT or groups != [tag]:
+            raise SystemExit(str(path) + ' has an unreviewed baseline group/environment')
+        environments.add(environment)
         identities.append(identity)
+        for unit in report_units:
+            unit['execution_environment'] = {
+                'php_version': environment[0], 'database': environment[1]}
+        units += report_units
     seen = {}
     for u in units:
         # Prerequisite modules are replayed as 'preparation' units inside
@@ -48,11 +68,14 @@ def main():
             kept = seen[u['key']]
             kept['reported_in'].append(u['result_file'])
             kept['other_statuses'].append(u['status'])
+            kept['reported_environments'].append(u['execution_environment'])
             if worst.get(kept['status'], 0) >= worst.get(u['status'], 0):
                 continue
             u['reported_in'] = kept['reported_in']; u['other_statuses'] = kept['other_statuses']
+            u['reported_environments'] = kept['reported_environments']
         else:
             u['reported_in'] = [u['result_file']]; u['other_statuses'] = []
+            u['reported_environments'] = [u['execution_environment']]
         seen[u['key']] = u
     units = list(seen.values())
     for g in missing:
@@ -60,13 +83,14 @@ def main():
                       'failed_checks': [], 'error': {'class': 'GroupMissing',
                       'message': 'Group job produced no results (infrastructure failure before the runner completed)', 'site': None},
                       'elapsed_s': 0, 'after_failures': [], 'captures': [],
-                      'assignment': 'runner infrastructure', 'result_file': None})
+                      'assignment': 'runner infrastructure', 'result_file': None,
+                      'reported_environments': []})
     counts = {s: 0 for s in STATUS}
     for u in units: counts[u['status']] += 1
     failures = [u for u in units if u['status'] in ('failed', 'absent')]
     blocked = [u for u in units if u['status'] == 'blocked']
 
-    bound_fields = ('source_sha', 'source_tree', 'run_id', 'run_attempt', 'ref', 'event', 'php_version', 'database')
+    bound_fields = ('source_sha', 'source_tree', 'run_id', 'run_attempt', 'ref', 'event')
     for field in bound_fields:
         values = {str(identity.get(field, '')) for identity in identities}
         if len(values) > 1:
@@ -75,14 +99,19 @@ def main():
         'source_sha': os.environ.get('CWP_SOURCE_SHA'), 'source_tree': os.environ.get('CWP_SOURCE_TREE'),
         'run_id': os.environ.get('GITHUB_RUN_ID'), 'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
         'ref': os.environ.get('GITHUB_REF'), 'event': os.environ.get('GITHUB_EVENT_NAME'),
-        'php_version': '8.3', 'database': 'mariadb-10.11',
     }
     for field, value in expected.items():
         if value and identities and str(identities[0].get(field, '')) != str(value):
             raise SystemExit('Diagnostic combined identity differs from expected ' + field)
 
+    common_identity = ({field: identities[0].get(field) for field in bound_fields}
+                       if identities else None)
     combined = {'kind': 'diagnostic-combined', 'source_sha': sorted(shas), 'source_tree': sorted(trees),
-                'identity': identities[0] if identities else None, 'result_files': [f.name for f in files],
+                'identity': common_identity,
+                'execution_environments': [
+                    {'php_version': php, 'database': database}
+                    for php, database in sorted(environments)],
+                'result_files': [f.name for f in files],
                 'totals': dict(counts, units=len(units), checks=sum(u['checks'] for u in units),
                                failed_assertions=sum(len(u['failed_checks']) for u in units)),
                 'units': units, 'not_reached': sorted(set(not_reached)),
