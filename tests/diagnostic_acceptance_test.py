@@ -6,7 +6,7 @@ registry mirrors the strict module sequence, unit boundaries record and
 contain failures, dependency blocking propagates, and the combined report
 never reports a failed or blocked run as successful.
 """
-import json, sys, tempfile
+import json, os, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,6 +97,10 @@ def main():
     # Combined report: a group job that produced no results is recorded as
     # blocked infrastructure failure, and duplicate units keep the worst status.
     import subprocess
+    report_env = os.environ.copy()
+    for key in ('CWP_SOURCE_SHA', 'CWP_SOURCE_TREE', 'GITHUB_RUN_ID',
+                'GITHUB_RUN_ATTEMPT', 'GITHUB_REF', 'GITHUB_EVENT_NAME'):
+        report_env.pop(key, None)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         identity = {'source_sha': 'a' * 40, 'source_tree': 'b' * 40, 'run_id': '1',
@@ -112,7 +116,7 @@ def main():
                        'after_failures': [], 'captures': [], 'assignment': 'site-www lane'}]}))
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
                                '--expect=website,mail', str(tmp), str(tmp / 'combined')],
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, env=report_env)
         ok('Missing expected group fails the combined report', code.returncode == 1)
         merged = json.loads((tmp / 'combined.json').read_text())
         group_units = [u for u in merged['units'] if u['key'] == 'group:mail']
@@ -122,7 +126,7 @@ def main():
         ok('Combined markdown written', (tmp / 'combined.md').is_file())
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
                                '--expect=website', str(tmp), str(tmp / 'combined2')],
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, env=report_env)
         ok('All-groups-present clean run exits zero', code.returncode == 0)
 
     # Module selection: --modules semantics and dependency expansion.
@@ -180,7 +184,7 @@ def main():
         (tmp / 'diagnostic-billing-results.json').write_text(json.dumps(b))
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
                                '--expect=portal,billing', str(tmp), str(tmp / 'dup')],
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, env=report_env)
         merged = json.loads((tmp / 'dup.json').read_text())
         kept = [u for u in merged['units'] if u['key'] == 'staff']
         ok('Replayed prerequisite keeps worst status', len(kept) == 1 and kept[0]['status'] == 'failed')
@@ -209,7 +213,7 @@ def main():
             'totals': {}, 'not_reached': [], 'units': [skipped]}))
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
                                '--expect=portal,billing', str(tmp), str(tmp / 'absent')],
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, env=report_env)
         ok('Selected absent module fails combined report', code.returncode == 1)
         combined_absent = json.loads((tmp / 'absent.json').read_text())
         ok('Selected absent module outranks another group skipped placeholder',
@@ -224,6 +228,8 @@ def main():
            assertion in strict_source and assertion in diagnostic_source)
 
     workflow = (ROOT / '.github/workflows/diagnostic-tests.yml').read_text(encoding='utf-8')
+    plan = workflow.split('\n  plan:\n', 1)[1].split('\n  diagnose:\n', 1)[0]
+    ok('Diagnostic plan still runs when build fails', '\n    needs: build\n' not in plan)
     ok('Workflow never interpolates group input into Python source', "raw = '${{ inputs.groups" not in workflow)
     ok('Workflow retains always-run diagnostic mutation guard',
        'if: always()' in workflow and 'tools/acceptance_artifacts.py guard' in workflow)
