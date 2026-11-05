@@ -191,6 +191,15 @@ def main():
         ok('Provenance records both group reports',
            sorted(kept[0]['reported_in']) == ['diagnostic-billing-results.json', 'diagnostic-portal-results.json'])
         ok('Duplicate-status run still exits non-zero', code.returncode == 1)
+        b['units'] = [dict(unit, status='skipped', role='preparation')]
+        (tmp / 'diagnostic-billing-results.json').write_text(json.dumps(b))
+        code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
+                               '--expect=portal,billing', str(tmp), str(tmp / 'dup-passed')],
+                              capture_output=True, text=True, env=report_env)
+        merged = json.loads((tmp / 'dup-passed.json').read_text())
+        ok('Passed home result outranks another group skipped placeholder',
+           code.returncode == 0 and
+           [u['status'] for u in merged['units'] if u['key'] == 'staff'] == ['passed'])
 
     # A selected module that disappears is an explicit failing outcome.
     with tempfile.TemporaryDirectory() as tmp:

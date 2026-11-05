@@ -43,7 +43,7 @@ def main():
         # dependent groups, so one unit legitimately appears in several files.
         # Keep the worst status so a duplicate can never soften a result, and
         # retain every reporting file as provenance.
-        worst = {'passed': 0, 'skipped': 1, 'absent': 2, 'blocked': 3, 'failed': 4}
+        worst = {'skipped': 0, 'passed': 1, 'absent': 2, 'blocked': 3, 'failed': 4}
         if u['key'] in seen:
             kept = seen[u['key']]
             kept['reported_in'].append(u['result_file'])
