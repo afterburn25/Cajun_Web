@@ -151,6 +151,10 @@ def run(root=ROOT):
                 lambda: altered_receipt(lambda data: data['integration_repairs'].pop('tests/installed_owner_authority.php')))
         refuses('Refuses omitted integration repair inverse',
                 lambda: altered_receipt(lambda data: data['integration_repairs']['tests/provider_force_ssl_controls_cases.py']['edits'].pop()))
+        refuses('Refuses omitted finance-readiness repair admission',
+                lambda: altered_receipt(lambda data: data['integration_repairs'].pop('tests/finance_initial_enrollment_native.php')))
+        refuses('Refuses omitted finance-readiness repair inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tests/finance_initial_enrollment_native.php']['edits'].pop()))
 
         def forged_repair_and_receipt():
             repair = fixture / 'tests/installed_owner_authority.py'

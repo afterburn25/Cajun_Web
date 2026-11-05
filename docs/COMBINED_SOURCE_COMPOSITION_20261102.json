@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "2f1e220a164eedd4d19aa321e215c5cc320f2de77ee56db3c445eaf9a7b7b350",
-  "regression_sha256": "6cf74492f14eb7b8ef52f0f1dd811884935fcbfbe7b9c99409c7b5f2cc7eccfd",
+  "verifier_sha256": "b4ebccb2d2740ff1ef78a72c0beb288d133e646f11a66d54ff40589bb59f74ec",
+  "regression_sha256": "4ab67e939584cb4d652eed883424b795955f38ba96150e6e677176985f20611e",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",
@@ -640,6 +640,16 @@
         [
           "    for path, digest in item['published_baseline']['source_sha256'].items():\n        check('Published 1.25 acceptance input source bound ' + path, hashlib.sha256((root / path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    guard = item['published_baseline']['input_guard_correction']\n    original_guard = (root / guard['path']).read_text()\n    check('Published archive negative test changes only unapproved future version', original_guard.count(guard['after']) == 1 and hashlib.sha256(original_guard.replace(guard['after'], guard['before'], 1).encode()).hexdigest() == guard['predecessor_sha256'])\n    reports = json.loads((root / 'tools/acceptance-reports.json').read_text())\n    for key, facts in item['predecessor_reports'].items():\n        current = reports[key]\n        additions = item['reports'] + (item['upgrade']['reports'] if key == 'final' else [])\n        check('Cloud request reports are unique in ' + key, len(current) == len(set(current)) and all(current.count(n) == 1 for n in additions))\n        retained = [n for n in current if n not in additions]\n",
           "    for path, digest in item['published_baseline']['source_sha256'].items():\n        check('Published 1.25 acceptance input source bound ' + path, hashlib.sha256((root / path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)\n    guard = item['published_baseline']['input_guard_correction']\n    original_guard = (root / guard['path']).read_text()\n    check('Published archive negative test changes only unapproved future version', original_guard.count(guard['after']) == 1 and hashlib.sha256(original_guard.replace(guard['after'], guard['before'], 1).encode()).hexdigest() == guard['predecessor_sha256'])\n    reports = json.loads(fixture_predecessor_source(root, 'tools/acceptance-reports.json'))\n    for key, facts in item['predecessor_reports'].items():\n        current = reports[key]\n        additions = item['reports'] + (item['upgrade']['reports'] if key == 'final' else [])\n        check('Cloud request reports are unique in ' + key, len(current) == len(set(current)) and all(current.count(n) == 1 for n in additions))\n        retained = [n for n in current if n not in additions]\n"
+        ]
+      ]
+    },
+    "tests/finance_initial_enrollment_native.php": {
+      "original_sha256": "0632b77c78a78992c81505d9ec30e142373d4c42c2a1608dbb38f8e312d05de3",
+      "current_sha256": "f61066d00ae989965130c0f8965bb0300c45ab45bbe220bc1b95ff6029020f38",
+      "edits": [
+        [
+          "    $password='Synthetic enrollment owner passphrase';$now=gmdate('Y-m-d H:i:s');",
+          "    // Regression for the financing-offer CI failure: payment readiness also\n    // depends on staff and studio schema markers. Verify both their negative\n    // and recovered states in the actual isolated native database fixture.\n    fie_ok('Financing fixture initializes staff, studio and payments readiness',\n        payments_ready() && staff_ready() && studio_ready());\n    save_setting('staff_schema_version','');\n    fie_ok('Payments fail closed without staff schema readiness', !payments_ready());\n    save_setting('staff_schema_version','1');\n    save_setting('studio_schema_version','');\n    fie_ok('Payments fail closed without studio schema readiness', !payments_ready());\n    save_setting('studio_schema_version','2');\n    save_setting('payments_schema_version','');\n    fie_ok('Payments fail closed without payment schema readiness', !payments_ready());\n    save_setting('payments_schema_version','2');\n    fie_ok('Financing fixture recovers all readiness prerequisites', payments_ready());\n    $password='Synthetic enrollment owner passphrase';$now=gmdate('Y-m-d H:i:s');"
         ]
       ]
     },
