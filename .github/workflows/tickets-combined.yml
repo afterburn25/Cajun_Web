@@ -35,12 +35,11 @@ jobs:
           test "$(git rev-parse HEAD^{tree})" = 'ebd4fd2bc6efee1d4dd7df6eb9506649499b72ce'
           git merge-base --is-ancestor f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391 HEAD
           git merge-base --is-ancestor 2421ff27d21a75f888a23ae0f2d17d3066a9893c HEAD
-          python3 tests/combined_source_composition.py
-          python3 tests/combined_source_composition_test.py > qa-composition-regression.json
-          python3 tests/combined_source_composition_test.py --shallow > qa-composition-shallow.json
-          python3 tools/build.py --refresh
           mkdir -p qa/tickets-source
-          mv qa-composition-regression.json qa-composition-shallow.json qa/tickets-source/
+          python3 tests/combined_source_composition.py
+          python3 tests/combined_source_composition_test.py > qa/tickets-source/composition-regression.json
+          python3 tests/combined_source_composition_test.py --shallow > qa/tickets-source/composition-shallow.json
+          python3 tools/build.py --refresh
           php tests/desk/run.php > qa/tickets-source/desk.log
           php tests/desk/review_controls.php > qa/tickets-source/review.json
           php tests/desk/review_controls.php --deployment > qa/tickets-source/deployed-review.json
@@ -75,7 +74,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: tickets-source-${{ steps.record.outputs.sha }}
+          name: tickets-source-${{ inputs.source_sha }}
           path: qa/tickets-source/
           if-no-files-found: error
           retention-days: 14
