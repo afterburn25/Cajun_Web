@@ -628,6 +628,10 @@ def verify_current(root):
                                       diagnostic_source_parent, DIAGNOSTIC_ADDITION_SOURCE).decode().splitlines())
     require(diagnostic_source_paths == DIAGNOSTIC_ADDITIONS,
             'Retained diagnostic source changed a different path set')
+    require(not DIAGNOSTIC_ADDITIONS & set(entries(root, diagnostic_source_parent)),
+            'Retained diagnostic source did not add every admitted path')
+    require(not DIAGNOSTIC_ADDITIONS & set(ticket_addition_entries),
+            'Diagnostic additions existed in the earlier ticket source')
     for identity in (BASE, REPAIR_BASE, ADDITION_SOURCE,
                      *(source['commit'] for source in COMPONENTS.values())):
         require(not TICKET_ADDITIONS & set(entries(root, identity)),
