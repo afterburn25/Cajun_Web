@@ -229,7 +229,11 @@ def main():
 
     workflow = (ROOT / '.github/workflows/diagnostic-tests.yml').read_text(encoding='utf-8')
     plan = workflow.split('\n  plan:\n', 1)[1].split('\n  diagnose:\n', 1)[0]
+    combine = workflow.split('\n  combine:\n', 1)[1]
     ok('Diagnostic plan still runs when build fails', '\n    needs: build\n' not in plan)
+    ok('Combined report survives missing group artifacts',
+       'continue-on-error: true' in combine and
+       '- name: Build combined report\n        if: always()' in combine)
     ok('Workflow never interpolates group input into Python source', "raw = '${{ inputs.groups" not in workflow)
     ok('Workflow retains always-run diagnostic mutation guard',
        'if: always()' in workflow and 'tools/acceptance_artifacts.py guard' in workflow)
