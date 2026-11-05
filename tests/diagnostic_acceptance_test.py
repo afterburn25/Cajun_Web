@@ -283,6 +283,9 @@ def main():
     ok('Combined report survives missing group artifacts',
        'continue-on-error: true' in combine and
        '- name: Build combined report\n        if: always()' in combine)
+    ok('Combined report downloads both baseline and exact named target artifacts',
+       'pattern: diag-*-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}' in combine and
+       'pattern: diag-group-*-' not in combine)
     ok('Historical fixture downloads retain bounded retry evidence',
        'for attempt in 1 2 3; do' in workflow and
        'tee -a qa/legacy-preparation.txt' in workflow and

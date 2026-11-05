@@ -339,7 +339,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          pattern: diag-group-*-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          pattern: diag-*-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
           merge-multiple: true
           path: .diagnostic-results
       - name: Build combined report
