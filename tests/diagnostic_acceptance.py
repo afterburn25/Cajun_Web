@@ -25,7 +25,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tests'))
-from diagnostic_registry import GROUPS, STAGES, MODULES, MODULE_STAGE_REQUIRES, ASSIGNMENTS
+from diagnostic_registry import (GROUPS, STAGES, MODULES, MODULE_STAGE_REQUIRES,
+                                 ASSIGNMENTS, resolve_groups)
 
 BASE = 'http://127.0.0.1:8091'; WEB = ROOT / 'test-runtime/web'; QA = ROOT / 'qa'; QA.mkdir(exist_ok=True)
 checks = []
@@ -209,7 +210,11 @@ def stage_admin_flow():
     r = alice.get(BASE + '/existing/portal/index.php?job=1'); check('Client sees own invoice', 'HTTP manual invoice' in r.text)
     r = bob.get(BASE + '/existing/portal/index.php?job=2'); check('Other client does not see invoice', 'HTTP manual invoice' not in r.text)
     with open(ROOT / 'site/images/icons/favicon.png', 'rb') as f: r = submit(admin, BASE + '/existing/admin/index.php?view=studio-portfolio', 'studio_media', files={'image': ('public-capture.png', f, 'image/png')})
-    check('Real GD image upload returns successfully', r.status_code == 200 and 'Saved.' in r.text)
+    check('Real GD image upload returns successfully', r.status_code == 200 and 'Saved.' in r.text and 'could not' not in r.text.lower())
+    # Negative real HTTP cases must stay synchronized with the strict prelude.
+    r = bob.get(BASE + '/existing/portal/index.php?job=2'); bad = {'csrf': token(r), 'action': 'message', 'body': 'Cross-client write must fail.'}
+    r = bob.post(BASE + '/existing/portal/index.php?job=1', data=bad); check('Cross-client message POST denied', r.status_code == 404)
+    r = alice.get(BASE + '/existing/portal/index.php?job=1'); check('Cross-client message not saved', 'Cross-client write must fail.' not in r.text)
     r = alice.post(BASE + '/existing/portal/index.php?job=1', data={'csrf': 'invalid', 'action': 'message', 'body': 'CSRF write must fail.'}); check('Portal CSRF rejected', 'session expired' in r.text.lower())
     r = alice.get(BASE + '/existing/portal/index.php?job=1'); check('CSRF message not saved', 'CSRF write must fail.' not in r.text)
     f = form_for(r, 'upload'); bad = form_data(f)
@@ -298,13 +303,32 @@ def stage_log_check():
     check('Application server has no PHP runtime warnings or errors', not diagnostics)
 
 
+def evidence_identity():
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip()
+    expected = os.environ.get('CWP_SOURCE_SHA') or os.environ.get('GITHUB_SHA')
+    if expected and expected != head:
+        raise RuntimeError('Diagnostic checkout differs from the bound source SHA')
+    return {
+        'source_sha': head,
+        'source_tree': tree,
+        'run_id': os.environ.get('GITHUB_RUN_ID', 'local'),
+        'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT', 'local'),
+        'ref': os.environ.get('GITHUB_REF', 'local'),
+        'event': os.environ.get('GITHUB_EVENT_NAME', 'local'),
+        'php_version': os.environ.get('CWP_PHP_VERSION', 'local'),
+        'database': os.environ.get('CWP_DATABASE', 'local'),
+    }
+
+
 def write_reports(tag, selected_modules):
     counts = {'passed': 0, 'failed': 0, 'blocked': 0, 'skipped': 0, 'absent': 0}
     for r in results: counts[r['status']] += 1
     selected_keys = {m[0] for m in selected_modules}
     not_reached = sorted(selected_keys - {r['key'] for r in results})
+    identity = evidence_identity()
     payload = {'kind': 'diagnostic-results', 'transport': 'real loopback HTTP; PHP built-in server; native database; actual browser fetch',
-               'source_sha': os.environ.get('GITHUB_SHA') or subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True, cwd=ROOT).stdout.strip(),
+               'source_sha': identity['source_sha'], 'source_tree': identity['source_tree'], 'identity': identity,
                'selection': {'groups': sorted({m[3] for m in MODULES if m[0] in HOME_KEYS}),
                              'modules': sorted(HOME_KEYS),
                              'preparation': sorted(selected_keys - HOME_KEYS)},
@@ -334,9 +358,11 @@ def main():
     ap.add_argument('--list', action='store_true', help='Print the registry and exit without running.')
     args = ap.parse_args()
 
-    groups = {g.strip() for raw in (args.group or ['all']) for g in raw.split(',')}
-    unknown = groups - set(GROUPS) - {'all'}
-    if unknown: raise SystemExit('Unknown diagnostic group(s): ' + ', '.join(sorted(unknown)))
+    raw_groups = ','.join(args.group) if args.group else 'all'
+    try:
+        groups = set(resolve_groups(raw_groups))
+    except ValueError as exc:
+        raise SystemExit(str(exc))
     module_keys = {m.strip() for m in args.modules.split(',') if m.strip()}
     known = {m[0] for m in MODULES}
     if module_keys - known: raise SystemExit('Unknown module key(s): ' + ', '.join(sorted(module_keys - known)))
@@ -344,7 +370,7 @@ def main():
     if module_keys:
         home = set(module_keys)
     else:
-        home = {m[0] for m in MODULES if m[3] in groups or 'all' in groups}
+        home = {m[0] for m in MODULES if m[3] in groups}
     # Modules in other groups that the selection's prerequisites require are
     # replayed as 'preparation' units so every run is self-sufficient on a
     # freshly seeded ci_ schema. Their results are real assertion results;
@@ -361,7 +387,7 @@ def main():
     if requests is None:
         raise SystemExit('Diagnostic run requires: requests, beautifulsoup4, playwright')
 
-    tag = args.tag or (args.modules and 'modules' or ('-'.join(sorted(groups)) if 'all' not in groups else 'all'))
+    tag = args.tag or (args.modules and 'modules' or ('-'.join(sorted(groups)) if len(groups) != len(GROUPS) else 'all'))
 
     # Environment setup — ported from the pinned strict runner.
     WEB.mkdir(parents=True, exist_ok=True)
@@ -446,7 +472,7 @@ def main():
     counts = write_reports(tag, selected)
     for item in checks: print(('PASS ' if item['passed'] else 'FAIL ') + item['unit'] + ' :: ' + item['name'])
     print(json.dumps({'units': counts}, indent=0))
-    return 0 if counts['failed'] == 0 and counts['blocked'] == 0 else 1
+    return 0 if counts['failed'] == 0 and counts['blocked'] == 0 and counts['absent'] == 0 else 1
 
 
 if __name__ == '__main__':

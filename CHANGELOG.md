@@ -1,3 +1,10 @@
+## 2026-11-05 — Diagnostic multi-failure acceptance successor
+
+- Retain the six-file diagnostic source from historical PR #327 as an explicit merge parent, then bind its registry to all 58 modules in the current strict non-focused browser runner through AST discovery.
+- Run ten isolated PHP 8.3/MariaDB group lanes plus a separately named PHP 8.4/MySQL billing target, with exact source/tree/run/attempt/config identity and always-run source mutation guards.
+- Refuse unallowlisted manual group input, fail selected absent modules and missing group workers in both JSON and Markdown, and restore the current strict cross-client/GD prelude assertions without changing the authoritative strict runner.
+- This is diagnostic collection only, not release acceptance. Full Application, RC, review, normal merge and exact-main diagnostic verification remain required; no live operation is authorized or performed.
+
 ## 2026-11-04 — 1.26.1 webhook identity and payment-link privacy qualification
 
 - Added one strict Authorize.Net subscription-event identity parser and applied it before both sandbox and production lifecycle routing.

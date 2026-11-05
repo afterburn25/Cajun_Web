@@ -18,10 +18,10 @@ release evidence; a red one is never reportable as success.
   `public` routes/guards/estimator, `admin-flow` HTTP flows/uploads/invoices,
   `installer` (native fresh install), `release` (upgrade + fixture seeding via
   `release_cases.run_http`), `browser` (Chromium session, captures, motion).
-- **54 feature modules** — every `*_cases.run_browser` call in the strict
-  runner, in the same order. The registry
-  (`tests/diagnostic_registry.py`) is checked against the strict file by
-  `tests/diagnostic_acceptance_test.py`; drift fails the contract test.
+- **58 feature modules** — every `*_cases.run_browser` call in the strict
+  runner's actual non-focused branch, in the same order. The registry parses
+  that branch with Python's AST and attaches finite metadata; a missing,
+  duplicated, stale, or newly unclassified module fails the contract test.
 - A final `server-log` unit asserting the PHP server log has no warnings.
 
 Each module keeps its own assertions unchanged. A failure aborts only that
@@ -35,8 +35,10 @@ suspect downstream failure can be discounted instead of trusted blindly.
 never ran against possibly contaminated state), `skipped` (deselected by the
 run filter), `absent` (the module file is not in this source tree). The
 combined report additionally lists `not_reached` modules and synthesizes a
-`group:<name>` blocked unit when an expected group job produced no results at
-all (infrastructure failure), so a crashed worker can never look green.
+`group:<name>` blocked unit in both JSON and Markdown when an expected group
+job produced no results at all (infrastructure failure), so a crashed worker
+can never look green. A selected `absent` module also fails its lane and the
+combined report.
 
 ## Groups and parallelism
 
@@ -48,16 +50,16 @@ mutable database or browser session:
 |---|---|---|
 | website | 2 | portfolio, reviews (+ public/browser stages) |
 | installer | 1 | release-browser (+ installer/release stages) |
-| portal | 2 | staff, appointments (+ admin-flow stage) |
-| billing | 7 | catalog, payments, attempts, ledger, delivery, recurring-billing, license-release |
+| portal | 3 | staff, appointments, contacts (+ admin-flow stage) |
+| billing | 9 | catalog, payments, attempts, ledger, delivery, recurring-billing, license-release, software-commerce, license-financing |
 | mail | 9 | notifications, mail-templates, mail-accounts, mail-connections, mail-inbox, mail-message, mail-notices, mail-drafts, mail-submissions |
 | twentyi-inventory | 9 | catalog-import, provider-settings/operations, service-observations, service-plan, cloud-providers, reset-template, cloud-assignment, provider-schedule |
 | twentyi-domains | 9 | domain-search, registrar, domain-renewals, domain-contracts, registration-periods, domain-expiry, renewal-agreements, renewal-dispatch, registration-drafts |
 | twentyi-packages | 10 | provider-mailbox, provider-forwarding, cloud-sites, package-php, document-roots, package-force-ssl, directory-listing, force-ssl-controls, wordpress-installed, directory-controls |
 | stackcp | 2 | stackcp-prerequisites, stackcp-access (in-group dependency) |
-| security | 3 | support, activity, client-authority (+ server-log) |
+| security | 4 | support, backups, activity, client-authority (+ server-log) |
 
-All 54 modules can execute behind the shared bootstrap. Verified module→module
+All 58 modules can execute behind the shared bootstrap. Verified module→module
 edges (from controllers and `*_ready()` gates): `staff` roots the
 admin-readiness chain (`catalog`, `payments`, `support`, `portfolio`);
 `payments` also creates the shared `request-staff` account consumed by 34
@@ -67,24 +69,34 @@ modules (billing, mail, portal, security, provider and StackCP modules);
 gates `cloud-sites`; the mail chain runs
 `mail-accounts` → `mail-inbox`/`mail-connections`/`mail-drafts` →
 `mail-message` → `mail-notices`/`mail-submissions`; `stackcp-access` →
-`stackcp-prerequisites`. Each group job replays its transitive closure as
+`stackcp-prerequisites`; `backups` requires `staff`; `license-financing`
+requires `software-commerce`; and `contacts` requires the current recurring,
+registration-draft, software-commerce, and financing preparation chains. Each
+group job replays its transitive closure as
 `preparation` units so it is self-sufficient on a fresh `ci_` schema.
 **Supported workers: up to 10 concurrent group jobs** (one per group), plus
 stage- and module-level blocking keeps dependents honest inside each job.
-Per-group execution sizes: website 4, portal 3, installer 1, billing 9,
-mail 12, security 5, twentyi-inventory 11, twentyi-domains 12,
-twentyi-packages 14, stackcp 5.
+The matrix runs each selected group on PHP 8.3/MariaDB 10.11. When billing is
+selected it also runs one separately named target lane on PHP 8.4/MySQL 8.4;
+the target artifact is not substituted into the ten-group combined report.
 
 ## Workflow
 
-`.github/workflows/diagnostic-tests.yml` is **dispatch-only** — it reuses the
-acceptance build job's immutable inputs (`tools/acceptance_artifacts.py
+`.github/workflows/diagnostic-tests.yml` runs on the bounded
+`codex/diagnostic-acceptance-*` successor branch, on `main`, and by manual
+dispatch. Manual group text is passed only through an environment variable to
+the shared allowlisting registry CLI; it is never interpolated into Python or
+shell source. Development runs use PR/ref-scoped newest-wins concurrency,
+while every main run is retained. The workflow reuses the acceptance build
+job's immutable inputs (`tools/acceptance_artifacts.py
 pack-inputs` / `receive`), seeds the isolated `ci_` fixture with
 `tests/native.php`, then runs one job per group. `qa/` (results JSON, report
 MD, screenshots, `http-server.log`, `php-diagnostics.json`) uploads per
 group; the `combine` job merges all results via `tests/diagnostic_report.py`
-and fails the workflow when anything failed, was blocked, or a group never
-reported.
+and fails the workflow when anything failed, was blocked, was selected but
+absent, or a group never reported. Every lane binds source commit, tree, run,
+attempt, ref, event, PHP and database; an always-run mutation guard verifies
+the received shipping source even when the diagnostic runner fails.
 
 ## Running locally / on a branch
 

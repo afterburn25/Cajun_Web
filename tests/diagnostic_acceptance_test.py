@@ -6,7 +6,7 @@ registry mirrors the strict module sequence, unit boundaries record and
 contain failures, dependency blocking propagates, and the combined report
 never reports a failed or blocked run as successful.
 """
-import json, re, sys, tempfile
+import json, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,11 +25,13 @@ def main():
     import diagnostic_registry as reg
     import diagnostic_acceptance as diag
 
-    # Registry mirrors the pinned strict module order exactly.
-    src = (ROOT / 'tests/browser_acceptance.py').read_text(encoding='utf-8')
-    strict = ['release_cases'] + [s + '_cases' for s in re.findall(r'from (\w+)_cases import run_browser', src)]
+    # Registry is discovered from the actual strict non-focused AST branch.
+    strict = reg.discover_strict_modules()
     registry = [m[1] for m in reg.MODULES]
     ok('Registry lists every strict *_cases module in order', registry == strict)
+    ok('Registry covers all 58 current strict modules', len(registry) == 58)
+    ok('Late finance/contact modules cannot be omitted', registry[-3:] == [
+        'software_commerce_cases', 'license_financing_cases', 'contacts_cases'])
 
     keys = [m[0] for m in reg.MODULES]
     ok('Module keys are unique', len(set(keys)) == len(keys))
@@ -45,6 +47,24 @@ def main():
     ok('Every group has a repair assignment', all(g in reg.ASSIGNMENTS for g in reg.GROUPS))
     required_groups = {'website', 'installer', 'portal', 'billing', 'mail', 'stackcp', 'security'}
     ok('Required categories are covered', required_groups <= set(reg.GROUPS))
+    expected_counts = {'website': 2, 'installer': 1, 'portal': 3, 'billing': 9, 'mail': 9,
+                       'twentyi-inventory': 9, 'twentyi-domains': 9,
+                       'twentyi-packages': 10, 'stackcp': 2, 'security': 4}
+    ok('Exact current group partition is retained',
+       {g: sum(1 for m in reg.MODULES if m[3] == g) for g in reg.GROUPS} == expected_counts)
+    ok('Group resolver allowlists all', reg.resolve_groups('all') == sorted(reg.GROUPS))
+    for malicious in ('billing;echo-owned', 'billing,$(id)', 'billing,,mail', '../billing', 'all,billing'):
+        try:
+            reg.resolve_groups(malicious)
+        except ValueError:
+            refused = True
+        else:
+            refused = False
+        ok('Group resolver refuses ' + malicious, refused)
+    ok('Target lane is separately named and configured', reg.lanes_for(['billing'])[-1] == {
+        'group': 'billing', 'php_version': '8.4', 'database': 'mysql-8.4',
+        'tag': 'target-billing-php84-mysql', 'artifact': 'diag-target-billing-php84-mysql',
+        'role': 'target'})
 
     # Unit boundary: a failing unit is recorded and does not raise out.
     diag.results.clear(); diag.checks.clear(); diag.status_of.clear()
@@ -79,8 +99,12 @@ def main():
     import subprocess
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
+        identity = {'source_sha': 'a' * 40, 'source_tree': 'b' * 40, 'run_id': '1',
+                    'run_attempt': '1', 'ref': 'refs/heads/test', 'event': 'push',
+                    'php_version': '8.3', 'database': 'mariadb-10.11'}
         (tmp / 'diagnostic-website-results.json').write_text(json.dumps({
             'kind': 'diagnostic-results', 'source_sha': 'a' * 40,
+            'source_tree': 'b' * 40, 'identity': identity,
             'selection': {'groups': ['website'], 'modules': ['portfolio']},
             'totals': {}, 'not_reached': ['reviews'],
             'units': [{'key': 'portfolio', 'kind': 'module', 'group': 'website', 'status': 'passed',
@@ -93,6 +117,7 @@ def main():
         merged = json.loads((tmp / 'combined.json').read_text())
         group_units = [u for u in merged['units'] if u['key'] == 'group:mail']
         ok('Missing group recorded as blocked', group_units and group_units[0]['status'] == 'blocked')
+        ok('Synthesized blocked group appears in markdown', 'group:mail' in (tmp / 'combined.md').read_text())
         ok('Not-reached list preserved', merged['not_reached'] == ['reviews'])
         ok('Combined markdown written', (tmp / 'combined.md').is_file())
         code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
@@ -138,7 +163,11 @@ def main():
     # in several group reports, and retains provenance.
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        base = {'kind': 'diagnostic-results', 'source_sha': 'b' * 40, 'totals': {}, 'not_reached': []}
+        identity = {'source_sha': 'b' * 40, 'source_tree': 'c' * 40, 'run_id': '2',
+                    'run_attempt': '1', 'ref': 'refs/heads/test', 'event': 'push',
+                    'php_version': '8.3', 'database': 'mariadb-10.11'}
+        base = {'kind': 'diagnostic-results', 'source_sha': 'b' * 40, 'source_tree': 'c' * 40,
+                'identity': identity, 'totals': {}, 'not_reached': []}
         unit = {'key': 'staff', 'kind': 'module', 'group': 'portal', 'checks': 5,
                 'failed_checks': [], 'error': None, 'elapsed_s': 1,
                 'after_failures': [], 'captures': [], 'assignment': 'studio/portal lane'}
@@ -158,6 +187,38 @@ def main():
         ok('Provenance records both group reports',
            sorted(kept[0]['reported_in']) == ['diagnostic-billing-results.json', 'diagnostic-portal-results.json'])
         ok('Duplicate-status run still exits non-zero', code.returncode == 1)
+
+    # A selected module that disappears is an explicit failing outcome.
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        identity = {'source_sha': 'd' * 40, 'source_tree': 'e' * 40, 'run_id': '3',
+                    'run_attempt': '1', 'ref': 'refs/heads/test', 'event': 'push',
+                    'php_version': '8.3', 'database': 'mariadb-10.11'}
+        absent = {'key': 'contacts', 'kind': 'module', 'group': 'portal', 'status': 'absent',
+                  'checks': 0, 'failed_checks': [], 'error': {'class': 'ModuleAbsent',
+                  'message': 'contacts_cases.py not present', 'site': None}, 'elapsed_s': 0,
+                  'after_failures': [], 'captures': [], 'assignment': 'studio/portal lane'}
+        (tmp / 'diagnostic-portal-results.json').write_text(json.dumps({
+            'kind': 'diagnostic-results', 'source_sha': 'd' * 40, 'source_tree': 'e' * 40,
+            'identity': identity, 'selection': {'groups': ['portal'], 'modules': ['contacts']},
+            'totals': {}, 'not_reached': [], 'units': [absent]}))
+        code = subprocess.run([sys.executable, str(ROOT / 'tests/diagnostic_report.py'),
+                               '--expect=portal', str(tmp), str(tmp / 'absent')],
+                              capture_output=True, text=True)
+        ok('Selected absent module fails combined report', code.returncode == 1)
+        ok('Absent module appears in human report', 'contacts' in (tmp / 'absent.md').read_text())
+
+    strict_source = (ROOT / 'tests/browser_acceptance.py').read_text(encoding='utf-8')
+    diagnostic_source = (ROOT / 'tests/diagnostic_acceptance.py').read_text(encoding='utf-8')
+    for assertion in ('Cross-client message POST denied', 'Cross-client message not saved',
+                      'Real GD image upload returns successfully'):
+        ok('Diagnostic prelude retains strict assertion: ' + assertion,
+           assertion in strict_source and assertion in diagnostic_source)
+
+    workflow = (ROOT / '.github/workflows/diagnostic-tests.yml').read_text(encoding='utf-8')
+    ok('Workflow never interpolates group input into Python source', "raw = '${{ inputs.groups" not in workflow)
+    ok('Workflow retains always-run diagnostic mutation guard',
+       'if: always()' in workflow and 'tools/acceptance_artifacts.py guard' in workflow)
 
     print(json.dumps({'checks': len(results), 'passed': sum(1 for _, p in results if p)}))
     return 0

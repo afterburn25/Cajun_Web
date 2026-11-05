@@ -6,7 +6,7 @@ Writes <out-prefix>.json and <out-prefix>.md. Exits non-zero when any unit
 failed or was dependency-blocked — a diagnostic run with failures is never
 reported as successful.
 """
-import json, sys
+import json, os, sys
 from pathlib import Path
 
 STATUS = ['passed', 'failed', 'blocked', 'skipped', 'absent']
@@ -23,7 +23,7 @@ def main():
     missing = sorted(expected - produced)
     if not files and not missing:
         raise SystemExit('No diagnostic-*-results.json files under ' + str(src))
-    units, not_reached, shas = [], [], set()
+    units, not_reached, shas, trees, identities = [], [], set(), set(), []
     for path in files:
         payload = json.loads(path.read_text(encoding='utf-8'))
         if payload.get('kind') != 'diagnostic-results':
@@ -32,6 +32,11 @@ def main():
             unit = dict(unit); unit['result_file'] = path.name; units.append(unit)
         not_reached += payload.get('not_reached', [])
         shas.add(payload.get('source_sha') or 'unknown')
+        trees.add(payload.get('source_tree') or 'unknown')
+        identity = payload.get('identity')
+        if not isinstance(identity, dict):
+            raise SystemExit(str(path) + ' has no exact diagnostic identity')
+        identities.append(identity)
     seen = {}
     for u in units:
         # Prerequisite modules are replayed as 'preparation' units inside
@@ -50,18 +55,34 @@ def main():
             u['reported_in'] = [u['result_file']]; u['other_statuses'] = []
         seen[u['key']] = u
     units = list(seen.values())
-    counts = {s: 0 for s in STATUS}
-    for u in units: counts[u['status']] += 1
-    failures = [u for u in units if u['status'] == 'failed']
-    blocked = [u for u in units if u['status'] == 'blocked']
     for g in missing:
         units.append({'key': 'group:' + g, 'kind': 'group', 'group': g, 'status': 'blocked', 'checks': 0,
                       'failed_checks': [], 'error': {'class': 'GroupMissing',
                       'message': 'Group job produced no results (infrastructure failure before the runner completed)', 'site': None},
                       'elapsed_s': 0, 'after_failures': [], 'captures': [],
                       'assignment': 'runner infrastructure', 'result_file': None})
-        counts['blocked'] += 1
-    combined = {'kind': 'diagnostic-combined', 'source_sha': sorted(shas), 'result_files': [f.name for f in files],
+    counts = {s: 0 for s in STATUS}
+    for u in units: counts[u['status']] += 1
+    failures = [u for u in units if u['status'] in ('failed', 'absent')]
+    blocked = [u for u in units if u['status'] == 'blocked']
+
+    bound_fields = ('source_sha', 'source_tree', 'run_id', 'run_attempt', 'ref', 'event', 'php_version', 'database')
+    for field in bound_fields:
+        values = {str(identity.get(field, '')) for identity in identities}
+        if len(values) > 1:
+            raise SystemExit('Diagnostic group identity mismatch for ' + field + ': ' + repr(sorted(values)))
+    expected = {
+        'source_sha': os.environ.get('CWP_SOURCE_SHA'), 'source_tree': os.environ.get('CWP_SOURCE_TREE'),
+        'run_id': os.environ.get('GITHUB_RUN_ID'), 'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+        'ref': os.environ.get('GITHUB_REF'), 'event': os.environ.get('GITHUB_EVENT_NAME'),
+        'php_version': '8.3', 'database': 'mariadb-10.11',
+    }
+    for field, value in expected.items():
+        if value and identities and str(identities[0].get(field, '')) != str(value):
+            raise SystemExit('Diagnostic combined identity differs from expected ' + field)
+
+    combined = {'kind': 'diagnostic-combined', 'source_sha': sorted(shas), 'source_tree': sorted(trees),
+                'identity': identities[0] if identities else None, 'result_files': [f.name for f in files],
                 'totals': dict(counts, units=len(units), checks=sum(u['checks'] for u in units),
                                failed_assertions=sum(len(u['failed_checks']) for u in units)),
                 'units': units, 'not_reached': sorted(set(not_reached)),
@@ -77,7 +98,7 @@ def main():
             ['| total | ' + str(len(units)) + ' |', '',
              'Checks executed: ' + str(combined['totals']['checks']) + '  •  failed assertions: ' + str(combined['totals']['failed_assertions']), '']
     if failures or blocked:
-        lines += ['## Failures and blocked units', '',
+        lines += ['## Failures, absent modules, and blocked units', '',
                   '| unit | group | status | failed assertions | error | repair lane |',
                   '|---|---|---|---|---|---|']
         for u in failures + blocked:
@@ -92,7 +113,7 @@ def main():
              ['| ' + u['key'] + ' | ' + u['group'] + ' | ' + u['status'] + ' | ' + str(u['checks']) + ' | ' + ', '.join(u['captures'][:6]) + ' |' for u in units]
     out.with_suffix('.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print(json.dumps({'units': len(units), 'counts': counts, 'not_reached': len(set(not_reached))}))
-    return 0 if counts['failed'] == 0 and counts['blocked'] == 0 else 1
+    return 0 if counts['failed'] == 0 and counts['blocked'] == 0 and counts['absent'] == 0 else 1
 
 
 if __name__ == '__main__':
