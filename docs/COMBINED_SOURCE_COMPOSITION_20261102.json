@@ -1,5 +1,5 @@
 {
-  "format": 3,
+  "format": 4,
   "base": "84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd",
   "base_tree": "a206e95562ab751cd9461db3a8ed32c4305ecbec",
   "components": {
@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "24e83346d81d2e6bcfffe831a86c3a9beb5bd8a32685a41ea116d3cccf1dc08e",
-  "regression_sha256": "d5f15b894e74f864427afaf1a2e1b5ec75920225639896fb27a09054a8167123",
+  "verifier_sha256": "2f1e220a164eedd4d19aa321e215c5cc320f2de77ee56db3c445eaf9a7b7b350",
+  "regression_sha256": "6cf74492f14eb7b8ef52f0f1dd811884935fcbfbe7b9c99409c7b5f2cc7eccfd",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",
@@ -1075,6 +1075,24 @@
         ]
       ]
     },
+    "tests/ticket_cases.py": {
+      "original_sha256": "8f6403347dac6d3372b0162aecca7ce03601f9d1468c8959567823c903cbdb54",
+      "current_sha256": "dc3bf485e8473588661b8bfaeb88ef8caab87281d5111e23ed987957af4938bf",
+      "edits": [
+        [
+          "from staff_cases import OWNER, STAFF\n",
+          "from staff_cases import OWNER, STAFF\nfrom ticket_screenshot import capture_ticket_page\n"
+        ],
+        [
+          "        page.screenshot(path=str(QA/(name+'-Desktop.png')), full_page=True)\n",
+          "        check(name+' desktop screenshot includes the complete footer',\n              capture_ticket_page(page, QA/(name+'-Desktop.png')))\n"
+        ],
+        [
+          "        page.screenshot(path=str(QA/(name+'-Mobile.png')), full_page=True)\n",
+          "        check(name+' mobile screenshot includes the complete footer',\n              capture_ticket_page(page, QA/(name+'-Mobile.png')))\n"
+        ]
+      ]
+    },
     "tools/acceptance-contract.json": {
       "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
       "current_sha256": "068d0aac2cd983215bd90decfa396fbbf1637813836bfe7c44b580adb99c3f2c",
@@ -1272,6 +1290,14 @@
           "    submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})\n    # Recurring navigation is tested only after the maintained billing preparation.\n    check('Contact billing navigation uses prepared service-plan and recurring storage',\n          db(\"SELECT name,value FROM ci_settings WHERE name IN ('service_plans_schema_version','recurring_billing_schema_version') ORDER BY name\")==[\n              {'name':'recurring_billing_schema_version','value':'1'},\n              {'name':'service_plans_schema_version','value':'1'}])\n    r=billing.get(portal)\n    check('Billing-enabled contact sees billing navigation', 'agreements=1' in r.text and 'recurring=1' in r.text and 'registration_drafts=1' in r.text)\n    r=contact.get(portal+'?recurring=1')\n    check('Prepared recurring billing remains unavailable to a projects-only contact',r.status_code==403)\n"
         ]
       ]
+    }
+  },
+  "ticket_addition_source": "2421ff27d21a75f888a23ae0f2d17d3066a9893c",
+  "ticket_addition_source_tree": "375e82042ded868582448a8d14b2d81ad72d7daf",
+  "ticket_additions": {
+    "tests/ticket_screenshot.py": {
+      "sha256": "2ff95ddef50e9acd3ddf9f5a865ad54f029c58aebddc2ab9c5ba46749014419d",
+      "mode": "100644"
     }
   }
 }

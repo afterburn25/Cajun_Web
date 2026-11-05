@@ -37,7 +37,7 @@ def run(root=ROOT):
         subprocess.run(['git', 'checkout', '--quiet', '--detach', proof.git(root, 'rev-parse', 'HEAD').decode().strip()], cwd=fixture, check=True)
         # The test also runs before the new comparison adapters are committed.
         # Copy only their finite reviewed bytes into the disposable checkout.
-        for path in proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY, 'tools/acceptance-contract.json'}:
+        for path in proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY, 'tools/acceptance-contract.json'}:
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))
@@ -344,6 +344,43 @@ def run(root=ROOT):
 
         refuses('Refuses simultaneous contact source and addition-receipt hash substitution', forged_addition_and_receipt)
 
+        ticket_helper = 'tests/ticket_screenshot.py'
+        refuses('Refuses altered exact ticket screenshot addition',
+                lambda: modified(ticket_helper, lambda target: target.write_bytes(
+                    target.read_bytes() + b'\n# unreviewed ticket capture\n')))
+        refuses('Refuses missing exact ticket screenshot addition',
+                lambda: modified(ticket_helper, lambda target: target.unlink()))
+        refuses('Refuses an executable mode on the ticket screenshot addition',
+                lambda: modified(ticket_helper, lambda target: target.chmod(0o755)))
+        refuses('Refuses a symlink replacing the ticket screenshot addition',
+                lambda: modified(ticket_helper, symlink))
+        refuses('Refuses substituting the retained ticket source commit',
+                lambda: altered_receipt(lambda data: data.__setitem__('ticket_addition_source', '0' * 40)))
+        refuses('Refuses substituting the retained ticket source tree',
+                lambda: altered_receipt(lambda data: data.__setitem__('ticket_addition_source_tree', '0' * 40)))
+        refuses('Refuses an omitted ticket addition admission',
+                lambda: altered_receipt(lambda data: data['ticket_additions'].pop(ticket_helper)))
+        refuses('Refuses an expanded ticket addition scope',
+                lambda: altered_receipt(lambda data: data['ticket_additions'].__setitem__(
+                    'tests/unreviewed-ticket-screenshot.py', {'sha256': '0' * 64, 'mode': '100644'})))
+
+        def forged_ticket_addition_and_receipt():
+            addition = fixture / ticket_helper
+            receipt = fixture / proof.RECEIPT
+            old_addition, old_receipt = addition.read_bytes(), receipt.read_bytes()
+            try:
+                addition.write_bytes(old_addition + b'\n# changed ticket screenshot helper\n')
+                data = json.loads(old_receipt)
+                data['ticket_additions'][ticket_helper]['sha256'] = proof.digest(addition.read_bytes())
+                receipt.write_text(json.dumps(data))
+                proof.verify_current(fixture)
+            finally:
+                addition.write_bytes(old_addition)
+                receipt.write_bytes(old_receipt)
+
+        refuses('Refuses simultaneous ticket helper and addition-receipt hash substitution',
+                forged_ticket_addition_and_receipt)
+
         source = fixture / 'tests/software_authority_provenance.py'
         cached = Path(importlib.util.cache_from_source(str(source)))
         py_compile.compile(str(source), cfile=str(cached), doraise=True)
@@ -409,7 +446,7 @@ def shallow_acceptance(root=ROOT):
     with tempfile.TemporaryDirectory(prefix='cwp-composition-shallow-') as directory:
         fixture = Path(directory) / 'source'
         subprocess.run(['git', 'clone', '--quiet', '--depth', '1', '--no-tags', root.as_uri(), str(fixture)], check=True)
-        for path in proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY, 'tools/acceptance-contract.json'}:
+        for path in proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY, 'tools/acceptance-contract.json'}:
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))
@@ -448,6 +485,10 @@ def shallow_acceptance(root=ROOT):
         check('All four exact component ancestry requirements still execute', True)
         proof.git(fixture, 'merge-base', '--is-ancestor', proof.ADDITION_SOURCE, 'HEAD')
         check('The exact retained contact source is also hydrated as required current ancestry', True)
+        proof.git(fixture, 'merge-base', '--is-ancestor', proof.TICKET_ADDITION_SOURCE, 'HEAD')
+        check('The exact retained ticket addition source is hydrated as required current ancestry',
+              proof.git(fixture, 'rev-parse', proof.TICKET_ADDITION_SOURCE + '^{tree}').decode().strip()
+              == proof.TICKET_ADDITION_SOURCE_TREE)
         check('A later source check performs no duplicate history fetch', proof.ensure_history(fixture) == {'performed': False})
 
         # A second genuine shallow clone proves the local test transport is not
