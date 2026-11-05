@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "2f47d3b2162fe5bdf3934cd02037fddeb12e0736120f108c6c26fc5a6053e251",
+  "verifier_sha256": "76bf05b7fe8bd0abe7c0f873d9a1b56d8799741c0c7882d3da0ee60f0d56f469",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1315,8 +1315,8 @@
   "diagnostic_additions": {
     ".github/workflows/diagnostic-tests.yml": {
       "source_sha256": "4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c",
-      "current_sha256": "af78e25852efe58b7f5dc8acfec80b0c73c8805ee68d601702f5f41fab619a66",
-      "delta_sha256": "a96c5fa45c3286ed815cacd24d20d16f61b9f4c229b009458d74079cefb9a6bb",
+      "current_sha256": "65e693be3083f87568ecfcaf3a016d8ff3537b4edc44e0845bbc72c7c9b57be1",
+      "delta_sha256": "68cb1ab9407cc138dd54670ff7c35f515b249689f4b97aed66c71b03750dfe82",
       "mode": "100644"
     },
     "docs/DIAGNOSTIC_ACCEPTANCE.md": {
@@ -1333,8 +1333,8 @@
     },
     "tests/diagnostic_acceptance_test.py": {
       "source_sha256": "ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655",
-      "current_sha256": "272d132073167e09492dd2167ac73df432bac83a5c8559aaf22196651b83e688",
-      "delta_sha256": "45418a838103e4d2e6c6aed9446684b3a805ee75d1cf0f1d2f24157cfc72c236",
+      "current_sha256": "9cd87d8932170bc325a50beef52abd8d1208653f8ae76e73df64b1083bf82650",
+      "delta_sha256": "0fc827b2fc4e331bb2a4e785f4b54ea0604c4440b919082ca8fbe14a60fd846a",
       "mode": "100644"
     },
     "tests/diagnostic_registry.py": {
