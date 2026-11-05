@@ -74,12 +74,12 @@ DIAGNOSTIC_ADDITIONS = frozenset((
     'tests/diagnostic_report.py',
 ))
 DIAGNOSTIC_ADDITION_SHA256 = {
-    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': 'e2f2da7837901c3f16c90cffcc07993c1133c14a591800dbfcedfc61c903b22b', 'delta': 'd5b9196f170d98447c8fa708b030e0d2ff0a12283c06e62f8c1b897e8cd84b3c'},
-    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': '699f734ad29342dfd43009251b6cb93da51d948ee17f85b627e4ad2615bcd13f', 'delta': '3391d29f9fa0a47df92a261b2d1f45e5c0a25847def2aa6e3dbb5e3005e9f5d6'},
-    'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': 'bbba00447bec612e832cc93cb402829abac98ff0a380a802f73e0dba11705c3f', 'delta': 'edf8969a13cd910ab2e9a872731a5399fce3dd17496b05f57d81279293b06379'},
-    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'd15b386e87fe885bc5c9fa0901bd1f1242fb8b25ad12e2844ff3f758eeb6238e', 'delta': 'fda665fcacee307ec319759100e07885c4808811f7e9028ffa8df839cb3091bd'},
-    'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '21e4d7ee1f08a351d693e3523c8b7d8b4541a387cb3c93beb41a0b8664b73144', 'delta': 'ec8eedeca6c58e5f5735e26cee42e36d122381a4cd156d0be1f50f3f5d953fac'},
-    'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'e7922fd5c7016a2bd0597704d3509f4195a9299c103c9566ad101d04a0ce8ca4', 'delta': 'ffd0a03f72ef14ad96be7804527a4af7b6418f934fddbb51b44b5a4d84d18307'},
+    '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '6685b5ad314bb41e47fbc3d133b6b2c83a07c0e1d3de6b1db02a0c0ad47051be', 'delta': '8c1b9fc1761c713c536db7ca22072b14680ff2a5866d3c73db37adb5dd26b8c8'},
+    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'ec2dead5ccebd3b2b5f619c7a17391e8d53df75211e3d223aeac008c35c53ca0', 'delta': '29a61e5977b9911adf244faedbf8b4e74379a55c460b3336177bc9881a02ec8a'},
+    'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': '4b9505faafe06a4e822999dd2d04e15bd482e3daa673135a5bdc25a1c1e6aed4', 'delta': '1f433b177ab5e6fa78f90aa2212acabb1246fb8ed112f607a110095a4866a4c2'},
+    'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'd0dae0bc115daf3d8cdfcf8d39cd8199d4f97bcc11bcbbc2fa4ef7801929203b', 'delta': 'f47a2578e25ea89fdd61d07542cd6478c9b1072edba9f6aa22325205b11c0e83'},
+    'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '823d13a81b24d1c39f0e53a58a26ba727520dcd7b677baa5825a00ded4fce8d6', 'delta': 'f39cb50543cd25907091c8bae4a80db8c174472be372e30e21594275a1907a34'},
+    'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'e1b06b07dfd74b862e6ccdba78f208982377e5805d9ac43b6b0e736fa86b5181', 'delta': '3e2dd2ca6211956be8b454c73dd9f4c7ac1870a6be15120f6b1214d6b5278863'},
 }
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
