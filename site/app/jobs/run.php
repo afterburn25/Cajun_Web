@@ -34,4 +34,14 @@ try{
     fwrite(STDERR,"Financing schedule needs owner review. Open Website Licenses; no private diagnostic is printed here.\n");$ok=false;
 }
 
+try{
+    require CWP_CODE_ROOT.'/app/licenses/software_onboarding.php';
+    if(software_onboarding_ready()){
+        $removed=software_onboarding_cleanup_expired(false);
+        fwrite(STDOUT,'Software upload cleanup: '.$removed." expired package(s) removed.\n");
+    }
+}catch(Throwable){
+    fwrite(STDERR,"Software upload cleanup needs owner review. Open the service catalog; no private diagnostic is printed here.\n");$ok=false;
+}
+
 exit($ok?0:1);

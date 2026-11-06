@@ -5,11 +5,23 @@ require_once CWP_CODE_ROOT.'/app/providers/catalog_import.php';
 require_once CWP_CODE_ROOT.'/admin/views/catalog_import.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/catalog_variants.php';
 require_once CWP_CODE_ROOT.'/app/billing/catalog_browse.php';
+require_once CWP_CODE_ROOT.'/app/licenses/software_onboarding.php';
+require_once CWP_CODE_ROOT.'/admin/views/software_onboarding.php';
 function catalog_selection(): array {
     $value=posted('product',40);if(!preg_match('/^([1-9][0-9]{0,8}):([1-9][0-9]{0,8})$/D',$value,$m))throw new InvalidArgumentException('Choose a current published service.');return [(int)$m[1],(int)$m[2]];
 }
 function catalog_admin_action(string $action,array $user): never {
     check_csrf();
+    if($action==='catalog_software_prepare'){
+        if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current database and private-file backup.');
+        software_onboarding_prepare();flash('Guided software uploads enabled. Existing products and packages were preserved.');redirect(admin_url('catalog').'#software-onboarding');
+    }
+    if($action==='catalog_software_upload'){
+        $request=software_onboarding_upload_file('package',gint($_POST,'software_product',0,9999999,0));redirect(admin_url('catalog',['software_upload'=>$request['request_key']]).'#software-onboarding');
+    }
+    if($action==='catalog_software_save'){
+        $result=software_onboarding_finish(posted('request_key',64),$_POST);flash($result['reused']?'The identical private package was already saved; its existing product and asset were retained.':'Draft software product and private package saved.');redirect(admin_url('catalog',['id'=>$result['product_id'],'onboarding_done'=>$result['product_id']]).'#software-onboarding');
+    }
     if(str_starts_with($action,'catalog_import_')){
         provider_catalog_import_owner();
         if(in_array($action,['catalog_import_variant_prepare','catalog_import_variant_create'],true))provider_catalog_variant_admin_action($action);
@@ -89,11 +101,12 @@ function catalog_admin_render(string $view,array $user,string $error): never {
     ?><p class="admin-intro">Manage products from one home. Importing, editing or uploading an image never publishes, orders, provisions or charges anything. Hosting publication and customer licensing keep their existing review and authorization boundaries.</p>
     <section class="workspace-card catalog-primary-actions" aria-labelledby="catalog-primary-actions"><h2 id="catalog-primary-actions">Start a product task</h2><div class="workspace-grid">
     <a class="catalog-primary-action" href="<?=esc(admin_url('catalog',['import_source'=>'package.types']))?>#hosting-import"><strong>Import 20i products</strong><span>Create local drafts from the saved 20i catalog. Prices, terms and publication still need review.</span></a>
-    <a class="catalog-primary-action" href="<?=esc(admin_url('catalog',['new_family'=>'software']))?>#product-editor"><strong>Add software</strong><span>Create the software product here, then continue to its private files and licensing settings.</span></a>
+    <a class="catalog-primary-action" href="<?=esc(admin_url('catalog',['new_family'=>'software']))?>#software-onboarding"><strong>Add software</strong><span>Upload a ZIP, review detected details and save a private draft with license settings.</span></a>
     <?php if(staff_can('staff.manage',$user)): ?>
     <a class="catalog-primary-action" href="<?=esc(admin_url('studio-licenses'))?>#license-create"><strong>Issue customer license</strong><span>Choose registered software and a customer without repeating product setup.</span></a>
     <?php endif; ?>
     </div><p class="button-row"><a class="btn outline" href="<?=esc(admin_url('hosting-offers'))?>">Hosting offers &amp; publication</a><a class="btn outline" href="<?=esc(page_url('packages'))?>">View published services</a></p></section><?php
+    if(function_exists('software_onboarding_admin_view'))software_onboarding_admin_view($user,$error);
     $browseError='';
     try{$productBrowse=catalog_admin_browse($_GET);}catch(InvalidArgumentException $e){$productBrowse=catalog_admin_browse([]);$browseError=$e->getMessage();}
     $localProducts=all('SELECT * FROM '.table('catalog_products').$productBrowse['where'].' ORDER BY id DESC LIMIT 51 OFFSET '.$productBrowse['offset'],$productBrowse['params']);

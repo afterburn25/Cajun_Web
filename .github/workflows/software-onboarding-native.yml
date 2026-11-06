@@ -1,0 +1,75 @@
+name: Software onboarding native checks
+on:
+  pull_request:
+    branches: [main, 'codex/**', 'chatgpt/**']
+    paths:
+      - 'tests/software_onboarding_native.php'
+      - 'site/admin/controllers/catalog.php'
+      - 'site/admin/views/software_onboarding.php'
+      - 'site/app/licenses/software_assets.php'
+      - 'site/app/licenses/software_products.php'
+      - 'site/app/licenses/software_onboarding.php'
+      - 'site/app/jobs/run.php'
+      - 'site/database/schema/software_onboarding_schema.php'
+      - 'site/database/migrations/software_onboarding_migrate.php'
+      - '.github/workflows/software-onboarding-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports:
+          - 3306/tcp
+        options: >-
+          --health-cmd="mariadb-admin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Bind assigned database port
+        run: echo "CWP_TEST_PORT=${{ job.services.mariadb.ports[3306] }}" >> "$GITHUB_ENV"
+      - name: Install PHP runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-zip php8.3-mbstring
+      - name: Write isolated test-only configuration
+        run: |
+          mkdir -p test-runtime/software-private qa
+          php8.3 -r '$storage=realpath("test-runtime/software-private");$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>$storage,"key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"swon_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'
+      - name: Run guided onboarding checks
+        run: |
+          git rev-parse HEAD > qa/software-onboarding-commit.txt
+          git rev-parse 'HEAD^{tree}' > qa/software-onboarding-tree.txt
+          sha256sum tests/software_onboarding_native.php site/app/licenses/software_onboarding.php > qa/software-onboarding-source.sha256
+          php8.3 tests/software_onboarding_native.php 2>&1 | tee qa/software-onboarding-native.log
+          exit "${PIPESTATUS[0]}"
+      - name: Preserve exact-source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: software-onboarding-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qa/software-onboarding-*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Verify shipping source stayed unchanged
+        if: always()
+        run: git diff --exit-code -- site foundation

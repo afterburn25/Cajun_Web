@@ -56,18 +56,8 @@ function software_asset_member_name(string $entry):?string{
     return $name.($directory?'/':'');
 }
 
-function software_asset_publish(string $sku,string $version,string $title,string $path,#[\SensitiveParameter]string $password,bool $customerVisible=true):int{
-    if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
-    if(support_current())throw new RuntimeException('Leave support mode before software publication.');
-    staff_require('staff.manage');
-    $sku=strtoupper(trim($sku));$version=trim($version);$title=trim($title);
-    if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku)
-        ||!preg_match('/^[0-9A-Za-z][0-9A-Za-z._-]{0,39}$/D',$version)
-        ||$title===''||strlen($title)>120)throw new InvalidArgumentException('Enter approved software SKU, version and title.');
-    $product=one('SELECT id,family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
-    $legacy=preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]+$/D',$sku)===1;
-    if(!$product||(($product['family']??'')!=='software'&&!$legacy))
-        throw new InvalidArgumentException('Choose a registered software catalog product.');
+/** Validate a private ZIP without executing or extracting any member. */
+function software_asset_inspect(string $path):array{
     $storage=software_asset_private_root();$file=realpath($path);
     if(!$storage||!$file||!is_file($file)||!software_asset_contains($storage,$file)
         ||strtolower(pathinfo($file,PATHINFO_EXTENSION))!=='zip'){
@@ -78,6 +68,7 @@ function software_asset_publish(string $sku,string $version,string $title,string
     if(!class_exists('ZipArchive'))throw new RuntimeException('ZIP validation extension unavailable.');
     $zip=new ZipArchive();
     if($zip->open($file,ZipArchive::RDONLY)!==true)throw new InvalidArgumentException('Archive is not a readable ZIP.');
+    $names=[];
     try{
         if($zip->numFiles<1||$zip->numFiles>12000)throw new InvalidArgumentException('Unexpected software ZIP member count.');
         $expanded=0;$members=[];
@@ -96,7 +87,7 @@ function software_asset_publish(string $sku,string $version,string $title,string
             $member=rtrim($canonical,'/');
             $collision=function_exists('mb_strtolower')?mb_strtolower($member,'UTF-8'):strtolower($member);
             if(isset($members[$collision]))throw new InvalidArgumentException('ZIP contains duplicate or case-colliding paths.');
-            $members[$collision]=true;
+            $members[$collision]=true;$names[]=$canonical;
             $ops=0;$attr=0;
             if($zip->getExternalAttributesIndex($i,$ops,$attr)){
                 $type=(($attr>>16)&0170000);
@@ -107,19 +98,48 @@ function software_asset_publish(string $sku,string $version,string $title,string
     }finally{$zip->close();}
     $sha=hash_file('sha256',$file);
     if(!is_string($sha))throw new RuntimeException('Could not verify ZIP checksum.');
-    $reference=software_asset_reference($storage,$file);
-    return staff_locked(fn()=>staff_transaction(function()use($password,$sku,$version,$title,$reference,$sha,$bytes,$customerVisible):int{
-        $actor=staff_owner($password);
-        if(one('SELECT id FROM '.table('software_assets').' WHERE sku=? AND version=?',[$sku,$version]))
-            throw new RuntimeException('This version already has an immutable software asset.');
-        $now=gmdate('Y-m-d H:i:s');
-        query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
-            [$sku,$version,$title,$reference,$sha,$bytes,$customerVisible?1:0,$customerVisible?$now:null,$now]);
-        $id=(int)db()->lastInsertId();
-        license_audit((int)$actor['id'],'software.asset.publish',
-            'Published ZIP '.$id.' for '.$sku.' version '.$version.' as '.($customerVisible?'customer-visible':'owner-private'));
-        return $id;
-    }));
+    return ['path'=>$file,'reference'=>software_asset_reference($storage,$file),'sha256'=>$sha,'byte_size'=>$bytes,'members'=>$names];
+}
+
+/** Internal composition point; caller must own the staff mutex and transaction. */
+function software_asset_insert_in_transaction(string $sku,string $version,string $title,array $inspected,
+    #[\SensitiveParameter]string $password,bool $customerVisible=true):int{
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)
+        throw new LogicException('Software asset saving requires the owning account transaction.');
+    if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+    if(support_current())throw new RuntimeException('Leave support mode before software publication.');
+    staff_require('staff.manage');$actor=staff_owner($password);
+    $sku=strtoupper(trim($sku));$version=trim($version);$title=trim($title);
+    if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku)
+        ||!preg_match('/^[0-9A-Za-z][0-9A-Za-z._-]{0,39}$/D',$version)
+        ||$title===''||strlen($title)>120)throw new InvalidArgumentException('Enter approved software SKU, version and title.');
+    $product=one('SELECT id,family FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
+    $legacy=preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]+$/D',$sku)===1;
+    if(!$product||(($product['family']??'')!=='software'&&!$legacy))
+        throw new InvalidArgumentException('Choose a registered software catalog product.');
+    foreach(['reference','sha256','byte_size'] as $key)if(!array_key_exists($key,$inspected))throw new LogicException('Software ZIP inspection is incomplete.');
+    $reference=(string)$inspected['reference'];$sha=(string)$inspected['sha256'];$bytes=(int)$inspected['byte_size'];
+    if(!preg_match('/^[a-f0-9]{64}$/D',$sha)||$bytes<22||$bytes>300*1024*1024||software_asset_resolve_path($reference)===null)
+        throw new RuntimeException('Software ZIP inspection is no longer current.');
+    if(one('SELECT id FROM '.table('software_assets').' WHERE sku=? AND version=?',[$sku,$version]))
+        throw new RuntimeException('This version already has an immutable software asset.');
+    $now=gmdate('Y-m-d H:i:s');
+    query('INSERT INTO '.table('software_assets').' (sku,version,title,file_path,sha256,byte_size,is_published,released_at,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+        [$sku,$version,$title,$reference,$sha,$bytes,$customerVisible?1:0,$customerVisible?$now:null,$now]);
+    $id=(int)db()->lastInsertId();
+    license_audit((int)$actor['id'],'software.asset.publish',
+        'Published ZIP '.$id.' for '.$sku.' version '.$version.' as '.($customerVisible?'customer-visible':'owner-private'));
+    return $id;
+}
+
+function software_asset_publish(string $sku,string $version,string $title,string $path,#[\SensitiveParameter]string $password,bool $customerVisible=true):int{
+    if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+    if(support_current())throw new RuntimeException('Leave support mode before software publication.');
+    staff_require('staff.manage');
+    $inspected=software_asset_inspect($path);
+    return staff_locked(fn()=>staff_transaction(fn()=>software_asset_insert_in_transaction(
+        $sku,$version,$title,$inspected,$password,$customerVisible)));
 }
 
 function software_asset_visibility(int $assetId,bool $customerVisible,#[\SensitiveParameter]string $password):bool{

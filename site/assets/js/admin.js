@@ -53,3 +53,25 @@ if(sidebar&&btn){
  mobile.addEventListener('change',()=>close());
  sync();
 }
+
+for(const form of document.querySelectorAll('form[data-software-package-upload]')){
+ const progress=form.querySelector('[data-upload-progress]');
+ const status=form.querySelector('[data-upload-status]');
+ form.addEventListener('submit',event=>{
+  if(!window.XMLHttpRequest||!form.checkValidity())return;
+  event.preventDefault();const request=new XMLHttpRequest();request.open('POST',form.action||window.location.href);request.responseType='text';
+  if(progress){progress.hidden=false;progress.value=0;}if(status)status.textContent='Uploading package…';
+  request.upload.addEventListener('progress',e=>{if(e.lengthComputable&&progress){progress.value=Math.round(e.loaded/e.total*100);if(status)status.textContent='Uploading package… '+progress.value+'%';}});
+  request.addEventListener('load',()=>{
+   const target=new URL(request.responseURL||window.location.href,window.location.href);
+   if(request.status>=200&&request.status<400&&target.origin===window.location.origin&&target.searchParams.has('software_upload')){
+    if(status)status.textContent='Upload complete. Loading review…';window.location.assign(target.href);return;
+   }
+   let message='The package could not be uploaded. Choose the ZIP again to retry.';
+   try{const response=new DOMParser().parseFromString(request.responseText,'text/html');const alert=response.querySelector('[role="alert"],.notice.error');if(alert?.textContent.trim())message=alert.textContent.trim();}catch(e){/* Keep the bounded retry message when the response is not readable HTML. */}
+   if(status)status.textContent=message;if(progress)progress.hidden=true;
+  });
+  request.addEventListener('error',()=>{if(status)status.textContent='The upload was interrupted. Choose the ZIP again to retry.';if(progress)progress.hidden=true;});
+  request.send(new FormData(form));
+ });
+}
