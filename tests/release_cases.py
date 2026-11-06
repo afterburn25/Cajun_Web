@@ -289,11 +289,12 @@ def run_browser(env,browser,fixture):
     from owner_navigation_contract import core_admin_destinations
     check('Grouped owner navigation retains core destinations',core_admin_destinations(p))
     check('Grouped owner navigation links to the actual administration routes',all(admin_nav.get_by_role('link',name=label,exact=True,include_hidden=True).get_attribute('href')==BASE+'/existing/admin/index.php?view='+view for label,view in owner_destinations))
-    billing_group=admin_nav.locator('[data-nav-group=billing]')
-    billing_group.locator('summary').click()
-    expect(billing_group).to_have_attribute('open','')
-    expect(billing_group.get_by_role('link',name='Service catalog',exact=True)).to_be_visible()
-    check('Owner can expand Billing and Products with native controls',True)
+    catalog_group=admin_nav.locator('[data-nav-group=catalog]')
+    catalog_group.locator('summary').click()
+    expect(catalog_group).to_have_attribute('open','')
+    expect(catalog_group.get_by_role('link',name='Service catalog',exact=True)).to_be_visible()
+    expect(catalog_group.get_by_role('link',name='Licenses & software',exact=True)).to_be_visible()
+    check('Owner can expand Catalog and Licensing with native controls',True)
     public_nav_page=owner.new_page()
     for route,label in [('hosting','Hosting'),('services','Web Design'),('products','Products')]:
         response=public_nav_page.goto(BASE+'/existing/index.php?page='+route)

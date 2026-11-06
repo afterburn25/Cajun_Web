@@ -26,5 +26,22 @@ try{
     foreach(['enabled','pending',[]] as $i=>$value)pwd('Unknown publication status denied '.$i,fn()=>catalog_admin_browse(['product_status'=>$value]));
     foreach([str_repeat('x',121),"line\nfeed",[],"\xff"] as $i=>$value)pwd('Invalid or excessive search denied '.$i,fn()=>catalog_admin_browse(['product_search'=>$value]));
     pwd('Invalid generated next page denied',fn()=>catalog_admin_browse_url($b,10001));
+    pwc('Software shortcut selects only the supported new-product family',catalog_admin_new_family(['new_family'=>'software'])==='software');
+    foreach(['unknown','hosting','domain','vps','addon','maintenance','web-design',[],42,null] as $i=>$value)pwc('Unsupported new-product shortcut is inert '.$i,catalog_admin_new_family(['new_family'=>$value])==='web-design');
+    $product=['id'=>12,'revision'=>3,'amount_cents'=>1500,'summary'=>'Summary','features'=>'Feature','terms'=>'Terms'];
+    $import=['media_id'=>null];$state=catalog_admin_product_readiness($product,$import,null,false);
+    pwc('Imported product without documented artwork is honest and actionable',$state['image_label']==='No provider image available'&&$state['missing']===['Image missing']&&$state['offer_label']==='Review for publication'&&!$state['offer_needs_review']);
+    $import=['media_id'=>str_repeat('a',32)];$offer=['product_revision'=>2,'media_id'=>str_repeat('b',32),'withdrawn'=>0];$state=catalog_admin_product_readiness($product,$import,$offer,true);
+    pwc('Changed product revision or managed image requires offer review',$state['image_label']==='Image ready'&&$state['offer_label']==='Changes need review'&&$state['offer_action']==='Review and update offer'&&$state['offer_needs_review']);
+    $state=catalog_admin_product_readiness($product,$import,$offer,false);
+    pwc('A recorded image without an available managed file is not called ready',$state['image_id']===null&&$state['image_label']==='Image missing'&&in_array('Image missing',$state['missing'],true));
+    $offer=['product_revision'=>3,'media_id'=>str_repeat('a',32),'withdrawn'=>0];$state=catalog_admin_product_readiness($product,$import,$offer,true);
+    pwc('Matching latest offer is distinguished from unpublished or stale state',$state['offer_label']==='Offer published'&&!$state['offer_needs_review']&&$state['missing']===[]);
+    $optionalFeatures=$product;$optionalFeatures['features']='';$state=catalog_admin_product_readiness($optionalFeatures,null,null,false);
+    pwc('Optional feature bullets do not create a false details warning',$state['missing']===[]);
+    $zeroPrice=$product;$zeroPrice['amount_cents']=0;$state=catalog_admin_product_readiness($zeroPrice,null,null,false);
+    pwc('A zero amount is still named as price work before publication',$state['missing']===['Price needed']);
+    $incomplete=$product;$incomplete['amount_cents']=null;$incomplete['summary']='';$state=catalog_admin_product_readiness($incomplete,null,null,false);
+    pwc('Ordinary product readiness names missing price and details without inventing artwork state',$state['missing']===['Price needed','Details needed']&&$state['image_label']===null&&$state['offer_label']===null);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];}
 $pass=!array_filter($checks,fn($c)=>!$c['passed']);echo json_encode(['passed'=>$pass,'scope'=>'Pure local routing and SQL-fragment/parameter generation; actual database execution not tested','checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).PHP_EOL;exit($pass?0:1);

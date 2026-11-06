@@ -2,7 +2,7 @@
 
 User reported software licensing appears absent. Inspection of b2825c7/abcf9b7 found two concrete integration omissions: studio-licenses had no administrator navigation entry, and the client router never dispatched to the existing software or financing renderers. The underlying grant, lifecycle, private asset, product-policy and payment modules already exist.
 
-This increment adds Software & Licensing > Licenses & software plus an owner-permission-filtered master-portal shortcut. The existing owner page gains read-only readiness and task navigation, and software setup links to the catalog prerequisite instead of presenting a guaranteed failing action. Existing setup, issuance, asset, lifecycle, financial and security checks are retained. Licenses are not created merely by visiting the page.
+This increment adds Catalog & Licensing > Licenses & software plus an owner-permission-filtered master-portal shortcut. The existing owner page gains read-only readiness and task navigation, and software setup links to the catalog prerequisite instead of presenting a guaranteed failing action. Existing setup, issuance, asset, lifecycle, financial and security checks are retained. Licenses are not created merely by visiting the page.
 
 Client software=1 and finance=1/agreement-id routes now dispatch AFTER real client authentication and BEFORE project fallback. Existing renderer ownership and support restrictions remain. Malformed/mixed selectors fail closed and sensitive licensing responses use private no-store headers. Login/new-password fields and actual provider credentials are not removed; no repeat-current-admin-password controls are added.
 

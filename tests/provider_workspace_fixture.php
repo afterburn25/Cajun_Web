@@ -2,26 +2,51 @@
 /** Local-only synthetic rendering of actual templates. Never a production login or packaged site file. */
 declare(strict_types=1);
 if(getenv('CWP_UI_FIXTURE')!=='1'||($_SERVER['REQUEST_METHOD']??'GET')!=='GET'||(PHP_SAPI!=='cli'&&!in_array($_SERVER['REMOTE_ADDR']??'',['127.0.0.1','::1'],true))){http_response_code(404);exit;}
-define('CWP_BOOT',true);define('CWP_CODE_ROOT',dirname(__DIR__).'/site');define('CWP_ROOT',__DIR__.'/nonexistent-test-webroot');define('CWP_VERSION','1.26.0 · DEVELOPMENT PREVIEW');
+define('CWP_BOOT',true);define('CWP_CODE_ROOT',dirname(__DIR__).'/site');define('CWP_ROOT',__DIR__.'/nonexistent-test-webroot');define('CWP_VERSION','1.26.0 · DEVELOPMENT PREVIEW');define('CWP_GUARD',"<?php http_response_code(404); exit; ?>\n");
 set_error_handler(static function(int $n,string $s,string $f,int $l):never {throw new ErrorException($s,0,$n,$f,$l);});
 require CWP_CODE_ROOT.'/includes/security/input.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/app/providers/workspace.php';
 $_POST=[];$_SESSION=[];
 function fixture_state():string{return is_string($_GET['scenario']??null)?$_GET['scenario']:'connected';}
 function admin_url(string $view='dashboard',array $params=[]):string{return '/tests/provider_workspace_fixture.php?'.http_build_query(['view'=>$view,'scenario'=>fixture_state()]+$params);}
 function page_url(string $page='home',array $params=[]):string{return '/tests/provider_workspace_fixture.php?'.http_build_query(['view'=>'public','page'=>$page]+$params);}
-function site_url(string $path=''):string{return '/fixture-disabled/'.ltrim($path,'/');}
+function site_url(string $path=''):string {
+    if(fixture_state()==='ready-media-file'&&str_starts_with($path,'media/index.php?id='))return '/tests/provider_workspace_fixture.php?'.http_build_query(['fixture_media'=>'1','scenario'=>fixture_state(),'id'=>substr($path,strlen('media/index.php?id='))]);
+    return '/fixture-disabled/'.ltrim($path,'/');
+}
 function asset(string $file):string{if($file==='logo.png')return '/site/images/branding/logo.png';if($file==='favicon.png')return '/site/images/icons/favicon.png';return '/site/assets/'.(str_ends_with($file,'.css')?'css/':'js/').$file;}
 function icon(string $name):string{return '<span aria-hidden="true">◇</span>';}
 function show_flash():void{echo '<p class="notice">DEVELOPMENT PREVIEW · Synthetic data · No provider connection or saved changes</p>';}
 function csrf_field():string{return '<input type="hidden" name="csrf" value="synthetic-only">';}
-function staff_can(string $permission,?array $user=null):bool{return true;}
+function fixture_media_id():string{return str_repeat('d',32);}
+function fixture_storage():string {
+    static $storage=null;if($storage!==null)return $storage;
+    if(fixture_state()!=='ready-media-file')return $storage=__DIR__.'/nonexistent-provider-workspace-storage';
+    $provided=getenv('CWP_UI_MEDIA_STORAGE');if(is_string($provided)&&$provided!=='')return $storage=$provided;
+    $storage=sys_get_temp_dir().DIRECTORY_SEPARATOR.'cwp-provider-workspace-'.getmypid().'-'.bin2hex(random_bytes(8));$directory=$storage.DIRECTORY_SEPARATOR.'media';
+    if(!mkdir($directory,0700,true))throw new RuntimeException('Synthetic media directory could not be created.');
+    $payload=file_get_contents(CWP_CODE_ROOT.'/images/icons/favicon.png');if($payload===false)throw new RuntimeException('Synthetic artwork fixture could not be read.');
+    $file=$directory.DIRECTORY_SEPARATOR.fixture_media_id().'.php';$bytes=CWP_GUARD.$payload;
+    if(file_put_contents($file,$bytes)!==strlen($bytes)||!chmod($file,0600))throw new RuntimeException('Synthetic guarded media could not be created.');
+    register_shutdown_function(static function()use($file,$directory,$storage):void{@unlink($file);@rmdir($directory);@rmdir($storage);});
+    return $storage;
+}
+function config():array{return ['storage'=>fixture_storage()];}
+function boot(bool $session=true):void{}
+function staff_can(string $permission,?array $user=null):bool{return !($permission==='staff.manage'&&fixture_state()==='catalog-limited');}
 function staff_view_permission(string $key):?string{return null;}
 function mail_accounts_access(array $u):bool{return false;}
 function mail_notices_access(array $u):bool{return false;}
 function table(string $name):string{return $name;}
-function one(string $sql,array $args=[]):?array{return ['n'=>0];}
+function one(string $sql,array $args=[]):?array {
+    if(str_contains($sql,'SELECT * FROM media')){
+        $payload=file_get_contents(CWP_CODE_ROOT.'/images/icons/favicon.png');if($payload===false)throw new RuntimeException('Synthetic artwork fixture could not be read.');
+        return fixture_state()==='ready-media-file'&&($args[0]??null)===fixture_media_id()?['id'=>fixture_media_id(),'filename'=>fixture_media_id().'.php','bytes'=>strlen($payload)]:null;
+    }
+    return ['n'=>0];
+}
 function all(string $sql,array $args=[]):array {
-    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting']];
+    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting','summary'=>'Synthetic hosting summary','features'=>'Synthetic feature','terms'=>'Synthetic terms']];
+    if(str_contains($sql,'FROM media'))return in_array(fixture_state(),['missing-media-file','ready-media-file'],true)?[['id'=>fixture_media_id(),'filename'=>fixture_media_id().'.php']]:[];
     throw new LogicException('Unexpected fixture query');
 }
 function provider_settings_manager():array{return ['id'=>1];}
@@ -40,6 +65,10 @@ function provider_cloud_site_request_confirmation_render():void{throw new LogicE
 function support_current():?array{return null;}
 function provider_catalog_import_owner():array{return ['id'=>1];}
 function provider_catalog_import_ready():bool{return fixture_state()!=='setup';}
+function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>in_array(fixture_state(),['missing-media-file','ready-media-file'],true)?fixture_media_id():null]]:[];}
+function hosting_catalog_ready():bool{return false;}
+function staff_locked(callable $work):mixed{return $work();}
+function staff_transaction(callable $work):mixed{return $work();}
 function provider_package_types_ready():bool{return fixture_state()!=='catalog-setup';}
 function provider_catalog_import_preview(int $page,string $source):array {
     if($source!=='package.types')throw new RuntimeException('Synthetic fixture only provides the package-type catalog, not existing hosting accounts.');
@@ -67,6 +96,7 @@ function fixture_function(string $path,string $name):void {
     }throw new LogicException('Actual renderer not found');
 }
 $user=['id'=>1,'name'=>'Test owner'];$view=$_GET['view']??'provider-settings';
+if(($_GET['fixture_media']??null)==='1'){require CWP_CODE_ROOT.'/media/serve.php';exit;}
 if($view==='catalog'){
     require CWP_CODE_ROOT.'/admin/views/catalog_import.php';
     require CWP_CODE_ROOT.'/app/billing/catalog_browse.php';

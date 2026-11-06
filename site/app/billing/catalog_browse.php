@@ -26,3 +26,80 @@ function catalog_admin_browse_url(array $browse,int $page):string {
     catalog_admin_browse($q); // Reject impossible pagination before producing a link.
     return admin_url('catalog',$q).'#catalog-products';
 }
+
+/** A shortcut may suggest a family for a new product, but never changes an existing product. */
+function catalog_admin_new_family(array $query):string {
+    return ($query['new_family']??null)==='software'?'software':'web-design';
+}
+
+/** Match the managed-image serving boundary before calling artwork ready. */
+function catalog_admin_managed_media_available(array $media):bool {
+    $id=$media['id']??null;$filename=$media['filename']??null;
+    if(!is_string($id)||!preg_match('/^[a-f0-9]{32}$/D',$id)
+        ||!is_string($filename)||!preg_match('/^[a-f0-9]{32}\.php$/D',$filename))return false;
+    $storage=config()['storage']??null;
+    if(!is_string($storage)||$storage==='')return false;
+    $directory=realpath(rtrim($storage,'/\\').DIRECTORY_SEPARATOR.'media');
+    $candidate=rtrim($storage,'/\\').DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.$filename;
+    $path=realpath($candidate);
+    if(!$directory||!$path||dirname($path)!==$directory||is_link($candidate))return false;
+    $fp=@fopen($path,'rb');if(!$fp)return false;
+    try{return fread($fp,strlen(CWP_GUARD))===CWP_GUARD;}finally{fclose($fp);}
+}
+
+/** Pure presentation state from already validated product/import/publication rows. */
+function catalog_admin_product_readiness(array $product,?array $import,?array $offer,bool $mediaAvailable):array {
+    $missing=[];
+    $amount=$product['amount_cents']??null;
+    if($amount===null||(int)$amount<=0)$missing[]='Price needed';
+    if(trim((string)($product['summary']??''))===''||trim((string)($product['terms']??''))==='')$missing[]='Details needed';
+    $imageId=$import['media_id']??null;$imageLabel=null;
+    if($import!==null){
+        if($imageId===null)$imageLabel='No provider image available';
+        elseif(!$mediaAvailable)$imageLabel='Image missing';
+        else $imageLabel='Image ready';
+        if(!$mediaAvailable)$missing[]='Image missing';
+    }
+    $offerLabel=null;$offerAction=null;$offerNeedsReview=false;
+    if($import!==null){
+        if($offer===null){$offerLabel='Review for publication';$offerAction='Review for publication';}
+        elseif((int)$offer['withdrawn']===1){$offerLabel='Offer withdrawn';$offerAction='Review and update offer';$offerNeedsReview=true;}
+        elseif((int)$offer['product_revision']!==(int)$product['revision']||($offer['media_id']??null)!==$imageId){$offerLabel='Changes need review';$offerAction='Review and update offer';$offerNeedsReview=true;}
+        else{$offerLabel='Offer published';$offerAction='Review hosting offer';}
+    }
+    return ['imported'=>$import!==null,'image_id'=>$mediaAvailable?$imageId:null,'image_label'=>$imageLabel,
+        'missing'=>array_values(array_unique($missing)),'offer_label'=>$offerLabel,'offer_action'=>$offerAction,
+        'offer_needs_review'=>$offerNeedsReview];
+}
+
+/**
+ * Validate import and hosting history once under the shared staff mutex, then derive one bounded page.
+ * This read-only transaction creates no setup marker, publication, provider operation or order.
+ */
+function catalog_admin_product_contexts(array $products):array {
+    if(!array_is_list($products)||count($products)>50)throw new InvalidArgumentException('Choose one bounded product page.');
+    if(!$products)return [];
+    $ids=[];foreach($products as $product){$id=filter_var($product['id']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>2147483647]]);if($id===false||isset($ids[$id]))throw new InvalidArgumentException('Choose distinct saved products.');$ids[$id]=$id;}
+    return staff_locked(fn()=>staff_transaction(function()use($products,$ids):array {
+        $imports=[];
+        if(provider_catalog_import_ready()){
+            foreach(array_chunk(array_values($ids),20) as $chunk)foreach(provider_catalog_import_records_in_scope($chunk) as $record)$imports[(int)$record['product_id']]=$record;
+        }
+        $media=[];$mediaIds=array_values(array_unique(array_filter(array_column($imports,'media_id'),static fn($id)=>is_string($id)&&$id!=='')));
+        if($mediaIds){
+            $placeholders=implode(',',array_fill(0,count($mediaIds),'?'));
+            foreach(all('SELECT id,filename FROM '.table('media').' WHERE id IN ('.$placeholders.')',$mediaIds) as $row){
+                if(catalog_admin_managed_media_available($row))$media[$row['id']]=true;
+            }
+        }
+        $offers=[];
+        if(hosting_catalog_ready()){
+            $placeholders=implode(',',array_fill(0,count($ids),'?'));
+            $publications=table('hosting_catalog_publications');$withdrawals=table('hosting_catalog_withdrawals');
+            $sql="SELECT p.id,p.product_id,p.product_revision,p.media_id,CASE WHEN w.id IS NULL THEN 0 ELSE 1 END AS withdrawn FROM $publications p LEFT JOIN $publications newer ON newer.product_id=p.product_id AND newer.seq>p.seq LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE newer.id IS NULL AND p.product_id IN ($placeholders)";
+            foreach(all($sql,array_values($ids)) as $offer)$offers[(int)$offer['product_id']]=$offer;
+        }
+        $contexts=[];foreach($products as $product){$id=(int)$product['id'];$import=$imports[$id]??null;$mediaAvailable=$import!==null&&is_string($import['media_id']??null)&&isset($media[$import['media_id']]);$contexts[$id]=catalog_admin_product_readiness($product,$import,$offers[$id]??null,$mediaAvailable);}
+        return $contexts;
+    }));
+}

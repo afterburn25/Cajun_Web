@@ -368,7 +368,7 @@ def run_browser(env, browser):
         submit(op, 'catalog_import_image', 'Save image')
         imaged = state()
         counts('Annual image upload creates one independent local media row', edited, imaged, {'media': 1})
-        annual_image = urljoin(op.url, op.locator('img[alt="Uploaded draft product image"]').get_attribute('src'))
+        annual_image = urljoin(op.url, op.locator('#product-image img.editor-preview[alt^="Artwork for "]').get_attribute('src'))
         check('Annual price and artwork stay independent while the canonical monthly draft is preserved',
               imaged['products'][str(annual_id)]['amount_cents'] == ANNUAL_PRICE
               and imaged['products'][str(annual_id)]['title'] == ANNUAL_TITLE

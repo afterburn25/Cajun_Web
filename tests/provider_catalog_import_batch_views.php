@@ -119,7 +119,7 @@ try{
     pcbv_ok('Actual form includes CSRF and bounded batch action',pcbv_input($form,'csrf')==='synthetic-token'&&pcbv_input($form,'action')==='catalog_import_batch');
     pcbv_ok('Returned provider text is escaped in the actual renderer',str_contains($html,'Safe &lt;script&gt;alert(1)&lt;/script&gt; &amp; type')&&!str_contains($html,'<script>'));
     pcbv_ok('Batch scope states drafts across pages and preservation of earlier edits',str_contains($html,'batches of up to 50 types across all catalog pages')&&str_contains($html,'Already imported products keep their names, prices, terms and images.'));
-    pcbv_ok('View distinguishes local images from unavailable provider artwork and VPS import',str_contains($html,'Images are not copied from 20i.')&&str_contains($html,'Upload or replace each product’s image')&&str_contains($html,'Automatic 20i artwork and VPS catalog import are not available'));
+    pcbv_ok('View distinguishes local images from unavailable provider artwork and VPS import',str_contains($html,'documented 20i contract does not provide a supported artwork source')&&str_contains($html,'No provider image available — Add image')&&str_contains($html,'Reimport preserves that image')&&str_contains($html,'VPS catalog import is not available'));
     pcbv_ok('View leaves price and feature entry with the owner',str_contains($html,'Prices and features stay blank until you enter them.')&&str_contains($html,'Prices and provider images are not imported.'));
     pcbv_ok('Existing draft links remain escaped local subfolder URLs',str_contains($html,esc(admin_url('catalog',['id'=>7])))&&str_contains($html,esc(admin_url('hosting-offers'))));
 

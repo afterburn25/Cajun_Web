@@ -1,3 +1,62 @@
+## 2026-11-06 12:50 UTC — PR #367 managed-media serving proof successor
+
+The exact c074 analysis is complete: 0 bugs, 0 vulnerabilities, the prior bug and flag resolved, and one new applicable flag because a static SVG proved only that a thumbnail element existed. The local successor is test-only and executes the shipping managed-media server over loopback with a guarded PNG, an exact media row, HTTP 200 and successful browser decoding.
+
+| Queue item | Current evidence | Required disposition |
+|---|---|---|
+| PR #367 `c074d0c` | Prior findings resolved; one exact-source serving-proof flag; natural workflows preserved | Nonqualifying predecessor; do not merge or relabel as final evidence |
+| Local managed-media proof | 84 renderer, 78 loopback browser, 61 policy and 87 build-rejection checks; missing-file negative case retained; shipping bytes unchanged | Finish source/build/docs proof, publish normally, request fresh exact-head review and classify natural acceptance |
+| Remaining #365 work | Dependency-ordered behind accepted first slice | Keep independent read-only design moving; shared proof/release changes stay with integration lead |
+
+No live provider call, payment, provisioning, customer message, SSH/support session, production deployment or release publication is authorized by this queue update.
+
+## 2026-11-06 12:35 UTC — PR #367 guarded-file proof successor
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains authoritative. `026b296f` fixes the physical-file readiness bug but is not merge-qualified because exact-head review requested positive-path focused coverage.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR #367 `026b296f` | Prior bug resolved; 0 bugs/0 vulnerabilities; one applicable positive-path coverage flag; natural workflows preserved | Do not merge or relabel as final evidence |
+| Local guarded-file proof | Test-only child; guarded temporary file must produce ready label/thumbnail while absent file must remain missing; 84 renderer, 77 browser and 99 repair reversals pass | Finish guards, publish normally, rerun exact-head review and natural acceptance |
+| Remaining #365 work | Dependency-ordered behind accepted first slice | Continue read-only design independently; keep shared proof/release work with integration lead |
+| Release/live operations | NOT AUTHORIZED | Preserve all explicit boundaries |
+
+No shipping, schema, routing, authorization, billing or provider behavior changes in this proof follow-up.
+
+## 2026-11-06 12:15 UTC — PR #367 physical-artwork successor
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains the authoritative queue. Development main remains verified at `c5d17f782af6959305390f96f11119283c93c7aa`, version 1.26.1; no release or production action is authorized.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR #367 `c4b2a766` | Four-lane consolidation passed, but authenticated review found one exact-source blocker: database-only media existence could be called ready while the serving boundary returned 404 | Preserve all runs/artifacts; do not merge or relabel as accepted |
+| Local physical-file successor | Endpoint-equivalent managed-file readiness check plus policy/template/loopback regressions; 61/80/73 focused checks, 87 build rejections and 99 repair reversals pass | Publish a normal child, require fresh exact-head review and hosted acceptance, then merge only if accepted |
+| Remaining issue #365 work | Still dependency-ordered behind this first slice | Keep independent design/read-only work moving; do not mix shared routing, authorization, schema, billing, source-proof or release changes into parallel slices |
+| Publication/deployment | NOT AUTHORIZED | Preserve explicit user authorization boundaries |
+
+The correction reads only existing private managed-media metadata and bytes. It creates no media, order, publication, license, payment, provisioning, provider request or customer message. The known Windows executable-mode composition failure remains preserved rather than weakened.
+
+## 2026-11-06 06:22 UTC — verified main and issue #365 catalog slice
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains the authoritative queue. PR #366 is merged and verified on main `c5d17f782af6959305390f96f11119283c93c7aa`; Application `42158346351` and all 19 automatic push workflows passed, with independent exact-artifact replay complete. v1.25.0 remains the latest publication.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Main `c5d17f7`, 1.26.1 | ALREADY INTEGRATED and resulting-main verified; 219 reports, 32,814 executions and 757 final files independently checked | Preserve exact evidence; do not redispatch or relabel it as a release |
+| Issue #365 catalog/licensing home | PR #367 first head is nonqualifying after three applicable review findings; reviewed `12cb916b` retained one stale native assertion; `ca48a864` exposed two proof expectations; `db354a91` passed the corrected account matrix but all four consolidation lanes isolated a removed generic image locator | Advance only the four stale lookups and reversible receipt edges, then require fresh exact-head Application and complete hosted acceptance before normal merge |
+| Remaining issue #365 work | Not implemented by this slice: storefront registration continuity, managed software onboarding, full license flow, client-portal parity and unified DB updates | Continue in the issue's recorded dependency order after the first slice is accepted |
+| Release publication | NOT AUTHORIZED; v1.25.0 remains latest | Preserve explicit publication/deployment boundary |
+
+The candidate performs no provider fetch for artwork and no order, publication, license issuance, payment, provisioning, message or production action. The installed licensing browser's local `Disposable loopback SQL only` refusal is retained; its existing hosted disposable MySQL/MariaDB gate remains required.
+
+Preserve PR #367 head `9c453bd5` and its naturally triggered workflows as useful nonqualifying history. Its three public review findings are applicable and are corrected only in the pending successor; do not resolve or count them against the old head as accepted evidence.
+
+Also preserve reviewed head `12cb916b` and native artifact `13485360092`. Its exact Application build and recovery passed; native checks reached the importer owner-view assertion, which still expected the removed sentence `Images are not copied from 20i`. The proof-only successor must require the current verified contract boundary and explicit local fallback, then earn its own run. Do not relabel the skipped browser stage as evidence.
+
+Preserve proof successor `ca48a864`, account/notification `42182881213`, Application `42182881366` and consolidation `42182880986` as nonqualifying evidence. The first two workflows reached 2,742 helpers before refusing `tools/acceptance-contract.json`'s old importer-test identity. Consolidation's four supported lanes performed the upload and redirect but required superseded flash copy; all skipped stages remain unclaimed.
+
+Also preserve `db354a91` and consolidation `42187677165`. All four lanes rebuilt exact source and passed 79 native assertions, then produced 146 browser checks with the single same failure: three test modules still selected `Uploaded draft product image`, while shipping deliberately renders the editor-scoped product-specific `Artwork for [product title]` alternative. Advance all four lookups through reversible receipt rows; do not weaken the saved-image assertion or relabel the failed head.
+
 ## 2026-11-04 17:16 UTC — Codex-owned master queue checkpoint
 
 [Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) is the authoritative queue; the owner's Codex assignment supersedes older Devin-only ownership while preserving every product, evidence, review, data and release requirement.
