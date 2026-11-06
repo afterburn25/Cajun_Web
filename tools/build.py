@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Three deterministic, sanitized artifacts from one clean recorded commit."""
 from pathlib import Path, PurePosixPath
-import os,argparse,hashlib,json,re,subprocess,zipfile,shutil,tempfile
+import os,argparse,hashlib,io,json,re,stat,subprocess,zipfile,shutil,tempfile
 from contextlib import contextmanager
 ROOT=Path(__file__).resolve().parents[1];SITE=ROOT/'site'
 MAP=json.loads((ROOT/'tools/directory-map.json').read_text(encoding="utf-8"))
@@ -65,8 +65,24 @@ def source_blobs(commit,names):
             finally:process.stdout.close()
 
 def safe(name):
+    if not isinstance(name,str) or not name:raise RuntimeError('Unsafe path: '+str(name))
     p=PurePosixPath(name)
-    if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
+    reserved={'CON','PRN','AUX','NUL',*(f'COM{i}' for i in range(1,10)),*(f'LPT{i}' for i in range(1,10))}
+    if (p.is_absolute() or '..' in p.parts or '\\' in name
+            or ':' in name or str(p)!=name or any(ord(c)<32 for c in name)
+            or any(part in {'','.','..'} or part!=part.rstrip(' .')
+                   or part.split('.')[0].upper() in reserved for part in p.parts)):
+        raise RuntimeError('Unsafe path: '+str(name))
+
+def recorded_source(root,revision):
+    if not re.fullmatch(r'[0-9a-f]{40}',revision or ''):raise RuntimeError('A full recorded commit is required')
+    commit=subprocess.check_output(['git','rev-parse',revision+'^{commit}'],cwd=root,text=True).strip()
+    if subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()!=commit:raise RuntimeError('Build checkout must be the recorded commit')
+    if subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=root,text=True).strip():raise RuntimeError('Release source must be clean, including untracked files')
+    tracked=subprocess.check_output(['git','ls-tree','-r','--name-only',commit],cwd=root,text=True).splitlines()
+    modes=subprocess.check_output(['git','ls-tree','-r',commit],cwd=root,text=True).splitlines()
+    if any(line.startswith('120000 ') for line in modes):raise RuntimeError('Git symlinks cannot be shipped, including on Windows checkouts')
+    return commit,tracked
 
 def full_project_area(name):
     safe(name)
@@ -177,6 +193,122 @@ def archive(out,name,files,commit,version):
     write(out/(prefix+'.directories.txt'),'\n'.join(directories)+'\n')
     return manifest
 
+def manifest_json(path):
+    def unique(pairs):
+        result={}
+        for key,value in pairs:
+            if key in result:raise RuntimeError('Duplicate JSON key in '+str(path))
+            result[key]=value
+        return result
+    try:return json.loads(path.read_bytes(),object_pairs_hook=unique)
+    except (OSError,UnicodeError,json.JSONDecodeError) as error:raise RuntimeError('Invalid JSON manifest: '+str(path)) from error
+
+def inspect_release_archive(path,manifest,expected_commit,expected_version):
+    required={'version','source_commit','artifact','sha256','directories','files'}
+    if not isinstance(manifest,dict) or set(manifest)!=required:raise RuntimeError('Malformed package manifest: '+path.name)
+    if manifest['version']!=expected_version:raise RuntimeError('Package version differs from release manifest: '+path.name)
+    if manifest['source_commit']!=expected_commit:raise RuntimeError('Package source differs from recorded commit: '+path.name)
+    if (manifest['artifact']!=path.name or not isinstance(manifest['sha256'],str)
+            or not re.fullmatch(r'[0-9a-f]{64}',manifest['sha256'])):raise RuntimeError('Package identity mismatch: '+path.name)
+    files=manifest['files']
+    if not isinstance(files,dict) or not files:raise RuntimeError('Empty package manifest: '+path.name)
+    names=list(files)
+    for name,value in files.items():
+        safe(name)
+        if not isinstance(value,str) or re.fullmatch(r'[0-9a-f]{64}',value) is None:raise RuntimeError('Invalid package member hash: '+name)
+        if name.lower().endswith('.zip'):raise RuntimeError('Nested ZIP forbidden: '+name)
+    if len(names)!=len(set(names)) or len(names)!=len({name.casefold() for name in names}):raise RuntimeError('Duplicate or case-colliding package member')
+    directories=sorted({str(parent)+'/' for name in names for parent in PurePosixPath(name).parents if str(parent)!='.'})
+    if manifest['directories']!=directories:raise RuntimeError('Package directory inventory mismatch: '+path.name)
+    raw=path.read_bytes()
+    if sha(raw)!=manifest['sha256']:raise RuntimeError('Package archive hash mismatch: '+path.name)
+    with zipfile.ZipFile(io.BytesIO(raw)) as package:
+        entries=package.infolist();archive_names=[entry.filename for entry in entries]
+        if archive_names!=sorted(names) or len(archive_names)!=len(set(archive_names)) or len(archive_names)!=len({name.casefold() for name in archive_names}):raise RuntimeError('Package member set/order mismatch: '+path.name)
+        for entry in entries:
+            safe(entry.filename)
+            mode=entry.external_attr>>16
+            if entry.is_dir() or entry.flag_bits&1 or stat.S_IFMT(mode) not in {0,stat.S_IFREG}:raise RuntimeError('Unsafe package member: '+entry.filename)
+            digest=hashlib.sha256()
+            with package.open(entry) as source:
+                for block in iter(lambda:source.read(1024*1024),b''):digest.update(block)
+            if digest.hexdigest()!=files[entry.filename]:raise RuntimeError('Package member hash mismatch: '+entry.filename)
+        if package.testzip() is not None:raise RuntimeError('Package CRC mismatch: '+path.name)
+    return raw,names
+
+def validate_release_outputs(dist,expected_commit):
+    aggregate=manifest_json(dist/'manifest.json')
+    if (not isinstance(aggregate,dict) or set(aggregate)!={'version','source_commit','layout','files','artifacts'}
+            or aggregate['source_commit']!=expected_commit or aggregate['layout']!='organized'):
+        raise RuntimeError('Release manifest differs from recorded source')
+    version=aggregate['version']
+    if not isinstance(version,str) or re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+',version) is None:raise RuntimeError('Invalid release manifest version')
+    shipping=aggregate['files']
+    if not isinstance(shipping,dict) or not shipping:raise RuntimeError('Empty release shipping inventory')
+    shipping_names=list(shipping)
+    for name,digest in shipping.items():
+        safe(name)
+        if not isinstance(digest,str) or re.fullmatch(r'[0-9a-f]{64}',digest) is None:raise RuntimeError('Invalid release shipping hash: '+name)
+    if len(shipping_names)!=len({name.casefold() for name in shipping_names}):raise RuntimeError('Case-colliding release shipping inventory')
+    expected_artifacts={f'CajunWebPro-{version}-{kind}.zip' for kind in ('FULL-PROJECT','COMPLETE-UPLOAD','UPDATE')}
+    rows=aggregate['artifacts']
+    if not isinstance(rows,list) or len(rows)!=3 or {row.get('artifact') for row in rows if isinstance(row,dict)}!=expected_artifacts:raise RuntimeError('Release manifest artifact set mismatch')
+    packages={}
+    for name in sorted(expected_artifacts):
+        prefix=name.removesuffix('.zip');manifest=manifest_json(dist/(prefix+'.manifest.json'))
+        raw,names=inspect_release_archive(dist/name,manifest,expected_commit,version)
+        directories='\n'.join(manifest['directories'])+'\n'
+        if (dist/(prefix+'.directories.txt')).read_text(encoding='utf-8')!=directories:raise RuntimeError('Package directory list mismatch: '+name)
+        aggregate_row=next(row for row in rows if row.get('artifact')==name)
+        if aggregate_row!={key:value for key,value in manifest.items() if key!='files'}:raise RuntimeError('Aggregate/package manifest mismatch: '+name)
+        packages[name]={'manifest':manifest,'raw':raw,'names':names}
+    expected_files={'manifest.json','START-HERE.txt'}
+    for name in expected_artifacts:expected_files|={name,name.removesuffix('.zip')+'.manifest.json',name.removesuffix('.zip')+'.directories.txt'}
+    actual_files={path.name for path in dist.iterdir() if path.is_file()}
+    if actual_files!=expected_files|{'SHA256SUMS.txt'}:raise RuntimeError('Unexpected release output set')
+    lines=(dist/'SHA256SUMS.txt').read_text(encoding='utf-8').splitlines();checks={}
+    for line in lines:
+        pieces=line.split('  ')
+        if len(pieces)!=2 or re.fullmatch(r'[0-9a-f]{64}',pieces[0]) is None:raise RuntimeError('Malformed package checksum line')
+        safe(pieces[1])
+        if '/' in pieces[1] or pieces[1] in checks:raise RuntimeError('Unsafe or duplicate package checksum name')
+        checks[pieces[1]]=pieces[0]
+    if set(checks)!=expected_files:raise RuntimeError('Package checksum inventory mismatch')
+    for name,digest in checks.items():
+        if sha((dist/name).read_bytes())!=digest:raise RuntimeError('Package checksum mismatch: '+name)
+    return version,packages
+
+def rc_note(version):
+    note=('UNRELEASED '+version+' test candidate. Do not deploy to production. '
+          'Validate installation, financing, provider integrations and security before shipping.\n').encode()
+    validate_rc_note(note,version)
+    return note
+
+def validate_rc_note(note,version):
+    expected=('UNRELEASED '+version+' test candidate. Do not deploy to production. '
+              'Validate installation, financing, provider integrations and security before shipping.\n').encode()
+    if note!=expected or b'\\n' in note or not note.endswith(b'\n') or note.endswith(b'\n\n'):raise RuntimeError('Invalid RC test-only note')
+
+def stage_rc_upload(dist,destination,expected_commit):
+    if destination.exists() or destination.is_symlink():raise RuntimeError('RC staging destination must not exist')
+    version,packages=validate_release_outputs(dist,expected_commit)
+    name=f'CajunWebPro-{version}-COMPLETE-UPLOAD.zip';package=packages[name]
+    if 'RC-TEST-ONLY.txt' in package['names']:raise RuntimeError('RC note collides with package member')
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    temporary=Path(tempfile.mkdtemp(prefix=destination.name+'-',dir=destination.parent))
+    try:
+        with zipfile.ZipFile(io.BytesIO(package['raw'])) as archive:
+            for member in package['names']:
+                target=temporary/member;target.parent.mkdir(parents=True,exist_ok=True)
+                if target.exists() or not target.resolve().is_relative_to(temporary.resolve()):raise RuntimeError('Unsafe RC extraction target')
+                with archive.open(member) as source,target.open('xb') as output:shutil.copyfileobj(source,output)
+        note=rc_note(version);(temporary/'RC-TEST-ONLY.txt').write_bytes(note);validate_rc_note((temporary/'RC-TEST-ONLY.txt').read_bytes(),version)
+        temporary.replace(destination)
+    except Exception:
+        shutil.rmtree(temporary,ignore_errors=True)
+        raise
+    return {'version':version,'source_commit':expected_commit,'files':len(package['names']),'destination':destination.name}
+
 def release_version(root,site):
     runtime=re.search(r"const CWP_VERSION = '([^']+)'",(site/'config/defaults.php').read_text(encoding='utf-8')).group(1)
     if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+',runtime):raise RuntimeError('Invalid release version')
@@ -185,7 +317,11 @@ def release_version(root,site):
     return runtime
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit');args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit');ap.add_argument('--stage-rc');args=ap.parse_args()
+    if args.refresh and (args.commit or args.stage_rc):raise RuntimeError('--refresh cannot build or stage a release')
+    if args.stage_rc:
+        safe(args.stage_rc)
+        if len(PurePosixPath(args.stage_rc).parts)!=1:raise RuntimeError('RC staging directory must be a repository-root name')
     inv=generated(args.refresh)
     version=release_version(ROOT,SITE)
     view=(SITE/'install/views/form.php').read_text(encoding="utf-8")
@@ -201,12 +337,7 @@ def main():
     if args.refresh:
         print('Refreshed and checked canonical installer; no release built from uncommitted files.');return
     if not args.commit:raise RuntimeError('A clean recorded --commit is required to build archives')
-    commit=subprocess.check_output(['git','rev-parse',args.commit+'^{commit}'],cwd=ROOT,text=True).strip()
-    if subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()!=commit:raise RuntimeError('Build checkout must be the recorded commit')
-    if subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=ROOT,text=True).strip():raise RuntimeError('Release source must be clean, including untracked files')
-    tracked=subprocess.check_output(['git','ls-tree','-r','--name-only',commit],cwd=ROOT,text=True).splitlines()
-    modes=subprocess.check_output(['git','ls-tree','-r',commit],cwd=ROOT,text=True).splitlines()
-    if any(line.startswith('120000 ') for line in modes):raise RuntimeError('Git symlinks cannot be shipped, including on Windows checkouts')
+    commit,tracked=recorded_source(ROOT,args.commit)
     if {n[5:] for n in tracked if n.startswith('site/')}!=set(inv):raise RuntimeError('Shipping inventory differs from source commit')
     full={}
     with source_blobs(commit,tracked) as read_source:
@@ -247,5 +378,7 @@ def main():
     (out/'START-HERE.txt').write_bytes(full['START-HERE.txt'])
     files=sorted([out/'manifest.json',out/'START-HERE.txt']+[out/m['artifact'] for m in reports]+[out/(m['artifact'].removesuffix('.zip')+ext) for m in reports for ext in ['.manifest.json','.directories.txt']],key=lambda p:p.name)
     write(out/'SHA256SUMS.txt',''.join(sha(p.read_bytes())+'  '+p.name+'\n' for p in files))
-    print(json.dumps({'version':version,'source_commit':commit,'shipping_files':len(inv),'artifacts':{m['artifact']:len(m['files']) for m in reports}},indent=2))
+    result={'version':version,'source_commit':commit,'shipping_files':len(inv),'artifacts':{m['artifact']:len(m['files']) for m in reports}}
+    if args.stage_rc:result['rc']=stage_rc_upload(out,ROOT/args.stage_rc,commit)
+    print(json.dumps(result,indent=2))
 if __name__=='__main__':main()

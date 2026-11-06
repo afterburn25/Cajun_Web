@@ -83,7 +83,9 @@ DIAGNOSTIC_ADDITION_SHA256 = {
 }
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
+    '.github/workflows/rc126-test-package.yml',
     'docs/CLIENT_PORTAL_ROADMAP.md',
+    'docs/RELEASE_WORKFLOW.md',
     'site/admin/controllers/studio.php',
     'site/admin/views/studio/clients.php',
     'site/admin/views/studio/job.php',
@@ -153,6 +155,7 @@ REPAIRS = frozenset((
     'tests/service_plan_cases.py',
     'tests/service_plans_native.php',
     'tests/support_tickets_native.php',
+    'tests/build_guards.py',
     'tests/ticket_cases.py',
     '.github/workflows/application-tests.yml',
     '.github/workflows/software-webhook-contract.yml',
@@ -164,6 +167,7 @@ REPAIRS = frozenset((
     'tests/software_webhook_contract.php',
     'tools/acceptance-contract.json',
     'tools/acceptance-reports.json',
+    'tools/build.py',
 ))
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
@@ -189,6 +193,10 @@ REPAIR_SHA256['tests/payments_cases.py'] = 'b5b4f3e9e3fd23474f298832a22a14672c0f
 REPAIR_SHA256['tests/ticket_cases.py'] = 'dc3bf485e8473588661b8bfaeb88ef8caab87281d5111e23ed987957af4938bf'
 REPAIR_SHA256['tests/finance_initial_enrollment_native.php'] = 'f61066d00ae989965130c0f8965bb0300c45ab45bbe220bc1b95ff6029020f38'
 REPAIR_SHA256['tools/acceptance-contract.json'] = '068d0aac2cd983215bd90decfa396fbbf1637813836bfe7c44b580adb99c3f2c'
+REPAIR_SHA256['.github/workflows/rc126-test-package.yml'] = '7902b61c4bda1946e9d768b9d793afab1b832c2de8fa1d667c792f1caf739ba3'
+REPAIR_SHA256['docs/RELEASE_WORKFLOW.md'] = 'ae72fcdf222802c81f1769eb42c3c7e17a61afdcd26ae650c01d788ed780bae6'
+REPAIR_SHA256['tests/build_guards.py'] = '7df4f04b58418ef27d33ee53c175cf4eb61e2348988f0c4b79909a063ad049f2'
+REPAIR_SHA256['tools/build.py'] = 'bf76464dc1e736b76a892a5662b65134eeb8a558f1c2f39e0359f39463725ad4'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
