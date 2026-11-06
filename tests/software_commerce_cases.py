@@ -931,6 +931,12 @@ def run_browser(env, browser):
     check('Installed onboarding exposes browser upload progress and no server-path input',
           p.locator('form[data-software-package-upload] progress[data-upload-progress]').count()==1
           and p.locator('input[name=path], input[name=file_path]').count()==0)
+    invalid_zip=qa/'Software-Onboarding-Invalid.zip';invalid_zip.write_bytes(b'not a ZIP package; retained only for the rejected browser upload')
+    p.locator('input[type=file][name=package]').set_input_files(str(invalid_zip))
+    p.get_by_role('button',name='Upload and review').click()
+    expect(p.locator('[data-upload-status]')).to_contain_text('Archive is not a readable ZIP.',timeout=40000)
+    check('Rejected XHR upload keeps a recoverable form without replacing the document',
+          p.locator('form[data-software-package-upload]').count()==1 and 'software_upload=' not in p.url)
     p.locator('input[type=file][name=package]').set_input_files(str(onboarding_zip))
     p.get_by_role('button',name='Upload and review').click()
     expect(p.get_by_text('Stored securely.',exact=False)).to_be_visible(timeout=40000)
@@ -957,7 +963,7 @@ def run_browser(env, browser):
     if onboarding_errors:
         raise AssertionError('Installed onboarding browser errors: '+repr(onboarding_errors))
     check('Installed onboarding browser saves without uncaught script errors',True)
-    context.close();onboarding_zip.unlink()
+    context.close();onboarding_zip.unlink();invalid_zip.unlink()
 
     register=admin.get(licenses,timeout=25)
     legacy_deactivate={
