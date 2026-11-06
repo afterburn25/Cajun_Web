@@ -1,3 +1,9 @@
+## 2026-11-06 12:35 UTC — PR #367 positive artwork proof added locally
+
+Exact head `026b296fa0e5ca1d11365650dcf0307c8ff7d97b` resolved the prior missing-file bug. Authenticated reanalysis found zero bugs and zero vulnerabilities, resolved the predecessor finding, and raised one applicable flag: the focused fixture proved only missing artwork, not that a valid guarded managed file remains ready. Its naturally triggered workflows are preserved as predecessor evidence.
+
+The local proof-only successor creates a per-request private temporary media directory and guarded synthetic file, exercises the actual readiness helper through the real catalog template, and removes the file at request shutdown. Both the positive `Image ready`/thumbnail case and the existing missing-file/no-thumbnail case now pass in offline rendering and loopback Chromium at 84 and 77 checks. All 99 reversible repair rows reconstruct exactly. No shipping byte, authorization path, live operation or release boundary changes in this follow-up; fresh exact-head review and hosted acceptance are required.
+
 ## 2026-11-06 12:15 UTC — PR #367 review blocker corrected locally
 
 PR #367 proof successor `c4b2a7668c0214674962f2d9550044f35b562ea1`, tree `78969d95a79f7c6e9209e8335a08cdcf2725117c`, passed all four consolidation lanes: 79 native and 469 browser assertions per lane, 32 captures, empty browser stderr and no live operation. Its first Force SSL attempt retained one pre-checkout host-port collision and the failed-job retry passed without source or workflow change. These results remain exact-source predecessor evidence while its complete Application run finishes.

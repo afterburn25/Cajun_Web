@@ -1,3 +1,9 @@
+## 2026-11-06 12:35 UTC — exact-head reanalysis requested a guarded positive case
+
+Published `026b296f` after its exact-source build and reversible proof passed. Authenticated Devin analysis was explicitly started for that commit; it resolved the predecessor missing-artwork bug and returned zero bugs and zero vulnerabilities, plus one applicable flag: the synthetic fixture covered absent storage only. Preserved all naturally triggered workflows and the Force SSL attempt-1 pre-checkout port collision.
+
+Added a test-only positive scenario with a private per-request temporary media directory, exact guard prefix, matching row/filename, shutdown cleanup and an actual-template assertion for `Image ready` plus a thumbnail. Kept the absent-file scenario unchanged. Offline rendering now passes 84 checks and loopback Chromium 77; the 99-repair finite receipt remains fully reversible at verifier SHA-256 `85fc818baadfebc9ea13e757cee7c2e1ee87d237d442be86f2781a2968cc7c9f`. This local checkpoint is unpublished and changes no shipping byte.
+
 ## 2026-11-06 12:15 UTC — exact-head review caught missing managed file
 
 PR #367 successor `c4b2a766` cleared four-lane consolidation with 79 native and 469 browser passes per lane, 32 captures and no live operation. Preserved the first Force SSL attempt's pre-checkout host-port collision and its source-identical failed-job retry. Authenticated review then exposed one applicable bug despite zero vulnerabilities/flags: catalog readiness checked only the media database row, while the real serving path also refuses a missing, escaped, symlinked, unreadable or unguarded private file.

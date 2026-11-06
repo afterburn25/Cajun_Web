@@ -68,6 +68,8 @@ try:
         check('Import batch and single product confirmations exist',page.get_by_role('button',name='Import this batch',exact=True).count()==1 and page.get_by_role('button',name='Create draft',exact=True).count()==1)
         check('Mutation forms retain CSRF; search remains read-only',page.locator('main form[method="post"]').count()==page.locator('main form[method="post"] input[name="csrf"]').count())
         page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)
+        render(view='catalog',scenario='ready-media-file')
+        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)
         render(view='catalog',scenario='missing-media-file')
         check('A retained media row with no managed file is shown as missing, not ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)
         render(view='catalog',scenario='empty')

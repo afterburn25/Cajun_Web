@@ -207,10 +207,10 @@ REPAIR_SHA256['tests/catalog_storefront_checkout_cases.py'] = '70d146a07a0fe22e5
 REPAIR_SHA256['tests/hosting_catalog_plan_setup_cases.py'] = '91f98263a8e5716129ab2d11012b2d3f9672cb96e861b144d1d46272929b85d0'
 REPAIR_SHA256['tests/hosting_billing_options_cases.py'] = 'd4959ae1033a045364cc933a75e841680ee4978a4af1dc08c9855146d8ed6175'
 REPAIR_SHA256['site/app/billing/catalog_browse.php'] = 'da7ba2410622a0b74f8c377e9ac7a14dd468ce708803c711cdb334989cc8c6da'
-REPAIR_SHA256['tests/provider_workspace_fixture.php'] = '9c9175e1b043ed590548644ac5a15209b22b0848e5d2e5f0f3170dd2f560a99d'
+REPAIR_SHA256['tests/provider_workspace_fixture.php'] = 'a774e1164adbd87aeb4490589d2992ff10c16636f9f9dce383637c30ac43c78d'
 REPAIR_SHA256['tests/provider_workspace_policy.php'] = '65ba05aeefaeb62c142deac9526c09bc92149c30f15574230aacab2f89145297'
-REPAIR_SHA256['tests/provider_workspace_render.py'] = '43187ff2d1f8e4d39ee29301a683504affed9a9083f29d0d10e6fe66187dfcee'
-REPAIR_SHA256['tests/provider_workspace_browser.py'] = '3765c53a3db35d4a06c2f3f5b7c8ce88d2d5e597f15f43cec7edc91fe8f72fb7'
+REPAIR_SHA256['tests/provider_workspace_render.py'] = 'd941a87f6adbd5bd91601828d96c8aa77bfc19dc7be405f2088004bae6f9b18e'
+REPAIR_SHA256['tests/provider_workspace_browser.py'] = '3162a862f7137ca425e9729cd042f6ea218225b11ad807990e5825ef3431bddc'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}

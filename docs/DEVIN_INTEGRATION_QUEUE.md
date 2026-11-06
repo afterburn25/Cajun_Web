@@ -1,3 +1,16 @@
+## 2026-11-06 12:35 UTC — PR #367 guarded-file proof successor
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains authoritative. `026b296f` fixes the physical-file readiness bug but is not merge-qualified because exact-head review requested positive-path focused coverage.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR #367 `026b296f` | Prior bug resolved; 0 bugs/0 vulnerabilities; one applicable positive-path coverage flag; natural workflows preserved | Do not merge or relabel as final evidence |
+| Local guarded-file proof | Test-only child; guarded temporary file must produce ready label/thumbnail while absent file must remain missing; 84 renderer, 77 browser and 99 repair reversals pass | Finish guards, publish normally, rerun exact-head review and natural acceptance |
+| Remaining #365 work | Dependency-ordered behind accepted first slice | Continue read-only design independently; keep shared proof/release work with integration lead |
+| Release/live operations | NOT AUTHORIZED | Preserve all explicit boundaries |
+
+No shipping, schema, routing, authorization, billing or provider behavior changes in this proof follow-up.
+
 ## 2026-11-06 12:15 UTC — PR #367 physical-artwork successor
 
 [Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains the authoritative queue. Development main remains verified at `c5d17f782af6959305390f96f11119283c93c7aa`, version 1.26.1; no release or production action is authorized.

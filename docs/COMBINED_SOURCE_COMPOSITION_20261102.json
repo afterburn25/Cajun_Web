@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "86b572de52d311f1fa254adf5d487260feb1cdb68aa2c6d6fe2fad15c66915fc",
+  "verifier_sha256": "85fc818baadfebc9ea13e757cee7c2e1ee87d237d442be86f2781a2968cc7c9f",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1453,7 +1453,7 @@
     },
     "tests/provider_workspace_browser.py": {
       "original_sha256": "a00a75df721f35aaa7278ee74b473f64225b109c0d3837e0e2144096eee962ad",
-      "current_sha256": "3765c53a3db35d4a06c2f3f5b7c8ce88d2d5e597f15f43cec7edc91fe8f72fb7",
+      "current_sha256": "3162a862f7137ca425e9729cd042f6ea218225b11ad807990e5825ef3431bddc",
       "edits": [
         [
           "        check('Unknown section falls back to overview',page.get_by_role('heading',name='Connect once',exact=True).count()==1)\n        visit(view='catalog')\n        check('Local products precede the importer and create form',page.locator('#catalog-products').evaluate('(el)=>el.getBoundingClientRect().top')<page.locator('#hosting-import').evaluate('(el)=>el.getBoundingClientRect().top')<page.get_by_role('heading',name='New product',exact=True).evaluate('(el)=>el.getBoundingClientRect().top'))\n        check('Importer defaults to direct package-type catalog',page.locator('nav[aria-label=\"Hosting import source\"] a[aria-current=\"page\"]').inner_text()=='20i hosting catalog')\n        check('Uninstalled provider plan appears as import choice',page.get_by_role('heading',name='Business hosting (synthetic)',exact=True).count()==1)\n        check('Previously imported product links to existing draft',page.get_by_role('link',name='Review draft product',exact=True).count()==1)\n        check('Batch and individual import forms remain explicit',page.get_by_role('button',name='Import this batch',exact=True).count()==1 and page.get_by_role('button',name='Create draft',exact=True).count()==1)\n        check('Catalog forms retain CSRF',page.locator('main form').count()==page.locator('main form input[name=\"csrf\"]').count())\n        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='empty')\n",
@@ -1470,12 +1470,16 @@
         [
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='empty')\n",
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='missing-media-file')\n        check('Physical managed artwork is required before the catalog calls it ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)\n        visit(view='catalog',scenario='empty')\n"
+        ],
+        [
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='missing-media-file')\n",
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='ready-media-file')\n        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)\n        visit(view='catalog',scenario='missing-media-file')\n"
         ]
       ]
     },
     "tests/provider_workspace_fixture.php": {
       "original_sha256": "9913ae76b8a36f879c6c58a8bdfa39378d2bffcc423981dd8d20ea4b3fc4cdbb",
-      "current_sha256": "9c9175e1b043ed590548644ac5a15209b22b0848e5d2e5f0f3170dd2f560a99d",
+      "current_sha256": "a774e1164adbd87aeb4490589d2992ff10c16636f9f9dce383637c30ac43c78d",
       "edits": [
         [
           "function one(string $sql,array $args=[]):?array{return ['n'=>0];}\nfunction all(string $sql,array $args=[]):array {\n    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting']];\n    throw new LogicException('Unexpected fixture query');\n}\n",
@@ -1500,6 +1504,26 @@
         [
           "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>null]]:[];}",
           "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>fixture_state()==='missing-media-file'?str_repeat('d',32):null]]:[];}"
+        ],
+        [
+          "define('CWP_BOOT',true);define('CWP_CODE_ROOT',dirname(__DIR__).'/site');define('CWP_ROOT',__DIR__.'/nonexistent-test-webroot');define('CWP_VERSION','1.26.0 · DEVELOPMENT PREVIEW');\n",
+          "define('CWP_BOOT',true);define('CWP_CODE_ROOT',dirname(__DIR__).'/site');define('CWP_ROOT',__DIR__.'/nonexistent-test-webroot');define('CWP_VERSION','1.26.0 · DEVELOPMENT PREVIEW');define('CWP_GUARD',\"<?php http_response_code(404); exit; ?>\\n\");\n"
+        ],
+        [
+          "function site_url(string $path=''):string{return '/fixture-disabled/'.ltrim($path,'/');}",
+          "function site_url(string $path=''):string{return fixture_state()==='ready-media-file'&&str_starts_with($path,'media/index.php?id=')?'/site/images/portfolio/project-placeholder.svg':'/fixture-disabled/'.ltrim($path,'/');}"
+        ],
+        [
+          "function config():array{return ['storage'=>__DIR__.'/nonexistent-provider-workspace-storage'];}",
+          "function fixture_media_id():string{return str_repeat('d',32);}\nfunction fixture_storage():string {\n    static $storage=null;if($storage!==null)return $storage;\n    if(fixture_state()!=='ready-media-file')return $storage=__DIR__.'/nonexistent-provider-workspace-storage';\n    $storage=sys_get_temp_dir().DIRECTORY_SEPARATOR.'cwp-provider-workspace-'.getmypid().'-'.bin2hex(random_bytes(8));$directory=$storage.DIRECTORY_SEPARATOR.'media';\n    if(!mkdir($directory,0700,true))throw new RuntimeException('Synthetic media directory could not be created.');\n    $file=$directory.DIRECTORY_SEPARATOR.fixture_media_id().'.php';$bytes=CWP_GUARD.'synthetic managed artwork';\n    if(file_put_contents($file,$bytes)!==strlen($bytes)||!chmod($file,0600))throw new RuntimeException('Synthetic guarded media could not be created.');\n    register_shutdown_function(static function()use($file,$directory,$storage):void{@unlink($file);@rmdir($directory);@rmdir($storage);});\n    return $storage;\n}\nfunction config():array{return ['storage'=>fixture_storage()];}"
+        ],
+        [
+          "    if(str_contains($sql,'FROM media'))return fixture_state()==='missing-media-file'?[['id'=>str_repeat('d',32),'filename'=>str_repeat('d',32).'.php']]:[];",
+          "    if(str_contains($sql,'FROM media'))return in_array(fixture_state(),['missing-media-file','ready-media-file'],true)?[['id'=>fixture_media_id(),'filename'=>fixture_media_id().'.php']]:[];"
+        ],
+        [
+          "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>fixture_state()==='missing-media-file'?str_repeat('d',32):null]]:[];}",
+          "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>in_array(fixture_state(),['missing-media-file','ready-media-file'],true)?fixture_media_id():null]]:[];}"
         ]
       ]
     },
@@ -1523,7 +1547,7 @@
     },
     "tests/provider_workspace_render.py": {
       "original_sha256": "7ed28645607847efba7ba362077a1f784f79ca1e3e1c95f467ce7a8087623eca",
-      "current_sha256": "43187ff2d1f8e4d39ee29301a683504affed9a9083f29d0d10e6fe66187dfcee",
+      "current_sha256": "d941a87f6adbd5bd91601828d96c8aa77bfc19dc7be405f2088004bae6f9b18e",
       "edits": [
         [
           "        check('Traversal-like section safely renders overview',page.get_by_role('heading',name='Connect once',exact=True).count()==1)\n        render(view='catalog')\n        check('Saved local products precede importer and new form',page.locator('#catalog-products').evaluate('(e)=>e.getBoundingClientRect().top')<page.locator('#hosting-import').evaluate('(e)=>e.getBoundingClientRect().top')<page.get_by_role('heading',name='New product',exact=True).evaluate('(e)=>e.getBoundingClientRect().top'))\n        check('Product search, type and status filters exist',page.locator('input[name=\"product_search\"],select[name=\"product_family\"],select[name=\"product_status\"]').count()==3)\n",
@@ -1544,6 +1568,10 @@
         [
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='empty')\n",
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='missing-media-file')\n        check('A retained media row with no managed file is shown as missing, not ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)\n        render(view='catalog',scenario='empty')\n"
+        ],
+        [
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='missing-media-file')\n",
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='ready-media-file')\n        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)\n        render(view='catalog',scenario='missing-media-file')\n"
         ]
       ]
     },
