@@ -26,7 +26,7 @@
     },
     "tests/software_commerce_cases.py": {
       "before_sha256": "d77a4d6e31c44408584ee72b225258a35f4551cf5b6319f89e2fdd361c3652ce",
-      "current_sha256": "fbc8619f11b20a8fd0509faa3565ca4f2b43c00eeef7d8ee096d79a85d954bd2"
+      "current_sha256": "049936a0a3abc5e25344e23ae9836cb432db955352a095fd6184a819de6f0a49"
     }
   },
   "added": {
