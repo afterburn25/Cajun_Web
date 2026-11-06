@@ -7,6 +7,7 @@
 - Correct the first review head before integration: zero prices remain publication work, optional feature bullets do not create a false details warning, and the customer-license shortcut is shown only to staff with `staff.manage`.
 - Align the retained native importer assertion with the verified documented-contract/no-provider-artwork wording and require its explicit local-upload fallback; no shipping behavior changes in this proof correction.
 - Advance the acceptance contract's exact importer-test identity through the existing reversible source receipt after the first proof successor correctly refused its predecessor hash; no application byte or acceptance rule changes.
+- Align the retained four-lane checkout upload assertion with the stronger post-upload review warning already rendered by the candidate; preserve the actual multipart upload, image, redirect and commercial-inertness checks.
 - Improve desktop and mobile product presentation without changing publication, licensing, payment, provisioning, provider-operation or customer-message authority. This is a development candidate pending review, hosted acceptance, integration and resulting-main verification.
 
 ## 2026-11-06 — exact-source RC test packaging

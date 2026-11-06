@@ -184,7 +184,7 @@ def run_browser(env, browser):
         click(op, 'catalog_import_image', 'Save image')
         uploaded_image = op.locator('img[alt="Uploaded draft product image"]')
         check('Storefront owner saves local artwork through the actual multipart form',
-              'Draft product image saved. Publication has not changed.' in op.content()
+              'Draft product image saved. If this product already has a published offer, changes need review before its storefront card is current.' in op.content()
               and uploaded_image.count() == 1)
         image_url = urljoin(op.url, uploaded_image.get_attribute('src'))
         check('Storefront uploaded image uses only the installed media endpoint',

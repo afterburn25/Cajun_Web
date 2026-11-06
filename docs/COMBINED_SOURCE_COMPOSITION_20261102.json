@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "5638f91b9d99a5ddb68e7bb7b758bbe4e3150c4c37056500a012d15d1c19a5aa",
+  "verifier_sha256": "9651568a6aab6a223fad35b5e6bd5dbcfae5a7186e75ec29e324344af8990a69",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -607,7 +607,7 @@
     },
     "tests/catalog_storefront_checkout_cases.py": {
       "original_sha256": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
-      "current_sha256": "843048d926ca4187c9a2f60a3a360b43e46311f336b5c32573f4f2af76778213",
+      "current_sha256": "185ff00e4ab5290b1acc92d299792e7165877b3089f993d7a59c3111375d81c2",
       "edits": [
         [
           "        image_form.locator('[name=\"product_image\"]').set_input_files({\n            'name': 'synthetic-storefront.png', 'mimeType': 'image/png', 'buffer': SYNTHETIC_PNG,\n        })\n        image_form.locator('[name=\"owner_password\"]').fill(owner_password)\n        click(op, 'catalog_import_image', 'Save image')\n        uploaded_image = op.locator('img[alt=\"Uploaded draft product image\"]')\n        check('Storefront owner saves local artwork through the actual multipart form',\n",
@@ -616,6 +616,10 @@
         [
           "        click(op, 'hosting_catalog_preview', 'Preview offer')\n        publish = values(op, 'hosting_catalog_publish')\n        unchanged('Storefront owner preview performs no commercial write', uploaded)\n        form(op, 'hosting_catalog_publish').locator('[name=\"current_password\"]').fill(owner_password)\n        form(op, 'hosting_catalog_publish').locator('[name=\"confirm\"]').check()\n        click(op, 'hosting_catalog_publish', 'Publish hosting offer')\n        published = fixture('state')\n",
           "        click(op, 'hosting_catalog_preview', 'Preview offer')\n        publish = values(op, 'hosting_catalog_publish')\n        unchanged('Storefront owner preview performs no commercial write', uploaded)\n        check('Storefront publication uses the current owner session with explicit confirmation',\n              form(op, 'hosting_catalog_publish').locator('[name=\"current_password\"],[name=\"owner_password\"]').count() == 0\n              and bool(form(op, 'hosting_catalog_publish').locator('[name=\"csrf\"]').input_value())\n              and not form(op, 'hosting_catalog_publish').locator('[name=\"confirm\"]').is_checked())\n        form(op, 'hosting_catalog_publish').locator('[name=\"confirm\"]').check()\n        click(op, 'hosting_catalog_publish', 'Publish hosting offer')\n        published = fixture('state')\n"
+        ],
+        [
+          "              'Draft product image saved. Publication has not changed.' in op.content()\n",
+          "              'Draft product image saved. If this product already has a published offer, changes need review before its storefront card is current.' in op.content()\n"
         ]
       ]
     },

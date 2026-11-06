@@ -5,7 +5,7 @@
 | Candidate | Current disposition | Next action |
 | --- | --- | --- |
 | Main `c5d17f7`, 1.26.1 | ALREADY INTEGRATED and resulting-main verified; 219 reports, 32,814 executions and 757 final files independently checked | Preserve exact evidence; do not redispatch or relabel it as a release |
-| Issue #365 catalog/licensing home | PR #367 first head is nonqualifying after three applicable review findings; reviewed `12cb916b` retained one stale native assertion, and proof successor `ca48a864` then correctly refused the acceptance contract's predecessor test hash | Advance only that contract hash and reversible receipt edge, then require fresh exact-head Application and complete hosted acceptance before normal merge |
+| Issue #365 catalog/licensing home | PR #367 first head is nonqualifying after three applicable review findings; reviewed `12cb916b` retained one stale native assertion, while proof successor `ca48a864` exposed the acceptance contract's predecessor hash and a four-lane checkout assertion for superseded flash copy | Advance only those expectations and reversible receipt edges, then require fresh exact-head Application and complete hosted acceptance before normal merge |
 | Remaining issue #365 work | Not implemented by this slice: storefront registration continuity, managed software onboarding, full license flow, client-portal parity and unified DB updates | Continue in the issue's recorded dependency order after the first slice is accepted |
 | Release publication | NOT AUTHORIZED; v1.25.0 remains latest | Preserve explicit publication/deployment boundary |
 
@@ -15,7 +15,7 @@ Preserve PR #367 head `9c453bd5` and its naturally triggered workflows as useful
 
 Also preserve reviewed head `12cb916b` and native artifact `13485360092`. Its exact Application build and recovery passed; native checks reached the importer owner-view assertion, which still expected the removed sentence `Images are not copied from 20i`. The proof-only successor must require the current verified contract boundary and explicit local fallback, then earn its own run. Do not relabel the skipped browser stage as evidence.
 
-Preserve proof successor `ca48a864` and account/notification run `42182881213` as the next nonqualifying proof edge. Its source job reached 2,742 helper checks before refusing `tools/acceptance-contract.json`'s old importer-test identity; downstream acceptance/checkpoint were skipped and are not evidence.
+Preserve proof successor `ca48a864`, account/notification `42182881213`, Application `42182881366` and consolidation `42182880986` as nonqualifying evidence. The first two workflows reached 2,742 helpers before refusing `tools/acceptance-contract.json`'s old importer-test identity. Consolidation's four supported lanes performed the upload and redirect but required superseded flash copy; all skipped stages remain unclaimed.
 
 ## 2026-11-04 17:16 UTC — Codex-owned master queue checkpoint
 

@@ -8,7 +8,7 @@ PR #367's first review head is retained but cannot earn integration credit: revi
 
 Reviewed successor `12cb916b` likewise earns no integration credit: its Application native partition retained a stale importer-copy expectation and skipped browser acceptance. Updating that exact assertion to the verified documented-contract/local-fallback wording is a proof correction only; fresh exact-head acceptance remains required.
 
-Proof successor `ca48a864` earns no integration credit either: account/notification source proof stopped at the acceptance contract's predecessor importer-test hash after 2,742 passing helpers. Advancing that exact identity through the finite receipt changes no roadmap scope or shipping behavior and still requires fresh acceptance.
+Proof successor `ca48a864` earns no integration credit either: account/notification and Application source proof stopped at the acceptance contract's predecessor importer-test hash after 2,742 passing helpers, while four consolidation lanes retained superseded image-upload flash copy. Advancing those exact expectations through the finite receipt changes no roadmap scope or shipping behavior and still requires fresh acceptance.
 
 ## 2026-11-04 17:16 UTC — release-blocker qualification before roadmap continuation
 
