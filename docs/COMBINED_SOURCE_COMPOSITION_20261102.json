@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "d346f0aaed0d14457b91c62fc231d0706a7e4aec1ee4e3efe88d5cc2a64a6a44",
+  "verifier_sha256": "5638f91b9d99a5ddb68e7bb7b758bbe4e3150c4c37056500a012d15d1c19a5aa",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1113,7 +1113,7 @@
     },
     "tools/acceptance-contract.json": {
       "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
-      "current_sha256": "068d0aac2cd983215bd90decfa396fbbf1637813836bfe7c44b580adb99c3f2c",
+      "current_sha256": "557968d4a2889f0955fcc16e357f488285281bb6a6a1d193fd9bb7077052c030",
       "edits": [
         [
           "      \"tests/release_cases.py\": \"807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af\",\n",
@@ -1130,6 +1130,10 @@
         [
           "e445a3a65c19bdf02ee3f1027e17b4d8f3bed39ecb0a995609af57e82800c3ad",
           "b5b4f3e9e3fd23474f298832a22a14672c0f61e50d55b0c57b21d4c0e06755e6"
+        ],
+        [
+          "69f29a5b6b0fa8b575c7282025c568fdce1646da57ea99390b2a88fc6223d205",
+          "09daadc349d961a472eb15e14d07f08364498add25200b580587a9ffcfa9c37e"
         ]
       ]
     },
