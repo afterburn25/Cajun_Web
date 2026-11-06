@@ -9,7 +9,10 @@ $_POST=[];$_SESSION=[];
 function fixture_state():string{return is_string($_GET['scenario']??null)?$_GET['scenario']:'connected';}
 function admin_url(string $view='dashboard',array $params=[]):string{return '/tests/provider_workspace_fixture.php?'.http_build_query(['view'=>$view,'scenario'=>fixture_state()]+$params);}
 function page_url(string $page='home',array $params=[]):string{return '/tests/provider_workspace_fixture.php?'.http_build_query(['view'=>'public','page'=>$page]+$params);}
-function site_url(string $path=''):string{return fixture_state()==='ready-media-file'&&str_starts_with($path,'media/index.php?id=')?'/site/images/portfolio/project-placeholder.svg':'/fixture-disabled/'.ltrim($path,'/');}
+function site_url(string $path=''):string {
+    if(fixture_state()==='ready-media-file'&&str_starts_with($path,'media/index.php?id='))return '/tests/provider_workspace_fixture.php?'.http_build_query(['fixture_media'=>'1','scenario'=>fixture_state(),'id'=>substr($path,strlen('media/index.php?id='))]);
+    return '/fixture-disabled/'.ltrim($path,'/');
+}
 function asset(string $file):string{if($file==='logo.png')return '/site/images/branding/logo.png';if($file==='favicon.png')return '/site/images/icons/favicon.png';return '/site/assets/'.(str_ends_with($file,'.css')?'css/':'js/').$file;}
 function icon(string $name):string{return '<span aria-hidden="true">◇</span>';}
 function show_flash():void{echo '<p class="notice">DEVELOPMENT PREVIEW · Synthetic data · No provider connection or saved changes</p>';}
@@ -18,20 +21,29 @@ function fixture_media_id():string{return str_repeat('d',32);}
 function fixture_storage():string {
     static $storage=null;if($storage!==null)return $storage;
     if(fixture_state()!=='ready-media-file')return $storage=__DIR__.'/nonexistent-provider-workspace-storage';
+    $provided=getenv('CWP_UI_MEDIA_STORAGE');if(is_string($provided)&&$provided!=='')return $storage=$provided;
     $storage=sys_get_temp_dir().DIRECTORY_SEPARATOR.'cwp-provider-workspace-'.getmypid().'-'.bin2hex(random_bytes(8));$directory=$storage.DIRECTORY_SEPARATOR.'media';
     if(!mkdir($directory,0700,true))throw new RuntimeException('Synthetic media directory could not be created.');
-    $file=$directory.DIRECTORY_SEPARATOR.fixture_media_id().'.php';$bytes=CWP_GUARD.'synthetic managed artwork';
+    $payload=file_get_contents(CWP_CODE_ROOT.'/images/icons/favicon.png');if($payload===false)throw new RuntimeException('Synthetic artwork fixture could not be read.');
+    $file=$directory.DIRECTORY_SEPARATOR.fixture_media_id().'.php';$bytes=CWP_GUARD.$payload;
     if(file_put_contents($file,$bytes)!==strlen($bytes)||!chmod($file,0600))throw new RuntimeException('Synthetic guarded media could not be created.');
     register_shutdown_function(static function()use($file,$directory,$storage):void{@unlink($file);@rmdir($directory);@rmdir($storage);});
     return $storage;
 }
 function config():array{return ['storage'=>fixture_storage()];}
+function boot(bool $session=true):void{}
 function staff_can(string $permission,?array $user=null):bool{return !($permission==='staff.manage'&&fixture_state()==='catalog-limited');}
 function staff_view_permission(string $key):?string{return null;}
 function mail_accounts_access(array $u):bool{return false;}
 function mail_notices_access(array $u):bool{return false;}
 function table(string $name):string{return $name;}
-function one(string $sql,array $args=[]):?array{return ['n'=>0];}
+function one(string $sql,array $args=[]):?array {
+    if(str_contains($sql,'SELECT * FROM media')){
+        $payload=file_get_contents(CWP_CODE_ROOT.'/images/icons/favicon.png');if($payload===false)throw new RuntimeException('Synthetic artwork fixture could not be read.');
+        return fixture_state()==='ready-media-file'&&($args[0]??null)===fixture_media_id()?['id'=>fixture_media_id(),'filename'=>fixture_media_id().'.php','bytes'=>strlen($payload)]:null;
+    }
+    return ['n'=>0];
+}
 function all(string $sql,array $args=[]):array {
     if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting','summary'=>'Synthetic hosting summary','features'=>'Synthetic feature','terms'=>'Synthetic terms']];
     if(str_contains($sql,'FROM media'))return in_array(fixture_state(),['missing-media-file','ready-media-file'],true)?[['id'=>fixture_media_id(),'filename'=>fixture_media_id().'.php']]:[];
@@ -84,6 +96,7 @@ function fixture_function(string $path,string $name):void {
     }throw new LogicException('Actual renderer not found');
 }
 $user=['id'=>1,'name'=>'Test owner'];$view=$_GET['view']??'provider-settings';
+if(($_GET['fixture_media']??null)==='1'){require CWP_CODE_ROOT.'/media/serve.php';exit;}
 if($view==='catalog'){
     require CWP_CODE_ROOT.'/admin/views/catalog_import.php';
     require CWP_CODE_ROOT.'/app/billing/catalog_browse.php';

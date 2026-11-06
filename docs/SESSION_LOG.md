@@ -1,3 +1,9 @@
+## 2026-11-06 12:50 UTC — exact-head review required the real media server
+
+Authenticated analysis of PR #367 at `c074d0c` resolved the earlier missing-file bug and positive-readiness flag with 0 bugs and 0 vulnerabilities, then identified one distinct applicable flag: the fixture's static SVG thumbnail bypassed managed-image HTTP serving. Preserved c074 and its natural workflows as predecessor evidence.
+
+Replaced the static substitution locally with an exact loopback-only fixture route that requires the shipping `site/media/serve.php` implementation, a private temporary guarded PNG and a matching media row. The browser now observes HTTP 200 and requires the image to decode; missing physical artwork still produces `Image missing` and no thumbnail. Renderer 84, loopback browser 78, policy 61 and build guards 87 pass. Updated the finite composition repair receipt for the three changed test files; full composition reaches only the known Windows executable-mode mismatch for `foundation/mail-receiving/vendor/bin/carbon.bat`. No shipping, workflow, authorization, schema, billing or release byte changed.
+
 ## 2026-11-06 12:35 UTC — exact-head reanalysis requested a guarded positive case
 
 Published `026b296f` after its exact-source build and reversible proof passed. Authenticated Devin analysis was explicitly started for that commit; it resolved the predecessor missing-artwork bug and returned zero bugs and zero vulnerabilities, plus one applicable flag: the synthetic fixture covered absent storage only. Preserved all naturally triggered workflows and the Force SSL attempt-1 pre-checkout port collision.

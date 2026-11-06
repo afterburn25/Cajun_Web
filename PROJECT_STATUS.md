@@ -1,3 +1,9 @@
+## 2026-11-06 12:50 UTC — PR #367 managed-image HTTP proof added locally
+
+Authenticated exact-head analysis of `c074d0c2983aa1d6b01c45c97260c137bf29549c` resolved the predecessor bug and coverage flag and reported 0 bugs and 0 vulnerabilities. It raised one distinct applicable flag: the positive fixture rendered a thumbnail element through a static SVG substitution, so it did not prove that the guarded managed file could cross the real HTTP serving boundary. Preserve c074 and its naturally triggered workflows as nonqualifying predecessor evidence.
+
+The local test-only successor now gives loopback Chromium a private temporary guarded PNG, routes the exact synthetic media URL back through the fixture, and invokes the shipping `site/media/serve.php` implementation with an exact matching media row. The browser requires an HTTP 200 response and a decoded image with positive natural width; the missing-file case still renders no image and remains labeled missing. Focused results are 84 renderer, 78 loopback-browser, 61 policy and 87 build-rejection checks. The reversible composition receipt accepts the three changed test files and reaches only the preserved Windows executable-mode mismatch for `carbon.bat`. Shipping application bytes are unchanged; fresh exact-head review and hosted acceptance remain required before merge.
+
 ## 2026-11-06 12:35 UTC — PR #367 positive artwork proof added locally
 
 Exact head `026b296fa0e5ca1d11365650dcf0307c8ff7d97b` resolved the prior missing-file bug. Authenticated reanalysis found zero bugs and zero vulnerabilities, resolved the predecessor finding, and raised one applicable flag: the focused fixture proved only missing artwork, not that a valid guarded managed file remains ready. Its naturally triggered workflows are preserved as predecessor evidence.

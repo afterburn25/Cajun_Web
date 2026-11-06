@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "85fc818baadfebc9ea13e757cee7c2e1ee87d237d442be86f2781a2968cc7c9f",
+  "verifier_sha256": "1da962e2538df869d81a7431e2ff331eee87c7ecc3ebb1656d60cb7e70d43d3e",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1453,7 +1453,7 @@
     },
     "tests/provider_workspace_browser.py": {
       "original_sha256": "a00a75df721f35aaa7278ee74b473f64225b109c0d3837e0e2144096eee962ad",
-      "current_sha256": "3162a862f7137ca425e9729cd042f6ea218225b11ad807990e5825ef3431bddc",
+      "current_sha256": "024e57e59dec8c7118a43c547076d6d020befe5a6bd266f15f9458a4ef0b5ffe",
       "edits": [
         [
           "        check('Unknown section falls back to overview',page.get_by_role('heading',name='Connect once',exact=True).count()==1)\n        visit(view='catalog')\n        check('Local products precede the importer and create form',page.locator('#catalog-products').evaluate('(el)=>el.getBoundingClientRect().top')<page.locator('#hosting-import').evaluate('(el)=>el.getBoundingClientRect().top')<page.get_by_role('heading',name='New product',exact=True).evaluate('(el)=>el.getBoundingClientRect().top'))\n        check('Importer defaults to direct package-type catalog',page.locator('nav[aria-label=\"Hosting import source\"] a[aria-current=\"page\"]').inner_text()=='20i hosting catalog')\n        check('Uninstalled provider plan appears as import choice',page.get_by_role('heading',name='Business hosting (synthetic)',exact=True).count()==1)\n        check('Previously imported product links to existing draft',page.get_by_role('link',name='Review draft product',exact=True).count()==1)\n        check('Batch and individual import forms remain explicit',page.get_by_role('button',name='Import this batch',exact=True).count()==1 and page.get_by_role('button',name='Create draft',exact=True).count()==1)\n        check('Catalog forms retain CSRF',page.locator('main form').count()==page.locator('main form input[name=\"csrf\"]').count())\n        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='empty')\n",
@@ -1474,12 +1474,32 @@
         [
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='missing-media-file')\n",
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='ready-media-file')\n        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)\n        visit(view='catalog',scenario='missing-media-file')\n"
+        ],
+        [
+          "import json, os, shutil, socket, subprocess, time, urllib.request",
+          "import json, os, shutil, socket, subprocess, tempfile, time, urllib.request"
+        ],
+        [
+          "log=(OUT/'php-server.log').open('w')\nserver=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(ROOT)],env={**os.environ,'CWP_UI_FIXTURE':'1'},stdout=log,stderr=log)",
+          "log=(OUT/'php-server.log').open('w')\nmedia_storage=Path(tempfile.mkdtemp(prefix='cwp-provider-workspace-browser-'))\nmedia_directory=media_storage/'media';media_directory.mkdir(mode=0o700)\nmedia_id='d'*32;media_file=media_directory/(media_id+'.php')\nmedia_file.write_bytes(b'<?php http_response_code(404); exit; ?>\\n'+(ROOT/'site'/'images'/'icons'/'favicon.png').read_bytes())\nmedia_file.chmod(0o600)\nserver=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(ROOT)],env={**os.environ,'CWP_UI_FIXTURE':'1','CWP_UI_MEDIA_STORAGE':str(media_storage)},stdout=log,stderr=log)"
+        ],
+        [
+          "        page=ctx.new_page();errors=[];page.on('pageerror',lambda error: errors.append(str(error)))",
+          "        page=ctx.new_page();errors=[];media_responses=[];page.on('pageerror',lambda error: errors.append(str(error)))\n        page.on('response',lambda response: media_responses.append((response.url,response.status)) if 'fixture_media=1' in response.url else None)"
+        ],
+        [
+          "        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)",
+          "        thumbnail=page.locator('#catalog-products img.catalog-product-thumb')\n        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and thumbnail.count()==1)\n        check('The guarded thumbnail is served by the real managed-media boundary',any('fixture_media=1' in url and status==200 for url,status in media_responses) and thumbnail.evaluate('(img)=>img.complete&&img.naturalWidth>0'))"
+        ],
+        [
+          "    server.terminate();server.wait(timeout=5);log.close()",
+          "    server.terminate();server.wait(timeout=5);log.close();shutil.rmtree(media_storage,ignore_errors=True)"
         ]
       ]
     },
     "tests/provider_workspace_fixture.php": {
       "original_sha256": "9913ae76b8a36f879c6c58a8bdfa39378d2bffcc423981dd8d20ea4b3fc4cdbb",
-      "current_sha256": "a774e1164adbd87aeb4490589d2992ff10c16636f9f9dce383637c30ac43c78d",
+      "current_sha256": "68e2b0f3c10b5a96c31073a3fc0c37d0ac9b97c935d47a72fc495807da45137f",
       "edits": [
         [
           "function one(string $sql,array $args=[]):?array{return ['n'=>0];}\nfunction all(string $sql,array $args=[]):array {\n    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting']];\n    throw new LogicException('Unexpected fixture query');\n}\n",
@@ -1524,6 +1544,26 @@
         [
           "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>fixture_state()==='missing-media-file'?str_repeat('d',32):null]]:[];}",
           "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>in_array(fixture_state(),['missing-media-file','ready-media-file'],true)?fixture_media_id():null]]:[];}"
+        ],
+        [
+          "function site_url(string $path=''):string{return fixture_state()==='ready-media-file'&&str_starts_with($path,'media/index.php?id=')?'/site/images/portfolio/project-placeholder.svg':'/fixture-disabled/'.ltrim($path,'/');}",
+          "function site_url(string $path=''):string {\n    if(fixture_state()==='ready-media-file'&&str_starts_with($path,'media/index.php?id='))return '/tests/provider_workspace_fixture.php?'.http_build_query(['fixture_media'=>'1','scenario'=>fixture_state(),'id'=>substr($path,strlen('media/index.php?id='))]);\n    return '/fixture-disabled/'.ltrim($path,'/');\n}"
+        ],
+        [
+          "    if(fixture_state()!=='ready-media-file')return $storage=__DIR__.'/nonexistent-provider-workspace-storage';\n    $storage=sys_get_temp_dir().DIRECTORY_SEPARATOR.'cwp-provider-workspace-'.getmypid().'-'.bin2hex(random_bytes(8));$directory=$storage.DIRECTORY_SEPARATOR.'media';\n    if(!mkdir($directory,0700,true))throw new RuntimeException('Synthetic media directory could not be created.');\n    $file=$directory.DIRECTORY_SEPARATOR.fixture_media_id().'.php';$bytes=CWP_GUARD.'synthetic managed artwork';",
+          "    if(fixture_state()!=='ready-media-file')return $storage=__DIR__.'/nonexistent-provider-workspace-storage';\n    $provided=getenv('CWP_UI_MEDIA_STORAGE');if(is_string($provided)&&$provided!=='')return $storage=$provided;\n    $storage=sys_get_temp_dir().DIRECTORY_SEPARATOR.'cwp-provider-workspace-'.getmypid().'-'.bin2hex(random_bytes(8));$directory=$storage.DIRECTORY_SEPARATOR.'media';\n    if(!mkdir($directory,0700,true))throw new RuntimeException('Synthetic media directory could not be created.');\n    $payload=file_get_contents(CWP_CODE_ROOT.'/images/icons/favicon.png');if($payload===false)throw new RuntimeException('Synthetic artwork fixture could not be read.');\n    $file=$directory.DIRECTORY_SEPARATOR.fixture_media_id().'.php';$bytes=CWP_GUARD.$payload;"
+        ],
+        [
+          "function config():array{return ['storage'=>fixture_storage()];}\nfunction staff_can",
+          "function config():array{return ['storage'=>fixture_storage()];}\nfunction boot(bool $session=true):void{}\nfunction staff_can"
+        ],
+        [
+          "function one(string $sql,array $args=[]):?array{return ['n'=>0];}",
+          "function one(string $sql,array $args=[]):?array {\n    if(str_contains($sql,'SELECT * FROM media')){\n        $payload=file_get_contents(CWP_CODE_ROOT.'/images/icons/favicon.png');if($payload===false)throw new RuntimeException('Synthetic artwork fixture could not be read.');\n        return fixture_state()==='ready-media-file'&&($args[0]??null)===fixture_media_id()?['id'=>fixture_media_id(),'filename'=>fixture_media_id().'.php','bytes'=>strlen($payload)]:null;\n    }\n    return ['n'=>0];\n}"
+        ],
+        [
+          "$user=['id'=>1,'name'=>'Test owner'];$view=$_GET['view']??'provider-settings';\nif($view==='catalog'){",
+          "$user=['id'=>1,'name'=>'Test owner'];$view=$_GET['view']??'provider-settings';\nif(($_GET['fixture_media']??null)==='1'){require CWP_CODE_ROOT.'/media/serve.php';exit;}\nif($view==='catalog'){"
         ]
       ]
     },
@@ -1547,7 +1587,7 @@
     },
     "tests/provider_workspace_render.py": {
       "original_sha256": "7ed28645607847efba7ba362077a1f784f79ca1e3e1c95f467ce7a8087623eca",
-      "current_sha256": "d941a87f6adbd5bd91601828d96c8aa77bfc19dc7be405f2088004bae6f9b18e",
+      "current_sha256": "356a5121d43dccb74912e17573cfdca2e5d71db8cd0adfede891a6404f0bdf38",
       "edits": [
         [
           "        check('Traversal-like section safely renders overview',page.get_by_role('heading',name='Connect once',exact=True).count()==1)\n        render(view='catalog')\n        check('Saved local products precede importer and new form',page.locator('#catalog-products').evaluate('(e)=>e.getBoundingClientRect().top')<page.locator('#hosting-import').evaluate('(e)=>e.getBoundingClientRect().top')<page.get_by_role('heading',name='New product',exact=True).evaluate('(e)=>e.getBoundingClientRect().top'))\n        check('Product search, type and status filters exist',page.locator('input[name=\"product_search\"],select[name=\"product_family\"],select[name=\"product_status\"]').count()==3)\n",
@@ -1572,6 +1612,10 @@
         [
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='missing-media-file')\n",
           "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='ready-media-file')\n        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)\n        render(view='catalog',scenario='missing-media-file')\n"
+        ],
+        [
+          "    for image in soup.select('img[src]'):\n        path=(ROOT/image['src'].lstrip('/')).resolve();assert path.is_relative_to(ROOT/'site/images')\n        image['src']='data:image/png;base64,'+base64.b64encode(path.read_bytes()).decode()",
+          "    for image in soup.select('img[src]'):\n        source=urlparse(image['src']);query=dict(parse_qsl(source.query))\n        if source.path=='/tests/provider_workspace_fixture.php' and query=={'fixture_media':'1','scenario':'ready-media-file','id':'d'*32}:\n            path=(ROOT/'site/images/icons/favicon.png').resolve()\n        else:\n            path=(ROOT/source.path.lstrip('/')).resolve();assert path.is_relative_to(ROOT/'site/images')\n        image['src']='data:image/png;base64,'+base64.b64encode(path.read_bytes()).decode()"
         ]
       ]
     },

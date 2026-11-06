@@ -2,7 +2,7 @@
 No installed database, actual authentication, provider access, or form submission.
 """
 from pathlib import Path
-import json, os, shutil, socket, subprocess, time, urllib.request
+import json, os, shutil, socket, subprocess, tempfile, time, urllib.request
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 OUT=Path(os.environ.get('CWP_UI_REPORT_DIR',str(ROOT/'qa'/'provider-workspace')))
@@ -15,7 +15,12 @@ with socket.socket() as sock:
     sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
 base=f'http://127.0.0.1:{port}'
 log=(OUT/'php-server.log').open('w')
-server=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(ROOT)],env={**os.environ,'CWP_UI_FIXTURE':'1'},stdout=log,stderr=log)
+media_storage=Path(tempfile.mkdtemp(prefix='cwp-provider-workspace-browser-'))
+media_directory=media_storage/'media';media_directory.mkdir(mode=0o700)
+media_id='d'*32;media_file=media_directory/(media_id+'.php')
+media_file.write_bytes(b'<?php http_response_code(404); exit; ?>\n'+(ROOT/'site'/'images'/'icons'/'favicon.png').read_bytes())
+media_file.chmod(0o600)
+server=subprocess.Popen(['php','-S',f'127.0.0.1:{port}','-t',str(ROOT)],env={**os.environ,'CWP_UI_FIXTURE':'1','CWP_UI_MEDIA_STORAGE':str(media_storage)},stdout=log,stderr=log)
 try:
     for _ in range(50):
         try:
@@ -33,7 +38,8 @@ try:
             if url.startswith(base+'/'):r.continue_()
             else:blocked.append('external resource');r.abort()
         ctx.route('**/*',route)
-        page=ctx.new_page();errors=[];page.on('pageerror',lambda error: errors.append(str(error)))
+        page=ctx.new_page();errors=[];media_responses=[];page.on('pageerror',lambda error: errors.append(str(error)))
+        page.on('response',lambda response: media_responses.append((response.url,response.status)) if 'fixture_media=1' in response.url else None)
         def visit(view='provider-settings',section='overview',scenario='connected'):
             response=page.goto(base+f'/tests/provider_workspace_fixture.php?view={view}&section={section}&scenario={scenario}',wait_until='networkidle')
             check(f'{view}/{section}/{scenario} renders HTTP 200',response.status==200)
@@ -72,7 +78,9 @@ try:
         check('Catalog mutation forms retain CSRF',page.locator('main form[method="post"]').count()==page.locator('main form[method="post"] input[name="csrf"]').count())
         page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)
         visit(view='catalog',scenario='ready-media-file')
-        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==1)
+        thumbnail=page.locator('#catalog-products img.catalog-product-thumb')
+        check('A guarded managed file is shown ready with its thumbnail','Image ready' in page.locator('#catalog-products').inner_text() and 'Image missing' not in page.locator('#catalog-products').inner_text() and thumbnail.count()==1)
+        check('The guarded thumbnail is served by the real managed-media boundary',any('fixture_media=1' in url and status==200 for url,status in media_responses) and thumbnail.evaluate('(img)=>img.complete&&img.naturalWidth>0'))
         visit(view='catalog',scenario='missing-media-file')
         check('Physical managed artwork is required before the catalog calls it ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)
         visit(view='catalog',scenario='empty')
@@ -91,7 +99,7 @@ try:
 except Exception as error:
     result={'passed':False,'scope':__doc__,'checks':checks,'error':f'{type(error).__name__}: {error}'}
 finally:
-    server.terminate();server.wait(timeout=5);log.close()
+    server.terminate();server.wait(timeout=5);log.close();shutil.rmtree(media_storage,ignore_errors=True)
 (OUT/'browser-results.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps({'passed':result['passed'],'checks':len(checks),'error':result.get('error')}))
 raise SystemExit(0 if result['passed'] else 1)
