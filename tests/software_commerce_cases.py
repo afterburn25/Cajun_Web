@@ -950,9 +950,13 @@ def run_browser(env, browser):
     p.set_viewport_size({'width':1440,'height':1000})
     p.get_by_role('button',name='Save draft product').click()
     expect(p.get_by_text('Draft software product saved.',exact=False)).to_be_visible(timeout=40000)
-    check('Installed onboarding browser saves the reviewed package without uncaught script errors',
-          not onboarding_errors and db("SELECT status FROM ci_catalog_products WHERE sku='SOFTWARE-INSTALLED-CAPTURE'")==[{'status':'draft'}]
-          and db("SELECT is_published FROM ci_software_assets WHERE sku='SOFTWARE-INSTALLED-CAPTURE' AND version='4.0.0'")==[{'is_published':0}])
+    check('Installed onboarding browser creates the exact reviewed draft product',
+          db("SELECT status FROM ci_catalog_products WHERE sku='SOFTWARE-INSTALLED-CAPTURE'")==[{'status':'draft'}])
+    check('Installed onboarding browser retains the reviewed package owner-private',
+          db("SELECT is_published FROM ci_software_assets WHERE sku='SOFTWARE-INSTALLED-CAPTURE' AND version='4.0.0'")==[{'is_published':0}])
+    if onboarding_errors:
+        raise AssertionError('Installed onboarding browser errors: '+repr(onboarding_errors))
+    check('Installed onboarding browser saves without uncaught script errors',True)
     context.close();onboarding_zip.unlink()
 
     register=admin.get(licenses,timeout=25)
