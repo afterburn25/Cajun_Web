@@ -71,6 +71,8 @@ try:
         check('Batch and individual import forms remain explicit',page.get_by_role('button',name='Import this batch',exact=True).count()==1 and page.get_by_role('button',name='Create draft',exact=True).count()==1)
         check('Catalog mutation forms retain CSRF',page.locator('main form[method="post"]').count()==page.locator('main form[method="post"] input[name="csrf"]').count())
         page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)
+        visit(view='catalog',scenario='missing-media-file')
+        check('Physical managed artwork is required before the catalog calls it ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)
         visit(view='catalog',scenario='empty')
         check('Empty local products explain next action','No local products yet.' in page.locator('#catalog-products').inner_text())
         check('Empty provider response is not a fabricated successful import','No named plans are available in this saved response.' in page.locator('#hosting-import').inner_text())

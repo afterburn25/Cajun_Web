@@ -1,3 +1,9 @@
+## 2026-11-06 12:15 UTC — exact-head review caught missing managed file
+
+PR #367 successor `c4b2a766` cleared four-lane consolidation with 79 native and 469 browser passes per lane, 32 captures and no live operation. Preserved the first Force SSL attempt's pre-checkout host-port collision and its source-identical failed-job retry. Authenticated review then exposed one applicable bug despite zero vulnerabilities/flags: catalog readiness checked only the media database row, while the real serving path also refuses a missing, escaped, symlinked, unreadable or unguarded private file.
+
+Prepared a local successor that mirrors those serving preconditions before returning `Image ready`. Added a synthetic retained-row/missing-file case to the fixture and required honest missing state through the pure policy, actual rendered template and loopback browser. Touched PHP syntax, 61 policy, 80 renderer, 73 browser and 87 build-rejection checks pass. The finite receipt validates at verifier SHA-256 `86b572de52d311f1fa254adf5d487260feb1cdb68aa2c6d6fe2fad15c66915fc`; all 99 repairs reconstruct to the immutable base. The full composition run retains the known Windows `carbon.bat` mode refusal. No commit was yet published at this checkpoint, and no release or live operation occurred.
+
 ## 2026-11-06 06:22 UTC — resulting main closed; #365 catalog slice started
 
 Closed PR #366 resulting-main qualification at `c5d17f782af6959305390f96f11119283c93c7aa`: Application run `42158346351` passed all jobs, all 19 automatic workflows succeeded, and an independent replay verified 219 reports, 32,814 executions and all 757 final files with no failure. Posted exact evidence to PR #366 and issue #157, then renewed PR #340's coordinator marker without displacing a newer owner.

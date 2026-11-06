@@ -1,3 +1,16 @@
+## 2026-11-06 12:15 UTC — PR #367 physical-artwork successor
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains the authoritative queue. Development main remains verified at `c5d17f782af6959305390f96f11119283c93c7aa`, version 1.26.1; no release or production action is authorized.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| PR #367 `c4b2a766` | Four-lane consolidation passed, but authenticated review found one exact-source blocker: database-only media existence could be called ready while the serving boundary returned 404 | Preserve all runs/artifacts; do not merge or relabel as accepted |
+| Local physical-file successor | Endpoint-equivalent managed-file readiness check plus policy/template/loopback regressions; 61/80/73 focused checks, 87 build rejections and 99 repair reversals pass | Publish a normal child, require fresh exact-head review and hosted acceptance, then merge only if accepted |
+| Remaining issue #365 work | Still dependency-ordered behind this first slice | Keep independent design/read-only work moving; do not mix shared routing, authorization, schema, billing, source-proof or release changes into parallel slices |
+| Publication/deployment | NOT AUTHORIZED | Preserve explicit user authorization boundaries |
+
+The correction reads only existing private managed-media metadata and bytes. It creates no media, order, publication, license, payment, provisioning, provider request or customer message. The known Windows executable-mode composition failure remains preserved rather than weakened.
+
 ## 2026-11-06 06:22 UTC — verified main and issue #365 catalog slice
 
 [Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains the authoritative queue. PR #366 is merged and verified on main `c5d17f782af6959305390f96f11119283c93c7aa`; Application `42158346351` and all 19 automatic push workflows passed, with independent exact-artifact replay complete. v1.25.0 remains the latest publication.

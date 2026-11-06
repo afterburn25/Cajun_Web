@@ -33,6 +33,8 @@ try{
     pwc('Imported product without documented artwork is honest and actionable',$state['image_label']==='No provider image available'&&$state['missing']===['Image missing']&&$state['offer_label']==='Review for publication'&&!$state['offer_needs_review']);
     $import=['media_id'=>str_repeat('a',32)];$offer=['product_revision'=>2,'media_id'=>str_repeat('b',32),'withdrawn'=>0];$state=catalog_admin_product_readiness($product,$import,$offer,true);
     pwc('Changed product revision or managed image requires offer review',$state['image_label']==='Image ready'&&$state['offer_label']==='Changes need review'&&$state['offer_action']==='Review and update offer'&&$state['offer_needs_review']);
+    $state=catalog_admin_product_readiness($product,$import,$offer,false);
+    pwc('A recorded image without an available managed file is not called ready',$state['image_id']===null&&$state['image_label']==='Image missing'&&in_array('Image missing',$state['missing'],true));
     $offer=['product_revision'=>3,'media_id'=>str_repeat('a',32),'withdrawn'=>0];$state=catalog_admin_product_readiness($product,$import,$offer,true);
     pwc('Matching latest offer is distinguished from unpublished or stale state',$state['offer_label']==='Offer published'&&!$state['offer_needs_review']&&$state['missing']===[]);
     $optionalFeatures=$product;$optionalFeatures['features']='';$state=catalog_admin_product_readiness($optionalFeatures,null,null,false);

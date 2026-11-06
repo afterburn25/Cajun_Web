@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "efafbf3a81b567a37d2b5c978b020cf9107a4170737f09691c14765c5bb00b57",
+  "verifier_sha256": "86b572de52d311f1fa254adf5d487260feb1cdb68aa2c6d6fe2fad15c66915fc",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1391,7 +1391,7 @@
     },
     "site/app/billing/catalog_browse.php": {
       "original_sha256": "18969027ac1c6a18ed140483438ef9939f7bc454cd8950be3ff7a6d929a56ebe",
-      "current_sha256": "82b296b1fa8b48d9e29e30e580a290e020803353c9848284eb753287a8f61c38",
+      "current_sha256": "da7ba2410622a0b74f8c377e9ac7a14dd468ce708803c711cdb334989cc8c6da",
       "edits": [
         [
           "    return admin_url('catalog',$q).'#catalog-products';\n}\n",
@@ -1400,6 +1400,14 @@
         [
           "    $missing=[];\n    if(($product['amount_cents']??null)===null)$missing[]='Price needed';\n    if(trim((string)($product['summary']??''))===''||trim((string)($product['features']??''))===''||trim((string)($product['terms']??''))==='')$missing[]='Details needed';\n    $imageId=$import['media_id']??null;$imageLabel=null;\n",
           "    $missing=[];\n    $amount=$product['amount_cents']??null;\n    if($amount===null||(int)$amount<=0)$missing[]='Price needed';\n    if(trim((string)($product['summary']??''))===''||trim((string)($product['terms']??''))==='')$missing[]='Details needed';\n    $imageId=$import['media_id']??null;$imageLabel=null;\n"
+        ],
+        [
+          "function catalog_admin_new_family(array $query):string {\n    return ($query['new_family']??null)==='software'?'software':'web-design';\n}\n\n/** Pure presentation state from already validated product/import/publication rows. */\n",
+          "function catalog_admin_new_family(array $query):string {\n    return ($query['new_family']??null)==='software'?'software':'web-design';\n}\n\n/** Match the managed-image serving boundary before calling artwork ready. */\nfunction catalog_admin_managed_media_available(array $media):bool {\n    $id=$media['id']??null;$filename=$media['filename']??null;\n    if(!is_string($id)||!preg_match('/^[a-f0-9]{32}$/D',$id)\n        ||!is_string($filename)||!preg_match('/^[a-f0-9]{32}\\.php$/D',$filename))return false;\n    $storage=config()['storage']??null;\n    if(!is_string($storage)||$storage==='')return false;\n    $directory=realpath(rtrim($storage,'/\\\\').DIRECTORY_SEPARATOR.'media');\n    $candidate=rtrim($storage,'/\\\\').DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.$filename;\n    $path=realpath($candidate);\n    if(!$directory||!$path||dirname($path)!==$directory||is_link($candidate))return false;\n    $fp=@fopen($path,'rb');if(!$fp)return false;\n    try{return fread($fp,strlen(CWP_GUARD))===CWP_GUARD;}finally{fclose($fp);}\n}\n\n/** Pure presentation state from already validated product/import/publication rows. */\n"
+        ],
+        [
+          "            $placeholders=implode(',',array_fill(0,count($mediaIds),'?'));\n            foreach(all('SELECT id FROM '.table('media').' WHERE id IN ('.$placeholders.')',$mediaIds) as $row)$media[$row['id']]=true;\n",
+          "            $placeholders=implode(',',array_fill(0,count($mediaIds),'?'));\n            foreach(all('SELECT id,filename FROM '.table('media').' WHERE id IN ('.$placeholders.')',$mediaIds) as $row){\n                if(catalog_admin_managed_media_available($row))$media[$row['id']]=true;\n            }\n"
         ]
       ]
     },
@@ -1445,7 +1453,7 @@
     },
     "tests/provider_workspace_browser.py": {
       "original_sha256": "a00a75df721f35aaa7278ee74b473f64225b109c0d3837e0e2144096eee962ad",
-      "current_sha256": "07ef304967ed4962e0025563765fd37810d795b0f7180357100a7544dac86ba2",
+      "current_sha256": "3765c53a3db35d4a06c2f3f5b7c8ce88d2d5e597f15f43cec7edc91fe8f72fb7",
       "edits": [
         [
           "        check('Unknown section falls back to overview',page.get_by_role('heading',name='Connect once',exact=True).count()==1)\n        visit(view='catalog')\n        check('Local products precede the importer and create form',page.locator('#catalog-products').evaluate('(el)=>el.getBoundingClientRect().top')<page.locator('#hosting-import').evaluate('(el)=>el.getBoundingClientRect().top')<page.get_by_role('heading',name='New product',exact=True).evaluate('(el)=>el.getBoundingClientRect().top'))\n        check('Importer defaults to direct package-type catalog',page.locator('nav[aria-label=\"Hosting import source\"] a[aria-current=\"page\"]').inner_text()=='20i hosting catalog')\n        check('Uninstalled provider plan appears as import choice',page.get_by_role('heading',name='Business hosting (synthetic)',exact=True).count()==1)\n        check('Previously imported product links to existing draft',page.get_by_role('link',name='Review draft product',exact=True).count()==1)\n        check('Batch and individual import forms remain explicit',page.get_by_role('button',name='Import this batch',exact=True).count()==1 and page.get_by_role('button',name='Create draft',exact=True).count()==1)\n        check('Catalog forms retain CSRF',page.locator('main form').count()==page.locator('main form input[name=\"csrf\"]').count())\n        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='empty')\n",
@@ -1458,12 +1466,16 @@
         [
           "        check('Add software carries the bounded software-family suggestion','new_family=software' in page.get_by_role('link',name='Add software').get_attribute('href'))\n        check('Local products precede the importer and create form',",
           "        check('Add software carries the bounded software-family suggestion','new_family=software' in page.get_by_role('link',name='Add software').get_attribute('href'))\n        visit(view='catalog',scenario='catalog-limited')\n        check('Catalog-only staff do not receive a forbidden license shortcut',page.get_by_role('link',name='Issue customer license').count()==0 and page.get_by_role('link',name='Import 20i products').count()==1 and page.get_by_role('link',name='Add software').count()==1)\n        visit(view='catalog')\n        check('Local products precede the importer and create form',"
+        ],
+        [
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='empty')\n",
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        visit(view='catalog',scenario='missing-media-file')\n        check('Physical managed artwork is required before the catalog calls it ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)\n        visit(view='catalog',scenario='empty')\n"
         ]
       ]
     },
     "tests/provider_workspace_fixture.php": {
       "original_sha256": "9913ae76b8a36f879c6c58a8bdfa39378d2bffcc423981dd8d20ea4b3fc4cdbb",
-      "current_sha256": "b339fe8be82869fe321e20b3061b0ceb95e668a3e324e8fc497b8c9c4aa0ecf1",
+      "current_sha256": "9c9175e1b043ed590548644ac5a15209b22b0848e5d2e5f0f3170dd2f560a99d",
       "edits": [
         [
           "function one(string $sql,array $args=[]):?array{return ['n'=>0];}\nfunction all(string $sql,array $args=[]):array {\n    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting']];\n    throw new LogicException('Unexpected fixture query');\n}\n",
@@ -1476,12 +1488,24 @@
         [
           "function staff_can(string $permission,?array $user=null):bool{return true;}",
           "function staff_can(string $permission,?array $user=null):bool{return !($permission==='staff.manage'&&fixture_state()==='catalog-limited');}"
+        ],
+        [
+          "function csrf_field():string{return '<input type=\"hidden\" name=\"csrf\" value=\"synthetic-only\">';}\nfunction staff_can",
+          "function csrf_field():string{return '<input type=\"hidden\" name=\"csrf\" value=\"synthetic-only\">';}\nfunction config():array{return ['storage'=>__DIR__.'/nonexistent-provider-workspace-storage'];}\nfunction staff_can"
+        ],
+        [
+          "    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting','summary'=>'Synthetic hosting summary','features'=>'Synthetic feature','terms'=>'Synthetic terms']];\n    throw new LogicException('Unexpected fixture query');\n",
+          "    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting','summary'=>'Synthetic hosting summary','features'=>'Synthetic feature','terms'=>'Synthetic terms']];\n    if(str_contains($sql,'FROM media'))return fixture_state()==='missing-media-file'?[['id'=>str_repeat('d',32),'filename'=>str_repeat('d',32).'.php']]:[];\n    throw new LogicException('Unexpected fixture query');\n"
+        ],
+        [
+          "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>null]]:[];}",
+          "function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>fixture_state()==='missing-media-file'?str_repeat('d',32):null]]:[];}"
         ]
       ]
     },
     "tests/provider_workspace_policy.php": {
       "original_sha256": "9514399a27e163ef08e7dcf5604c0db2706432f335a2f3adca2b4e95acf40203",
-      "current_sha256": "e7c727c040693d62d9ef42ac869cd0433c417e8c6e6db3587aeed49d89c9021b",
+      "current_sha256": "65ba05aeefaeb62c142deac9526c09bc92149c30f15574230aacab2f89145297",
       "edits": [
         [
           "    foreach([str_repeat('x',121),\"line\\nfeed\",[],\"\\xff\"] as $i=>$value)pwd('Invalid or excessive search denied '.$i,fn()=>catalog_admin_browse(['product_search'=>$value]));\n    pwd('Invalid generated next page denied',fn()=>catalog_admin_browse_url($b,10001));\n}catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];}\n$pass=!array_filter($checks,fn($c)=>!$c['passed']);echo json_encode(['passed'=>$pass,'scope'=>'Pure local routing and SQL-fragment/parameter generation; actual database execution not tested','checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).PHP_EOL;exit($pass?0:1);\n",
@@ -1490,12 +1514,16 @@
         [
           "    pwc('Matching latest offer is distinguished from unpublished or stale state',$state['offer_label']==='Offer published'&&!$state['offer_needs_review']&&$state['missing']===[]);\n    $incomplete=$product;",
           "    pwc('Matching latest offer is distinguished from unpublished or stale state',$state['offer_label']==='Offer published'&&!$state['offer_needs_review']&&$state['missing']===[]);\n    $optionalFeatures=$product;$optionalFeatures['features']='';$state=catalog_admin_product_readiness($optionalFeatures,null,null,false);\n    pwc('Optional feature bullets do not create a false details warning',$state['missing']===[]);\n    $zeroPrice=$product;$zeroPrice['amount_cents']=0;$state=catalog_admin_product_readiness($zeroPrice,null,null,false);\n    pwc('A zero amount is still named as price work before publication',$state['missing']===['Price needed']);\n    $incomplete=$product;"
+        ],
+        [
+          "    pwc('Changed product revision or managed image requires offer review',$state['image_label']==='Image ready'&&$state['offer_label']==='Changes need review'&&$state['offer_action']==='Review and update offer'&&$state['offer_needs_review']);\n    $offer=['product_revision'=>3,",
+          "    pwc('Changed product revision or managed image requires offer review',$state['image_label']==='Image ready'&&$state['offer_label']==='Changes need review'&&$state['offer_action']==='Review and update offer'&&$state['offer_needs_review']);\n    $state=catalog_admin_product_readiness($product,$import,$offer,false);\n    pwc('A recorded image without an available managed file is not called ready',$state['image_id']===null&&$state['image_label']==='Image missing'&&in_array('Image missing',$state['missing'],true));\n    $offer=['product_revision'=>3,"
         ]
       ]
     },
     "tests/provider_workspace_render.py": {
       "original_sha256": "7ed28645607847efba7ba362077a1f784f79ca1e3e1c95f467ce7a8087623eca",
-      "current_sha256": "8f70ecd0aca67c31923a916af8126f79d20466444878b2145813f20aecd97673",
+      "current_sha256": "43187ff2d1f8e4d39ee29301a683504affed9a9083f29d0d10e6fe66187dfcee",
       "edits": [
         [
           "        check('Traversal-like section safely renders overview',page.get_by_role('heading',name='Connect once',exact=True).count()==1)\n        render(view='catalog')\n        check('Saved local products precede importer and new form',page.locator('#catalog-products').evaluate('(e)=>e.getBoundingClientRect().top')<page.locator('#hosting-import').evaluate('(e)=>e.getBoundingClientRect().top')<page.get_by_role('heading',name='New product',exact=True).evaluate('(e)=>e.getBoundingClientRect().top'))\n        check('Product search, type and status filters exist',page.locator('input[name=\"product_search\"],select[name=\"product_family\"],select[name=\"product_status\"]').count()==3)\n",
@@ -1512,6 +1540,10 @@
         [
           "        check('Add software shortcut carries an explicit software-family suggestion','new_family=software' in page.get_by_role('link',name='Add software').get_attribute('href'))\n        check('Saved local products precede importer and new form',",
           "        check('Add software shortcut carries an explicit software-family suggestion','new_family=software' in page.get_by_role('link',name='Add software').get_attribute('href'))\n        render(view='catalog',scenario='catalog-limited')\n        check('Catalog-only staff do not receive a forbidden license shortcut',page.get_by_role('link',name='Issue customer license').count()==0 and page.get_by_role('link',name='Import 20i products').count()==1 and page.get_by_role('link',name='Add software').count()==1)\n        render(view='catalog')\n        check('Saved local products precede importer and new form',"
+        ],
+        [
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='empty')\n",
+          "        page.screenshot(path=str(OUT/'catalog-desktop.png'),full_page=True)\n        render(view='catalog',scenario='missing-media-file')\n        check('A retained media row with no managed file is shown as missing, not ready','Image missing' in page.locator('#catalog-products').inner_text() and 'Image ready' not in page.locator('#catalog-products').inner_text() and page.locator('#catalog-products img.catalog-product-thumb').count()==0)\n        render(view='catalog',scenario='empty')\n"
         ]
       ]
     },

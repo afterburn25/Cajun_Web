@@ -32,6 +32,21 @@ function catalog_admin_new_family(array $query):string {
     return ($query['new_family']??null)==='software'?'software':'web-design';
 }
 
+/** Match the managed-image serving boundary before calling artwork ready. */
+function catalog_admin_managed_media_available(array $media):bool {
+    $id=$media['id']??null;$filename=$media['filename']??null;
+    if(!is_string($id)||!preg_match('/^[a-f0-9]{32}$/D',$id)
+        ||!is_string($filename)||!preg_match('/^[a-f0-9]{32}\.php$/D',$filename))return false;
+    $storage=config()['storage']??null;
+    if(!is_string($storage)||$storage==='')return false;
+    $directory=realpath(rtrim($storage,'/\\').DIRECTORY_SEPARATOR.'media');
+    $candidate=rtrim($storage,'/\\').DIRECTORY_SEPARATOR.'media'.DIRECTORY_SEPARATOR.$filename;
+    $path=realpath($candidate);
+    if(!$directory||!$path||dirname($path)!==$directory||is_link($candidate))return false;
+    $fp=@fopen($path,'rb');if(!$fp)return false;
+    try{return fread($fp,strlen(CWP_GUARD))===CWP_GUARD;}finally{fclose($fp);}
+}
+
 /** Pure presentation state from already validated product/import/publication rows. */
 function catalog_admin_product_readiness(array $product,?array $import,?array $offer,bool $mediaAvailable):array {
     $missing=[];
@@ -73,7 +88,9 @@ function catalog_admin_product_contexts(array $products):array {
         $media=[];$mediaIds=array_values(array_unique(array_filter(array_column($imports,'media_id'),static fn($id)=>is_string($id)&&$id!=='')));
         if($mediaIds){
             $placeholders=implode(',',array_fill(0,count($mediaIds),'?'));
-            foreach(all('SELECT id FROM '.table('media').' WHERE id IN ('.$placeholders.')',$mediaIds) as $row)$media[$row['id']]=true;
+            foreach(all('SELECT id,filename FROM '.table('media').' WHERE id IN ('.$placeholders.')',$mediaIds) as $row){
+                if(catalog_admin_managed_media_available($row))$media[$row['id']]=true;
+            }
         }
         $offers=[];
         if(hosting_catalog_ready()){
