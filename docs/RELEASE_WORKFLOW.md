@@ -1,3 +1,11 @@
+## 2026-11-06 — exact-source RC test wrapper
+
+The RC test-package workflow must package the single event checkout identified by the full `GITHUB_SHA`. It must not fetch, restore or commit files from historical feature branches, and generated-source refresh must produce no tracked or untracked drift. Pull-request and feature-branch runs may cancel superseded work; exact `main` runs must remain retained.
+
+`tools/build.py --commit "$GITHUB_SHA" --stage-rc rc-upload` is the only supported RC staging path. The builder first requires a clean exact commit, validates the aggregate release manifest, all three package manifests, archive and member hashes, portable unique member paths, directory inventories, checksum inventory, source commit and dynamically derived semantic version, and only then extracts the already-validated COMPLETE-UPLOAD bytes. The test-only note uses that manifest version and one real trailing newline. The workflow artifact is temporary test evidence, not a release asset, publication, deployment or authorization for live operations.
+
+Any change to package layout or RC staging must extend the negative build guards. Never weaken validation or import an overlay to make a candidate pass. Preserve failed and historical wrapper runs as source-bound evidence; only the exact reviewed successor and its resulting-main run may qualify the current wrapper.
+
 ## 2026-10-19 — component filters and verified queue cleanup
 
 Service-plan and staff-invitation workflows now filter pull requests using their actual source, test and workflow dependencies. Only 13 trigger lines are added; every existing job, command, matrix, push/manual trigger and release gate remains unchanged. This avoids four unrelated jobs per documentation-only PR after integration; it does not cancel existing runs. [Source, dependency and independent review evidence](evidence/ci-final-component-pr-filters.json). Service plans deliberately include `site/**` plus canonical service-plan, estimator and review-request families, the test family and own workflow. Staff invitations include access/invitation sources and tests, covering schemas, the same-file worker and the full Docker context. Future inputs outside these roots require matching filter changes.

@@ -1,3 +1,10 @@
+## 2026-11-06 — exact-source RC test packaging
+
+- Replace the historical multi-branch RC composition with the single clean event commit and refuse generated-source drift.
+- Validate source/version identity, all package manifests, archive/member hashes, portable paths, directory lists and checksum inventory before extracting the COMPLETE-UPLOAD candidate.
+- Derive artifact and test-only note versions from the release manifest, emit one real trailing newline, and preserve every exact-main wrapper run while retaining superseded-branch cancellation.
+- Add negative builder and workflow guards for dirty overlays, abbreviated commits, archive tampering, version mismatch, unsafe notes and legacy imports. This is test packaging only; no release, deployment or live operation is performed.
+
 ## 2026-11-05 — Diagnostic multi-failure acceptance successor
 
 - Retain the six-file diagnostic source from historical PR #327 as an explicit merge parent, then bind its registry to all 58 modules in the current strict non-focused browser runner through AST discovery.
