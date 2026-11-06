@@ -5,6 +5,7 @@
 - Add a bounded read-only product readiness projection for price, details, owner-managed artwork and current hosting-offer review state, with validation failures shown as unavailable rather than ready.
 - State the exact 20i artwork boundary: the documented contract has no supported provider-artwork source, so imported drafts link to managed local upload and reimport preserves that media.
 - Correct the first review head before integration: zero prices remain publication work, optional feature bullets do not create a false details warning, and the customer-license shortcut is shown only to staff with `staff.manage`.
+- Align the retained native importer assertion with the verified documented-contract/no-provider-artwork wording and require its explicit local-upload fallback; no shipping behavior changes in this proof correction.
 - Improve desktop and mobile product presentation without changing publication, licensing, payment, provisioning, provider-operation or customer-message authority. This is a development candidate pending review, hosted acceptance, integration and resulting-main verification.
 
 ## 2026-11-06 — exact-source RC test packaging
