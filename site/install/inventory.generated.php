@@ -127,7 +127,7 @@ function setup_expected_files(): array { return [
     'admin/views/service_observations.php'=>'91006dbc0f7a1abdeb75bfc689ea1d0d82abd6d66b702c0a6a23629c78e337cf',
     'admin/views/services.php'=>'f99c59a1c1d827da1ae43aaf0c9af7351722b0fe7b30d8908dadb060ee14294c',
     'admin/views/settings.php'=>'cda28fc421fed7fa28dda5ec9927228bef20adf4cc41129cac50c45d7275bee3',
-    'admin/views/software_onboarding.php'=>'2d703212664952f78fde428b3ecfb05c65ac0dd0ebca54b780aeb4668b38482f',
+    'admin/views/software_onboarding.php'=>'f12cf6b5cbb0f53dd4c6585e80614c5ce24c9a73409840a1fd4c40d022fa6da7',
     'admin/views/studio.php'=>'bb384bc66aaf2f6be14c864228ba51125fc60e8eba82a0a54743a81042f49653',
     'admin/views/studio/clients.php'=>'5d42172fb9767e187564c4af59d75c519f5f2c942593f5c59d037b98358370b3',
     'admin/views/studio/content.php'=>'e751af62e6207c1503be6784ec47f94ba4c37e67539f7fcfa4c0f486bfd9c46a',

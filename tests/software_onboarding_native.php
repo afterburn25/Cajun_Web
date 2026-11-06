@@ -38,6 +38,7 @@ try{
     staff_seed_owner(1);$_SESSION=['uid'=>1,'auth_version'=>str_repeat('d',32),'login_at'=>time(),'last_activity'=>time()];
     require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_onboarding.php';
+    require_once CWP_CODE_ROOT.'/admin/views/software_onboarding.php';
     $jobSource=file_get_contents(CWP_CODE_ROOT.'/app/jobs/run.php');
     soon_ok(is_string($jobSource)&&str_contains($jobSource,'software_onboarding_cleanup_expired(false)'),'Shared-host CLI runner invokes bounded software staging expiry without browser authority');
     software_commerce_prepare($password);
@@ -62,6 +63,14 @@ try{
     soon_ok((int)$asset['is_published']===0&&$asset['released_at']===null&&!preg_match('~^(?:[A-Za-z]:[\\\\/]|/)~',(string)$asset['file_path']),'Package is owner-private and stores only a relative private reference');
     $policy=software_product_policy((int)$product['id']);soon_ok($policy['module_key']==='native-onboard'&&$policy['max_installations']===2&&$policy['update_months']===0,'Default license settings and detected module key save atomically');
     soon_ok(software_asset_resolve_path((string)$asset['file_path'])!==null,'Saved private asset resolves to the exact retained ZIP');
+    $fill=[];$params=[];$tuple='('.implode(',',array_fill(0,17,'?')).')';
+    for($i=0;$i<501;$i++){
+        $fill[]=$tuple;$label=str_pad((string)$i,3,'0',STR_PAD_LEFT);
+        array_push($params,'SOFTWARE-FILLER-'.$label,'AAA filler '.$label,'software','draft','once','USD',null,0,null,'','','','',0,1,$now,$now);
+    }
+    query('INSERT INTO '.table('catalog_products').' (sku,title,family,status,term,currency,amount_cents,setup_cents,cost_cents,provider_ref,summary,features,terms,sort_order,revision,created_at,updated_at) VALUES '.implode(',',$fill),$params);
+    $boundChoice=software_onboarding_product_choices((int)$product['id']);
+    soon_ok($boundChoice===[(string)$product['id']=>'Native Onboard · SOFTWARE-NATIVE-ONBOARD'],'Bound review fetches its exact product title and SKU even outside the capped general list');
 
     $concurrent=$temporary.DIRECTORY_SEPARATOR.'concurrent.zip';soon_zip($concurrent,['title'=>'Concurrent Product','version'=>'2.0.0']);
     $concurrentRequests=[software_onboarding_stage($concurrent,'concurrent-a.zip',false),software_onboarding_stage($concurrent,'concurrent-b.zip',false)];

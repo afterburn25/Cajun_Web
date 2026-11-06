@@ -2,6 +2,17 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 
+function software_onboarding_product_choices(int $boundProductId):array{
+    if($boundProductId<0||$boundProductId>9999999)throw new RuntimeException('Selected software product identity is invalid.');
+    if($boundProductId>0){
+        $product=one("SELECT id,sku,title FROM ".table('catalog_products')." WHERE id=? AND family='software'",[$boundProductId]);
+        return [(string)$boundProductId=>$product?$product['title'].' · '.$product['sku']:'Selected software product is no longer available'];
+    }
+    $products=['0'=>'Create a new draft product'];
+    foreach(all("SELECT id,sku,title FROM ".table('catalog_products')." WHERE family='software' ORDER BY title,id LIMIT 500") as $product)$products[(string)$product['id']]=$product['title'].' · '.$product['sku'];
+    return $products;
+}
+
 function software_onboarding_admin_view(array $user,string $error):void{
     $canManage=staff_can('staff.manage',$user);
     ?><section class="workspace-card" id="software-onboarding"><h2>Add software from a ZIP</h2>
@@ -31,8 +42,7 @@ function software_onboarding_admin_view(array $user,string $error):void{
         </section><?php return;
     }
     $metadata=$request['metadata'];$boundProductId=(int)($metadata['target_product_id']??0);$selected=$boundProductId>0?$boundProductId:(is_string($_POST['product_id']??null)?(int)$_POST['product_id']:0);
-    $products=['0'=>'Create a new draft product'];foreach(all("SELECT id,sku,title FROM ".table('catalog_products')." WHERE family='software' ORDER BY title,id LIMIT 500") as $product)$products[(string)$product['id']]=$product['title'].' · '.$product['sku'];
-    if($boundProductId>0)$products=[(string)$boundProductId=>$products[(string)$boundProductId]??'Selected software product is unavailable'];
+    $products=software_onboarding_product_choices($boundProductId);
     if($selected===0&&($metadata['embedded_sku']??'')!==''){$matched=one('SELECT id FROM '.table('catalog_products').' WHERE family=? AND sku=?',['software',$metadata['embedded_sku']]);if($matched)$selected=(int)$matched['id'];}
     $title=is_string($_POST['title']??null)?$_POST['title']:(string)($metadata['title']??'');
     $version=is_string($_POST['version']??null)?$_POST['version']:(string)($metadata['version']??'');
