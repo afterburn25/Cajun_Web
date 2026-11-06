@@ -196,7 +196,7 @@ def run_browser(env, browser):
               and form(op, ACTION).locator('[name="price"],[name="currency"],[name="type"],[name="package_type"],[name="profile_id"]').count() == 0)
         unchanged('Opening guided setup does not create a plan or provider intent', initial)
         check('Guided setup opens the real imported product editor', goto(op, product_url) == 200 and form(op, 'catalog_save').count() == 1)
-        image_url = op.locator('img[alt="Uploaded draft product image"]').get_attribute('src')
+        image_url = op.locator('#product-image img.editor-preview[alt^="Artwork for "]').get_attribute('src')
         edit = form(op, 'catalog_save')
         edit.locator('[name="amount"]').fill('27.00')
         edit.locator('[name="summary"]').fill('One reviewed hosting service with owner-completed setup.')
@@ -206,7 +206,7 @@ def run_browser(env, browser):
               'Product saved with a new revision.' in op.content() and changed['counts'] == initial['counts']
               and changed['results'] == initial['results'] and setup_counts(changed) == initial_setup
               and changed['business_sha256'] != initial['business_sha256'])
-        check('Product edit keeps the original uploaded local image', op.locator('img[alt="Uploaded draft product image"]').get_attribute('src') == image_url)
+        check('Product edit keeps the original uploaded local image', op.locator('#product-image img.editor-preview[alt^="Artwork for "]').get_attribute('src') == image_url)
         response = post(owner, owner_url, stale)
         stale_fields = response_fields(response, ACTION)
         check('Stale setup review is refused with original entries and digest retained',

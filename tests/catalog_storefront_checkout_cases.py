@@ -182,7 +182,7 @@ def run_browser(env, browser):
               image_form.locator('[name="current_password"],[name="owner_password"]').count() == 0
               and bool(image_form.locator('[name="csrf"]').input_value()))
         click(op, 'catalog_import_image', 'Save image')
-        uploaded_image = op.locator('img[alt="Uploaded draft product image"]')
+        uploaded_image = op.locator('#product-image img.editor-preview[alt^="Artwork for "]')
         check('Storefront owner saves local artwork through the actual multipart form',
               'Draft product image saved. If this product already has a published offer, changes need review before its storefront card is current.' in op.content()
               and uploaded_image.count() == 1)

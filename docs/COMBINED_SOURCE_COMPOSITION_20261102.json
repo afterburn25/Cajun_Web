@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "9651568a6aab6a223fad35b5e6bd5dbcfae5a7186e75ec29e324344af8990a69",
+  "verifier_sha256": "efafbf3a81b567a37d2b5c978b020cf9107a4170737f09691c14765c5bb00b57",
   "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -607,7 +607,7 @@
     },
     "tests/catalog_storefront_checkout_cases.py": {
       "original_sha256": "71239df5a4ec2afe12058c8a8288c35928fd2fc3d687d626c6ca655cb7270ff8",
-      "current_sha256": "185ff00e4ab5290b1acc92d299792e7165877b3089f993d7a59c3111375d81c2",
+      "current_sha256": "70d146a07a0fe22e5628873954a87dbd69ab9741d29a291dc0d51f3e3bc11112",
       "edits": [
         [
           "        image_form.locator('[name=\"product_image\"]').set_input_files({\n            'name': 'synthetic-storefront.png', 'mimeType': 'image/png', 'buffer': SYNTHETIC_PNG,\n        })\n        image_form.locator('[name=\"owner_password\"]').fill(owner_password)\n        click(op, 'catalog_import_image', 'Save image')\n        uploaded_image = op.locator('img[alt=\"Uploaded draft product image\"]')\n        check('Storefront owner saves local artwork through the actual multipart form',\n",
@@ -620,6 +620,10 @@
         [
           "              'Draft product image saved. Publication has not changed.' in op.content()\n",
           "              'Draft product image saved. If this product already has a published offer, changes need review before its storefront card is current.' in op.content()\n"
+        ],
+        [
+          "        uploaded_image = op.locator('img[alt=\"Uploaded draft product image\"]')\n",
+          "        uploaded_image = op.locator('#product-image img.editor-preview[alt^=\"Artwork for \"]')\n"
         ]
       ]
     },
@@ -663,7 +667,7 @@
     },
     "tests/hosting_billing_options_cases.py": {
       "original_sha256": "0fbd3db1e332861a20523b3675af3114e6b41d1f809a08cbc02786e01b70ed60",
-      "current_sha256": "4ac8630913e7812e11f536bc8663a2dd06891f49e5c2c4c1ed119ae713334cc5",
+      "current_sha256": "d4959ae1033a045364cc933a75e841680ee4978a4af1dc08c9855146d8ed6175",
       "edits": [
         [
           "              and selected['checkout_mode'] == 'invoice-on-confirmation'\n              and '$' + format(amount / 100, '.2f') in review.inner_text()\n              and ('per month' if cadence == 'monthly' else 'per year') in review.inner_text()\n              and form(page, 'hosting_catalog_publish').locator('[name=\"current_password\"]').input_value() == ''\n              and not form(page, 'hosting_catalog_publish').locator('[name=\"confirm\"]').is_checked())\n        image_ready(page, review.locator('.hosting-catalog-image'), image_url, cadence + ' publication preview')\n        if stage:\n            review.locator('details').get_by_text('Plan terms', exact=True).click()\n            capture(page, review, stage)\n        unchanged('Installed ' + cadence + ' preview and captures perform no commercial writes', before)\n        form(page, 'hosting_catalog_publish').locator('[name=\"current_password\"]').fill(owner_password)\n        form(page, 'hosting_catalog_publish').locator('[name=\"confirm\"]').check()\n        submit(page, 'hosting_catalog_publish', 'Publish hosting offer')\n        after = state()\n",
@@ -688,6 +692,10 @@
         [
           "        for key in ('inclusions', 'exclusions', 'limits', 'support', 'reseller_id', 'package_label', 'package_region', 'review_days',\n                    'limit_websites', 'limit_disk_mb', 'limit_bandwidth_mb', 'limit_mailboxes', 'limit_databases'):\n            target.locator('[name=\"' + key + '\"]').fill(selected[key])\n        target.locator('[name=\"current_password\"]').fill(owner_password)\n        target.locator('[name=\"reviewed_defaults\"]').check()\n        target.locator('[name=\"confirm\"]').check()\n        submit(op, SETUP_ACTION, 'Create matching plan')\n",
           "        for key in ('inclusions', 'exclusions', 'limits', 'support', 'reseller_id', 'package_label', 'package_region', 'review_days',\n                    'limit_websites', 'limit_disk_mb', 'limit_bandwidth_mb', 'limit_mailboxes', 'limit_databases'):\n            target.locator('[name=\"' + key + '\"]').fill(selected[key])\n        check('Annual guided plan uses the current owner session and reviewed confirmations',\n              target.locator('[name=\"current_password\"],[name=\"owner_password\"]').count() == 0\n              and bool(target.locator('[name=\"csrf\"]').input_value())\n              and not target.locator('[name=\"reviewed_defaults\"]').is_checked() and not target.locator('[name=\"confirm\"]').is_checked())\n        target.locator('[name=\"reviewed_defaults\"]').check()\n        target.locator('[name=\"confirm\"]').check()\n        submit(op, SETUP_ACTION, 'Create matching plan')\n"
+        ],
+        [
+          "        annual_image = urljoin(op.url, op.locator('img[alt=\"Uploaded draft product image\"]').get_attribute('src'))\n",
+          "        annual_image = urljoin(op.url, op.locator('#product-image img.editor-preview[alt^=\"Artwork for \"]').get_attribute('src'))\n"
         ]
       ]
     },
@@ -715,7 +723,7 @@
     },
     "tests/hosting_catalog_plan_setup_cases.py": {
       "original_sha256": "7ac91e818644e98cf5ea800aa3e2db32c99179281e2ff8a5e01a27d02e87c0b9",
-      "current_sha256": "51bd299de65d61e40f2ec34bf7deccad452e14281761e0a0b2a38b54ca281508",
+      "current_sha256": "91f98263a8e5716129ab2d11012b2d3f9672cb96e861b144d1d46272929b85d0",
       "edits": [
         [
           "All mutations use actual authenticated forms. The existing read-only state bridge\nproves retained financial history and exact local setup counts. No provider read,\nfixture seed, session injection, timestamp edit or automatic publication occurs.\n\"\"\"\nimport hashlib\nimport math\n",
@@ -760,6 +768,14 @@
         [
           "        text = review.inner_text()\n",
           "        plan_terms = review.locator('details').filter(has=op.get_by_text('Plan terms', exact=True))\n        check('Guided offer preview starts with the original Plan terms collapsed',\n              plan_terms.count() == 1 and plan_terms.locator('summary').count() == 1\n              and plan_terms.evaluate('el => !el.open') is True)\n        plan_terms.locator('summary').click()\n        check('Guided offer preview reveals terms through the real summary',\n              plan_terms.evaluate('el => el.open') is True)\n        text = review.inner_text()\n"
+        ],
+        [
+          "        image_url = op.locator('img[alt=\"Uploaded draft product image\"]').get_attribute('src')\n",
+          "        image_url = op.locator('#product-image img.editor-preview[alt^=\"Artwork for \"]').get_attribute('src')\n"
+        ],
+        [
+          "        check('Product edit keeps the original uploaded local image', op.locator('img[alt=\"Uploaded draft product image\"]').get_attribute('src') == image_url)\n",
+          "        check('Product edit keeps the original uploaded local image', op.locator('#product-image img.editor-preview[alt^=\"Artwork for \"]').get_attribute('src') == image_url)\n"
         ]
       ]
     },
