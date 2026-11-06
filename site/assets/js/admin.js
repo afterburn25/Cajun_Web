@@ -68,7 +68,7 @@ for(const form of document.querySelectorAll('form[data-software-package-upload]'
     if(status)status.textContent='Upload complete. Loading review…';window.location.assign(target.href);return;
    }
    let message='The package could not be uploaded. Choose the ZIP again to retry.';
-   try{const response=new DOMParser().parseFromString(request.responseText,'text/html');const alert=response.querySelector('#software-onboarding [role="alert"]');if(alert?.textContent.trim())message=alert.textContent.trim();}catch(e){/* Keep the bounded retry message when the response is not readable HTML. */}
+   try{const response=new DOMParser().parseFromString(request.responseText,'text/html');const alert=response.querySelector('[role="alert"],.notice.error');if(alert?.textContent.trim())message=alert.textContent.trim();}catch(e){/* Keep the bounded retry message when the response is not readable HTML. */}
    if(status)status.textContent=message;if(progress)progress.hidden=true;
   });
   request.addEventListener('error',()=>{if(status)status.textContent='The upload was interrupted. Choose the ZIP again to retry.';if(progress)progress.hidden=true;});

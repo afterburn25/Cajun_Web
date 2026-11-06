@@ -22,7 +22,7 @@
     },
     "site/assets/js/admin.js": {
       "before_sha256": "c3ad330eeacd0f9ab62beea618b111b1c4943e74216e861f1467c937262942ee",
-      "current_sha256": "e5f554bada87336da2468a80995fd4586c19f413b3fe3fe0e95400b036125b88"
+      "current_sha256": "0fbcb5cbe0c590254c0e863ab08fabd4b144e4c6d6c6074f252613bfc0be39ea"
     },
     "tests/software_commerce_cases.py": {
       "before_sha256": "d77a4d6e31c44408584ee72b225258a35f4551cf5b6319f89e2fdd361c3652ce",

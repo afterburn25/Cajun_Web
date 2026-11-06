@@ -413,7 +413,7 @@ function setup_expected_files(): array { return [
     'assets/css/site.css'=>'ecf7a54945d89e62b86fd43741aeafbee7480a752d4133e17053ddffe251abcf',
     'assets/css/tickets.css'=>'bd67fdf732fed0bf08f2b77721713bb3b75e2827bba97910264a2f8401f9e0c1',
     'assets/js/activity.js'=>'5431861226ca77e95e0eff5752890dedae583882a241024dbfd54e9af42d9628',
-    'assets/js/admin.js'=>'e5f554bada87336da2468a80995fd4586c19f413b3fe3fe0e95400b036125b88',
+    'assets/js/admin.js'=>'0fbcb5cbe0c590254c0e863ab08fabd4b144e4c6d6c6074f252613bfc0be39ea',
     'assets/js/authorize-net-checkout.js'=>'7ab84622c619d14a53fa559ff086c692a0cd9ad6e50185b94cc352ad097bb2ba',
     'assets/js/growth.js'=>'9cf5fcb8185c778fd836137990a59910e680148a4ecf903423d9df41f8d73243',
     'assets/js/mail-notices.js'=>'9e8cbd84a480428baa22cb3ff7b289f51ca436126bbb5aacd3712c5a2511cd01',
