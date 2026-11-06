@@ -85,6 +85,12 @@ def run_browser(env, browser):
     root, qa, base, check = (env[k] for k in ['ROOT','QA','BASE','check'])
     soup, token, form_data, submit = (env[k] for k in ['soup','token','form_data','submit'])
     php=env['php']
+    installed_guard=env['WEB']/'existing'/'.installed.php'
+    if not installed_guard.exists():
+        installed_guard.write_bytes(b'<?php exit; ?>synthetic focused software installation guard')
+    check('Software browser fixture has an explicit disposable installation guard',
+          installed_guard.is_file())
+    installed_guard_bytes=installed_guard.read_bytes()
     licenses=base+'/existing/admin/index.php?view=studio-licenses'
     catalog=base+'/existing/admin/index.php?view=catalog'
     portal=base+'/existing/portal/index.php?software=1'
@@ -211,6 +217,8 @@ def run_browser(env, browser):
     check('Installed success state links to licensing versioning and publication review without performing them',
           onboarding_saved.status_code==200 and 'Issue a license' in onboarding_saved.text
           and 'Add another version' in onboarding_saved.text and 'Review price and publication' in onboarding_saved.text)
+    check('Guided onboarding preserves the installed-site guard byte for byte',
+          installed_guard.read_bytes()==installed_guard_bytes)
 
     legacy_page=admin.get(licenses,timeout=25)
     legacy_form=None
