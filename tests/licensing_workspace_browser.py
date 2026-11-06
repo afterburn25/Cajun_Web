@@ -52,7 +52,7 @@ try:
    page.goto(url);submit(page,'login',{'email':email,'password':password})
   owner=context();page=owner.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
   login(page,admin+'?view=login','owner@licensing.invalid')
-  page.locator('[data-nav-group="licensing"] > summary').click()
+  page.locator('[data-nav-group="catalog"] > summary').click()
   page.locator('.admin-sidebar').get_by_role('link',name='Licenses & software',exact=True).click()
   check('Visible admin navigation opens licensing workspace',page.locator('#licensing-overview').count()==1 and page.get_by_role('heading',name='Licenses & software',exact=True).count()==1)
   before=state();response=page.goto(licenses)

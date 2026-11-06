@@ -1,3 +1,9 @@
+## 2026-11-06 06:22 UTC — issue #365 dependency-first catalog slice
+
+No feature credit or completion percentage changes. Verified main is `c5d17f782af6959305390f96f11119283c93c7aa`; its complete resulting-main Application and all 19 automatic workflows passed. The active issue #365 candidate integrates existing catalog, software and license entry points into one owner-facing home and adds truthful, bounded product/image/offer readiness. It does not complete storefront registration, managed software onboarding, license lifecycle, client-portal parity or unified database updates, and it performs no publication or live operation.
+
+The slice must still clear canonical source/composition, independent review, hosted exact-head acceptance, normal integration and resulting-main verification. Continue issue #365 in its recorded dependency order after that gate; release and live-operation columns remain unchanged.
+
 ## 2026-11-04 17:16 UTC — release-blocker qualification before roadmap continuation
 
 No feature credit or completion percentage changes. Before publishing 1.26.1, the current candidate must clear independent review and full installed acceptance for strict subscription webhook identity and the existing payment-link privacy behavior. The four exact-main supported-runtime runs remain active; do not duplicate them. After an accepted successor reaches and verifies main, continue issue #157 in dependency order through bounded verification/packaging repairs and then customer, administration, mail and provider integrations. Release and live-operation columns remain unchanged.

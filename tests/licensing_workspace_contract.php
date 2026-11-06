@@ -75,7 +75,7 @@ require CWP_CODE_ROOT.'/includes/layout/admin.php';
 try{
     ob_start();admin_navigation('studio-licenses',['id'=>1],0);$nav=ob_get_clean();
     check('Owner navigation exposes actual licensing route',str_contains($nav,'view=studio-licenses')&&str_contains($nav,'Licenses &amp; software'));
-    check('Licensing navigation group is expanded and selected',str_contains($nav,'data-nav-group="licensing" open data-active="true"')&&str_contains($nav,'aria-current="page"'));
+    check('Catalog and licensing group is expanded and selected',str_contains($nav,'data-nav-group="catalog" open data-active="true"')&&str_contains($nav,'aria-current="page"'));
     $owner=false;ob_start();admin_navigation('dashboard',['id'=>2],0);$nav=ob_get_clean();
     check('Non-owner navigation does not expose owner licensing',!str_contains($nav,'view=studio-licenses'));
     foreach([[false,false,false],[true,false,false],[true,true,false],[true,true,true]] as $i=>[$ready,$catalogPreparedTest,$softwareReady]){

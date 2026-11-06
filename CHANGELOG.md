@@ -1,3 +1,11 @@
+## 2026-11-06 — catalog and licensing home candidate
+
+- Group the existing Service catalog and Licenses & software routes under one permission-filtered Catalog & Licensing navigation area while preserving their accessible labels and destinations.
+- Put the existing import, software setup and customer-license tasks at the top of the catalog home; only the explicit software shortcut may preselect a new software draft.
+- Add a bounded read-only product readiness projection for price, details, owner-managed artwork and current hosting-offer review state, with validation failures shown as unavailable rather than ready.
+- State the exact 20i artwork boundary: the documented contract has no supported provider-artwork source, so imported drafts link to managed local upload and reimport preserves that media.
+- Improve desktop and mobile product presentation without changing publication, licensing, payment, provisioning, provider-operation or customer-message authority. This is a development candidate pending review, hosted acceptance, integration and resulting-main verification.
+
 ## 2026-11-06 — exact-source RC test packaging
 
 - Replace the historical multi-branch RC composition with the single clean event commit and refuse generated-source drift.

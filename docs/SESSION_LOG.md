@@ -1,3 +1,9 @@
+## 2026-11-06 06:22 UTC — resulting main closed; #365 catalog slice started
+
+Closed PR #366 resulting-main qualification at `c5d17f782af6959305390f96f11119283c93c7aa`: Application run `42158346351` passed all jobs, all 19 automatic workflows succeeded, and an independent replay verified 219 reports, 32,814 executions and all 757 final files with no failure. Posted exact evidence to PR #366 and issue #157, then renewed PR #340's coordinator marker without displacing a newer owner.
+
+Started issue #365 from that exact main. Added one Catalog & Licensing navigation group and a bounded catalog-home projection for the three existing owner tasks, local product readiness, managed artwork and hosting-offer review state. Kept absent provider artwork explicit because the documented 20i contract has no supported artwork source. Static review narrowed the new-family shortcut to software only and made readiness validation fail closed. PHP lint, 58 policy checks, 69 render checks, 62 loopback browser checks and the relevant navigation/import/hosting contracts pass; desktop and mobile captures were inspected. The installed licensing browser preserved its disposable-SQL refusal because Docker is unavailable locally. No live or destructive operation occurred.
+
 ## 2026-11-04 19:42 UTC — complete Application failure retained and narrowed
 
 PR361 complete Application run `41888630284` on exact head `e65f22f0` passed build, recovery and Apache, then failed native/browser after 621 HTTP checks. Retained artifact `13356801613` and final artifact `13356896447` prove the anonymous bearer request itself returned HTTP 200; the assertion failed because the test expected `not available on this link yet` while the unchanged shipping page says `Online card payment is not available on this request yet.` The failure and both official artifact digests remain recorded and are not relabeled as product success.

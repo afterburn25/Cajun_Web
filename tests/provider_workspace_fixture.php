@@ -21,7 +21,7 @@ function mail_notices_access(array $u):bool{return false;}
 function table(string $name):string{return $name;}
 function one(string $sql,array $args=[]):?array{return ['n'=>0];}
 function all(string $sql,array $args=[]):array {
-    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting']];
+    if(str_contains($sql,'FROM catalog_products'))return fixture_state()==='empty'?[]:[['id'=>12,'sku'=>'20I-701','title'=>'Starter hosting (synthetic)','status'=>'draft','term'=>'month','amount_cents'=>1500,'setup_cents'=>0,'revision'=>1,'family'=>'hosting','summary'=>'Synthetic hosting summary','features'=>'Synthetic feature','terms'=>'Synthetic terms']];
     throw new LogicException('Unexpected fixture query');
 }
 function provider_settings_manager():array{return ['id'=>1];}
@@ -40,6 +40,10 @@ function provider_cloud_site_request_confirmation_render():void{throw new LogicE
 function support_current():?array{return null;}
 function provider_catalog_import_owner():array{return ['id'=>1];}
 function provider_catalog_import_ready():bool{return fixture_state()!=='setup';}
+function provider_catalog_import_records_in_scope(array $ids):array{return in_array(12,$ids,true)?[['product_id'=>12,'media_id'=>null]]:[];}
+function hosting_catalog_ready():bool{return false;}
+function staff_locked(callable $work):mixed{return $work();}
+function staff_transaction(callable $work):mixed{return $work();}
 function provider_package_types_ready():bool{return fixture_state()!=='catalog-setup';}
 function provider_catalog_import_preview(int $page,string $source):array {
     if($source!=='package.types')throw new RuntimeException('Synthetic fixture only provides the package-type catalog, not existing hosting accounts.');

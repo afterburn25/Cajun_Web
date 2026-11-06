@@ -1,3 +1,16 @@
+## 2026-11-06 06:22 UTC — verified main and issue #365 catalog slice
+
+[Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remains the authoritative queue. PR #366 is merged and verified on main `c5d17f782af6959305390f96f11119283c93c7aa`; Application `42158346351` and all 19 automatic push workflows passed, with independent exact-artifact replay complete. v1.25.0 remains the latest publication.
+
+| Candidate | Current disposition | Next action |
+| --- | --- | --- |
+| Main `c5d17f7`, 1.26.1 | ALREADY INTEGRATED and resulting-main verified; 219 reports, 32,814 executions and 757 final files independently checked | Preserve exact evidence; do not redispatch or relabel it as a release |
+| Issue #365 catalog/licensing home | Implemented locally from exact main; bounded catalog readiness, honest missing-provider-artwork state, responsive owner entry points and relevant local contracts pass | Refresh inventory/composition, complete docs/source gates and independent review, then obtain exact-head hosted acceptance before normal merge |
+| Remaining issue #365 work | Not implemented by this slice: storefront registration continuity, managed software onboarding, full license flow, client-portal parity and unified DB updates | Continue in the issue's recorded dependency order after the first slice is accepted |
+| Release publication | NOT AUTHORIZED; v1.25.0 remains latest | Preserve explicit publication/deployment boundary |
+
+The candidate performs no provider fetch for artwork and no order, publication, license issuance, payment, provisioning, message or production action. The installed licensing browser's local `Disposable loopback SQL only` refusal is retained; its existing hosted disposable MySQL/MariaDB gate remains required.
+
 ## 2026-11-04 17:16 UTC — Codex-owned master queue checkpoint
 
 [Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) is the authoritative queue; the owner's Codex assignment supersedes older Devin-only ownership while preserving every product, evidence, review, data and release requirement.
