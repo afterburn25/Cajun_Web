@@ -1,8 +1,10 @@
 """Installed software-commerce HTTP/Chromium acceptance. No external payment or mail traffic."""
 import hashlib
+import io
 import json
 import os
 import subprocess
+import zipfile
 from datetime import datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 
@@ -30,6 +32,16 @@ def _product_data():
         'terms':'One-time synthetic acceptance purchase. No live payment is performed.',
         'sort_order':'0',
     }
+
+
+def _onboarding_zip(title, version, sku=None):
+    output=io.BytesIO()
+    manifest={'title':title,'version':version,'module_key':'installed-browser','require':{'php':'>=8.2'}}
+    if sku is not None:manifest['sku']=sku
+    with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr('cajunwebpro.json',json.dumps(manifest,separators=(',',':')))
+        archive.writestr('src/plugin.php','<?php // inert installed-browser fixture')
+    return output.getvalue()
 
 
 def _action_form(soup, response, action, *, product_id=None, asset_id=None, invoice_id=None, license_id=None, transition=None):
@@ -166,6 +178,39 @@ def run_browser(env, browser):
               and 'Software license and purchase storage is prepared' in response.text)
     else:
         check('Software commerce storage is already prepared for installed acceptance',True)
+
+    onboarding_page=admin.get(catalog,timeout=25)
+    if settings('software_onboarding_version') != [{'value':'1'}]:
+        onboarding_setup=_action_form(soup,onboarding_page,'catalog_software_prepare')
+        setup_data=form_data(onboarding_setup);setup_data['confirm']='1'
+        onboarding_page=admin.post(catalog,data=setup_data,timeout=25)
+        check('Owner explicitly prepares additive guided software upload storage',
+              onboarding_page.status_code==200 and settings('software_onboarding_version')==[{'value':'1'}])
+    else:
+        check('Guided software upload storage is already prepared for installed acceptance',True)
+    upload_form=_action_form(soup,onboarding_page,'catalog_software_upload')
+    upload_data=form_data(upload_form)
+    reviewed=admin.post(catalog,data=upload_data,
+                        files={'package':('installed-onboarding.zip',_onboarding_zip('Installed Onboarding','3.4.5','SOFTWARE-INSTALLED-ONBOARD'),'application/zip')},
+                        timeout=40)
+    save_form=_action_form(soup,reviewed,'catalog_software_save')
+    check('Direct installed browser upload reaches the honest metadata review step',
+          reviewed.status_code==200 and 'Stored securely.' in reviewed.text
+          and save_form.select_one('input[name=title]').get('value')=='Installed Onboarding'
+          and save_form.select_one('input[name=version]').get('value')=='3.4.5'
+          and 'php &gt;=8.2' in reviewed.text and 'No package code was executed' in reviewed.text)
+    save_data=form_data(save_form);save_data.update({'product_id':'0','title':'Installed Onboarding','version':'3.4.5'})
+    onboarding_saved=admin.post(catalog,data=save_data,timeout=40)
+    onboarding_product=db("SELECT id,sku,status,amount_cents,terms FROM ci_catalog_products WHERE sku='SOFTWARE-INSTALLED-ONBOARD'")
+    onboarding_asset=db("SELECT id,file_path,is_published,released_at FROM ci_software_assets WHERE sku='SOFTWARE-INSTALLED-ONBOARD' AND version='3.4.5'")
+    check('Installed guided save creates one draft and one owner-private relative asset',
+          len(onboarding_product)==len(onboarding_asset)==1
+          and onboarding_product[0]['status']=='draft' and onboarding_product[0]['amount_cents'] is None and onboarding_product[0]['terms']==''
+          and onboarding_asset[0]['is_published']==0 and onboarding_asset[0]['released_at'] is None
+          and not onboarding_asset[0]['file_path'].startswith(('/', '\\')) and ':' not in onboarding_asset[0]['file_path'])
+    check('Installed success state links to licensing versioning and publication review without performing them',
+          onboarding_saved.status_code==200 and 'Issue a license' in onboarding_saved.text
+          and 'Add another version' in onboarding_saved.text and 'Review price and publication' in onboarding_saved.text)
 
     legacy_page=admin.get(licenses,timeout=25)
     legacy_form=None
@@ -868,6 +913,33 @@ def run_browser(env, browser):
     check('Software commerce mobile fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     check('Software commerce browser has no uncaught script errors',not errors)
     context.close()
+
+    onboarding_zip=qa/'Software-Onboarding-Browser.zip'
+    onboarding_zip.write_bytes(_onboarding_zip('Installed Browser Capture','4.0.0','SOFTWARE-INSTALLED-CAPTURE'))
+    context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
+    context.add_cookies([{'name':c.name,'value':c.value,'url':base+'/existing/'} for c in admin.cookies])
+    p=context.new_page();onboarding_errors=[];p.on('pageerror',lambda e:onboarding_errors.append(str(e)))
+    p.goto(catalog+'#software-onboarding');expect(p.get_by_role('heading',name='Add software from a ZIP')).to_be_visible()
+    check('Installed onboarding exposes browser upload progress and no server-path input',
+          p.locator('form[data-software-package-upload] progress[data-upload-progress]').count()==1
+          and p.locator('input[name=path], input[name=file_path]').count()==0)
+    p.locator('input[type=file][name=package]').set_input_files(str(onboarding_zip))
+    p.get_by_role('button',name='Upload and review').click()
+    expect(p.get_by_text('Stored securely.',exact=False)).to_be_visible(timeout=40000)
+    expect(p.locator('input[name=title]')).to_have_value('Installed Browser Capture')
+    expect(p.locator('input[name=version]')).to_have_value('4.0.0')
+    p.screenshot(path=str(qa/'Software-Onboarding-Review-Desktop.png'),full_page=True)
+    check('Software onboarding review desktop fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+    p.set_viewport_size({'width':390,'height':844})
+    p.screenshot(path=str(qa/'Software-Onboarding-Review-Mobile.png'),full_page=True)
+    check('Software onboarding review mobile fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+    p.set_viewport_size({'width':1440,'height':1000})
+    p.get_by_role('button',name='Save draft product').click()
+    expect(p.get_by_text('Draft software product saved.',exact=False)).to_be_visible(timeout=40000)
+    check('Installed onboarding browser saves the reviewed package without uncaught script errors',
+          not onboarding_errors and db("SELECT status FROM ci_catalog_products WHERE sku='SOFTWARE-INSTALLED-CAPTURE'")==[{'status':'draft'}]
+          and db("SELECT is_published FROM ci_software_assets WHERE sku='SOFTWARE-INSTALLED-CAPTURE' AND version='4.0.0'")==[{'is_published':0}])
+    context.close();onboarding_zip.unlink()
 
     register=admin.get(licenses,timeout=25)
     legacy_deactivate={

@@ -1,7 +1,7 @@
 name: Software focused installed acceptance
 on:
   push:
-    branches: [feature/software-license-commerce-20261025]
+    branches: [main, feature/software-license-commerce-20261025]
     paths:
       - 'tests/software_commerce_cases.py'
       - 'tests/software_commerce_browser_fixture.php'
@@ -15,14 +15,19 @@ on:
       - 'site/portal/controllers/actions.php'
       - 'site/portal/views/software.php'
       - 'site/admin/controllers/studio.php'
+      - 'site/admin/controllers/catalog.php'
+      - 'site/admin/views/software_onboarding.php'
       - 'site/admin/views/studio/licenses.php'
+      - 'site/assets/js/admin.js'
+      - 'site/database/schema/software_onboarding_schema.php'
+      - 'site/database/migrations/software_onboarding_migrate.php'
       - 'site/database/schema/software_commerce_schema.php'
       - 'site/database/migrations/software_commerce_migrate.php'
       - 'site/includes/security/http.php'
       - 'site/install/inventory.generated.php'
       - '.github/workflows/software-focused-acceptance.yml'
   pull_request:
-    branches: [feature/software-license-commerce-20261025]
+    branches: [main, feature/software-license-commerce-20261025]
     paths:
       - 'tests/software_commerce_cases.py'
       - 'tests/software_commerce_browser_fixture.php'
@@ -37,7 +42,12 @@ on:
       - 'site/portal/views/software.php'
       - 'site/admin/controllers/actions.php'
       - 'site/admin/controllers/studio.php'
+      - 'site/admin/controllers/catalog.php'
+      - 'site/admin/views/software_onboarding.php'
       - 'site/admin/views/studio/licenses.php'
+      - 'site/assets/js/admin.js'
+      - 'site/database/schema/software_onboarding_schema.php'
+      - 'site/database/migrations/software_onboarding_migrate.php'
       - 'site/app/staff/accounts.php'
       - 'site/database/schema/software_commerce_schema.php'
       - 'site/database/migrations/software_commerce_migrate.php'
@@ -106,6 +116,8 @@ jobs:
             qa/php-diagnostics.json
             qa/Software-Commerce-Desktop.png
             qa/Software-Commerce-Mobile.png
+            qa/Software-Onboarding-Review-Desktop.png
+            qa/Software-Onboarding-Review-Mobile.png
             qa/fresh-install-result.json
           retention-days: 14
           if-no-files-found: warn

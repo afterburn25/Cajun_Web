@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "base_commit": "3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c",
+  "base_tree": "9f77b938f343d1f7c6e56e121ed60fdd9a9446b4",
+  "scope": "UX-03 guided owner-private software ZIP onboarding. No publication, payment, provisioning, customer message, live access, or deployment.",
+  "modified": {
+    ".github/workflows/software-focused-acceptance.yml": {
+      "before_sha256": "4b2ca74ac962f2a0739b67c51cb844a81ae1833dac8716b73fff1bdd14d6f792",
+      "current_sha256": "7b90d062988abb28764d953ce691a96d82b6665cb2221f036b92565fcb01ced3"
+    },
+    "site/app/licenses/software_assets.php": {
+      "before_sha256": "53a38bb3b51e321f7a50c9e43a96372702f6eb8618536ecf7e87b72d883892fe",
+      "current_sha256": "d139e39be0d9ddc6d00929df8dd187a05ea9fafab592c66f51e3c2b6ff7eb0e4"
+    },
+    "site/app/licenses/software_products.php": {
+      "before_sha256": "38f39e2610f750fb09fc9ba868cf770894d561c74a43ff470801ac0a02b1ad7d",
+      "current_sha256": "32402bc6cf2e38b767dda002328b42448faff69d591170637582ba75cd7aedf0"
+    },
+    "site/assets/js/admin.js": {
+      "before_sha256": "c3ad330eeacd0f9ab62beea618b111b1c4943e74216e861f1467c937262942ee",
+      "current_sha256": "a053bf83f5e170703bbb219248d66350c59c018f244e0f1522363640c4745e5f"
+    },
+    "tests/software_commerce_cases.py": {
+      "before_sha256": "d77a4d6e31c44408584ee72b225258a35f4551cf5b6319f89e2fdd361c3652ce",
+      "current_sha256": "1c76bdd2ccda52e2985345b32813b4a51e7a4c73e34d27a7af14f0025e6f0173"
+    }
+  },
+  "added": {
+    ".github/workflows/software-onboarding-native.yml": "cb710c64d2e1aa2815b291f81e84ef4d3610033d182da843dee7d52836f52f76",
+    "docs/SOFTWARE_ONBOARDING.md": "e9d1f91fdc60562dba0bc7ce96eafeb71bc83f7a8055da7e8c08008d8aa7afc8",
+    "site/admin/views/software_onboarding.php": "fceb1bd97cc661c4da6acbfe9bbd067e4ad8ec89b9eb07af4ecd4fc6b50ccc1b",
+    "site/app/licenses/software_onboarding.php": "9c0184739ad21114b2e5e4376f22702f95306544a21bdd0687320b8e034ddc66",
+    "site/database/migrations/software_onboarding_migrate.php": "469796eddef0d0c9211f69b9fa738350f7cf9139c6c92066b9fa2f7f77e5c0fd",
+    "site/database/schema/software_onboarding_schema.php": "e103da30d3671c1588325318b71613da9ab0acb05f569a78aa0b92148fc5a70f",
+    "tests/software_onboarding_native.php": "e7dd75740ff9642230b0909909759afaf57c5be3a86f805b244a7654ce67e2a2"
+  }
+}

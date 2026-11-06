@@ -83,9 +83,15 @@ function software_product_policy_assert_acyclic(int $productId,array $replacemen
     foreach(array_keys($graph) as $node)$walk((int)$node);
 }
 
-function software_product_policy_save(int $productId,int $expectedRevision,string $moduleKey,string $dependencies,
+/** Internal composition point; caller must own the staff mutex and transaction. */
+function software_product_policy_save_in_transaction(int $productId,int $expectedRevision,string $moduleKey,string $dependencies,
     int $updateMonths,int $maxInstallations,#[\SensitiveParameter] string $password):array{
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)
+        throw new LogicException('Software policy saving requires the owning account transaction.');
     if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
+    if(support_current())throw new RuntimeException('Leave support mode before changing software policy.');
+    staff_require('staff.manage');$actor=staff_owner($password);$actorId=(int)$actor['id'];
     if($expectedRevision<0||$updateMonths<0||$updateMonths>120||$maxInstallations<1||$maxInstallations>25){
         throw new InvalidArgumentException('Software policy values are outside supported limits.');
     }
@@ -114,25 +120,27 @@ function software_product_policy_save(int $productId,int $expectedRevision,strin
     }
     sort($ids,SORT_NUMERIC);$encoded=json_encode($ids,JSON_THROW_ON_ERROR);$now=gmdate('Y-m-d H:i:s');
 
-    staff_locked(fn()=>staff_transaction(function()use($productId,$expectedRevision,$moduleKey,$encoded,$updateMonths,$maxInstallations,$password,$now):void{
-        $actor=staff_owner($password);
-        $actorId=(int)$actor['id'];
-        $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
-        $revision=(int)($current['revision']??0);
-        if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
-        $replacement=json_decode($encoded,true,32,JSON_THROW_ON_ERROR);
-        software_product_policy_assert_acyclic($productId,$replacement);
-        if($current){
-            query('UPDATE '.table('software_product_policies').' SET module_key=?,dependencies=?,update_months=?,max_installations=?,revision=?,updated_by=?,updated_at=? WHERE product_id=?',
-                [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actorId,$now,$productId]);
-        }else{
-            query('INSERT INTO '.table('software_product_policies').' (product_id,module_key,dependencies,update_months,max_installations,revision,updated_by,updated_at) VALUES (?,?,?,?,?,1,?,?)',
-                [$productId,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actorId,$now]);
-        }
-        license_audit($actorId,'software.policy','Software product '.$productId.' policy revision '.($revision+1).
-            '; update months '.$updateMonths.'; max installations '.$maxInstallations);
-    }));
+    $current=one('SELECT * FROM '.table('software_product_policies').' WHERE product_id=? FOR UPDATE',[$productId]);
+    $revision=(int)($current['revision']??0);
+    if($revision!==$expectedRevision)throw new RuntimeException('This software policy changed. Reload before saving.');
+    $replacement=json_decode($encoded,true,32,JSON_THROW_ON_ERROR);
+    software_product_policy_assert_acyclic($productId,$replacement);
+    if($current){
+        query('UPDATE '.table('software_product_policies').' SET module_key=?,dependencies=?,update_months=?,max_installations=?,revision=?,updated_by=?,updated_at=? WHERE product_id=?',
+            [$moduleKey,$encoded,$updateMonths,$maxInstallations,$revision+1,$actorId,$now,$productId]);
+    }else{
+        query('INSERT INTO '.table('software_product_policies').' (product_id,module_key,dependencies,update_months,max_installations,revision,updated_by,updated_at) VALUES (?,?,?,?,?,1,?,?)',
+            [$productId,$moduleKey,$encoded,$updateMonths,$maxInstallations,$actorId,$now]);
+    }
+    license_audit($actorId,'software.policy','Software product '.$productId.' policy revision '.($revision+1).
+        '; update months '.$updateMonths.'; max installations '.$maxInstallations);
     return software_product_policy($productId);
+}
+
+function software_product_policy_save(int $productId,int $expectedRevision,string $moduleKey,string $dependencies,
+    int $updateMonths,int $maxInstallations,#[\SensitiveParameter] string $password):array{
+    return staff_locked(fn()=>staff_transaction(fn()=>software_product_policy_save_in_transaction(
+        $productId,$expectedRevision,$moduleKey,$dependencies,$updateMonths,$maxInstallations,$password)));
 }
 
 function software_product_policy_purchase_snapshot(array $policy):array{
