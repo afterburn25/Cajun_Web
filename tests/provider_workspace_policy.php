@@ -35,6 +35,10 @@ try{
     pwc('Changed product revision or managed image requires offer review',$state['image_label']==='Image ready'&&$state['offer_label']==='Changes need review'&&$state['offer_action']==='Review and update offer'&&$state['offer_needs_review']);
     $offer=['product_revision'=>3,'media_id'=>str_repeat('a',32),'withdrawn'=>0];$state=catalog_admin_product_readiness($product,$import,$offer,true);
     pwc('Matching latest offer is distinguished from unpublished or stale state',$state['offer_label']==='Offer published'&&!$state['offer_needs_review']&&$state['missing']===[]);
+    $optionalFeatures=$product;$optionalFeatures['features']='';$state=catalog_admin_product_readiness($optionalFeatures,null,null,false);
+    pwc('Optional feature bullets do not create a false details warning',$state['missing']===[]);
+    $zeroPrice=$product;$zeroPrice['amount_cents']=0;$state=catalog_admin_product_readiness($zeroPrice,null,null,false);
+    pwc('A zero amount is still named as price work before publication',$state['missing']===['Price needed']);
     $incomplete=$product;$incomplete['amount_cents']=null;$incomplete['summary']='';$state=catalog_admin_product_readiness($incomplete,null,null,false);
     pwc('Ordinary product readiness names missing price and details without inventing artwork state',$state['missing']===['Price needed','Details needed']&&$state['image_label']===null&&$state['offer_label']===null);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];}

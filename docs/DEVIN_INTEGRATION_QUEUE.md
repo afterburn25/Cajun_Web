@@ -5,11 +5,13 @@
 | Candidate | Current disposition | Next action |
 | --- | --- | --- |
 | Main `c5d17f7`, 1.26.1 | ALREADY INTEGRATED and resulting-main verified; 219 reports, 32,814 executions and 757 final files independently checked | Preserve exact evidence; do not redispatch or relabel it as a release |
-| Issue #365 catalog/licensing home | Implemented locally from exact main; bounded catalog readiness, honest missing-provider-artwork state, responsive owner entry points and relevant local contracts pass | Refresh inventory/composition, complete docs/source gates and independent review, then obtain exact-head hosted acceptance before normal merge |
+| Issue #365 catalog/licensing home | PR #367 first head is nonqualifying after three applicable review findings; local successor corrects non-positive-price, optional-feature and `staff.manage` shortcut behavior with 60/76/69 focused checks passing | Refresh inventory/composition and source gates, publish the successor, then require fresh review and exact-head hosted acceptance before normal merge |
 | Remaining issue #365 work | Not implemented by this slice: storefront registration continuity, managed software onboarding, full license flow, client-portal parity and unified DB updates | Continue in the issue's recorded dependency order after the first slice is accepted |
 | Release publication | NOT AUTHORIZED; v1.25.0 remains latest | Preserve explicit publication/deployment boundary |
 
 The candidate performs no provider fetch for artwork and no order, publication, license issuance, payment, provisioning, message or production action. The installed licensing browser's local `Disposable loopback SQL only` refusal is retained; its existing hosted disposable MySQL/MariaDB gate remains required.
+
+Preserve PR #367 head `9c453bd5` and its naturally triggered workflows as useful nonqualifying history. Its three public review findings are applicable and are corrected only in the pending successor; do not resolve or count them against the old head as accepted evidence.
 
 ## 2026-11-04 17:16 UTC — Codex-owned master queue checkpoint
 

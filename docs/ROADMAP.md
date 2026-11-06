@@ -4,6 +4,8 @@ No feature credit or completion percentage changes. Verified main is `c5d17f782a
 
 The slice must still clear canonical source/composition, independent review, hosted exact-head acceptance, normal integration and resulting-main verification. Continue issue #365 in its recorded dependency order after that gate; release and live-operation columns remain unchanged.
 
+PR #367's first review head is retained but cannot earn integration credit: review found zero-price and optional-feature readiness mistakes plus a shortcut shown without its destination's `staff.manage` permission. The pending correction adds focused regressions and changes no roadmap scope, completion credit or live-operation boundary.
+
 ## 2026-11-04 17:16 UTC — release-blocker qualification before roadmap continuation
 
 No feature credit or completion percentage changes. Before publishing 1.26.1, the current candidate must clear independent review and full installed acceptance for strict subscription webhook identity and the existing payment-link privacy behavior. The four exact-main supported-runtime runs remain active; do not duplicate them. After an accepted successor reaches and verifies main, continue issue #157 in dependency order through bounded verification/packaging repairs and then customer, administration, mail and provider integrations. Release and live-operation columns remain unchanged.

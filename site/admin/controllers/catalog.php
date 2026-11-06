@@ -90,7 +90,9 @@ function catalog_admin_render(string $view,array $user,string $error): never {
     <section class="workspace-card catalog-primary-actions" aria-labelledby="catalog-primary-actions"><h2 id="catalog-primary-actions">Start a product task</h2><div class="workspace-grid">
     <a class="catalog-primary-action" href="<?=esc(admin_url('catalog',['import_source'=>'package.types']))?>#hosting-import"><strong>Import 20i products</strong><span>Create local drafts from the saved 20i catalog. Prices, terms and publication still need review.</span></a>
     <a class="catalog-primary-action" href="<?=esc(admin_url('catalog',['new_family'=>'software']))?>#product-editor"><strong>Add software</strong><span>Create the software product here, then continue to its private files and licensing settings.</span></a>
+    <?php if(staff_can('staff.manage',$user)): ?>
     <a class="catalog-primary-action" href="<?=esc(admin_url('studio-licenses'))?>#license-create"><strong>Issue customer license</strong><span>Choose registered software and a customer without repeating product setup.</span></a>
+    <?php endif; ?>
     </div><p class="button-row"><a class="btn outline" href="<?=esc(admin_url('hosting-offers'))?>">Hosting offers &amp; publication</a><a class="btn outline" href="<?=esc(page_url('packages'))?>">View published services</a></p></section><?php
     $browseError='';
     try{$productBrowse=catalog_admin_browse($_GET);}catch(InvalidArgumentException $e){$productBrowse=catalog_admin_browse([]);$browseError=$e->getMessage();}

@@ -35,8 +35,9 @@ function catalog_admin_new_family(array $query):string {
 /** Pure presentation state from already validated product/import/publication rows. */
 function catalog_admin_product_readiness(array $product,?array $import,?array $offer,bool $mediaAvailable):array {
     $missing=[];
-    if(($product['amount_cents']??null)===null)$missing[]='Price needed';
-    if(trim((string)($product['summary']??''))===''||trim((string)($product['features']??''))===''||trim((string)($product['terms']??''))==='')$missing[]='Details needed';
+    $amount=$product['amount_cents']??null;
+    if($amount===null||(int)$amount<=0)$missing[]='Price needed';
+    if(trim((string)($product['summary']??''))===''||trim((string)($product['terms']??''))==='')$missing[]='Details needed';
     $imageId=$import['media_id']??null;$imageLabel=null;
     if($import!==null){
         if($imageId===null)$imageLabel='No provider image available';

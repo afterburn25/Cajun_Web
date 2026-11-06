@@ -14,7 +14,7 @@ function asset(string $file):string{if($file==='logo.png')return '/site/images/b
 function icon(string $name):string{return '<span aria-hidden="true">◇</span>';}
 function show_flash():void{echo '<p class="notice">DEVELOPMENT PREVIEW · Synthetic data · No provider connection or saved changes</p>';}
 function csrf_field():string{return '<input type="hidden" name="csrf" value="synthetic-only">';}
-function staff_can(string $permission,?array $user=null):bool{return true;}
+function staff_can(string $permission,?array $user=null):bool{return !($permission==='staff.manage'&&fixture_state()==='catalog-limited');}
 function staff_view_permission(string $key):?string{return null;}
 function mail_accounts_access(array $u):bool{return false;}
 function mail_notices_access(array $u):bool{return false;}

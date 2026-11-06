@@ -4,6 +4,7 @@
 - Put the existing import, software setup and customer-license tasks at the top of the catalog home; only the explicit software shortcut may preselect a new software draft.
 - Add a bounded read-only product readiness projection for price, details, owner-managed artwork and current hosting-offer review state, with validation failures shown as unavailable rather than ready.
 - State the exact 20i artwork boundary: the documented contract has no supported provider-artwork source, so imported drafts link to managed local upload and reimport preserves that media.
+- Correct the first review head before integration: zero prices remain publication work, optional feature bullets do not create a false details warning, and the customer-license shortcut is shown only to staff with `staff.manage`.
 - Improve desktop and mobile product presentation without changing publication, licensing, payment, provisioning, provider-operation or customer-message authority. This is a development candidate pending review, hosted acceptance, integration and resulting-main verification.
 
 ## 2026-11-06 — exact-source RC test packaging
