@@ -37,7 +37,10 @@ def run(root=ROOT):
         subprocess.run(['git', 'checkout', '--quiet', '--detach', proof.git(root, 'rev-parse', 'HEAD').decode().strip()], cwd=fixture, check=True)
         # The test also runs before the new comparison adapters are committed.
         # Copy only their finite reviewed bytes into the disposable checkout.
-        for path in proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS | proof.DIAGNOSTIC_ADDITIONS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY, 'tools/acceptance-contract.json'}:
+        for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
+                     | proof.DIAGNOSTIC_ADDITIONS | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
+                     | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
+                        proof.ONBOARDING_SOURCE, 'tools/acceptance-contract.json'}):
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))

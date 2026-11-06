@@ -62,7 +62,7 @@ for(const form of document.querySelectorAll('form[data-software-package-upload]'
   event.preventDefault();const request=new XMLHttpRequest();request.open('POST',form.action||window.location.href);request.responseType='text';
   if(progress){progress.hidden=false;progress.value=0;}if(status)status.textContent='Uploading package…';
   request.upload.addEventListener('progress',e=>{if(e.lengthComputable&&progress){progress.value=Math.round(e.loaded/e.total*100);if(status)status.textContent='Uploading package… '+progress.value+'%';}});
-  request.addEventListener('load',()=>{if(status)status.textContent='Upload complete. Loading review…';document.open();document.write(request.responseText);document.close();});
+  request.addEventListener('load',()=>{if(status)status.textContent='Upload complete. Loading review…';const target=new URL(request.responseURL||window.location.href,window.location.href);if(target.origin===window.location.origin)history.replaceState(null,'',target.href);document.open();document.write(request.responseText);document.close();});
   request.addEventListener('error',()=>{if(status)status.textContent='The upload was interrupted. Choose the ZIP again to retry.';if(progress)progress.hidden=true;});
   request.send(new FormData(form));
  });

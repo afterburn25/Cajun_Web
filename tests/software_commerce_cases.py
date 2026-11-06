@@ -928,6 +928,11 @@ def run_browser(env, browser):
     expect(p.get_by_text('Stored securely.',exact=False)).to_be_visible(timeout=40000)
     expect(p.locator('input[name=title]')).to_have_value('Installed Browser Capture')
     expect(p.locator('input[name=version]')).to_have_value('4.0.0')
+    review_url=p.url
+    p.reload();expect(p.get_by_text('Stored securely.',exact=False)).to_be_visible(timeout=40000)
+    check('XHR onboarding keeps its durable review URL across refresh',
+          'software_upload=' in review_url and p.url==review_url
+          and p.locator('input[name=title]').input_value()=='Installed Browser Capture')
     p.screenshot(path=str(qa/'Software-Onboarding-Review-Desktop.png'),full_page=True)
     check('Software onboarding review desktop fits viewport',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     p.set_viewport_size({'width':390,'height':844})

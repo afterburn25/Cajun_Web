@@ -73,9 +73,10 @@ function software_onboarding_copy_upload(string $source,string $target):void{
     fclose($in);fclose($out);
 }
 /** Core staging entry used by the HTTP action and native tests. */
-function software_onboarding_stage(string $source,string $originalName,bool $requireHttpUpload=true):array{
+function software_onboarding_stage(string $source,string $originalName,bool $requireHttpUpload=true,int $targetProductId=0):array{
     $actor=software_onboarding_require();
     software_onboarding_cleanup_expired();
+    if($targetProductId<0||$targetProductId>9999999)throw new InvalidArgumentException('Choose an existing software product.');
     if($requireHttpUpload&&!is_uploaded_file($source))throw new InvalidArgumentException('Choose a ZIP from this device and upload it again.');
     $originalName=basename(str_replace('\\','/',$originalName));
     if($originalName===''||strlen($originalName)>255||strtolower(pathinfo($originalName,PATHINFO_EXTENSION))!=='zip')
@@ -85,10 +86,14 @@ function software_onboarding_stage(string $source,string $originalName,bool $req
     $key=bin2hex(random_bytes(32));$target=$directory.DIRECTORY_SEPARATOR.$key.'.zip';
     software_onboarding_copy_upload($source,$target);
     try{
-        $inspection=software_asset_inspect($target);$metadata=software_onboarding_metadata($target,$inspection);
+        $inspection=software_asset_inspect($target);$metadata=software_onboarding_metadata($target,$inspection);$metadata['target_product_id']=$targetProductId;
         $now=gmdate('Y-m-d H:i:s');
-        staff_locked(fn()=>staff_transaction(function()use($key,$actor,$originalName,$inspection,$metadata,$now):void{
+        staff_locked(fn()=>staff_transaction(function()use($key,$actor,$originalName,$inspection,$metadata,$now,$targetProductId):void{
             software_onboarding_require();
+            if($targetProductId>0){
+                $target=one('SELECT id FROM '.table('catalog_products')." WHERE id=? AND family='software' FOR UPDATE",[$targetProductId]);
+                if(!$target)throw new InvalidArgumentException('Choose an existing software product.');
+            }
             query('INSERT INTO '.table('software_upload_requests').' (request_key,actor_id,state,original_name,stored_path,sha256,byte_size,metadata,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
                 [$key,(int)$actor['id'],'review',$originalName,$inspection['reference'],$inspection['sha256'],$inspection['byte_size'],json_encode($metadata,JSON_THROW_ON_ERROR),$now,$now]);
             license_audit((int)$actor['id'],'software.onboarding.upload','Validated private ZIP request '.$key.' ('.$inspection['byte_size'].' bytes)');
@@ -96,7 +101,7 @@ function software_onboarding_stage(string $source,string $originalName,bool $req
     }catch(Throwable $e){@unlink($target);throw $e;}
     return software_onboarding_request($key);
 }
-function software_onboarding_upload_file(string $field='package'):array{
+function software_onboarding_upload_file(string $field='package',int $targetProductId=0):array{
     $file=$_FILES[$field]??null;
     if(!is_array($file)||is_array($file['error']??null)||!is_int($file['error']??null))throw new InvalidArgumentException('Choose one ZIP package.');
     $error=$file['error'];
@@ -107,7 +112,7 @@ function software_onboarding_upload_file(string $field='package'):array{
         UPLOAD_ERR_NO_TMP_DIR,UPLOAD_ERR_CANT_WRITE=>'The server cannot stage uploads right now.',
         UPLOAD_ERR_EXTENSION=>'The server refused this upload.',default=>'The ZIP upload did not complete.'});
     if(!is_string($file['tmp_name']??null)||!is_string($file['name']??null))throw new InvalidArgumentException('Choose one ZIP package.');
-    return software_onboarding_stage($file['tmp_name'],$file['name'],true);
+    return software_onboarding_stage($file['tmp_name'],$file['name'],true,$targetProductId);
 }
 function software_onboarding_request(string $key,bool $lock=false):array{
     $actor=software_onboarding_require();$key=software_onboarding_request_key($key);
@@ -139,6 +144,8 @@ function software_onboarding_finish(string $requestKey,array $input):array{
         $actor=software_onboarding_require();$request=software_onboarding_request($requestKey,true);
         if($request['state']==='complete')return ['product_id'=>(int)$request['product_id'],'asset_id'=>(int)$request['asset_id'],'reused'=>true];
         if($request['state']!=='review')throw new RuntimeException('This software upload is not ready to save.');
+        $boundProductId=(int)($request['metadata']['target_product_id']??0);
+        if($boundProductId>0&&$productId!==$boundProductId)throw new InvalidArgumentException('This upload is bound to its selected software product. Start a new upload to choose another product.');
         $resolved=software_asset_resolve_path((string)$request['stored_path']);
         if($resolved===null)throw new RuntimeException('The staged ZIP is missing. Upload it again; no product was changed.');
         $inspection=software_asset_inspect($resolved);
@@ -186,10 +193,12 @@ function software_onboarding_finish(string $requestKey,array $input):array{
 }
 
 /** Delete only expired, unfinished staging bytes while retaining their audit rows. */
-function software_onboarding_cleanup_expired():int{
+function software_onboarding_cleanup_expired(bool $requireOwner=true):int{
     if(!software_onboarding_ready())return 0;
-    return staff_locked(function():int{
-        software_onboarding_require();$cutoff=gmdate('Y-m-d H:i:s',time()-172800);$removed=0;
+    if(!$requireOwner&&PHP_SAPI!=='cli')throw new RuntimeException('Scheduled software cleanup is available only to the local CLI job runner.');
+    return staff_locked(function()use($requireOwner):int{
+        if($requireOwner)software_onboarding_require();
+        $cutoff=gmdate('Y-m-d H:i:s',time()-172800);$removed=0;
         foreach(all("SELECT id,stored_path FROM ".table('software_upload_requests')." WHERE state='review' AND updated_at<? ORDER BY id LIMIT 50",[$cutoff]) as $row){
             $file=software_asset_resolve_path((string)$row['stored_path']);$deleted=$file===null||@unlink($file);
             if($file!==null&&$deleted)$removed++;

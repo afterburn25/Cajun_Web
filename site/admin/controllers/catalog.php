@@ -17,7 +17,7 @@ function catalog_admin_action(string $action,array $user): never {
         software_onboarding_prepare();flash('Guided software uploads enabled. Existing products and packages were preserved.');redirect(admin_url('catalog').'#software-onboarding');
     }
     if($action==='catalog_software_upload'){
-        $request=software_onboarding_upload_file();redirect(admin_url('catalog',['software_upload'=>$request['request_key']]).'#software-onboarding');
+        $request=software_onboarding_upload_file('package',gint($_POST,'software_product',0,9999999,0));redirect(admin_url('catalog',['software_upload'=>$request['request_key']]).'#software-onboarding');
     }
     if($action==='catalog_software_save'){
         $result=software_onboarding_finish(posted('request_key',64),$_POST);flash($result['reused']?'The identical private package was already saved; its existing product and asset were retained.':'Draft software product and private package saved.');redirect(admin_url('catalog',['id'=>$result['product_id'],'onboarding_done'=>$result['product_id']]).'#software-onboarding');

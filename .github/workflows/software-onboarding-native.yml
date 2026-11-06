@@ -9,6 +9,7 @@ on:
       - 'site/app/licenses/software_assets.php'
       - 'site/app/licenses/software_products.php'
       - 'site/app/licenses/software_onboarding.php'
+      - 'site/app/jobs/run.php'
       - 'site/database/schema/software_onboarding_schema.php'
       - 'site/database/migrations/software_onboarding_migrate.php'
       - '.github/workflows/software-onboarding-native.yml'
@@ -60,6 +61,7 @@ jobs:
           git rev-parse 'HEAD^{tree}' > qa/software-onboarding-tree.txt
           sha256sum tests/software_onboarding_native.php site/app/licenses/software_onboarding.php > qa/software-onboarding-source.sha256
           php8.3 tests/software_onboarding_native.php 2>&1 | tee qa/software-onboarding-native.log
+          exit "${PIPESTATUS[0]}"
       - name: Preserve exact-source evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

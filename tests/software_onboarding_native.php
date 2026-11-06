@@ -38,6 +38,8 @@ try{
     staff_seed_owner(1);$_SESSION=['uid'=>1,'auth_version'=>str_repeat('d',32),'login_at'=>time(),'last_activity'=>time()];
     require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
     require_once CWP_CODE_ROOT.'/app/licenses/software_onboarding.php';
+    $jobSource=file_get_contents(CWP_CODE_ROOT.'/app/jobs/run.php');
+    soon_ok(is_string($jobSource)&&str_contains($jobSource,'software_onboarding_cleanup_expired(false)'),'Shared-host CLI runner invokes bounded software staging expiry without browser authority');
     software_commerce_prepare($password);
     soon_ok(!software_onboarding_ready(),'Guided uploads require explicit owner preparation');
     software_onboarding_prepare();soon_ok(software_onboarding_ready(),'Owner preparation creates durable upload staging');
@@ -95,6 +97,13 @@ try{
     $nextRequest=software_onboarding_stage($next,'next.zip',false);$nextSaved=software_onboarding_finish($nextRequest['request_key'],['product_id'=>(string)$saved['product_id'],'title'=>'Native Onboard','version'=>'1.2.4']);
     soon_ok(!$nextSaved['reused']&&(int)query('SELECT COUNT(*) FROM '.table('software_assets')." WHERE sku='SOFTWARE-NATIVE-ONBOARD'")->fetchColumn()===2,'Existing product accepts a distinct reviewed version without changing its SKU');
 
+    $bound=$temporary.DIRECTORY_SEPARATOR.'bound.zip';soon_zip($bound,['title'=>'Changed Display Name','version'=>'1.2.5'],'bound');
+    $boundRequest=software_onboarding_stage($bound,'bound.zip',false,(int)$saved['product_id']);
+    soon_ok((int)$boundRequest['metadata']['target_product_id']===(int)$saved['product_id'],'Add-version staging durably binds the selected software product');
+    soon_deny(fn()=>software_onboarding_finish($boundRequest['request_key'],['product_id'=>'0','title'=>'Changed Display Name','version'=>'1.2.5']),'Bound version upload cannot switch to a new product during review');
+    $boundSaved=software_onboarding_finish($boundRequest['request_key'],['product_id'=>(string)$saved['product_id'],'title'=>'Changed Display Name','version'=>'1.2.5']);
+    soon_ok($boundSaved['product_id']===$saved['product_id']&&(int)query('SELECT COUNT(*) FROM '.table('catalog_products')." WHERE title='Changed Display Name'")->fetchColumn()===0,'Metadata-free version remains attached to its selected product');
+
     $missing=$temporary.DIRECTORY_SEPARATOR.'missing.zip';soon_zip($missing,['title'=>'Missing Stage','version'=>'1.0.0']);$missingRequest=software_onboarding_stage($missing,'missing.zip',false);
     $missingFile=software_asset_resolve_path((string)$missingRequest['stored_path']);if($missingFile===null)throw new RuntimeException('Missing-file fixture did not stage.');unlink($missingFile);
     $productsBefore=(int)query('SELECT COUNT(*) FROM '.table('catalog_products'))->fetchColumn();$assetsBefore=(int)query('SELECT COUNT(*) FROM '.table('software_assets'))->fetchColumn();
@@ -112,6 +121,12 @@ try{
     soon_ok(software_onboarding_cleanup_expired()===1,'Expired unfinished private staging is removed under current owner authority');
     $expiredRow=one('SELECT state,last_error FROM '.table('software_upload_requests').' WHERE id=?',[(int)$expiredRequest['id']]);
     soon_ok($expiredRow['state']==='expired'&&$expiredRow['last_error']!==''&&software_asset_resolve_path((string)$expiredRequest['stored_path'])===null,'Expired cleanup retains useful history without orphaned bytes');
+
+    $scheduled=$temporary.DIRECTORY_SEPARATOR.'scheduled.zip';soon_zip($scheduled,['title'=>'Scheduled Expiry','version'=>'1.0.0']);$scheduledRequest=software_onboarding_stage($scheduled,'scheduled.zip',false);
+    query('UPDATE '.table('software_upload_requests').' SET updated_at=? WHERE id=?',[gmdate('Y-m-d H:i:s',time()-172801),(int)$scheduledRequest['id']]);
+    $_SESSION=[];soon_ok(software_onboarding_cleanup_expired(false)===1,'Scheduled maintenance expires abandoned staging without an interactive session');
+    $_SESSION=['uid'=>1,'auth_version'=>str_repeat('d',32),'login_at'=>time(),'last_activity'=>time()];
+    soon_ok(one('SELECT state FROM '.table('software_upload_requests').' WHERE id=?',[(int)$scheduledRequest['id']])['state']==='expired','Scheduled cleanup retains the expired request history and removes only its staging bytes');
 
     soon_deny(fn()=>cwp_test_owner_revoked(fn()=>software_onboarding_finish($rollbackRequest['request_key'],['product_id'=>'0','title'=>'Denied','version'=>'1.0.1'])),'Revoked owner authority is rechecked at the mutation boundary');
     echo 'Software onboarding native: '.$count.' checks passed'.PHP_EOL;

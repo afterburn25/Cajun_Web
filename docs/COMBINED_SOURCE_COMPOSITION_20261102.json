@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "36f538fd0c2834955d22543e0ec94b8592d9fd1dffd296013f0932a5bb06b923",
-  "regression_sha256": "b04cd57dbcf44981b773bf572907704df1242e294e498d9e051a1cae04c1637d",
+  "verifier_sha256": "d6603ee2752f24abb4b4476255c75f1a52625f6b06a5aa1a56b528cf3409a6bd",
+  "regression_sha256": "9c3ea590ea350b0202f4cf154f7a90e046ed559be0c3ce0eb3cd773857a23fe5",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",
@@ -1359,7 +1359,7 @@
     },
     "site/admin/controllers/catalog.php": {
       "original_sha256": "b14e00fdae172fc823764eb642fc852fdec08b6fc17f7076808bcfc9a0ad5ce3",
-      "current_sha256": "ed9aba12ab012011a34b59c6cd0ea2b1c356df0d51b01ffa67ef24484672761d",
+      "current_sha256": "586e03f6637fb952be7f095e28366e080ff83dec950681d888a1d2c82abd2ee2",
       "edits": [
         [
           "            flash('Observed hosting type saved as a local draft, or its existing draft retained. Review its price, terms and image. No product was published or ordered.');redirect(admin_url('catalog',['id'=>$id]));\n        }\n        if($action==='catalog_import_image'){\n            $id=gint($_POST,'id',1,9999999);provider_catalog_import_image($id,gint($_POST,'revision',1,9999999),gint($_POST,'image_revision',0,9999999),posted('remove_image',1)==='1',posted('owner_password',1000));flash('Draft product image saved. Publication has not changed.');redirect(admin_url('catalog',['id'=>$id]));\n        }\n        throw new InvalidArgumentException('Unknown catalog import action.');\n    }\n",
@@ -1379,7 +1379,7 @@
         ],
         [
           "function catalog_admin_action(string $action,array $user): never {\n    check_csrf();\n    if(str_starts_with($action,'catalog_import_')){",
-          "function catalog_admin_action(string $action,array $user): never {\n    check_csrf();\n    if($action==='catalog_software_prepare'){\n        if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current database and private-file backup.');\n        software_onboarding_prepare();flash('Guided software uploads enabled. Existing products and packages were preserved.');redirect(admin_url('catalog').'#software-onboarding');\n    }\n    if($action==='catalog_software_upload'){\n        $request=software_onboarding_upload_file();redirect(admin_url('catalog',['software_upload'=>$request['request_key']]).'#software-onboarding');\n    }\n    if($action==='catalog_software_save'){\n        $result=software_onboarding_finish(posted('request_key',64),$_POST);flash($result['reused']?'The identical private package was already saved; its existing product and asset were retained.':'Draft software product and private package saved.');redirect(admin_url('catalog',['id'=>$result['product_id'],'onboarding_done'=>$result['product_id']]).'#software-onboarding');\n    }\n    if(str_starts_with($action,'catalog_import_')){"
+          "function catalog_admin_action(string $action,array $user): never {\n    check_csrf();\n    if($action==='catalog_software_prepare'){\n        if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current database and private-file backup.');\n        software_onboarding_prepare();flash('Guided software uploads enabled. Existing products and packages were preserved.');redirect(admin_url('catalog').'#software-onboarding');\n    }\n    if($action==='catalog_software_upload'){\n        $request=software_onboarding_upload_file('package',gint($_POST,'software_product',0,9999999,0));redirect(admin_url('catalog',['software_upload'=>$request['request_key']]).'#software-onboarding');\n    }\n    if($action==='catalog_software_save'){\n        $result=software_onboarding_finish(posted('request_key',64),$_POST);flash($result['reused']?'The identical private package was already saved; its existing product and asset were retained.':'Draft software product and private package saved.');redirect(admin_url('catalog',['id'=>$result['product_id'],'onboarding_done'=>$result['product_id']]).'#software-onboarding');\n    }\n    if(str_starts_with($action,'catalog_import_')){"
         ],
         [
           "    <a class=\"catalog-primary-action\" href=\"<?=esc(admin_url('catalog',['new_family'=>'software']))?>#product-editor\"><strong>Add software</strong><span>Create the software product here, then continue to its private files and licensing settings.</span></a>",

@@ -16,22 +16,26 @@
       "before_sha256": "38f39e2610f750fb09fc9ba868cf770894d561c74a43ff470801ac0a02b1ad7d",
       "current_sha256": "32402bc6cf2e38b767dda002328b42448faff69d591170637582ba75cd7aedf0"
     },
+    "site/app/jobs/run.php": {
+      "before_sha256": "7605cabae3933f59ae1a4da298c617573fa315ad81797f876a8fdf34cfdf5b52",
+      "current_sha256": "134b8624efede0f74ef4d30385639d941d8cc3743774e201505cb86b5cf68328"
+    },
     "site/assets/js/admin.js": {
       "before_sha256": "c3ad330eeacd0f9ab62beea618b111b1c4943e74216e861f1467c937262942ee",
-      "current_sha256": "a053bf83f5e170703bbb219248d66350c59c018f244e0f1522363640c4745e5f"
+      "current_sha256": "fdda8c154f665dac7370a3cce0318e7bc63ef4659003377c4077f0dbbacf6391"
     },
     "tests/software_commerce_cases.py": {
       "before_sha256": "d77a4d6e31c44408584ee72b225258a35f4551cf5b6319f89e2fdd361c3652ce",
-      "current_sha256": "1c76bdd2ccda52e2985345b32813b4a51e7a4c73e34d27a7af14f0025e6f0173"
+      "current_sha256": "847970229130c3b5674fc22e6e4feee73a0a9b9f509c4af8f90fe35aa1406481"
     }
   },
   "added": {
-    ".github/workflows/software-onboarding-native.yml": "cb710c64d2e1aa2815b291f81e84ef4d3610033d182da843dee7d52836f52f76",
-    "docs/SOFTWARE_ONBOARDING.md": "e9d1f91fdc60562dba0bc7ce96eafeb71bc83f7a8055da7e8c08008d8aa7afc8",
-    "site/admin/views/software_onboarding.php": "fceb1bd97cc661c4da6acbfe9bbd067e4ad8ec89b9eb07af4ecd4fc6b50ccc1b",
-    "site/app/licenses/software_onboarding.php": "9c0184739ad21114b2e5e4376f22702f95306544a21bdd0687320b8e034ddc66",
+    ".github/workflows/software-onboarding-native.yml": "d60a5f7e2e4ba166bd0477bfcc9e1edab3729e690ff8bae8de34fa4ac49502f0",
+    "docs/SOFTWARE_ONBOARDING.md": "00c3e451edc5fd3d1af8529fe4158fcacef0beb385a4a6c2466e25d62acb47be",
+    "site/admin/views/software_onboarding.php": "2d703212664952f78fde428b3ecfb05c65ac0dd0ebca54b780aeb4668b38482f",
+    "site/app/licenses/software_onboarding.php": "7701ff7c85f2b9bf11902a2f24000c2a1c60e746888b1ebaf21026c604300b39",
     "site/database/migrations/software_onboarding_migrate.php": "469796eddef0d0c9211f69b9fa738350f7cf9139c6c92066b9fa2f7f77e5c0fd",
     "site/database/schema/software_onboarding_schema.php": "e103da30d3671c1588325318b71613da9ab0acb05f569a78aa0b92148fc5a70f",
-    "tests/software_onboarding_native.php": "e7dd75740ff9642230b0909909759afaf57c5be3a86f805b244a7654ce67e2a2"
+    "tests/software_onboarding_native.php": "bbebd3de00cc19fd7b0c9733ef0f5a816454eb5dedb392324121cda55b0b584e"
   }
 }
