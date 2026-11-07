@@ -112,8 +112,8 @@ DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
-DATABASE_WORKFLOW_SOURCE = '2960c681e75bcd1fa5da23bd43a26b12bc79da71'
-DATABASE_WORKFLOW_SOURCE_TREE = 'afabe8311dad11435981913d8c5d48b560ab4b6d'
+DATABASE_WORKFLOW_SOURCE = '5e410b745f5ab4a2cc16034296a2a76e82b6177d'
+DATABASE_WORKFLOW_SOURCE_TREE = '3180895642ce93fafe79336bd1bead53a2b16b80'
 DATABASE_WORKFLOW_ADDITIONS = frozenset((
     'site/app/settings/database_schemas.php',
     'tests/database_schema_action_policy.php',
@@ -129,6 +129,7 @@ DATABASE_WORKFLOW_REPAIRS = frozenset((
     'site/admin/views/studio/upgrade.php',
     'site/app/staff/accounts.php',
     'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
     'tests/admin_20i_populated_upgrade.py',
     'tests/browser_acceptance.py',
     'tests/owner_update_session_policy.php',
@@ -334,6 +335,7 @@ REPAIR_SHA256['site/admin/controllers/studio.php'] = '77501d58a9c577587fd8052025
 REPAIR_SHA256['site/admin/views/studio/upgrade.php'] = '37fe5df5ca0bf48e0d2843f7dbaf07412c8b8a345daa53879573da370c352e49'
 REPAIR_SHA256['site/app/staff/accounts.php'] = '149eb237a32b304b19edc5fbd3c556978834c6de22f00247ccd9609755df4ea6'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '10c42783e6be677e2a4d630adbf4583f53bf1065b256706c6fb3517d3a135fa5'
+REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = 'cf20fa44c765b00009a0efd1d53899fe05312a9a5bff3d0588b776c094826d83'
 REPAIR_SHA256['tests/admin_20i_populated_upgrade.py'] = '23980a8fb6da772c101a4a33e1db5e3d9e77768a8f75aeac377d6b509dd1f8a2'
 REPAIR_SHA256['tests/browser_acceptance.py'] = '76cc1bebf0cff397a46bb920db598d25669d6a205a22cc8467d23abfc01a86a1'
 REPAIR_SHA256['tests/owner_update_session_policy.php'] = 'b12346f03f23d130bd32f9c03fe862abb0fe75c8cdff5a7d26ded960290df6b5'
