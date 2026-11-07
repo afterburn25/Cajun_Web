@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "af35d8044c1d19f09adbaea5bc8c9c585f5c1d685cfd1106850b79ee34e79782",
+  "verifier_sha256": "ae8347c9811ab0a70d06a12a837543af65deb093a1dbfe86d1bb6bdd91dceaf3",
   "regression_sha256": "23dc26c0f2b1083cb135c5989091d4ea37c6119ff8a263a9eed5798d10306e0c",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1209,7 +1209,7 @@
     },
     "tools/acceptance-contract.json": {
       "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
-      "current_sha256": "5371b1f19cae46f035b0b5bc832c50d19b153c21c40cccf525607b514e55f556",
+      "current_sha256": "f7062918916f84a838e6018a6af5dbf14edf8220a4144475b2171c1d601db817",
       "edits": [
         [
           "      \"tests/release_cases.py\": \"807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af\",\n",
@@ -1238,6 +1238,14 @@
         [
           "    \"predecessor_count\": 160,\n    \"predecessor_sha256\": \"5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe\"\n  },\n  \"non20i_native_command_extension\": {\n    \"additions\": [\n      \"\\\"$PHP_BINARY\\\" tests/backups_native.php\"\n",
           "    \"predecessor_count\": 160,\n    \"predecessor_sha256\": \"5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe\"\n  },\n  \"database_schema_native_command_extension\": {\n    \"additions_after\": \"\\\"$PHP_BINARY\\\" tests/staff_native.php\",\n    \"additions\": [\n      \"\\\"$PHP_BINARY\\\" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json\",\n      \"\\\"$PHP_BINARY\\\" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json\",\n      \"\\\"$PHP_BINARY\\\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json\",\n      \"\\\"$PHP_BINARY\\\" tests/database_schema_native.php\",\n      \"CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \\\"$PHP_BINARY\\\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json\"\n    ],\n    \"predecessor_native_count\": 162,\n    \"predecessor_native_sha256\": \"7c0ca505b26ce7d7f579f8a5cd59ad83aa626016be19d77e1141747a5d158113\",\n    \"reports\": [\n      \"database-schema-registry-policy-results.json\",\n      \"database-schema-action-policy-results.json\",\n      \"database-schema-view-policy-results.json\",\n      \"database-schema-native-results.json\",\n      \"service-plans-checkout-native-results.json\"\n    ],\n    \"screenshots\": [\n      \"Database-Updates-Desktop.png\",\n      \"Database-Updates-Mobile.png\"\n    ],\n    \"source_sha256\": {\n      \"site/app/settings/database_schemas.php\": \"47e3256cb5f92eb9c629f865d94c3f6c4aba2a62bc28daab941a07b35e288188\",\n      \"tests/database_schema_registry_policy.php\": \"7db0a6724b60427f855f81919e6fe9389167cf7f692bfb549b3a8525b701d739\",\n      \"tests/database_schema_action_policy.php\": \"af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd\",\n      \"tests/database_schema_view_policy.php\": \"4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935\",\n      \"tests/database_schema_native.php\": \"11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768\",\n      \"tests/service_plans_checkout_native.php\": \"4582451eb68075d463db2969980b7e3e709ef9c08bdfe217599783c0074da392\",\n      \"tests/database_update_cases.py\": \"38ae4e88f86d8221070526af2d0c106c76620a166bddbad6772a4f340d498a14\",\n      \"tests/database_update_forms.py\": \"6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2\"\n    },\n    \"scope\": \"Pure registry/action/view policy, disposable owner-reviewed Contacts migration, existing isolated service checkout migration and packaged HTTP/Chromium review; no live payments, provisioning, messages, provider calls, customer data, production SSH or deployment.\"\n  },\n  \"non20i_native_command_extension\": {\n    \"additions\": [\n      \"\\\"$PHP_BINARY\\\" tests/backups_native.php\"\n"
+        ],
+        [
+          "      \"site/app/settings/database_schemas.php\": \"47e3256cb5f92eb9c629f865d94c3f6c4aba2a62bc28daab941a07b35e288188\",\n",
+          "      \"site/app/settings/database_schemas.php\": \"fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d\",\n"
+        ],
+        [
+          "      \"tests/database_schema_registry_policy.php\": \"7db0a6724b60427f855f81919e6fe9389167cf7f692bfb549b3a8525b701d739\",\n",
+          "      \"tests/database_schema_registry_policy.php\": \"9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd\",\n"
         ]
       ]
     },
@@ -2094,9 +2102,9 @@
       "sha256": "6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2"
     }
   },
-  "database_workflow_base": "281d07082723c352f4f381fec078287f2e0eea0b",
-  "database_workflow_base_tree": "8ba34277c69a3d105e9b0eb35e2473a9bce1035d",
-  "database_workflow_source": "027533943e49a76fcaa78964b9e318e65751c55c",
+  "database_workflow_base": "8d31de5e125ece6ad999dab4bb9e483dd8b70822",
+  "database_workflow_base_tree": "a73a70b6bbe05fdc1e773cf078e1a642fb9a6816",
+  "database_workflow_source": "2960c681e75bcd1fa5da23bd43a26b12bc79da71",
   "database_workflow_source_paths": [
     ".github/workflows/application-tests.yml",
     "site/admin/controllers/studio.php",
@@ -2123,5 +2131,5 @@
     "tools/acceptance-reports.json",
     "tools/update/owner-update.php"
   ],
-  "database_workflow_source_tree": "61d2e57dcca410a531c153fc0a31c4317761e302"
+  "database_workflow_source_tree": "afabe8311dad11435981913d8c5d48b560ab4b6d"
 }
