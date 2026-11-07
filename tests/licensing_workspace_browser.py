@@ -63,29 +63,68 @@ try:
   page.get_by_role('link',name='Prepare service catalog',exact=True).click();submit(page,'catalog_migrate',{'confirm':True})
   submit(page,'catalog_save',{'sku':sku,'title':'Synthetic software product','family':'software','status':'published','term':'once','amount':'29.99','summary':'Synthetic licensing acceptance product','features':'One fixture feature','terms':'Synthetic test terms'})
   page.goto(licenses);submit(page,'software_commerce_setup')
-  check('Actual owner preparation enables software license types without repeat password',form(page,'studio_license_create').filter(has=page.locator('[name="license_type"]')).count()==1 and page.locator('input[type="password"]').count()==0)
+  issue=form(page,'software_license_review')
+  check('Actual owner preparation enables guided customer licensing without repeat password',issue.count()==1 and issue.locator('input[type="password"]').count()==0 and form(page,'software_license_issue').count()==0)
   check('Software readiness is visible after actual setup',page.locator('[data-license-readiness="software"]').inner_text()=='Prepared')
-  issue=form(page,'studio_license_create').filter(has=page.locator('[name="license_type"]'))
   fields=issue.evaluate('(f)=>Object.fromEntries(new FormData(f))');before=state()
-  owner.request.post(licenses,form={**fields,'csrf':'invalid','customer_id':'1','product_id':sku,'license_type':'standard','licensee_name':'CSRF attempt','domain':'denied.example.invalid'})
-  check('Invalid license-issuance CSRF preserves stored licenses',state()==before)
+  owner.request.post(licenses,form={**fields,'csrf':'invalid','customer_id':'1','product_id':sku,'license_type':'standard','domain':'denied.example.invalid'})
+  check('Invalid license-review CSRF preserves stored licenses',state()==before)
   for target in [licenses+'&support=invalid',admin+'?view=dashboard&support=invalid']:
    page.goto(licenses)
-   issue=form(page,'studio_license_create').filter(has=page.locator('[name="license_type"]'))
+   issue=form(page,'software_license_review')
    valid=issue.evaluate('(f)=>Object.fromEntries(new FormData(f))');before=state()
-   refused=owner.request.post(target,form={**valid,'customer_id':'1','product_id':sku,'license_type':'standard','licensee_name':'Support boundary refusal','domain':'blocked.example.invalid'})
+   refused=owner.request.post(target,form={**valid,'customer_id':'1','product_id':sku,'license_type':'standard','domain':'blocked.example.invalid'})
    check('Support-scoped license POST is refused before mutation through '+urlsplit(target).query,
          refused.status in (200,403) and state()==before and ('Leave client support' in refused.text()))
-  for kind in ['standard','trial','temporary','master']:
-   page.goto(licenses);issue=form(page,'studio_license_create').filter(has=page.locator('[name="license_type"]'))
-   values={'customer_id':'1','product_id':sku,'license_type':kind,'licensee_name':'Licensing Client','domain':kind+'.example.invalid' if kind!='master' else '', 'master_purpose':'Internal synthetic acceptance only' if kind=='master' else ''}
+  page.goto(licenses);before=state()
+  submit(page,'software_license_review',{'customer_id':'1','product_id':sku,'license_type':'standard','domain':'unreleased.example.invalid'})
+  check('Review names the missing approved release and exact next action without issuing',
+        state()==before and 'No customer-visible release yet' in page.content()
+        and 'License issuance is unavailable' in page.content()
+        and page.get_by_role('link',name='Add another version',exact=True).count()==1
+        and form(page,'software_license_issue').count()==0)
+  submit(page,'software_license_review_clear')
+  submit(page,'software_asset_publish',{'sku':sku,'version':'1.0.0','title':'Synthetic release download','private_path':'/workspace/test-runtime/licensing-private/release.zip','customer_visible':True})
+  asset=state()['assets'][0];check('Real publication records verified immutable ZIP checksum',asset['sha256']==archive_sha and asset['is_published']==1)
+  page.goto(licenses);submit(page,'software_license_review',{'customer_id':'1','product_id':sku,'license_type':'standard','domain':'forged-token.example.invalid'})
+  reviewed=form(page,'software_license_issue').evaluate('(f)=>Object.fromEntries(new FormData(f))')
+  refused=owner.request.post(licenses,form={**reviewed,'confirm':'1','review_token':'0'*64})
+  check('Forged review token cannot issue and invalidates the stale review',
+        state()['license_count']==0 and 'license review expired' in refused.text())
+  page.goto(licenses);check('Invalidated review is no longer confirmable',form(page,'software_license_issue').count()==0)
+  page.goto(licenses);submit(page,'software_license_review',{'customer_id':'1','product_id':sku,'license_type':'standard','domain':'stale-policy.example.invalid'})
+  stale_issue=form(page,'software_license_issue').evaluate('(f)=>Object.fromEntries(new FormData(f))')
+  policy_form=form(page,'software_product_policy').filter(has=page.locator('[name="product_id"]')).first
+  policy_values=policy_form.evaluate('(f)=>Object.fromEntries(new FormData(f))');policy_values.update({'max_installations':'3','current_password':password})
+  changed=owner.request.post(licenses,form=policy_values);check('Owner can revise current product policy while a review is open',changed.status==200)
+  stale=owner.request.post(licenses,form={**stale_issue,'confirm':'1'})
+  check('Changed policy invalidates the stale review before license mutation',
+        state()['license_count']==0 and 'policy or approved release changed' in stale.text())
+  for kind in ['standard','trial','temporary']:
+   page.goto(licenses);issue=form(page,'software_license_review')
+   values={'customer_id':'1','product_id':sku,'license_type':kind,'domain':kind+'.example.invalid'}
    if kind in ['trial','temporary']:values['expires_at']=(datetime.now(timezone.utc)+timedelta(days=7)).strftime('%Y-%m-%dT%H:%M')
-   submit(page,'studio_license_create',values,issue)
+   before=state();submit(page,'software_license_review',values,issue)
+   check('Guided '+kind+' review makes no license before confirmation',state()==before)
+   review=form(page,'software_license_issue')
+   check('Guided '+kind+' review shows exact customer product domain policy and approved release',
+         review.count()==1 and 'Licensing Client' in page.content() and sku in page.content()
+         and kind+'.example.invalid' in page.content() and 'v1.0.0' in page.content()
+         and '3 concurrent installations' in page.content())
+   submit(page,'software_license_issue',{'confirm':True},review)
+  page.goto(licenses);master_details=page.locator('details').filter(has=page.get_by_text('Internal master license (owner-only)',exact=True));master_details.locator('summary').click()
+  master=form(page,'studio_license_create').filter(has=page.locator('[name="license_type"][value="master"]'))
+  check('Internal master issuance is separate from the customer-license flow',master.count()==1 and issue.count()==1)
+  submit(page,'studio_license_create',{'customer_id':'1','product_id':sku,'licensee_name':'Internal QA','master_purpose':'Internal synthetic acceptance only'},master)
   rows={x['license_type']:x for x in state()['licenses']}
   check('All four license types are persisted by real admin forms',set(rows)=={'standard','trial','temporary','master'} and state()['license_count']==4)
   page.goto(licenses);check('License register displays all four masked software key identities',all(x['license_key'][:8] in page.content() and x['license_key'] not in page.content() for x in rows.values()))
-  submit(page,'software_asset_publish',{'sku':sku,'version':'1.0.0','title':'Synthetic release download','private_path':'/workspace/test-runtime/licensing-private/release.zip','customer_visible':True})
-  asset=state()['assets'][0];check('Real publication records verified immutable ZIP checksum',asset['sha256']==archive_sha and asset['is_published']==1)
+  register=page.locator('#license-register + .workspace-grid')
+  register_text=register.inner_text()
+  check('License register shows readable linked product, customer, domain, type, status and expiry',
+        register.get_by_role('link',name='Synthetic software product',exact=True).count()==4
+        and 'Licensing Client' in register_text and 'standard.example.invalid' in register_text
+        and 'Standard' in register_text and 'Active' in register_text and 'Never' in register_text)
   page.screenshot(path=str(OUT/'licensing-admin.png'),full_page=True)
   def validate(kind,domain,product=sku):
    r=owner.request.post(base+'/api/validate.php',data=json.dumps({'license_key':rows[kind]['license_key'],'domain':domain,'product_id':product}),headers={'Content-Type':'application/json'})

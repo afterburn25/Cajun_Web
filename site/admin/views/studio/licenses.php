@@ -28,8 +28,12 @@ $softwareEntitlementTable=(bool)one(
     [config()['db']['prefix'].'software_entitlements']
 );
 
-$licenses = $ready ? all('SELECT l.*, c.name as customer_name FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100') : [];
+$licenseSql=$catalogPrepared
+    ?'SELECT l.*,c.name AS customer_name,p.id AS product_catalog_id,p.title AS product_title FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id LEFT JOIN '.table('catalog_products').' p ON p.sku=l.product_id ORDER BY l.created_at DESC LIMIT 100'
+    :'SELECT l.*,c.name AS customer_name,NULL AS product_catalog_id,NULL AS product_title FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100';
+$licenses=$ready?all($licenseSql):[];
 $customers = $ready ? array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id') : [];
+$softwareCustomers=$ready?array_column(all('SELECT id,name FROM '.table('studio_clients').' WHERE active=1 ORDER BY name'),'name','id'):[];
 // First-class software-family products may use any valid SKU; retain legacy prefixed products.
 $products = [];
 $legacyProducts=['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
@@ -43,10 +47,13 @@ try {
 } catch (Throwable) {}
 if(!$softwareReady)$products = $legacyProducts;
 $softwarePolicyProducts=[];
+$softwareLicenseProducts=[];
 if($softwareReady){
     require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
-    try{$softwarePolicyProducts=all('SELECT id,sku,title,family FROM '.table('catalog_products')." WHERE family='software' OR sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title LIMIT 100");}
-    catch(Throwable){$softwarePolicyProducts=[];}
+    try{
+        $softwareLicenseProducts=all('SELECT id,sku,title,family FROM '.table('catalog_products')." WHERE family='software' OR sku LIKE 'WEBSITE-%' OR sku LIKE 'SOFTWARE-%' OR sku LIKE 'APP-%' ORDER BY title,id");
+        $softwarePolicyProducts=array_slice($softwareLicenseProducts,0,100);
+    }catch(Throwable){$softwarePolicyProducts=[];$softwareLicenseProducts=[];}
 }
 $financeCandidates=$financeOffersReady?license_finance_offer_candidates():[];
 $financeOffers=$financeOffersReady?license_finance_offer_list_admin():[];
@@ -63,7 +70,22 @@ try{
     if(mail_accounts_ready()&&mail_drafts_ready())foreach(array_slice(mail_accounts_assigned(1),0,20) as $a)if($a['can_send'])$financeMailAccounts[]=mail_drafts_account($a['id']);
 }catch(Throwable){}
 
-if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
+$licenseReview=is_array($_SESSION['software_license_review']??null)?$_SESSION['software_license_review']:null;
+$licenseReviewSnapshot=is_array($licenseReview['snapshot']??null)?$licenseReview['snapshot']:null;
+$licenseReviewInput=is_array($licenseReview['input']??null)?$licenseReview['input']:[];
+$licenseForm=[
+    'product_id'=>(string)($licenseReviewInput['product_id']??(is_string($_POST['product_id']??null)?$_POST['product_id']:'')),
+    'customer_id'=>(string)($licenseReviewInput['customer_id']??(is_string($_POST['customer_id']??null)?$_POST['customer_id']:'')),
+    'license_type'=>(string)($licenseReviewInput['license_type']??(is_string($_POST['license_type']??null)?$_POST['license_type']:'standard')),
+    'domain'=>(string)($licenseReviewInput['domain']??(is_string($_POST['domain']??null)?$_POST['domain']:'')),
+    'expires_at'=>isset($licenseReviewInput['expires_at'])&&is_string($licenseReviewInput['expires_at'])?str_replace(' ','T',substr($licenseReviewInput['expires_at'],0,16)):(is_string($_POST['expires_at']??null)?$_POST['expires_at']:''),
+];
+if(isset($_SESSION['license_key_created'])){
+    $hasSummary=is_string($_SESSION['license_created_summary']??null);
+    $summary=$hasSummary?' '.esc($_SESSION['license_created_summary']).'.':'';
+    echo '<div class="notice success"><strong>'.($hasSummary?'Customer license issued.':'License key created.').'</strong>'.$summary.' License key (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';
+    unset($_SESSION['license_key_created'],$_SESSION['license_created_summary']);
+}
 ?>
 
 <?php if(!$softwareReady): ?>
@@ -224,39 +246,67 @@ Both must be present before production settings can be read; this page still off
 <?php endif; ?>
 <?php endif; ?>
 <div class="workspace-grid">
-<section class="workspace-card" id="license-create">
-<h2>Create a license</h2>
-<form method="post">
-<?php admin_action('studio_license_create'); ?>
-<label for="customer_id">Customer</label>
-<select name="customer_id" id="customer_id" required>
-<option value="">Choose a customer…</option>
-<?php foreach($customers as $id=>$name): ?>
-<option value="<?= esc($id) ?>"><?= esc($name) ?></option>
-<?php endforeach; ?>
-</select>
-<label for="product_id">Product</label>
-<select name="product_id" id="product_id" required>
-<option value="">Choose a product…</option>
-<?php foreach($products as $key=>$name): ?>
-<option value="<?= esc($key) ?>"><?= esc($name) ?></option>
-<?php endforeach; ?>
-</select>
+<section class="workspace-card" id="license-create" aria-labelledby="license-create-title">
+<h2 id="license-create-title"><?=$softwareReady?'Issue a customer license':'Create a license'?></h2>
 <?php if($softwareReady): ?>
-<label>Licensee name<input type="text" name="licensee_name" maxlength="190" required placeholder="Customer or organization"></label>
-<label>License type<select name="license_type"><option value="standard">Standard — perpetual</option><option value="trial">Trial — expires</option><option value="temporary">Temporary — expires</option><?php if(staff_can('staff.manage')): ?><option value="master">Master — internal staff only</option><?php endif; ?></select></label>
-<label>Installation domain (required except internal master)<input type="text" name="domain" maxlength="253" placeholder="example.com"></label>
-<label>Expiration in UTC (required for trial and temporary)<input type="datetime-local" name="expires_at"></label>
-<?php if(staff_can('staff.manage')): ?>
-<?php admin_input('master_purpose','Master-license purpose','','text','minlength="10" maxlength="200" placeholder="Internal QA, release validation, or other owner-approved purpose"'); ?>
-<?php admin_input('current_password','Owner password for master licenses','','password','autocomplete="current-password"'); ?>
-<?php endif; ?>
-<p class="hint">Master keys require an owner-reviewed purpose, can authorize any domain, and must never be bundled or sent to customers. Normal licenses are bound to an installation domain.</p>
+<p><strong>Choose software <span aria-hidden="true">→</span> Choose customer <span aria-hidden="true">→</span> Domain and terms <span aria-hidden="true">→</span> Review <span aria-hidden="true">→</span> Issue</strong></p>
+<p>Add software once, then issue a separate license for each customer. This does not charge the customer, create a subscription, send a message, or contact a provider.</p>
+<?php if(!$softwareLicenseProducts): ?><p class="notice info"><strong>No registered software is available.</strong> <a href="<?=esc(admin_url('catalog',['new_family'=>'software']))?>#software-onboarding">Add software from a ZIP</a>, then return here.</p>
+<?php elseif(!$softwareCustomers): ?><p class="notice info"><strong>No active customer is available.</strong> <a href="<?=esc(admin_url('studio-clients'))?>">Create or reactivate a customer</a>, then return here.</p>
 <?php else: ?>
-<?php if(staff_can('staff.manage')): ?><label><input type="checkbox" name="master" value="1"> Master key — internal testing only</label><?php endif; ?>
-<?php endif; ?>
-<button class="btn gold">Generate license key</button>
+<form method="post" data-customer-license-review>
+<?php admin_action('software_license_review'); ?>
+<label for="software_license_product">1. Software product</label>
+<select name="product_id" id="software_license_product" required>
+<option value="">Choose registered software…</option>
+<?php foreach($softwareLicenseProducts as $product): ?><option value="<?=esc($product['sku'])?>"<?=$licenseForm['product_id']===$product['sku']?' selected':''?>><?=esc($product['title'].' · '.$product['sku'])?></option><?php endforeach; ?>
+</select>
+<details><summary>What is a software product?</summary><p>It is the reusable product record containing files, versions and license settings. A customer license is one customer's separate right to use that product.</p></details>
+<label for="software_license_customer">2. Customer</label>
+<select name="customer_id" id="software_license_customer" required data-license-customer>
+<option value="">Choose an active customer…</option>
+<?php foreach($softwareCustomers as $id=>$name): ?><option value="<?=esc($id)?>" data-customer-name="<?=esc($name)?>"<?=$licenseForm['customer_id']===(string)$id?' selected':''?>><?=esc($name)?></option><?php endforeach; ?>
+</select>
+<p class="hint">The licensee name is filled from the selected customer; it is shown on the review step before issuance.</p>
+<label>3. License type<select name="license_type" data-license-type><option value="standard"<?=$licenseForm['license_type']==='standard'?' selected':''?>>Standard — no expiration</option><option value="trial"<?=$licenseForm['license_type']==='trial'?' selected':''?>>Trial — expires</option><option value="temporary"<?=$licenseForm['license_type']==='temporary'?' selected':''?>>Temporary — expires</option></select></label>
+<label>Installation domain<input type="text" name="domain" maxlength="253" required value="<?=esc($licenseForm['domain'])?>" placeholder="example.com"></label>
+<label>Expiration in UTC <span class="hint">Required for trial and temporary; leave blank for standard.</span><input type="datetime-local" name="expires_at" value="<?=esc($licenseForm['expires_at'])?>" data-license-expiry></label>
+<details><summary>What will be reviewed?</summary><p>The next step shows the exact customer, product, domain, type, expiry, current installation/update policy, dependencies and latest approved customer release before any key is created.</p></details>
+<button class="btn gold">Review customer license</button>
 </form>
+<?php endif; ?>
+<?php if($licenseReviewSnapshot): $reviewPolicy=$licenseReviewSnapshot['policy'];$reviewRelease=$licenseReviewSnapshot['release']; ?>
+<article class="workspace-version" aria-labelledby="license-review-title">
+<h3 id="license-review-title">4. Review exact customer license</h3>
+<dl>
+<dt><strong>Software product</strong></dt><dd><a href="<?=esc(admin_url('catalog',['id'=>$licenseReviewSnapshot['product']['id']]))?>#product-editor"><?=esc($licenseReviewSnapshot['product']['title'])?></a> · <?=esc($licenseReviewSnapshot['product']['sku'])?></dd>
+<dt><strong>Customer</strong></dt><dd><?=esc($licenseReviewSnapshot['customer']['name'])?></dd>
+<dt><strong>Domain</strong></dt><dd><?=esc($licenseReviewSnapshot['license']['domain'])?></dd>
+<dt><strong>Type / licensee</strong></dt><dd><?=esc(ucfirst($licenseReviewSnapshot['license']['type']))?> · <?=esc($licenseReviewSnapshot['license']['licensee'])?></dd>
+<dt><strong>Expires</strong></dt><dd><?=esc($licenseReviewSnapshot['license']['expires_at']??'Never')?></dd>
+<dt><strong>License settings</strong></dt><dd><?=(int)$reviewPolicy['max_installations']?> concurrent installation<?=((int)$reviewPolicy['max_installations']===1?'':'s')?> · <?=$reviewPolicy['update_months']===0?'lifetime updates':(int)$reviewPolicy['update_months'].' months of updates'?> · revision <?=(int)$reviewPolicy['revision']?></dd>
+<dt><strong>Required software</strong></dt><dd><?=$reviewPolicy['dependency_skus']?esc(implode(', ',$reviewPolicy['dependency_skus'])):'None'?></dd>
+<dt><strong>Approved customer release</strong></dt><dd><?=$reviewRelease?'v'.esc($reviewRelease['version']).' · '.esc($reviewRelease['title']):'No customer-visible release yet'?></dd>
+</dl>
+<?php if(!$reviewRelease): ?><p class="notice warning"><strong>License issuance is unavailable until a customer release is approved.</strong> <a href="<?=esc(admin_url('catalog',['software_product'=>$licenseReviewSnapshot['product']['id']]))?>#software-onboarding">Add another version</a> or review an existing private release below.</p>
+<?php else: ?><form method="post"><?php admin_action('software_license_issue');studio_hidden('review_token',$licenseReview['token']);admin_check('confirm','I reviewed this customer, product, domain and license policy. Issue this license without a charge or message.',false);?><button class="btn gold">5. Issue reviewed license</button></form><?php endif; ?>
+<form method="post"><?php admin_action('software_license_review_clear');?><button class="btn outline">Start over</button></form>
+</article>
+<?php endif; ?>
+<?php if(staff_can('staff.manage')): ?><details><summary>Internal master license (owner-only)</summary><p>Master keys are for internal QA and release validation. They authorize any domain for the selected product and are never shown or delivered in a customer portal.</p>
+<form method="post"><?php admin_action('studio_license_create');studio_hidden('license_type','master'); ?>
+<label>Software product<select name="product_id" required><option value="">Choose registered software…</option><?php foreach($softwareLicenseProducts as $product): ?><option value="<?=esc($product['sku'])?>"><?=esc($product['title'].' · '.$product['sku'])?></option><?php endforeach; ?></select></label>
+<label>Reference customer <span class="hint">Required by the retained license record; this key is not delivered.</span><select name="customer_id" required><option value="">Choose an active customer…</option><?php foreach($softwareCustomers as $id=>$name): ?><option value="<?=esc($id)?>"><?=esc($name)?></option><?php endforeach; ?></select></label>
+<label>Internal licensee name<input type="text" name="licensee_name" maxlength="190" required value="CajunWebPro internal QA"></label>
+<?php admin_input('master_purpose','Owner-reviewed purpose','','text','required minlength="10" maxlength="200" placeholder="Internal QA, release validation, or another owner-approved purpose"'); ?>
+<?php admin_input('current_password','Current owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn outline">Create internal master key</button></form></details><?php endif; ?>
+<?php else: ?>
+<form method="post"><?php admin_action('studio_license_create'); ?>
+<label for="customer_id">Customer</label><select name="customer_id" id="customer_id" required><option value="">Choose a customer…</option><?php foreach($customers as $id=>$name): ?><option value="<?=esc($id)?>"><?=esc($name)?></option><?php endforeach; ?></select>
+<label for="product_id">Product</label><select name="product_id" id="product_id" required><option value="">Choose a product…</option><?php foreach($products as $key=>$name): ?><option value="<?=esc($key)?>"><?=esc($name)?></option><?php endforeach; ?></select>
+<?php if(staff_can('staff.manage')): ?><label><input type="checkbox" name="master" value="1"> Master key — internal testing only</label><?php endif; ?><button class="btn gold">Generate license key</button></form>
+<?php endif; ?>
 </section>
 <?php if($softwareReady): ?>
 <section class="workspace-card">
@@ -439,13 +489,13 @@ if($softwareReady&&$isSoftwareEntitlement){
 <dt><strong>Customer</strong></dt>
 <dd><?= esc($lic['customer_name'] ?? 'Unknown') ?></dd>
 <dt><strong>Product</strong></dt>
-<dd><?= esc($lic['product_id']) ?></dd>
+<dd><?php if((int)($lic['product_catalog_id']??0)>0): ?><a href="<?=esc(admin_url('catalog',['id'=>$lic['product_catalog_id']]))?>#product-editor"><?=esc($lic['product_title']??$lic['product_id'])?></a> · <?php endif; ?><?=esc($lic['product_id'])?></dd>
 <dt><strong>Status</strong></dt><?php $ls=$lifecycle['state']??((int)$lic['is_active']===1?'active':'suspended');$ll=match($ls){'active'=>'Active','suspended'=>'Suspended','revoked'=>'Revoked',default=>'Inactive'}; ?><dd><span style="color:<?=$ls==='active'?'green':'red'?>"><?=esc($ll)?></span><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
 <?php if($isSoftwareEntitlement&&!$softwareReady): ?>
 <dt><strong>Software storage</strong></dt><dd><span style="color:#b8860b">Entitlement detected but software-commerce readiness is incomplete. Preserve the database and complete the reviewed recovery before changing software-specific rights.</span></dd>
 <?php endif; ?>
 <?php if($meta): ?>
-<dt><strong>Type / licensee</strong></dt><dd><?=esc($meta['license_type'])?> · <?=esc($meta['licensee'])?></dd>
+<dt><strong>Type / licensee</strong></dt><dd><?=esc(ucfirst((string)$meta['license_type']))?> · <?=esc($meta['licensee'])?></dd>
 <dt><strong>Expires</strong></dt><dd><?=esc($meta['expires_at']??'Never')?></dd>
 <dt><strong>Update entitlement</strong></dt><dd><?=(int)($lic['is_master']??0)===1
     ?'Internal master · all recorded versions, including owner-private staging'

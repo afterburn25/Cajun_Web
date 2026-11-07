@@ -8,6 +8,58 @@ require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 
+/**
+ * Build the non-mutating owner review shown before an ordinary customer
+ * software license is issued. The same function is called again at the
+ * confirmation boundary so a changed customer, policy, dependency, or
+ * published release cannot be accepted from a stale review screen.
+ */
+function software_grant_manual_review(int $clientId,string $sku,string $kind,string $name,
+    ?string $domain,?string $expires):array{
+    if(!software_commerce_ready())throw new RuntimeException('Software licensing is not prepared.');
+    if(!in_array($kind,[SoftwareLicensePolicy::STANDARD,SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY],true)){
+        throw new InvalidArgumentException('Choose a customer license type. Internal master licenses use the separate owner-only workflow.');
+    }
+    $customer=one('SELECT id,name FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId]);
+    if(!$customer)throw new InvalidArgumentException('Choose an active customer.');
+    $name=trim($name)===''?(string)$customer['name']:$name;
+    $issuedAt=new DateTimeImmutable('now',new DateTimeZone('UTC'));
+    $metadata=SoftwareLicensePolicy::issue($kind,$name,$domain,$expires,true,$issuedAt);
+    $sku=strtoupper(trim($sku));
+    if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$sku))throw new InvalidArgumentException('Unknown software SKU.');
+    $product=one('SELECT id,sku,title,family,status FROM '.table('catalog_products').' WHERE sku=?',[$sku]);
+    $legacy=$product&&preg_match('/^(?:WEBSITE|SOFTWARE|APP)-[A-Z0-9_-]+$/D',(string)$product['sku'])===1;
+    if(!$product||(($product['family']??'')!=='software'&&!$legacy)){
+        throw new InvalidArgumentException('Choose a registered software catalog product.');
+    }
+    $policy=software_product_policy_purchase_snapshot(software_product_policy((int)$product['id']));
+    if(!software_dependencies_satisfied($clientId,$policy['dependency_skus'])){
+        $missing=[];
+        foreach($policy['dependency_skus'] as $dependencySku){
+            if(is_string($dependencySku)&&!software_customer_has_valid_product($clientId,$dependencySku))$missing[]=$dependencySku;
+        }
+        $detail=$missing?implode(', ',$missing):'one or more required products';
+        throw new RuntimeException('This customer is missing required software: '.$detail.'. Issue those customer licenses first, then review this license again.');
+    }
+    $release=one('SELECT id,version,title,released_at FROM '.table('software_assets').' WHERE sku=? AND is_published=1 AND released_at IS NOT NULL ORDER BY released_at DESC,id DESC LIMIT 1',[$sku]);
+    return [
+        'customer'=>['id'=>(int)$customer['id'],'name'=>(string)$customer['name']],
+        'product'=>['id'=>(int)$product['id'],'sku'=>(string)$product['sku'],'title'=>(string)$product['title'],
+            'status'=>(string)$product['status']],
+        'license'=>['type'=>$metadata['type'],'licensee'=>$metadata['licensee'],'domain'=>$metadata['domain'],
+            'expires_at'=>$metadata['expires_at']],
+        'policy'=>['revision'=>$policy['revision'],'module_key'=>$policy['module_key'],
+            'dependency_skus'=>$policy['dependency_skus'],'update_months'=>$policy['update_months'],
+            'max_installations'=>$policy['max_installations']],
+        'release'=>$release?['id'=>(int)$release['id'],'version'=>(string)$release['version'],
+            'title'=>(string)$release['title'],'released_at'=>(string)$release['released_at']]:null,
+    ];
+}
+
+function software_grant_manual_review_hash(array $review):string{
+    return hash('sha256',json_encode($review,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES));
+}
+
 function software_grant_create(int $clientId, string $sku, string $kind, string $name,
     ?string $domain, ?string $expires, int $issuer=0, ?int $invoice=null, ?int $unit=null,
     string $purpose='', bool $recurring=false, ?array $purchasePolicy=null,

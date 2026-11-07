@@ -17,6 +17,7 @@ function routing_ok(bool $condition,string $name):void{
 $actions=routing_source('site/admin/controllers/actions.php');
 $permissions=routing_source('site/app/staff/accounts.php');
 $studio=routing_source('site/admin/controllers/studio.php');
+$grants=routing_source('site/app/licenses/software_grants.php');
 
 routing_ok(
     str_contains($actions,"str_starts_with(\$action,'studio_')||str_starts_with(\$action,'software_')")
@@ -40,5 +41,38 @@ foreach(['software_license_lifecycle','studio_license_deactivate','studio_licens
         $action.' loads the commerce readiness boundary before calling it'
     );
 }
+
+$reviewStart=strpos($studio,"elseif(\$action==='software_license_review')");
+$clearStart=strpos($studio,"}elseif(\$action==='software_license_review_clear'",$reviewStart+1);
+$issueStart=strpos($studio,"}elseif(\$action==='software_license_issue'",$clearStart+1);
+$lifecycleStart=strpos($studio,"}elseif(\$action==='software_license_lifecycle'",$issueStart+1);
+routing_ok($reviewStart!==false&&$clearStart!==false&&$issueStart!==false&&$lifecycleStart!==false,
+    'Guided review, clear and issue branches are distinct owner actions');
+$reviewBranch=substr($studio,$reviewStart,$clearStart-$reviewStart);
+$issueBranch=substr($studio,$issueStart,$lifecycleStart-$issueStart);
+routing_ok(str_contains($reviewBranch,'software_grant_manual_review(')
+    &&str_contains($reviewBranch,"\$_SESSION['software_license_review']")
+    &&str_contains($reviewBranch,'software_grant_manual_review_hash($review)'),
+    'Customer license review is non-mutating and stores an exact current snapshot');
+routing_ok(str_contains($issueBranch,"posted('confirm',1)!=='1'")
+    &&str_contains($issueBranch,"hash_equals(\$draft['token'],posted('review_token',64))")
+    &&str_contains($issueBranch,'software_grant_manual_review(')
+    &&str_contains($issueBranch,"\$current['release']===null")
+    &&str_contains($issueBranch,'software_grant_manual_review_hash($current)')
+    &&str_contains($issueBranch,'db()->beginTransaction()')
+    &&str_contains($issueBranch,'software_grant_create(')
+    &&strpos($issueBranch,'software_grant_manual_review(')<strpos($issueBranch,'db()->beginTransaction()')
+    &&strpos($issueBranch,'db()->beginTransaction()')<strpos($issueBranch,'software_grant_create('),
+    'Issuance requires confirmation, exact session token, fresh review and the existing transaction engine');
+routing_ok(str_contains($grants,'function software_grant_manual_review(')
+    &&str_contains($grants,'[SoftwareLicensePolicy::STANDARD,SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY]')
+    &&str_contains($grants,"WHERE id=? AND active=1")
+    &&str_contains($grants,'software_product_policy_purchase_snapshot(software_product_policy(')
+    &&str_contains($grants,'software_dependencies_satisfied(')
+    &&str_contains($grants,'This customer is missing required software: ')
+    &&str_contains($grants,'software_customer_has_valid_product(')
+    &&str_contains($grants,"is_published=1 AND released_at IS NOT NULL")
+    &&str_contains($grants,'function software_grant_manual_review_hash('),
+    'Review reuses current customer, product, policy, dependency and approved-release state while excluding master keys');
 
 echo "Software admin routing contract: PASS".PHP_EOL;
