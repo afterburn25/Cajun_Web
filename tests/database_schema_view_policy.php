@@ -40,4 +40,4 @@ try{
     $GLOBALS['schema_history']=[['action'=>'database.update.failed','detail'=>json_encode(['marker'=>'license_schema_version','label'=>'License','from'=>'2','to'=>'3','review'=>'abc','reason'=>'Synthetic failure'],JSON_THROW_ON_ERROR),'created_at'=>'2026-11-07 05:00:00']];$html=dv_render();
     dv_ok('Recorded outcomes remain visible with failure reason',str_contains($html,'Database update history')&&str_contains($html,'License</strong> — Failed')&&str_contains($html,'Synthetic failure'));
 }catch(Throwable $e){$failure=$e->getMessage();}
-echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;exit($failure===null?0:1);
+echo json_encode(['passed'=>$failure===null,'executions'=>count($checks),'checks'=>$checks,'failure'=>$failure]).PHP_EOL;exit($failure===null?0:1);

@@ -711,9 +711,9 @@
     ],
     "source_sha256": {
       "site/app/settings/database_schemas.php": "47e3256cb5f92eb9c629f865d94c3f6c4aba2a62bc28daab941a07b35e288188",
-      "tests/database_schema_registry_policy.php": "3e8aa12420272d790541491c670663335c0bbf875316477e30a1e8421333d6de",
-      "tests/database_schema_action_policy.php": "01717203d2cdd8b1207762c43a67180c48e072068d71bbc4257cefbad9a11d37",
-      "tests/database_schema_view_policy.php": "2d4716cd07eb137e1e0626cc864f98e0d8f1b424b28333ceef13b1360c3c6af2",
+      "tests/database_schema_registry_policy.php": "7db0a6724b60427f855f81919e6fe9389167cf7f692bfb549b3a8525b701d739",
+      "tests/database_schema_action_policy.php": "af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd",
+      "tests/database_schema_view_policy.php": "4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935",
       "tests/database_schema_native.php": "11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768",
       "tests/service_plans_checkout_native.php": "4582451eb68075d463db2969980b7e3e709ef9c08bdfe217599783c0074da392",
       "tests/database_update_cases.py": "38ae4e88f86d8221070526af2d0c106c76620a166bddbad6772a4f340d498a14",

@@ -95,5 +95,5 @@ try{
     $backupRows=$currentRows;$backupRows['backups_schema_version']=database_schema_classify($registry['backups_schema_version'],'1');$backupPlan=database_schema_plan(['backups_schema_version'],$backupRows);
     ds_ok('Review rows disclose non-database side effects',str_contains($backupPlan['rows'][0]['note'],'private backup directory'));
 }catch(Throwable $e){$failure=$e->getMessage();}
-echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;
+echo json_encode(['passed'=>$failure===null,'executions'=>count($checks),'checks'=>$checks,'failure'=>$failure]).PHP_EOL;
 exit($failure===null?0:1);
