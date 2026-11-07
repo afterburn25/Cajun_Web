@@ -67,6 +67,9 @@ ADDITIONS = frozenset((
 ))
 # BEGIN GENERATED CONTACT ADDITION IDENTITIES
 ADDITION_SHA256 = {'site/app/clients/contacts.php': '73732cea46fc24532bfe95dedea72873210ffdf84f5cb226f4ab4424abcc335a', 'site/database/migrations/contacts_migrate.php': 'c4f447909a14ddfc870065b517c29f4be7786e96488d7aa1fca616d399c7aeea', 'site/database/schema/contacts_schema.php': 'a2fde85f75d286241a3642bf4f4fab0a7b4aa98c26705e9316552a9223974f0d', 'tests/contacts_cases.py': 'fc5a777bf9f464744e2ff9315114b9b5c0e771a5ba991b04fa5c134dcd05eed2'}
+# BEGIN GENERATED DATABASE WORKFLOW CONTACT IDENTITIES
+ADDITION_SHA256['tests/contacts_cases.py'] = 'c4fc6c75febba8d28db7a5874368cb6fbade205e0fc94d57162f19be12e3ec39'
+# END GENERATED DATABASE WORKFLOW CONTACT IDENTITIES
 # END GENERATED CONTACT ADDITION IDENTITIES
 # The ticket helper is new source, not a repair of a component file. Its exact
 # source commit is retained as an ancestor independently from the older PR331
@@ -101,6 +104,51 @@ DIAGNOSTIC_ADDITION_SHA256 = {
     'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '823d13a81b24d1c39f0e53a58a26ba727520dcd7b677baa5825a00ded4fce8d6', 'delta': 'f39cb50543cd25907091c8bae4a80db8c174472be372e30e21594275a1907a34'},
     'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'e1b06b07dfd74b862e6ccdba78f208982377e5805d9ac43b6b0e736fa86b5181', 'delta': '3e2dd2ca6211956be8b454c73dd9f4c7ac1870a6be15120f6b1214d6b5278863'},
 }
+# BEGIN GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '6fa76fc60584158ae29729995e091f43efb5cd1373cf0853a75234150db8ef61'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = 'acead1f82b00128a776321dc79495d72b51e4f45042618bc935cdf78fed44b19'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '368048a13179629c5ce37f8b355b425a928724f72821e7eb9e29ba830405ee4f'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657c225ee8dcd1af78ebafe1fe7beb7220af868c792e30ec5530c16e4b'
+# END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
+DATABASE_WORKFLOW_BASE = '281d07082723c352f4f381fec078287f2e0eea0b'
+DATABASE_WORKFLOW_BASE_TREE = '8ba34277c69a3d105e9b0eb35e2473a9bce1035d'
+DATABASE_WORKFLOW_SOURCE = '027533943e49a76fcaa78964b9e318e65751c55c'
+DATABASE_WORKFLOW_SOURCE_TREE = '61d2e57dcca410a531c153fc0a31c4317761e302'
+DATABASE_WORKFLOW_ADDITIONS = frozenset((
+    'site/app/settings/database_schemas.php',
+    'tests/database_schema_action_policy.php',
+    'tests/database_schema_native.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/database_update_cases.py',
+    'tests/database_update_forms.py',
+))
+DATABASE_WORKFLOW_REPAIRS = frozenset((
+    '.github/workflows/application-tests.yml',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio/upgrade.php',
+    'site/app/staff/accounts.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/admin_20i_populated_upgrade.py',
+    'tests/browser_acceptance.py',
+    'tests/owner_update_session_policy.php',
+    'tests/release_cases.py',
+    'tests/service_plan_cases.py',
+    'tools/acceptance-contract.json',
+    'tools/acceptance-reports.json',
+    'tools/update/owner-update.php',
+))
+DATABASE_WORKFLOW_CONTACTS = frozenset(('tests/contacts_cases.py',))
+DATABASE_WORKFLOW_DIAGNOSTICS = frozenset((
+    'tests/diagnostic_acceptance_test.py',
+    'tests/diagnostic_registry.py',
+))
+DATABASE_WORKFLOW_SOURCE_PATHS = (DATABASE_WORKFLOW_ADDITIONS | DATABASE_WORKFLOW_REPAIRS
+                                  | DATABASE_WORKFLOW_CONTACTS | DATABASE_WORKFLOW_DIAGNOSTICS
+                                  | {INVENTORY})
+# BEGIN GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
+DATABASE_WORKFLOW_ADDITION_SHA256 = {'site/app/settings/database_schemas.php': 'fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d', 'tests/database_schema_action_policy.php': 'af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd', 'tests/database_schema_native.php': '11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768', 'tests/database_schema_registry_policy.php': '9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd', 'tests/database_schema_view_policy.php': '4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935', 'tests/database_update_cases.py': '38ae4e88f86d8221070526af2d0c106c76620a166bddbad6772a4f340d498a14', 'tests/database_update_forms.py': '6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2'}
+# END GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
     '.github/workflows/rc126-test-package.yml',
@@ -225,6 +273,9 @@ REPAIRS = REPAIRS | frozenset((
     'tests/master_portal_policy.php',
     'tests/owner_release_apache.py',
 ))
+# UX-07 extends the repair set only with existing files from the immutable
+# repair checkpoint. Its seven genuinely new source files remain disjoint.
+REPAIRS = REPAIRS | DATABASE_WORKFLOW_REPAIRS
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
 NARRATIVES = frozenset((
@@ -240,7 +291,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '9c3ea590ea350b0202f4cf154f7a90e046ed559be0c3ce0eb3cd773857a23fe5'
+REGRESSION_SHA256 = '5d92d4e10ecc4555594b526e86f3c88acaf4ea679d60cb4f7fc957ca1cb7567c'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -277,6 +328,21 @@ REPAIR_SHA256['tests/master_portal_installed_browser.py'] = '2256945bd7ddb4a083e
 REPAIR_SHA256['tests/master_portal_native.php'] = '896b9cbfebb19de382892c189ab8d838c4cfb5b43745b0c1a186a737a5c3a213'
 REPAIR_SHA256['tests/master_portal_policy.php'] = '95de8026903492bf4b9f2fb69d96ac999436dcdd96f91792dbe839109f13a5eb'
 REPAIR_SHA256['tests/owner_release_apache.py'] = '0d074273e99e89af22b6f865355fc9dfa09f90f122eead05792390e8ca173a87'
+# BEGIN GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
+REPAIR_SHA256['.github/workflows/application-tests.yml'] = '286ba4a87d41256a7dcb729298b17f61e2ce2a8c0dc7655b4d81768b3b19d742'
+REPAIR_SHA256['site/admin/controllers/studio.php'] = '77501d58a9c577587fd8052025331c882d3b1bc4bee660bbe507a20cf507ff99'
+REPAIR_SHA256['site/admin/views/studio/upgrade.php'] = '37fe5df5ca0bf48e0d2843f7dbaf07412c8b8a345daa53879573da370c352e49'
+REPAIR_SHA256['site/app/staff/accounts.php'] = '149eb237a32b304b19edc5fbd3c556978834c6de22f00247ccd9609755df4ea6'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '10c42783e6be677e2a4d630adbf4583f53bf1065b256706c6fb3517d3a135fa5'
+REPAIR_SHA256['tests/admin_20i_populated_upgrade.py'] = '23980a8fb6da772c101a4a33e1db5e3d9e77768a8f75aeac377d6b509dd1f8a2'
+REPAIR_SHA256['tests/browser_acceptance.py'] = '76cc1bebf0cff397a46bb920db598d25669d6a205a22cc8467d23abfc01a86a1'
+REPAIR_SHA256['tests/owner_update_session_policy.php'] = 'b12346f03f23d130bd32f9c03fe862abb0fe75c8cdff5a7d26ded960290df6b5'
+REPAIR_SHA256['tests/release_cases.py'] = 'bef2874006b64ba39fa063c4180de164ca25727c3081381c069a22f9368ec282'
+REPAIR_SHA256['tests/service_plan_cases.py'] = 'aed974cf60079d8268d3090e9e9f9876c2d69d737b09e575e1533bd823b67ec9'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '5371b1f19cae46f035b0b5bc832c50d19b153c21c40cccf525607b514e55f556'
+REPAIR_SHA256['tools/acceptance-reports.json'] = 'e7d9d2b1f66f72109c434c96303611062c7236bfe24cdcf296e5a0080c88a2b8'
+REPAIR_SHA256['tools/update/owner-update.php'] = 'f151c1f042841853bfd36cc60ec0629cd8cc1b8d4c0da5af57562d4239e9cec5'
+# END GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -381,6 +447,8 @@ def hydration_origin(root, head):
         (ADDITION_SOURCE, ADDITION_SOURCE_TREE, 'contact addition'),
         (TICKET_ADDITION_SOURCE, TICKET_ADDITION_SOURCE_TREE, 'ticket addition'),
         (DIAGNOSTIC_ADDITION_SOURCE, DIAGNOSTIC_ADDITION_SOURCE_TREE, 'diagnostic addition'),
+        (DATABASE_WORKFLOW_BASE, DATABASE_WORKFLOW_BASE_TREE, 'database workflow base'),
+        (DATABASE_WORKFLOW_SOURCE, DATABASE_WORKFLOW_SOURCE_TREE, 'database workflow source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -472,9 +540,12 @@ def validate_receipt(data, verifier):
         'repair_base', 'repair_base_tree', 'integration_repairs',
         'addition_source', 'addition_source_tree', 'additions',
         'ticket_addition_source', 'ticket_addition_source_tree', 'ticket_additions',
-        'diagnostic_addition_source', 'diagnostic_addition_source_tree', 'diagnostic_additions'},
+        'diagnostic_addition_source', 'diagnostic_addition_source_tree', 'diagnostic_additions',
+        'database_workflow_base', 'database_workflow_base_tree',
+        'database_workflow_source', 'database_workflow_source_tree',
+        'database_workflow_source_paths', 'database_workflow_additions'},
         'Unexpected composition receipt fields')
-    require(data['format'] == 5 and data['base'] == BASE and data['base_tree'] == BASE_TREE
+    require(data['format'] == 6 and data['base'] == BASE and data['base_tree'] == BASE_TREE
             and data['components'] == COMPONENTS, 'Unreviewed component source identity')
     require(data['verifier_sha256'] == digest(verifier), 'Composition verifier changed')
     require(data['regression_sha256'] == REGRESSION_SHA256, 'Composition regression identity changed')
@@ -555,6 +626,24 @@ def validate_receipt(data, verifier):
                 and all(re.fullmatch('[0-9a-f]{64}', row[name]) is not None
                         for name in ('source_sha256', 'current_sha256', 'delta_sha256'))
                 and row['mode'] == '100644', 'Unreviewed diagnostic addition identity: ' + path)
+    require(data['database_workflow_base'] == DATABASE_WORKFLOW_BASE
+            and data['database_workflow_base_tree'] == DATABASE_WORKFLOW_BASE_TREE
+            and data['database_workflow_source'] == DATABASE_WORKFLOW_SOURCE
+            and data['database_workflow_source_tree'] == DATABASE_WORKFLOW_SOURCE_TREE,
+            'Unreviewed database workflow source identity')
+    require(set(data['database_workflow_source_paths']) == DATABASE_WORKFLOW_SOURCE_PATHS
+            and len(data['database_workflow_source_paths']) == len(DATABASE_WORKFLOW_SOURCE_PATHS),
+            'Unreviewed database workflow source path set')
+    require(isinstance(data['database_workflow_additions'], dict)
+            and set(data['database_workflow_additions']) == DATABASE_WORKFLOW_ADDITIONS
+            and set(DATABASE_WORKFLOW_ADDITION_SHA256) == DATABASE_WORKFLOW_ADDITIONS,
+            'Unreviewed database workflow addition scope')
+    for path, row in data['database_workflow_additions'].items():
+        require(isinstance(row, dict) and set(row) == {'sha256', 'mode'}
+                and row['sha256'] == DATABASE_WORKFLOW_ADDITION_SHA256[path]
+                and re.fullmatch('[0-9a-f]{64}', row['sha256']) is not None
+                and row['mode'] == '100644',
+                'Unreviewed database workflow addition identity: ' + path)
     return data
 
 
@@ -695,6 +784,11 @@ def verify_current(root):
                                        | TICKET_ADDITIONS | NARRATIVES
                                        | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
             'Diagnostic additions cannot replace existing component, repair, addition or proof files')
+    require(not DATABASE_WORKFLOW_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
+                                               | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
+                                               | ONBOARDING_ADDITIONS | NARRATIVES
+                                               | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
+            'Database workflow additions cannot replace existing admitted source or proof files')
     require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
             'Retained contact source tree changed')
     git(root, 'merge-base', '--is-ancestor', ADDITION_SOURCE, 'HEAD')
@@ -735,8 +829,35 @@ def verify_current(root):
                 'Ticket helper existed in an earlier admitted source: ' + identity)
         require(not DIAGNOSTIC_ADDITIONS & set(entries(root, identity)),
                 'Diagnostic source existed in an earlier admitted source: ' + identity)
+    require(git(root, 'rev-parse', DATABASE_WORKFLOW_BASE + '^{tree}').decode().strip()
+            == DATABASE_WORKFLOW_BASE_TREE, 'Database workflow base tree changed')
+    require(git(root, 'rev-parse', DATABASE_WORKFLOW_SOURCE + '^{tree}').decode().strip()
+            == DATABASE_WORKFLOW_SOURCE_TREE, 'Database workflow source tree changed')
+    git(root, 'merge-base', '--is-ancestor', DATABASE_WORKFLOW_BASE, DATABASE_WORKFLOW_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', DATABASE_WORKFLOW_SOURCE, 'HEAD')
+    database_source_paths = set(git(root, 'diff', '--name-only', '--no-renames',
+                                    DATABASE_WORKFLOW_BASE, DATABASE_WORKFLOW_SOURCE).decode().splitlines())
+    require(database_source_paths == DATABASE_WORKFLOW_SOURCE_PATHS,
+            'Database workflow source changed a different path set')
+    database_base_entries = entries(root, DATABASE_WORKFLOW_BASE)
+    database_source_entries = entries(root, DATABASE_WORKFLOW_SOURCE)
+    require(not DATABASE_WORKFLOW_ADDITIONS & set(database_base_entries)
+            and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
+            'Database workflow addition did not originate in its exact source range')
+    for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', DATABASE_WORKFLOW_SOURCE + ':' + path)
+                and mode(root, path) == database_source_entries[path][0],
+                'Current database workflow bytes or mode differ from exact source: ' + path)
+    for path in sorted(DATABASE_WORKFLOW_ADDITIONS):
+        value = ordinary(root, path)
+        row = data['database_workflow_additions'][path]
+        require(digest(value) == row['sha256'] == DATABASE_WORKFLOW_ADDITION_SHA256[path]
+                and row['mode'] == database_source_entries[path][0] == '100644',
+                'Database workflow addition bytes or mode changed: ' + path)
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
-               | ONBOARDING_ADDITIONS | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE})
+               | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
+               | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
@@ -797,6 +918,7 @@ def verify_current(root):
         {'name': 'Four exact contact additions retain their original PR331 source, ancestry and modes; runtime uses current reviewed bytes', 'passed': True},
         {'name': 'The exact two-path ticket source retains its commit, tree, ancestry and path equality; the helper bytes and mode are a disjoint addition', 'passed': True},
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
+        {'name': 'Exact UX-07 base-to-source range binds 24 database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
