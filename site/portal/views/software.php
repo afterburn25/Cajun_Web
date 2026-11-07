@@ -7,9 +7,11 @@ require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
 require_once CWP_CODE_ROOT.'/app/licenses/software_asset_access.php';
 
 function software_portal_render(?array $client,string $error=''):never{
-    if(!$client||support_current())fail_page('Sign in to your own account to manage software.',403);
-    try{contact_require_permission('billing',(int)$client['id']);}catch(PDOException $e){throw $e;}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
-    $canPurchase=!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION);
+    if(!$client)fail_page('Sign in to your own account to manage software.',403);
+    $review=support_current()!==null;
+    if(!$review)try{contact_require_permission('billing',(int)$client['id']);}catch(PDOException $e){throw $e;}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
+    $canPurchase=!$review&&!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION);
+    if($review)support_record('software.view','client',(string)$client['id']);
     header('Cache-Control: private, no-store');
     $gateway=null;
     if(software_commerce_ready()&&$canPurchase){
@@ -24,6 +26,7 @@ function software_portal_render(?array $client,string $error=''):never{
     echo '<p><a href="'.esc(studio_url()).'">Client workspace</a> / My Software</p><h1>Software & Licenses</h1>';
     show_flash();
     if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
+    if($review)echo '<p class="notice info">Administrator review is read-only. Licenses, orders and billing status are shown for this client; purchases, payments, downloads and installation changes require the customer account.</p>';
     if(!$canPurchase)echo '<p class="notice info">Software purchases, payments and recurring billing changes are managed by the primary client account. You can review existing licenses and invoices here.</p>';
     if(!software_commerce_ready()){
         echo '<p>Software purchases have not been enabled. Your existing hosting, domains and project records remain available.</p>';
@@ -41,7 +44,7 @@ function software_portal_render(?array $client,string $error=''):never{
                 'suspended'=>'Suspended',
                 default=>($expired&&$billing==='billing_suspended'?'Payment suspended':($expired?'Expired':($activeDomains===0?'Pending deployment':'Active')))
             };
-            $canManageInstallations=$lifecycle['state']==='active'&&!$expired;
+            $canManageInstallations=!$review&&$lifecycle['state']==='active'&&!$expired;
             echo '<article class="workspace-card"><h3>'.esc($lic['product_id']).'</h3>';
             echo '<p>'.esc(ucfirst($lic['license_type'])).' · '.esc($status).'</p>';
             echo '<p>Licensed to: '.esc($lic['licensee']).'</p>';
@@ -101,7 +104,7 @@ function software_portal_render(?array $client,string $error=''):never{
         }
         if(!$licenses)echo '<p>No issued software licenses yet.</p>';
         echo '</div><h2>Purchased downloads</h2>';
-        $canSoftwareDownloads=contact_can('downloads');
+        $canSoftwareDownloads=!$review&&contact_can('downloads');
         $assets=$canSoftwareDownloads?all('SELECT a.id,a.sku,a.version,a.title,a.released_at,l.id AS license_id,e.invoice_id,e.unit_number FROM '.table('software_assets').' a JOIN '.table('website_licenses').' l ON l.product_id=a.sku JOIN '.table('software_entitlements').' e ON e.license_id=l.id WHERE l.customer_id=? AND l.is_active=1 AND l.is_master=0 AND a.is_published=1 AND a.released_at IS NOT NULL AND (e.expires_at IS NULL OR e.expires_at>UTC_TIMESTAMP()) AND (e.updates_until IS NULL OR a.released_at<=e.updates_until) ORDER BY a.sku,a.released_at DESC,a.id DESC,(e.invoice_id IS NULL),l.id LIMIT 250',[$clientId]):[];
         $shown=[];$downloadCount=0;
         foreach($assets as $asset){

@@ -5,6 +5,7 @@ if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require __DIR__.'/../site/database/schema/software_commerce_schema.php';
 require __DIR__.'/../site/app/clients/master_portal.php';
 $private=dirname(__DIR__).'/test-runtime/master-portal-private';
 $config=['site_url'=>'http://127.0.0.1:8092/master','key'=>str_repeat('c',64),'storage'=>$private,'db'=>['host'=>'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER'),'pass'=>getenv('CWP_TEST_PASSWORD'),'prefix'=>'masterci_']];
@@ -14,7 +15,7 @@ if($mode==='config'){echo '<?php return '.var_export($config,true).';';exit;}
 if($mode==='snapshot'){
  $rows=all('SELECT id,email,password_hash,auth_version,active FROM '.table('studio_clients').' ORDER BY id');
  $last=one('SELECT actor_id,client_id,context FROM '.table('support_sessions').' ORDER BY started_at DESC,id DESC LIMIT 1');
- echo json_encode(['clients'=>count($rows),'credentials_hash'=>hash('sha256',json_encode($rows)),'owner_reviews'=>(int)query("SELECT COUNT(*) FROM ".table('support_events')." WHERE action='owner.review.start'")->fetchColumn(),'sessions'=>(int)query('SELECT COUNT(*) FROM '.table('support_sessions'))->fetchColumn(),'last_session'=>$last]);exit;
+ echo json_encode(['clients'=>count($rows),'credentials_hash'=>hash('sha256',json_encode($rows)),'owner_reviews'=>(int)query("SELECT COUNT(*) FROM ".table('support_events')." WHERE action='owner.review.start'")->fetchColumn(),'software_views'=>(int)query("SELECT COUNT(*) FROM ".table('support_events')." WHERE action='software.view'")->fetchColumn(),'financing_views'=>(int)query("SELECT COUNT(*) FROM ".table('support_events')." WHERE action='financing.view'")->fetchColumn(),'sessions'=>(int)query('SELECT COUNT(*) FROM '.table('support_sessions'))->fetchColumn(),'last_session'=>$last]);exit;
 }
 if($mode==='revoke'){query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[str_repeat('f',32)]);echo '{}';exit;}
 if($mode!=='seed')exit(2);
@@ -26,7 +27,9 @@ function mp_deny(string $name,callable $f):void {try{$f();}catch(InvalidArgument
 function mp_actor(int $id):void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION['uid']=$id;$_SESSION['auth_version']=$u['auth_version'];$_SESSION['last_activity']=$_SESSION['login_at']=time();unset($GLOBALS['cwp_support']);$_GET=[];}
 try {
  foreach(schema_statements('masterci_') as $sql)db()->exec($sql);
+ foreach(software_commerce_schema('masterci_') as $sql)db()->exec($sql);
  foreach(default_settings() as $key=>$value)save_setting($key,$value);
+ save_setting('software_commerce_version','3');
  foreach([[1,'Master Owner','master-owner@example.invalid','owner',[]],[2,'Portal Staff','master-staff@example.invalid','administrator',['support.login']],[3,'Website Staff','master-denied@example.invalid','administrator',['website.manage']]] as [$id,$name,$email,$role,$perms]){
   query('INSERT INTO '.table('users').' (id,name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$id,$name,$email,password_hash('Synthetic master portal passphrase',PASSWORD_DEFAULT),str_repeat((string)$id,32),gmdate('Y-m-d H:i:s')]);
   query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode($perms)]);
@@ -35,6 +38,9 @@ try {
  foreach([[1,'Alpha Client','master-owner@example.invalid',1],[2,'Beta Client','beta@example.invalid',1],[3,'Disabled Client','disabled@example.invalid',0],[4,'100% Studio','percent@example.invalid',1]] as [$id,$name,$email,$active]){
   query('INSERT INTO '.table('studio_clients').' (id,name,email,password_hash,auth_version,active,created_at) VALUES (?,?,?,?,?,?,?)',[$id,$name,$email,password_hash('Synthetic customer-only passphrase',PASSWORD_DEFAULT),str_repeat(dechex($id),32),$active,gmdate('Y-m-d H:i:s')]);
  }
+ query('INSERT INTO '.table('website_licenses').' (id,license_key,customer_id,product_id,invoice_id,is_active,is_master,created_at,updated_at) VALUES (?,?,?,?,NULL,1,0,?,?)',[1,'SYNTHETIC-ALPHA-KEY',1,'CWP-ALPHA',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
+ query('INSERT INTO '.table('software_entitlements').' (license_id,license_type,licensee,expires_at,updates_until,max_installations,policy_revision,issued_by,purpose,invoice_id,unit_number,created_at) VALUES (?,?,?,NULL,NULL,2,1,1,?,NULL,NULL,?)',[1,'standard','Alpha Client','Synthetic administrator review fixture',gmdate('Y-m-d H:i:s')]);
+ query('INSERT INTO '.table('license_domains').' (license_id,domain,is_active,registered_at,deactivated_at) VALUES (?,?,1,?,NULL)',[1,'alpha.example',gmdate('Y-m-d H:i:s')]);
  for($i=5;$i<=58;$i++)query('INSERT INTO '.table('studio_clients').' (id,name,email,password_hash,auth_version,active,created_at) VALUES (?,?,?,?,?,1,?)',[$i,'Synthetic Client '.$i,'client'.$i.'@example.invalid','',str_repeat('a',32),gmdate('Y-m-d H:i:s')]);
  $original=all('SELECT id,email,password_hash,auth_version,active FROM '.table('studio_clients').' ORDER BY id');
  mp_deny('Unauthenticated hub cannot list clients',fn()=>master_portal_clients([]));

@@ -180,7 +180,7 @@ try:
                 for section in ['overview','connection','services','cloud','domains','website','advanced']:
                     check(label+' 20i section '+section,good(owner.get(admin+'?view=provider-settings&section='+section,timeout=30)))
                 r=owner.get(url+'/portal/index.php?master=1',timeout=30)
-                check(label+' master portal with existing owner session',good(r) and 'Master client portal' in r.text and 'view=login' not in r.url)
+                check(label+' client portal with existing owner session',good(r) and '>Client portal<' in r.text and 'admin-sidebar' not in r.text and 'view=login' not in r.url)
                 browse(anon,url,label+' upgraded',rewrite)
                 fresh=web/'fresh';unpack(COMPLETE,fresh);freshurl=f'http://127.0.0.1:{port}/fresh'
                 new=LocalSession();install(new,freshurl,'new'+('r' if rewrite else 'n')+('s_' if nested else 'r_'),private)

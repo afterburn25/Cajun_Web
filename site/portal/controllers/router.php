@@ -59,8 +59,8 @@ if(array_key_exists('domains',$_GET)||($_POST['action']??null)==='client_domain_
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
 if($supportRequested)header('Cache-Control: no-store, private');
 if($supportRequested){
- if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
-  try{support_check_csrf($supportId);support_end($supportId);redirect(admin_url('support'));}catch(Throwable){support_unavailable();}
+ if($_SERVER['REQUEST_METHOD']==='POST'&&in_array($_POST['action']??null,['support_end','support_switch'],true)){
+  try{$action=$_POST['action'];support_check_csrf($supportId);support_end($supportId);redirect($action==='support_switch'?master_portal_url():admin_url('support'));}catch(Throwable){support_unavailable();}
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }

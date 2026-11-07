@@ -1,5 +1,5 @@
 <?php
-/** Administrator portal hub. Customer authentication and support scopes stay separate. */
+/** Client-styled administrator entry. Customer authentication and support scopes stay separate. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
@@ -51,10 +51,6 @@ function master_portal_clients(array $query): array {
     }));
 }
 function master_portal_render(array $actor): never {
-    // The portal router does not load admin email controllers. Load the passive
-    // navigation access policies before rendering the shared admin shell.
-    require_once CWP_CODE_ROOT.'/app/mail/accounts.php';
-    require_once CWP_CODE_ROOT.'/app/mail/notices.php';
     $data=null;$error=null;
     if (staff_can('support.login',$actor)&&support_ready()&&setting('support_policy_confirmed')==='1') {
         try {$data=master_portal_clients($_GET);}catch(InvalidArgumentException|RuntimeException $e) {
@@ -62,46 +58,41 @@ function master_portal_render(array $actor): never {
             http_response_code($e instanceof InvalidArgumentException?400:403);$error=$e->getMessage();
         }
     }
-    admin_head('Master client portal','support',$actor);
-    if ($error!==null) {echo '<div class="notice error" role="alert">'.esc($error).'</div>';admin_foot();exit;}
-    ?><p class="admin-intro">One administrator sign-in. Choose a client workspace below, or manage services and billing from the shortcuts. Client review keeps your staff identity and audit trail; it never signs in as the customer.</p>
-    <section class="workspace-card"><h2>Your administration workspace</h2><div class="button-row"><?php
-    foreach (['studio-clients'=>'Manage clients','catalog'=>'Products & prices','studio-licenses'=>'Licenses & software','hosting-offers'=>'Hosting offers','hosting-purchases'=>'Hosting purchases','recurring-billing'=>'Recurring billing','payments'=>'Payment requests','provider-settings'=>'20i workspace','support'=>'Client access settings'] as $view=>$label) {
-        $permission=staff_view_permission($view);
-        if ($permission!==null&&staff_can($permission,$actor)) echo '<a class="btn outline small" href="'.esc(admin_url($view)).'">'.esc($label).'</a>';
-    }
-    ?></div><p class="hint">Your administrator account is not converted into a customer account. Customer purchases, payment approvals, signatures and security settings remain separate.</p></section><?php
+    site_head('Client portal','portal');
+    ?><section class="page-hero compact"><div class="container"><span class="eyebrow">AUTHORIZED CLIENT REVIEW</span><h1>Client portal</h1><p>Choose a client to open the same workspace clients use. Your administrator identity and audit trail remain active; this does not sign you in as the customer.</p><div class="button-row"><a class="btn outline" href="<?=esc(admin_url(staff_home($actor)))?>">Return to admin</a></div></div></section><section class="section"><div class="container"><?php
+    if ($error!==null) {echo '<div class="notice error" role="alert">'.esc($error).'</div></div></section>';site_foot(false);exit;}
     if (!staff_can('support.login',$actor)) {
-        echo '<div class="notice warning">Your administrator account does not have client-portal review permission. An owner can manage your permissions in Administrators.</div>';admin_foot();exit;
+        echo '<div class="notice warning">Your administrator account does not have client-portal review permission. An owner can manage your permissions in Administrators.</div></div></section>';site_foot(false);exit;
     }
     if (!support_ready()||setting('support_policy_confirmed')!=='1') {
         echo '<section class="workspace-card"><h2>Set up client-portal access</h2><p>Client review must be explicitly enabled once. No customer account is created or changed by opening this page.</p>';
         if (staff_can('staff.manage',$actor)) echo '<a class="btn gold" href="'.esc(admin_url('support')).'">Set up client access</a>';
         else echo '<p>Ask an owner to enable client access.</p>';
-        echo '</section>';admin_foot();exit;
+        echo '</section></div></section>';site_foot(false);exit;
     }
+    $resume=null;
     if (support_binding()!=='') {
         $open=one('SELECT id FROM '.table('support_sessions').' WHERE binding_hash=? AND actor_id=? AND ended_at IS NULL AND expires_at>? AND last_seen_at>? ORDER BY started_at DESC LIMIT 1',[support_binding(),$actor['id'],time(),time()-300]);
-        if ($open) echo '<div class="notice info">A client review is already open. End it before choosing another client. <a href="'.esc(site_url('portal/index.php?'.http_build_query(['support'=>$open['id']]))).'">Resume current review</a></div>';
+        if ($open&&support_resolve((string)$open['id'])) {$resume=(string)$open['id'];echo '<div class="notice info">A valid client review is already open. End it before choosing another client. <a href="'.esc(site_url('portal/index.php?'.http_build_query(['support'=>$resume]))).'">Resume client view</a></div>';}
     }
-    ?><section class="workspace-card" id="master-client-accounts"><h2>Client portals</h2><p><?=support_owner_review_allowed($actor)?'Owner access: all active client accounts.':'Only active clients approved for your staff support access are listed.'?></p>
+    ?><section class="workspace-card" id="master-client-accounts"><h2>Choose a client</h2><p><?=support_owner_review_allowed($actor)?'Owner access: all active client accounts.':'Only active clients approved for your staff support access are listed.'?></p>
     <form method="get" action="<?=esc(site_url('portal/index.php'))?>"><input type="hidden" name="master" value="1"><label>Find a client by name or email<input type="search" name="q" maxlength="120" value="<?=esc($data['q'])?>"></label><div class="button-row"><button class="btn gold">Search clients</button><a class="btn outline" href="<?=esc(master_portal_url())?>">Clear search</a></div></form>
     <p class="hint">Each review is time-limited and audited. Customer payments, signatures and password changes are not available in review mode.</p>
-    <div class="workspace-grid"><?php foreach($data['clients'] as $client):?><article class="workspace-card"><h3><?=esc($client['name'])?></h3><p><?=esc($client['email'])?></p><?php support_open_form((int)$client['id']);?></article><?php endforeach;?></div>
+    <div class="workspace-grid"><?php foreach($data['clients'] as $client):?><article class="workspace-card"><h3><?=esc($client['name'])?></h3><p><?=esc($client['email'])?></p><?php if($resume===null)support_open_form((int)$client['id']);else echo '<p class="hint">End the current review before choosing another client.</p>';?></article><?php endforeach;?></div>
     <?php if(!$data['clients']):?><p role="status">No accessible active clients match this search. Clear the search or review client access settings.</p><?php endif;?>
-    <nav aria-label="Master portal client pages"><?php if($data['page']>1):?><a href="<?=esc(master_portal_url(['q'=>$data['q'],'portal_page'=>$data['page']-1]))?>">Previous clients</a> <?php endif;if($data['more']):?><a href="<?=esc(master_portal_url(['q'=>$data['q'],'portal_page'=>$data['page']+1]))?>">Next clients</a><?php endif;?></nav></section><?php
-    admin_foot();exit;
+    <nav aria-label="Client portal account pages"><?php if($data['page']>1):?><a href="<?=esc(master_portal_url(['q'=>$data['q'],'portal_page'=>$data['page']-1]))?>">Previous clients</a> <?php endif;if($data['more']):?><a href="<?=esc(master_portal_url(['q'=>$data['q'],'portal_page'=>$data['page']+1]))?>">Next clients</a><?php endif;?></nav></section></div></section><?php
+    site_foot(false);exit;
 }
 function master_portal_dispatch(): void {
     $requested=array_key_exists('master',$_GET);
     if (support_current()||array_key_exists('support',$_GET)) {
-        if ($requested) fail_page('End client review before opening the master portal.',403);
+        if ($requested) fail_page('Switch or end the current client review before choosing another client.',403);
         return;
     }
     $actor=admin_user();$entry=master_portal_entry($_GET,$_SERVER['REQUEST_METHOD']??'GET',$actor!==null);
     if ($entry==='none') return;
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
-    if ($entry==='invalid') fail_page('Invalid master portal request.',400);
+    if ($entry==='invalid') fail_page('Invalid client portal request.',400);
     if ($entry==='method') {header('Allow: GET');fail_page('Use the individual action forms for client administration.',405);}
     if ($entry==='redirect') redirect(master_portal_url());
     if (!$actor) redirect(admin_url('login',['portal'=>'master']));
