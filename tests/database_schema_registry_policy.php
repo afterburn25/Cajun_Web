@@ -9,6 +9,13 @@ function ds_ok(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$na
 try{
     $registry=database_schema_registry();
     ds_ok('Registry has one descriptor for every version marker',count($registry)===78&&array_keys($registry)===array_keys(database_schema_versions()));
+    $migrations=database_schema_migrations();$unmapped=array_values(array_diff(array_keys(database_schema_versions()),array_keys($migrations)));sort($unmapped);$separate=array_keys(database_schema_separate_setups());sort($separate);
+    ds_ok('Unified workflow maps every pure migration and leaves six disclosed feature setups separate',count($migrations)===72&&$unmapped===['delivery_schema_version','provider_stackcp_access_schema_version','provider_stackcp_assignment_schema_version','provider_stackcp_auth_schema_version','registration_drafts_schema_version','support_schema_version']&&$separate===$unmapped);
+    $metadataValid=true;foreach($migrations as $marker=>$migration){$metadataValid=$metadataValid&&isset($registry[$marker])&&is_file(CWP_CODE_ROOT.'/'.$migration['file'])&&is_string($migration['function'])&&$migration['function']!==''&&in_array($migration['arguments'],['none','password','owner'],true)&&array_is_list($migration['depends']);foreach([...$migration['depends'],...($migration['effects']??[])] as $related)$metadataValid=$metadataValid&&isset($registry[$related]);}
+    ds_ok('Every unified migration has a shipping source, supported dispatcher contract and registered dependencies',$metadataValid);
+    $allMissing=[];foreach($registry as $marker=>$entry)$allMissing[$marker]=database_schema_classify($entry,'');$plannable=true;
+    foreach(array_keys($migrations) as $marker){try{$candidate=database_schema_plan([$marker],$allMissing);$plannable=$plannable&&in_array($marker,array_column($candidate['rows'],'marker'),true);}catch(RuntimeException $e){$plannable=$plannable&&$marker==='support_tickets_schema_version'&&str_contains($e->getMessage(),'Support must be prepared through its feature setup');}}
+    ds_ok('Every mapped feature has an acyclic dependency plan or its disclosed support-policy prerequisite',$plannable);
     $found=[];$root=dirname(__DIR__).'/site';
     $iterator=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root,FilesystemIterator::SKIP_DOTS));
     foreach($iterator as $file){if($file->getExtension()!=='php'||$file->getPathname()===CWP_CODE_ROOT.'/app/settings/database_schemas.php')continue;$source=file_get_contents($file->getPathname());preg_match_all("/(?:setting|save_setting)\\(['\"]([a-z0-9_]+_version)['\"]/",$source,$matches);foreach($matches[1] as $marker)$found[$marker]=true;}
@@ -57,7 +64,7 @@ try{
         'Current selection is refused'=>fn()=>database_schema_plan(['studio_schema_version'],$currentRows),
         'Unknown selection is refused'=>fn()=>database_schema_plan(['unregistered_schema_version'],$currentRows),
         'Unsupported selection is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['license_schema_version']=database_schema_classify($registry['license_schema_version'],'99');database_schema_plan(['license_schema_version'],$bad);},
-        'Unmanaged missing dependency is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'');$bad['provider_inventory_schema_version']=database_schema_classify($registry['provider_inventory_schema_version'],'4');database_schema_plan(['provider_inventory_schema_version'],$bad);},
+        'Separately managed missing dependency is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['support_schema_version']=database_schema_classify($registry['support_schema_version'],'');$bad['support_tickets_schema_version']=database_schema_classify($registry['support_tickets_schema_version'],'');database_schema_plan(['support_tickets_schema_version'],$bad);},
         'Unsupported side effect is refused before planning'=>function()use($gatewayRows,$registry){$bad=$gatewayRows;$bad['license_finance_recovery_schema_version']=database_schema_classify($registry['license_finance_recovery_schema_version'],'99');database_schema_plan(['license_finance_gateway_schema_version'],$bad);},
     ] as $name=>$operation){$refused=false;try{$operation();}catch(InvalidArgumentException|RuntimeException){$refused=true;}ds_ok($name,$refused);}
     $executionRows=$currentRows;$executionRows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');$executionRows['software_commerce_version']=database_schema_classify($registry['software_commerce_version'],'2');
@@ -79,6 +86,13 @@ try{
     $effectRows=$gatewayRows;$effectPlan=database_schema_plan(['license_finance_gateway_schema_version'],$effectRows);$effectCalls=[];
     $effectResult=database_schema_execute_reviewed($effectPlan['requested'],$effectPlan['review_hash'],function()use(&$effectRows):array{return $effectRows;},function(string $marker)use(&$effectRows,&$effectCalls,$registry):void{$effectCalls[]=$marker;$effectRows[$marker]=database_schema_classify($registry[$marker],$registry[$marker]['current']);$effectRows['license_finance_recovery_schema_version']=database_schema_classify($registry['license_finance_recovery_schema_version'],'1');});
     ds_ok('Reviewed indirect effect may change with its declared step',$effectCalls===['license_finance_gateway_schema_version']&&count($effectResult['rows'])===2);
+    $recoveryRows=$gatewayRows;$recoveryPlan=database_schema_plan(['license_finance_recovery_schema_version'],$recoveryRows);
+    ds_ok('Selecting recovery closes over the gateway without a redundant recovery step',$recoveryPlan['order']===['license_finance_gateway_schema_version']&&array_column($recoveryPlan['rows'],'marker')===['license_finance_gateway_schema_version','license_finance_recovery_schema_version']);
+    $mailRows=$currentRows;foreach(['mail_accounts_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_notices_schema_version'] as $marker)$mailRows[$marker]=database_schema_classify($registry[$marker],'');
+    $mailPlan=database_schema_plan(['mail_notices_schema_version'],$mailRows);
+    ds_ok('Mail notice setup closes over accounts, inbox and messages in dependency order',$mailPlan['order']===['mail_accounts_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_notices_schema_version']);
+    $backupRows=$currentRows;$backupRows['backups_schema_version']=database_schema_classify($registry['backups_schema_version'],'1');$backupPlan=database_schema_plan(['backups_schema_version'],$backupRows);
+    ds_ok('Review rows disclose non-database side effects',str_contains($backupPlan['rows'][0]['note'],'private backup directory'));
 }catch(Throwable $e){$failure=$e->getMessage();}
 echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;
 exit($failure===null?0:1);

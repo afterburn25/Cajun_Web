@@ -110,6 +110,17 @@ function database_schema_required_markers(): array {
     return ['staff_schema_version','studio_schema_version'];
 }
 
+function database_schema_separate_setups(): array {
+    return [
+        'delivery_schema_version'=>'Use the website-delivery setup because it also prepares protected private delivery storage.',
+        'registration_drafts_schema_version'=>'Use domain-registration setup because it also prepares protected registration key material.',
+        'provider_stackcp_auth_schema_version'=>'Use StackCP authentication setup because it also prepares the protected provider vault.',
+        'provider_stackcp_assignment_schema_version'=>'Use StackCP assignment setup after authentication and inventory are ready.',
+        'provider_stackcp_access_schema_version'=>'Use StackCP access setup after authentication and assignment history are ready.',
+        'support_schema_version'=>'Use Support policy setup because enabling it also confirms the owner-reviewed support policy.',
+    ];
+}
+
 function database_schema_group(string $marker): string {
     return match(true) {
         str_starts_with($marker,'provider_')=>'Provider',
@@ -150,6 +161,7 @@ function database_schema_classify(array $entry,string $installed): array {
     elseif($installed===''){$state=$entry['required']?'required':'optional';$action=$entry['required']?'Required setup is missing.':'Optional feature storage is not prepared.';}
     elseif(in_array($installed,$entry['upgrade_from'],true)){$state='update';$action='A reviewed additive update is available.';}
     elseif(in_array($installed,$entry['recover_from'],true)){$state='interrupted';$action='A supported interrupted update can be resumed.';}
+    if($installed===''&&isset(database_schema_separate_setups()[$entry['marker']]))$action=database_schema_separate_setups()[$entry['marker']];
     return $entry+['installed'=>$installed,'state'=>$state,'action'=>$action,
         'needs_update'=>in_array($state,['required','update','interrupted'],true)];
 }
@@ -173,25 +185,85 @@ function database_schema_groups(array $rows): array {
 
 function database_schema_migrations(): array {
     return [
-        'staff_schema_version'=>['depends'=>[],'effects'=>[],'file'=>'database/migrations/staff_migrate.php','function'=>'staff_migrate','arguments'=>'owner'],
-        'studio_schema_version'=>['depends'=>[],'effects'=>[],'file'=>'database/migrations/workspace.php','function'=>'studio_migrate','arguments'=>'none'],
-        'backups_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/backups_migrate.php','function'=>'backups_migrate','arguments'=>'password'],
+        'staff_schema_version'=>['depends'=>[],'effects'=>[],'note'=>'Registers the current administrator as the initial owner and preserves existing administrator identities.','file'=>'database/migrations/staff_migrate.php','function'=>'staff_migrate','arguments'=>'owner'],
+        'studio_schema_version'=>['depends'=>[],'note'=>'Creates or verifies client-workspace and content-history storage.','file'=>'database/migrations/workspace.php','function'=>'studio_migrate','arguments'=>'none'],
+        'activity_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/activity_migrate.php','function'=>'activity_migrate','arguments'=>'password'],
+        'appointments_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'note'=>'Creates the one supported initial appointment-settings record when scheduling is first prepared.','file'=>'database/migrations/appointments_migrate.php','function'=>'appointments_migrate','arguments'=>'password'],
+        'backups_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'note'=>'Also creates or verifies the protected private backup directory.','file'=>'database/migrations/backups_migrate.php','function'=>'backups_migrate','arguments'=>'password'],
+        'catalog_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/catalog_migrate.php','function'=>'catalog_migrate','arguments'=>'password'],
+        'contacts_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/contacts_migrate.php','function'=>'contacts_migrate','arguments'=>'password'],
         'license_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/license_migrate.php','function'=>'license_migrate','arguments'=>'password'],
         'payments_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/payments_migrate.php','function'=>'payments_migrate','arguments'=>'password'],
+        'notification_feed_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/notification_feed_migrate.php','function'=>'notification_feed_migrate','arguments'=>'password'],
+        'proposals_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/proposals_migrate.php','function'=>'proposals_migrate','arguments'=>'password'],
+        'support_tickets_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','support_schema_version'],'file'=>'database/migrations/support_tickets_migrate.php','function'=>'support_tickets_migrate','arguments'=>'password'],
+        'website_reviews_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/reviews_migrate.php','function'=>'reviews_migrate','arguments'=>'password'],
+        'invoice_ledger_schema_version'=>['depends'=>['payments_schema_version'],'note'=>'Imports supported retained paid-invoice balances; it does not send or verify a new payment.','file'=>'database/migrations/ledger_migrate.php','function'=>'ledger_migrate','arguments'=>'password'],
+        'payment_attempts_schema_version'=>['depends'=>['payments_schema_version'],'file'=>'database/migrations/attempts_migrate.php','function'=>'attempts_migrate','arguments'=>'password'],
+        'payment_notifications_schema_version'=>['depends'=>['payment_attempts_schema_version'],'file'=>'database/migrations/notifications_migrate.php','function'=>'notifications_migrate','arguments'=>'password'],
+        'service_plans_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/service_plans_migrate.php','function'=>'service_plans_migrate','arguments'=>'password'],
+        'recurring_billing_schema_version'=>['depends'=>['staff_schema_version','service_plans_schema_version','invoice_ledger_schema_version','payments_schema_version'],'file'=>'database/migrations/recurring_billing_migrate.php','function'=>'recurring_billing_migrate','arguments'=>'password'],
+        'license_finance_offers_schema_version'=>['depends'=>['staff_schema_version','license_financing_schema_version','recurring_billing_schema_version','payments_schema_version','invoice_ledger_schema_version'],'file'=>'database/migrations/license_finance_offers_migrate.php','function'=>'license_finance_offers_prepare','arguments'=>'password'],
+        'license_finance_recovery_schema_version'=>['depends'=>['license_finance_gateway_schema_version'],'file'=>'database/migrations/license_finance_recovery_migrate.php','function'=>'license_finance_recovery_prepare','arguments'=>'password'],
         'provider_inventory_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_settings_schema_version'],'file'=>'database/migrations/provider_inventory_migrate.php','function'=>'provider_inventory_migrate','arguments'=>'password'],
         'provider_operations_schema_version'=>['depends'=>['staff_schema_version','provider_settings_schema_version','provider_inventory_schema_version'],'file'=>'database/migrations/provider_operations_migrate.php','function'=>'provider_operations_migrate','arguments'=>'password'],
         'software_commerce_version'=>['depends'=>['staff_schema_version','studio_schema_version','license_schema_version','catalog_schema_version'],'file'=>'database/migrations/software_commerce_migrate.php','function'=>'software_commerce_prepare','arguments'=>'password'],
+        'software_onboarding_version'=>['depends'=>['staff_schema_version','catalog_schema_version','software_commerce_version'],'file'=>'database/migrations/software_onboarding_migrate.php','function'=>'software_onboarding_prepare','arguments'=>'none'],
         'license_financing_schema_version'=>['depends'=>['staff_schema_version','license_schema_version','recurring_billing_schema_version'],'file'=>'database/migrations/license_financing_migrate.php','function'=>'license_financing_prepare','arguments'=>'password'],
         'license_finance_gateway_schema_version'=>['depends'=>['staff_schema_version','license_finance_offers_schema_version','payments_schema_version','invoice_ledger_schema_version'],'effects'=>['license_finance_recovery_schema_version'],'file'=>'database/migrations/license_finance_gateway_migrate.php','function'=>'license_finance_gateway_prepare','arguments'=>'password'],
         'service_plans_checkout_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','service_plans_schema_version'],'file'=>'database/migrations/service_plans_checkout_migrate.php','function'=>'service_plans_checkout_migrate','arguments'=>'password'],
         'recurring_billing_checkout_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','recurring_billing_schema_version','service_plans_checkout_schema_version','invoice_ledger_schema_version'],'file'=>'database/migrations/recurring_billing_checkout_migrate.php','function'=>'recurring_billing_checkout_migrate','arguments'=>'password'],
+        'mail_accounts_schema_version'=>['depends'=>['staff_schema_version'],'file'=>'database/migrations/mail_accounts_migrate.php','function'=>'mail_accounts_migrate','arguments'=>'password'],
+        'mail_connections_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_connections_migrate.php','function'=>'mail_connections_migrate','arguments'=>'password'],
+        'mail_drafts_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_drafts_migrate.php','function'=>'mail_drafts_migrate','arguments'=>'password'],
+        'mail_inbox_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_inbox_migrate.php','function'=>'mail_inbox_migrate','arguments'=>'password'],
+        'mail_messages_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_messages_migrate.php','function'=>'mail_messages_migrate','arguments'=>'password'],
+        'mail_notices_schema_version'=>['depends'=>['mail_accounts_schema_version','mail_inbox_schema_version','mail_messages_schema_version'],'file'=>'database/migrations/mail_notices_migrate.php','function'=>'mail_notices_migrate','arguments'=>'password'],
+        'mail_submissions_schema_version'=>['depends'=>['mail_accounts_schema_version','mail_drafts_schema_version'],'file'=>'database/migrations/mail_submissions_migrate.php','function'=>'mail_submissions_migrate','arguments'=>'password'],
+        'mail_templates_schema_version'=>['depends'=>['staff_schema_version'],'file'=>'database/migrations/mail_templates_migrate.php','function'=>'mail_templates_migrate','arguments'=>'password'],
+        'hosting_records_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/hosting_records_migrate.php','function'=>'hosting_records_migrate','arguments'=>'password'],
+        'hosting_operations_schema_version'=>['depends'=>['hosting_records_schema_version','provider_settings_schema_version'],'file'=>'database/migrations/hosting_operations_migrate.php','function'=>'hosting_operations_migrate','arguments'=>'password'],
+        'service_orders_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','service_plans_schema_version'],'file'=>'database/migrations/service_orders_migrate.php','function'=>'service_orders_migrate','arguments'=>'password'],
+        'hosting_order_links_schema_version'=>['depends'=>['service_orders_schema_version','hosting_records_schema_version'],'file'=>'database/migrations/hosting_order_links_migrate.php','function'=>'hosting_order_links_migrate','arguments'=>'password'],
+        'hosting_reconciliation_schema_version'=>['depends'=>['hosting_records_schema_version','hosting_operations_schema_version'],'file'=>'database/migrations/hosting_reconciliation_migrate.php','function'=>'hosting_reconciliation_migrate','arguments'=>'password'],
+        'hosting_fulfillment_schema_version'=>['depends'=>['service_orders_schema_version','hosting_records_schema_version','hosting_order_links_schema_version','hosting_operations_schema_version','provider_operations_schema_version','hosting_reconciliation_schema_version'],'file'=>'database/migrations/hosting_fulfillment_migrate.php','function'=>'hosting_fulfillment_migrate','arguments'=>'password'],
+        'service_observations_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version'],'file'=>'app/providers/service_observations_storage.php','function'=>'service_observations_prepare','arguments'=>'password'],
+        'provider_settings_schema_version'=>['depends'=>['staff_schema_version'],'file'=>'database/migrations/provider_settings_migrate.php','function'=>'provider_settings_migrate','arguments'=>'password'],
+        'provider_catalog_import_version'=>['depends'=>['staff_schema_version','catalog_schema_version','provider_settings_schema_version'],'file'=>'database/migrations/provider_catalog_import_migrate.php','function'=>'provider_catalog_import_prepare','arguments'=>'none'],
+        'provider_catalog_variant_version'=>['depends'=>['provider_catalog_import_version'],'file'=>'database/migrations/provider_catalog_variant_migrate.php','function'=>'provider_catalog_variant_prepare','arguments'=>'password'],
+        'provider_cloud_confirmation_schema_version'=>['depends'=>['provider_inventory_schema_version','provider_operations_schema_version'],'file'=>'app/providers/cloud_confirmation_storage.php','function'=>'provider_cloud_confirmation_prepare','arguments'=>'password'],
+        'provider_cloud_providers_schema_version'=>['depends'=>['provider_inventory_schema_version'],'file'=>'app/providers/cloud_providers_storage.php','function'=>'provider_cloud_providers_prepare','arguments'=>'password'],
+        'provider_cloud_site_request_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version','provider_operations_schema_version'],'file'=>'app/providers/cloud_site_requests_storage.php','function'=>'provider_cloud_site_requests_prepare','arguments'=>'password'],
+        'provider_directory_indexing_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version'],'file'=>'app/providers/directory_listing_storage.php','function'=>'provider_directory_indexing_prepare','arguments'=>'password'],
+        'provider_directory_indexing_control_schema_version'=>['depends'=>['provider_directory_indexing_schema_version','provider_operations_schema_version'],'file'=>'app/providers/directory_listing_controls_storage.php','function'=>'provider_directory_indexing_controls_prepare','arguments'=>'password'],
+        'provider_document_roots_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version'],'file'=>'app/providers/document_roots_storage.php','function'=>'provider_document_roots_prepare','arguments'=>'password'],
+        'provider_domain_search_schema_version'=>['depends'=>['provider_settings_schema_version'],'file'=>'database/migrations/provider_domain_search_migrate.php','function'=>'provider_domain_search_migrate','arguments'=>'password'],
+        'provider_domain_client_schema_version'=>['depends'=>['studio_schema_version','provider_domain_search_schema_version'],'file'=>'app/providers/domain_search_clients.php','function'=>'provider_domain_client_prepare','arguments'=>'password'],
+        'provider_force_ssl_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version'],'file'=>'app/providers/package_force_ssl_storage.php','function'=>'provider_force_ssl_prepare','arguments'=>'password'],
+        'provider_force_ssl_control_schema_version'=>['depends'=>['provider_force_ssl_schema_version','provider_operations_schema_version'],'file'=>'app/providers/force_ssl_controls_storage.php','function'=>'provider_force_ssl_controls_prepare','arguments'=>'password'],
+        'provider_forwarding_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version','provider_operations_schema_version'],'file'=>'app/providers/forwarding_storage.php','function'=>'provider_forwarding_prepare','arguments'=>'password'],
+        'provider_mailbox_schema_version'=>['depends'=>['studio_schema_version','provider_inventory_schema_version','provider_operations_schema_version'],'file'=>'app/providers/mailbox_storage.php','function'=>'provider_mailbox_prepare','arguments'=>'password'],
+        'provider_package_types_schema_version'=>['depends'=>['provider_inventory_schema_version'],'file'=>'database/migrations/provider_package_types_migrate.php','function'=>'provider_package_types_prepare','arguments'=>'password'],
+        'provider_php_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version'],'file'=>'app/providers/package_php_storage.php','function'=>'provider_php_prepare','arguments'=>'password'],
+        'provider_plan_catalog_version'=>['depends'=>['service_plans_schema_version','provider_settings_schema_version'],'file'=>'app/providers/plan_catalog.php','function'=>'provider_plan_catalog_prepare','arguments'=>'password'],
+        'provider_registrar_schema_version'=>['depends'=>['provider_inventory_schema_version'],'file'=>'app/providers/registrar_storage.php','function'=>'provider_registrar_prepare','arguments'=>'password'],
+        'provider_registration_period_version'=>['depends'=>['provider_inventory_schema_version'],'file'=>'app/providers/registration_period_storage.php','function'=>'provider_registration_period_prepare','arguments'=>'password'],
+        'provider_schedule_version'=>['depends'=>['provider_inventory_schema_version'],'note'=>'Creates the supported initial local refresh schedule document; it does not call the provider.','file'=>'app/providers/schedule_storage.php','function'=>'provider_schedule_prepare','arguments'=>'password'],
+        'provider_wp_installed_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_inventory_schema_version'],'file'=>'app/providers/package_wordpress_installed_storage.php','function'=>'provider_wp_installed_prepare','arguments'=>'password'],
+        'domain_contracts_schema_version'=>['depends'=>['provider_registrar_schema_version'],'file'=>'app/providers/domain_contracts_storage.php','function'=>'domain_contracts_prepare','arguments'=>'password'],
+        'domain_expiry_schema_version'=>['depends'=>['provider_registrar_schema_version'],'file'=>'app/providers/domain_expiry_storage.php','function'=>'domain_expiry_prepare','arguments'=>'password'],
+        'domain_renewals_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_registrar_schema_version'],'file'=>'app/providers/domain_renewals_storage.php','function'=>'domain_renewals_prepare','arguments'=>'password'],
+        'domain_renewal_agreements_schema_version'=>['depends'=>['domain_renewals_schema_version','provider_registrar_schema_version','service_plans_schema_version'],'file'=>'app/providers/domain_renewal_agreements_storage.php','function'=>'domain_renewal_agreements_prepare','arguments'=>'password'],
+        'domain_renewal_dispatch_schema_version'=>['depends'=>['domain_renewal_agreements_schema_version','provider_operations_schema_version'],'file'=>'app/providers/domain_renewal_dispatch_storage.php','function'=>'domain_renewal_dispatch_prepare','arguments'=>'password'],
+        'hosting_catalog_version'=>['depends'=>['catalog_schema_version','provider_plan_catalog_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_catalog_migrate.php','function'=>'hosting_catalog_prepare','arguments'=>'password'],
+        'hosting_checkout_version'=>['depends'=>['hosting_catalog_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_checkout_migrate.php','function'=>'hosting_checkout_prepare','arguments'=>'password'],
     ];
 }
 
 function database_schema_plan(array $requested,array $snapshot): array {
     if(!array_is_list($requested)||count($requested)<1||count($requested)>count(database_schema_versions()))throw new InvalidArgumentException('Choose one or more registered database updates.');
     foreach($snapshot as $row)if(($row['state']??null)==='unsupported')throw new RuntimeException('Resolve unsupported database feature versions before applying another update.');
-    $migrations=array_map(fn(array $row):array=>$row+['effects'=>[]],database_schema_migrations());$selected=[];$effects=[];
+    $migrations=array_map(fn(array $row):array=>$row+['effects'=>[],'note'=>''],database_schema_migrations());$selected=[];$effects=[];
     foreach($requested as $marker){if(!is_string($marker)||!isset($snapshot[$marker],$migrations[$marker]))throw new InvalidArgumentException('Unknown or separately managed database update.');$selected[$marker]=true;}
     $visit=function(string $marker)use(&$visit,&$selected,&$effects,$snapshot,$migrations):void{
         $row=$snapshot[$marker]??null;if(!$row||!isset($migrations[$marker]))throw new RuntimeException('A selected database dependency is not managed by this workflow.');
@@ -216,6 +288,7 @@ function database_schema_plan(array $requested,array $snapshot): array {
         }
     };
     foreach(array_keys($selected) as $marker)$visit($marker);
+    foreach(array_keys($selected) as $marker)if(($snapshot[$marker]['state']??'current')!=='current')foreach($migrations[$marker]['effects'] as $effect)unset($selected[$effect]);
     $ordered=[];$temporary=[];$complete=[];
     $sort=function(string $marker)use(&$sort,&$ordered,&$temporary,&$complete,$selected,$migrations):void{
         if(isset($complete[$marker]))return;if(isset($temporary[$marker]))throw new LogicException('Cyclic database migration dependency.');$temporary[$marker]=true;
@@ -224,7 +297,7 @@ function database_schema_plan(array $requested,array $snapshot): array {
     };
     $keys=array_keys($selected);sort($keys,SORT_STRING);foreach($keys as $marker)$sort($marker);
     $rowFor=fn(string $marker):array=>['marker'=>$marker,'installed'=>$snapshot[$marker]['installed'],'current'=>$snapshot[$marker]['current'],'state'=>$snapshot[$marker]['state'],'label'=>$snapshot[$marker]['label']];
-    $rows=[];$steps=[];foreach($ordered as $marker){$row=$snapshot[$marker];if($row['state']==='current')continue;$steps[]=$marker;$rows[]=$rowFor($marker);foreach($effects[$marker]??[] as $effect)$rows[]=$rowFor($effect);}
+    $rows=[];$steps=[];foreach($ordered as $marker){$row=$snapshot[$marker];if($row['state']==='current')continue;$steps[]=$marker;$step=$rowFor($marker);$step['note']=$migrations[$marker]['note'];$rows[]=$step;foreach($effects[$marker]??[] as $effect){$effectRow=$rowFor($effect);$effectRow['note']='Prepared as a declared effect of '.$row['label'].'.';$rows[]=$effectRow;}}
     if(!$rows)throw new InvalidArgumentException('The selected database features are already current.');
     $review=['format'=>1,'steps'=>$steps,'rows'=>$rows];$hash=hash('sha256',json_encode($review,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES));
     return ['requested'=>array_values(array_unique($requested)),'order'=>$steps,'rows'=>$rows,'review_hash'=>$hash];
@@ -234,7 +307,7 @@ function database_schema_execute_reviewed(array $requested,string $reviewHash,ca
     if(!preg_match('/^[a-f0-9]{64}$/D',$reviewHash))throw new InvalidArgumentException('Reload and review the exact database update plan.');
     $before=$snapshot();$plan=database_schema_plan($requested,$before);
     if(!hash_equals($plan['review_hash'],$reviewHash))throw new RuntimeException('Database state or selected updates changed. Reload and review the plan again.');
-    $reviewed=array_fill_keys(array_column($plan['rows'],'marker'),true);$migrations=array_map(fn(array $row):array=>$row+['effects'=>[]],database_schema_migrations());$applied=[];
+    $reviewed=array_fill_keys(array_column($plan['rows'],'marker'),true);$migrations=array_map(fn(array $row):array=>$row+['effects'=>[],'note'=>''],database_schema_migrations());$applied=[];
     foreach($plan['order'] as $marker){
         $stepRow=$before[$marker];if($recordStep)$recordStep('started',$marker,$stepRow,null);
         try{
