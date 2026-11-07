@@ -15,10 +15,9 @@ function studio_admin_action(string $action,array $user): never {
             $_SESSION['database_schema_review']=['requested'=>$plan['requested'],'review_hash'=>$plan['review_hash']];
             redirect(admin_url('studio-upgrade',['database_review'=>$plan['review_hash']]));
         }
-        $stored=$_SESSION['database_schema_review']??null;$normalized=array_values(array_unique($requested));
-        if(!is_array($stored)||($stored['requested']??null)!==$normalized||!is_string($stored['review_hash']??null)||!hash_equals($stored['review_hash'],posted('review_hash',64)))throw new RuntimeException('Reload and review the exact database update plan before applying it.');
+        $bound=database_schema_bound_review($requested,posted('review_hash',64));
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you reviewed the exact ordered database plan and saved a current backup.');
-        $result=database_schema_apply($normalized,$stored['review_hash']);unset($_SESSION['database_schema_review']);
+        $result=database_schema_apply($bound['requested'],$bound['review_hash']);unset($_SESSION['database_schema_review']);
         flash('Database updates completed: '.implode(', ',array_column($result['rows'],'label')).'. Existing records were preserved.');redirect(admin_url('studio-upgrade'));
     }
     if($action==='studio_migrate'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a backup before updating.');studio_migrate();flash('Database update completed. Existing content was preserved.');redirect(admin_url('studio-upgrade'));}

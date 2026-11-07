@@ -19,5 +19,10 @@ try{
     $GLOBALS['db_policy']['support']=true;da_ok('Active client review is refused',da_refuses('database_schema_current_owner'));$GLOBALS['db_policy']['support']=false;
     $GLOBALS['db_policy']['binding']='bound';da_ok('Bound resumable client review is refused',da_refuses('database_schema_current_owner'));$GLOBALS['db_policy']['binding']='';
     $GLOBALS['db_policy']['valid']=false;da_ok('Revoked administrator session is refused',da_refuses('database_schema_current_owner'));
+    $hash=str_repeat('a',64);$_SESSION['database_schema_review']=['requested'=>['license_schema_version','payments_schema_version'],'review_hash'=>$hash];
+    da_ok('Exact stored review binds selected order and hash',database_schema_bound_review(['license_schema_version','payments_schema_version'],$hash)['requested']===['license_schema_version','payments_schema_version']);
+    da_ok('Reordered apply request cannot bypass the displayed review',da_refuses(fn()=>database_schema_bound_review(['payments_schema_version','license_schema_version'],$hash)));
+    da_ok('Changed review hash is refused',da_refuses(fn()=>database_schema_bound_review(['license_schema_version','payments_schema_version'],str_repeat('b',64))));
+    unset($_SESSION['database_schema_review']);da_ok('Missing stored review is refused',da_refuses(fn()=>database_schema_bound_review(['license_schema_version'],$hash)));
 }catch(Throwable $e){$failure=$e->getMessage();}
 echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;exit($failure===null?0:1);

@@ -259,6 +259,12 @@ function database_schema_current_owner(): array {
     return $actor;
 }
 
+function database_schema_bound_review(array $requested,string $reviewHash): array {
+    $normalized=array_values(array_unique($requested));$stored=$_SESSION['database_schema_review']??null;
+    if(!is_array($stored)||($stored['requested']??null)!==$normalized||!is_string($stored['review_hash']??null)||!hash_equals($stored['review_hash'],$reviewHash))throw new RuntimeException('Reload and review the exact database update plan before applying it.');
+    return ['requested'=>$normalized,'review_hash'=>$stored['review_hash']];
+}
+
 function database_schema_run_migration(string $marker,array $migration,array $actor): void {
     require_once CWP_CODE_ROOT.'/'.$migration['file'];$function=$migration['function'];
     if(!function_exists($function))throw new LogicException('Registered database migration is unavailable: '.$marker);
