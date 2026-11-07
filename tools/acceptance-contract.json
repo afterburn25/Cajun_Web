@@ -710,8 +710,8 @@
       "Database-Updates-Mobile.png"
     ],
     "source_sha256": {
-      "site/app/settings/database_schemas.php": "47e3256cb5f92eb9c629f865d94c3f6c4aba2a62bc28daab941a07b35e288188",
-      "tests/database_schema_registry_policy.php": "7db0a6724b60427f855f81919e6fe9389167cf7f692bfb549b3a8525b701d739",
+      "site/app/settings/database_schemas.php": "fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d",
+      "tests/database_schema_registry_policy.php": "9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd",
       "tests/database_schema_action_policy.php": "af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd",
       "tests/database_schema_view_policy.php": "4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935",
       "tests/database_schema_native.php": "11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768",
