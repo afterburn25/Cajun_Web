@@ -49,10 +49,19 @@ def run_browser(env,browser):
 
     delegated=login_owner();_,delegated_location,delegated_review=database_plan(delegated,upgrade,['contacts_schema_version'],soup,form_for)
     owner_id=db("SELECT id FROM ci_users WHERE email='owner@example.invalid'")[0]['id'];profile=db('SELECT role,permissions FROM ci_staff_profiles WHERE user_id=?',[owner_id])[0]
-    db("UPDATE ci_staff_profiles SET role='administrator',permissions='[\"staff.manage\"]' WHERE user_id=?",[owner_id])
+    delegated_permissions=json.dumps(['mail.read','mail.send','mail.templates.manage','payments.manage','catalog.manage','website.manage','clients.manage','support.tickets','support.login','support.write','support.download'],separators=(',',':'))
+    delegated_audit=db("SELECT COUNT(*) AS n FROM ci_audit WHERE action LIKE 'database.update.%'")[0]['n']
+    db("UPDATE ci_staff_profiles SET role='administrator',permissions=? WHERE user_id=?",[delegated_permissions,owner_id])
     response=database_apply(delegated,delegated_location,delegated_review,form_for,True)
-    check('Delegated staff management cannot replace owner authority','Only the active owner' in response.text and not marker() and not contacts_tables())
+    check('Fully delegated administrator cannot apply owner-reviewed database updates',response.status_code==403 and 'access to this section' in response.text and not marker() and not contacts_tables() and db("SELECT COUNT(*) AS n FROM ci_audit WHERE action LIKE 'database.update.%'")[0]['n']==delegated_audit)
     db('UPDATE ci_staff_profiles SET role=?,permissions=? WHERE user_id=?',[profile['role'],profile['permissions'],owner_id]);delegated.close()
+
+    malformed=login_owner();_,malformed_location,malformed_review=database_plan(malformed,upgrade,['contacts_schema_version'],soup,form_for)
+    malformed_audit=db("SELECT COUNT(*) AS n FROM ci_audit WHERE action LIKE 'database.update.%'")[0]['n']
+    db("UPDATE ci_staff_profiles SET role='administrator',permissions='[\"staff.manage\"]' WHERE user_id=?",[owner_id])
+    response=database_apply(malformed,malformed_location,malformed_review,form_for,True)
+    check('Malformed delegated management profile fails closed before database apply',response.status_code==200 and 'Sign in' in response.text and 'view=login' in response.url and not marker() and not contacts_tables() and db("SELECT COUNT(*) AS n FROM ci_audit WHERE action LIKE 'database.update.%'")[0]['n']==malformed_audit)
+    db('UPDATE ci_staff_profiles SET role=?,permissions=? WHERE user_id=?',[profile['role'],profile['permissions'],owner_id]);malformed.close()
 
     support=login_owner();support_page=support.get(admin+'?view=support');support_form=None
     for candidate in soup(support_page).select('form'):
