@@ -18,6 +18,8 @@ $actions=routing_source('site/admin/controllers/actions.php');
 $permissions=routing_source('site/app/staff/accounts.php');
 $studio=routing_source('site/admin/controllers/studio.php');
 $grants=routing_source('site/app/licenses/software_grants.php');
+$products=routing_source('site/app/licenses/software_products.php');
+$assets=routing_source('site/app/licenses/software_assets.php');
 
 routing_ok(
     str_contains($actions,"str_starts_with(\$action,'studio_')||str_starts_with(\$action,'software_')")
@@ -59,11 +61,20 @@ routing_ok(str_contains($issueBranch,"posted('confirm',1)!=='1'")
     &&str_contains($issueBranch,'software_grant_manual_review(')
     &&str_contains($issueBranch,"\$current['release']===null")
     &&str_contains($issueBranch,'software_grant_manual_review_hash($current)')
+    &&str_contains($issueBranch,'staff_locked(function()')
+    &&str_contains($issueBranch,"staff_require('staff.manage');")
     &&str_contains($issueBranch,'db()->beginTransaction()')
     &&str_contains($issueBranch,'software_grant_create(')
-    &&strpos($issueBranch,'software_grant_manual_review(')<strpos($issueBranch,'db()->beginTransaction()')
-    &&strpos($issueBranch,'db()->beginTransaction()')<strpos($issueBranch,'software_grant_create('),
-    'Issuance requires confirmation, exact session token, fresh review and the existing transaction engine');
+    &&strpos($issueBranch,'staff_locked(function()')<strpos($issueBranch,'db()->beginTransaction()')
+    &&strpos($issueBranch,'db()->beginTransaction()')<strpos($issueBranch,'software_grant_manual_review(')
+    &&strpos($issueBranch,'software_grant_manual_review(')<strpos($issueBranch,'software_grant_create(')
+    &&strpos($issueBranch,'software_grant_create(')<strpos($issueBranch,'db()->commit()'),
+    'Issuance requires confirmation, exact session token and a fresh review inside the mutation transaction');
+routing_ok(
+    str_contains($products,'return staff_locked(fn()=>staff_transaction(fn()=>software_product_policy_save_in_transaction(')
+    &&str_contains($assets,'return staff_locked(fn()=>staff_transaction(function()use($assetId,$customerVisible,$password):bool{'),
+    'Policy and release-visibility mutations use the same staff mutex as final issuance review'
+);
 routing_ok(str_contains($grants,'function software_grant_manual_review(')
     &&str_contains($grants,'[SoftwareLicensePolicy::STANDARD,SoftwareLicensePolicy::TRIAL,SoftwareLicensePolicy::TEMPORARY]')
     &&str_contains($grants,"WHERE id=? AND active=1")

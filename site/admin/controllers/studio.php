@@ -278,28 +278,37 @@ function studio_admin_action(string $action,array $user): never {
             unset($_SESSION['software_license_review']);
             throw new RuntimeException('That license review expired. Review the current product, customer, domain and terms again.');
         }
-        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
-        $current=software_grant_manual_review((int)$input['customer_id'],(string)$input['product_id'],
-            (string)$input['license_type'],(string)$input['licensee_name'],
-            $input['domain'],$input['expires_at']);
-        if($current['release']===null){
-            unset($_SESSION['software_license_review']);
-            throw new RuntimeException('Approve a customer-visible software release, then review the license again before issuing.');
-        }
-        if(!is_string($draft['snapshot_hash']??null)
-            ||!hash_equals($draft['snapshot_hash'],software_grant_manual_review_hash($current))){
-            unset($_SESSION['software_license_review']);
-            throw new RuntimeException('The product, customer, license policy or approved release changed. Review the current details again before issuing.');
-        }
         if(db()->inTransaction())throw new LogicException('License issuance owns its transaction.');
-        db()->beginTransaction();
-        try{
-            $result=software_grant_create((int)$input['customer_id'],(string)$input['product_id'],
-                (string)$input['license_type'],(string)$input['licensee_name'],
-                $input['domain'],$input['expires_at'],
-                (int)$user['id'],null,null,'',false,$current['policy']);
-            db()->commit();
-        }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        $issued=staff_locked(function()use($draft,$input,$user):array{
+            if(support_current())throw new RuntimeException('Leave client support before issuing a customer license.');
+            staff_require('staff.manage');
+            db()->beginTransaction();
+            try{
+                // Product, policy and release mutations use this same staff mutex.
+                // Rebuild the review after acquiring it so none can commit between
+                // the equality check and the entitlement insert.
+                $current=software_grant_manual_review((int)$input['customer_id'],(string)$input['product_id'],
+                    (string)$input['license_type'],(string)$input['licensee_name'],
+                    $input['domain'],$input['expires_at']);
+                if($current['release']===null){
+                    unset($_SESSION['software_license_review']);
+                    throw new RuntimeException('Approve a customer-visible software release, then review the license again before issuing.');
+                }
+                if(!is_string($draft['snapshot_hash']??null)
+                    ||!hash_equals($draft['snapshot_hash'],software_grant_manual_review_hash($current))){
+                    unset($_SESSION['software_license_review']);
+                    throw new RuntimeException('The product, customer, license policy or approved release changed. Review the current details again before issuing.');
+                }
+                $result=software_grant_create((int)$input['customer_id'],(string)$input['product_id'],
+                    (string)$input['license_type'],(string)$input['licensee_name'],
+                    $input['domain'],$input['expires_at'],
+                    (int)$user['id'],null,null,'',false,$current['policy']);
+                db()->commit();
+                return ['result'=>$result,'current'=>$current];
+            }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+        });
+        $result=$issued['result'];$current=$issued['current'];
         unset($_SESSION['software_license_review']);
         $_SESSION['license_key_created']=$result['key'];
         $_SESSION['license_created_summary']=$current['product']['title'].' issued to '.$current['customer']['name'].' for '.$current['license']['domain'];
