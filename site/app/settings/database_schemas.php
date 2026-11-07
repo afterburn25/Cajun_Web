@@ -372,8 +372,10 @@ function database_schema_history(int $limit=12): array {
 }
 
 function database_schema_apply(array $requested,string $reviewHash): array {
-    $actor=database_schema_current_owner();
-    return database_schema_locked(fn()=>database_schema_execute_reviewed($requested,$reviewHash,'database_schema_snapshot',
-        fn(string $marker,array $migration)=>database_schema_run_migration($marker,$migration,$actor),
-        fn(string $outcome,string $marker,array $row,?Throwable $error)=>database_schema_record_step($outcome,$marker,$row,$reviewHash,$error)));
+    return database_schema_locked(function()use($requested,$reviewHash):array {
+        $actor=database_schema_current_owner();
+        return database_schema_execute_reviewed($requested,$reviewHash,'database_schema_snapshot',
+            fn(string $marker,array $migration)=>database_schema_run_migration($marker,$migration,$actor),
+            fn(string $outcome,string $marker,array $row,?Throwable $error)=>database_schema_record_step($outcome,$marker,$row,$reviewHash,$error));
+    });
 }
