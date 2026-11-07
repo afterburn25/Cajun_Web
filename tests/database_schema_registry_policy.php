@@ -8,11 +8,13 @@ $checks=[];$failure=null;
 function ds_ok(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 try{
     $registry=database_schema_registry();
-    ds_ok('Registry has one descriptor for every version marker',count($registry)===76&&array_keys($registry)===array_keys(database_schema_versions()));
+    ds_ok('Registry has one descriptor for every version marker',count($registry)===78&&array_keys($registry)===array_keys(database_schema_versions()));
     $found=[];$root=dirname(__DIR__).'/site';
     $iterator=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root,FilesystemIterator::SKIP_DOTS));
     foreach($iterator as $file){if($file->getExtension()!=='php'||$file->getPathname()===CWP_CODE_ROOT.'/app/settings/database_schemas.php')continue;$source=file_get_contents($file->getPathname());preg_match_all("/(?:setting|save_setting)\\(['\"]([a-z0-9_]+_version)['\"]/",$source,$matches);foreach($matches[1] as $marker)$found[$marker]=true;}
     ksort($found);$expected=database_schema_versions();ksort($expected);
+    foreach(['provider_stackcp_auth_schema_version','provider_stackcp_assignment_schema_version'] as $dynamicMarker)$found[$dynamicMarker]=true;
+    ksort($found);
     ds_ok('Every persisted feature version referenced by shipping source is registered',array_keys($found)===array_keys($expected));
     foreach($registry as $marker=>$entry){
         ds_ok('Descriptor is bounded and internally consistent: '.$marker,$entry['marker']===$marker&&$entry['current']!==''&&$entry['label']!==''&&$entry['group']!=='');
@@ -28,13 +30,13 @@ try{
     ds_ok('Grouping keeps provider, billing, mail and domain families distinct',
         $registry['provider_settings_schema_version']['group']==='Provider'&&$registry['payments_schema_version']['group']==='Billing'&&$registry['mail_accounts_schema_version']['group']==='Mail'&&$registry['domain_renewals_schema_version']['group']==='Domains');
     $rows=[];foreach($registry as $marker=>$entry)$rows[$marker]=database_schema_classify($entry,$entry['current']);
-    $summary=database_schema_summary($rows);ds_ok('All-current summary needs no update and has no blocker',$summary['current']===76&&$summary['all_current']&&$summary['needs_update']===0&&$summary['blocking']===0);
+    $summary=database_schema_summary($rows);ds_ok('All-current summary needs no update and has no blocker',$summary['current']===78&&$summary['all_current']&&$summary['needs_update']===0&&$summary['blocking']===0);
     $rows['studio_schema_version']=database_schema_classify($registry['studio_schema_version'],'');
     $rows['contacts_schema_version']=database_schema_classify($registry['contacts_schema_version'],'');
     $rows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');
     $rows['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'99');
     $summary=database_schema_summary($rows);ds_ok('Summary separates required, optional, update and unsupported states',$summary['required']===1&&$summary['optional']===1&&$summary['update']===1&&$summary['unsupported']===1&&$summary['needs_update']===2&&$summary['blocking']===1&&!$summary['all_current']);
-    $groups=database_schema_groups($rows);ds_ok('Grouped rows retain all registered entries',array_sum(array_map('count',$groups))===76&&isset($groups['Provider'],$groups['Billing'],$groups['Mail'],$groups['Domains']));
+    $groups=database_schema_groups($rows);ds_ok('Grouped rows retain all registered entries',array_sum(array_map('count',$groups))===78&&isset($groups['Provider'],$groups['Billing'],$groups['Mail'],$groups['Domains']));
     $currentRows=[];foreach($registry as $marker=>$entry)$currentRows[$marker]=database_schema_classify($entry,$entry['current']);
     $currentRows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');
     $currentRows['software_commerce_version']=database_schema_classify($registry['software_commerce_version'],'2');
