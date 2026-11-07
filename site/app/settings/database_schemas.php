@@ -168,3 +168,54 @@ function database_schema_summary(array $rows): array {
 function database_schema_groups(array $rows): array {
     $groups=[];foreach($rows as $row)$groups[$row['group']][]=$row;ksort($groups);return $groups;
 }
+
+function database_schema_migrations(): array {
+    return [
+        'staff_schema_version'=>['depends'=>[],'file'=>'database/migrations/staff_migrate.php','function'=>'staff_migrate','arguments'=>'owner'],
+        'studio_schema_version'=>['depends'=>[],'file'=>'database/migrations/workspace.php','function'=>'studio_migrate','arguments'=>'none'],
+        'backups_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/backups_migrate.php','function'=>'backups_migrate','arguments'=>'password'],
+        'license_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/license_migrate.php','function'=>'license_migrate','arguments'=>'password'],
+        'payments_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/payments_migrate.php','function'=>'payments_migrate','arguments'=>'password'],
+        'provider_inventory_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','provider_settings_schema_version'],'file'=>'database/migrations/provider_inventory_migrate.php','function'=>'provider_inventory_migrate','arguments'=>'password'],
+        'provider_operations_schema_version'=>['depends'=>['staff_schema_version','provider_settings_schema_version','provider_inventory_schema_version'],'file'=>'database/migrations/provider_operations_migrate.php','function'=>'provider_operations_migrate','arguments'=>'password'],
+        'software_commerce_version'=>['depends'=>['staff_schema_version','studio_schema_version','license_schema_version','catalog_schema_version'],'file'=>'database/migrations/software_commerce_migrate.php','function'=>'software_commerce_prepare','arguments'=>'password'],
+        'license_financing_schema_version'=>['depends'=>['staff_schema_version','license_schema_version','recurring_billing_schema_version'],'file'=>'database/migrations/license_financing_migrate.php','function'=>'license_financing_prepare','arguments'=>'password'],
+        'license_finance_gateway_schema_version'=>['depends'=>['staff_schema_version','license_finance_offers_schema_version','payments_schema_version','invoice_ledger_schema_version'],'file'=>'database/migrations/license_finance_gateway_migrate.php','function'=>'license_finance_gateway_prepare','arguments'=>'password'],
+        'service_plans_checkout_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','service_plans_schema_version'],'file'=>'database/migrations/service_plans_checkout_migrate.php','function'=>'service_plans_checkout_migrate','arguments'=>'password'],
+        'recurring_billing_checkout_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','recurring_billing_schema_version','service_plans_checkout_schema_version','invoice_ledger_schema_version'],'file'=>'database/migrations/recurring_billing_checkout_migrate.php','function'=>'recurring_billing_checkout_migrate','arguments'=>'password'],
+    ];
+}
+
+function database_schema_plan(array $requested,array $snapshot): array {
+    if(!array_is_list($requested)||count($requested)<1||count($requested)>count(database_schema_versions()))throw new InvalidArgumentException('Choose one or more registered database updates.');
+    $migrations=database_schema_migrations();$selected=[];
+    foreach($requested as $marker){if(!is_string($marker)||!isset($snapshot[$marker],$migrations[$marker]))throw new InvalidArgumentException('Unknown or separately managed database update.');$selected[$marker]=true;}
+    $visit=function(string $marker)use(&$visit,&$selected,$snapshot,$migrations):void{
+        $row=$snapshot[$marker]??null;if(!$row||!isset($migrations[$marker]))throw new RuntimeException('A selected database dependency is not managed by this workflow.');
+        if(in_array($row['state'],['current','unsupported'],true)){
+            if($row['state']==='current')return;
+            throw new RuntimeException($row['label'].' has an unsupported installed version.');
+        }
+        $selected[$marker]=true;
+        foreach($migrations[$marker]['depends'] as $dependency){
+            $dependencyRow=$snapshot[$dependency]??null;
+            if(!$dependencyRow)throw new RuntimeException('A registered database dependency is missing from the status snapshot.');
+            if($dependencyRow['state']==='current')continue;
+            if($dependencyRow['state']==='unsupported')throw new RuntimeException($dependencyRow['label'].' has an unsupported installed version.');
+            if(!isset($migrations[$dependency]))throw new RuntimeException($dependencyRow['label'].' must be prepared through its feature setup before this update.');
+            $visit($dependency);
+        }
+    };
+    foreach(array_keys($selected) as $marker)$visit($marker);
+    $ordered=[];$temporary=[];$complete=[];
+    $sort=function(string $marker)use(&$sort,&$ordered,&$temporary,&$complete,$selected,$migrations):void{
+        if(isset($complete[$marker]))return;if(isset($temporary[$marker]))throw new LogicException('Cyclic database migration dependency.');$temporary[$marker]=true;
+        foreach($migrations[$marker]['depends'] as $dependency)if(isset($selected[$dependency]))$sort($dependency);
+        unset($temporary[$marker]);$complete[$marker]=true;$ordered[]=$marker;
+    };
+    $keys=array_keys($selected);sort($keys,SORT_STRING);foreach($keys as $marker)$sort($marker);
+    $rows=[];foreach($ordered as $marker){$row=$snapshot[$marker];if($row['state']==='current')continue;$rows[]=['marker'=>$marker,'installed'=>$row['installed'],'current'=>$row['current'],'state'=>$row['state'],'label'=>$row['label']];}
+    if(!$rows)throw new InvalidArgumentException('The selected database features are already current.');
+    $review=['format'=>1,'rows'=>$rows];$hash=hash('sha256',json_encode($review,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES));
+    return ['requested'=>array_values(array_unique($requested)),'order'=>array_column($rows,'marker'),'rows'=>$rows,'review_hash'=>$hash];
+}

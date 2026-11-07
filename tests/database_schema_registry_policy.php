@@ -35,6 +35,25 @@ try{
     $rows['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'99');
     $summary=database_schema_summary($rows);ds_ok('Summary separates required, optional, update and unsupported states',$summary['required']===1&&$summary['optional']===1&&$summary['update']===1&&$summary['unsupported']===1&&$summary['needs_update']===2&&$summary['blocking']===1&&!$summary['all_current']);
     $groups=database_schema_groups($rows);ds_ok('Grouped rows retain all registered entries',array_sum(array_map('count',$groups))===76&&isset($groups['Provider'],$groups['Billing'],$groups['Mail'],$groups['Domains']));
+    $currentRows=[];foreach($registry as $marker=>$entry)$currentRows[$marker]=database_schema_classify($entry,$entry['current']);
+    $currentRows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');
+    $currentRows['software_commerce_version']=database_schema_classify($registry['software_commerce_version'],'2');
+    $plan=database_schema_plan(['software_commerce_version','license_schema_version'],$currentRows);
+    ds_ok('Dependency plan orders licensing before software commerce',$plan['order']===['license_schema_version','software_commerce_version']);
+    $reordered=database_schema_plan(['license_schema_version','software_commerce_version'],$currentRows);
+    ds_ok('Review hash is stable across request ordering',$reordered['order']===$plan['order']&&hash_equals($plan['review_hash'],$reordered['review_hash']));
+    $currentRows['service_plans_checkout_schema_version']=database_schema_classify($registry['service_plans_checkout_schema_version'],'preparing-1');
+    $currentRows['recurring_billing_checkout_schema_version']=database_schema_classify($registry['recurring_billing_checkout_schema_version'],'preparing-1');
+    $checkout=database_schema_plan(['recurring_billing_checkout_schema_version'],$currentRows);
+    ds_ok('Interrupted recurring checkout closes over service checkout first',$checkout['order']===['service_plans_checkout_schema_version','recurring_billing_checkout_schema_version']);
+    $changed=$currentRows;$changed['license_schema_version']=database_schema_classify($registry['license_schema_version'],'1');
+    ds_ok('Changed installed version changes exact review hash',!hash_equals($plan['review_hash'],database_schema_plan(['software_commerce_version','license_schema_version'],$changed)['review_hash']));
+    foreach([
+        'Current selection is refused'=>fn()=>database_schema_plan(['studio_schema_version'],$currentRows),
+        'Unknown selection is refused'=>fn()=>database_schema_plan(['unregistered_schema_version'],$currentRows),
+        'Unsupported selection is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['license_schema_version']=database_schema_classify($registry['license_schema_version'],'99');database_schema_plan(['license_schema_version'],$bad);},
+        'Unmanaged missing dependency is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'');$bad['provider_inventory_schema_version']=database_schema_classify($registry['provider_inventory_schema_version'],'4');database_schema_plan(['provider_inventory_schema_version'],$bad);},
+    ] as $name=>$operation){$refused=false;try{$operation();}catch(InvalidArgumentException|RuntimeException){$refused=true;}ds_ok($name,$refused);}
 }catch(Throwable $e){$failure=$e->getMessage();}
 echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;
 exit($failure===null?0:1);
