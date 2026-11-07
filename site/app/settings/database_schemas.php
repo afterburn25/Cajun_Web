@@ -363,7 +363,11 @@ function database_schema_record_step(string $outcome,string $marker,array $row,s
     $reason=$error?preg_replace('/[^\x20-\x7e]/','?',substr($error->getMessage(),0,180)):'';
     $detail=json_encode(['marker'=>$marker,'label'=>$row['label'],'from'=>$row['installed'],'to'=>$row['current'],'review'=>substr($reviewHash,0,16),'reason'=>$reason],JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
     try{query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[(int)($_SESSION['uid']??0),'database.update.'.$outcome,$detail,gmdate('Y-m-d H:i:s')]);}
-    catch(Throwable $e){if($outcome==='started')throw new RuntimeException('Database update history is unavailable. No migration was started.',0,$e);error_log('CWP database update history write failed');}
+    catch(Throwable $e){
+        if($outcome==='started')throw new RuntimeException('Database update history is unavailable. No migration was started.',0,$e);
+        if($outcome==='completed')throw new RuntimeException('The database step reached its target but completion history could not be recorded. Recheck database status before continuing.',0,$e);
+        error_log('CWP database update failure history write failed');
+    }
 }
 
 function database_schema_history(int $limit=12): array {

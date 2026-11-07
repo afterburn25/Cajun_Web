@@ -31,5 +31,6 @@ try{
     $row=['label'=>'License','installed'=>'2','current'=>'3'];database_schema_record_step('started','license_schema_version',$row,$hash);
     da_ok('Step start is durably recorded before migration',count($GLOBALS['db_policy']['audit'])===1&&$GLOBALS['db_policy']['audit'][0][1]==='database.update.started');
     $GLOBALS['db_policy']['audit_fail']=true;da_ok('Unavailable start history refuses migration',da_refuses(fn()=>database_schema_record_step('started','license_schema_version',$row,$hash)));
+    da_ok('Unavailable completion history cannot report success',da_refuses(fn()=>database_schema_record_step('completed','license_schema_version',$row,$hash)));
 }catch(Throwable $e){$failure=$e->getMessage();}
 echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;exit($failure===null?0:1);
