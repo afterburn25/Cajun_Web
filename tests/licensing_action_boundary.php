@@ -14,7 +14,7 @@ function db():object{return new class{public function inTransaction():bool{retur
 function assert_boundary(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 try{
  $_SERVER['REQUEST_METHOD']='POST';
- foreach(['studio_license_create','studio_domain_add','software_license_lifecycle'] as $actionName){
+ foreach(['studio_license_create','studio_domain_add','software_license_review','software_license_issue','software_license_review_clear','software_license_lifecycle'] as $actionName){
   foreach([false,true] as $inSupport){
    $_POST=['action'=>$actionName];$_GET=$inSupport?['support'=>'invalid']:[];$error='';
    require CWP_CODE_ROOT.'/admin/controllers/actions.php';

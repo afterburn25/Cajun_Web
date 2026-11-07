@@ -112,6 +112,8 @@ REPAIRS = frozenset((
     'site/admin/views/catalog_import.php',
     'site/admin/views/studio/clients.php',
     'site/admin/views/studio/job.php',
+    'site/admin/views/studio/license_overview.php',
+    'site/admin/views/studio/licenses.php',
     'site/admin/views/studio/upgrade.php',
     'site/api/bundle-download.php',
     'site/api/software-download.php',
@@ -121,6 +123,7 @@ REPAIRS = frozenset((
     'site/app/clients/files.php',
     'site/app/clients/identity.php',
     'site/app/licenses/financing_offers.php',
+    'site/app/licenses/software_grants.php',
     'site/app/marketing/proposals.php',
     'site/app/notifications/events.php',
     'site/app/notifications/feed.php',
@@ -167,6 +170,7 @@ REPAIRS = frozenset((
     'tests/installed_owner_authority_test.py',
     'tests/license_financing_cases.py',
     'tests/license_financing_native_cases.php',
+    'tests/licensing_action_boundary.php',
     'tests/licensing_workspace_browser.py',
     'tests/licensing_workspace_contract.php',
     'tests/organized_update_cases.py',
@@ -187,6 +191,7 @@ REPAIRS = frozenset((
     'tests/reset_template_acceptance_contract.py',
     'tests/service_plan_cases.py',
     'tests/service_plans_native.php',
+    'tests/software_admin_routing_contract.php',
     'tests/support_tickets_native.php',
     'tests/build_guards.py',
     'tests/ticket_cases.py',
@@ -232,6 +237,13 @@ REPAIR_SHA256['tests/provider_workspace_fixture.php'] = '68e2b0f3c10b5a96c31073a
 REPAIR_SHA256['tests/provider_workspace_policy.php'] = '65ba05aeefaeb62c142deac9526c09bc92149c30f15574230aacab2f89145297'
 REPAIR_SHA256['tests/provider_workspace_render.py'] = '356a5121d43dccb74912e17573cfdca2e5d71db8cd0adfede891a6404f0bdf38'
 REPAIR_SHA256['tests/provider_workspace_browser.py'] = '024e57e59dec8c7118a43c547076d6d020befe5a6bd266f15f9458a4ef0b5ffe'
+REPAIR_SHA256['site/admin/controllers/studio.php'] = 'df1d93ddd9ca77e2fa9887c55bb534bc24859f4717d15adcf2b68322bc812c15'
+REPAIR_SHA256['site/admin/views/studio/license_overview.php'] = '8bf6a301d845d59acb4c796ba25847fd2577799f5d441fff817ce42c5fc68271'
+REPAIR_SHA256['site/admin/views/studio/licenses.php'] = 'b3ee5e1537ef48e36cd099cbcaa23378934123481494b00221929aed0aa7b1a2'
+REPAIR_SHA256['site/app/licenses/software_grants.php'] = 'bd3e5dbf510e5e2985f9656694d66883a06bd8c4d11cebc26e454bd47b79407a'
+REPAIR_SHA256['tests/licensing_action_boundary.php'] = 'c80a461c467a5e2c4d2ca503890cadc39706c4c3baff28cd2b9bd8074a6b611b'
+REPAIR_SHA256['tests/licensing_workspace_browser.py'] = 'ecc18bac36886b8697ff5c38e05f0631738ee35fbed35ebaced8b5b761ab2fdc'
+REPAIR_SHA256['tests/software_admin_routing_contract.php'] = '1609dda83ce374bbeba2b250763ba4eb22788baa23c20b405647fcb91757c90c'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}

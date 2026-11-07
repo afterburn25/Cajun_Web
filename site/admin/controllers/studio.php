@@ -229,6 +229,90 @@ function studio_admin_action(string $action,array $user): never {
         software_commerce_prepare(posted('current_password',200));
         flash('Software license and purchase storage is prepared. Existing licenses were retained.');
         redirect(admin_url('studio-licenses'));
+    }elseif($action==='software_license_review'){
+        if(support_current())throw new RuntimeException('Leave client support before issuing a customer license.');
+        staff_require('staff.manage');
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        $rawExpiry=posted('expires_at',19);
+        if($rawExpiry!==''&&!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?$/D',$rawExpiry)){
+            throw new InvalidArgumentException('Use a valid UTC expiration for trial or temporary licenses.');
+        }
+        $normalizedExpiry=$rawExpiry===''?null:str_replace('T',' ',$rawExpiry).(strlen($rawExpiry)===16?':00':'');
+        $review=software_grant_manual_review(
+            gint($_POST,'customer_id',1,2147483647),posted('product_id',60),posted('license_type',20),
+            posted('licensee_name',190),posted('domain',253),
+            $normalizedExpiry
+        );
+        $_SESSION['software_license_review']=[
+            'token'=>bin2hex(random_bytes(32)),'created_at'=>time(),
+            'input'=>[
+                'customer_id'=>$review['customer']['id'],'product_id'=>$review['product']['sku'],
+                'license_type'=>$review['license']['type'],'licensee_name'=>$review['license']['licensee'],
+                'domain'=>$review['license']['domain'],'expires_at'=>$review['license']['expires_at'],
+            ],
+            'snapshot'=>$review,'snapshot_hash'=>software_grant_manual_review_hash($review),
+        ];
+        redirect(admin_url('studio-licenses',['license_review'=>'1']).'#license-create');
+    }elseif($action==='software_license_review_clear'){
+        unset($_SESSION['software_license_review']);
+        redirect(admin_url('studio-licenses').'#license-create');
+    }elseif($action==='software_license_issue'){
+        if(support_current())throw new RuntimeException('Leave client support before issuing a customer license.');
+        staff_require('staff.manage');
+        if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Review and confirm the exact customer license before issuing it.');
+        $draft=$_SESSION['software_license_review']??null;
+        $input=is_array($draft['input']??null)?$draft['input']:null;
+        $inputValid=is_array($input);
+        foreach(['customer_id','product_id','license_type','licensee_name','domain','expires_at'] as $key){
+            if(!array_key_exists($key,$input??[])
+                ||($key==='customer_id'&&!is_int($input[$key]))
+                ||($key==='expires_at'&&$input[$key]!==null&&!is_string($input[$key]))
+                ||(!in_array($key,['customer_id','expires_at'],true)&&!is_string($input[$key]))){
+                $inputValid=false;break;
+            }
+        }
+        if(!is_array($draft)||!is_array($draft['input']??null)||!is_array($draft['snapshot']??null)
+            ||!$inputValid
+            ||!is_string($draft['token']??null)||!hash_equals($draft['token'],posted('review_token',64))
+            ||!is_int($draft['created_at']??null)||$draft['created_at']>time()+60||time()-$draft['created_at']>1800){
+            unset($_SESSION['software_license_review']);
+            throw new RuntimeException('That license review expired. Review the current product, customer, domain and terms again.');
+        }
+        if(db()->inTransaction())throw new LogicException('License issuance owns its transaction.');
+        require_once CWP_CODE_ROOT.'/app/licenses/software_grants.php';
+        $issued=staff_locked(function()use($draft,$input,$user):array{
+            if(support_current())throw new RuntimeException('Leave client support before issuing a customer license.');
+            staff_require('staff.manage');
+            db()->beginTransaction();
+            try{
+                // Product, policy and release mutations use this same staff mutex.
+                // Rebuild the review after acquiring it so none can commit between
+                // the equality check and the entitlement insert.
+                $current=software_grant_manual_review((int)$input['customer_id'],(string)$input['product_id'],
+                    (string)$input['license_type'],(string)$input['licensee_name'],
+                    $input['domain'],$input['expires_at']);
+                if($current['release']===null){
+                    unset($_SESSION['software_license_review']);
+                    throw new RuntimeException('Approve a customer-visible software release, then review the license again before issuing.');
+                }
+                if(!is_string($draft['snapshot_hash']??null)
+                    ||!hash_equals($draft['snapshot_hash'],software_grant_manual_review_hash($current))){
+                    unset($_SESSION['software_license_review']);
+                    throw new RuntimeException('The product, customer, license policy or approved release changed. Review the current details again before issuing.');
+                }
+                $result=software_grant_create((int)$input['customer_id'],(string)$input['product_id'],
+                    (string)$input['license_type'],(string)$input['licensee_name'],
+                    $input['domain'],$input['expires_at'],
+                    (int)$user['id'],null,null,'',false,$current['policy']);
+                db()->commit();
+                return ['result'=>$result,'current'=>$current];
+            }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+        });
+        $result=$issued['result'];$current=$issued['current'];
+        unset($_SESSION['software_license_review']);
+        $_SESSION['license_key_created']=$result['key'];
+        $_SESSION['license_created_summary']=$current['product']['title'].' issued to '.$current['customer']['name'].' for '.$current['license']['domain'];
+        redirect(admin_url('studio-licenses').'#license-register');
     }elseif($action==='software_license_lifecycle'){
         require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
         if(!software_commerce_ready())throw new RuntimeException('Prepare software commerce first.');
