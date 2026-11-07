@@ -716,7 +716,7 @@
       "tests/database_schema_view_policy.php": "4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935",
       "tests/database_schema_native.php": "5b8a7dbb4b43af3bc392bd03f0062257d85d85ab31e4deac585dbfec04fd490e",
       "tests/service_plans_checkout_native.php": "4582451eb68075d463db2969980b7e3e709ef9c08bdfe217599783c0074da392",
-      "tests/database_update_cases.py": "3ec7b82268bbc61fc4a837c5af09c9815dabd247c5131d9f6db87100187b3e25",
+      "tests/database_update_cases.py": "5d5f183596dc5902b1f3f9090a161c949ef8fd693a725457db78c9a5d4b99150",
       "tests/database_update_forms.py": "6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2"
     },
     "scope": "Pure registry/action/view policy, disposable owner-reviewed Contacts migration, existing isolated service checkout migration and packaged HTTP/Chromium review; no live payments, provisioning, messages, provider calls, customer data, production SSH or deployment."
