@@ -170,6 +170,7 @@ REPAIRS = frozenset((
     'tests/installed_owner_authority_test.py',
     'tests/license_financing_cases.py',
     'tests/license_financing_native_cases.php',
+    'tests/licensing_action_boundary.php',
     'tests/licensing_workspace_browser.py',
     'tests/licensing_workspace_contract.php',
     'tests/organized_update_cases.py',
@@ -240,6 +241,7 @@ REPAIR_SHA256['site/admin/controllers/studio.php'] = 'df1d93ddd9ca77e2fa9887c55b
 REPAIR_SHA256['site/admin/views/studio/license_overview.php'] = '8bf6a301d845d59acb4c796ba25847fd2577799f5d441fff817ce42c5fc68271'
 REPAIR_SHA256['site/admin/views/studio/licenses.php'] = 'b3ee5e1537ef48e36cd099cbcaa23378934123481494b00221929aed0aa7b1a2'
 REPAIR_SHA256['site/app/licenses/software_grants.php'] = 'bd3e5dbf510e5e2985f9656694d66883a06bd8c4d11cebc26e454bd47b79407a'
+REPAIR_SHA256['tests/licensing_action_boundary.php'] = 'c80a461c467a5e2c4d2ca503890cadc39706c4c3baff28cd2b9bd8074a6b611b'
 REPAIR_SHA256['tests/licensing_workspace_browser.py'] = 'ecc18bac36886b8697ff5c38e05f0631738ee35fbed35ebaced8b5b761ab2fdc'
 REPAIR_SHA256['tests/software_admin_routing_contract.php'] = '1609dda83ce374bbeba2b250763ba4eb22788baa23c20b405647fcb91757c90c'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
