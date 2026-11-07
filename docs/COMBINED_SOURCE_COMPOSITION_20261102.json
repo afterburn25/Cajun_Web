@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "161542c2ed071f6657d74c7b3af30e5a9c842e10158f0e07cdd13660d5458017",
+  "verifier_sha256": "538e6fd1f4056c7ac5f3cb5bb128d2fe11a03010482d67068b5df7e3c2eebb28",
   "regression_sha256": "23dc26c0f2b1083cb135c5989091d4ea37c6119ff8a263a9eed5798d10306e0c",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1209,7 +1209,7 @@
     },
     "tools/acceptance-contract.json": {
       "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
-      "current_sha256": "f7062918916f84a838e6018a6af5dbf14edf8220a4144475b2171c1d601db817",
+      "current_sha256": "341d1f3ace142355ce38bb5ec458d14c9e10af1efdb9c90cb7d7ca56c7245efe",
       "edits": [
         [
           "      \"tests/release_cases.py\": \"807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af\",\n",
@@ -1246,6 +1246,18 @@
         [
           "      \"tests/database_schema_registry_policy.php\": \"7db0a6724b60427f855f81919e6fe9389167cf7f692bfb549b3a8525b701d739\",\n",
           "      \"tests/database_schema_registry_policy.php\": \"9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd\",\n"
+        ],
+        [
+          "    \"\\\"$PHP_BINARY\\\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json\",\n    \"\\\"$PHP_BINARY\\\" tests/database_schema_native.php\",\n    \"CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \\\"$PHP_BINARY\\\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json\",\n",
+          "    \"\\\"$PHP_BINARY\\\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json\",\n    \"CWP_TEST_DATABASE_DOCKER_PORT=3306 \\\"$PHP_BINARY\\\" tests/database_schema_native.php\",\n    \"CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \\\"$PHP_BINARY\\\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json\",\n"
+        ],
+        [
+          "      \"\\\"$PHP_BINARY\\\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json\",\n      \"\\\"$PHP_BINARY\\\" tests/database_schema_native.php\",\n      \"CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \\\"$PHP_BINARY\\\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json\"\n",
+          "      \"\\\"$PHP_BINARY\\\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json\",\n      \"CWP_TEST_DATABASE_DOCKER_PORT=3306 \\\"$PHP_BINARY\\\" tests/database_schema_native.php\",\n      \"CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \\\"$PHP_BINARY\\\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json\"\n"
+        ],
+        [
+          "      \"tests/database_schema_native.php\": \"11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768\",\n",
+          "      \"tests/database_schema_native.php\": \"fea4e71571e251dad59ac3a814e965909757e9e604955235f5b3f53d548db2a3\",\n"
         ]
       ]
     },
@@ -1281,7 +1293,7 @@
     },
     ".github/workflows/application-tests.yml": {
       "original_sha256": "9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c",
-      "current_sha256": "286ba4a87d41256a7dcb729298b17f61e2ce2a8c0dc7655b4d81768b3b19d742",
+      "current_sha256": "4a5152120f702a374ab1706fd9cd0aec8833fea13b0aa12a9b5c7ac58f57c81f",
       "edits": [
         [
           "          set -o pipefail\n          python3 tools/build.py --commit \"$GITHUB_SHA\" | tee qa/build-results.txt\n          python3 tests/build_guards.py\n          python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt\n      - name: Prepare only pristine public historical fixtures\n        id: fixtures\n",
@@ -1298,6 +1310,10 @@
         [
           "          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:\n              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')\n          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:\n              raise SystemExit('Unexpected PHP PPA signing identity')\n          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')\n          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:\n              raise SystemExit('Only the exact repository URI may change')\n          source.write_bytes(changed)\n          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)\n          CWP_PHP_MIRROR\n          fi\n          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq\n          sudo apt-get -o Acquire::Retries=5 install -y \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n          test -x \"$PHP_BINARY\"\n          printf 'PHP_BINARY=%s\\n' \"$PHP_BINARY\" >> \"$GITHUB_ENV\"\n          \"$PHP_BINARY\" -v\n          \"$PHP_BINARY\" -m\n          if [ \"$CWP_DATABASE\" = \"mysql-8.4\" ]; then\n            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n          fi\n          python3 -m venv .ci-venv\n          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright\n          .ci-venv/bin/python -m playwright install --with-deps chromium\n          python3 tests/acceptance_environment.py --lane native\n      - name: Download this attempt's immutable build input\n        id: download\n        if: needs.build.outputs.inputs_id != ''\n        uses: actions/download-artifact@v4\n        with:\n          artifact-ids: ${{ needs.build.outputs.inputs_id }}\n          merge-multiple: true\n          path: .acceptance/download\n      - name: Verify and materialize exact same-attempt inputs\n        id: input\n        run: python3 tools/acceptance_artifacts.py receive --lane native-browser\n      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n          \"$PHP_BINARY\" tests/service-plans/forms.php > qa/service-plans-forms-results.json\n          \"$PHP_BINARY\" tests/service-plans/documents.php > qa/service-plans-documents-results.json\n          \"$PHP_BINARY\" tests/service-plans/run.php > qa/service-plans-supplied-default.txt\n          \"$PHP_BINARY\" tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json\n          \"$PHP_BINARY\" tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json\n          \"$PHP_BINARY\" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json\n          \"$PHP_BINARY\" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json\n          \"$PHP_BINARY\" tests/estimator_adapter.php\n          \"$PHP_BINARY\" tests/native.php\n          \"$PHP_BINARY\" tests/staff_native.php\n          \"$PHP_BINARY\" tests/support_native.php\n          \"$PHP_BINARY\" tests/catalog_native.php\n          \"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json\n          \"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json\n          \"$PHP_BINARY\" tests/provider_catalog_import_native.php\n          \"$PHP_BINARY\" tests/payments_native.php\n          \"$PHP_BINARY\" tests/attempts_native.php\n          \"$PHP_BINARY\" tests/notifications_native.php\n          \"$PHP_BINARY\" tests/ledger_native.php\n          \"$PHP_BINARY\" tests/delivery_archive.php\n          \"$PHP_BINARY\" tests/delivery_native.php\n          \"$PHP_BINARY\" tests/backups_native.php\n          \"$PHP_BINARY\" tests/activity_native.php\n          \"$PHP_BINARY\" tests/mail_templates_native.php\n          \"$PHP_BINARY\" tests/mail_accounts_native.php\n          \"$PHP_BINARY\" tests/reviews_native.php\n          \"$PHP_BINARY\" tests/appointments_native.php\n          \"$PHP_BINARY\" tests/mail_connections_native.php\n          \"$PHP_BINARY\" tests/mail_inbox_native.php\n          \"$PHP_BINARY\" tests/mail_message_native.php\n",
           "          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:\n              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')\n          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:\n              raise SystemExit('Unexpected PHP PPA signing identity')\n          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')\n          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:\n              raise SystemExit('Only the exact repository URI may change')\n          source.write_bytes(changed)\n          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)\n          CWP_PHP_MIRROR\n          fi\n          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq\n          sudo apt-get -o Acquire::Retries=5 install -y \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n          test -x \"$PHP_BINARY\"\n          printf 'PHP_BINARY=%s\\n' \"$PHP_BINARY\" >> \"$GITHUB_ENV\"\n          \"$PHP_BINARY\" -v\n          \"$PHP_BINARY\" -m\n          if [ \"$CWP_DATABASE\" = \"mysql-8.4\" ]; then\n            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n            docker exec -e MYSQL_PWD=isolated-checkout-root-only ${{ job.services.checkout_mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n          fi\n          python3 -m venv .ci-venv\n          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright\n          .ci-venv/bin/python -m playwright install --with-deps chromium\n          python3 tests/acceptance_environment.py --lane native\n      - name: Download this attempt's immutable build input\n        id: download\n        if: needs.build.outputs.inputs_id != ''\n        uses: actions/download-artifact@v4\n        with:\n          artifact-ids: ${{ needs.build.outputs.inputs_id }}\n          merge-multiple: true\n          path: .acceptance/download\n      - name: Verify and materialize exact same-attempt inputs\n        id: input\n        run: python3 tools/acceptance_artifacts.py receive --lane native-browser\n      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n          \"$PHP_BINARY\" tests/service-plans/forms.php > qa/service-plans-forms-results.json\n          \"$PHP_BINARY\" tests/service-plans/documents.php > qa/service-plans-documents-results.json\n          \"$PHP_BINARY\" tests/service-plans/run.php > qa/service-plans-supplied-default.txt\n          \"$PHP_BINARY\" tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json\n          \"$PHP_BINARY\" tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json\n          \"$PHP_BINARY\" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json\n          \"$PHP_BINARY\" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json\n          \"$PHP_BINARY\" tests/estimator_adapter.php\n          \"$PHP_BINARY\" tests/native.php\n          \"$PHP_BINARY\" tests/staff_native.php\n          \"$PHP_BINARY\" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json\n          \"$PHP_BINARY\" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json\n          \"$PHP_BINARY\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json\n          \"$PHP_BINARY\" tests/database_schema_native.php\n          CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \"$PHP_BINARY\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json\n          \"$PHP_BINARY\" tests/support_native.php\n          \"$PHP_BINARY\" tests/catalog_native.php\n          \"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json\n          \"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json\n          \"$PHP_BINARY\" tests/provider_catalog_import_native.php\n          \"$PHP_BINARY\" tests/payments_native.php\n          \"$PHP_BINARY\" tests/attempts_native.php\n          \"$PHP_BINARY\" tests/notifications_native.php\n          \"$PHP_BINARY\" tests/ledger_native.php\n          \"$PHP_BINARY\" tests/delivery_archive.php\n          \"$PHP_BINARY\" tests/delivery_native.php\n          \"$PHP_BINARY\" tests/backups_native.php\n          \"$PHP_BINARY\" tests/activity_native.php\n          \"$PHP_BINARY\" tests/mail_templates_native.php\n          \"$PHP_BINARY\" tests/mail_accounts_native.php\n          \"$PHP_BINARY\" tests/reviews_native.php\n          \"$PHP_BINARY\" tests/appointments_native.php\n          \"$PHP_BINARY\" tests/mail_connections_native.php\n          \"$PHP_BINARY\" tests/mail_inbox_native.php\n          \"$PHP_BINARY\" tests/mail_message_native.php\n"
+        ],
+        [
+          "          \"$PHP_BINARY\" tests/database_schema_native.php\n",
+          "          CWP_TEST_DATABASE_DOCKER_PORT=3306 \"$PHP_BINARY\" tests/database_schema_native.php\n"
         ]
       ]
     },
@@ -1373,7 +1389,7 @@
     },
     "tests/account_notification_workflow_contract.py": {
       "original_sha256": "92a0c02dc2108b6a1c913e9334caab7e6accb248b3222a3019fe0679d9fa49a5",
-      "current_sha256": "cf20fa44c765b00009a0efd1d53899fe05312a9a5bff3d0588b776c094826d83",
+      "current_sha256": "0d04682880e1b5ffee147f446ec332e857e2e4f6bed35eee0fe3a968343be046",
       "edits": [
         [
           "LEGACY = '.github/workflows/account-notifications-combined.yml'\nPROTECTED = '.github/workflows/application-tests.yml'\nLEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'\nPROTECTED_SHA256 = '9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\nPARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',\n           'ebcbbb56336249fee2073c8f02e9d6998740b64e')\n",
@@ -1382,6 +1398,10 @@
         [
           "PROTECTED_SHA256 = '5db94d83c68397a964baae19329fa7522fe4d8e2204ca3de0270c40a65ab0ef6'\n",
           "PROTECTED_SHA256 = '286ba4a87d41256a7dcb729298b17f61e2ce2a8c0dc7655b4d81768b3b19d742'\n"
+        ],
+        [
+          "PROTECTED_SHA256 = '286ba4a87d41256a7dcb729298b17f61e2ce2a8c0dc7655b4d81768b3b19d742'\n",
+          "PROTECTED_SHA256 = '4a5152120f702a374ab1706fd9cd0aec8833fea13b0aa12a9b5c7ac58f57c81f'\n"
         ]
       ]
     },
@@ -2087,7 +2107,7 @@
     },
     "tests/database_schema_native.php": {
       "mode": "100644",
-      "sha256": "11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768"
+      "sha256": "fea4e71571e251dad59ac3a814e965909757e9e604955235f5b3f53d548db2a3"
     },
     "tests/database_schema_registry_policy.php": {
       "mode": "100644",
@@ -2108,7 +2128,7 @@
   },
   "database_workflow_base": "8d31de5e125ece6ad999dab4bb9e483dd8b70822",
   "database_workflow_base_tree": "a73a70b6bbe05fdc1e773cf078e1a642fb9a6816",
-  "database_workflow_source": "5e410b745f5ab4a2cc16034296a2a76e82b6177d",
+  "database_workflow_source": "6e6060c9d3b4ee73be6093432c60672db208f3b3",
   "database_workflow_source_paths": [
     ".github/workflows/application-tests.yml",
     "site/admin/controllers/studio.php",
@@ -2136,5 +2156,5 @@
     "tools/acceptance-reports.json",
     "tools/update/owner-update.php"
   ],
-  "database_workflow_source_tree": "3180895642ce93fafe79336bd1bead53a2b16b80"
+  "database_workflow_source_tree": "9821b16a8d53bc9935d86510f26645c232312717"
 }
