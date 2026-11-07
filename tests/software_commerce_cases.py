@@ -803,12 +803,12 @@ def run_browser(env, browser):
     support_software=support_root+'&software=1'
     software_views_before=db(
         "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
-        "AND action='software.view' AND outcome='success'",[support_id])[0]['total']
+        "AND action='software.view' AND outcome='allowed'",[support_id])[0]['total']
     blocked=admin.get(support_software,timeout=25)
     blocked_page=soup(blocked)
     software_views_after=db(
         "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
-        "AND action='software.view' AND outcome='success'",[support_id])[0]['total']
+        "AND action='software.view' AND outcome='allowed'",[support_id])[0]['total']
     check('My Software is audited and read-only during administrator support context',
           blocked.status_code==200
           and 'Administrator review is read-only.' in blocked.text
