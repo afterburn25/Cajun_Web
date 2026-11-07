@@ -288,10 +288,26 @@ def run_browser(env,browser):
     started=chosen_form(admin,support_admin,'support_start','client_id',1,{})
     support_id=parse_qs(urlparse(started.url).query).get('support',[''])[0]
     support_root=base+'/existing/portal/index.php?support='+support_id
+    financing_views_before=env['db'](
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='financing.view' AND outcome='allowed'",[support_id])[0]['total']
     blocked=admin.get(support_root+'&finance='+offer,timeout=25)
-    check('Staff support session cannot open the customer financing agreement',
-          len(support_id)==32 and blocked.status_code==403
-          and 'Sign in to your own account to review financing' in blocked.text)
+    blocked_page=soup(blocked)
+    financing_views_after=env['db'](
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='financing.view' AND outcome='allowed'",[support_id])[0]['total']
+    check('Customer financing is audited and read-only during administrator support context',
+          len(support_id)==32 and blocked.status_code==200
+          and 'Administrator review is read-only.' in blocked.text
+          and 'License financing:</strong> Suspended' in blocked.text
+          and financing_views_after==financing_views_before+1
+          and not blocked_page.select('[name=action][value=finance_offer_sign], '
+                                      '[name=action][value=finance_offer_decline], '
+                                      '[name=action][value=finance_offer_payment], '
+                                      '[name=action][value=finance_subscription_enroll], '
+                                      '[name=action][value=finance_subscription_reenroll]')
+          and blocked_page.select_one('[data-authorize-net]') is None
+          and 'Pay the outstanding installment securely' not in blocked.text)
     support_home=admin.get(support_root,timeout=25)
     offer_before=env['db'](
         'SELECT status,activation_invoice_id,payment_request_id FROM ci_license_finance_offers WHERE id=?',

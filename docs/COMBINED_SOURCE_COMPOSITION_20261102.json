@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "8deae4cec6657b06c619ba07850ff5c8fd86b88f287f96f3432f9148c8d70de9",
+  "verifier_sha256": "4c45d9f141155e93dc67a777cbf21f1a5380eb38dfd2614611b393688f0d491c",
   "regression_sha256": "9c3ea590ea350b0202f4cf154f7a90e046ed559be0c3ce0eb3cd773857a23fe5",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -917,7 +917,7 @@
     },
     "tests/license_financing_cases.py": {
       "original_sha256": "a999c6ccf78056a969fb582cc34af1615a776e5cf19eb9b4c9a3bda8f7da02c5",
-      "current_sha256": "7c23b44721f97a718d99b06e449dbd379bfab856ec7452a9d193ef7b031ec3c1",
+      "current_sha256": "40dcbea1d3347c03e15cc1c5fa450c0fb8757ed1a6a2b17c8a6fa09b152c0d2f",
       "edits": [
         [
           "    validate=base+'/existing/api/validate.php'\n    initial_denied=requests.post(validate,json={\n",
@@ -930,6 +930,10 @@
         [
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'payment status can no longer suspend this license' in paid_workspace.text.lower()\n          and 'owner license controls' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n",
           "    check('Paid-off client workspace explains payment-only unlock, removes standalone domain deactivation and retains replacement',\n          'financing is complete: this license is permanently unlocked and cannot be deactivated.' in paid_workspace.text.lower()\n          and 'the approved-domain requirement and commercial-rights restrictions remain in force.' in paid_workspace.text.lower()\n          and not client_domain_deactivate\n          and _form(soup,paid_workspace,'license_domain_replace',license_id=license_id) is not None)\n"
+        ],
+        [
+          "    support_root=base+'/existing/portal/index.php?support='+support_id\n    blocked=admin.get(support_root+'&finance='+offer,timeout=25)\n    check('Staff support session cannot open the customer financing agreement',\n          len(support_id)==32 and blocked.status_code==403\n          and 'Sign in to your own account to review financing' in blocked.text)\n",
+          "    support_root=base+'/existing/portal/index.php?support='+support_id\n    financing_views_before=env['db'](\n        \"SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 \"\n        \"AND action='financing.view' AND outcome='allowed'\",[support_id])[0]['total']\n    blocked=admin.get(support_root+'&finance='+offer,timeout=25)\n    blocked_page=soup(blocked)\n    financing_views_after=env['db'](\n        \"SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 \"\n        \"AND action='financing.view' AND outcome='allowed'\",[support_id])[0]['total']\n    check('Customer financing is audited and read-only during administrator support context',\n          len(support_id)==32 and blocked.status_code==200\n          and 'Administrator review is read-only.' in blocked.text\n          and 'License financing:</strong> Suspended' in blocked.text\n          and financing_views_after==financing_views_before+1\n          and not blocked_page.select('[name=action][value=finance_offer_sign], '\n                                      '[name=action][value=finance_offer_decline], '\n                                      '[name=action][value=finance_offer_payment], '\n                                      '[name=action][value=finance_subscription_enroll], '\n                                      '[name=action][value=finance_subscription_reenroll]')\n          and blocked_page.select_one('[data-authorize-net]') is None\n          and 'Pay the outstanding installment securely' not in blocked.text)\n"
         ]
       ]
     },
