@@ -262,6 +262,8 @@ function database_schema_migrations(): array {
 
 function database_schema_plan(array $requested,array $snapshot): array {
     if(!array_is_list($requested)||count($requested)<1||count($requested)>count(database_schema_versions()))throw new InvalidArgumentException('Choose one or more registered database updates.');
+    foreach($requested as $marker)if(!is_string($marker)||$marker==='')throw new InvalidArgumentException('Choose registered database updates.');
+    if(count(array_unique($requested))!==count($requested))throw new InvalidArgumentException('Choose each database update once.');
     foreach($snapshot as $row)if(($row['state']??null)==='unsupported')throw new RuntimeException('Resolve unsupported database feature versions before applying another update.');
     $migrations=array_map(fn(array $row):array=>$row+['effects'=>[],'note'=>''],database_schema_migrations());$selected=[];$effects=[];
     foreach($requested as $marker){if(!is_string($marker)||!isset($snapshot[$marker],$migrations[$marker]))throw new InvalidArgumentException('Unknown or separately managed database update.');$selected[$marker]=true;}
@@ -335,9 +337,10 @@ function database_schema_current_owner(): array {
 }
 
 function database_schema_bound_review(array $requested,string $reviewHash): array {
-    $normalized=array_values(array_unique($requested));$stored=$_SESSION['database_schema_review']??null;
-    if(!is_array($stored)||($stored['requested']??null)!==$normalized||!is_string($stored['review_hash']??null)||!hash_equals($stored['review_hash'],$reviewHash))throw new RuntimeException('Reload and review the exact database update plan before applying it.');
-    return ['requested'=>$normalized,'review_hash'=>$stored['review_hash']];
+    if(!array_is_list($requested)||count($requested)<1||array_filter($requested,fn($marker)=>!is_string($marker)||$marker==='')||count(array_unique($requested))!==count($requested))throw new RuntimeException('Reload and review the exact database update plan before applying it.');
+    $stored=$_SESSION['database_schema_review']??null;
+    if(!is_array($stored)||($stored['requested']??null)!==$requested||!is_string($stored['review_hash']??null)||!hash_equals($stored['review_hash'],$reviewHash))throw new RuntimeException('Reload and review the exact database update plan before applying it.');
+    return ['requested'=>$requested,'review_hash'=>$stored['review_hash']];
 }
 
 function database_schema_run_migration(string $marker,array $migration,array $actor): void {

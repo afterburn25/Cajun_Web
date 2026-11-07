@@ -26,6 +26,7 @@ try{
     da_ok('Exact stored review binds selected order and hash',database_schema_bound_review(['license_schema_version','payments_schema_version'],$hash)['requested']===['license_schema_version','payments_schema_version']);
     da_ok('Reordered apply request cannot bypass the displayed review',da_refuses(fn()=>database_schema_bound_review(['payments_schema_version','license_schema_version'],$hash)));
     da_ok('Changed review hash is refused',da_refuses(fn()=>database_schema_bound_review(['license_schema_version','payments_schema_version'],str_repeat('b',64))));
+    da_ok('Duplicate or structured selections cannot bypass the displayed review',da_refuses(fn()=>database_schema_bound_review(['license_schema_version','license_schema_version'],$hash))&&da_refuses(fn()=>database_schema_bound_review([['license_schema_version']],$hash)));
     unset($_SESSION['database_schema_review']);da_ok('Missing stored review is refused',da_refuses(fn()=>database_schema_bound_review(['license_schema_version'],$hash)));
     $row=['label'=>'License','installed'=>'2','current'=>'3'];database_schema_record_step('started','license_schema_version',$row,$hash);
     da_ok('Step start is durably recorded before migration',count($GLOBALS['db_policy']['audit'])===1&&$GLOBALS['db_policy']['audit'][0][1]==='database.update.started');

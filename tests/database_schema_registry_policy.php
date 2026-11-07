@@ -63,6 +63,7 @@ try{
     foreach([
         'Current selection is refused'=>fn()=>database_schema_plan(['studio_schema_version'],$currentRows),
         'Unknown selection is refused'=>fn()=>database_schema_plan(['unregistered_schema_version'],$currentRows),
+        'Duplicate selection is refused'=>fn()=>database_schema_plan(['license_schema_version','license_schema_version'],$currentRows),
         'Unsupported selection is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['license_schema_version']=database_schema_classify($registry['license_schema_version'],'99');database_schema_plan(['license_schema_version'],$bad);},
         'Separately managed missing dependency is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['support_schema_version']=database_schema_classify($registry['support_schema_version'],'');$bad['support_tickets_schema_version']=database_schema_classify($registry['support_tickets_schema_version'],'');database_schema_plan(['support_tickets_schema_version'],$bad);},
         'Unsupported side effect is refused before planning'=>function()use($gatewayRows,$registry){$bad=$gatewayRows;$bad['license_finance_recovery_schema_version']=database_schema_classify($registry['license_finance_recovery_schema_version'],'99');database_schema_plan(['license_finance_gateway_schema_version'],$bad);},
