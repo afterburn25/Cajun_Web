@@ -22,6 +22,10 @@ $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/
 $checks=[];$password='Synthetic database-update owner';
 function dsn_ok(string $name,bool $passed):void {global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
 function dsn_bad(string $name,callable $work):void {try{$work();}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;dsn_ok($name,true);return;}dsn_ok($name,false);}
+function dsn_endpoint(string $database,string $host,int $clientPort,string $mapping,int $serverPort):bool {
+    if($database!=='cwp_test'||$host!=='127.0.0.1'||$clientPort<1||$serverPort<1)return false;
+    return $mapping===''?$serverPort===$clientPort:$mapping==='3306'&&$serverPort===3306;
+}
 function dsn_owner():void {$user=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$user['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function dsn_contacts_tables():array {return all("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,6)='dbuci_' AND TABLE_NAME LIKE 'dbuci_studio_contact%' ORDER BY TABLE_NAME");}
 
@@ -29,7 +33,18 @@ try {
     $serverPort=(int)query('SELECT @@port')->fetchColumn();
     dsn_ok('Fixture connects only to the explicitly owned database and client/server port mapping',
         query('SELECT DATABASE()')->fetchColumn()===$database&&(int)config()['db']['port']===$port
-        &&$serverPort===($mappedPort===''?$port:(int)$mappedPort));
+        &&dsn_endpoint($database,(string)getenv('CWP_TEST_HOST'),$port,$mappedPort,$serverPort));
+    dsn_ok('Direct disposable endpoint requires identical client and server ports',
+        dsn_endpoint('cwp_test','127.0.0.1',43319,'',43319));
+    foreach([
+        ['wrong database','production','127.0.0.1',43319,'3306',3306],
+        ['remote host','cwp_test','database.example.invalid',43319,'3306',3306],
+        ['zero client port','cwp_test','127.0.0.1',0,'3306',3306],
+        ['invalid mapping','cwp_test','127.0.0.1',43319,'3306x',3306],
+        ['wrong mapped server port','cwp_test','127.0.0.1',43319,'3306',3307],
+        ['wrong direct server port','cwp_test','127.0.0.1',43319,'',3306],
+    ] as [$name,$testDatabase,$host,$clientPort,$mapping,$reportedPort])
+        dsn_ok('Endpoint refuses '.$name,!dsn_endpoint($testDatabase,$host,$clientPort,$mapping,$reportedPort));
     dsn_ok('Owned database-update namespace is initially empty',
         !all("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,6)='dbuci_'"));
     $schema=schema_statements('dbuci_');
