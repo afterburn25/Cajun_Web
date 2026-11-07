@@ -228,20 +228,24 @@ function database_schema_plan(array $requested,array $snapshot): array {
     return ['requested'=>array_values(array_unique($requested)),'order'=>$steps,'rows'=>$rows,'review_hash'=>$hash];
 }
 
-function database_schema_execute_reviewed(array $requested,string $reviewHash,callable $snapshot,callable $runStep): array {
+function database_schema_execute_reviewed(array $requested,string $reviewHash,callable $snapshot,callable $runStep,?callable $recordStep=null): array {
     if(!preg_match('/^[a-f0-9]{64}$/D',$reviewHash))throw new InvalidArgumentException('Reload and review the exact database update plan.');
     $before=$snapshot();$plan=database_schema_plan($requested,$before);
     if(!hash_equals($plan['review_hash'],$reviewHash))throw new RuntimeException('Database state or selected updates changed. Reload and review the plan again.');
     $reviewed=array_fill_keys(array_column($plan['rows'],'marker'),true);$migrations=array_map(fn(array $row):array=>$row+['effects'=>[]],database_schema_migrations());$applied=[];
     foreach($plan['order'] as $marker){
-        $runStep($marker,$migrations[$marker]);$after=$snapshot();
-        if(array_keys($after)!==array_keys($before))throw new RuntimeException('Registered database feature scope changed during update.');
-        foreach($after as $changed=>$row){
-            if(($before[$changed]['installed']??null)!==($row['installed']??null)&&!isset($reviewed[$changed]))throw new RuntimeException('An unreviewed registered database feature changed: '.$row['label'].'.');
-        }
-        foreach([$marker,...$migrations[$marker]['effects']] as $target){
-            if(($after[$target]['state']??null)!=='current')throw new RuntimeException('Database update did not reach its reviewed target: '.($after[$target]['label']??$target).'.');
-        }
+        $stepRow=$before[$marker];if($recordStep)$recordStep('started',$marker,$stepRow,null);
+        try{
+            $runStep($marker,$migrations[$marker]);$after=$snapshot();
+            if(array_keys($after)!==array_keys($before))throw new RuntimeException('Registered database feature scope changed during update.');
+            foreach($after as $changed=>$row){
+                if(($before[$changed]['installed']??null)!==($row['installed']??null)&&!isset($reviewed[$changed]))throw new RuntimeException('An unreviewed registered database feature changed: '.$row['label'].'.');
+            }
+            foreach([$marker,...$migrations[$marker]['effects']] as $target){
+                if(($after[$target]['state']??null)!=='current')throw new RuntimeException('Database update did not reach its reviewed target: '.($after[$target]['label']??$target).'.');
+            }
+        }catch(Throwable $e){if($recordStep)$recordStep('failed',$marker,$stepRow,$e);throw $e;}
+        if($recordStep)$recordStep('completed',$marker,$stepRow,null);
         $before=$after;$applied[]=$marker;
     }
     foreach($plan['rows'] as $row)if(($before[$row['marker']]['state']??null)!=='current')throw new RuntimeException('Reviewed database update remains incomplete: '.$row['label'].'.');
@@ -270,8 +274,25 @@ function database_schema_locked(callable $work): mixed {
     try{return $work();}finally{query('SELECT RELEASE_LOCK(?)',[$key]);}
 }
 
+function database_schema_record_step(string $outcome,string $marker,array $row,string $reviewHash,?Throwable $error=null): void {
+    if(!in_array($outcome,['started','completed','failed'],true))throw new InvalidArgumentException('Unknown database update outcome.');
+    $reason=$error?preg_replace('/[^\x20-\x7e]/','?',substr($error->getMessage(),0,180)):'';
+    $detail=json_encode(['marker'=>$marker,'label'=>$row['label'],'from'=>$row['installed'],'to'=>$row['current'],'review'=>substr($reviewHash,0,16),'reason'=>$reason],JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES);
+    try{query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[(int)($_SESSION['uid']??0),'database.update.'.$outcome,$detail,gmdate('Y-m-d H:i:s')]);}
+    catch(Throwable){error_log('CWP database update history write failed');}
+}
+
+function database_schema_history(int $limit=12): array {
+    $limit=max(1,min(30,$limit));
+    try{$history=all("SELECT action,detail,created_at FROM ".table('audit')." WHERE action IN ('database.update.started','database.update.completed','database.update.failed') ORDER BY id DESC LIMIT ".$limit);}
+    catch(Throwable){return [];}
+    $rows=[];foreach($history as $entry){$detail=json_decode((string)($entry['detail']??''),true);if(!is_array($detail)||!is_string($detail['marker']??null)||!isset(database_schema_versions()[$detail['marker']]))continue;$rows[]=['outcome'=>substr((string)$entry['action'],strlen('database.update.')),'created_at'=>(string)($entry['created_at']??''),'marker'=>$detail['marker'],'label'=>(string)($detail['label']??database_schema_label($detail['marker'])),'from'=>(string)($detail['from']??''),'to'=>(string)($detail['to']??''),'reason'=>(string)($detail['reason']??'')];}
+    return $rows;
+}
+
 function database_schema_apply(array $requested,string $reviewHash): array {
     $actor=database_schema_current_owner();
     return database_schema_locked(fn()=>database_schema_execute_reviewed($requested,$reviewHash,'database_schema_snapshot',
-        fn(string $marker,array $migration)=>database_schema_run_migration($marker,$migration,$actor)));
+        fn(string $marker,array $migration)=>database_schema_run_migration($marker,$migration,$actor),
+        fn(string $outcome,string $marker,array $row,?Throwable $error)=>database_schema_record_step($outcome,$marker,$row,$reviewHash,$error)));
 }
