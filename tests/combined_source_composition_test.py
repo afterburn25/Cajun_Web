@@ -446,12 +446,20 @@ def run(root=ROOT):
                     lambda path=path: modified(path, lambda target: target.unlink()))
         refuses('Refuses an executable mode on a database workflow addition',
                 lambda: modified(database_addition, lambda target: target.chmod(0o755)))
+        refuses('Refuses a symlink replacing a database workflow addition',
+                lambda: modified(database_addition, symlink))
         refuses('Refuses substituting the exact database workflow base',
                 lambda: altered_receipt(lambda data: data.__setitem__(
                     'database_workflow_base', '0' * 40)))
+        refuses('Refuses substituting the exact database workflow base tree',
+                lambda: altered_receipt(lambda data: data.__setitem__(
+                    'database_workflow_base_tree', '0' * 40)))
         refuses('Refuses substituting the exact database workflow source',
                 lambda: altered_receipt(lambda data: data.__setitem__(
                     'database_workflow_source', '0' * 40)))
+        refuses('Refuses substituting the exact database workflow source tree',
+                lambda: altered_receipt(lambda data: data.__setitem__(
+                    'database_workflow_source_tree', '0' * 40)))
         refuses('Refuses an omitted database workflow source path',
                 lambda: altered_receipt(lambda data: data['database_workflow_source_paths'].remove(
                     database_addition)))
@@ -461,9 +469,42 @@ def run(root=ROOT):
         refuses('Refuses an omitted database workflow addition admission',
                 lambda: altered_receipt(lambda data: data['database_workflow_additions'].pop(
                     database_addition)))
+        refuses('Refuses a database workflow addition overlapping an integration repair',
+                lambda: altered_receipt(lambda data: data['database_workflow_additions'].__setitem__(
+                    '.github/workflows/application-tests.yml',
+                    {'sha256': proof.digest(proof.ordinary(fixture, '.github/workflows/application-tests.yml')),
+                     'mode': '100644'})))
         refuses('Refuses a substituted database workflow addition hash',
                 lambda: altered_receipt(lambda data: data['database_workflow_additions'][database_addition].__setitem__(
                     'sha256', '0' * 64)))
+
+        def forged_database_addition_and_receipt():
+            addition = fixture / database_addition
+            receipt = fixture / proof.RECEIPT
+            old_addition, old_receipt = addition.read_bytes(), receipt.read_bytes()
+            try:
+                addition.write_bytes(old_addition + b'\n# forged database workflow source\n')
+                data = json.loads(old_receipt)
+                data['database_workflow_additions'][database_addition]['sha256'] = proof.digest(addition.read_bytes())
+                receipt.write_text(json.dumps(data))
+                proof.verify_current(fixture)
+            finally:
+                addition.write_bytes(old_addition)
+                receipt.write_bytes(old_receipt)
+
+        refuses('Refuses simultaneous database workflow source and receipt-hash substitution',
+                forged_database_addition_and_receipt)
+
+        def altered_database_hydration_identity():
+            original = proof.DATABASE_WORKFLOW_SOURCE_TREE
+            try:
+                proof.DATABASE_WORKFLOW_SOURCE_TREE = '0' * 40
+                proof.hydration_origin(fixture, proof.git(fixture, 'rev-parse', 'HEAD').decode().strip())
+            finally:
+                proof.DATABASE_WORKFLOW_SOURCE_TREE = original
+
+        refuses('Refuses altered database workflow identity in the authorized hydration history',
+                altered_database_hydration_identity)
 
         source = fixture / 'tests/software_authority_provenance.py'
         cached = Path(importlib.util.cache_from_source(str(source)))
@@ -530,7 +571,10 @@ def shallow_acceptance(root=ROOT):
     with tempfile.TemporaryDirectory(prefix='cwp-composition-shallow-') as directory:
         fixture = Path(directory) / 'source'
         subprocess.run(['git', 'clone', '--quiet', '--depth', '1', '--no-tags', root.as_uri(), str(fixture)], check=True)
-        for path in proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS | proof.DIAGNOSTIC_ADDITIONS | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY, 'tools/acceptance-contract.json'}:
+        for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
+                     | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
+                     | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
+                        'tools/acceptance-contract.json'}):
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))
@@ -577,6 +621,14 @@ def shallow_acceptance(root=ROOT):
         check('The exact retained diagnostic addition source is hydrated as required current ancestry',
               proof.git(fixture, 'rev-parse', proof.DIAGNOSTIC_ADDITION_SOURCE + '^{tree}').decode().strip()
               == proof.DIAGNOSTIC_ADDITION_SOURCE_TREE)
+        proof.git(fixture, 'merge-base', '--is-ancestor', proof.DATABASE_WORKFLOW_BASE,
+                  proof.DATABASE_WORKFLOW_SOURCE)
+        proof.git(fixture, 'merge-base', '--is-ancestor', proof.DATABASE_WORKFLOW_SOURCE, 'HEAD')
+        check('The exact database workflow base and source are hydrated as required current ancestry',
+              proof.git(fixture, 'rev-parse', proof.DATABASE_WORKFLOW_BASE + '^{tree}').decode().strip()
+              == proof.DATABASE_WORKFLOW_BASE_TREE
+              and proof.git(fixture, 'rev-parse', proof.DATABASE_WORKFLOW_SOURCE + '^{tree}').decode().strip()
+              == proof.DATABASE_WORKFLOW_SOURCE_TREE)
         check('A later source check performs no duplicate history fetch', proof.ensure_history(fixture) == {'performed': False})
 
         # A second genuine shallow clone proves the local test transport is not
