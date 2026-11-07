@@ -263,7 +263,7 @@ REPAIR_SHA256['tests/licensing_action_boundary.php'] = 'c80a461c467a5e2c4d2ca503
 REPAIR_SHA256['tests/licensing_workspace_browser.py'] = 'ecc18bac36886b8697ff5c38e05f0631738ee35fbed35ebaced8b5b761ab2fdc'
 REPAIR_SHA256['tests/software_admin_routing_contract.php'] = '1609dda83ce374bbeba2b250763ba4eb22788baa23c20b405647fcb91757c90c'
 REPAIR_SHA256['docs/MASTER_CLIENT_PORTAL_1.26.1.md'] = 'ac669c0f6f4e627481f5a65a6fc308759ea01251c023678e616d154aef4bafb9'
-REPAIR_SHA256['site/admin/controllers/support.php'] = '89724a5e2b4c44999a7789e6c99edeff69320553672bff375d2177386d1aebee'
+REPAIR_SHA256['site/admin/controllers/support.php'] = '1c7651085c946dae05830594dcfdaa6acc7b6f43c83840ef6833c24ddfbabd32'
 REPAIR_SHA256['site/admin/views/auth.php'] = '810d3818d3e2faf1e01d601db135089d6041199ed80ec23d0c166eab5dd7fb76'
 REPAIR_SHA256['site/app/clients/master_portal.php'] = '1e801456fc903bf77c497681d593ccddb24f775a56fcde751f9d000727d0b90e'
 REPAIR_SHA256['site/includes/layout/admin.php'] = '084b9ab7e75d0b57c546dbd225321dbe3762dd9ec44a8fe9e0fafc1138daf9e7'
@@ -274,7 +274,7 @@ REPAIR_SHA256['site/portal/views/software.php'] = '9b937b8d2adfdb2da7e718dd7053e
 REPAIR_SHA256['site/portal/views/workspace.php'] = 'cab382dda952f2b71f91d81dbbcea919c71a71a637165577de28baa9965afd73'
 REPAIR_SHA256['tests/master_portal_installed_browser.py'] = '2256945bd7ddb4a083ef7ffd4ad676145866730f331ec7f9a513e3ee57fb9003'
 REPAIR_SHA256['tests/master_portal_native.php'] = '896b9cbfebb19de382892c189ab8d838c4cfb5b43745b0c1a186a737a5c3a213'
-REPAIR_SHA256['tests/master_portal_policy.php'] = '8606f3653d93c881b0f3fdc228888b9b1f60c46a6aeb3435e96e627c4dfbee7c'
+REPAIR_SHA256['tests/master_portal_policy.php'] = '95de8026903492bf4b9f2fb69d96ac999436dcdd96f91792dbe839109f13a5eb'
 REPAIR_SHA256['tests/owner_release_apache.py'] = '0d074273e99e89af22b6f865355fc9dfa09f90f122eead05792390e8ca173a87'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 

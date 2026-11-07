@@ -60,7 +60,7 @@ function setup_expected_files(): array { return [
     'admin/controllers/settings.php'=>'a47319d99588ac9273c764ec4b8f64059343783b26fb4f809b0e8fb3cb1aa2a9',
     'admin/controllers/staff.php'=>'bbb3c36373e432ed2f99a14fc58380c36d124913f1430ea69d19e0cce1cd217c',
     'admin/controllers/studio.php'=>'df1d93ddd9ca77e2fa9887c55bb534bc24859f4717d15adcf2b68322bc812c15',
-    'admin/controllers/support.php'=>'89724a5e2b4c44999a7789e6c99edeff69320553672bff375d2177386d1aebee',
+    'admin/controllers/support.php'=>'1c7651085c946dae05830594dcfdaa6acc7b6f43c83840ef6833c24ddfbabd32',
     'admin/controllers/testimonials.php'=>'e90f852a6139a12ed6973009a1986a229d2ce7eea0969479b32af3715678b3d8',
     'admin/controllers/tickets.php'=>'8c1918824c4c78f1c53d110d1c53ba877525540daa85b50867df1c4af733f601',
     'admin/index.php'=>'027eaabfc6b6430b230e528349bf135ce7910831550e5f352a38f71876a13bde',
