@@ -188,6 +188,7 @@ function database_schema_migrations(): array {
 
 function database_schema_plan(array $requested,array $snapshot): array {
     if(!array_is_list($requested)||count($requested)<1||count($requested)>count(database_schema_versions()))throw new InvalidArgumentException('Choose one or more registered database updates.');
+    foreach($snapshot as $row)if(($row['state']??null)==='unsupported')throw new RuntimeException('Resolve unsupported database feature versions before applying another update.');
     $migrations=array_map(fn(array $row):array=>$row+['effects'=>[]],database_schema_migrations());$selected=[];$effects=[];
     foreach($requested as $marker){if(!is_string($marker)||!isset($snapshot[$marker],$migrations[$marker]))throw new InvalidArgumentException('Unknown or separately managed database update.');$selected[$marker]=true;}
     $visit=function(string $marker)use(&$visit,&$selected,&$effects,$snapshot,$migrations):void{
@@ -245,4 +246,32 @@ function database_schema_execute_reviewed(array $requested,string $reviewHash,ca
     }
     foreach($plan['rows'] as $row)if(($before[$row['marker']]['state']??null)!=='current')throw new RuntimeException('Reviewed database update remains incomplete: '.$row['label'].'.');
     return ['applied'=>$applied,'review_hash'=>$reviewHash,'rows'=>$plan['rows']];
+}
+
+function database_schema_current_owner(): array {
+    if((function_exists('support_current')&&support_current())||(function_exists('support_binding')&&support_binding()!==''))throw new RuntimeException('End client review before updating the database.');
+    $actor=require_admin();if(!admin_session_matches($actor))throw new RuntimeException('Your administrator session changed. Sign in again.');
+    if(staff_ready())$actor=staff_owner('');
+    return $actor;
+}
+
+function database_schema_run_migration(string $marker,array $migration,array $actor): void {
+    require_once CWP_CODE_ROOT.'/'.$migration['file'];$function=$migration['function'];
+    if(!function_exists($function))throw new LogicException('Registered database migration is unavailable: '.$marker);
+    if($migration['arguments']==='none'){$function();return;}
+    if($migration['arguments']==='password'){$function('');return;}
+    if($migration['arguments']==='owner'){$function((int)$actor['id'],'');return;}
+    throw new LogicException('Unknown registered database migration arguments.');
+}
+
+function database_schema_locked(callable $work): mixed {
+    $key='cwp-database-schema-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if((int)query('SELECT GET_LOCK(?,5)',[$key])->fetchColumn()!==1)throw new RuntimeException('Another database update is in progress. Please retry.');
+    try{return $work();}finally{query('SELECT RELEASE_LOCK(?)',[$key]);}
+}
+
+function database_schema_apply(array $requested,string $reviewHash): array {
+    $actor=database_schema_current_owner();
+    return database_schema_locked(fn()=>database_schema_execute_reviewed($requested,$reviewHash,'database_schema_snapshot',
+        fn(string $marker,array $migration)=>database_schema_run_migration($marker,$migration,$actor)));
 }
