@@ -210,6 +210,7 @@ def software_authority_report_checks(tmp):
     """Package retained SQL evidence as test data; never rerun or invent SQL results."""
     name = 'software-commerce-native-authority.json'
     registry = a.load(ROOT / 'tools/acceptance-reports.json')
+    database_reports=set(a.load(ROOT/'tools/acceptance-contract.json').get('database_schema_native_command_extension',{}).get('reports',[]))
     for mode, count, digest in [
         ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
         ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
@@ -217,7 +218,7 @@ def software_authority_report_checks(tmp):
         current = registry[mode]
         check('Software authority named report is required exactly once in ' + mode,
               current.count(name) == 1 and len(current) == len(set(current)))
-        retained = [item for item in current if item != name]
+        retained = [item for item in current if item != name and item not in database_reports]
         check('Software authority inventory retains every original ordered ' + mode + ' report',
               len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
     body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
@@ -524,6 +525,26 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    database_ext=contract.get('database_schema_native_command_extension')
+    if database_ext:
+        additions=database_ext['additions'];position=native_commands.index(database_ext['additions_after'])+1
+        check('Reviewed database commands are one exact additive extension',
+              len(native_commands)==database_ext['predecessor_native_count']+len(additions)
+              and native_commands==contract['native_commands']
+              and native_commands[position:position+len(additions)]==additions
+              and all(native_commands.count(command)==1 for command in additions))
+        native_commands=[command for command in native_commands if command not in additions]
+        check('Reviewed database additions retain the complete predecessor recipe',
+              len(native_commands)==database_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
+        for path,expected_hash in database_ext['source_sha256'].items():
+            check('Reviewed database source identity '+path,
+                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        registry=a.load(ROOT/'tools/acceptance-reports.json')
+        for report in database_ext['reports']:
+            check('Reviewed database report is required in browser and final evidence '+report,
+                  registry['browser'].count(report)==1 and registry['final'].count(report)==1)
+        contract={**contract,'native_commands':native_commands}
     ext=contract.get('non20i_native_command_extension')
     if ext:
         additions=ext['additions']
