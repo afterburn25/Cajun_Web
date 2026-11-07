@@ -226,3 +226,23 @@ function database_schema_plan(array $requested,array $snapshot): array {
     $review=['format'=>1,'steps'=>$steps,'rows'=>$rows];$hash=hash('sha256',json_encode($review,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES));
     return ['requested'=>array_values(array_unique($requested)),'order'=>$steps,'rows'=>$rows,'review_hash'=>$hash];
 }
+
+function database_schema_execute_reviewed(array $requested,string $reviewHash,callable $snapshot,callable $runStep): array {
+    if(!preg_match('/^[a-f0-9]{64}$/D',$reviewHash))throw new InvalidArgumentException('Reload and review the exact database update plan.');
+    $before=$snapshot();$plan=database_schema_plan($requested,$before);
+    if(!hash_equals($plan['review_hash'],$reviewHash))throw new RuntimeException('Database state or selected updates changed. Reload and review the plan again.');
+    $reviewed=array_fill_keys(array_column($plan['rows'],'marker'),true);$migrations=array_map(fn(array $row):array=>$row+['effects'=>[]],database_schema_migrations());$applied=[];
+    foreach($plan['order'] as $marker){
+        $runStep($marker,$migrations[$marker]);$after=$snapshot();
+        if(array_keys($after)!==array_keys($before))throw new RuntimeException('Registered database feature scope changed during update.');
+        foreach($after as $changed=>$row){
+            if(($before[$changed]['installed']??null)!==($row['installed']??null)&&!isset($reviewed[$changed]))throw new RuntimeException('An unreviewed registered database feature changed: '.$row['label'].'.');
+        }
+        foreach([$marker,...$migrations[$marker]['effects']] as $target){
+            if(($after[$target]['state']??null)!=='current')throw new RuntimeException('Database update did not reach its reviewed target: '.($after[$target]['label']??$target).'.');
+        }
+        $before=$after;$applied[]=$marker;
+    }
+    foreach($plan['rows'] as $row)if(($before[$row['marker']]['state']??null)!=='current')throw new RuntimeException('Reviewed database update remains incomplete: '.$row['label'].'.');
+    return ['applied'=>$applied,'review_hash'=>$reviewHash,'rows'=>$plan['rows']];
+}

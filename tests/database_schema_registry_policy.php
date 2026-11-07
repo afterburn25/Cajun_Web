@@ -58,6 +58,24 @@ try{
         'Unmanaged missing dependency is refused'=>function()use($currentRows,$registry){$bad=$currentRows;$bad['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'');$bad['provider_inventory_schema_version']=database_schema_classify($registry['provider_inventory_schema_version'],'4');database_schema_plan(['provider_inventory_schema_version'],$bad);},
         'Unsupported side effect is refused before planning'=>function()use($gatewayRows,$registry){$bad=$gatewayRows;$bad['license_finance_recovery_schema_version']=database_schema_classify($registry['license_finance_recovery_schema_version'],'99');database_schema_plan(['license_finance_gateway_schema_version'],$bad);},
     ] as $name=>$operation){$refused=false;try{$operation();}catch(InvalidArgumentException|RuntimeException){$refused=true;}ds_ok($name,$refused);}
+    $executionRows=$currentRows;$executionRows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');$executionRows['software_commerce_version']=database_schema_classify($registry['software_commerce_version'],'2');
+    $executionPlan=database_schema_plan(['software_commerce_version','license_schema_version'],$executionRows);$calls=[];
+    $snapshot=function()use(&$executionRows):array{return $executionRows;};
+    $runner=function(string $marker)use(&$executionRows,&$calls,$registry):void{$calls[]=$marker;$executionRows[$marker]=database_schema_classify($registry[$marker],$registry[$marker]['current']);};
+    $result=database_schema_execute_reviewed($executionPlan['requested'],$executionPlan['review_hash'],$snapshot,$runner);
+    ds_ok('Exact reviewed plan executes once in dependency order',$calls===['license_schema_version','software_commerce_version']&&$result['applied']===$calls);
+    $calls=[];$stale=$executionRows;$stale['license_schema_version']=database_schema_classify($registry['license_schema_version'],'1');
+    $refused=false;try{database_schema_execute_reviewed($executionPlan['requested'],$executionPlan['review_hash'],fn()=>$stale,function()use(&$calls):void{$calls[]='called';});}catch(RuntimeException){$refused=true;}
+    ds_ok('Stale review is refused before a migration runs',$refused&&$calls===[]);
+    $unexpected=$currentRows;$unexpected['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');$unexpectedPlan=database_schema_plan(['license_schema_version'],$unexpected);
+    $refused=false;try{database_schema_execute_reviewed($unexpectedPlan['requested'],$unexpectedPlan['review_hash'],function()use(&$unexpected):array{return $unexpected;},function()use(&$unexpected,$registry):void{$unexpected['license_schema_version']=database_schema_classify($registry['license_schema_version'],'3');$unexpected['contacts_schema_version']=database_schema_classify($registry['contacts_schema_version'],'');});}catch(RuntimeException){$refused=true;}
+    ds_ok('Unreviewed registered marker change is detected',$refused);
+    $incomplete=$currentRows;$incomplete['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');$incompletePlan=database_schema_plan(['license_schema_version'],$incomplete);
+    $refused=false;try{database_schema_execute_reviewed($incompletePlan['requested'],$incompletePlan['review_hash'],fn()=>$incomplete,fn()=>null);}catch(RuntimeException){$refused=true;}
+    ds_ok('Step that does not reach its reviewed target is refused',$refused);
+    $effectRows=$gatewayRows;$effectPlan=database_schema_plan(['license_finance_gateway_schema_version'],$effectRows);$effectCalls=[];
+    $effectResult=database_schema_execute_reviewed($effectPlan['requested'],$effectPlan['review_hash'],function()use(&$effectRows):array{return $effectRows;},function(string $marker)use(&$effectRows,&$effectCalls,$registry):void{$effectCalls[]=$marker;$effectRows[$marker]=database_schema_classify($registry[$marker],$registry[$marker]['current']);$effectRows['license_finance_recovery_schema_version']=database_schema_classify($registry['license_finance_recovery_schema_version'],'1');});
+    ds_ok('Reviewed indirect effect may change with its declared step',$effectCalls===['license_finance_gateway_schema_version']&&count($effectResult['rows'])===2);
 }catch(Throwable $e){$failure=$e->getMessage();}
 echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;
 exit($failure===null?0:1);
