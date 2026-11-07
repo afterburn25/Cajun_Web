@@ -112,8 +112,8 @@ DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
-DATABASE_WORKFLOW_SOURCE = 'edfc44cb5005fac0742e169ca3928058dd60deb9'
-DATABASE_WORKFLOW_SOURCE_TREE = '356c850b154887c36291d402609fa9bf2df6877e'
+DATABASE_WORKFLOW_SOURCE = '4efd219efcef76c4660472d6739f0bc8e0486f9b'
+DATABASE_WORKFLOW_SOURCE_TREE = '36891978ccbcf897c1908eb5901303c723e783fd'
 DATABASE_WORKFLOW_ADDITIONS = frozenset((
     'site/app/settings/database_schemas.php',
     'tests/database_schema_action_policy.php',
@@ -148,7 +148,7 @@ DATABASE_WORKFLOW_SOURCE_PATHS = (DATABASE_WORKFLOW_ADDITIONS | DATABASE_WORKFLO
                                   | DATABASE_WORKFLOW_CONTACTS | DATABASE_WORKFLOW_DIAGNOSTICS
                                   | {INVENTORY})
 # BEGIN GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
-DATABASE_WORKFLOW_ADDITION_SHA256 = {'site/app/settings/database_schemas.php': 'fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d', 'tests/database_schema_action_policy.php': 'af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd', 'tests/database_schema_native.php': '5b8a7dbb4b43af3bc392bd03f0062257d85d85ab31e4deac585dbfec04fd490e', 'tests/database_schema_registry_policy.php': '9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd', 'tests/database_schema_view_policy.php': '4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935', 'tests/database_update_cases.py': '3ec7b82268bbc61fc4a837c5af09c9815dabd247c5131d9f6db87100187b3e25', 'tests/database_update_forms.py': '6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2'}
+DATABASE_WORKFLOW_ADDITION_SHA256 = {'site/app/settings/database_schemas.php': 'fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d', 'tests/database_schema_action_policy.php': 'af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd', 'tests/database_schema_native.php': '5b8a7dbb4b43af3bc392bd03f0062257d85d85ab31e4deac585dbfec04fd490e', 'tests/database_schema_registry_policy.php': '9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd', 'tests/database_schema_view_policy.php': '4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935', 'tests/database_update_cases.py': '5d5f183596dc5902b1f3f9090a161c949ef8fd693a725457db78c9a5d4b99150', 'tests/database_update_forms.py': '6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2'}
 # END GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
@@ -341,7 +341,7 @@ REPAIR_SHA256['tests/browser_acceptance.py'] = '76cc1bebf0cff397a46bb920db598d25
 REPAIR_SHA256['tests/owner_update_session_policy.php'] = 'b12346f03f23d130bd32f9c03fe862abb0fe75c8cdff5a7d26ded960290df6b5'
 REPAIR_SHA256['tests/release_cases.py'] = 'bef2874006b64ba39fa063c4180de164ca25727c3081381c069a22f9368ec282'
 REPAIR_SHA256['tests/service_plan_cases.py'] = 'aed974cf60079d8268d3090e9e9f9876c2d69d737b09e575e1533bd823b67ec9'
-REPAIR_SHA256['tools/acceptance-contract.json'] = '2091307487dd3ebf7a152ba029750cf6fa883ac332a798e87437111f8b8c5cea'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '6f9659f3af4752e86972db13483eb923d8a941fbe8e2f78c11ef762d6df0d3d2'
 REPAIR_SHA256['tools/acceptance-reports.json'] = 'e7d9d2b1f66f72109c434c96303611062c7236bfe24cdcf296e5a0080c88a2b8'
 REPAIR_SHA256['tools/update/owner-update.php'] = 'f151c1f042841853bfd36cc60ec0629cd8cc1b8d4c0da5af57562d4239e9cec5'
 # END GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
