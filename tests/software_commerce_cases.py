@@ -801,9 +801,22 @@ def run_browser(env, browser):
           len(support_id)==32 and 'Support session' in started.text)
     support_root=base+'/existing/portal/index.php?support='+support_id
     support_software=support_root+'&software=1'
+    software_views_before=db(
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='software.view' AND outcome='allowed'",[support_id])[0]['total']
     blocked=admin.get(support_software,timeout=25)
-    check('My Software is unavailable during staff support context',
-          blocked.status_code==403 and 'Sign in to your own account to manage software' in blocked.text)
+    blocked_page=soup(blocked)
+    software_views_after=db(
+        "SELECT COUNT(*) AS total FROM ci_support_events WHERE support_id=? AND actor_id=1 AND client_id=1 "
+        "AND action='software.view' AND outcome='allowed'",[support_id])[0]['total']
+    check('My Software is audited and read-only during administrator support context',
+          blocked.status_code==200
+          and 'Administrator review is read-only.' in blocked.text
+          and software_views_after==software_views_before+1
+          and blocked_page.select_one('[name=action][value=software_order_buy]') is None
+          and blocked_page.select_one('[name=action][value^=license_domain_]') is None
+          and blocked_page.select_one('[data-authorize-net]') is None
+          and blocked_page.select_one('a[href*="api/software-download.php"]') is None)
     support_home=admin.get(support_root,timeout=25)
     forged_support={
         'csrf':token(support_home),

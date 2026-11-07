@@ -8,11 +8,13 @@ require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
 function license_finance_money(int $cents):string{return '$'.number_format($cents/100,2,'.',',');}
 
 function license_finance_portal_render(?array $client,string $id,string $error=''):never{
-    if(!$client||support_current())fail_page('Sign in to your own account to review financing.',403);
-    try{contact_require_permission('billing',(int)$client['id']);}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
+    if(!$client)fail_page('Sign in to your own account to review financing.',403);
+    $review=support_current()!==null;
+    if(!$review)try{contact_require_permission('billing',(int)$client['id']);}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
+    if($review)support_record('financing.view','client',(string)$client['id']);
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     $financeGateway=null;
-    if(license_finance_gateway_ready()){
+    if(!$review&&license_finance_gateway_ready()){
         try{
             require_once CWP_CODE_ROOT.'/app/billing/finance_authorize_net.php';
             $financeGateway=license_finance_anet_settings();
@@ -27,6 +29,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
     site_head('Financing Agreement','portal');support_banner();
     echo '<section class="section"><div class="container"><p><a href="'.esc(studio_url()).'">Client workspace</a> / Financing</p><h1>Financing agreement</h1>';
     show_flash();if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';
+    if($review)echo '<p class="notice info">Administrator review is read-only. Agreement terms and payment state are visible; signing, declining, payments and automatic-billing changes require the customer account.</p>';
     if(!license_finance_offers_ready()){
         echo '<p>Financing agreements are not available yet.</p></div></section>';site_foot(false);exit;
     }
@@ -62,7 +65,9 @@ function license_finance_portal_render(?array $client,string $id,string $error='
     echo '<p><strong>Signed agreement rights:</strong> '.esc($rightsText?implode(' + ',$rightsText).' rights expressly granted':'site-use only; resale and distribution are not granted').'.</p>';
     echo '<h3>Agreement terms</h3><div class="prose">'.nl2br(esc($terms['agreement_text'])).'</div>';
     echo '<p class="hint">Agreement fingerprint: <code>'.esc($row['terms_sha256']).'</code>. Signing records your authenticated client account, typed signer name, account email, this exact fingerprint and the UTC signing time.</p>';
-    if($state==='offered'){
+    if($state==='offered'&&$review){
+        echo '<p class="notice info">This agreement is awaiting the customer\'s decision. An administrator cannot sign or decline it for the customer.</p>';
+    }elseif($state==='offered'){
         echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="finance_offer_sign"><input type="hidden" name="finance_id" value="'.esc($row['id']).'">';
         echo '<label>Type your legal/authorized signer name<input name="signer_name" maxlength="190" required></label>';
         echo '<label class="check"><input type="checkbox" name="agree_terms" value="1" required> I have reviewed and agree to these exact financing and payment terms.</label>';
@@ -72,7 +77,9 @@ function license_finance_portal_render(?array $client,string $id,string $error='
     }elseif($state==='signed'){
         echo '<p class="notice info">Signed by '.esc((string)$row['signed_name']).' using '.esc((string)$row['signed_email']).' on '.esc((string)$row['signed_at']).' UTC.</p>';
         $financeSub=license_finance_gateway_ready()?license_finance_subscription_row((string)$row['id']):null;
-        $financePlan=license_financing_sync((int)$row['license_id']);
+        $financePlan=$review
+            ? one('SELECT * FROM '.table('license_financing').' WHERE license_id=?',[(int)$row['license_id']])
+            : license_financing_sync((int)$row['license_id']);
         if($financePlan){
             echo '<p><strong>License financing:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financePlan['state']))).($financePlan['paid_off_at']!==null?' · permanently paid off '.esc((string)$financePlan['paid_off_at']).' UTC':'').'</p>';
             echo '<p><strong>Current commercial rights:</strong> '.esc(license_financing_rights_label($financePlan)).'.</p>';
@@ -97,7 +104,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         }
         if($financeSub)echo '<p><strong>Automatic installments:</strong> '.esc(ucwords(str_replace('_',' ',(string)$financeSub['status']))).($financeSub['gateway_subscription_id']!==null?' · gateway subscription '.esc((string)$financeSub['gateway_subscription_id']):'').'</p>';
         if($financeSub&&$financeSub['status']==='retirement_pending')echo '<p class="notice warning">Automatic billing requires review. Cancellation is awaiting confirmation; another automatic billing setup is unavailable until this is resolved. Recorded payments remain credited.</p>';
-        if($financeSub&&license_financing_recovery_link_allowed((string)$financeSub['status'])){
+        if(!$review&&$financeSub&&license_financing_recovery_link_allowed((string)$financeSub['status'])){
             $recovery=one('SELECT p.* FROM '.table('payment_requests').' p JOIN '.table('recurring_billing_invoices').' r ON r.invoice_id=p.invoice_id WHERE r.schedule_id=? AND p.purpose=? AND p.status=? ORDER BY r.period_index,p.id DESC LIMIT 1',
                 [$row['schedule_id'],'financing','prepared']);
             $recoveryUrl=null;
@@ -135,7 +142,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
         }
         $financePaidOff=$financePlan&&($financePlan['paid_off_at']!==null||(string)$financePlan['state']==='paid_off');
         try{$initialSatisfied=license_finance_offer_initial_paid($row);}catch(Throwable){$initialSatisfied=false;}
-        if((int)$terms['initial_payment_cents']>0&&!$financePaidOff){
+        if(!$review&&(int)$terms['initial_payment_cents']>0&&!$financePaidOff){
             if($initialSatisfied){
                 echo '<p class="notice info">Initial payment is verified. You can now enroll the remaining signed installments.</p>';
             }else{
@@ -147,7 +154,7 @@ function license_finance_portal_render(?array $client,string $id,string $error='
                 elseif(!$financeSub)echo '<form method="post">'.support_csrf_field().'<input type="hidden" name="action" value="finance_offer_payment"><input type="hidden" name="finance_id" value="'.esc($row['id']).'"><button class="btn gold">Prepare initial payment page</button></form>';
             }
         }
-        if(!$financeSub&&$initialSatisfied&&!$financePaidOff){
+        if(!$review&&!$financeSub&&$initialSatisfied&&!$financePaidOff){
             if($financeGateway){
                 echo '<h3>Set up automatic installment payments</h3>';
                 echo '<form method="post" data-authorize-net data-login="'.esc($financeGateway['login']).'" data-client-key="'.esc($financeGateway['client_key']).'">'.support_csrf_field();

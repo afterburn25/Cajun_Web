@@ -11,11 +11,11 @@ $checks=[];
 function check(string $name,bool $ok): void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function denied(string $name,callable $f): void {try{$f();}catch(InvalidArgumentException){check($name,true);return;}check($name,false);}
 try {
-    check('Signed-in administrator bare portal goes to hub',master_portal_entry([],'GET',true)==='redirect');
+    check('Signed-in administrator bare portal goes to client selector',master_portal_entry([],'GET',true)==='redirect');
     check('Signed-out bare portal remains customer login',master_portal_entry([],'GET',false)==='none');
-    check('Explicit master path is available before authentication',master_portal_entry(['master'=>'1'],'GET',false)==='hub');
-    check('Master route refuses POST',master_portal_entry(['master'=>'1'],'POST',true)==='method');
-    check('Master route refuses array marker',master_portal_entry(['master'=>['1']],'GET',true)==='invalid');
+    check('Explicit compatibility path is available before authentication',master_portal_entry(['master'=>'1'],'GET',false)==='hub');
+    check('Client selector route refuses POST',master_portal_entry(['master'=>'1'],'POST',true)==='method');
+    check('Client selector route refuses array marker',master_portal_entry(['master'=>['1']],'GET',true)==='invalid');
     foreach(['invite','support','invoice','hosting','hosting_purchases','downloads','agreements','license','finance'] as $key){
         check('Deep link '.$key.' is not hijacked',master_portal_entry([$key=>'1'],'GET',true)==='none');
         check('Mixed master/'.$key.' route rejected',master_portal_entry(['master'=>'1',$key=>'1'],'GET',true)==='invalid');
@@ -34,6 +34,16 @@ try {
     check('Pagination bounded to 51 rows and computed offset',str_ends_with($sql,'LIMIT 51 OFFSET 50'));
     [$sql,$params]=master_portal_client_query(true,master_portal_filters([]));
     check('Owner sees active clients without staff opt-in condition',str_contains($sql,'c.active=1')&&!str_contains($sql,'support_clients')&&$params===[]);
+    $entrySource=file_get_contents(__DIR__.'/../site/app/clients/master_portal.php');
+    $bannerSource=file_get_contents(__DIR__.'/../site/admin/controllers/support.php');
+    $routerSource=file_get_contents(__DIR__.'/../site/portal/controllers/router.php');
+    $softwareSource=file_get_contents(__DIR__.'/../site/portal/views/software.php');
+    $financeSource=file_get_contents(__DIR__.'/../site/portal/views/financing.php');
+    check('Administrator selector uses client shell and validates resume rather than admin shell',str_contains($entrySource,"site_head('Client portal','portal')")&&str_contains($entrySource,'support_resolve((string)$open[\'id\'])')&&!str_contains($entrySource,"admin_head('Master client portal'"));
+    check('Review banner names the audited support context, selected client and both exits',str_contains($bannerSource,'Support session · Audited')&&str_contains($bannerSource,'Viewing <?=esc($ctx[\'client\'][\'name\'])?> as administrator')&&str_contains($bannerSource,'value="support_switch"')&&str_contains($bannerSource,'value="support_end"'));
+    check('Switch ends bound review before returning to selector',str_contains($routerSource,"['support_end','support_switch']")&&str_contains($routerSource,'support_end($supportId)')&&str_contains($routerSource,"master_portal_url()"));
+    check('Software review is explicitly audited and read-only',str_contains($softwareSource,"support_record('software.view'")&&str_contains($softwareSource,'$canPurchase=!$review')&&str_contains($softwareSource,'$canManageInstallations=!$review'));
+    check('Financing review is explicitly audited without customer decisions or state sync',str_contains($financeSource,"support_record('financing.view'")&&str_contains($financeSource,'$state===\'offered\'&&$review')&&str_contains($financeSource,'!$review&&license_finance_gateway_ready()')&&str_contains($financeSource,"? one('SELECT * FROM '"));
     foreach([['q'=>[]],['q'=>str_repeat('a',121)],['q'=>"bad\0value"],['q'=>"\xff"],['portal_page'=>'0'],['portal_page'=>'-1'],['portal_page'=>[]],['portal_page'=>'1 OR 1=1'],['portal_page'=>'100000']] as $i=>$input)denied('Malformed filter '.$i.' rejected',fn()=>master_portal_filters($input));
 }catch(Throwable $e){$failure=$e->getMessage();}
 @mkdir(__DIR__.'/../qa',0775,true);
