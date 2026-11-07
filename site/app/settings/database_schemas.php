@@ -257,7 +257,7 @@ function database_schema_execute_reviewed(array $requested,string $reviewHash,ca
 function database_schema_current_owner(): array {
     if((function_exists('support_current')&&support_current())||(function_exists('support_binding')&&support_binding()!==''))throw new RuntimeException('End client review before updating the database.');
     $actor=require_admin();if(!admin_session_matches($actor))throw new RuntimeException('Your administrator session changed. Sign in again.');
-    if(staff_ready())$actor=staff_owner('');
+    if(staff_ready()){$actor=staff_owner('');if(($actor['role']??'')!=='owner')throw new RuntimeException('Only the active owner can update the database.');}
     return $actor;
 }
 
