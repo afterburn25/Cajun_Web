@@ -92,6 +92,7 @@ MODULE_SPECS = {
     'release_cases': ('release-browser', 'installer', []),
     'staff_cases': ('staff', 'portal', []),
     'support_cases': ('support', 'security', ['staff']),
+    'database_update_cases': ('database-updates', 'installer', ['support']),
     'catalog_cases': ('catalog', 'billing', ['staff']),
     'provider_catalog_import_cases': ('catalog-import', 'twentyi-inventory', []),
     'payments_cases': ('payments', 'billing', ['catalog']),
@@ -122,7 +123,7 @@ MODULE_SPECS = {
     'mail_drafts_cases': ('mail-drafts', 'mail', ['mail-accounts']),
     'mail_submissions_cases': ('mail-submissions', 'mail', ['mail-accounts', 'mail-drafts']),
     'client_authority_cases': ('client-authority', 'security', ['payments']),
-    'service_plan_cases': ('service-plan', 'twentyi-inventory', ['payments', 'support']),
+    'service_plan_cases': ('service-plan', 'twentyi-inventory', ['payments', 'support', 'database-updates']),
     'recurring_billing_cases': ('recurring-billing', 'billing', ['payments', 'service-plan', 'ledger', 'provider-operations']),
     'domain_contracts_cases': ('domain-contracts', 'twentyi-domains', ['registrar']),
     'provider_cloud_providers_cases': ('cloud-providers', 'twentyi-inventory', ['provider-settings']),
@@ -146,7 +147,7 @@ MODULE_SPECS = {
     'provider_schedule_cases': ('provider-schedule', 'twentyi-inventory', ['provider-settings']),
     'software_commerce_cases': ('software-commerce', 'billing', []),
     'license_financing_cases': ('license-financing', 'billing', ['software-commerce']),
-    'contacts_cases': ('contacts', 'portal', ['recurring-billing', 'registration-drafts', 'software-commerce', 'license-financing']),
+    'contacts_cases': ('contacts', 'portal', ['recurring-billing', 'registration-drafts', 'software-commerce', 'license-financing', 'database-updates']),
 }
 
 STRICT_MODULES = discover_strict_modules()

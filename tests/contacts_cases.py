@@ -7,7 +7,6 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db
 from staff_cases import OWNER
-from owner_browser_forms import refuse_owner_action
 
 CPASS='Synthetic contact passphrase 2026'
 
@@ -16,7 +15,6 @@ def run_browser(env,browser):
     db('DELETE FROM ci_rate_limits')
     root=BASE+'/existing/admin/index.php'
     clients=root+'?view=studio-clients'
-    upgrade=root+'?view=studio-upgrade'
     portal=BASE+'/existing/portal/index.php'
     owner=requests.Session()
     submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
@@ -36,23 +34,7 @@ def run_browser(env,browser):
             if a and i and d and a['value']=='studio_contact' and i['value']==str(c) and d['value']=='0':return form_data(f)
         raise AssertionError('Missing add-contact form for client '+str(c))
 
-    # Explicit owner preparation, never silent adoption.
-    setup_form=env['form_for'](owner.get(upgrade),'studio_contacts_setup')
-    check('Contacts setup uses current owner authority without another password',not setup_form.select('[name=current_password],[name=owner_password]') and bool(setup_form.select_one('[name=csrf]')['value']))
-    setup_before=db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")
-    r=submit(owner,upgrade,'studio_contacts_setup',{'confirm':'1','csrf':'invalid'})
-    check('Contacts setup rejects invalid CSRF without changing readiness','expired' in r.text.lower() and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==setup_before)
-    r=submit(owner,upgrade,'studio_contacts_setup',{'confirm':''})
-    check('Contacts setup requires explicit backup confirmation','Confirm that you saved' in r.text and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==setup_before)
-    refuse_owner_action(env,owner,upgrade,'studio_contacts_setup',{'confirm':'1'})
-    r=submit(owner,upgrade,'studio_contacts_setup',{'confirm':'1'})
-    check('Owner prepares contacts storage','contacts storage prepared' in r.text and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value':'1'}])
-    r=submit(owner,upgrade,'studio_contacts_setup',{'confirm':'1'})
-    check('Contacts setup is idempotent','contacts storage prepared' in r.text)
-    db("UPDATE ci_settings SET value='bogus' WHERE name='contacts_schema_version'")
-    r=submit(owner,upgrade,'studio_contacts_setup',{'confirm':'1'})
-    check('Unknown contacts marker refuses to adopt data','Unrecognized contacts schema version' in r.text)
-    db("UPDATE ci_settings SET value='1' WHERE name='contacts_schema_version'")
+    check('Contacts begin only after unified reviewed database preparation',db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value':'1'}] and bool(db("SELECT id FROM ci_audit WHERE action='database.update.completed' AND detail LIKE '%contacts_schema_version%'")))
     notifications=root+'?view=notifications'
     if soup(owner.get(notifications)).select_one('[name=action][value=notifications_setup]'):
         submit(owner,notifications,'notifications_setup',{'confirm':'1'})

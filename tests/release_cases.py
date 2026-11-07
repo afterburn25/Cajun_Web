@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 import requests
 from playwright.sync_api import expect
 from release_version import VERSION
+from database_update_forms import database_apply, database_plan
 
 def fixture_command(request):
     result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps(request),text=True,capture_output=True,check=True)
@@ -104,15 +105,19 @@ def run_http(env):
     check('Actual update ZIP preserves config locks media and unrelated files',all(p.read_bytes()==data for p,data in preserved.items()))
     up=requests.Session();r=submit(up,BASE+'/upgrade/admin/index.php?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     check('Original owner can sign in after file update','Sales pipeline' in r.text)
-    r=submit(up,BASE+'/upgrade/admin/index.php?view=studio-upgrade','studio_migrate',{'confirm':'1'})
-    check('Supported admin database upgrade completes','Database update completed' in r.text)
+    upgrade_url=BASE+'/upgrade/admin/index.php?view=studio-upgrade'
+    planned,review_url,review=database_plan(up,upgrade_url,['studio_schema_version'],soup,form_for)
+    check('Supported admin database upgrade requires a readable review',planned.status_code==303 and 'Review selected database updates' in review.text and 'Studio' in review.text)
+    r=database_apply(up,review_url,review,form_for,True)
+    check('Supported admin database upgrade completes through reviewed workflow','Database updates completed: Studio' in r.text)
     for table in ['leads','projects']:check('Upgrade retains populated '+table,db('SELECT * FROM upgrade_'+table)==rows_before[table])
     after={r['name']:r['value'] for r in db('SELECT * FROM upgrade_settings')}
     check('Upgrade preserves all original settings',all(after[r['name']]==r['value'] for r in rows_before['settings']))
     user=db('SELECT * FROM upgrade_users')[0]; old=rows_before['users'][0]
     check('Upgrade preserves original credentials and identity',all(user[k]==old[k] for k in old if k!='last_login'))
-    submit(up,BASE+'/upgrade/admin/index.php?view=studio-upgrade','studio_migrate',{'confirm':'1'})
-    check('HTTP upgrade can safely repeat',db("SELECT value FROM upgrade_settings WHERE name='studio_schema_version'")[0]['value']=='2')
+    before_repeat={table:db('SELECT * FROM upgrade_'+table) for table in ['settings','users','leads','projects']}
+    replay=database_apply(up,review_url,review,form_for,True)
+    check('Reviewed database apply cannot be replayed and preserves data','Reload and review' in replay.text and all(db('SELECT * FROM upgrade_'+table)==rows for table,rows in before_repeat.items()) and db("SELECT value FROM upgrade_settings WHERE name='studio_schema_version'")[0]['value']=='2')
     check('Upgraded site never reruns fresh setup',removed_setup_unavailable(globals(),upgrade,up))
     # Private invitation is copied from the real admin response; no customer mail.
     clients=BASE+'/existing/admin/index.php?view=studio-clients'

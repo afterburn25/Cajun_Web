@@ -148,27 +148,7 @@ def run_browser(env, browser):
     check('Client may decline an unactivated offer without agreeing', 'Declined offer' in r.text and 'Service terms accepted' not in r.text)
 
     # Additional contacts share the parent client identity; their own current billing authority is rechecked inside the guard.
-    contacts_upgrade = admin+'?view=studio-upgrade'
-    setup_form = form_for(owner.get(contacts_upgrade), 'studio_contacts_setup')
-    setup_confirmation = setup_form.select_one('input[name=confirm][type=checkbox][value="1"]')
-    setup_fields = form_data(setup_form)
-    check('Service-plan contact setup retains unchecked backup confirmation and current-owner authority',
-          setup_confirmation is not None and not setup_confirmation.has_attr('checked')
-          and 'confirm' not in setup_fields and bool(setup_fields.get('csrf'))
-          and not setup_form.select('[name=current_password],[name=owner_password]'))
-    contacts_before = db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")
-    contact_tables_before = db("SHOW TABLES LIKE 'ci_studio_contacts'")
-    agreements_before = snapshot()
-    r = submit(owner, contacts_upgrade, 'studio_contacts_setup', {'current_password': OWNER})
-    check('Service-plan contact setup refuses the obsolete password-only request without preparing storage',
-          r.status_code==200 and not r.history and 'Confirm that you saved' in r.text
-          and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==contacts_before
-          and db("SHOW TABLES LIKE 'ci_studio_contacts'")==contact_tables_before and snapshot()==agreements_before)
-    r = submit(owner, contacts_upgrade, 'studio_contacts_setup', {'confirm': '1'})
-    check('Service-plan owner explicitly prepares contacts before exercising scoped agreement access',
-          r.status_code==200 and len(r.history)==1 and r.history[0].status_code==303
-          and 'contacts storage prepared' in r.text
-          and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value': '1'}])
+    check('Service-plan contact cases reuse unified reviewed database preparation',db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value':'1'}] and bool(db("SELECT id FROM ci_audit WHERE action='database.update.completed' AND detail LIKE '%contacts_schema_version%'")))
 
     def contact_form(action, field, value):
         for f in soup(owner.get(admin+'?view=studio-clients')).select('form'):
