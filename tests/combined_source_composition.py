@@ -112,8 +112,8 @@ DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
-DATABASE_WORKFLOW_SOURCE = '6e6060c9d3b4ee73be6093432c60672db208f3b3'
-DATABASE_WORKFLOW_SOURCE_TREE = '9821b16a8d53bc9935d86510f26645c232312717'
+DATABASE_WORKFLOW_SOURCE = 'affb0e0deebf853d03f23040ee1fe2e855bde89a'
+DATABASE_WORKFLOW_SOURCE_TREE = '9ba3f264bb6cd8c698d4624f0abb2eeff5405fca'
 DATABASE_WORKFLOW_ADDITIONS = frozenset((
     'site/app/settings/database_schemas.php',
     'tests/database_schema_action_policy.php',
@@ -148,7 +148,7 @@ DATABASE_WORKFLOW_SOURCE_PATHS = (DATABASE_WORKFLOW_ADDITIONS | DATABASE_WORKFLO
                                   | DATABASE_WORKFLOW_CONTACTS | DATABASE_WORKFLOW_DIAGNOSTICS
                                   | {INVENTORY})
 # BEGIN GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
-DATABASE_WORKFLOW_ADDITION_SHA256 = {'site/app/settings/database_schemas.php': 'fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d', 'tests/database_schema_action_policy.php': 'af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd', 'tests/database_schema_native.php': 'fea4e71571e251dad59ac3a814e965909757e9e604955235f5b3f53d548db2a3', 'tests/database_schema_registry_policy.php': '9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd', 'tests/database_schema_view_policy.php': '4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935', 'tests/database_update_cases.py': '38ae4e88f86d8221070526af2d0c106c76620a166bddbad6772a4f340d498a14', 'tests/database_update_forms.py': '6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2'}
+DATABASE_WORKFLOW_ADDITION_SHA256 = {'site/app/settings/database_schemas.php': 'fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d', 'tests/database_schema_action_policy.php': 'af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd', 'tests/database_schema_native.php': '5b8a7dbb4b43af3bc392bd03f0062257d85d85ab31e4deac585dbfec04fd490e', 'tests/database_schema_registry_policy.php': '9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd', 'tests/database_schema_view_policy.php': '4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935', 'tests/database_update_cases.py': '38ae4e88f86d8221070526af2d0c106c76620a166bddbad6772a4f340d498a14', 'tests/database_update_forms.py': '6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2'}
 # END GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
@@ -341,7 +341,7 @@ REPAIR_SHA256['tests/browser_acceptance.py'] = '76cc1bebf0cff397a46bb920db598d25
 REPAIR_SHA256['tests/owner_update_session_policy.php'] = 'b12346f03f23d130bd32f9c03fe862abb0fe75c8cdff5a7d26ded960290df6b5'
 REPAIR_SHA256['tests/release_cases.py'] = 'bef2874006b64ba39fa063c4180de164ca25727c3081381c069a22f9368ec282'
 REPAIR_SHA256['tests/service_plan_cases.py'] = 'aed974cf60079d8268d3090e9e9f9876c2d69d737b09e575e1533bd823b67ec9'
-REPAIR_SHA256['tools/acceptance-contract.json'] = '341d1f3ace142355ce38bb5ec458d14c9e10af1efdb9c90cb7d7ca56c7245efe'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '77fae4a0fff4e06018951c409a1ad946d5aefbadaf696d5854701b28439bb4b1'
 REPAIR_SHA256['tools/acceptance-reports.json'] = 'e7d9d2b1f66f72109c434c96303611062c7236bfe24cdcf296e5a0080c88a2b8'
 REPAIR_SHA256['tools/update/owner-update.php'] = 'f151c1f042841853bfd36cc60ec0629cd8cc1b8d4c0da5af57562d4239e9cec5'
 # END GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
@@ -920,7 +920,7 @@ def verify_current(root):
         {'name': 'Four exact contact additions retain their original PR331 source, ancestry and modes; runtime uses current reviewed bytes', 'passed': True},
         {'name': 'The exact two-path ticket source retains its commit, tree, ancestry and path equality; the helper bytes and mode are a disjoint addition', 'passed': True},
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
-        {'name': 'Exact UX-07 base-to-source range binds 24 database workflow paths and seven disjoint additions', 'passed': True},
+        {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
