@@ -155,3 +155,16 @@ function database_schema_classify(array $entry,string $installed): array {
 function database_schema_snapshot(): array {
     $rows=[];foreach(database_schema_registry() as $marker=>$entry)$rows[$marker]=database_schema_classify($entry,setting($marker));return $rows;
 }
+
+function database_schema_summary(array $rows): array {
+    $counts=array_fill_keys(['current','required','optional','update','interrupted','unsupported'],0);
+    foreach($rows as $row){if(!is_array($row)||!isset($counts[$row['state']??'']))throw new InvalidArgumentException('Invalid database schema status row.');$counts[$row['state']]++;}
+    $counts['needs_update']=$counts['required']+$counts['update']+$counts['interrupted'];
+    $counts['blocking']=$counts['unsupported'];
+    $counts['all_current']=$counts['needs_update']===0&&$counts['blocking']===0;
+    return $counts;
+}
+
+function database_schema_groups(array $rows): array {
+    $groups=[];foreach($rows as $row)$groups[$row['group']][]=$row;ksort($groups);return $groups;
+}

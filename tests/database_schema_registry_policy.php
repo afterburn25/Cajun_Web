@@ -27,6 +27,14 @@ try{
     foreach(database_schema_recovery_sources() as $marker=>$versions)foreach($versions as $version){$row=database_schema_classify($registry[$marker],$version);ds_ok('Interrupted marker is recoverable: '.$marker.' '.$version,$row['state']==='interrupted'&&$row['needs_update']);}
     ds_ok('Grouping keeps provider, billing, mail and domain families distinct',
         $registry['provider_settings_schema_version']['group']==='Provider'&&$registry['payments_schema_version']['group']==='Billing'&&$registry['mail_accounts_schema_version']['group']==='Mail'&&$registry['domain_renewals_schema_version']['group']==='Domains');
+    $rows=[];foreach($registry as $marker=>$entry)$rows[$marker]=database_schema_classify($entry,$entry['current']);
+    $summary=database_schema_summary($rows);ds_ok('All-current summary needs no update and has no blocker',$summary['current']===76&&$summary['all_current']&&$summary['needs_update']===0&&$summary['blocking']===0);
+    $rows['studio_schema_version']=database_schema_classify($registry['studio_schema_version'],'');
+    $rows['contacts_schema_version']=database_schema_classify($registry['contacts_schema_version'],'');
+    $rows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');
+    $rows['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'99');
+    $summary=database_schema_summary($rows);ds_ok('Summary separates required, optional, update and unsupported states',$summary['required']===1&&$summary['optional']===1&&$summary['update']===1&&$summary['unsupported']===1&&$summary['needs_update']===2&&$summary['blocking']===1&&!$summary['all_current']);
+    $groups=database_schema_groups($rows);ds_ok('Grouped rows retain all registered entries',array_sum(array_map('count',$groups))===76&&isset($groups['Provider'],$groups['Billing'],$groups['Mail'],$groups['Domains']));
 }catch(Throwable $e){$failure=$e->getMessage();}
 echo json_encode(['passed'=>$failure===null,'checks'=>count($checks),'failure'=>$failure]).PHP_EOL;
 exit($failure===null?0:1);
