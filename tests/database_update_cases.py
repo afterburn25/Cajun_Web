@@ -83,7 +83,7 @@ def run_browser(env,browser):
     check('Completed feature rechecks current and is no longer selectable','Contacts</strong> — Current' in current.text and soup(current).select_one('[name="database_updates[]"][value="contacts_schema_version"]') is None)
 
     context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');browser_page=context.new_page();errors=[];browser_page.on('pageerror',lambda error:errors.append(str(error)))
-    browser_page.goto(admin+'?view=login');browser_page.locator('[name=email]').fill('owner@example.invalid');browser_page.locator('[name=password]').fill(OWNER);browser_page.locator('button[type=submit]').click();browser_page.wait_for_url('**/admin/index.php')
+    browser_page.goto(admin+'?view=login');browser_page.locator('[name=email]').fill('owner@example.invalid');browser_page.locator('[name=password]').fill(OWNER);browser_page.locator('button[type=submit],button:not([type])').first.click();browser_page.wait_for_url('**/admin/index.php')
     browser_page.goto(upgrade,wait_until='networkidle');browser_page.locator('[name="database_updates[]"][value="notification_feed_version"]').check();browser_page.get_by_role('button',name='Review selected updates').click();browser_page.wait_for_url('**database_review=*')
     expect(browser_page.locator('[data-database-review]')).to_be_visible();expect(browser_page.locator('[data-database-history]')).to_contain_text('Contacts')
     browser_page.screenshot(path=str(QA/'Database-Updates-Desktop.png'),full_page=True);check('Database review desktop fits viewport',browser_page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
