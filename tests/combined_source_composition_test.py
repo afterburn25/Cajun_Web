@@ -38,7 +38,8 @@ def run(root=ROOT):
         # The test also runs before the new comparison adapters are committed.
         # Copy only their finite reviewed bytes into the disposable checkout.
         for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
-                     | proof.DIAGNOSTIC_ADDITIONS | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
+                     | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
+                     | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, 'tools/acceptance-contract.json'}):
             target = fixture / path
@@ -435,6 +436,34 @@ def run(root=ROOT):
                 receipt.write_bytes(old_receipt)
         refuses('Refuses simultaneous diagnostic source and current-hash substitution',
                 forged_diagnostic_and_receipt)
+
+        database_addition = 'tests/database_schema_registry_policy.php'
+        for path in sorted(proof.DATABASE_WORKFLOW_ADDITIONS):
+            refuses('Refuses changed exact database workflow addition ' + path,
+                    lambda path=path: modified(path, lambda target: target.write_bytes(
+                        target.read_bytes() + b'\n# unreviewed database workflow change\n')))
+            refuses('Refuses missing exact database workflow addition ' + path,
+                    lambda path=path: modified(path, lambda target: target.unlink()))
+        refuses('Refuses an executable mode on a database workflow addition',
+                lambda: modified(database_addition, lambda target: target.chmod(0o755)))
+        refuses('Refuses substituting the exact database workflow base',
+                lambda: altered_receipt(lambda data: data.__setitem__(
+                    'database_workflow_base', '0' * 40)))
+        refuses('Refuses substituting the exact database workflow source',
+                lambda: altered_receipt(lambda data: data.__setitem__(
+                    'database_workflow_source', '0' * 40)))
+        refuses('Refuses an omitted database workflow source path',
+                lambda: altered_receipt(lambda data: data['database_workflow_source_paths'].remove(
+                    database_addition)))
+        refuses('Refuses an expanded database workflow source path set',
+                lambda: altered_receipt(lambda data: data['database_workflow_source_paths'].append(
+                    'tests/unreviewed-database-workflow.php')))
+        refuses('Refuses an omitted database workflow addition admission',
+                lambda: altered_receipt(lambda data: data['database_workflow_additions'].pop(
+                    database_addition)))
+        refuses('Refuses a substituted database workflow addition hash',
+                lambda: altered_receipt(lambda data: data['database_workflow_additions'][database_addition].__setitem__(
+                    'sha256', '0' * 64)))
 
         source = fixture / 'tests/software_authority_provenance.py'
         cached = Path(importlib.util.cache_from_source(str(source)))
