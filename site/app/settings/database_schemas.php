@@ -171,8 +171,8 @@ function database_schema_groups(array $rows): array {
 
 function database_schema_migrations(): array {
     return [
-        'staff_schema_version'=>['depends'=>[],'file'=>'database/migrations/staff_migrate.php','function'=>'staff_migrate','arguments'=>'owner'],
-        'studio_schema_version'=>['depends'=>[],'file'=>'database/migrations/workspace.php','function'=>'studio_migrate','arguments'=>'none'],
+        'staff_schema_version'=>['depends'=>[],'effects'=>[],'file'=>'database/migrations/staff_migrate.php','function'=>'staff_migrate','arguments'=>'owner'],
+        'studio_schema_version'=>['depends'=>[],'effects'=>[],'file'=>'database/migrations/workspace.php','function'=>'studio_migrate','arguments'=>'none'],
         'backups_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/backups_migrate.php','function'=>'backups_migrate','arguments'=>'password'],
         'license_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/license_migrate.php','function'=>'license_migrate','arguments'=>'password'],
         'payments_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/payments_migrate.php','function'=>'payments_migrate','arguments'=>'password'],
@@ -180,7 +180,7 @@ function database_schema_migrations(): array {
         'provider_operations_schema_version'=>['depends'=>['staff_schema_version','provider_settings_schema_version','provider_inventory_schema_version'],'file'=>'database/migrations/provider_operations_migrate.php','function'=>'provider_operations_migrate','arguments'=>'password'],
         'software_commerce_version'=>['depends'=>['staff_schema_version','studio_schema_version','license_schema_version','catalog_schema_version'],'file'=>'database/migrations/software_commerce_migrate.php','function'=>'software_commerce_prepare','arguments'=>'password'],
         'license_financing_schema_version'=>['depends'=>['staff_schema_version','license_schema_version','recurring_billing_schema_version'],'file'=>'database/migrations/license_financing_migrate.php','function'=>'license_financing_prepare','arguments'=>'password'],
-        'license_finance_gateway_schema_version'=>['depends'=>['staff_schema_version','license_finance_offers_schema_version','payments_schema_version','invoice_ledger_schema_version'],'file'=>'database/migrations/license_finance_gateway_migrate.php','function'=>'license_finance_gateway_prepare','arguments'=>'password'],
+        'license_finance_gateway_schema_version'=>['depends'=>['staff_schema_version','license_finance_offers_schema_version','payments_schema_version','invoice_ledger_schema_version'],'effects'=>['license_finance_recovery_schema_version'],'file'=>'database/migrations/license_finance_gateway_migrate.php','function'=>'license_finance_gateway_prepare','arguments'=>'password'],
         'service_plans_checkout_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','service_plans_schema_version'],'file'=>'database/migrations/service_plans_checkout_migrate.php','function'=>'service_plans_checkout_migrate','arguments'=>'password'],
         'recurring_billing_checkout_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','recurring_billing_schema_version','service_plans_checkout_schema_version','invoice_ledger_schema_version'],'file'=>'database/migrations/recurring_billing_checkout_migrate.php','function'=>'recurring_billing_checkout_migrate','arguments'=>'password'],
     ];
@@ -188,9 +188,9 @@ function database_schema_migrations(): array {
 
 function database_schema_plan(array $requested,array $snapshot): array {
     if(!array_is_list($requested)||count($requested)<1||count($requested)>count(database_schema_versions()))throw new InvalidArgumentException('Choose one or more registered database updates.');
-    $migrations=database_schema_migrations();$selected=[];
+    $migrations=array_map(fn(array $row):array=>$row+['effects'=>[]],database_schema_migrations());$selected=[];$effects=[];
     foreach($requested as $marker){if(!is_string($marker)||!isset($snapshot[$marker],$migrations[$marker]))throw new InvalidArgumentException('Unknown or separately managed database update.');$selected[$marker]=true;}
-    $visit=function(string $marker)use(&$visit,&$selected,$snapshot,$migrations):void{
+    $visit=function(string $marker)use(&$visit,&$selected,&$effects,$snapshot,$migrations):void{
         $row=$snapshot[$marker]??null;if(!$row||!isset($migrations[$marker]))throw new RuntimeException('A selected database dependency is not managed by this workflow.');
         if(in_array($row['state'],['current','unsupported'],true)){
             if($row['state']==='current')return;
@@ -205,6 +205,12 @@ function database_schema_plan(array $requested,array $snapshot): array {
             if(!isset($migrations[$dependency]))throw new RuntimeException($dependencyRow['label'].' must be prepared through its feature setup before this update.');
             $visit($dependency);
         }
+        foreach($migrations[$marker]['effects'] as $effect){
+            $effectRow=$snapshot[$effect]??null;
+            if(!$effectRow)throw new RuntimeException('A migration effect is missing from the status snapshot.');
+            if($effectRow['state']==='unsupported')throw new RuntimeException($effectRow['label'].' has an unsupported installed version.');
+            if($effectRow['state']!=='current')$effects[$marker][]=$effect;
+        }
     };
     foreach(array_keys($selected) as $marker)$visit($marker);
     $ordered=[];$temporary=[];$complete=[];
@@ -214,8 +220,9 @@ function database_schema_plan(array $requested,array $snapshot): array {
         unset($temporary[$marker]);$complete[$marker]=true;$ordered[]=$marker;
     };
     $keys=array_keys($selected);sort($keys,SORT_STRING);foreach($keys as $marker)$sort($marker);
-    $rows=[];foreach($ordered as $marker){$row=$snapshot[$marker];if($row['state']==='current')continue;$rows[]=['marker'=>$marker,'installed'=>$row['installed'],'current'=>$row['current'],'state'=>$row['state'],'label'=>$row['label']];}
+    $rowFor=fn(string $marker):array=>['marker'=>$marker,'installed'=>$snapshot[$marker]['installed'],'current'=>$snapshot[$marker]['current'],'state'=>$snapshot[$marker]['state'],'label'=>$snapshot[$marker]['label']];
+    $rows=[];$steps=[];foreach($ordered as $marker){$row=$snapshot[$marker];if($row['state']==='current')continue;$steps[]=$marker;$rows[]=$rowFor($marker);foreach($effects[$marker]??[] as $effect)$rows[]=$rowFor($effect);}
     if(!$rows)throw new InvalidArgumentException('The selected database features are already current.');
-    $review=['format'=>1,'rows'=>$rows];$hash=hash('sha256',json_encode($review,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES));
-    return ['requested'=>array_values(array_unique($requested)),'order'=>array_column($rows,'marker'),'rows'=>$rows,'review_hash'=>$hash];
+    $review=['format'=>1,'steps'=>$steps,'rows'=>$rows];$hash=hash('sha256',json_encode($review,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES));
+    return ['requested'=>array_values(array_unique($requested)),'order'=>$steps,'rows'=>$rows,'review_hash'=>$hash];
 }
