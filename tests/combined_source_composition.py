@@ -232,6 +232,7 @@ REPAIR_SHA256['tests/provider_workspace_fixture.php'] = '68e2b0f3c10b5a96c31073a
 REPAIR_SHA256['tests/provider_workspace_policy.php'] = '65ba05aeefaeb62c142deac9526c09bc92149c30f15574230aacab2f89145297'
 REPAIR_SHA256['tests/provider_workspace_render.py'] = '356a5121d43dccb74912e17573cfdca2e5d71db8cd0adfede891a6404f0bdf38'
 REPAIR_SHA256['tests/provider_workspace_browser.py'] = '024e57e59dec8c7118a43c547076d6d020befe5a6bd266f15f9458a4ef0b5ffe'
+REPAIR_SHA256['site/admin/controllers/studio.php'] = 'df1d93ddd9ca77e2fa9887c55bb534bc24859f4717d15adcf2b68322bc812c15'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
