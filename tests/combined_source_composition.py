@@ -207,6 +207,24 @@ REPAIRS = frozenset((
     'tools/acceptance-reports.json',
     'tools/build.py',
 ))
+# UX-06 extends the reviewed repair set with the exact master-portal source
+# and qualification paths changed from the immutable repair checkpoint.
+REPAIRS = REPAIRS | frozenset((
+    'docs/MASTER_CLIENT_PORTAL_1.26.1.md',
+    'site/admin/controllers/support.php',
+    'site/admin/views/auth.php',
+    'site/app/clients/master_portal.php',
+    'site/includes/layout/admin.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/auth.php',
+    'site/portal/views/financing.php',
+    'site/portal/views/software.php',
+    'site/portal/views/workspace.php',
+    'tests/master_portal_installed_browser.py',
+    'tests/master_portal_native.php',
+    'tests/master_portal_policy.php',
+    'tests/owner_release_apache.py',
+))
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
 NARRATIVES = frozenset((
@@ -244,6 +262,20 @@ REPAIR_SHA256['site/app/licenses/software_grants.php'] = 'bd3e5dbf510e5e2985f965
 REPAIR_SHA256['tests/licensing_action_boundary.php'] = 'c80a461c467a5e2c4d2ca503890cadc39706c4c3baff28cd2b9bd8074a6b611b'
 REPAIR_SHA256['tests/licensing_workspace_browser.py'] = 'ecc18bac36886b8697ff5c38e05f0631738ee35fbed35ebaced8b5b761ab2fdc'
 REPAIR_SHA256['tests/software_admin_routing_contract.php'] = '1609dda83ce374bbeba2b250763ba4eb22788baa23c20b405647fcb91757c90c'
+REPAIR_SHA256['docs/MASTER_CLIENT_PORTAL_1.26.1.md'] = 'ac669c0f6f4e627481f5a65a6fc308759ea01251c023678e616d154aef4bafb9'
+REPAIR_SHA256['site/admin/controllers/support.php'] = '11297e0b1ab1a5b2855e34566f62d28fa0a69ec92a9b672a61869e85b7d20ebb'
+REPAIR_SHA256['site/admin/views/auth.php'] = '810d3818d3e2faf1e01d601db135089d6041199ed80ec23d0c166eab5dd7fb76'
+REPAIR_SHA256['site/app/clients/master_portal.php'] = '1e801456fc903bf77c497681d593ccddb24f775a56fcde751f9d000727d0b90e'
+REPAIR_SHA256['site/includes/layout/admin.php'] = '084b9ab7e75d0b57c546dbd225321dbe3762dd9ec44a8fe9e0fafc1138daf9e7'
+REPAIR_SHA256['site/portal/controllers/router.php'] = 'd7bd12d1c2c53f8531900ae6b75d7068a8f0b50720029346d56416f0bd34ea99'
+REPAIR_SHA256['site/portal/views/auth.php'] = '5195c1e288d3642f52f541e3e361ea5c3dc746a0ea25db9cade9d2fb45199942'
+REPAIR_SHA256['site/portal/views/financing.php'] = '47532bc87a409a47b335d8f504b8d76bd19fbd5e205ec896bf46a1a8b51995b9'
+REPAIR_SHA256['site/portal/views/software.php'] = '9b937b8d2adfdb2da7e718dd7053eb63a67b2e9078276bd55d7d5e138b5e91b0'
+REPAIR_SHA256['site/portal/views/workspace.php'] = 'cab382dda952f2b71f91d81dbbcea919c71a71a637165577de28baa9965afd73'
+REPAIR_SHA256['tests/master_portal_installed_browser.py'] = '2256945bd7ddb4a083ef7ffd4ad676145866730f331ec7f9a513e3ee57fb9003'
+REPAIR_SHA256['tests/master_portal_native.php'] = '896b9cbfebb19de382892c189ab8d838c4cfb5b43745b0c1a186a737a5c3a213'
+REPAIR_SHA256['tests/master_portal_policy.php'] = '24fbebfe7fd73d73de436ff9f6a7d90cd2bb0f13bc6f294ef5bd1290cc3019c4'
+REPAIR_SHA256['tests/owner_release_apache.py'] = '0d074273e99e89af22b6f865355fc9dfa09f90f122eead05792390e8ca173a87'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
