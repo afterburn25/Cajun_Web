@@ -4,7 +4,9 @@ declare(strict_types=1);
 require_once __DIR__.'/current_owner_authority.php';
 
 $database=(string)getenv('CWP_TEST_DATABASE');$port=(int)getenv('CWP_TEST_PORT');
-if(PHP_SAPI!=='cli'||$database!=='cwp_test'||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port<1)exit(2);
+$mappedPort=(string)getenv('CWP_TEST_DATABASE_DOCKER_PORT');
+if(PHP_SAPI!=='cli'||$database!=='cwp_test'||getenv('CWP_TEST_HOST')!=='127.0.0.1'||$port<1
+    ||($mappedPort!==''&&$mappedPort!=='3306'))exit(2);
 $site=realpath((string)(getenv('CWP_TEST_CODE_ROOT')?:__DIR__.'/../site'));
 if(!$site||!is_file($site.'/app/settings/database_schemas.php'))exit(2);
 define('CWP_BOOT',true);define('CWP_CODE_ROOT',$site);
@@ -24,8 +26,10 @@ function dsn_owner():void {$user=one('SELECT * FROM '.table('users').' WHERE id=
 function dsn_contacts_tables():array {return all("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,6)='dbuci_' AND TABLE_NAME LIKE 'dbuci_studio_contact%' ORDER BY TABLE_NAME");}
 
 try {
-    dsn_ok('Fixture connects only to the explicitly owned database and port',
-        query('SELECT DATABASE()')->fetchColumn()===$database&&(int)query('SELECT @@port')->fetchColumn()===$port);
+    $serverPort=(int)query('SELECT @@port')->fetchColumn();
+    dsn_ok('Fixture connects only to the explicitly owned database and client/server port mapping',
+        query('SELECT DATABASE()')->fetchColumn()===$database&&(int)config()['db']['port']===$port
+        &&$serverPort===($mappedPort===''?$port:(int)$mappedPort));
     dsn_ok('Owned database-update namespace is initially empty',
         !all("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(TABLE_NAME,6)='dbuci_'"));
     $schema=schema_statements('dbuci_');

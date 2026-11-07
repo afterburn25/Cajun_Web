@@ -309,7 +309,7 @@ jobs:
           "$PHP_BINARY" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json
           "$PHP_BINARY" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json
           "$PHP_BINARY" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json
-          "$PHP_BINARY" tests/database_schema_native.php
+          CWP_TEST_DATABASE_DOCKER_PORT=3306 "$PHP_BINARY" tests/database_schema_native.php
           CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 "$PHP_BINARY" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json
           "$PHP_BINARY" tests/support_native.php
           "$PHP_BINARY" tests/catalog_native.php

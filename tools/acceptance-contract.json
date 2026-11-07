@@ -23,7 +23,7 @@
     "\"$PHP_BINARY\" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json",
     "\"$PHP_BINARY\" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json",
     "\"$PHP_BINARY\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json",
-    "\"$PHP_BINARY\" tests/database_schema_native.php",
+    "CWP_TEST_DATABASE_DOCKER_PORT=3306 \"$PHP_BINARY\" tests/database_schema_native.php",
     "CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \"$PHP_BINARY\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json",
     "\"$PHP_BINARY\" tests/support_native.php",
     "\"$PHP_BINARY\" tests/catalog_native.php",
@@ -693,7 +693,7 @@
       "\"$PHP_BINARY\" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json",
       "\"$PHP_BINARY\" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json",
       "\"$PHP_BINARY\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json",
-      "\"$PHP_BINARY\" tests/database_schema_native.php",
+      "CWP_TEST_DATABASE_DOCKER_PORT=3306 \"$PHP_BINARY\" tests/database_schema_native.php",
       "CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \"$PHP_BINARY\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json"
     ],
     "predecessor_native_count": 162,
@@ -714,7 +714,7 @@
       "tests/database_schema_registry_policy.php": "9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd",
       "tests/database_schema_action_policy.php": "af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd",
       "tests/database_schema_view_policy.php": "4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935",
-      "tests/database_schema_native.php": "11b1058abaf0b0a1fe5dff76a1f36f8899c07c7bdc8d6560886c2d9865e51768",
+      "tests/database_schema_native.php": "fea4e71571e251dad59ac3a814e965909757e9e604955235f5b3f53d548db2a3",
       "tests/service_plans_checkout_native.php": "4582451eb68075d463db2969980b7e3e709ef9c08bdfe217599783c0074da392",
       "tests/database_update_cases.py": "38ae4e88f86d8221070526af2d0c106c76620a166bddbad6772a4f340d498a14",
       "tests/database_update_forms.py": "6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2"
