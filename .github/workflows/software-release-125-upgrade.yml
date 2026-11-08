@@ -159,6 +159,8 @@ jobs:
         run: python3 tools/build.py --commit "$GITHUB_SHA"
       - name: Materialize immutable published v1.25 baseline
         if: steps.version.outputs.run_gate == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           mkdir -p test-runtime/released-1.25.0
           baseline=/tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip
@@ -172,12 +174,28 @@ jobs:
               break
             fi
             rm -f "$partial"
-            if [ "$attempt" -eq 3 ]; then
+            if [ "$attempt" -lt 3 ]; then
+              printf 'Published v1.25 baseline download attempt %s failed; retrying after bounded delay.\n' "$attempt"
+              sleep "$((attempt * 10))"
+            fi
+          done
+          if [ ! -f "$baseline" ]; then
+            printf 'Published URL remained unavailable; using pinned GitHub release asset 652201384.\n'
+            authorization=()
+            if [ -n "${GITHUB_TOKEN:-}" ]; then
+              authorization=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+            fi
+            if curl --fail --location --proto '=https' --proto-redir '=https' --tlsv1.2 \
+              --connect-timeout 15 --max-time 120 \
+              -H 'Accept: application/octet-stream' -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "${authorization[@]}" --output "$partial" \
+              https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/652201384; then
+              mv "$partial" "$baseline"
+            else
+              rm -f "$partial"
               exit 1
             fi
-            printf 'Published v1.25 baseline download attempt %s failed; retrying after bounded delay.\n' "$attempt"
-            sleep "$((attempt * 10))"
-          done
+          fi
           test -f "$baseline"
           echo "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39  $baseline" | sha256sum -c -
           python3 - <<'PY'

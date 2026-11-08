@@ -5,6 +5,7 @@ These tests do not claim Apache, OPCache, database or populated-upgrade acceptan
 """
 import ast
 import getpass
+import io
 import json
 import os
 from pathlib import Path
@@ -17,6 +18,9 @@ import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
+from urllib.request import HTTPRedirectHandler, Request
 import zipfile
 
 from acceptance_environment import selected, php_matches
@@ -72,25 +76,109 @@ class UpgradeHarness(unittest.TestCase):
             "      - name: Exercise published v1.25 update and recovery\n", 1)[0]
         url = ('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/'
                'CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip')
+        api = 'https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/652201384'
         digest = 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
         self.assertEqual(step.count(url), 1)
+        self.assertEqual(step.count(api), 1)
         self.assertEqual(step.count('for attempt in 1 2 3; do'), 1)
         self.assertIn("--proto '=https' --proto-redir '=https' --tlsv1.2", step)
         self.assertIn('--connect-timeout 15 --max-time 120 --output "$partial"', step)
         self.assertIn('partial="${baseline}.part"', step)
         self.assertGreaterEqual(step.count('rm -f "$partial"'), 2)
-        self.assertIn('if [ "$attempt" -eq 3 ]; then\n              exit 1\n            fi', step)
+        self.assertIn('if [ "$attempt" -lt 3 ]; then', step)
         self.assertIn('sleep "$((attempt * 10))"', step)
+        self.assertIn('if [ ! -f "$baseline" ]; then', step)
+        self.assertIn("-H 'Accept: application/octet-stream' -H 'X-GitHub-Api-Version: 2022-11-28'", step)
+        self.assertIn('authorization=(-H "Authorization: Bearer ${GITHUB_TOKEN}")', step)
+        self.assertIn('GITHUB_TOKEN: ${{ github.token }}', step)
         self.assertNotIn('--retry-all-errors', step)
-        curl = step.index('if curl ')
+        direct = step.index('if curl ')
         rename = step.index('mv "$partial" "$baseline"')
         loop_end = step.index('          done\n', rename)
-        checksum = step.index(digest, loop_end)
+        fallback = step.index('if [ ! -f "$baseline" ]; then', loop_end)
+        api_download = step.index(api, fallback)
+        checksum = step.index(digest, api_download)
         archive = step.index("          python3 - <<'PY'", checksum)
-        self.assertLess(curl, rename)
+        self.assertLess(direct, rename)
         self.assertLess(rename, loop_end)
-        self.assertLess(loop_end, checksum)
+        self.assertLess(loop_end, fallback)
+        self.assertLess(fallback, api_download)
+        self.assertLess(api_download, checksum)
         self.assertLess(checksum, archive)
+
+    def test_historical_release_fallback_uses_only_pinned_asset_identities(self):
+        source=(ROOT/'tests/prepare_legacy.py').read_text(encoding='utf-8')
+        tree=ast.parse(source,filename='tests/prepare_legacy.py')
+        assignment=next(node for node in tree.body if isinstance(node,ast.Assign)
+                        and any(isinstance(target,ast.Name) and target.id=='RELEASE_ASSET_IDS' for target in node.targets))
+        redirect_class=next(node for node in tree.body if isinstance(node,ast.ClassDef) and node.name=='_ReleaseAssetRedirect')
+        helper=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='urlopen')
+        namespace={'HTTPError':HTTPError,'URLError':URLError,'TimeoutError':TimeoutError,
+                   'HTTPRedirectHandler':HTTPRedirectHandler,'Request':Request,'urlsplit':urlsplit,'os':os}
+        exec(compile(ast.Module(body=[assignment,redirect_class,helper],type_ignores=[]),
+                     '<release-asset-helper>','exec'),namespace)
+        ids=namespace['RELEASE_ASSET_IDS']
+        urls=[node.args[0].value for node in ast.walk(tree) if isinstance(node,ast.Call)
+              and isinstance(node.func,ast.Name) and node.func.id=='urlopen' and node.args
+              and isinstance(node.args[0],ast.Constant) and isinstance(node.args[0].value,str)]
+        self.assertEqual(len(urls),28)
+        self.assertEqual(set(urls),set(ids))
+        self.assertEqual(len(set(ids.values())),28)
+        self.assertTrue(all(isinstance(value,int) and value>0 for value in ids.values()))
+
+        known=urls[0]
+        api='https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/'+str(ids[known])
+        signed='https://release-assets.githubusercontent.com/synthetic/exact-asset'
+        direct=[];opened=[]
+        def failed_direct(value,timeout=0):
+            direct.append((value,timeout))
+            if value==signed:return io.BytesIO(b'exact published bytes')
+            raise HTTPError(value,504,'Gateway Timeout',{},io.BytesIO())
+        class Opener:
+            def open(self,request,timeout=0):
+                opened.append((request,timeout))
+                raise HTTPError(api,302,'Found',{'Location':signed},io.BytesIO())
+        namespace['_urlopen']=failed_direct;namespace['build_opener']=lambda *_:Opener()
+        with patch.dict(os.environ,{'GITHUB_TOKEN':'synthetic-token'}):
+            response=namespace['urlopen'](known,timeout=37)
+        request=opened[0][0]
+        self.assertEqual(response.read(),b'exact published bytes')
+        self.assertEqual(direct,[(known,37),(signed,37)])
+        self.assertEqual(len(opened),1)
+        self.assertEqual(request.full_url,api)
+        self.assertEqual(opened[0][1],37)
+        self.assertEqual(request.get_header('Accept'),'application/octet-stream')
+        self.assertEqual(request.get_header('X-github-api-version'),'2022-11-28')
+        self.assertEqual(request.get_header('Authorization'),'Bearer synthetic-token')
+        self.assertIsInstance(direct[1][0],str,'API token must not follow the signed redirect')
+
+        untrusted_calls=[]
+        def untrusted_direct(value,timeout=0):
+            untrusted_calls.append((value,timeout))
+            raise HTTPError(value,504,'Gateway Timeout',{},io.BytesIO())
+        class UntrustedOpener:
+            def open(self,request,timeout=0):
+                raise HTTPError(api,302,'Found',{'Location':'https://example.com/unreviewed-asset'},io.BytesIO())
+        namespace['_urlopen']=untrusted_direct;namespace['build_opener']=lambda *_:UntrustedOpener()
+        with self.assertRaisesRegex(RuntimeError,'untrusted redirect'):
+            namespace['urlopen'](known,timeout=29)
+        self.assertEqual(untrusted_calls,[(known,29)],'Untrusted redirect must never be opened')
+
+        calls=[]
+        def missing(value,timeout=0):
+            calls.append(value);raise HTTPError(value,404,'Not Found',{},io.BytesIO())
+        namespace['_urlopen']=missing
+        namespace['build_opener']=lambda *_:(_ for _ in ()).throw(AssertionError('API fallback must not run'))
+        with self.assertRaises(HTTPError) as missing_error:
+            namespace['urlopen'](known)
+        self.assertEqual(missing_error.exception.code,404)
+        self.assertEqual(calls,[known])
+
+        unknown='https://github.com/afterburn25/Cajun_Web/releases/download/v9.9.9/unreviewed.zip'
+        namespace['_urlopen']=failed_direct
+        with self.assertRaises(HTTPError) as unknown_error:
+            namespace['urlopen'](unknown)
+        self.assertEqual(unknown_error.exception.code,504)
 
     def organized(self, web, base, check, qa, php, label, prefix, version, *, at_root=False):
         self.calls.append((web, label, prefix, version, at_root))

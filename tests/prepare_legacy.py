@@ -1,7 +1,80 @@
 """Verify and extract the retained historical fixture, never a deployment source."""
 from pathlib import Path, PurePosixPath
 import os,hashlib, zipfile, subprocess, shutil, re, json, base64
-from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen as _urlopen
+
+RELEASE_ASSET_IDS={
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.1.0/CajunWebPro-1.1.0-COMPLETE-UPLOAD.zip':636147535,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.2.0/CajunWebPro-1.2.0-COMPLETE-UPLOAD.zip':636253719,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.3.0/CajunWebPro-1.3.0-COMPLETE-UPLOAD.zip':636369523,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.4.0/CajunWebPro-1.4.0-COMPLETE-UPLOAD.zip':636443599,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.5.0/CajunWebPro-1.5.0-COMPLETE-UPLOAD.zip':636534385,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.6.0/CajunWebPro-1.6.0-COMPLETE-UPLOAD.zip':636632368,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.7.0/CajunWebPro-1.7.0-COMPLETE-UPLOAD.zip':636723642,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.8.0/CajunWebPro-1.8.0-COMPLETE-UPLOAD.zip':636833464,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-COMPLETE-UPLOAD.zip':636954718,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip':637089096,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.0/CajunWebPro-1.11.0-COMPLETE-UPLOAD.zip':637460490,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.0/CajunWebPro-1.11.0-UPDATE.zip':637460544,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.1/CajunWebPro-1.11.1-COMPLETE-UPLOAD.zip':637586942,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.2/CajunWebPro-1.11.2-COMPLETE-UPLOAD.zip':637668833,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.12.0/CajunWebPro-1.12.0-COMPLETE-UPLOAD.zip':637806867,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.13.0/CajunWebPro-1.13.0-COMPLETE-UPLOAD.zip':637905091,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.14.0/CajunWebPro-1.14.0-COMPLETE-UPLOAD.zip':638019123,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.15.0/CajunWebPro-1.15.0-COMPLETE-UPLOAD.zip':638137373,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.16.0/CajunWebPro-1.16.0-COMPLETE-UPLOAD.zip':638253111,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.17.0/CajunWebPro-1.17.0-COMPLETE-UPLOAD.zip':638528195,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.18.0/CajunWebPro-1.18.0-COMPLETE-UPLOAD.zip':638796158,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.19.0/CajunWebPro-1.19.0-COMPLETE-UPLOAD.zip':639086806,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.20.0/CajunWebPro-1.20.0-COMPLETE-UPLOAD.zip':639404722,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.21.0/CajunWebPro-1.21.0-COMPLETE-UPLOAD.zip':639648564,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.22.0/CajunWebPro-1.22.0-COMPLETE-UPLOAD.zip':640171248,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.23.0/CajunWebPro-1.23.0-COMPLETE-UPLOAD.zip':640852124,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.24.0/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip':643417859,
+    'https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip':652201384,
+}
+
+class _ReleaseAssetRedirect(HTTPRedirectHandler):
+    def redirect_request(self,request,file_pointer,code,message,headers,new_url):
+        return None
+
+def urlopen(url,timeout=60):
+    """Prefer the published URL; use only its pinned release-asset API identity on transport failure."""
+    failure=None
+    try:
+        return _urlopen(url,timeout=timeout)
+    except HTTPError as error:
+        if error.code < 500 or error.code > 599:
+            raise
+        failure=error
+    except (URLError,TimeoutError) as error:
+        failure=error
+    asset_id=RELEASE_ASSET_IDS.get(url) if isinstance(url,str) else None
+    if asset_id is None:
+        raise failure
+    headers={
+        'Accept':'application/octet-stream',
+        'X-GitHub-Api-Version':'2022-11-28',
+        'User-Agent':'CajunWebPro-release-acceptance',
+    }
+    token=os.environ.get('GITHUB_TOKEN')
+    if token:
+        headers['Authorization']='Bearer '+token
+    request=Request('https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/'+str(asset_id),headers=headers)
+    try:
+        return build_opener(_ReleaseAssetRedirect).open(request,timeout=timeout)
+    except HTTPError as redirect:
+        if redirect.code not in (301,302,303,307,308):
+            raise
+        location=redirect.headers.get('Location','')
+        redirect.close()
+        target=urlsplit(location)
+        if target.scheme!='https' or target.hostname not in {'release-assets.githubusercontent.com','objects.githubusercontent.com'}:
+            raise RuntimeError('Release asset API returned an untrusted redirect')
+        return _urlopen(location,timeout=timeout)
+
 root=Path(__file__).resolve().parents[1]
 archive=root/'tests/fixtures/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip'
 assert hashlib.sha256(archive.read_bytes()).hexdigest()=='13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf'
