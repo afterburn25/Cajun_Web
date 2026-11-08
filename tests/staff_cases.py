@@ -90,7 +90,16 @@ def run_browser(env,browser):
     check('Browser administrator creation persists selected access',json.loads(db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[cid])[0]['permissions'])==['clients.manage'])
     invite=p.locator('form').filter(has=p.locator('[name=action][value=staff_invite]')).filter(has=p.locator('[name=id][value="'+str(cid)+'"]'));assert_no_owner_reprompt(check,invite,'Invite staff client');invite.locator('button').click()
     expect(p.locator('[data-staff-invite]')).to_be_visible();client_link=p.locator('[data-staff-invite]').get_attribute('href')
-    check('Long private link fits narrow mobile',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+    invite_layout=p.evaluate("""async()=>{
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const root=document.documentElement,invite=document.querySelector('[data-staff-invite]'),notice=invite.closest('.notice');
+      const facts=element=>{const box=element.getBoundingClientRect(),style=getComputedStyle(element);return {tag:element.tagName.toLowerCase(),classes:[...element.classList],left:box.left,right:box.right,width:box.width,client_width:element.clientWidth,scroll_width:element.scrollWidth,display:style.display,overflow_wrap:style.overflowWrap,word_break:style.wordBreak}};
+      const offenders=[...document.querySelectorAll('body *')].map((element,ordinal)=>({element,ordinal,box:element.getBoundingClientRect()})).filter(row=>row.box.right>innerWidth+1).slice(0,25).map(row=>({tag:row.element.tagName.toLowerCase(),classes:[...row.element.classList],ordinal:row.ordinal,left:row.box.left,right:row.box.right,width:row.box.width}));
+      return {inner_width:innerWidth,root_client_width:root.clientWidth,root_scroll_width:root.scrollWidth,invite:facts(invite),notice:facts(notice),offenders};
+    }""")
+    (QA/'staff-invite-layout-diagnostics.json').write_text(json.dumps(invite_layout,sort_keys=True,separators=(',',':'))+'\n')
+    check('Private setup link retains explicit narrow wrapping',invite_layout['invite']['overflow_wrap']=='anywhere' and invite_layout['invite']['word_break'] in ('break-word','break-all'))
+    check('Long private link fits narrow mobile',invite_layout['root_scroll_width']<=invite_layout['inner_width']+1)
     # Activate website staff using the generated fragment and actual local script.
     staff=browser.new_context(viewport={'width':390,'height':844});s=staff.new_page();s.on('pageerror',lambda e:errors.append(str(e)))
     response=s.goto(fixture['link']);expect(s.locator('[data-setup-token]')).to_have_value(fixture['code'])
