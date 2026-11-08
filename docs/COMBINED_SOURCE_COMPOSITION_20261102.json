@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "baacdfa876966ea9f63792ad7385d989dd1394aefc5c6ae8e7e7d39e54868eab",
+  "verifier_sha256": "6ce6f9193c2676c0b25144f47115d15c9bd383d9d1a016415c464e46ff24323f",
   "regression_sha256": "23dc26c0f2b1083cb135c5989091d4ea37c6119ff8a263a9eed5798d10306e0c",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1459,7 +1459,7 @@
     },
     "tests/account_notification_workflow_contract.py": {
       "original_sha256": "92a0c02dc2108b6a1c913e9334caab7e6accb248b3222a3019fe0679d9fa49a5",
-      "current_sha256": "0d04682880e1b5ffee147f446ec332e857e2e4f6bed35eee0fe3a968343be046",
+      "current_sha256": "bc4317c73f9e9c1e7b1b99671c7627d9701aa4cc9c0ce58f35cd7fb228bc4fcf",
       "edits": [
         [
           "LEGACY = '.github/workflows/account-notifications-combined.yml'\nPROTECTED = '.github/workflows/application-tests.yml'\nLEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'\nPROTECTED_SHA256 = '9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\nPARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',\n           'ebcbbb56336249fee2073c8f02e9d6998740b64e')\n",
@@ -1472,6 +1472,10 @@
         [
           "PROTECTED_SHA256 = '286ba4a87d41256a7dcb729298b17f61e2ce2a8c0dc7655b4d81768b3b19d742'\n",
           "PROTECTED_SHA256 = '4a5152120f702a374ab1706fd9cd0aec8833fea13b0aa12a9b5c7ac58f57c81f'\n"
+        ],
+        [
+          "PROTECTED_SHA256 = '4a5152120f702a374ab1706fd9cd0aec8833fea13b0aa12a9b5c7ac58f57c81f'\n",
+          "PROTECTED_SHA256 = '5ddd172b5ede5221799575b5a604e32f43e6415e7cf824fd7cf4c4222f706d09'\n"
         ]
       ]
     },

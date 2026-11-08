@@ -294,6 +294,7 @@ REPAIRS = REPAIRS | frozenset(('tests/staff_cases.py',))
 DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
     '.github/workflows/application-tests.yml': 6,
     'tests/acceptance_artifacts_test.py': 5,
+    'tests/account_notification_workflow_contract.py': 4,
     'tools/acceptance-contract.json': 17,
 }
 # Session narratives may be prefixed by the integration owner. They are not
@@ -357,7 +358,7 @@ REPAIR_SHA256['site/admin/controllers/studio.php'] = '77501d58a9c577587fd8052025
 REPAIR_SHA256['site/admin/views/studio/upgrade.php'] = '37fe5df5ca0bf48e0d2843f7dbaf07412c8b8a345daa53879573da370c352e49'
 REPAIR_SHA256['site/app/staff/accounts.php'] = '149eb237a32b304b19edc5fbd3c556978834c6de22f00247ccd9609755df4ea6'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '10c42783e6be677e2a4d630adbf4583f53bf1065b256706c6fb3517d3a135fa5'
-REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '0d04682880e1b5ffee147f446ec332e857e2e4f6bed35eee0fe3a968343be046'
+REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = 'bc4317c73f9e9c1e7b1b99671c7627d9701aa4cc9c0ce58f35cd7fb228bc4fcf'
 REPAIR_SHA256['tests/admin_20i_populated_upgrade.py'] = '23980a8fb6da772c101a4a33e1db5e3d9e77768a8f75aeac377d6b509dd1f8a2'
 REPAIR_SHA256['tests/browser_acceptance.py'] = '76cc1bebf0cff397a46bb920db598d25669d6a205a22cc8467d23abfc01a86a1'
 REPAIR_SHA256['tests/owner_update_session_policy.php'] = 'b12346f03f23d130bd32f9c03fe862abb0fe75c8cdff5a7d26ded960290df6b5'
