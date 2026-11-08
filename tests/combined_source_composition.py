@@ -303,6 +303,7 @@ NARRATIVES = frozenset((
     'AGENTS.md', '.clinerules/01-cajunwebpro-continuity.md',
     'CHANGELOG.md', 'PROJECT_STATUS.md', 'SESSION_HANDOFF.md',
     'docs/AI_AGENT_CONTINUITY.md',
+    'docs/agent-handoffs/2026-11-08-codex-release-stack-integration.md',
     'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
     'docs/RELEASES.md', 'docs/ROADMAP.md', 'docs/SESSION_LOG.md',
 ))
