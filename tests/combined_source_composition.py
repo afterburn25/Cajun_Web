@@ -281,7 +281,9 @@ REPAIRS = REPAIRS | DATABASE_WORKFLOW_REPAIRS
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
 NARRATIVES = frozenset((
+    'AGENTS.md', '.clinerules/01-cajunwebpro-continuity.md',
     'CHANGELOG.md', 'PROJECT_STATUS.md', 'SESSION_HANDOFF.md',
+    'docs/AI_AGENT_CONTINUITY.md',
     'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
     'docs/RELEASES.md', 'docs/ROADMAP.md', 'docs/SESSION_LOG.md',
 ))
@@ -347,6 +349,8 @@ REPAIR_SHA256['tools/acceptance-contract.json'] = 'a4f6d568865513547c86f20269176
 REPAIR_SHA256['tools/acceptance-reports.json'] = 'e7d9d2b1f66f72109c434c96303611062c7236bfe24cdcf296e5a0080c88a2b8'
 REPAIR_SHA256['tools/update/owner-update.php'] = 'f151c1f042841853bfd36cc60ec0629cd8cc1b8d4c0da5af57562d4239e9cec5'
 # END GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
+REPAIR_SHA256['tools/build.py'] = '85d3a6762852afa633c047ec7c138b8afe7cb0df08724034ba6a0d39d6065c77'
+REPAIR_SHA256['tests/build_guards.py'] = 'b85c6c2de743b6df813362c3714eab02dbe70a63f0e5a9d71e74ebd9d873a1c8'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
