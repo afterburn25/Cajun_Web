@@ -26,8 +26,15 @@ def verify(root, contract, workflow, commands, check):
     check('Cloud requests preserve all155 prior native commands', len(previous) == item['predecessor_native_count'] == 155 and hashlib.sha256(json.dumps(previous, separators=(',', ':')).encode()).hexdigest() == item['predecessor_native_sha256'])
     for path, digest in item['source_sha256'].items():
         check('Cloud request acceptance source bound ' + path, hashlib.sha256(fixture_predecessor_source(root, path).replace(b'\r\n', b'\n')).hexdigest() == digest)
-    for path, digest in item['published_baseline']['source_sha256'].items():
-        check('Published 1.25 acceptance input source bound ' + path, hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == digest)
+    published = item['published_baseline']
+    current_sources = published['current_source_sha256']
+    check('Published 1.25 current-source overrides are finite and retain the historical fixture binding',
+          set(current_sources) == {'tests/prepare_legacy.py'}
+          and set(current_sources) < set(published['source_sha256']))
+    for path, digest in published['source_sha256'].items():
+        current_digest = current_sources.get(path, digest)
+        check('Published 1.25 acceptance input source bound ' + path,
+              hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == current_digest)
     guard = item['published_baseline']['input_guard_correction']
     original_guard = (root / guard['path']).read_text()
     check('Published archive negative test changes only unapproved future version', original_guard.count(guard['after']) == 1 and hashlib.sha256(original_guard.replace(guard['after'], guard['before'], 1).encode()).hexdigest() == guard['predecessor_sha256'])

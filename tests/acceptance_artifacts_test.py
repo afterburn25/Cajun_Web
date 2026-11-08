@@ -651,9 +651,9 @@ def run(tmp):
           len(directory_additions)==len(set(directory_additions))==8 and native_commands[directory_position:directory_position+8]==directory_additions
           and all(native_commands.count(command)==1 for command in directory_additions))
     check('Public fixture preparation command remains singular in the build job', workflow.count('python3 tests/prepare_legacy.py')==1)
-    fixture=workflow.split('      - name: Prepare only pristine public historical fixtures\n        id: fixtures\n        run: |\n',1)[1].split('      - name: Seal exact build and public inputs\n',1)[0]
+    fixture=workflow.split('      - name: Prepare only pristine public historical fixtures\n',1)[1].split('      - name: Seal exact build and public inputs\n',1)[0]
     diagnostic=(ROOT/'.github/workflows/diagnostic-tests.yml').read_text()
-    diagnostic_fixture=diagnostic.split('      - name: Prepare only pristine public historical fixtures\n        id: fixtures\n        run: |\n',1)[1].split('      - name: Seal exact build and public inputs\n',1)[0]
+    diagnostic_fixture=diagnostic.split('      - name: Prepare only pristine public historical fixtures\n',1)[1].split('      - name: Seal exact build and public inputs\n',1)[0]
     check('Application fixture preparation reuses the accepted bounded diagnostic retry',
           fixture==diagnostic_fixture
           and fixture.count('for attempt in 1 2 3; do')==1

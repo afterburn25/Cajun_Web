@@ -110,6 +110,8 @@ DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = 'ac
 DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '368048a13179629c5ce37f8b355b425a928724f72821e7eb9e29ba830405ee4f'
 DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657c225ee8dcd1af78ebafe1fe7beb7220af868c792e30ec5530c16e4b'
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
+DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['current'] = '26243783910e73df36b0efe90137b56d37d8832f2df7191796ee9fb21c21248c'
+DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['delta'] = '334c53286ccf214c8c9ddd210bd53e5105e2508e4b1311bfffe6890ffd3d2fbd'
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
 DATABASE_WORKFLOW_SOURCE = 'aeeea87e4d0d31dcfc187daed1a29cb9946d907c'
@@ -278,15 +280,18 @@ REPAIRS = REPAIRS | frozenset((
 # UX-07 extends the repair set only with existing files from the immutable
 # repair checkpoint. Its seven genuinely new source files remain disjoint.
 REPAIRS = REPAIRS | DATABASE_WORKFLOW_REPAIRS
-# Release-asset delivery retries repair only the two additional existing
-# workflow/test paths; Application and its guard are already retained repairs.
+# Release-asset delivery repairs only the four additional existing fixture,
+# workflow and test paths; Application and its guard are already retained repairs.
 REPAIRS = REPAIRS | frozenset((
+    '.github/workflows/license-financing-browser.yml',
     '.github/workflows/software-release-125-upgrade.yml',
+    'tests/prepare_legacy.py',
     'tests/software_release_125_harness_tests.py',
 ))
 DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
     '.github/workflows/application-tests.yml': 6,
     'tests/acceptance_artifacts_test.py': 5,
+    'tools/acceptance-contract.json': 17,
 }
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
@@ -365,6 +370,15 @@ REPAIR_SHA256['.github/workflows/application-tests.yml'] = 'a4ece2460ea61f9fa9ed
 REPAIR_SHA256['.github/workflows/software-release-125-upgrade.yml'] = 'e66c3724bbc0f5ce0d65f7b711037c2b9f53108a43097b061c465b4b561ba4eb'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '25723015f3b3578cb1e0334c125e93f7b40da827d46458154b6c97607e454684'
 REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = '34efecf23833da592141292e0c1a12c6bbff3dd165a07749057afe60cf0b458e'
+REPAIR_SHA256['.github/workflows/application-tests.yml'] = '5ddd172b5ede5221799575b5a604e32f43e6415e7cf824fd7cf4c4222f706d09'
+REPAIR_SHA256['.github/workflows/software-release-125-upgrade.yml'] = '95a66a528da11ad358a9e9fba711afb4461d4a1d9fed25fed78908e0647fe51d'
+REPAIR_SHA256['tests/prepare_legacy.py'] = '66e1620ce25ea6f7bfc5c6a0c8a66690d26df2cda15bae9f430da8bcd716bb60'
+REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = 'aed628120c02169b833042992b3bd2bee520870029ed0ddfdfc91623c9b18a0d'
+REPAIR_SHA256['.github/workflows/license-financing-browser.yml'] = '46e929ef2652ff8f6ecb2cf3ccdfc21289f4fb32d449ede6045303c88a040abc'
+REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = 'd5f802cc6774179c35fafab703951d89633fed2f22377ef291d5ab31f79546d3'
+REPAIR_SHA256['tests/cloud_site_requests_wiring.py'] = 'a6cde5e837c572a9c2bf3fa5ea6572fc4f506146ac35be291b8189c6ee23a36e'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '7ec735ad0c767b6d450df7ffe66355f65d0244e900048343ad61885bfa08abda'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = 'aed38862b2b66cdcc01262b2daaf639994d53599733ed9c8b00b259692cccf1d'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -707,7 +721,7 @@ def reconstruct_repair(data, path, current):
 
 
 def reconstruct_database_workflow_successor(data, path, current):
-    """Reverse only the final retry edit before proving the later UX07 source."""
+    """Reverse only the final post-UX07 edit before proving the exact UX07 source."""
     require(path in DATABASE_WORKFLOW_SUCCESSOR_EDITS, 'Unknown database workflow successor')
     row = data['integration_repairs'][path]
     require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]

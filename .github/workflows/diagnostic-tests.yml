@@ -116,6 +116,8 @@ jobs:
           python3 tests/build_guards.py
       - name: Prepare only pristine public historical fixtures
         id: fixtures
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
           : > qa/legacy-preparation.txt
