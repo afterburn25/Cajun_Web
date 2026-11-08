@@ -6,7 +6,7 @@
   "modified": {
     ".github/workflows/software-focused-acceptance.yml": {
       "before_sha256": "4b2ca74ac962f2a0739b67c51cb844a81ae1833dac8716b73fff1bdd14d6f792",
-      "current_sha256": "7b90d062988abb28764d953ce691a96d82b6665cb2221f036b92565fcb01ced3"
+      "current_sha256": "c1903e998c35b085483bcdb9d731da0fd5c59777a9bd218a3f7fee8cdafa8d22"
     },
     "site/app/licenses/software_assets.php": {
       "before_sha256": "53a38bb3b51e321f7a50c9e43a96372702f6eb8618536ecf7e87b72d883892fe",
