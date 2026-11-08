@@ -180,6 +180,8 @@ try:
             staff_browser(globals(),browser)
             from support_cases import run_browser as support_browser
             support_browser(globals(),browser)
+            from database_update_cases import run_browser as database_update_browser
+            database_update_browser(globals(),browser)
             from catalog_cases import run_browser as catalog_browser
             catalog_browser(globals(),browser)
             from provider_catalog_import_cases import run_browser as catalog_import_browser

@@ -7,7 +7,20 @@ require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
 function studio_admin_action(string $action,array $user): never {
     require_admin();check_csrf();$target='studio-clients';
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-    if($action==='studio_migrate'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a backup before updating.');studio_migrate();flash('Database update completed. Existing content was preserved.');redirect(admin_url('studio-upgrade'));}
+    require_once CWP_CODE_ROOT.'/app/settings/database_schemas.php';
+    if(in_array($action,['studio_database_plan','studio_database_apply'],true)){
+        $requested=$_POST['database_updates']??null;if(!is_array($requested))throw new InvalidArgumentException('Choose one or more registered database updates.');$requested=array_values($requested);
+        if($action==='studio_database_plan'){
+            database_schema_current_owner();$plan=database_schema_plan($requested,database_schema_snapshot());
+            $_SESSION['database_schema_review']=['requested'=>$plan['requested'],'review_hash'=>$plan['review_hash']];
+            redirect(admin_url('studio-upgrade',['database_review'=>$plan['review_hash']]));
+        }
+        $bound=database_schema_bound_review($requested,posted('review_hash',64));
+        if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you reviewed the exact ordered database plan and saved a current backup.');
+        $result=database_schema_apply($bound['requested'],$bound['review_hash']);unset($_SESSION['database_schema_review']);
+        flash('Database updates completed: '.implode(', ',array_column($result['rows'],'label')).'. Existing records were preserved.');redirect(admin_url('studio-upgrade'));
+    }
+    if(in_array($action,['studio_migrate','studio_contacts_setup'],true))throw new RuntimeException('Use Version & database to check, review and apply this database setup.');
     if(!studio_ready())throw new RuntimeException('Enable the workspace tables under Version & database first.');
     if($action==='studio_client'){
         $id=gint($_POST,'id',0,2147483647);$name=posted('name',120);$email=strtolower(posted('email',190));
@@ -17,9 +30,6 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_invite'){
         $id=gint($_POST,'id',1,2147483647);
         $_SESSION['studio_invite_link']=studio_new_invite($id,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
-    }elseif($action==='studio_contacts_setup'){
-        if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you saved a current database and private-storage backup.');
-        contacts_migrate('');flash('Client contacts storage prepared.');redirect(admin_url('studio-upgrade'));
     }elseif($action==='studio_contact'){
         if(!contacts_ready())throw new RuntimeException('Prepare contacts storage under Version & database first.');
         $id=gint($_POST,'id',0,2147483647);$clientId=gint($_POST,'client_id',1,2147483647);$perms=array_filter(array_map('strval',(array)($_POST['perms']??[])));

@@ -43,6 +43,7 @@ try {
     $csrf=strpos($s,'check_csrf();');$guard=strpos($s,'$actor=structure_update_actor($actor);');$backup=strpos($s,"if(posted('backup_confirm',1)!=='1')");$mutation=strpos($s,'$dir=structure_store();');
     us_check('CSRF and backup confirmation remain before update mutations',$csrf!==false&&$guard!==false&&$backup!==false&&$mutation!==false&&$csrf<$guard&&$guard<$backup&&$backup<$mutation);
     us_check('Password input appears only in the signed-out branch',preg_match('/<\?php if\(!\$actor\):\?>(?:(?!<\?php else:).)*name="owner_password"(?:(?!<\?php else:).)*<\?php else:\?>/s',$s)===1&&substr_count($s,'name="owner_password"')===1);
+    us_check('Completed file update links to separate reviewed database checks',str_contains($s,"admin_url('studio-upgrade')")&&str_contains($s,'Database changes are a separate reviewed stage.')&&!str_contains($s,'database_schema_apply('));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected policy failure: '.$e->getMessage(),'passed'=>false];}
 $passed=$checks!==[]&&!array_filter($checks,fn($c)=>$c['passed']!==true);
 echo json_encode(['passed'=>$passed,'scope'=>'Actual updater authorization function and actual admin-session functions with modeled database rows; source checks for initial login/form/CSRF/backup guards. Not a real HTTP/SQL update.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR).PHP_EOL;exit($passed?0:1);

@@ -20,6 +20,11 @@
     "\"$PHP_BINARY\" tests/estimator_adapter.php",
     "\"$PHP_BINARY\" tests/native.php",
     "\"$PHP_BINARY\" tests/staff_native.php",
+    "\"$PHP_BINARY\" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json",
+    "\"$PHP_BINARY\" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json",
+    "\"$PHP_BINARY\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json",
+    "CWP_TEST_DATABASE_DOCKER_PORT=3306 \"$PHP_BINARY\" tests/database_schema_native.php",
+    "CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \"$PHP_BINARY\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json",
     "\"$PHP_BINARY\" tests/support_native.php",
     "\"$PHP_BINARY\" tests/catalog_native.php",
     "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
@@ -681,6 +686,40 @@
     ],
     "predecessor_count": 160,
     "predecessor_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe"
+  },
+  "database_schema_native_command_extension": {
+    "additions_after": "\"$PHP_BINARY\" tests/staff_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json",
+      "\"$PHP_BINARY\" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json",
+      "\"$PHP_BINARY\" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json",
+      "CWP_TEST_DATABASE_DOCKER_PORT=3306 \"$PHP_BINARY\" tests/database_schema_native.php",
+      "CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 \"$PHP_BINARY\" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json"
+    ],
+    "predecessor_native_count": 162,
+    "predecessor_native_sha256": "7c0ca505b26ce7d7f579f8a5cd59ad83aa626016be19d77e1141747a5d158113",
+    "reports": [
+      "database-schema-registry-policy-results.json",
+      "database-schema-action-policy-results.json",
+      "database-schema-view-policy-results.json",
+      "database-schema-native-results.json",
+      "service-plans-checkout-native-results.json"
+    ],
+    "screenshots": [
+      "Database-Updates-Desktop.png",
+      "Database-Updates-Mobile.png"
+    ],
+    "source_sha256": {
+      "site/app/settings/database_schemas.php": "fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d",
+      "tests/database_schema_registry_policy.php": "9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd",
+      "tests/database_schema_action_policy.php": "af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd",
+      "tests/database_schema_view_policy.php": "4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935",
+      "tests/database_schema_native.php": "5b8a7dbb4b43af3bc392bd03f0062257d85d85ab31e4deac585dbfec04fd490e",
+      "tests/service_plans_checkout_native.php": "4582451eb68075d463db2969980b7e3e709ef9c08bdfe217599783c0074da392",
+      "tests/database_update_cases.py": "11298023398d6f2ef9c374ef2a9248909f3517d04344f0ae9080de3a5345c592",
+      "tests/database_update_forms.py": "6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2"
+    },
+    "scope": "Pure registry/action/view policy, disposable owner-reviewed Contacts migration, existing isolated service checkout migration and packaged HTTP/Chromium review; no live payments, provisioning, messages, provider calls, customer data, production SSH or deployment."
   },
   "non20i_native_command_extension": {
     "additions": [

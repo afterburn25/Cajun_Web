@@ -186,6 +186,21 @@ jobs:
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
+      checkout_mariadb:
+        image: ${{ inputs.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-checkout-root-only
+          MARIADB_DATABASE: cwp_checkout_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: isolated-checkout-root-only
+          MYSQL_DATABASE: cwp_checkout_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+        ports: ['43319:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
@@ -261,6 +276,7 @@ jobs:
           "$PHP_BINARY" -m
           if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
             docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+            docker exec -e MYSQL_PWD=isolated-checkout-root-only ${{ job.services.checkout_mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
           fi
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
@@ -290,6 +306,11 @@ jobs:
           "$PHP_BINARY" tests/estimator_adapter.php
           "$PHP_BINARY" tests/native.php
           "$PHP_BINARY" tests/staff_native.php
+          "$PHP_BINARY" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json
+          "$PHP_BINARY" tests/database_schema_action_policy.php > qa/database-schema-action-policy-results.json
+          "$PHP_BINARY" tests/database_schema_view_policy.php > qa/database-schema-view-policy-results.json
+          CWP_TEST_DATABASE_DOCKER_PORT=3306 "$PHP_BINARY" tests/database_schema_native.php
+          CWP_TEST_DATABASE=cwp_checkout_test CWP_TEST_PORT=43319 CWP_TEST_CHECKOUT_DOCKER_PORT=3306 CWP_TEST_CHECKOUT_STORAGE=1 "$PHP_BINARY" tests/service_plans_checkout_native.php > qa/service-plans-checkout-native-results.json
           "$PHP_BINARY" tests/support_native.php
           "$PHP_BINARY" tests/catalog_native.php
           "$PHP_BINARY" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json

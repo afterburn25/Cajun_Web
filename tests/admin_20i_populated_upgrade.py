@@ -181,8 +181,15 @@ def main():
                         check(label + ' owner-authenticated HTTP recovery restores baseline version', '<h2>Rolled-back</h2>' in response.text and final['version'] == initial)
                         check(label + ' HTTP recovery preserves populated SQL and private data', same_retained(before, final, allow_settings_additions=False))
                     else:
-                        response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
-                        check(label + ' actual database update action succeeds', assert_no_error(response) and 'Database update completed' in response.text)
+                        database_url = admin + '?view=studio-upgrade'
+                        database_page = owner.get(database_url, timeout=120);database_doc = BeautifulSoup(database_page.text, 'html.parser')
+                        if database_doc.select_one('[name="database_updates[]"][value="studio_schema_version"]'):
+                            response = submit(owner, database_url, 'studio_database_plan', {'database_updates[]': 'studio_schema_version'})
+                            check(label + ' actual database update has exact review', assert_no_error(response) and 'Review selected database updates' in response.text and 'Studio' in response.text)
+                            response = submit(owner, response.url, 'studio_database_apply', {'confirm': '1'})
+                            check(label + ' actual reviewed database update action succeeds', assert_no_error(response) and 'Database updates completed: Studio' in response.text)
+                        else:
+                            check(label + ' existing workspace database is rechecked as current',assert_no_error(database_page) and 'Studio</strong> — Current' in database_page.text)
                         catalog = admin + '?view=catalog&import_source=package.types'
                         response = owner.get(catalog, timeout=120)
                         check(label + ' migrated catalog shows retained product and direct plan setup', assert_no_error(response) and 'UPGRADE-RETAIN' in response.text and 'catalog_import_catalog_prepare' in response.text)
@@ -193,8 +200,9 @@ def main():
                         for view in ['dashboard', 'catalog', 'provider-settings', 'studio-upgrade']:
                             response = owner.get(admin + '?view=' + view, timeout=120)
                             check(label + ' upgraded ' + view + ' loads without repeated password fields', assert_no_error(response) and 'view=login' not in response.url and not BeautifulSoup(response.text, 'html.parser').select('input[name="current_password"],input[name="owner_password"]'))
-                        response = submit(owner, admin + '?view=studio-upgrade', 'studio_migrate', {'confirm': '1'})
-                        check(label + ' repeated database update preserves existing records', assert_no_error(response) and same_retained(final, probe(installed, 'snapshot')))
+                        page = owner.get(database_url, timeout=120);csrf = BeautifulSoup(page.text, 'html.parser').select_one('input[name="csrf"]')['value']
+                        response = owner.post(database_url, data={'csrf': csrf, 'action': 'studio_migrate', 'confirm': '1'}, timeout=120)
+                        check(label + ' legacy database action is refused and preserves existing records', assert_no_error(response) and 'Use Version &amp; database' in response.text and same_retained(final, probe(installed, 'snapshot')))
                         probe(installed, 'revoke')
                         response = owner.get(updater, timeout=120)
                         check(label + ' revoked owner session cannot authorize updater', 'name="owner_password"' in response.text and 'Signed in as' not in response.text)
