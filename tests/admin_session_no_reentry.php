@@ -52,12 +52,13 @@ try {
     foreach(['password','new_password','confirm_password','general_key','smtp_password','auth_client_key'] as $name)ns_check('Real sign-in/new credential field remains: '.$name,str_contains(ns_render(fn()=>admin_input($name,'Credential','','password','required')),'name="'.$name.'"'));
     $markup=ns_render(fn()=>admin_action('provider_settings_save'));
     ns_check('Action fields retain CSRF',str_contains($markup,'name="csrf"')&&str_contains($markup,'value="provider_settings_save"'));
-    $root=dirname(__DIR__);$raw=[];$backend=[];
+    $root=dirname(__DIR__);$raw=[];$backend=[];$codeRoot=str_replace('\\','/',CWP_CODE_ROOT).'/';
     foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(CWP_CODE_ROOT,FilesystemIterator::SKIP_DOTS)) as $p){
-        if($p->getExtension()!=='php'||str_contains($p->getPathname(),'/foundation/')||str_contains($p->getPathname(),'/install/'))continue;
+        $path=str_replace('\\','/',$p->getPathname());
+        if($p->getExtension()!=='php'||str_contains($path,'/foundation/')||str_contains($path,'/install/'))continue;
         $s=file_get_contents($p->getPathname());
-        if(preg_match('/<input\\b[^>]*\\bname=["\x27](?:current_password|owner_password)["\x27]/',$s))$raw[]=str_replace(CWP_CODE_ROOT.'/','',$p->getPathname());
-        if(str_contains($s,'password_verify('))$backend[]=str_replace(CWP_CODE_ROOT.'/','',$p->getPathname());
+        if(preg_match('/<input\\b[^>]*\\bname=["\x27](?:current_password|owner_password)["\x27]/',$s))$raw[]=str_replace($codeRoot,'',$path);
+        if(str_contains($s,'password_verify('))$backend[]=str_replace($codeRoot,'',$path);
     }
     sort($raw);ns_check('Only deliberate customer credential change renders a current-password field',$raw===['portal/views/account.php']);
     $accountView=file_get_contents(CWP_CODE_ROOT.'/portal/views/account.php');
