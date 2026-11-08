@@ -288,6 +288,9 @@ REPAIRS = REPAIRS | frozenset((
     'tests/prepare_legacy.py',
     'tests/software_release_125_harness_tests.py',
 ))
+# The staff-invite observability successor changes only this retained browser
+# fixture. Its exact predecessor remains reconstructed for component checks.
+REPAIRS = REPAIRS | frozenset(('tests/staff_cases.py',))
 DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
     '.github/workflows/application-tests.yml': 6,
     'tests/acceptance_artifacts_test.py': 5,
@@ -379,6 +382,7 @@ REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = 'd5f802cc6774179c
 REPAIR_SHA256['tests/cloud_site_requests_wiring.py'] = 'a6cde5e837c572a9c2bf3fa5ea6572fc4f506146ac35be291b8189c6ee23a36e'
 REPAIR_SHA256['tools/acceptance-contract.json'] = '7ec735ad0c767b6d450df7ffe66355f65d0244e900048343ad61885bfa08abda'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = 'aed38862b2b66cdcc01262b2daaf639994d53599733ed9c8b00b259692cccf1d'
+REPAIR_SHA256['tests/staff_cases.py'] = '9446930e4f511848dfa1de1be20b20569b351d5e77990336fc733fac05fcc0ee'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
