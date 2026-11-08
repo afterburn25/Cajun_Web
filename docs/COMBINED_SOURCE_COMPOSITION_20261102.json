@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "a6961ba09a1b2215548c5472dfb31b8a83b01a61482295869b9ada1c0c4e8566",
+  "verifier_sha256": "a40d78b9ba0ede1523432faea42ad713b094ab850458f2060246e0076da5adc9",
   "regression_sha256": "23dc26c0f2b1083cb135c5989091d4ea37c6119ff8a263a9eed5798d10306e0c",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1209,7 +1209,7 @@
     },
     "tools/acceptance-contract.json": {
       "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
-      "current_sha256": "6f9659f3af4752e86972db13483eb923d8a941fbe8e2f78c11ef762d6df0d3d2",
+      "current_sha256": "a4f6d568865513547c86f20269176091ce92c91b787defa1be99a93796163a3d",
       "edits": [
         [
           "      \"tests/release_cases.py\": \"807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af\",\n",
@@ -1270,6 +1270,10 @@
         [
           "      \"tests/database_update_cases.py\": \"3ec7b82268bbc61fc4a837c5af09c9815dabd247c5131d9f6db87100187b3e25\",\n",
           "      \"tests/database_update_cases.py\": \"5d5f183596dc5902b1f3f9090a161c949ef8fd693a725457db78c9a5d4b99150\",\n"
+        ],
+        [
+          "      \"tests/database_update_cases.py\": \"5d5f183596dc5902b1f3f9090a161c949ef8fd693a725457db78c9a5d4b99150\",\n",
+          "      \"tests/database_update_cases.py\": \"11298023398d6f2ef9c374ef2a9248909f3517d04344f0ae9080de3a5345c592\",\n"
         ]
       ]
     },
@@ -2131,7 +2135,7 @@
     },
     "tests/database_update_cases.py": {
       "mode": "100644",
-      "sha256": "5d5f183596dc5902b1f3f9090a161c949ef8fd693a725457db78c9a5d4b99150"
+      "sha256": "11298023398d6f2ef9c374ef2a9248909f3517d04344f0ae9080de3a5345c592"
     },
     "tests/database_update_forms.py": {
       "mode": "100644",
@@ -2140,7 +2144,7 @@
   },
   "database_workflow_base": "8d31de5e125ece6ad999dab4bb9e483dd8b70822",
   "database_workflow_base_tree": "a73a70b6bbe05fdc1e773cf078e1a642fb9a6816",
-  "database_workflow_source": "4efd219efcef76c4660472d6739f0bc8e0486f9b",
+  "database_workflow_source": "aeeea87e4d0d31dcfc187daed1a29cb9946d907c",
   "database_workflow_source_paths": [
     ".github/workflows/application-tests.yml",
     "site/admin/controllers/studio.php",
@@ -2168,5 +2172,5 @@
     "tools/acceptance-reports.json",
     "tools/update/owner-update.php"
   ],
-  "database_workflow_source_tree": "36891978ccbcf897c1908eb5901303c723e783fd"
+  "database_workflow_source_tree": "6dc4871e6edf370844534a837f6f6de6ef7c58c4"
 }
