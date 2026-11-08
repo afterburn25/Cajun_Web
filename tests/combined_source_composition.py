@@ -278,6 +278,16 @@ REPAIRS = REPAIRS | frozenset((
 # UX-07 extends the repair set only with existing files from the immutable
 # repair checkpoint. Its seven genuinely new source files remain disjoint.
 REPAIRS = REPAIRS | DATABASE_WORKFLOW_REPAIRS
+# Release-asset delivery retries repair only the two additional existing
+# workflow/test paths; Application and its guard are already retained repairs.
+REPAIRS = REPAIRS | frozenset((
+    '.github/workflows/software-release-125-upgrade.yml',
+    'tests/software_release_125_harness_tests.py',
+))
+DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
+    '.github/workflows/application-tests.yml': 6,
+    'tests/acceptance_artifacts_test.py': 5,
+}
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
 NARRATIVES = frozenset((
@@ -351,6 +361,10 @@ REPAIR_SHA256['tools/update/owner-update.php'] = 'f151c1f042841853bfd36cc60ec062
 # END GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
 REPAIR_SHA256['tools/build.py'] = '85d3a6762852afa633c047ec7c138b8afe7cb0df08724034ba6a0d39d6065c77'
 REPAIR_SHA256['tests/build_guards.py'] = 'b85c6c2de743b6df813362c3714eab02dbe70a63f0e5a9d71e74ebd9d873a1c8'
+REPAIR_SHA256['.github/workflows/application-tests.yml'] = 'a4ece2460ea61f9fa9ed8f77c80bba9956c0eeea18b1232ef2a0a28972a3d599'
+REPAIR_SHA256['.github/workflows/software-release-125-upgrade.yml'] = 'e66c3724bbc0f5ce0d65f7b711037c2b9f53108a43097b061c465b4b561ba4eb'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '25723015f3b3578cb1e0334c125e93f7b40da827d46458154b6c97607e454684'
+REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = '34efecf23833da592141292e0c1a12c6bbff3dd165a07749057afe60cf0b458e'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -692,6 +706,24 @@ def reconstruct_repair(data, path, current):
     return original
 
 
+def reconstruct_database_workflow_successor(data, path, current):
+    """Reverse only the final retry edit before proving the later UX07 source."""
+    require(path in DATABASE_WORKFLOW_SUCCESSOR_EDITS, 'Unknown database workflow successor')
+    row = data['integration_repairs'][path]
+    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
+            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path],
+            'Current database workflow successor changed: ' + path)
+    before, after = row['edits'][-1]
+    text = current.decode('utf-8')
+    require(text.count(after) == 1, 'Nonunique database workflow successor inverse: ' + path)
+    predecessor = text.replace(after, before, 1)
+    require(predecessor.count(before) == 1,
+            'Nonunique database workflow successor forward change: ' + path)
+    require(predecessor.replace(before, after, 1).encode('utf-8') == current,
+            'Database workflow successor is not reversible: ' + path)
+    return predecessor.encode('utf-8')
+
+
 def reconstruct_addition(data, path, current):
     """Retain each exact new PR331 file while running its current reviewed bytes."""
     require(path in ADDITIONS, 'Unknown contact addition')
@@ -853,8 +885,10 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        require(ordinary(root, path)
-                == git(root, 'cat-file', 'blob', DATABASE_WORKFLOW_SOURCE + ':' + path)
+        value = ordinary(root, path)
+        if path in DATABASE_WORKFLOW_SUCCESSOR_EDITS:
+            value = reconstruct_database_workflow_successor(data, path, value)
+        require(value == git(root, 'cat-file', 'blob', DATABASE_WORKFLOW_SOURCE + ':' + path)
                 and mode(root, path) == database_source_entries[path][0],
                 'Current database workflow bytes or mode differ from exact source: ' + path)
     for path in sorted(DATABASE_WORKFLOW_ADDITIONS):

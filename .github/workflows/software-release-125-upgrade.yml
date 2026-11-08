@@ -161,8 +161,25 @@ jobs:
         if: steps.version.outputs.run_gate == 'true'
         run: |
           mkdir -p test-runtime/released-1.25.0
-          curl --fail --location --proto '=https' --tlsv1.2             --output /tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip             https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip
-          echo "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39  /tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip" | sha256sum -c -
+          baseline=/tmp/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip
+          partial="${baseline}.part"
+          rm -f "$partial"
+          for attempt in 1 2 3; do
+            if curl --fail --location --proto '=https' --proto-redir '=https' --tlsv1.2 \
+              --connect-timeout 15 --max-time 120 --output "$partial" \
+              https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip; then
+              mv "$partial" "$baseline"
+              break
+            fi
+            rm -f "$partial"
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            printf 'Published v1.25 baseline download attempt %s failed; retrying after bounded delay.\n' "$attempt"
+            sleep "$((attempt * 10))"
+          done
+          test -f "$baseline"
+          echo "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39  $baseline" | sha256sum -c -
           python3 - <<'PY'
           from pathlib import Path, PurePosixPath
           import zipfile

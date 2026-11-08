@@ -66,6 +66,32 @@ class UpgradeHarness(unittest.TestCase):
             'selected': selected, 'php_matches': php_matches, 'probe_environment': Mock(),
         })
 
+    def test_published_baseline_download_is_bounded_and_fail_closed(self):
+        workflow = (ROOT / '.github/workflows/software-release-125-upgrade.yml').read_text(encoding='utf-8')
+        step = workflow.split("      - name: Materialize immutable published v1.25 baseline\n", 1)[1].split(
+            "      - name: Exercise published v1.25 update and recovery\n", 1)[0]
+        url = ('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/'
+               'CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip')
+        digest = 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
+        self.assertEqual(step.count(url), 1)
+        self.assertEqual(step.count('for attempt in 1 2 3; do'), 1)
+        self.assertIn("--proto '=https' --proto-redir '=https' --tlsv1.2", step)
+        self.assertIn('--connect-timeout 15 --max-time 120 --output "$partial"', step)
+        self.assertIn('partial="${baseline}.part"', step)
+        self.assertGreaterEqual(step.count('rm -f "$partial"'), 2)
+        self.assertIn('if [ "$attempt" -eq 3 ]; then\n              exit 1\n            fi', step)
+        self.assertIn('sleep "$((attempt * 10))"', step)
+        self.assertNotIn('--retry-all-errors', step)
+        curl = step.index('if curl ')
+        rename = step.index('mv "$partial" "$baseline"')
+        loop_end = step.index('          done\n', rename)
+        checksum = step.index(digest, loop_end)
+        archive = step.index("          python3 - <<'PY'", checksum)
+        self.assertLess(curl, rename)
+        self.assertLess(rename, loop_end)
+        self.assertLess(loop_end, checksum)
+        self.assertLess(checksum, archive)
+
     def organized(self, web, base, check, qa, php, label, prefix, version, *, at_root=False):
         self.calls.append((web, label, prefix, version, at_root))
         self.assertFalse(any(web.iterdir()), 'Readiness probe must not enter the installed fixture')
