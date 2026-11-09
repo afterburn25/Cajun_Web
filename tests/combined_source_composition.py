@@ -343,6 +343,16 @@ UX09_IDENTITY_SNAPSHOT_MODIFIED = frozenset((
 UX09_IDENTITY_SNAPSHOT_SHA256 = {
     'tests/client_identity_native.php': '74b25adc1dcd6028a7ef332de1aa0dbc00fba285139ff40d5eeab77ada36555b',
 }
+UX09_FIXTURE_RECEIPT_BASE = 'ca81be662b0c01dd85d223540a191beb04f7ba2e'
+UX09_FIXTURE_RECEIPT_BASE_TREE = '7e57dbda6e403c9fd5af6c2ca56703fa929a42b3'
+UX09_FIXTURE_RECEIPT_SOURCE = '1e40f8aa245c8318013aaa86b9a3fcc3b8d13feb'
+UX09_FIXTURE_RECEIPT_SOURCE_TREE = '03b6ee8b65d0aad4c5feb202e084636480959dc3'
+UX09_FIXTURE_RECEIPT_MODIFIED = frozenset((
+    'tools/acceptance-contract.json',
+))
+UX09_FIXTURE_RECEIPT_SHA256 = {
+    'tools/acceptance-contract.json': 'fa43b8a278a72d9975b29858e45cb41bc9637643ed457ad0dc4d51af4014df69',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -764,6 +774,8 @@ def hydration_origin(root, head):
         (UX09_IDENTITY_SNAPSHOT_BASE, UX09_IDENTITY_SNAPSHOT_BASE_TREE, 'UX-09 identity-snapshot base'),
         (UX09_IDENTITY_SNAPSHOT_SOURCE, UX09_IDENTITY_SNAPSHOT_SOURCE_TREE,
          'UX-09 identity-snapshot source'),
+        (UX09_FIXTURE_RECEIPT_BASE, UX09_FIXTURE_RECEIPT_BASE_TREE, 'UX-09 fixture-receipt base'),
+        (UX09_FIXTURE_RECEIPT_SOURCE, UX09_FIXTURE_RECEIPT_SOURCE_TREE, 'UX-09 fixture-receipt source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -1017,7 +1029,8 @@ def validate_ux09_source(root):
         row = data['modified'][path]
         before = git(root, 'cat-file', 'blob', UX09_BASE + ':' + path)
         current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
-        actual = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        actual = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        actual = project_ux09_identity_snapshot(root, path, actual)
         actual = project_ux09_smtp_rejection(root, path, actual)
         actual = project_ux09_mail_review(root, path, actual)
         actual = project_ux09_cloud_proof(root, path, actual)
@@ -1030,7 +1043,8 @@ def validate_ux09_source(root):
                 'UX-09 modified source identity changed: ' + path)
     for path in sorted(UX09_ADDITIONS):
         row = data['added'][path];current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
-        actual = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        actual = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        actual = project_ux09_identity_snapshot(root, path, actual)
         actual = project_ux09_smtp_rejection(root, path, actual)
         actual = project_ux09_mail_review(root, path, actual)
         actual = project_ux09_cloud_proof(root, path, actual)
@@ -1100,7 +1114,8 @@ def validate_ux09_security_source(root):
             'UX-09 security successor changed a different path or status set')
     base_entries = entries(root, UX09_SECURITY_BASE);source_entries = entries(root, UX09_SECURITY_SOURCE)
     for path in sorted(UX09_SECURITY_MODIFIED):
-        current = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        current = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        current = project_ux09_identity_snapshot(root, path, current)
         current = project_ux09_smtp_rejection(root, path, current)
         current = project_ux09_mail_review(root, path, current)
         current = project_ux09_cloud_proof(root, path, current)
@@ -1134,7 +1149,8 @@ def validate_ux09_cloud_proof_source(root):
             'UX-09 cloud-proof successor changed a different path or status set')
     base_entries = entries(root, UX09_CLOUD_PROOF_BASE);source_entries = entries(root, UX09_CLOUD_PROOF_SOURCE)
     for path in sorted(UX09_CLOUD_PROOF_MODIFIED):
-        current = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        current = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        current = project_ux09_identity_snapshot(root, path, current)
         current = project_ux09_smtp_rejection(root, path, current)
         current = project_ux09_mail_review(root, path, current)
         require(current == git(root, 'cat-file', 'blob', UX09_CLOUD_PROOF_SOURCE + ':' + path)
@@ -1168,7 +1184,8 @@ def validate_ux09_mail_review_source(root):
     base_entries = entries(root, UX09_MAIL_REVIEW_BASE)
     source_entries = entries(root, UX09_MAIL_REVIEW_SOURCE)
     for path in sorted(UX09_MAIL_REVIEW_MODIFIED):
-        current = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        current = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        current = project_ux09_identity_snapshot(root, path, current)
         current = project_ux09_smtp_rejection(root, path, current)
         require(current == git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_SOURCE + ':' + path)
                 and digest(current) == UX09_MAIL_REVIEW_SHA256[path]
@@ -1186,6 +1203,38 @@ def project_ux09_mail_review(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_BASE + ':' + path)
 
 
+def validate_ux09_fixture_receipt_source(root):
+    """Bind the exact-source receipt for the repaired identity fixture."""
+    require(git(root, 'rev-parse', UX09_FIXTURE_RECEIPT_BASE + '^{tree}').decode().strip()
+            == UX09_FIXTURE_RECEIPT_BASE_TREE
+            and git(root, 'rev-parse', UX09_FIXTURE_RECEIPT_SOURCE + '^{tree}').decode().strip()
+            == UX09_FIXTURE_RECEIPT_SOURCE_TREE, 'UX-09 fixture-receipt successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_FIXTURE_RECEIPT_BASE, UX09_FIXTURE_RECEIPT_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_FIXTURE_RECEIPT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_FIXTURE_RECEIPT_BASE, UX09_FIXTURE_RECEIPT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_FIXTURE_RECEIPT_MODIFIED)],
+            'UX-09 fixture-receipt successor changed a different path or status set')
+    base_entries = entries(root, UX09_FIXTURE_RECEIPT_BASE)
+    source_entries = entries(root, UX09_FIXTURE_RECEIPT_SOURCE)
+    for path in sorted(UX09_FIXTURE_RECEIPT_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', UX09_FIXTURE_RECEIPT_SOURCE + ':' + path)
+                and digest(current) == UX09_FIXTURE_RECEIPT_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 fixture-receipt successor source identity changed: ' + path)
+
+
+def project_ux09_fixture_receipt(root, path, current):
+    """Restore the predecessor receipt only for older source proofs."""
+    if path not in UX09_FIXTURE_RECEIPT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_FIXTURE_RECEIPT_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_FIXTURE_RECEIPT_SHA256[path],
+            'Current UX-09 fixture-receipt successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX09_FIXTURE_RECEIPT_BASE + ':' + path)
+
+
 def validate_ux09_identity_snapshot_source(root):
     """Bind the optional-commercial-table identity fixture successor."""
     require(git(root, 'rev-parse', UX09_IDENTITY_SNAPSHOT_BASE + '^{tree}').decode().strip()
@@ -1201,7 +1250,7 @@ def validate_ux09_identity_snapshot_source(root):
     base_entries = entries(root, UX09_IDENTITY_SNAPSHOT_BASE)
     source_entries = entries(root, UX09_IDENTITY_SNAPSHOT_SOURCE)
     for path in sorted(UX09_IDENTITY_SNAPSHOT_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux09_fixture_receipt(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_SOURCE + ':' + path)
                 and digest(current) == UX09_IDENTITY_SNAPSHOT_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1233,7 +1282,8 @@ def validate_ux09_smtp_rejection_source(root):
     base_entries = entries(root, UX09_SMTP_REJECTION_BASE)
     source_entries = entries(root, UX09_SMTP_REJECTION_SOURCE)
     for path in sorted(UX09_SMTP_REJECTION_MODIFIED):
-        current = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        current = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        current = project_ux09_identity_snapshot(root, path, current)
         require(current == git(root, 'cat-file', 'blob', UX09_SMTP_REJECTION_SOURCE + ':' + path)
                 and digest(current) == UX09_SMTP_REJECTION_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1457,6 +1507,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_fixture_receipt_source(root)
     validate_ux09_identity_snapshot_source(root)
     validate_ux09_smtp_rejection_source(root)
     validate_ux09_mail_review_source(root)
@@ -1566,7 +1617,8 @@ def verify_current(root):
             and CLOUD_INTAKE_ADDITIONS <= set(cloud_source_entries),
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
-        value = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
@@ -1584,7 +1636,8 @@ def verify_current(root):
                 and mode(root, path) == cloud_source_entries[path][0],
                 'Current cloud intake bytes or mode differ from exact source: ' + path)
     for path in sorted(CLOUD_INTAKE_ADDITIONS):
-        value = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
@@ -1608,7 +1661,8 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
@@ -1630,7 +1684,8 @@ def verify_current(root):
                 and mode(root, path) == database_source_entries[path][0],
                 'Current database workflow bytes or mode differ from exact source: ' + path)
     for path in sorted(DATABASE_WORKFLOW_ADDITIONS):
-        value = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
@@ -1649,7 +1704,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux09_identity_snapshot(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
