@@ -7,18 +7,29 @@ from staff_cases import OWNER
 
 
 def age_unprotected_refreshes(seconds, profile_id=None):
-    """Retain old fixture aging for other reads; never rewrite a cloud source."""
+    """Age disposable reads; never rewrite cloud or confirmation evidence."""
     if seconds not in (60, 120, 7200):
         raise AssertionError('Unexpected fixture interval')
     before = db('SELECT * FROM ci_provider_refreshes WHERE operation=? ORDER BY seq', ['cloudservers.list'])
+    confirmation_table = db("SHOW TABLES LIKE 'ci_provider_cloud_confirmations'")
+    confirmation_ids = ([row['refresh_id'] for row in
+                         db('SELECT DISTINCT refresh_id FROM ci_provider_cloud_confirmations ORDER BY refresh_id')]
+                        if confirmation_table else [])
+    placeholders = ','.join('?' for _ in confirmation_ids)
+    confirmed = (db('SELECT * FROM ci_provider_refreshes WHERE id IN (' + placeholders + ') ORDER BY seq', confirmation_ids)
+                 if confirmation_ids else [])
     where = '(operation IS NULL OR operation<>?)'
     args = [seconds, 'cloudservers.list']
+    if confirmation_ids:
+        where += ' AND id NOT IN (' + placeholders + ')'; args.extend(confirmation_ids)
     if profile_id is not None:
         where += ' AND profile_id=?'; args.append(profile_id)
     db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-? WHERE ' + where, args)
     after = db('SELECT * FROM ci_provider_refreshes WHERE operation=? ORDER BY seq', ['cloudservers.list'])
-    if before != after:
-        raise AssertionError('Fixture changed retained cloud intent bytes')
+    confirmed_after = (db('SELECT * FROM ci_provider_refreshes WHERE id IN (' + placeholders + ') ORDER BY seq', confirmation_ids)
+                       if confirmation_ids else [])
+    if before != after or confirmed != confirmed_after:
+        raise AssertionError('Fixture changed retained provider evidence bytes')
     rows = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes' + (' WHERE profile_id=?' if profile_id else ''), [profile_id] if profile_id else [])
     time.sleep(max(0, int(rows[0]['epoch'] or 0) + 31 - time.time()))
 

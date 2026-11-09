@@ -378,6 +378,13 @@ REPAIRS = REPAIRS | frozenset((
 # fixture. Its exact predecessor remains reconstructed for component checks.
 REPAIRS = REPAIRS | frozenset(('tests/staff_cases.py',))
 REPAIRS = REPAIRS | CLOUD_INTAKE_REPAIRS
+# Exact-head Application exposed a fixture-only mutation of a previously
+# confirmed hosting refresh. These are ordinary reviewed integration repairs,
+# not part of the immutable cloud-intake feature source range.
+REPAIRS = REPAIRS | frozenset((
+    'tests/cloud_assignment_fixture.py',
+    'tests/cloud_assignment_fixture_test.py',
+))
 DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
     '.github/workflows/application-tests.yml': 6,
     'tests/acceptance_artifacts_test.py': 5,
@@ -489,6 +496,8 @@ REPAIR_SHA256['tools/acceptance-reports.json'] = '0bb0377061c504fcc4b7c174055821
 # END GENERATED CLOUD INTAKE REPAIR IDENTITIES
 REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '8e119d1f951a9b12f128f769ae2a2762e5dc0cd703a0516c6467cfea2881cf4a'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = 'bc0b96a1818073406581d434d1e26d7b1549e54f57c1ad465b7e2008f33d1279'
+REPAIR_SHA256['tests/cloud_assignment_fixture.py'] = '253440f3e7385c52711dacf86b561cadb915b34535598e19c2d333906485b3cb'
+REPAIR_SHA256['tests/cloud_assignment_fixture_test.py'] = 'd35ec960bce9c3c247a46b9184384142937ec02db373f3536475d2edba3ffe95'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
