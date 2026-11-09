@@ -152,6 +152,74 @@ DATABASE_WORKFLOW_SOURCE_PATHS = (DATABASE_WORKFLOW_ADDITIONS | DATABASE_WORKFLO
 # BEGIN GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
 DATABASE_WORKFLOW_ADDITION_SHA256 = {'site/app/settings/database_schemas.php': 'fe6126ddd5e1690d817eda4d80c6f298b1abc7be71bc56e677d11b1af81d5a5d', 'tests/database_schema_action_policy.php': 'af06296416c48856b3272ae12bf136812cfced28143a9665de8afa3cb67556bd', 'tests/database_schema_native.php': '5b8a7dbb4b43af3bc392bd03f0062257d85d85ab31e4deac585dbfec04fd490e', 'tests/database_schema_registry_policy.php': '9d2262fae374e1efccb41c3cf1cfa6ecbf5af39955d572f75be0088ba2b05acd', 'tests/database_schema_view_policy.php': '4b3913711d35665e3c382f9d168dd8ebe5f7606b5d33bd9770a869bb6b8b7935', 'tests/database_update_cases.py': '11298023398d6f2ef9c374ef2a9248909f3517d04344f0ae9080de3a5345c592', 'tests/database_update_forms.py': '6f066f71322ea679078e492e549e20b4434d397542125743985edf9950aac9e2'}
 # END GENERATED DATABASE WORKFLOW ADDITION IDENTITIES
+CLOUD_INTAKE_BASE = '47425290d1f69ba312b59ae888c9390772391966'
+CLOUD_INTAKE_BASE_TREE = 'cc1deebbf6ce4e75006b48c4fca906e5006bd023'
+CLOUD_INTAKE_SOURCE = '30df630fc802838396d8d308264ff52bed5e072a'
+CLOUD_INTAKE_SOURCE_TREE = 'aec45c42645be94b79f1919f0b7534e7aaa67973'
+CLOUD_INTAKE_ADDITIONS = frozenset((
+    'tests/cloud_site_intake_contract.php',
+    'tests/cloud_site_intake_wiring.py',
+))
+CLOUD_INTAKE_REPAIRS = frozenset((
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/provider-cloud-sites.yml',
+    'docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md',
+    'site/app/providers/cloud_site_requests.php',
+    'site/app/providers/cloud_site_requests_views.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/cloud_site_requests_ui_contract.php',
+    'tests/provider_cloud_site_requests_cases.py',
+    'tests/provider_cloud_site_requests_native.php',
+    'tools/acceptance-contract.json',
+    'tools/acceptance-reports.json',
+))
+CLOUD_INTAKE_SOURCE_NARRATIVES = frozenset((
+    'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-feature.md',
+))
+CLOUD_INTAKE_SOURCE_PATHS = CLOUD_INTAKE_ADDITIONS | CLOUD_INTAKE_REPAIRS | {INVENTORY}
+CLOUD_INTAKE_ADDITION_SHA256 = {
+    'tests/cloud_site_intake_contract.php': '0afa7765917c2f26937884c9baea5559c62aa90e17fea152f735b9ea4eb6e03b',
+    'tests/cloud_site_intake_wiring.py': '5b38379d10d44ceb903bb77fdfe7849ad8feecd1cd5585ebe741e21ad959be8f',
+}
+CLOUD_INTAKE_PREDECESSOR_SHA256 = {
+    '.github/workflows/application-tests.yml': '5ddd172b5ede5221799575b5a604e32f43e6415e7cf824fd7cf4c4222f706d09',
+    '.github/workflows/provider-cloud-sites.yml': 'bacfcd5d2c98434444c44c769a1f5b737c157db59df1c0b05023541c9141920f',
+    'docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md': '090c4fb63ffe1f83936a39e40d0db87966222f84d12fa0ba971b890cff0dbfaa',
+    'site/app/providers/cloud_site_requests.php': 'ac5c3c666c916b26081b6f9a5dbef8d588ca942dae9b10164213509014d54af0',
+    'site/app/providers/cloud_site_requests_views.php': '59c3d89f76615b182bba3d49d65937b85f88d8033e5ab8ee189409a33070fb64',
+    'tests/acceptance_artifacts_test.py': 'aed38862b2b66cdcc01262b2daaf639994d53599733ed9c8b00b259692cccf1d',
+    'tests/cloud_site_requests_ui_contract.php': 'e8f3c2d7902c6f9c1b265e8d346fae09557518d6cbcefaa4e9bb75e4e32dbfdc',
+    'tests/provider_cloud_site_requests_cases.py': '84e42344a2a03d42cb9bbb5d063b69e601224a0a1c9dce2bc20d19704df73bfb',
+    'tests/provider_cloud_site_requests_native.php': '23837d2606bb2a38ad45f513a7fb3aabefcf07f052182ba19fab731f8c17e9a8',
+    'tools/acceptance-contract.json': '7ec735ad0c767b6d450df7ffe66355f65d0244e900048343ad61885bfa08abda',
+    'tools/acceptance-reports.json': 'e7d9d2b1f66f72109c434c96303611062c7236bfe24cdcf296e5a0080c88a2b8',
+}
+CLOUD_INTAKE_SUCCESSOR_EDITS = {
+    '.github/workflows/application-tests.yml': 1,
+    '.github/workflows/provider-cloud-sites.yml': 4,
+    'docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md': 1,
+    'site/app/providers/cloud_site_requests.php': 3,
+    'site/app/providers/cloud_site_requests_views.php': 1,
+    'tests/acceptance_artifacts_test.py': 2,
+    'tests/cloud_site_requests_ui_contract.php': 1,
+    'tests/provider_cloud_site_requests_cases.py': 5,
+    'tests/provider_cloud_site_requests_native.php': 4,
+    'tools/acceptance-contract.json': 2,
+    'tools/acceptance-reports.json': 1,
+}
+CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS = {
+    '.github/workflows/application-tests.yml': 7,
+    '.github/workflows/provider-cloud-sites.yml': 4,
+    'docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md': 1,
+    'site/app/providers/cloud_site_requests.php': 3,
+    'site/app/providers/cloud_site_requests_views.php': 1,
+    'tests/acceptance_artifacts_test.py': 7,
+    'tests/cloud_site_requests_ui_contract.php': 1,
+    'tests/provider_cloud_site_requests_cases.py': 5,
+    'tests/provider_cloud_site_requests_native.php': 4,
+    'tools/acceptance-contract.json': 19,
+    'tools/acceptance-reports.json': 7,
+}
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
     '.github/workflows/rc126-test-package.yml',
@@ -291,6 +359,7 @@ REPAIRS = REPAIRS | frozenset((
 # The staff-invite observability successor changes only this retained browser
 # fixture. Its exact predecessor remains reconstructed for component checks.
 REPAIRS = REPAIRS | frozenset(('tests/staff_cases.py',))
+REPAIRS = REPAIRS | CLOUD_INTAKE_REPAIRS
 DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
     '.github/workflows/application-tests.yml': 6,
     'tests/acceptance_artifacts_test.py': 5,
@@ -304,6 +373,8 @@ NARRATIVES = frozenset((
     'CHANGELOG.md', 'PROJECT_STATUS.md', 'SESSION_HANDOFF.md',
     'docs/AI_AGENT_CONTINUITY.md',
     'docs/agent-handoffs/2026-11-08-codex-release-stack-integration.md',
+    'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-feature.md',
+    'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-integration.md',
     'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
     'docs/RELEASES.md', 'docs/ROADMAP.md', 'docs/SESSION_LOG.md',
 ))
@@ -315,7 +386,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '23dc26c0f2b1083cb135c5989091d4ea37c6119ff8a263a9eed5798d10306e0c'
+REGRESSION_SHA256 = '611f351fbaeae397850257c887bcb8df2a9d97cbb9f0278c2fa8330fd7e6d6f9'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -385,6 +456,19 @@ REPAIR_SHA256['tests/cloud_site_requests_wiring.py'] = 'a6cde5e837c572a9c2bf3fa5
 REPAIR_SHA256['tools/acceptance-contract.json'] = '7ec735ad0c767b6d450df7ffe66355f65d0244e900048343ad61885bfa08abda'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = 'aed38862b2b66cdcc01262b2daaf639994d53599733ed9c8b00b259692cccf1d'
 REPAIR_SHA256['tests/staff_cases.py'] = '9446930e4f511848dfa1de1be20b20569b351d5e77990336fc733fac05fcc0ee'
+# BEGIN GENERATED CLOUD INTAKE REPAIR IDENTITIES
+REPAIR_SHA256['.github/workflows/application-tests.yml'] = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+REPAIR_SHA256['.github/workflows/provider-cloud-sites.yml'] = '36a950242aaef55ad7f69a69e264593487b4535ec3fd738cd8a6f4e355fd9b81'
+REPAIR_SHA256['docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md'] = '2272a5666ca8a218074c6334e03bb078a987c028d9513b9fc058c768dd50e320'
+REPAIR_SHA256['site/app/providers/cloud_site_requests.php'] = 'aaafdf5210e00e92a946b19186e5e72f2c0025f0277da38c368d844b5f49e84d'
+REPAIR_SHA256['site/app/providers/cloud_site_requests_views.php'] = '0a5f61bee9af8c9ca805bdfc0bf820c34ea70eec15aed6559428b6fb93bb5539'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '93a31d163c487716e74f60ed005a2f19e9d7b9dcca66be452f0f26194867599e'
+REPAIR_SHA256['tests/cloud_site_requests_ui_contract.php'] = '01016f139e72c31aedb53bfa10a5e5e477e1247cd29efa16e0095049c7210234'
+REPAIR_SHA256['tests/provider_cloud_site_requests_cases.py'] = '66e9c9c8febe28604b93b3eaaee12ce4a5367fbf2c555597f1db54553c1eb0ed'
+REPAIR_SHA256['tests/provider_cloud_site_requests_native.php'] = '365d9bb50af2dbf8f61d931f096cc52e870c23205f51febedb5407f18986c059'
+REPAIR_SHA256['tools/acceptance-contract.json'] = 'e5ebee48faa0facf006106c0900f34d9d29b90309e8237dcdf54125f7fc124f5'
+REPAIR_SHA256['tools/acceptance-reports.json'] = '0bb0377061c504fcc4b7c1740558217d726b358a8edd99d5591b0afec989d8cb'
+# END GENERATED CLOUD INTAKE REPAIR IDENTITIES
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -491,6 +575,8 @@ def hydration_origin(root, head):
         (DIAGNOSTIC_ADDITION_SOURCE, DIAGNOSTIC_ADDITION_SOURCE_TREE, 'diagnostic addition'),
         (DATABASE_WORKFLOW_BASE, DATABASE_WORKFLOW_BASE_TREE, 'database workflow base'),
         (DATABASE_WORKFLOW_SOURCE, DATABASE_WORKFLOW_SOURCE_TREE, 'database workflow source'),
+        (CLOUD_INTAKE_BASE, CLOUD_INTAKE_BASE_TREE, 'cloud intake base'),
+        (CLOUD_INTAKE_SOURCE, CLOUD_INTAKE_SOURCE_TREE, 'cloud intake source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -585,7 +671,11 @@ def validate_receipt(data, verifier):
         'diagnostic_addition_source', 'diagnostic_addition_source_tree', 'diagnostic_additions',
         'database_workflow_base', 'database_workflow_base_tree',
         'database_workflow_source', 'database_workflow_source_tree',
-        'database_workflow_source_paths', 'database_workflow_additions'},
+        'database_workflow_source_paths', 'database_workflow_additions',
+        'cloud_intake_base', 'cloud_intake_base_tree',
+        'cloud_intake_source', 'cloud_intake_source_tree',
+        'cloud_intake_source_paths', 'cloud_intake_source_narratives',
+        'cloud_intake_additions'},
         'Unexpected composition receipt fields')
     require(data['format'] == 6 and data['base'] == BASE and data['base_tree'] == BASE_TREE
             and data['components'] == COMPONENTS, 'Unreviewed component source identity')
@@ -686,6 +776,27 @@ def validate_receipt(data, verifier):
                 and re.fullmatch('[0-9a-f]{64}', row['sha256']) is not None
                 and row['mode'] == '100644',
                 'Unreviewed database workflow addition identity: ' + path)
+    require(data['cloud_intake_base'] == CLOUD_INTAKE_BASE
+            and data['cloud_intake_base_tree'] == CLOUD_INTAKE_BASE_TREE
+            and data['cloud_intake_source'] == CLOUD_INTAKE_SOURCE
+            and data['cloud_intake_source_tree'] == CLOUD_INTAKE_SOURCE_TREE,
+            'Unreviewed cloud intake source identity')
+    require(set(data['cloud_intake_source_paths']) == CLOUD_INTAKE_SOURCE_PATHS
+            and len(data['cloud_intake_source_paths']) == len(CLOUD_INTAKE_SOURCE_PATHS),
+            'Unreviewed cloud intake source path set')
+    require(set(data['cloud_intake_source_narratives']) == CLOUD_INTAKE_SOURCE_NARRATIVES
+            and len(data['cloud_intake_source_narratives']) == len(CLOUD_INTAKE_SOURCE_NARRATIVES),
+            'Unreviewed cloud intake source narrative set')
+    require(isinstance(data['cloud_intake_additions'], dict)
+            and set(data['cloud_intake_additions']) == CLOUD_INTAKE_ADDITIONS
+            and set(CLOUD_INTAKE_ADDITION_SHA256) == CLOUD_INTAKE_ADDITIONS,
+            'Unreviewed cloud intake addition scope')
+    for path, row in data['cloud_intake_additions'].items():
+        require(isinstance(row, dict) and set(row) == {'sha256', 'mode'}
+                and row['sha256'] == CLOUD_INTAKE_ADDITION_SHA256[path]
+                and re.fullmatch('[0-9a-f]{64}', row['sha256']) is not None
+                and row['mode'] == '100644',
+                'Unreviewed cloud intake addition identity: ' + path)
     return data
 
 
@@ -726,14 +837,39 @@ def reconstruct_repair(data, path, current):
     return original
 
 
+def reconstruct_cloud_intake_successor(data, path, current):
+    """Reverse only the reviewed current-main-to-cloud-intake source range."""
+    require(path in CLOUD_INTAKE_REPAIRS, 'Unknown cloud intake successor')
+    row = data['integration_repairs'][path]
+    count = CLOUD_INTAKE_SUCCESSOR_EDITS[path]
+    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
+            and len(row['edits']) == CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS[path],
+            'Current cloud intake successor changed: ' + path)
+    text = current.decode('utf-8')
+    edits = row['edits'][-count:]
+    for before, after in reversed(edits):
+        require(text.count(after) == 1, 'Nonunique cloud intake successor inverse: ' + path)
+        text = text.replace(after, before, 1)
+    predecessor = text.encode('utf-8')
+    require(digest(predecessor) == CLOUD_INTAKE_PREDECESSOR_SHA256[path],
+            'Cloud intake predecessor changed: ' + path)
+    for before, after in edits:
+        require(text.count(before) == 1, 'Nonunique cloud intake successor forward change: ' + path)
+        text = text.replace(before, after, 1)
+    require(text.encode('utf-8') == current, 'Cloud intake successor is not reversible: ' + path)
+    return predecessor
+
+
 def reconstruct_database_workflow_successor(data, path, current):
-    """Reverse only the final post-UX07 edit before proving the exact UX07 source."""
+    """Reverse the fixed post-UX07 edit after any later source-range projection."""
     require(path in DATABASE_WORKFLOW_SUCCESSOR_EDITS, 'Unknown database workflow successor')
     row = data['integration_repairs'][path]
-    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
-            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path],
+    cloud_count = CLOUD_INTAKE_SUCCESSOR_EDITS.get(path, 0)
+    expected = CLOUD_INTAKE_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path])
+    require(digest(current) == expected
+            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] + cloud_count,
             'Current database workflow successor changed: ' + path)
-    before, after = row['edits'][-1]
+    before, after = row['edits'][DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] - 1]
     text = current.decode('utf-8')
     require(text.count(after) == 1, 'Nonunique database workflow successor inverse: ' + path)
     predecessor = text.replace(after, before, 1)
@@ -849,6 +985,13 @@ def verify_current(root):
                                                | ONBOARDING_ADDITIONS | NARRATIVES
                                                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
             'Database workflow additions cannot replace existing admitted source or proof files')
+    require(not CLOUD_INTAKE_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
+                                          | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
+                                          | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
+                                          | NARRATIVES | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
+            'Cloud intake additions cannot replace existing admitted source or proof files')
+    require(CLOUD_INTAKE_SOURCE_NARRATIVES <= NARRATIVES,
+            'Cloud intake source narratives must remain non-executable exceptions')
     require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
             'Retained contact source tree changed')
     git(root, 'merge-base', '--is-ancestor', ADDITION_SOURCE, 'HEAD')
@@ -889,6 +1032,36 @@ def verify_current(root):
                 'Ticket helper existed in an earlier admitted source: ' + identity)
         require(not DIAGNOSTIC_ADDITIONS & set(entries(root, identity)),
                 'Diagnostic source existed in an earlier admitted source: ' + identity)
+    require(git(root, 'rev-parse', CLOUD_INTAKE_BASE + '^{tree}').decode().strip()
+            == CLOUD_INTAKE_BASE_TREE, 'Cloud intake base tree changed')
+    require(git(root, 'rev-parse', CLOUD_INTAKE_SOURCE + '^{tree}').decode().strip()
+            == CLOUD_INTAKE_SOURCE_TREE, 'Cloud intake source tree changed')
+    git(root, 'merge-base', '--is-ancestor', CLOUD_INTAKE_BASE, CLOUD_INTAKE_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', CLOUD_INTAKE_SOURCE, 'HEAD')
+    cloud_source_paths = set(git(root, 'diff', '--name-only', '--no-renames',
+                                 CLOUD_INTAKE_BASE, CLOUD_INTAKE_SOURCE).decode().splitlines())
+    require(cloud_source_paths == CLOUD_INTAKE_SOURCE_PATHS | CLOUD_INTAKE_SOURCE_NARRATIVES,
+            'Cloud intake source changed a different path set')
+    cloud_base_entries = entries(root, CLOUD_INTAKE_BASE)
+    cloud_source_entries = entries(root, CLOUD_INTAKE_SOURCE)
+    require(not CLOUD_INTAKE_ADDITIONS & set(cloud_base_entries)
+            and CLOUD_INTAKE_ADDITIONS <= set(cloud_source_entries),
+            'Cloud intake addition did not originate in its exact source range')
+    for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
+        value = ordinary(root, path)
+        if path in CLOUD_INTAKE_REPAIRS:
+            require(reconstruct_cloud_intake_successor(data, path, value)
+                    == git(root, 'cat-file', 'blob', CLOUD_INTAKE_BASE + ':' + path),
+                    'Cloud intake repair does not retain exact base bytes: ' + path)
+        require(value == git(root, 'cat-file', 'blob', CLOUD_INTAKE_SOURCE + ':' + path)
+                and mode(root, path) == cloud_source_entries[path][0],
+                'Current cloud intake bytes or mode differ from exact source: ' + path)
+    for path in sorted(CLOUD_INTAKE_ADDITIONS):
+        value = ordinary(root, path)
+        row = data['cloud_intake_additions'][path]
+        require(digest(value) == row['sha256'] == CLOUD_INTAKE_ADDITION_SHA256[path]
+                and row['mode'] == cloud_source_entries[path][0] == '100644',
+                'Cloud intake addition bytes or mode changed: ' + path)
     require(git(root, 'rev-parse', DATABASE_WORKFLOW_BASE + '^{tree}').decode().strip()
             == DATABASE_WORKFLOW_BASE_TREE, 'Database workflow base tree changed')
     require(git(root, 'rev-parse', DATABASE_WORKFLOW_SOURCE + '^{tree}').decode().strip()
@@ -906,6 +1079,12 @@ def verify_current(root):
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
         value = ordinary(root, path)
+        if path == INVENTORY:
+            require(value == git(root, 'cat-file', 'blob', CLOUD_INTAKE_SOURCE + ':' + path),
+                    'Current cloud intake inventory differs from its exact source')
+            value = git(root, 'cat-file', 'blob', CLOUD_INTAKE_BASE + ':' + path)
+        elif path in CLOUD_INTAKE_REPAIRS:
+            value = reconstruct_cloud_intake_successor(data, path, value)
         if path in DATABASE_WORKFLOW_SUCCESSOR_EDITS:
             value = reconstruct_database_workflow_successor(data, path, value)
         require(value == git(root, 'cat-file', 'blob', DATABASE_WORKFLOW_SOURCE + ':' + path)
@@ -918,7 +1097,7 @@ def verify_current(root):
                 and row['mode'] == database_source_entries[path][0] == '100644',
                 'Database workflow addition bytes or mode changed: ' + path)
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
-               | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
+               | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
@@ -981,6 +1160,7 @@ def verify_current(root):
         {'name': 'The exact two-path ticket source retains its commit, tree, ancestry and path equality; the helper bytes and mode are a disjoint addition', 'passed': True},
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
+        {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
