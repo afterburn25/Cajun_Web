@@ -527,18 +527,20 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    cloud_intake_additions=contract['cloud_site_intake']['additions']
     database_ext=contract.get('database_schema_native_command_extension')
     if database_ext:
         additions=database_ext['additions'];position=native_commands.index(database_ext['additions_after'])+1
         check('Reviewed database commands are one exact additive extension',
-              len(native_commands)==database_ext['predecessor_native_count']+len(additions)
+              len(native_commands)==database_ext['predecessor_native_count']+len(additions)+len(cloud_intake_additions)
               and native_commands==contract['native_commands']
               and native_commands[position:position+len(additions)]==additions
               and all(native_commands.count(command)==1 for command in additions))
         native_commands=[command for command in native_commands if command not in additions]
+        database_predecessor=[command for command in native_commands if command not in cloud_intake_additions]
         check('Reviewed database additions retain the complete predecessor recipe',
-              len(native_commands)==database_ext['predecessor_native_count']
-              and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
+              len(database_predecessor)==database_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(database_predecessor,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
         for path,expected_hash in database_ext['source_sha256'].items():
             check('Reviewed database source identity '+path,
                   hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
@@ -550,10 +552,11 @@ def run(tmp):
     ext=contract.get('non20i_native_command_extension')
     if ext:
         additions=ext['additions']
-        check('Backup command is an exact additive extension',len(native_commands)==ext['predecessor_native_count']+len(additions) and native_commands==contract['native_commands'])
+        check('Backup command is an exact additive extension',len(native_commands)==ext['predecessor_native_count']+len(additions)+len(cloud_intake_additions) and native_commands==contract['native_commands'])
         check('Backup command retains exact predecessor ordering',all(native_commands.count(command)==1 and native_commands.index(ext['after'][command])+1==native_commands.index(command) for command in additions))
         native_commands=[command for command in native_commands if command not in additions]
-        check('All previous native commands are retained byte-for-byte',len(native_commands)==ext['predecessor_native_count'] and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==ext['predecessor_native_sha256'])
+        backup_predecessor=[command for command in native_commands if command not in cloud_intake_additions]
+        check('All previous native commands are retained byte-for-byte',len(backup_predecessor)==ext['predecessor_native_count'] and hashlib.sha256(json.dumps(backup_predecessor,separators=(',',':')).encode()).hexdigest()==ext['predecessor_native_sha256'])
         for path,expected_hash in ext['source_sha256'].items():
             check('Backup fixture identity '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
         contract={**contract,'native_commands':native_commands}
@@ -565,9 +568,10 @@ def run(tmp):
           and native_commands[software_position:software_position+1]==software_additions
           and native_commands.count(software_additions[0])==1)
     retained_native=[command for command in native_commands if command not in software_additions]
+    software_predecessor=[command for command in retained_native if command not in cloud_intake_additions]
     check('Software commerce native acceptance preserves the exact160-command predecessor recipe',
-          len(retained_native)==software_native['predecessor_count']==160
-          and hashlib.sha256(json.dumps(retained_native,separators=(',',':')).encode()).hexdigest()
+          len(software_predecessor)==software_native['predecessor_count']==160
+          and hashlib.sha256(json.dumps(software_predecessor,separators=(',',':')).encode()).hexdigest()
               ==software_native['predecessor_sha256'])
     native_commands=retained_native
     from cloud_site_intake_wiring import verify as cloud_intake_wiring
