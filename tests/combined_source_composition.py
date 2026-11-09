@@ -213,7 +213,7 @@ CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS = {
     'docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md': 1,
     'site/app/providers/cloud_site_requests.php': 3,
     'site/app/providers/cloud_site_requests_views.php': 1,
-    'tests/acceptance_artifacts_test.py': 7,
+    'tests/acceptance_artifacts_test.py': 8,
     'tests/cloud_site_requests_ui_contract.php': 1,
     'tests/provider_cloud_site_requests_cases.py': 5,
     'tests/provider_cloud_site_requests_native.php': 4,
@@ -221,12 +221,15 @@ CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS = {
     'tools/acceptance-reports.json': 7,
 }
 CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS = {
+    'tests/acceptance_artifacts_test.py': 1,
     'tests/account_notification_workflow_contract.py': 1,
 }
 CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256 = {
+    'tests/acceptance_artifacts_test.py': '93a31d163c487716e74f60ed005a2f19e9d7b9dcca66be452f0f26194867599e',
     'tests/account_notification_workflow_contract.py': 'bc4317c73f9e9c1e7b1b99671c7627d9701aa4cc9c0ce58f35cd7fb228bc4fcf',
 }
 CLOUD_INTAKE_PROOF_EDIT_COUNTS = {
+    'tests/acceptance_artifacts_test.py': 8,
     'tests/account_notification_workflow_contract.py': 5,
 }
 REPAIRS = frozenset((
@@ -395,7 +398,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '4dfb243eb7bb3a364444b1111460d5ef72cd92650a2831187e3b445e24c6c55f'
+REGRESSION_SHA256 = 'ed09f763303876f80b678a9bfd5e2cfd54d6d857157c723ba5187a29b3c42103'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -479,6 +482,7 @@ REPAIR_SHA256['tools/acceptance-contract.json'] = 'e5ebee48faa0facf006106c0900f3
 REPAIR_SHA256['tools/acceptance-reports.json'] = '0bb0377061c504fcc4b7c1740558217d726b358a8edd99d5591b0afec989d8cb'
 # END GENERATED CLOUD INTAKE REPAIR IDENTITIES
 REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '8e119d1f951a9b12f128f769ae2a2762e5dc0cd703a0516c6467cfea2881cf4a'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = 'bc0b96a1818073406581d434d1e26d7b1549e54f57c1ad465b7e2008f33d1279'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -852,11 +856,14 @@ def reconstruct_cloud_intake_successor(data, path, current):
     require(path in CLOUD_INTAKE_REPAIRS, 'Unknown cloud intake successor')
     row = data['integration_repairs'][path]
     count = CLOUD_INTAKE_SUCCESSOR_EDITS[path]
-    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
+    proof_count = CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS.get(path, 0)
+    expected = CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path])
+    require(digest(current) == expected
+            and row['current_sha256'] == REPAIR_SHA256[path]
             and len(row['edits']) == CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS[path],
             'Current cloud intake successor changed: ' + path)
     text = current.decode('utf-8')
-    edits = row['edits'][-count:]
+    edits = row['edits'][-(count + proof_count):-proof_count if proof_count else None]
     for before, after in reversed(edits):
         require(text.count(after) == 1, 'Nonunique cloud intake successor inverse: ' + path)
         text = text.replace(after, before, 1)
@@ -876,8 +883,8 @@ def reconstruct_database_workflow_successor(data, path, current):
     row = data['integration_repairs'][path]
     cloud_count = CLOUD_INTAKE_SUCCESSOR_EDITS.get(path, 0)
     proof_count = CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS.get(path, 0)
-    expected = CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256.get(
-        path, CLOUD_INTAKE_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path]))
+    expected = CLOUD_INTAKE_PREDECESSOR_SHA256.get(
+        path, CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path]))
     require(digest(current) == expected
             and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] + cloud_count + proof_count,
             'Current database workflow successor changed: ' + path)
@@ -1084,6 +1091,8 @@ def verify_current(root):
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
         value = ordinary(root, path)
+        if path in CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS:
+            value = reconstruct_cloud_intake_proof_successor(data, path, value)
         if path in CLOUD_INTAKE_REPAIRS:
             require(reconstruct_cloud_intake_successor(data, path, value)
                     == git(root, 'cat-file', 'blob', CLOUD_INTAKE_BASE + ':' + path),
@@ -1198,7 +1207,7 @@ def verify_current(root):
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
-        {'name': 'CI-discovered account workflow proof binding is exact, reversible and runtime-neutral', 'passed': True},
+        {'name': 'CI-discovered workflow and predecessor-projection proof bindings are exact, reversible and runtime-neutral', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
