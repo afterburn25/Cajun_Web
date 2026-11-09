@@ -377,10 +377,16 @@ def run_browser(env, browser, owner, client, other, profile):
               and len(ledger_rows) == 1 and ledger_rows[0]['status'] == 'accepted_pending'
               and rows()[-1]['id'] == dispatch['dispatch_id'] and rows()[-1]['kind'] == 'dispatch')
         package_id = ledger_rows[0]['external_id']
+        client_history_response = get(client, intake)
+        client_history = soup(client_history_response).select_one(
+            '[data-cloud-website-request="' + request_id + '"]')
+        check('acknowledged request keeps client history available',
+              'Website request history is temporarily unavailable.' not in client_history_response.text)
         check('acknowledged request does not silently assign a hosting package',
               db('SELECT * FROM ci_provider_package_links ORDER BY id') == before['links']
               and db('SELECT * FROM ci_provider_cloud_confirmations ORDER BY id') == before['confirmations']
-              and 'Accepted by 20i; confirmation needed' in history(client, request_id).text)
+              and client_history is not None
+              and 'Accepted by 20i; confirmation needed' in client_history.text)
         before = state(); post(owner, settings, dispatch, reviewed='1')
         check('owner exact dispatch replay cannot send or create another event', state() == before)
         capture(client, intake, '[data-cloud-website-request="' + request_id + '"]', 'Accepted')
