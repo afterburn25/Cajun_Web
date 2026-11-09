@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "a071f2297540ab6b0643517d41cf72c21167f06675edb183218cb43c53d7cde8",
-  "regression_sha256": "6a9a97c20e95b4ab70b5c213f344d9c2fe92e64cca0e484e2ca2271125f5cee6",
+  "verifier_sha256": "c39cff6ce6d3521de80716df6cffd4b1a8e93c9cfe992d7997a1e78293fbbe9b",
+  "regression_sha256": "eefd4c47cb8d5280966c5eea26336da7a7b8845e8d8c1c72782e5fdabc70c124",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",
@@ -659,11 +659,15 @@
     },
     "tests/backups_acceptance_wiring.py": {
       "original_sha256": "49768ae1e91cfb961b0c17f3833360b4881ad2722945e3a1e08f5aa034cd057e",
-      "current_sha256": "525486323025784b00ffa7d347f6663a6a5aa6e86574830c77ba5b18f1116741",
+      "current_sha256": "366f985b84a61379fadfc48a170e60483599c17fc118c52a8892c6865cf343d9",
       "edits": [
         [
           "\"\"\"Remove only the exact reviewed backup hook before historical byte contracts.\"\"\"\nimport hashlib\n\ndef predecessor_browser(root, contract):\n    driver = (root / 'tests/browser_acceptance.py').read_text()\n    item = contract.get('backups_browser_extension')\n    if item is None:\n        return driver\n",
           "\"\"\"Remove only the exact reviewed backup hook before historical byte contracts.\"\"\"\nimport hashlib\nimport json\nimport combined_source_composition as composition\n\ndef predecessor_browser(root, contract):\n    driver = (root / 'tests/browser_acceptance.py').read_text()\n    if composition.present(root):\n        # This is a historical byte comparison only. Prove every current file,\n        # then invert the finite reviewed driver repair before the old guards.\n        composition.verify_current(root)\n        actual_contract = json.loads(composition.ordinary(root, 'tools/acceptance-contract.json'))\n        if contract.get('backups_browser_extension') != actual_contract.get('backups_browser_extension'):\n            raise AssertionError('Unreviewed backup comparison contract')\n        receipt = json.loads(composition.ordinary(root, composition.RECEIPT))\n        driver = composition.reconstruct_repair(\n            receipt, 'tests/browser_acceptance.py',\n            composition.ordinary(root, 'tests/browser_acceptance.py')).decode('utf-8')\n    item = contract.get('backups_browser_extension')\n    if item is None:\n        return driver\n"
+        ],
+        [
+          "        driver = composition.reconstruct_repair(\n            receipt, 'tests/browser_acceptance.py',\n            composition.ordinary(root, 'tests/browser_acceptance.py')).decode('utf-8')\n",
+          "        ux09 = composition.validate_ux09_source(root)\n        driver = composition.project_ux09_security(root, 'tests/browser_acceptance.py', driver.encode())\n        driver = composition.project_ux09(root, ux09, 'tests/browser_acceptance.py', driver)\n        driver = composition.reconstruct_repair(\n            receipt, 'tests/browser_acceptance.py',\n            driver).decode('utf-8')\n"
         ]
       ]
     },

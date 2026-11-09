@@ -116,6 +116,9 @@ def run(root=ROOT):
         refuses('Refuses altered exact UX-09 CI successor',
                 lambda: modified('tests/domain_registration_drafts_native.php',
                                  lambda target: target.write_bytes(target.read_bytes() + b'\n// unreviewed fixture change\n')))
+        refuses('Refuses altered exact UX-09 security successor',
+                lambda: modified('site/app/mail/transport.php',
+                                 lambda target: target.write_bytes(target.read_bytes() + b'\n// unreviewed delivery change\n')))
 
         def altered_ux09_receipt(change):
             def rewrite(target):
