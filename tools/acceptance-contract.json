@@ -706,7 +706,7 @@
     ],
     "source_sha256": {
       "site/app/clients/public_identity.php": "18a583d7008ac75b4f99fb5803adcded757883f4ab2f89a16396fe9ee19019d3",
-      "site/app/mail/transport.php": "2f43b31ce1d0e36c1880e12c82ee847328305c07f745a11073d334473da7d8ca",
+      "site/app/mail/transport.php": "3b4e684a05ccb7de31b81ae4fed76304ff8faee5befb716a5be58aee0971a8ce",
       "site/app/clients/identity.php": "cb373e48005f6189691540316d45db77ccaa97b760c1713fb4e637c892949fa1",
       "site/app/clients/accounts.php": "b344440ef210c01d3da3d9f3ddc0b7eebd825410b5c7ecdfbb284042e91bebed",
       "site/database/schema/client_identity_schema.php": "c33ecb467e98b7606b77fafb2f814c6a1afb5b01a0c2badd7f67220d6402d1d7",
@@ -716,7 +716,7 @@
       "site/portal/controllers/router.php": "789e341d909a093b0f9674efd2b43e329704542d18b498a2f6bc2f9a0e92f533",
       "site/portal/controllers/actions.php": "b429615c2577f0d7a47160cf043719caf3400e1d97424e3a545e35eaa65a7da1",
       "site/portal/views/auth.php": "a1b875bad315ac56c65e87761d60371baffebf7f3d18a09e5fc6de6e037a05e3",
-      "tests/client_identity_policy.php": "8e83106f2ea03275bb806b4413cd2da8dc07a4ebd2b4a42176b4ed98a86f8530",
+      "tests/client_identity_policy.php": "f613746da519f5ea009d1cad8c7c7736bc6a3e93ff5cabae2e86ace85baca436",
       "tests/client_identity_native.php": "fd3b534b8023a6d6fc34cd1549c53c049ab8a210d51f993234f48cc27968a3f8",
       "tests/client_identity_cases.py": "7f49245e4947acf80f3245d7c4dc46d456edc9f1323e40756c340ad12fa5def7",
       "tests/browser_acceptance.py": "e49534668d13ba62f06747e9ce47438b7e02d5f5a66de26c40ab21b69ac55564"

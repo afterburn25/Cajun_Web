@@ -13,7 +13,7 @@ function smtp_remaining($stream): void {
 function smtp_read($stream, array $expected): string {
     $reply='';$code=0;
     for($i=0;$i<60;$i++) { smtp_remaining($stream);$line=fgets($stream,4096); if($line===false) throw new RuntimeException('SMTP connection closed or timed out.'); $reply.=$line; if(strlen($reply)>20000) throw new RuntimeException('SMTP response too large.'); if(!preg_match('/^(\d{3})([ -])/', $line,$m)) throw new RuntimeException('Invalid SMTP response.');$code=(int)$m[1];if($m[2]===' ')break; }
-    if(!in_array($code,$expected,true)) throw new RuntimeException('SMTP server rejected the request ('.$code.').'); return $reply;
+    if(!in_array($code,$expected,true)) throw new MailSubmissionFailure('SMTP server rejected the request ('.$code.').',true); return $reply;
 }
 function smtp_write($stream,string $data): void { $len=strlen($data);$pos=0;while($pos<$len){smtp_remaining($stream);$n=fwrite($stream,substr($data,$pos));if($n===false||$n===0)throw new RuntimeException('SMTP write failed.');$pos+=$n;} }
 function smtp_command($stream,string $command,array $expected): string { smtp_write($stream,$command."\r\n");return smtp_read($stream,$expected); }
