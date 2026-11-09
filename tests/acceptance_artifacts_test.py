@@ -574,6 +574,7 @@ def run(tmp):
           and hashlib.sha256(json.dumps(software_predecessor,separators=(',',':')).encode()).hexdigest()
               ==software_native['predecessor_sha256'])
     native_commands=retained_native
+    contract={**contract,'native_commands':native_commands}
     from cloud_site_intake_wiring import verify as cloud_intake_wiring
     native_commands=cloud_intake_wiring(ROOT,contract,workflow,native_commands,check)
     contract={**contract,'native_commands':native_commands}
