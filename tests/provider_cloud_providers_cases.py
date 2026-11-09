@@ -2,6 +2,7 @@
 import time
 import requests
 from playwright.sync_api import expect
+from cloud_assignment_fixture import dedicated_cloud_owner
 from release_cases import db
 from staff_cases import OWNER, STAFF
 from owner_browser_forms import refuse_owner_action
@@ -13,7 +14,9 @@ def run_browser(env, browser):
     admin = base + '/existing/admin/index.php'; url = admin + '?view=provider-settings&section=cloud'
     portal = base + '/existing/portal/index.php'; services = portal + '?services=1'
     db('DELETE FROM ci_rate_limits')
-    owner = requests.Session(); submit(owner, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    setup = requests.Session(); submit(setup, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    owner, owner_id = dedicated_cloud_owner(env, setup, 'cloud-providers-owner@example.invalid', 'Cloud provider observations owner')
+    setup.close()
     member = requests.Session(); submit(member, admin + '?view=login', 'login', {'email': 'request-staff@example.invalid', 'password': STAFF})
     client = requests.Session(); submit(client, portal, 'login', {'email': 'alice@example.invalid', 'password': 'Synthetic client passphrase 2026'})
     profile = db('SELECT id,revision FROM ci_provider_profiles WHERE provider_code=?', ['twenty-i'])[0]
@@ -28,7 +31,7 @@ def run_browser(env, browser):
     check('Cloud providers GET offers explicit preparation without schema or network changes', prepare in response.text and not db('SHOW TABLES LIKE "ci_provider_observation_cloud_providers"') and provider.calls == calls)
     for label, fields in [('CSRF', {'csrf': 'invalid'}), ('owner authority', {})]:
         if label == 'owner authority':
-            refuse_owner_action(env, owner, url, prepare, {})
+            refuse_owner_action(env, owner, url, prepare, {}, owner_id=owner_id)
         else:
             post(prepare, **fields)
         check('Cloud providers preparation refuses invalid ' + label, not db('SHOW TABLES LIKE "ci_provider_observation_cloud_providers"') and provider.calls == calls)
@@ -37,7 +40,7 @@ def run_browser(env, browser):
     check('Cloud providers administrator and support views are refused', member.get(url).status_code == 403 and owner.get(url + '&support=fixture').status_code == 403)
     for label, fields in [('CSRF', {'csrf': 'invalid'}), ('owner authority', {}), ('revision', {'revision': '999999'}), ('profile', {'profile_id': 'a' * 32})]:
         if label == 'owner authority':
-            refuse_owner_action(env, owner, url, refresh, {})
+            refuse_owner_action(env, owner, url, refresh, {}, owner_id=owner_id)
         else:
             post(refresh, **fields)
         check('Cloud providers refresh refuses invalid ' + label, not db('SELECT * FROM ci_provider_observation_cloud_providers') and provider.calls == calls)

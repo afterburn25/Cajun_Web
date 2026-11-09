@@ -39,6 +39,7 @@ def run(root=ROOT):
         # Copy only their finite reviewed bytes into the disposable checkout.
         for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
                      | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
+                     | proof.CLOUD_INTAKE_ADDITIONS
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, 'tools/acceptance-contract.json'}):
@@ -159,6 +160,14 @@ def run(root=ROOT):
                 lambda: altered_receipt(lambda data: data['integration_repairs'].pop('tests/finance_initial_enrollment_native.php')))
         refuses('Refuses omitted finance-readiness repair inverse',
                 lambda: altered_receipt(lambda data: data['integration_repairs']['tests/finance_initial_enrollment_native.php']['edits'].pop()))
+        refuses('Refuses omitted cloud intake account-proof successor inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tests/account_notification_workflow_contract.py']['edits'].pop()))
+        refuses('Refuses omitted cloud intake acceptance-projection successor inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tests/acceptance_artifacts_test.py']['edits'].pop()))
+        refuses('Refuses omitted cloud intake browser-fixture successor inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tests/provider_cloud_site_requests_cases.py']['edits'].pop()))
+        refuses('Refuses omitted cloud intake fixture-identity successor inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tools/acceptance-contract.json']['edits'].pop()))
 
         def forged_repair_and_receipt():
             repair = fixture / 'tests/installed_owner_authority.py'
@@ -506,6 +515,69 @@ def run(root=ROOT):
         refuses('Refuses altered database workflow identity in the authorized hydration history',
                 altered_database_hydration_identity)
 
+        cloud_addition = 'tests/cloud_site_intake_contract.php'
+        for path in sorted(proof.CLOUD_INTAKE_ADDITIONS):
+            refuses('Refuses changed exact cloud intake addition ' + path,
+                    lambda path=path: modified(path, lambda target: target.write_bytes(
+                        target.read_bytes() + b'\n# unreviewed cloud intake change\n')))
+            refuses('Refuses missing exact cloud intake addition ' + path,
+                    lambda path=path: modified(path, lambda target: target.unlink()))
+        refuses('Refuses an executable mode on a cloud intake addition',
+                lambda: modified(cloud_addition, lambda target: target.chmod(0o755)))
+        refuses('Refuses a symlink replacing a cloud intake addition',
+                lambda: modified(cloud_addition, symlink))
+        refuses('Refuses substituting the exact cloud intake base',
+                lambda: altered_receipt(lambda data: data.__setitem__('cloud_intake_base', '0' * 40)))
+        refuses('Refuses substituting the exact cloud intake base tree',
+                lambda: altered_receipt(lambda data: data.__setitem__('cloud_intake_base_tree', '0' * 40)))
+        refuses('Refuses substituting the exact cloud intake source',
+                lambda: altered_receipt(lambda data: data.__setitem__('cloud_intake_source', '0' * 40)))
+        refuses('Refuses substituting the exact cloud intake source tree',
+                lambda: altered_receipt(lambda data: data.__setitem__('cloud_intake_source_tree', '0' * 40)))
+        refuses('Refuses an omitted cloud intake source path',
+                lambda: altered_receipt(lambda data: data['cloud_intake_source_paths'].remove(cloud_addition)))
+        refuses('Refuses an expanded cloud intake source path set',
+                lambda: altered_receipt(lambda data: data['cloud_intake_source_paths'].append(
+                    'tests/unreviewed-cloud-intake.php')))
+        refuses('Refuses an omitted cloud intake addition admission',
+                lambda: altered_receipt(lambda data: data['cloud_intake_additions'].pop(cloud_addition)))
+        refuses('Refuses a cloud intake addition overlapping an integration repair',
+                lambda: altered_receipt(lambda data: data['cloud_intake_additions'].__setitem__(
+                    '.github/workflows/application-tests.yml',
+                    {'sha256': proof.digest(proof.ordinary(fixture, '.github/workflows/application-tests.yml')),
+                     'mode': '100644'})))
+        refuses('Refuses a substituted cloud intake addition hash',
+                lambda: altered_receipt(lambda data: data['cloud_intake_additions'][cloud_addition].__setitem__(
+                    'sha256', '0' * 64)))
+
+        def forged_cloud_addition_and_receipt():
+            addition = fixture / cloud_addition
+            receipt = fixture / proof.RECEIPT
+            old_addition, old_receipt = addition.read_bytes(), receipt.read_bytes()
+            try:
+                addition.write_bytes(old_addition + b'\n# forged cloud intake source\n')
+                data = json.loads(old_receipt)
+                data['cloud_intake_additions'][cloud_addition]['sha256'] = proof.digest(addition.read_bytes())
+                receipt.write_text(json.dumps(data))
+                proof.verify_current(fixture)
+            finally:
+                addition.write_bytes(old_addition)
+                receipt.write_bytes(old_receipt)
+
+        refuses('Refuses simultaneous cloud intake source and receipt-hash substitution',
+                forged_cloud_addition_and_receipt)
+
+        def altered_cloud_hydration_identity():
+            original = proof.CLOUD_INTAKE_SOURCE_TREE
+            try:
+                proof.CLOUD_INTAKE_SOURCE_TREE = '0' * 40
+                proof.hydration_origin(fixture, proof.git(fixture, 'rev-parse', 'HEAD').decode().strip())
+            finally:
+                proof.CLOUD_INTAKE_SOURCE_TREE = original
+
+        refuses('Refuses altered cloud intake identity in the authorized hydration history',
+                altered_cloud_hydration_identity)
+
         source = fixture / 'tests/software_authority_provenance.py'
         cached = Path(importlib.util.cache_from_source(str(source)))
         py_compile.compile(str(source), cfile=str(cached), doraise=True)
@@ -573,6 +645,7 @@ def shallow_acceptance(root=ROOT):
         subprocess.run(['git', 'clone', '--quiet', '--depth', '1', '--no-tags', root.as_uri(), str(fixture)], check=True)
         for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
                      | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
+                     | proof.CLOUD_INTAKE_ADDITIONS
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         'tools/acceptance-contract.json'}):
             target = fixture / path
@@ -629,6 +702,14 @@ def shallow_acceptance(root=ROOT):
               == proof.DATABASE_WORKFLOW_BASE_TREE
               and proof.git(fixture, 'rev-parse', proof.DATABASE_WORKFLOW_SOURCE + '^{tree}').decode().strip()
               == proof.DATABASE_WORKFLOW_SOURCE_TREE)
+        proof.git(fixture, 'merge-base', '--is-ancestor', proof.CLOUD_INTAKE_BASE,
+                  proof.CLOUD_INTAKE_SOURCE)
+        proof.git(fixture, 'merge-base', '--is-ancestor', proof.CLOUD_INTAKE_SOURCE, 'HEAD')
+        check('The exact cloud intake base and source are hydrated as required current ancestry',
+              proof.git(fixture, 'rev-parse', proof.CLOUD_INTAKE_BASE + '^{tree}').decode().strip()
+              == proof.CLOUD_INTAKE_BASE_TREE
+              and proof.git(fixture, 'rev-parse', proof.CLOUD_INTAKE_SOURCE + '^{tree}').decode().strip()
+              == proof.CLOUD_INTAKE_SOURCE_TREE)
         check('A later source check performs no duplicate history fetch', proof.ensure_history(fixture) == {'performed': False})
 
         # A second genuine shallow clone proves the local test transport is not

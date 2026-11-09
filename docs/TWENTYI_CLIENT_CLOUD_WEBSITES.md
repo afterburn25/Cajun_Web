@@ -1,6 +1,22 @@
 # Client cloud website requests
 
-## Implementation checkpoint — 2026-10-18
+## Current successor — local intake independent of recent inventory
+
+Branch `codex/issue343-cloud-intake-feature-20261109` starts from exact main `47425290d1f69ba312b59ae888c9390772391966`, tree `cc1deebbf6ce4e75006b48c4fca906e5006bd023`. It ports the reviewed feature-local implementation and tests from historical [PR343](https://github.com/afterburn25/Cajun_Web/pull/343), exact donor `9449c46f725d03b032473e8ed786938776507d3a`. Shared routing, authorization, schema, acceptance wiring, source proof and release files remain integration-lead work and are intentionally absent from this slice.
+
+The sixteen-field request binding retains its existing format. Its eleven assignment fields describe current local authority; its five observation fields come from that exact assignment's original authenticated anchor. Before every owner creation, the unchanged fresh-read function still requires the newest complete observation and matches the same assignment fields. New client context therefore survives later healthy reads without granting authority to send against stale or missing provider information.
+
+Already saved requests keep their complete original binding and context, including an observation newer than the assignment anchor. Exact replay uses those stored bytes. An unsubmitted old form with a different context must reload through the existing value-preserving error path. No fallback context, history rewrite or automatic approval is added.
+
+Local portable evidence on Windows PHP 8.3.36 is 177 extracted-production-body intake checks, 101 modeled UI checks and 141 document checks in each default and `php -n` mode. This PHP installation loads no `php.ini`, so the two invocations are command variants rather than independent packaged environments. Persistence and full-history readiness are modeled in the portable intake test; these results are not SQL, elapsed-time or browser acceptance.
+
+The native fixture covers real failed/unavailable and unfinished observations, a complete observation that omits the server, exact event/audit/head-only local intake, and unchanged owner refusal. Its optional expiry probe measures over 901 real monotonic seconds, proves both original and latest observations are older than 900 seconds, and records whether it ran. It does not alter clocks or authenticated timestamps. The native fixture deliberately refuses Windows; supported disposable Linux database execution, including genuine expiry where enabled, remains required.
+
+The packaged browser continuation remains synthetic with respect to provider calls. It adds one genuine failed cloud refresh, two local requests from its existing three-request journey, refusal of the actual previously usable owner form, then a genuine fresh read before original approval and captures. It adds no request quota reset. Installed browser execution and visual inspection remain integration gates.
+
+PHP syntax for every changed PHP file and Python parsing for the browser continuation pass locally. Native SQL/concurrency, genuine elapsed-age execution, packaged HTTP/Chromium with inspected pixels, integration-owned acceptance wiring and source proof, installed update/rollback/reapply, combined exact-main acceptance and publication are still required. This branch does not imply that the historical PR or wider 20i roadmap passed those gates. No live provider operation, deployment or publication occurred.
+
+## Earlier implementation checkpoint — 2026-10-18
 
 Branch `codex/twentyi-client-cloud-websites` starts at main `e397d9a6e293850e8dff61a593e3ba39ee178400`. It adds the client-to-owner journey for creating a website on an existing, explicitly assigned cloud server. This is an unreleased implementation. Published 1.25.0 remains immutable; no live provider operation or deployment occurred.
 
@@ -8,11 +24,11 @@ The owner requested a complete client portal. Clients can submit exact primary/a
 
 This uses the existing `CloudWebsiteCreate` contract. It does not purchase a cloud server, register a domain, invent a price, trigger payment, send mail, prove website health, or provide SSH. Existing direct owner creation remains supported.
 
-## Use and current limitation
+## Use and current authority
 
 An owner prepares **Client website requests** in 20i settings after existing inventory, operation, client and administrator storage is ready. GET requests never create tables. Clients open **Cloud website requests** from Hosting services. An active primary client session and the exact current server assignment are required; support and contact-context sessions cannot submit decisions.
 
-Intake currently requires an authenticated complete cloud inventory observation from the last 15 minutes. A newer failed or unfinished read also prevents submission. The page asks the client to contact the studio for a refresh when no eligible server is available. Owner dispatch separately requires a fresh observation and current owner password. Static protected intake without this freshness dependency remains a future usability improvement, not implemented behavior.
+New requests now use the exact original signed assignment anchor and current client, original approving owner, provider profile, credential revision and assignment authority. The full retained history must authenticate. A healthy newer failed, unfinished, old or complete server-omitting observation does not prevent local submission; the request makes no claim of current provider availability. Owner dispatch still requires the latest complete cloud observation within 15 minutes and the current owner password. Missing or corrupt history, revoked authority or a changed assignment still refuses intake. Legacy adopted assignments need an explicit owner reapproval.
 
 Domains are not trimmed, lowercased or truncated. The existing maximum of 20 distinct aliases applies. Intake sizes the complete future approval document against its existing 4,096-byte limit, so a valid but oversized domain list is rejected before saving an unfulfillable request. A client may make at most ten requests per 24 hours; the HTTP controller also limits repeated submissions. Overlapping pending or unresolved client requests are refused, and the existing shared operation still checks every prior cloud creation before dispatch.
 

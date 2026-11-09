@@ -10,26 +10,32 @@ source=Path(__file__).with_name('cloud_assignment_fixture.py').read_text()
 node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef) and n.name=='age_unprotected_refreshes')
 conn=sqlite3.connect(':memory:');conn.row_factory=sqlite3.Row
 conn.execute('CREATE TABLE ci_provider_refreshes(id TEXT,profile_id TEXT,operation TEXT,started_epoch INTEGER,seq INTEGER)')
+conn.execute('CREATE TABLE ci_provider_cloud_confirmations(refresh_id TEXT)')
 checks=[];sleeps=[]
 class Clock:
     @staticmethod
     def time():return 1000
     @staticmethod
     def sleep(value):sleeps.append(value)
-def db(sql,args=()):return [dict(r) for r in conn.execute(sql,args).fetchall()]
+def db(sql,args=()):
+    if sql == "SHOW TABLES LIKE 'ci_provider_cloud_confirmations'":
+        return [{'table': 'ci_provider_cloud_confirmations'}]
+    return [dict(r) for r in conn.execute(sql,args).fetchall()]
 scope={'db':db,'time':Clock};exec(compile(ast.Module(body=[node],type_ignores=[]),'<actual-fixture-helper>','exec'),scope)
 age=scope['age_unprotected_refreshes']
 def check(name,ok):
     checks.append({'name':name,'passed':ok})
     if not ok:raise AssertionError(name)
 def seed():
-    conn.execute('DELETE FROM ci_provider_refreshes');sleeps.clear()
+    conn.execute('DELETE FROM ci_provider_refreshes');conn.execute('DELETE FROM ci_provider_cloud_confirmations');sleeps.clear()
     conn.executemany('INSERT INTO ci_provider_refreshes VALUES (?,?,?,?,?)',[('cloud-a','a','cloudservers.list',990,1),('package-a','a','packages.list',999,2),('legacy-a','a',None,998,3),('cloud-b','b','cloudservers.list',995,4),('package-b','b','packages.list',997,5)])
 try:
-    seed();before=db('SELECT * FROM ci_provider_refreshes WHERE operation=? ORDER BY seq',['cloudservers.list']);age(120)
+    seed();conn.execute('INSERT INTO ci_provider_cloud_confirmations VALUES (?)',['package-a'])
+    before=db('SELECT * FROM ci_provider_refreshes WHERE operation=? ORDER BY seq',['cloudservers.list']);confirmed=db('SELECT * FROM ci_provider_refreshes WHERE id=?',['package-a']);age(120)
     check('Actual aging SQL preserves all cloud source bytes',db('SELECT * FROM ci_provider_refreshes WHERE operation=? ORDER BY seq',['cloudservers.list'])==before)
-    check('Actual aging SQL still ages only unrelated and legacy reads',db('SELECT started_epoch FROM ci_provider_refreshes WHERE id IN (?,?) ORDER BY id',['package-a','legacy-a'])==[{'started_epoch':878},{'started_epoch':879}])
-    check('Preserved newest cloud read imposes actual remaining cooldown',sleeps==[26])
+    check('Actual aging SQL preserves confirmation-referenced refresh bytes',db('SELECT * FROM ci_provider_refreshes WHERE id=?',['package-a'])==confirmed)
+    check('Actual aging SQL still ages unrelated and legacy reads',db('SELECT started_epoch FROM ci_provider_refreshes WHERE id IN (?,?) ORDER BY id',['legacy-a','package-b'])==[{'started_epoch':878},{'started_epoch':877}])
+    check('Preserved newest evidence imposes actual remaining cooldown',sleeps==[30])
     seed();other=db('SELECT * FROM ci_provider_refreshes WHERE profile_id=? ORDER BY seq',['b']);age(60,'a')
     check('Profile-scoped aging never changes another profile',db('SELECT * FROM ci_provider_refreshes WHERE profile_id=? ORDER BY seq',['b'])==other)
     check('Profile-scoped cooldown is derived only from selected profile',sleeps==[21])
@@ -48,8 +54,21 @@ try:
         return result
     scope['db']=corrupt;refused=False
     try:age(120)
-    except AssertionError as e:refused=str(e)=='Fixture changed retained cloud intent bytes'
+    except AssertionError as e:refused=str(e)=='Fixture changed retained provider evidence bytes'
     check('Actual before-after guard detects unintended protected mutation',changed and refused and sleeps==[])
+    scope['db']=original_db
+    seed();conn.execute('INSERT INTO ci_provider_cloud_confirmations VALUES (?)',['package-a']);original_db=scope['db'];changed=False
+    def corrupt_confirmation(sql,args=()):
+        global changed
+        result=original_db(sql,args)
+        if sql.startswith('UPDATE'):
+            conn.execute('UPDATE ci_provider_refreshes SET started_epoch=989 WHERE id=?',['package-a']);changed=True
+        return result
+    scope['db']=corrupt_confirmation;refused=False
+    try:age(120)
+    except AssertionError as e:refused=str(e)=='Fixture changed retained provider evidence bytes'
+    check('Actual before-after guard detects unintended confirmation-source mutation',changed and refused and sleeps==[])
+    scope['db']=original_db
     # Execute the exact literal INSERTs with the documented field sequence. This
     # checks SQL binding arity before expensive native jobs; SQLite does not prove
     # the real MySQL schema, transaction, authorization or HMAC behavior.
