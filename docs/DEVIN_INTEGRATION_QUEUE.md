@@ -1,3 +1,5 @@
+> **Current queue:** issue #157 is authoritative; UX-09, then UX-08, then REL-01/1.27.0. The Codex override at the end of this retained record supersedes historical ownership and P2 ordering.
+
 ## 2026-11-06 12:50 UTC — PR #367 managed-media serving proof successor
 
 The exact c074 analysis is complete: 0 bugs, 0 vulnerabilities, the prior bug and flag resolved, and one new applicable flag because a static SVG proved only that a thumbnail element existed. The local successor is test-only and executes the shipping managed-media server over loopback with a guarded PNG, an exact media row, HTTP 200 and successful browser decoding.
@@ -387,3 +389,6 @@ Each needs its own hosted green at exact head before any merge; contract re-anch
 - PR261 should-fix #2: `provider_operation_revoke` lacks a `consumed_key IS NULL` guard — a crafted owner POST could revoke a consumed template grant. Consider refusing revocation of consumed grants.
 
 Group A slice detail (25 merged slices A1–A25) remains recorded in the FSI copy of this file at branch `devin/full-site-integration`.
+# Current Codex master-queue override — 2026-11-09
+
+Issue #157 is authoritative. Codex currently owns all integration work. PR #383 is merged and verified on resulting main `4d10251e4f9c7ad85f42a5b49c3c23344057d66e`. The only active implementation priority is UX-09 public customer identity, followed by UX-08 Shared/VPS storefront/checkout/payment/fulfillment, then REL-01 and 1.27.0 qualification. PRs #344, #345, #347, #348 and all other P2/provider backlog integrations are paused until that sequence is complete. Historical queue rows below remain evidence, not current ownership or ordering.

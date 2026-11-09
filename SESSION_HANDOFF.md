@@ -1,3 +1,5 @@
+> **Current handoff:** UX-09 public customer identity is the only active implementation priority. See the detailed 2026-11-09 handoff at the end of this retained chronological record.
+
 ## 2026-11-06 12:50 UTC — managed-image serving proof pending publication
 
 PR #367 head `c074d0c2983aa1d6b01c45c97260c137bf29549c` is now a preserved predecessor. Authenticated Devin analysis resolved the prior missing-file bug and positive-readiness flag, reported 0 bugs and 0 vulnerabilities, then correctly identified that the positive thumbnail URL was a static SVG rather than a request through the managed-media server. Do not merge or count c074's running workflows as successor acceptance.
@@ -769,3 +771,12 @@ Coordinator review correction landed on `devin/non20i-backups-foundation` (`66fe
 3. No production deploy or live payment processing; only authorized sandbox/isolated fixtures are within this acceptance scope.
 
 ---
+## 2026-11-09 — active handoff: UX-09 public customer identity
+
+PR #383 is complete and verified on resulting main `4d10251e4f9c7ad85f42a5b49c3c23344057d66e` (tree `54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2`). Preserve its qualified head `f9f9d1452d63ebe873b520629be1cce95f84f409`, merge evidence, issue #157 record and all historical failures. Do not resume older provider/P2 integrations.
+
+Continue only from `D:\Development\Codex\Cajun_Web_Pro\ux09-public-identity`, branch `codex/ux09-public-identity-20261109`. Implementation commit `6000fb349136956dadc2e66ab47b779ad920accc` and proof commit `e17b0652` are local coherent checkpoints. Six new files and 17 modified files are bound to exact resulting main by `docs/UX09_PUBLIC_IDENTITY_SOURCE.json`; the source verifier validates full ancestry, path/status sets, every base/source blob and current byte/mode, predecessor projection and mutation refusals.
+
+The lifecycle is: public name/email registration creates an active but passwordless pending identity; captured local mail supplies a purpose-bound HMAC verification token; GET is non-consuming; CSRF POST lets the mailbox owner choose the first password, rotates auth, deletes tokens, starts the primary session and resumes only the closed offer descriptor. Resend replaces the token; expiry/replay fail closed. Recovery is enumeration-neutral for unknown/contact/pending/invited/ambiguous identities, rotates password/auth, clears invitations/tokens and does not auto-login. Registration, resend and recovery mail occur only after commit; failed delivery compare-clears the exact issued digest. No commercial, provider or fulfillment write is in the identity service.
+
+Next: push the branch, open the UX-09 PR, run exact-head Application and all naturally triggered checks, inspect native/browser reports and `Client-Identity-{Verification,Recovery}-{Desktop,Mobile}.png`, fix without weakening tests, obtain exact-head security/privacy review, merge normally, and verify resulting main. Then immediately implement UX-08 Shared/VPS storefront, checkout/payment, gateway evidence and fulfillment. Complete REL-01 and qualify 1.27.0 afterward. Publication, live payments, paid provisioning, customer messages, live SSH/support, destructive production changes and production deployment remain behind explicit authorization.

@@ -1,3 +1,5 @@
+> **Current ownership:** Codex owns all 20i and non-20i work under the 2026-11-09 owner override recorded below. Historical Devin assignments are superseded.
+
 ## 2026-11-02 — FK fixture rule follow-up
 
 The isolated FK metadata worker preserved c2f and local 15b81, changed only the shared native helper, and completed the approved 172-check supplement in fresh fkrule_ tables on owned 33316. The server is stopped; prior namespaces and all other workers’ runtimes are untouched. Root owns publication, matrix monitoring and outer composition. [Current source, evidence and next gates](FK_METADATA_QUERY_CHECKPOINT_20261102.md).
@@ -43,3 +45,10 @@ Publish through [RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md): exact combined revie
 Keep status, handoff, roadmap, changelog, decisions, session log, release register and the fixed requirements tracker current. Implemented, tested, integrated, released and live-verified are separate states. Historical approximate chat percentages are not acceptance evidence.
 
 [Previous complete coordination history](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/docs/AGENT_COORDINATION.md) preserves all old assignments, sources and queue receipts. Their results are retained; only the superseded allocation/priority instructions are replaced here.
+# Current owner override — 2026-11-09
+
+Codex owns all CajunWebPro 20i and non-20i implementation, integration, review coordination and release preparation until the owner changes this assignment. This supersedes the historical Devin-only allocation below without discarding its useful evidence or safety requirements.
+
+The enforced sequence is: qualify and merge UX-09 public customer identity; verify resulting main; implement and merge UX-08 Shared/VPS storefront, checkout/payment, gateway evidence and fulfillment; verify resulting main; then complete REL-01 and qualify 1.27.0. Do not begin #344, #345, #347, #348 or other P2 backlog integrations before those three priorities are complete. Use issue #157 as the master queue and PR #340 as the coordinator marker; respect any newer active coordinator.
+
+Use one integration lead and at most three bounded parallel tasks with separate files/branches. Shared routing, authorization, schema, billing, source-proof and release changes remain integration-lead owned. Preserve the explicit boundaries on live payments, paid provisioning, customer messages, destructive production changes, live SSH/support access, publication and production deployment.
