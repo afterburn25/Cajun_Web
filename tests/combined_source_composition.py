@@ -238,6 +238,39 @@ CLOUD_INTAKE_CI_EDIT_COUNTS = {
     'tests/provider_cloud_site_requests_cases.py': 10,
     'tools/acceptance-contract.json': 22,
 }
+UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
+UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
+UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
+UX09_SOURCE = '6000fb349136956dadc2e66ab47b779ad920accc'
+UX09_SOURCE_TREE = 'd570271ba597e7c6286b8cb1afbb538598f13899'
+UX09_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'site/app/clients/accounts.php',
+    'site/app/clients/identity.php',
+    'site/app/settings/database_schemas.php',
+    'site/database/schema/base.php',
+    'site/install/actions/deploy.php',
+    'site/install/inventory.generated.php',
+    'site/portal/controllers/actions.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/auth.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/browser_acceptance.py',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/database_update_cases.py',
+    'tools/acceptance-contract.json',
+    'tools/acceptance-reports.json',
+))
+UX09_ADDITIONS = frozenset((
+    'site/app/clients/public_identity.php',
+    'site/database/migrations/client_identity_migrate.php',
+    'site/database/schema/client_identity_schema.php',
+    'tests/client_identity_cases.py',
+    'tests/client_identity_native.php',
+    'tests/client_identity_policy.php',
+))
+UX09_SOURCE_PATHS = UX09_MODIFIED | UX09_ADDITIONS
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
     '.github/workflows/rc126-test-package.yml',
@@ -413,7 +446,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'e11251696b493912e28380ba3fdb28238644d9f22caaee45dcd87c25df4989de'
+REGRESSION_SHA256 = '2cfd5791ce838722753f6601db2db78e4ae36442a99e73fb66fa3d0dbfe399b0'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -609,6 +642,8 @@ def hydration_origin(root, head):
         (DATABASE_WORKFLOW_SOURCE, DATABASE_WORKFLOW_SOURCE_TREE, 'database workflow source'),
         (CLOUD_INTAKE_BASE, CLOUD_INTAKE_BASE_TREE, 'cloud intake base'),
         (CLOUD_INTAKE_SOURCE, CLOUD_INTAKE_SOURCE_TREE, 'cloud intake source'),
+        (UX09_BASE, UX09_BASE_TREE, 'UX-09 base'),
+        (UX09_SOURCE, UX09_SOURCE_TREE, 'UX-09 source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -832,6 +867,65 @@ def validate_receipt(data, verifier):
     return data
 
 
+def validate_ux09_source(root):
+    """Bind the complete UX-09 base-to-source range and its current bytes."""
+    data = json.loads(ordinary(root, UX09_SOURCE_RECEIPT))
+    require(isinstance(data, dict) and set(data) == {
+        'schema', 'base_commit', 'base_tree', 'source_commit', 'source_tree',
+        'modified', 'added', 'scope'}, 'Unexpected UX-09 source receipt fields')
+    require(data['schema'] == 1 and data['base_commit'] == UX09_BASE
+            and data['base_tree'] == UX09_BASE_TREE and data['source_commit'] == UX09_SOURCE
+            and data['source_tree'] == UX09_SOURCE_TREE and isinstance(data['scope'], str)
+            and bool(data['scope']), 'Unreviewed UX-09 source identity')
+    require(set(data['modified']) == UX09_MODIFIED and set(data['added']) == UX09_ADDITIONS,
+            'Unreviewed UX-09 source path set')
+    require(git(root, 'rev-parse', UX09_BASE + '^{tree}').decode().strip() == UX09_BASE_TREE
+            and git(root, 'rev-parse', UX09_SOURCE + '^{tree}').decode().strip() == UX09_SOURCE_TREE,
+            'UX-09 source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_BASE, UX09_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames', UX09_BASE, UX09_SOURCE).decode().splitlines()
+    require(len(changes) == len(UX09_SOURCE_PATHS), 'UX-09 source change count differs')
+    observed_modified = {line.split('\t', 1)[1] for line in changes if line.startswith('M\t')}
+    observed_added = {line.split('\t', 1)[1] for line in changes if line.startswith('A\t')}
+    require(observed_modified == UX09_MODIFIED and observed_added == UX09_ADDITIONS,
+            'UX-09 source changed a different path or status set')
+    base_entries = entries(root, UX09_BASE);source_entries = entries(root, UX09_SOURCE)
+    require(not UX09_ADDITIONS & set(base_entries) and UX09_ADDITIONS <= set(source_entries),
+            'UX-09 additions did not originate in the exact source range')
+    for path in sorted(UX09_MODIFIED):
+        row = data['modified'][path]
+        before = git(root, 'cat-file', 'blob', UX09_BASE + ':' + path)
+        current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
+        require(isinstance(row, dict) and set(row) == {'base_sha256', 'source_sha256', 'mode'}
+                and row['base_sha256'] == digest(before)
+                and row['source_sha256'] == digest(current)
+                and row['mode'] == base_entries[path][0] == source_entries[path][0] == '100644'
+                and ordinary(root, path) == current and mode(root, path) == row['mode'],
+                'UX-09 modified source identity changed: ' + path)
+    for path in sorted(UX09_ADDITIONS):
+        row = data['added'][path];current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
+        require(isinstance(row, dict) and set(row) == {'source_sha256', 'mode'}
+                and row['source_sha256'] == digest(current)
+                and row['mode'] == source_entries[path][0] == '100644'
+                and ordinary(root, path) == current and mode(root, path) == row['mode'],
+                'UX-09 addition source identity changed: ' + path)
+    return data
+
+
+def project_ux09(root, data, path, current):
+    """Restore the resulting-main predecessor only for older source proofs."""
+    if path not in UX09_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
+    require(current == source and digest(current) == data['modified'][path]['source_sha256'],
+            'Current UX-09 source changed before predecessor projection: ' + path)
+    before = git(root, 'cat-file', 'blob', UX09_BASE + ':' + path)
+    require(digest(before) == data['modified'][path]['base_sha256'],
+            'UX-09 predecessor identity changed: ' + path)
+    return before
+
+
 def reconstruct_adapter(data, path, current):
     require(path in ADAPTERS, 'Unknown comparison adapter')
     row = data['adapters'][path]
@@ -1012,6 +1106,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    ux09 = validate_ux09_source(root)
     onboarding = json.loads(ordinary(root, ONBOARDING_SOURCE))
     require(onboarding.get('schema') == 1 and onboarding.get('base_commit') == ONBOARDING_BASE
             and onboarding.get('base_tree') == ONBOARDING_BASE_TREE,
@@ -1050,6 +1145,12 @@ def verify_current(root):
                                           | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
                                           | NARRATIVES | {INVENTORY, RECEIPT, VERIFIER, REGRESSION}),
             'Cloud intake additions cannot replace existing admitted source or proof files')
+    require(not UX09_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
+                                  | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
+                                  | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
+                                  | CLOUD_INTAKE_ADDITIONS | NARRATIVES
+                                  | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, UX09_SOURCE_RECEIPT}),
+            'UX-09 additions cannot replace existing admitted source or proof files')
     require(CLOUD_INTAKE_SOURCE_NARRATIVES <= NARRATIVES,
             'Cloud intake source narratives must remain non-executable exceptions')
     require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
@@ -1108,7 +1209,7 @@ def verify_current(root):
             and CLOUD_INTAKE_ADDITIONS <= set(cloud_source_entries),
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
-        value = ordinary(root, path)
+        value = project_ux09(root, ux09, path, ordinary(root, path))
         if path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS:
             value = reconstruct_cloud_intake_ci_successor(data, path, value)
         if path in CLOUD_INTAKE_REPAIRS:
@@ -1140,7 +1241,7 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = ordinary(root, path)
+        value = project_ux09(root, ux09, path, ordinary(root, path))
         if path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS:
             value = reconstruct_cloud_intake_ci_successor(data, path, value)
         if path == INVENTORY:
@@ -1155,19 +1256,21 @@ def verify_current(root):
                 and mode(root, path) == database_source_entries[path][0],
                 'Current database workflow bytes or mode differ from exact source: ' + path)
     for path in sorted(DATABASE_WORKFLOW_ADDITIONS):
-        value = ordinary(root, path)
+        value = project_ux09(root, ux09, path, ordinary(root, path))
         row = data['database_workflow_additions'][path]
         require(digest(value) == row['sha256'] == DATABASE_WORKFLOW_ADDITION_SHA256[path]
                 and row['mode'] == database_source_entries[path][0] == '100644',
                 'Database workflow addition bytes or mode changed: ' + path)
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
-               | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE})
+               | UX09_ADDITIONS
+               | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
+                  UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = ordinary(root, path)
+        value = project_ux09(root, ux09, path, ordinary(root, path))
         if path in ONBOARDING_MODIFIED:
             row = onboarding['modified'][path]
             before = git(root, 'cat-file', 'blob', ONBOARDING_BASE + ':' + path)
@@ -1225,6 +1328,7 @@ def verify_current(root):
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
+        {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},

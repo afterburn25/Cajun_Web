@@ -39,10 +39,11 @@ def run(root=ROOT):
         # Copy only their finite reviewed bytes into the disposable checkout.
         for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
                      | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
-                     | proof.CLOUD_INTAKE_ADDITIONS
+                     | proof.CLOUD_INTAKE_ADDITIONS | proof.UX09_MODIFIED | proof.UX09_ADDITIONS
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
-                        proof.ONBOARDING_SOURCE, 'tools/acceptance-contract.json'}):
+                        proof.ONBOARDING_SOURCE, proof.UX09_SOURCE_RECEIPT,
+                        'tools/acceptance-contract.json'}):
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(proof.ordinary(root, path))
@@ -101,6 +102,30 @@ def run(root=ROOT):
 
         refuses('Refuses an untracked additional source file', lambda: addition('tests/unreviewed_composition.py'))
         refuses('Refuses a hidden additional shipping file', lambda: addition('site/.unreviewed-composition.php'))
+
+        for path in sorted(proof.UX09_ADDITIONS):
+            refuses('Refuses altered exact UX-09 addition ' + path,
+                    lambda path=path: modified(
+                        path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed UX-09 source\n')))
+            refuses('Refuses missing exact UX-09 addition ' + path,
+                    lambda path=path: modified(path, lambda target: target.unlink()))
+        refuses('Refuses altered exact UX-09 shipping integration',
+                lambda: modified('site/app/clients/accounts.php',
+                                 lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed identity authority\n')))
+
+        def altered_ux09_receipt(change):
+            def rewrite(target):
+                data = json.loads(target.read_bytes())
+                change(data)
+                target.write_text(json.dumps(data))
+            modified(proof.UX09_SOURCE_RECEIPT, rewrite)
+
+        refuses('Refuses substituting the UX-09 resulting-main base',
+                lambda: altered_ux09_receipt(lambda data: data.__setitem__('base_commit', '0' * 40)))
+        refuses('Refuses substituting the UX-09 implementation source',
+                lambda: altered_ux09_receipt(lambda data: data.__setitem__('source_commit', '0' * 40)))
+        refuses('Refuses omitting an exact UX-09 addition admission',
+                lambda: altered_ux09_receipt(lambda data: data['added'].pop('site/app/clients/public_identity.php')))
 
         def altered_receipt(change):
             def rewrite(target):
