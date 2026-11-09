@@ -27,6 +27,7 @@ function studio_client_save(int $id,string $expected,string $name,string $email,
             if(!$client)throw new InvalidArgumentException('Client not found.');
             studio_client_version($client,$expected);
             query('UPDATE '.table('studio_clients').' SET name=?,email=?,active=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$name,$email,(int)$active,bin2hex(random_bytes(16)),$id]);
+            if(setting('client_identity_schema_version')==='1')query('UPDATE '.table('studio_client_registrations').' SET email_fingerprint=? WHERE client_id=?',[hash_hmac('sha256','client-email-v1|'.$email,config()['key']),$id]);
         }else{
             if($expected!=='')throw new InvalidArgumentException('A new client cannot carry a saved account version.');
             query('INSERT INTO '.table('studio_clients').' (name,email,active,auth_version,created_at) VALUES (?,?,?,?,?)',[$name,$email,(int)$active,bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);$id=(int)db()->lastInsertId();
@@ -39,6 +40,7 @@ function studio_new_invite(int $id,string $expected):string {
         $actor=studio_client_manager();
         $client=one('SELECT id,active,auth_version FROM '.table('studio_clients').' WHERE id=? FOR UPDATE',[$id]);
         if(!$client || (int)$client['active']!==1)throw new InvalidArgumentException('Active client not found.');
+        if(setting('client_identity_schema_version')==='1'&&one('SELECT client_id FROM '.table('studio_client_registrations').' WHERE client_id=? AND verified_at IS NULL FOR UPDATE',[$id]))throw new InvalidArgumentException('This public account is awaiting email verification. Use the resend workflow instead of an invitation.');
         studio_client_version($client,$expected);$token=bin2hex(random_bytes(32));
         query('UPDATE '.table('studio_clients').' SET invite_hash=?,invite_expires=?,auth_version=? WHERE id=?',[hash('sha256',$token),time()+86400,bin2hex(random_bytes(16)),$id]);
         studio_client_audit((int)$actor['id'],'studio_invite',$id);return studio_url(['invite'=>$token]);

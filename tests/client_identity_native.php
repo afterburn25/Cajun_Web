@@ -1,0 +1,78 @@
+<?php
+/** Disposable native UX-09 identity lifecycle; synthetic mail-disabled fixtures only. */
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+define('CWP_BOOT',true);
+require __DIR__.'/../site/includes/bootstrap.php';
+require __DIR__.'/../site/database/schema/base.php';
+require_once __DIR__.'/../site/app/clients/workspace.php';
+require_once __DIR__.'/../site/database/migrations/client_identity_migrate.php';
+$private=__DIR__.'/../test-runtime/client-identity-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-identity-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:3306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'cidi_']];
+$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET','DOCUMENT_ROOT'=>realpath(__DIR__.'/../site')];start_session();
+$checks=[];$created=[];$password='Synthetic public client passphrase 2026';$replacement='Replacement public client passphrase 2026';
+function ci_native_ok(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
+function ci_native_deny(string $name,callable $operation):void{try{$operation();}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;ci_native_ok($name,true);return;}ci_native_ok($name,false);}
+function ci_native_actor():void{$u=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time(),'csrf'=>bin2hex(random_bytes(32))];}
+function ci_native_issue(array $client,string $purpose,array $destination=[],int $lifetime=3600):array{return staff_locked(fn()=>staff_transaction(fn()=>client_identity_issue_token($client,$purpose,$destination,$lifetime)));}
+function ci_native_commercial():string{$state=[];foreach(['studio_jobs','studio_invoices','payment_requests','service_orders','service_subscriptions','hosting_checkout_reviews','hosting_checkout_results','provider_operations','website_licenses'] as $name)$state[$name]=(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();return json_encode($state);}
+function ci_native_audit_failure(callable $operation):bool{db()->exec('CREATE TRIGGER cidi_identity_audit_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic identity audit failure'");try{$operation();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER cidi_identity_audit_fail');}return $failed;}
+try{
+    foreach(schema_statements('cidi_') as $name=>$sql){if(in_array($name,['studio_client_registrations','studio_client_tokens'],true))continue;db()->exec($sql);$created[]=$name;}
+    foreach(default_settings() as $key=>$value)if($key!=='client_identity_schema_version')save_setting($key,$value);
+    save_setting('contacts_schema_version','1');
+    query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Synthetic owner','identity-owner@example.invalid',password_hash('Synthetic owner passphrase 2026',PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);ci_native_actor();
+    client_identity_migrate('');
+    ci_native_ok('Unified migration creates and marks exact additive identity schema',setting('client_identity_schema_version')==='1'&&one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['cidi_studio_client_registrations'])!==null&&one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['cidi_studio_client_tokens'])!==null);
+    foreach(array_keys(client_identity_schema('cidi_')) as $name)client_identity_validate_table($name);
+    ci_native_ok('Migration validates both exact identity tables',true);
+    db()->exec('DROP TABLE '.table('studio_client_tokens'));save_setting('client_identity_schema_version','');client_identity_migrate('');
+    ci_native_ok('Interrupted empty migration retry preserves the first table and recreates only the missing table',setting('client_identity_schema_version')==='1'&&one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['cidi_studio_client_registrations'])!==null&&one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['cidi_studio_client_tokens'])!==null);
+    query('DELETE FROM '.table('audit'));
+    $destination=['hosting'=>'checkout','offer'=>str_repeat('1',32),'offer_sha256'=>str_repeat('2',64)];$commercial=ci_native_commercial();
+    client_identity_register('Synthetic Customer','CUSTOMER@example.invalid',$destination);
+    $client=one('SELECT * FROM '.table('studio_clients').' WHERE email=?',['customer@example.invalid']);$clientId=(int)$client['id'];$registration=one('SELECT * FROM '.table('studio_client_registrations').' WHERE client_id=?',[$clientId]);
+    ci_native_ok('Mail-disabled registration preserves passwordless pending account but compare-clears token',$clientId>0&&$client['password_hash']===''&&$registration['verified_at']===null&&(int)query('SELECT COUNT(*) FROM '.table('studio_client_tokens'))->fetchColumn()===0);
+    ci_native_ok('Registration creates no commercial provider or fulfillment rows',ci_native_commercial()===$commercial);
+    ci_native_ok('Registration audit contains only client identifier',one('SELECT user_id,action,detail FROM '.table('audit').' ORDER BY id DESC LIMIT 1')===['user_id'=>0,'action'=>'client.registered','detail'=>'Client '.$clientId]);
+    ci_native_deny('Pending public account cannot sign in',fn()=>studio_login('customer@example.invalid',$password));
+    ci_native_actor();ci_native_deny('Pending public account cannot be converted to an administrator invitation',fn()=>studio_new_invite($clientId,$client['auth_version']));$_SESSION=[];
+    $beforeClients=(int)query('SELECT COUNT(*) FROM '.table('studio_clients'))->fetchColumn();
+    ci_native_ok('Audit failure rolls registration back atomically',ci_native_audit_failure(fn()=>client_identity_register('Rollback Customer','rollback@example.invalid',[]))&&!one('SELECT id FROM '.table('studio_clients').' WHERE email=?',['rollback@example.invalid'])&&(int)query('SELECT COUNT(*) FROM '.table('studio_clients'))->fetchColumn()===$beforeClients);
+    $issued=ci_native_issue($client,'verify',$destination,86400);$raw=$issued['token'];$beforeToken=one('SELECT * FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId]);
+    ci_native_ok('Verification GET preview is repeatable and non-mutating',client_identity_token_preview('verify',$raw)!==null&&client_identity_token_preview('verify',$raw)!==null&&one('SELECT * FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId])===$beforeToken);
+    ci_native_ok('Purpose-bound digest rejects verification token as recovery',client_identity_token_preview('recover',$raw)===null);
+    query('UPDATE '.table('studio_client_tokens').' SET expires_at=? WHERE client_id=?',[time()-1,$clientId]);ci_native_ok('Expired verification token is refused',client_identity_token_preview('verify',$raw)===null);
+    $replacementToken=ci_native_issue($client,'verify',$destination,86400)['token'];ci_native_ok('Resend replacement invalidates prior token',client_identity_token_preview('verify',$raw)===null&&client_identity_token_preview('verify',$replacementToken)!==null);
+    $_SESSION=[];$resumed=client_identity_verify($replacementToken,$password);$verified=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$clientId]);
+    ci_native_ok('Verification consumes token marks account and establishes regenerated primary session',$resumed===$destination&&(int)one('SELECT verified_at FROM '.table('studio_client_registrations').' WHERE client_id=?',[$clientId])['verified_at']>0&&!one('SELECT token_digest FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId])&&($_SESSION['client_id']??0)===$clientId&&hash_equals($_SESSION['client_auth'],$verified['auth_version']));
+    ci_native_deny('Consumed verification token cannot replay',fn()=>client_identity_verify($replacementToken,$replacement));
+    ci_native_ok('Verification still creates no commercial side effects',ci_native_commercial()===$commercial);
+    $_SESSION=[];studio_login('customer@example.invalid',$password);ci_native_ok('Verified account signs in through ordinary primary session',($_SESSION['client_id']??0)===$clientId&&!isset($_SESSION['contact_id']));
+    $otherVersion=bin2hex(random_bytes(16));query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,active,created_at) VALUES (?,?,?,?,1,?)',['Other Client','other@example.invalid',password_hash($password,PASSWORD_DEFAULT),$otherVersion,gmdate('Y-m-d H:i:s')]);$other=(int)db()->lastInsertId();
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,password_hash,auth_version,permissions,enabled,created_at) VALUES (?,?,?,?,?,\'[]\',0,?)',[$other,'Disabled collision','disabled@example.invalid','',$otherVersion,gmdate('Y-m-d H:i:s')]);
+    $duplicateClients=(int)query('SELECT COUNT(*) FROM '.table('studio_clients'))->fetchColumn();client_identity_register('Collision','disabled@example.invalid',[]);ci_native_ok('Disabled contact reserves the public email namespace without disclosing it',(int)query('SELECT COUNT(*) FROM '.table('studio_clients'))->fetchColumn()===$duplicateClients);
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,password_hash,auth_version,permissions,enabled,created_at) VALUES (?,?,?,?,?,\'[]\',1,?)',[$other,'Historical ambiguity','customer@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
+    $_SESSION=[];ci_native_deny('Historical primary and contact ambiguity fails closed at login',fn()=>studio_login('customer@example.invalid',$password));query('DELETE FROM '.table('studio_contacts').' WHERE email=?',['customer@example.invalid']);
+    $beforeRecovery=(int)query('SELECT COUNT(*) FROM '.table('studio_client_tokens'))->fetchColumn();client_identity_recovery_request('unknown@example.invalid',$destination);client_identity_recovery_request('disabled@example.invalid',$destination);
+    ci_native_ok('Unknown and contact recovery requests remain neutral without tokens',(int)query('SELECT COUNT(*) FROM '.table('studio_client_tokens'))->fetchColumn()===$beforeRecovery);
+    client_identity_recovery_request('customer@example.invalid',$destination);ci_native_ok('Mail-disabled recovery compare-clears only issued token',!one('SELECT token_digest FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId]));
+    $client=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$clientId]);$recovery=ci_native_issue($client,'recover',$destination,3600);$recoveryRow=one('SELECT * FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId]);
+    ci_native_ok('Recovery preview retains exact closed checkout descriptor',client_identity_token_preview('recover',$recovery['token'])['destination']===$destination);
+    $oldVersion=$client['auth_version'];query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$clientId]);ci_native_ok('Auth rotation invalidates outstanding recovery',client_identity_token_preview('recover',$recovery['token'])===null);query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=?',[$oldVersion,$clientId]);
+    $recovery=ci_native_issue($client,'recover',$destination,3600);$before=one('SELECT password_hash,auth_version FROM '.table('studio_clients').' WHERE id=?',[$clientId]);
+    ci_native_ok('Recovery audit failure rolls password token and auth version back',ci_native_audit_failure(fn()=>client_identity_recovery_reset($recovery['token'],$replacement))&&one('SELECT password_hash,auth_version FROM '.table('studio_clients').' WHERE id=?',[$clientId])===$before&&one('SELECT token_digest FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId])!==null);
+    $resumed=client_identity_recovery_reset($recovery['token'],$replacement);$reset=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$clientId]);
+    ci_native_ok('Recovery rotates password and auth version clears invites and all tokens',$resumed===$destination&&password_verify($replacement,$reset['password_hash'])&&!hash_equals($before['auth_version'],$reset['auth_version'])&&$reset['invite_hash']===null&&!one('SELECT token_digest FROM '.table('studio_client_tokens').' WHERE client_id=?',[$clientId]));
+    ci_native_deny('Consumed recovery token cannot replay',fn()=>client_identity_recovery_reset($recovery['token'],$replacement));
+    $_SESSION=[];ci_native_deny('Old password is invalid after recovery',fn()=>studio_login('customer@example.invalid',$password));studio_login('customer@example.invalid',$replacement);ci_native_ok('Replacement password signs in and old auth session version is revoked',($_SESSION['client_id']??0)===$clientId&&!hash_equals($oldVersion,$reset['auth_version']));
+    ci_native_actor();$version=$reset['auth_version'];studio_client_save($clientId,$version,'Synthetic Customer','renamed@example.invalid',true);$renamed=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$clientId]);$metadata=one('SELECT email_fingerprint FROM '.table('studio_client_registrations').' WHERE client_id=?',[$clientId]);
+    ci_native_ok('Reviewed administrator email change rotates auth and updates registration binding',!hash_equals($version,$renamed['auth_version'])&&hash_equals($metadata['email_fingerprint'],client_identity_email_fingerprint('renamed@example.invalid')));
+    save_setting('client_identity_schema_version','');ci_native_deny('Populated unmarked identity storage is never adopted',fn()=>client_identity_migrate(''));save_setting('client_identity_schema_version','1');
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,password_hash,auth_version,permissions,enabled,created_at) VALUES (?,?,?,?,?,\'[]\',0,?)',[$other,'Migration ambiguity','renamed@example.invalid','',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);ci_native_deny('Migration refuses retained cross-table email ambiguity',fn()=>client_identity_migrate(''));query('DELETE FROM '.table('studio_contacts').' WHERE email=?',['renamed@example.invalid']);
+    db()->exec('DROP TABLE '.table('studio_client_tokens'));ci_native_deny('Marked but incomplete identity schema is not silently recreated',fn()=>client_identity_migrate(''));
+}catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
+foreach(array_reverse($created) as $name){try{db()->exec('DROP TABLE IF EXISTS '.table($name));}catch(Throwable){}}
+$ok=!array_filter($checks,fn(array $check):bool=>!$check['passed']);
+file_put_contents(__DIR__.'/../qa/client-identity-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Disposable native SQL with synthetic identities and mail disabled; accepted local capture is exercised by installed browser acceptance. No live messages, payments, provider calls, provisioning, or production access.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+echo ($ok?'PASS':'FAIL').': '.count($checks).' native public identity checks'.PHP_EOL;exit($ok?0:1);

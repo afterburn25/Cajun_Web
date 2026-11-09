@@ -10,6 +10,32 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
    if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='public_register'){
+  if($client||$identityRoute!=='register')throw new RuntimeException('Open the create-account page before submitting.');
+  $destination=client_identity_destination($_GET);client_identity_register(posted('name',120),posted('email',190),$destination);
+  flash('If that address can be registered, a verification link has been sent. Open it to choose your password.');
+  redirect(studio_url(['resend'=>1]+$destination));
+ }
+ elseif($action==='public_verify'){
+  if($client||$identityRoute!=='verify')throw new RuntimeException('Open the verification link before submitting.');
+  $password=posted('password',72);if(!hash_equals($password,posted('confirm_password',72)))throw new InvalidArgumentException('Passwords do not match.');
+  $destination=client_identity_verify($identityToken,$password);flash('Your email is verified and your client account is ready.');redirect(studio_url($destination));
+ }
+ elseif($action==='public_resend'){
+  if($client||$identityRoute!=='resend')throw new RuntimeException('Open the resend page before submitting.');
+  $destination=client_identity_destination($_GET);client_identity_resend(posted('email',190),$destination);
+  flash('If that address belongs to a pending account, a new verification link has been sent.');redirect(studio_url(['resend'=>1]+$destination));
+ }
+ elseif($action==='public_recovery_request'){
+  if($client||$identityRoute!=='forgot')throw new RuntimeException('Open the password-recovery page before submitting.');
+  $destination=client_identity_destination($_GET);client_identity_recovery_request(posted('email',190),$destination);
+  flash('If that address is eligible for recovery, a password reset link has been sent.');redirect(studio_url(['forgot'=>1]+$destination));
+ }
+ elseif($action==='public_recovery_reset'){
+  if($client||$identityRoute!=='reset')throw new RuntimeException('Open the password reset link before submitting.');
+  $password=posted('password',72);if(!hash_equals($password,posted('confirm_password',72)))throw new InvalidArgumentException('Passwords do not match.');
+  $destination=client_identity_recovery_reset($identityToken,$password);flash('Your password was reset. Sign in with the new password to continue.');redirect(studio_url($destination));
+ }
  elseif($action==='finance_offer_sign'){
   if(!$client)throw new RuntimeException('Sign in to review financing.');
   require_once CWP_CODE_ROOT.'/app/licenses/financing_offers.php';
@@ -115,8 +141,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   studio_account_password_change(posted('current_password',1000),posted('password',72),posted('confirm_password',72));
   flash('Password updated. Other client sessions and unused recovery invitations were revoked.');redirect(studio_url(['account'=>1]));
  }
- elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
- elseif($action==='contact_activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');contact_activate(is_string($_POST['cinvite']??null)?$_POST['cinvite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
+ elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url(client_identity_destination($_GET)));}
+ elseif($action==='contact_activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');contact_activate(is_string($_POST['cinvite']??null)?$_POST['cinvite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url(client_identity_destination($_GET)));}
  elseif($action==='login'){
   studio_login(strtolower(posted('email',190)),posted('password',1000));
   if(($_GET['account']??null)==='1')redirect(studio_url(['account'=>1]));

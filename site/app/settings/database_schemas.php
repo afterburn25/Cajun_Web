@@ -10,6 +10,7 @@ function database_schema_versions(): array {
         'backups_schema_version'=>'2',
         'catalog_schema_version'=>'1',
         'contacts_schema_version'=>'1',
+        'client_identity_schema_version'=>'1',
         'delivery_schema_version'=>'1',
         'domain_contracts_schema_version'=>'1',
         'domain_expiry_schema_version'=>'1',
@@ -129,7 +130,7 @@ function database_schema_group(string $marker): string {
         str_starts_with($marker,'payment_')||str_starts_with($marker,'payments_')||str_starts_with($marker,'invoice_')||str_starts_with($marker,'recurring_')=>'Billing',
         str_starts_with($marker,'hosting_')||str_starts_with($marker,'service_')=>'Hosting & services',
         str_starts_with($marker,'domain_')||$marker==='registration_drafts_schema_version'=>'Domains',
-        str_starts_with($marker,'activity_')||str_starts_with($marker,'appointments_')||str_starts_with($marker,'website_')||str_starts_with($marker,'proposals_')=>'Customer experience',
+        str_starts_with($marker,'activity_')||str_starts_with($marker,'appointments_')||str_starts_with($marker,'website_')||str_starts_with($marker,'proposals_')||$marker==='client_identity_schema_version'=>'Customer experience',
         default=>'Administration',
     };
 }
@@ -192,6 +193,7 @@ function database_schema_migrations(): array {
         'backups_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'note'=>'Also creates or verifies the protected private backup directory.','file'=>'database/migrations/backups_migrate.php','function'=>'backups_migrate','arguments'=>'password'],
         'catalog_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/catalog_migrate.php','function'=>'catalog_migrate','arguments'=>'password'],
         'contacts_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/contacts_migrate.php','function'=>'contacts_migrate','arguments'=>'password'],
+        'client_identity_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version','contacts_schema_version'],'note'=>'Creates isolated public registration, verification, and recovery state without adopting legacy client accounts.','file'=>'database/migrations/client_identity_migrate.php','function'=>'client_identity_migrate','arguments'=>'password'],
         'license_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/license_migrate.php','function'=>'license_migrate','arguments'=>'password'],
         'payments_schema_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/payments_migrate.php','function'=>'payments_migrate','arguments'=>'password'],
         'notification_feed_version'=>['depends'=>['staff_schema_version','studio_schema_version'],'file'=>'database/migrations/notification_feed_migrate.php','function'=>'notification_feed_migrate','arguments'=>'password'],
