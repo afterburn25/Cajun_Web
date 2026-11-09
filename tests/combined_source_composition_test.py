@@ -164,6 +164,10 @@ def run(root=ROOT):
                 lambda: altered_receipt(lambda data: data['integration_repairs']['tests/account_notification_workflow_contract.py']['edits'].pop()))
         refuses('Refuses omitted cloud intake acceptance-projection successor inverse',
                 lambda: altered_receipt(lambda data: data['integration_repairs']['tests/acceptance_artifacts_test.py']['edits'].pop()))
+        refuses('Refuses omitted cloud intake browser-fixture successor inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tests/provider_cloud_site_requests_cases.py']['edits'].pop()))
+        refuses('Refuses omitted cloud intake fixture-identity successor inverse',
+                lambda: altered_receipt(lambda data: data['integration_repairs']['tools/acceptance-contract.json']['edits'].pop()))
 
         def forged_repair_and_receipt():
             repair = fixture / 'tests/installed_owner_authority.py'

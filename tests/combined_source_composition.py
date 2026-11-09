@@ -215,22 +215,28 @@ CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS = {
     'site/app/providers/cloud_site_requests_views.php': 1,
     'tests/acceptance_artifacts_test.py': 8,
     'tests/cloud_site_requests_ui_contract.php': 1,
-    'tests/provider_cloud_site_requests_cases.py': 5,
+    'tests/provider_cloud_site_requests_cases.py': 6,
     'tests/provider_cloud_site_requests_native.php': 4,
-    'tools/acceptance-contract.json': 19,
+    'tools/acceptance-contract.json': 20,
     'tools/acceptance-reports.json': 7,
 }
-CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS = {
+CLOUD_INTAKE_CI_SUCCESSOR_EDITS = {
     'tests/acceptance_artifacts_test.py': 1,
     'tests/account_notification_workflow_contract.py': 1,
+    'tests/provider_cloud_site_requests_cases.py': 1,
+    'tools/acceptance-contract.json': 1,
 }
-CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256 = {
+CLOUD_INTAKE_CI_PREDECESSOR_SHA256 = {
     'tests/acceptance_artifacts_test.py': '93a31d163c487716e74f60ed005a2f19e9d7b9dcca66be452f0f26194867599e',
     'tests/account_notification_workflow_contract.py': 'bc4317c73f9e9c1e7b1b99671c7627d9701aa4cc9c0ce58f35cd7fb228bc4fcf',
+    'tests/provider_cloud_site_requests_cases.py': '66e9c9c8febe28604b93b3eaaee12ce4a5367fbf2c555597f1db54553c1eb0ed',
+    'tools/acceptance-contract.json': 'e5ebee48faa0facf006106c0900f34d9d29b90309e8237dcdf54125f7fc124f5',
 }
-CLOUD_INTAKE_PROOF_EDIT_COUNTS = {
+CLOUD_INTAKE_CI_EDIT_COUNTS = {
     'tests/acceptance_artifacts_test.py': 8,
     'tests/account_notification_workflow_contract.py': 5,
+    'tests/provider_cloud_site_requests_cases.py': 6,
+    'tools/acceptance-contract.json': 20,
 }
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
@@ -398,7 +404,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'ed09f763303876f80b678a9bfd5e2cfd54d6d857157c723ba5187a29b3c42103'
+REGRESSION_SHA256 = 'e11251696b493912e28380ba3fdb28238644d9f22caaee45dcd87c25df4989de'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -476,9 +482,9 @@ REPAIR_SHA256['site/app/providers/cloud_site_requests.php'] = 'aaafdf5210e00e92a
 REPAIR_SHA256['site/app/providers/cloud_site_requests_views.php'] = '0a5f61bee9af8c9ca805bdfc0bf820c34ea70eec15aed6559428b6fb93bb5539'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '93a31d163c487716e74f60ed005a2f19e9d7b9dcca66be452f0f26194867599e'
 REPAIR_SHA256['tests/cloud_site_requests_ui_contract.php'] = '01016f139e72c31aedb53bfa10a5e5e477e1247cd29efa16e0095049c7210234'
-REPAIR_SHA256['tests/provider_cloud_site_requests_cases.py'] = '66e9c9c8febe28604b93b3eaaee12ce4a5367fbf2c555597f1db54553c1eb0ed'
+REPAIR_SHA256['tests/provider_cloud_site_requests_cases.py'] = 'd47561b91d788b742905173f2ec24ff3103760ef4492d19d2a8f233280623d1a'
 REPAIR_SHA256['tests/provider_cloud_site_requests_native.php'] = '365d9bb50af2dbf8f61d931f096cc52e870c23205f51febedb5407f18986c059'
-REPAIR_SHA256['tools/acceptance-contract.json'] = 'e5ebee48faa0facf006106c0900f34d9d29b90309e8237dcdf54125f7fc124f5'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '41d7ad6ac5966d6ab83da88ba55a9f66b58c05d7ab661ce9875dca4eec74697a'
 REPAIR_SHA256['tools/acceptance-reports.json'] = '0bb0377061c504fcc4b7c1740558217d726b358a8edd99d5591b0afec989d8cb'
 # END GENERATED CLOUD INTAKE REPAIR IDENTITIES
 REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '8e119d1f951a9b12f128f769ae2a2762e5dc0cd703a0516c6467cfea2881cf4a'
@@ -856,14 +862,14 @@ def reconstruct_cloud_intake_successor(data, path, current):
     require(path in CLOUD_INTAKE_REPAIRS, 'Unknown cloud intake successor')
     row = data['integration_repairs'][path]
     count = CLOUD_INTAKE_SUCCESSOR_EDITS[path]
-    proof_count = CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS.get(path, 0)
-    expected = CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path])
+    ci_count = CLOUD_INTAKE_CI_SUCCESSOR_EDITS.get(path, 0)
+    expected = CLOUD_INTAKE_CI_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path])
     require(digest(current) == expected
             and row['current_sha256'] == REPAIR_SHA256[path]
             and len(row['edits']) == CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS[path],
             'Current cloud intake successor changed: ' + path)
     text = current.decode('utf-8')
-    edits = row['edits'][-(count + proof_count):-proof_count if proof_count else None]
+    edits = row['edits'][-(count + ci_count):-ci_count if ci_count else None]
     for before, after in reversed(edits):
         require(text.count(after) == 1, 'Nonunique cloud intake successor inverse: ' + path)
         text = text.replace(after, before, 1)
@@ -882,11 +888,11 @@ def reconstruct_database_workflow_successor(data, path, current):
     require(path in DATABASE_WORKFLOW_SUCCESSOR_EDITS, 'Unknown database workflow successor')
     row = data['integration_repairs'][path]
     cloud_count = CLOUD_INTAKE_SUCCESSOR_EDITS.get(path, 0)
-    proof_count = CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS.get(path, 0)
+    ci_count = CLOUD_INTAKE_CI_SUCCESSOR_EDITS.get(path, 0)
     expected = CLOUD_INTAKE_PREDECESSOR_SHA256.get(
-        path, CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path]))
+        path, CLOUD_INTAKE_CI_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path]))
     require(digest(current) == expected
-            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] + cloud_count + proof_count,
+            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] + cloud_count + ci_count,
             'Current database workflow successor changed: ' + path)
     before, after = row['edits'][DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] - 1]
     text = current.decode('utf-8')
@@ -899,26 +905,26 @@ def reconstruct_database_workflow_successor(data, path, current):
     return predecessor.encode('utf-8')
 
 
-def reconstruct_cloud_intake_proof_successor(data, path, current):
-    """Reverse the exact CI-discovered proof binding without changing runtime source."""
-    require(path in CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS, 'Unknown cloud intake proof successor')
+def reconstruct_cloud_intake_ci_successor(data, path, current):
+    """Reverse an exact CI-discovered successor before source-range reconstruction."""
+    require(path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS, 'Unknown cloud intake CI successor')
     row = data['integration_repairs'][path]
-    count = CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS[path]
+    count = CLOUD_INTAKE_CI_SUCCESSOR_EDITS[path]
     require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
-            and len(row['edits']) == CLOUD_INTAKE_PROOF_EDIT_COUNTS[path],
-            'Current cloud intake proof successor changed: ' + path)
+            and len(row['edits']) == CLOUD_INTAKE_CI_EDIT_COUNTS[path],
+            'Current cloud intake CI successor changed: ' + path)
     text = current.decode('utf-8')
     edits = row['edits'][-count:]
     for before, after in reversed(edits):
-        require(text.count(after) == 1, 'Nonunique cloud intake proof inverse: ' + path)
+        require(text.count(after) == 1, 'Nonunique cloud intake CI inverse: ' + path)
         text = text.replace(after, before, 1)
     predecessor = text.encode('utf-8')
-    require(digest(predecessor) == CLOUD_INTAKE_PROOF_PREDECESSOR_SHA256[path],
-            'Cloud intake proof predecessor changed: ' + path)
+    require(digest(predecessor) == CLOUD_INTAKE_CI_PREDECESSOR_SHA256[path],
+            'Cloud intake CI predecessor changed: ' + path)
     for before, after in edits:
-        require(text.count(before) == 1, 'Nonunique cloud intake proof forward change: ' + path)
+        require(text.count(before) == 1, 'Nonunique cloud intake CI forward change: ' + path)
         text = text.replace(before, after, 1)
-    require(text.encode('utf-8') == current, 'Cloud intake proof successor is not reversible: ' + path)
+    require(text.encode('utf-8') == current, 'Cloud intake CI successor is not reversible: ' + path)
     return predecessor
 
 
@@ -1091,8 +1097,8 @@ def verify_current(root):
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
         value = ordinary(root, path)
-        if path in CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS:
-            value = reconstruct_cloud_intake_proof_successor(data, path, value)
+        if path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS:
+            value = reconstruct_cloud_intake_ci_successor(data, path, value)
         if path in CLOUD_INTAKE_REPAIRS:
             require(reconstruct_cloud_intake_successor(data, path, value)
                     == git(root, 'cat-file', 'blob', CLOUD_INTAKE_BASE + ':' + path),
@@ -1123,8 +1129,8 @@ def verify_current(root):
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
         value = ordinary(root, path)
-        if path in CLOUD_INTAKE_PROOF_SUCCESSOR_EDITS:
-            value = reconstruct_cloud_intake_proof_successor(data, path, value)
+        if path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS:
+            value = reconstruct_cloud_intake_ci_successor(data, path, value)
         if path == INVENTORY:
             require(value == git(root, 'cat-file', 'blob', CLOUD_INTAKE_SOURCE + ':' + path),
                     'Current cloud intake inventory differs from its exact source')
@@ -1207,7 +1213,7 @@ def verify_current(root):
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
-        {'name': 'CI-discovered workflow and predecessor-projection proof bindings are exact, reversible and runtime-neutral', 'passed': True},
+        {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
