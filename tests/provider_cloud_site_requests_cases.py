@@ -269,7 +269,7 @@ def run_browser(env, browser, owner, client, other, profile):
         check('failed latest read withholds owner dispatch and asks for current information',
               blocked.select_one('[data-cloud-website-form="provider_inventory_cloud_request_dispatch"]') is None
               and 'refresh cloud inventory' in blocked.text and state() == failed_state)
-        refused_dispatch = post(owner, settings, prior_dispatch, reviewed='1', current_password=OWNER)
+        refused_dispatch = post(owner, settings, prior_dispatch, reviewed='1')
         check('previously valid owner approval cannot send through a newer failed read',
               refused_dispatch.status_code == 200
               and 'Refresh the cloud server list and review the latest complete observation' in refused_dispatch.text
