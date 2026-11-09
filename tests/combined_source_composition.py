@@ -247,6 +247,16 @@ UX09_PROOF_PREDECESSOR_SHA256 = {
 UX09_PROOF_EDIT_COUNTS = {
     'tests/account_notification_workflow_contract.py': 9,
 }
+UX09_CI_BASE = 'a9931eb5231927a7428f0f9116bd0ea389c6429f'
+UX09_CI_BASE_TREE = '0a6d040edd825c48c45f9fd03358a16997a83983'
+UX09_CI_SOURCE = 'ba6dc64ba55527bf9c79e33da45f89dba61716f7'
+UX09_CI_SOURCE_TREE = 'a648dd1a0486481aed7dbeb24a8ae0d1bafc17ce'
+UX09_CI_MODIFIED = frozenset((
+    'tests/domain_registration_drafts_native.php',
+))
+UX09_CI_SHA256 = {
+    'tests/domain_registration_drafts_native.php': '3cb508d3eeadf0b4e43f28874486220a75326825752489c3eafe5a2c36064d5f',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -455,7 +465,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '2cfd5791ce838722753f6601db2db78e4ae36442a99e73fb66fa3d0dbfe399b0'
+REGRESSION_SHA256 = '6a9a97c20e95b4ab70b5c213f344d9c2fe92e64cca0e484e2ca2271125f5cee6'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -654,6 +664,8 @@ def hydration_origin(root, head):
         (CLOUD_INTAKE_SOURCE, CLOUD_INTAKE_SOURCE_TREE, 'cloud intake source'),
         (UX09_BASE, UX09_BASE_TREE, 'UX-09 base'),
         (UX09_SOURCE, UX09_SOURCE_TREE, 'UX-09 source'),
+        (UX09_CI_BASE, UX09_CI_BASE_TREE, 'UX-09 CI-successor base'),
+        (UX09_CI_SOURCE, UX09_CI_SOURCE_TREE, 'UX-09 CI-successor source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -936,6 +948,36 @@ def project_ux09(root, data, path, current):
     return before
 
 
+def validate_ux09_ci_source(root):
+    """Bind the exact private-draft fixture repair discovered by initial UX-09 CI."""
+    require(git(root, 'rev-parse', UX09_CI_BASE + '^{tree}').decode().strip() == UX09_CI_BASE_TREE
+            and git(root, 'rev-parse', UX09_CI_SOURCE + '^{tree}').decode().strip()
+            == UX09_CI_SOURCE_TREE, 'UX-09 CI-successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_CI_BASE, UX09_CI_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_CI_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_CI_BASE, UX09_CI_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_CI_MODIFIED)],
+            'UX-09 CI successor changed a different path or status set')
+    base_entries = entries(root, UX09_CI_BASE);source_entries = entries(root, UX09_CI_SOURCE)
+    for path in sorted(UX09_CI_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', UX09_CI_SOURCE + ':' + path)
+                and digest(current) == UX09_CI_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 CI-successor source identity changed: ' + path)
+
+
+def project_ux09_ci(root, path, current):
+    """Restore the exact pre-CI-fix bytes only for historical component proofs."""
+    if path not in UX09_CI_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_CI_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_CI_SHA256[path],
+            'Current UX-09 CI-successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX09_CI_BASE + ':' + path)
+
+
 def reconstruct_adapter(data, path, current):
     require(path in ADAPTERS, 'Unknown comparison adapter')
     row = data['adapters'][path]
@@ -1144,6 +1186,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     ux09 = validate_ux09_source(root)
+    validate_ux09_ci_source(root)
     onboarding = json.loads(ordinary(root, ONBOARDING_SOURCE))
     require(onboarding.get('schema') == 1 and onboarding.get('base_commit') == ONBOARDING_BASE
             and onboarding.get('base_tree') == ONBOARDING_BASE_TREE,
@@ -1311,7 +1354,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux09(root, ux09, path, ordinary(root, path))
+        value = project_ux09_ci(root, path, ordinary(root, path))
+        value = project_ux09(root, ux09, path, value)
         if path in ONBOARDING_MODIFIED:
             row = onboarding['modified'][path]
             before = git(root, 'cat-file', 'blob', ONBOARDING_BASE + ':' + path)
@@ -1370,6 +1414,7 @@ def verify_current(root):
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
+        {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},

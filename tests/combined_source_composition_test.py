@@ -40,6 +40,7 @@ def run(root=ROOT):
         for path in (proof.ADAPTERS | proof.REPAIRS | proof.ADDITIONS | proof.TICKET_ADDITIONS
                      | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
                      | proof.CLOUD_INTAKE_ADDITIONS | proof.UX09_MODIFIED | proof.UX09_ADDITIONS
+                     | proof.UX09_CI_MODIFIED
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, proof.UX09_SOURCE_RECEIPT,
@@ -112,6 +113,9 @@ def run(root=ROOT):
         refuses('Refuses altered exact UX-09 shipping integration',
                 lambda: modified('site/app/clients/accounts.php',
                                  lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed identity authority\n')))
+        refuses('Refuses altered exact UX-09 CI successor',
+                lambda: modified('tests/domain_registration_drafts_native.php',
+                                 lambda target: target.write_bytes(target.read_bytes() + b'\n// unreviewed fixture change\n')))
 
         def altered_ux09_receipt(change):
             def rewrite(target):
