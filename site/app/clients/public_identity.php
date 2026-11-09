@@ -126,7 +126,7 @@ function client_identity_issue_token(array $client,string $purpose,array $destin
 function client_identity_finalize_delivery(int $client,string $purpose,string $digest,?string $retireDigest,string $outcome): void {
     try{staff_locked(fn()=>staff_transaction(function()use($client,$purpose,$digest,$retireDigest,$outcome):void {
         if($outcome==='accepted'&&$retireDigest!==null)query('DELETE FROM '.table('studio_client_tokens').' WHERE client_id=? AND purpose=? AND token_digest=?',[$client,$purpose,$retireDigest]);
-        elseif($outcome==='not_configured')query('DELETE FROM '.table('studio_client_tokens').' WHERE client_id=? AND purpose=? AND token_digest=?',[$client,$purpose,$digest]);
+        elseif(in_array($outcome,['not_configured','definitely_unsent'],true))query('DELETE FROM '.table('studio_client_tokens').' WHERE client_id=? AND purpose=? AND token_digest=?',[$client,$purpose,$digest]);
     }));}catch(Throwable $e){report_error($e);}
 }
 
@@ -143,7 +143,8 @@ function client_identity_deliver(int $client,string $purpose,array $issued): str
             pcntl_signal(SIGALRM,static function():never{throw new RuntimeException('Account email exceeded its delivery time budget.');});pcntl_alarm(6);
         }
         $outcome=send_message($issued['email'],$subject,$body,null,6.0);
-    }catch(Throwable $e){report_error($e);$outcome='uncertain';}
+    }catch(MailSubmissionFailure $e){report_error($e);$outcome=$e->definitelyUnsent?'definitely_unsent':'uncertain';}
+    catch(Throwable $e){report_error($e);$outcome='uncertain';}
     finally{if($mode==='mail'&&$restoreHandler!==null){pcntl_alarm(0);pcntl_signal(SIGALRM,$restoreHandler);pcntl_async_signals((bool)$restoreAsync);}}
     client_identity_finalize_delivery($client,$purpose,$issued['digest'],$issued['retire_digest'],$outcome);
     return $outcome;
