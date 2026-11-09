@@ -49,7 +49,7 @@ try{
     cu_check('Client has cancellation but no owner mutation forms',str_contains($html,'value="cloud_website_request_cancel"')&&!str_contains($html,'provider_inventory_cloud_request_')&&!str_contains($html,'type="password"'));
     cu_check('Client review consent is unchecked',!preg_match('/<input[^>]*\bchecked\b/',$html)&&str_contains($html,'name="request_confirm" value="1" required'));
     cu_check('Request anchor is stable and appears once',substr_count($html,'id="cloud-website-request-'.$id.'"')===1);
-    cu_check('Form text states request is not payment or server purchase',str_contains($html,'does not purchase a server or take payment'));
+    cu_check('Form text states request is not payment or server purchase',str_contains($html,'does not purchase a server or take payment')&&str_contains($html,'The studio will check current server information, domain permission and capacity before creation.'));
     $retry=$create+['current_password'=>'PRIVATE_PASSWORD','credentials'=>'PRIVATE_CONFIG'];$retry['domain']='x" autofocus onfocus="evil';$retry['aliases']='</textarea><script>evil</script>';
     $saved=provider_cloud_site_requests_retry($retry);$html=cu_html(fn()=>provider_cloud_site_requests_render([$option],[],false,true,1,$saved));
     cu_check('Safe failed client request retains exact request ID and escaped input',str_contains($html,'name="request_id" value="'.$id.'"')&&str_contains($html,'x&quot; autofocus onfocus=&quot;evil')&&str_contains($html,'&lt;/textarea&gt;&lt;script&gt;evil&lt;/script&gt;'));
@@ -57,7 +57,7 @@ try{
     $stale=$create;$stale['context']=str_repeat('0',64);$html=cu_html(fn()=>provider_cloud_site_requests_render([$option],[],false,true,1,$stale));
     cu_check('Stale request context suppresses replacement form',str_contains($html,'These details changed')&&!str_contains($html,'<form'));
     $html=cu_html(fn()=>provider_cloud_site_requests_render([],[],false,true,1,$create));
-    cu_check('Lost assignment retains safe unsubmitted domains without fresh approval',str_contains($html,'data-cloud-website-unsaved')&&str_contains($html,'example.invalid')&&str_contains($html,'alias.invalid')&&!str_contains($html,'<form'));
+    cu_check('Lost assignment retains safe unsubmitted domains without fresh approval',str_contains($html,'data-cloud-website-unsaved')&&str_contains($html,'example.invalid')&&str_contains($html,'alias.invalid')&&!str_contains($html,'<form')&&str_contains($html,'Ask the studio to review your assigned server.')&&!str_contains($html,'refresh the cloud server list'));
     $invalid=$create;$invalid['request_id']='bad';$html=cu_html(fn()=>provider_cloud_site_requests_render([$option],[],false,true,1,$invalid));
     cu_check('Invalid retained request ID cannot silently become fresh request',!str_contains($html,'<form'));
     $html=cu_html(fn()=>provider_cloud_site_requests_render([],[$row],true,true,1,$send));
