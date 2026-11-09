@@ -285,6 +285,18 @@ UX09_SECURITY_SHA256 = {
     'tests/client_identity_policy.php': '6439fd45d0ff0162dd5507b1a7f9b467cb26e0f9dadb5b47f4cbaeca339e4908',
     'tools/acceptance-contract.json': '1129016da1b74943d9fef1798c43f88bd1cab245c2104dc187971fc9ab322ec4',
 }
+UX09_CLOUD_PROOF_BASE = '83220d9e2e7d53610cb2fa54c8bafd0d409880ce'
+UX09_CLOUD_PROOF_BASE_TREE = '2da36d9b84bf407d7f87972026a3e97966c11ad2'
+UX09_CLOUD_PROOF_SOURCE = 'f544fa9ea804a8e655216af42ec44f8bc63dc114'
+UX09_CLOUD_PROOF_SOURCE_TREE = 'd4295816302f137801ef8d5194e6af7f6f0c06b8'
+UX09_CLOUD_PROOF_MODIFIED = frozenset((
+    'tests/cloud_site_intake_wiring.py',
+    'tools/acceptance-contract.json',
+))
+UX09_CLOUD_PROOF_SHA256 = {
+    'tests/cloud_site_intake_wiring.py': '4d49cad5f9b51fda266860ec25abab366377a1912b4caedf5b055109a1005d86',
+    'tools/acceptance-contract.json': '5b84c8d5cbbe028d90cb19aefc5d6db6e4cc0d1d628f61a0fb78af8e7d4cba55',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -493,7 +505,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'eefd4c47cb8d5280966c5eea26336da7a7b8845e8d8c1c72782e5fdabc70c124'
+REGRESSION_SHA256 = 'd7afdbfeab6475be8b34f21dffd6914e9f26f7940a996681b229bc1b70a4ef41'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -697,6 +709,8 @@ def hydration_origin(root, head):
         (UX09_CI_SOURCE, UX09_CI_SOURCE_TREE, 'UX-09 CI-successor source'),
         (UX09_SECURITY_BASE, UX09_SECURITY_BASE_TREE, 'UX-09 security-successor base'),
         (UX09_SECURITY_SOURCE, UX09_SECURITY_SOURCE_TREE, 'UX-09 security-successor source'),
+        (UX09_CLOUD_PROOF_BASE, UX09_CLOUD_PROOF_BASE_TREE, 'UX-09 cloud-proof base'),
+        (UX09_CLOUD_PROOF_SOURCE, UX09_CLOUD_PROOF_SOURCE_TREE, 'UX-09 cloud-proof source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -950,7 +964,8 @@ def validate_ux09_source(root):
         row = data['modified'][path]
         before = git(root, 'cat-file', 'blob', UX09_BASE + ':' + path)
         current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
-        actual = project_ux09_security(root, path, ordinary(root, path))
+        actual = project_ux09_cloud_proof(root, path, ordinary(root, path))
+        actual = project_ux09_security(root, path, actual)
         require(isinstance(row, dict) and set(row) == {'base_sha256', 'source_sha256', 'mode'}
                 and row['base_sha256'] == digest(before)
                 and row['source_sha256'] == digest(current)
@@ -959,7 +974,8 @@ def validate_ux09_source(root):
                 'UX-09 modified source identity changed: ' + path)
     for path in sorted(UX09_ADDITIONS):
         row = data['added'][path];current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
-        actual = project_ux09_security(root, path, ordinary(root, path))
+        actual = project_ux09_cloud_proof(root, path, ordinary(root, path))
+        actual = project_ux09_security(root, path, actual)
         require(isinstance(row, dict) and set(row) == {'source_sha256', 'mode'}
                 and row['source_sha256'] == digest(current)
                 and row['mode'] == source_entries[path][0] == '100644'
@@ -1025,7 +1041,7 @@ def validate_ux09_security_source(root):
             'UX-09 security successor changed a different path or status set')
     base_entries = entries(root, UX09_SECURITY_BASE);source_entries = entries(root, UX09_SECURITY_SOURCE)
     for path in sorted(UX09_SECURITY_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux09_cloud_proof(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob', UX09_SECURITY_SOURCE + ':' + path)
                 and digest(current) == UX09_SECURITY_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1040,6 +1056,37 @@ def project_ux09_security(root, path, current):
     require(current == source and digest(current) == UX09_SECURITY_SHA256[path],
             'Current UX-09 security successor changed before predecessor projection: ' + path)
     return git(root, 'cat-file', 'blob', UX09_SECURITY_BASE + ':' + path)
+
+
+def validate_ux09_cloud_proof_source(root):
+    """Bind the exact cloud-intake predecessor projection exposed by hosted UX-09 proof."""
+    require(git(root, 'rev-parse', UX09_CLOUD_PROOF_BASE + '^{tree}').decode().strip()
+            == UX09_CLOUD_PROOF_BASE_TREE
+            and git(root, 'rev-parse', UX09_CLOUD_PROOF_SOURCE + '^{tree}').decode().strip()
+            == UX09_CLOUD_PROOF_SOURCE_TREE, 'UX-09 cloud-proof successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_CLOUD_PROOF_BASE, UX09_CLOUD_PROOF_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_CLOUD_PROOF_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_CLOUD_PROOF_BASE, UX09_CLOUD_PROOF_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_CLOUD_PROOF_MODIFIED)],
+            'UX-09 cloud-proof successor changed a different path or status set')
+    base_entries = entries(root, UX09_CLOUD_PROOF_BASE);source_entries = entries(root, UX09_CLOUD_PROOF_SOURCE)
+    for path in sorted(UX09_CLOUD_PROOF_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', UX09_CLOUD_PROOF_SOURCE + ':' + path)
+                and digest(current) == UX09_CLOUD_PROOF_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 cloud-proof successor source identity changed: ' + path)
+
+
+def project_ux09_cloud_proof(root, path, current):
+    """Restore pre-cloud-proof bytes only for older source receipts."""
+    if path not in UX09_CLOUD_PROOF_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_CLOUD_PROOF_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_CLOUD_PROOF_SHA256[path],
+            'Current UX-09 cloud-proof successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX09_CLOUD_PROOF_BASE + ':' + path)
 
 
 def reconstruct_adapter(data, path, current):
@@ -1249,6 +1296,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_cloud_proof_source(root)
     validate_ux09_security_source(root)
     ux09 = validate_ux09_source(root)
     validate_ux09_ci_source(root)
@@ -1354,7 +1402,8 @@ def verify_current(root):
             and CLOUD_INTAKE_ADDITIONS <= set(cloud_source_entries),
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
-        value = project_ux09_security(root, path, ordinary(root, path))
+        value = project_ux09_cloud_proof(root, path, ordinary(root, path))
+        value = project_ux09_security(root, path, value)
         value = project_ux09(root, ux09, path, value)
         if path in UX09_PROOF_SUCCESSOR_EDITS:
             value = reconstruct_ux09_proof_successor(data, path, value)
@@ -1368,7 +1417,7 @@ def verify_current(root):
                 and mode(root, path) == cloud_source_entries[path][0],
                 'Current cloud intake bytes or mode differ from exact source: ' + path)
     for path in sorted(CLOUD_INTAKE_ADDITIONS):
-        value = ordinary(root, path)
+        value = project_ux09_cloud_proof(root, path, ordinary(root, path))
         row = data['cloud_intake_additions'][path]
         require(digest(value) == row['sha256'] == CLOUD_INTAKE_ADDITION_SHA256[path]
                 and row['mode'] == cloud_source_entries[path][0] == '100644',
@@ -1389,7 +1438,8 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = project_ux09_security(root, path, ordinary(root, path))
+        value = project_ux09_cloud_proof(root, path, ordinary(root, path))
+        value = project_ux09_security(root, path, value)
         value = project_ux09(root, ux09, path, value)
         if path in UX09_PROOF_SUCCESSOR_EDITS:
             value = reconstruct_ux09_proof_successor(data, path, value)
@@ -1407,7 +1457,8 @@ def verify_current(root):
                 and mode(root, path) == database_source_entries[path][0],
                 'Current database workflow bytes or mode differ from exact source: ' + path)
     for path in sorted(DATABASE_WORKFLOW_ADDITIONS):
-        value = project_ux09_security(root, path, ordinary(root, path))
+        value = project_ux09_cloud_proof(root, path, ordinary(root, path))
+        value = project_ux09_security(root, path, value)
         value = project_ux09(root, ux09, path, value)
         row = data['database_workflow_additions'][path]
         require(digest(value) == row['sha256'] == DATABASE_WORKFLOW_ADDITION_SHA256[path]
@@ -1422,7 +1473,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux09_security(root, path, ordinary(root, path))
+        value = project_ux09_cloud_proof(root, path, ordinary(root, path))
+        value = project_ux09_security(root, path, value)
         value = project_ux09_ci(root, path, value)
         value = project_ux09(root, ux09, path, value)
         if path in ONBOARDING_MODIFIED:
@@ -1485,6 +1537,7 @@ def verify_current(root):
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
+        {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},

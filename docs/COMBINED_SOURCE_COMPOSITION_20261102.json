@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "c39cff6ce6d3521de80716df6cffd4b1a8e93c9cfe992d7997a1e78293fbbe9b",
-  "regression_sha256": "eefd4c47cb8d5280966c5eea26336da7a7b8845e8d8c1c72782e5fdabc70c124",
+  "verifier_sha256": "7c0779f1cac70dbceca94f055245d152c26bf68e626734886d480bace4036290",
+  "regression_sha256": "d7afdbfeab6475be8b34f21dffd6914e9f26f7940a996681b229bc1b70a4ef41",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",

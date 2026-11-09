@@ -119,6 +119,9 @@ def run(root=ROOT):
         refuses('Refuses altered exact UX-09 security successor',
                 lambda: modified('site/app/mail/transport.php',
                                  lambda target: target.write_bytes(target.read_bytes() + b'\n// unreviewed delivery change\n')))
+        refuses('Refuses altered exact UX-09 cloud-proof successor',
+                lambda: modified('tests/cloud_site_intake_wiring.py',
+                                 lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed projection change\n')))
 
         def altered_ux09_receipt(change):
             def rewrite(target):
