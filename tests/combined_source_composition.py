@@ -238,6 +238,15 @@ CLOUD_INTAKE_CI_EDIT_COUNTS = {
     'tests/provider_cloud_site_requests_cases.py': 10,
     'tools/acceptance-contract.json': 22,
 }
+UX09_PROOF_SUCCESSOR_EDITS = {
+    'tests/account_notification_workflow_contract.py': 4,
+}
+UX09_PROOF_PREDECESSOR_SHA256 = {
+    'tests/account_notification_workflow_contract.py': '8e119d1f951a9b12f128f769ae2a2762e5dc0cd703a0516c6467cfea2881cf4a',
+}
+UX09_PROOF_EDIT_COUNTS = {
+    'tests/account_notification_workflow_contract.py': 9,
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -435,7 +444,7 @@ NARRATIVES = frozenset((
     'docs/agent-handoffs/2026-11-08-codex-release-stack-integration.md',
     'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-feature.md',
     'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-integration.md',
-    'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
+    'docs/AGENT_COORDINATION.md', 'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
     'docs/RELEASES.md', 'docs/ROADMAP.md', 'docs/SESSION_LOG.md',
 ))
 ADAPTERS = frozenset((
@@ -535,6 +544,7 @@ REPAIR_SHA256['tests/cloud_assignment_fixture.py'] = '253440f3e7385c52711dacf86b
 REPAIR_SHA256['tests/cloud_assignment_fixture_test.py'] = 'd35ec960bce9c3c247a46b9184384142937ec02db373f3536475d2edba3ffe95'
 REPAIR_SHA256['tests/provider_cloud_providers_cases.py'] = '8a26ab9a64abf07edda6627391d53c2296f49559c58514f9bca4a47582c7a95f'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
+REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '2c348e84a881a2902739d83309a1f3c2995ef7049015e7e31a41481fa69e2b9e'
 
 _PROJECTIONS = {}
 _HISTORICAL_RESULTS = {}
@@ -995,10 +1005,12 @@ def reconstruct_database_workflow_successor(data, path, current):
     row = data['integration_repairs'][path]
     cloud_count = CLOUD_INTAKE_SUCCESSOR_EDITS.get(path, 0)
     ci_count = CLOUD_INTAKE_CI_SUCCESSOR_EDITS.get(path, 0)
+    ux09_proof_count = UX09_PROOF_SUCCESSOR_EDITS.get(path, 0)
     expected = CLOUD_INTAKE_PREDECESSOR_SHA256.get(
         path, CLOUD_INTAKE_CI_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path]))
     require(digest(current) == expected
-            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] + cloud_count + ci_count,
+            and len(row['edits']) == (DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] + cloud_count
+                                      + ci_count + ux09_proof_count),
             'Current database workflow successor changed: ' + path)
     before, after = row['edits'][DATABASE_WORKFLOW_SUCCESSOR_EDITS[path] - 1]
     text = current.decode('utf-8')
@@ -1016,11 +1028,13 @@ def reconstruct_cloud_intake_ci_successor(data, path, current):
     require(path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS, 'Unknown cloud intake CI successor')
     row = data['integration_repairs'][path]
     count = CLOUD_INTAKE_CI_SUCCESSOR_EDITS[path]
-    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
-            and len(row['edits']) == CLOUD_INTAKE_CI_EDIT_COUNTS[path],
+    ux09_proof_count = UX09_PROOF_SUCCESSOR_EDITS.get(path, 0)
+    expected = UX09_PROOF_PREDECESSOR_SHA256.get(path, REPAIR_SHA256[path])
+    require(digest(current) == expected and row['current_sha256'] == REPAIR_SHA256[path]
+            and len(row['edits']) == CLOUD_INTAKE_CI_EDIT_COUNTS[path] + ux09_proof_count,
             'Current cloud intake CI successor changed: ' + path)
     text = current.decode('utf-8')
-    edits = row['edits'][-count:]
+    edits = row['edits'][-(count + ux09_proof_count):-ux09_proof_count if ux09_proof_count else None]
     for before, after in reversed(edits):
         require(text.count(after) == 1, 'Nonunique cloud intake CI inverse: ' + path)
         text = text.replace(after, before, 1)
@@ -1031,6 +1045,29 @@ def reconstruct_cloud_intake_ci_successor(data, path, current):
         require(text.count(before) == 1, 'Nonunique cloud intake CI forward change: ' + path)
         text = text.replace(before, after, 1)
     require(text.encode('utf-8') == current, 'Cloud intake CI successor is not reversible: ' + path)
+    return predecessor
+
+
+def reconstruct_ux09_proof_successor(data, path, current):
+    """Reverse only the exact proof repair discovered by initial UX-09 CI."""
+    require(path in UX09_PROOF_SUCCESSOR_EDITS, 'Unknown UX-09 proof successor')
+    row = data['integration_repairs'][path]
+    count = UX09_PROOF_SUCCESSOR_EDITS[path]
+    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
+            and len(row['edits']) == UX09_PROOF_EDIT_COUNTS[path],
+            'Current UX-09 proof successor changed: ' + path)
+    text = current.decode('utf-8')
+    edits = row['edits'][-count:]
+    for before, after in reversed(edits):
+        require(text.count(after) == 1, 'Nonunique UX-09 proof successor inverse: ' + path)
+        text = text.replace(after, before, 1)
+    predecessor = text.encode('utf-8')
+    require(digest(predecessor) == UX09_PROOF_PREDECESSOR_SHA256[path],
+            'UX-09 proof predecessor changed: ' + path)
+    for before, after in edits:
+        require(text.count(before) == 1, 'Nonunique UX-09 proof successor forward change: ' + path)
+        text = text.replace(before, after, 1)
+    require(text.encode('utf-8') == current, 'UX-09 proof successor is not reversible: ' + path)
     return predecessor
 
 
@@ -1210,6 +1247,8 @@ def verify_current(root):
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
         value = project_ux09(root, ux09, path, ordinary(root, path))
+        if path in UX09_PROOF_SUCCESSOR_EDITS:
+            value = reconstruct_ux09_proof_successor(data, path, value)
         if path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS:
             value = reconstruct_cloud_intake_ci_successor(data, path, value)
         if path in CLOUD_INTAKE_REPAIRS:
@@ -1242,6 +1281,8 @@ def verify_current(root):
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
         value = project_ux09(root, ux09, path, ordinary(root, path))
+        if path in UX09_PROOF_SUCCESSOR_EDITS:
+            value = reconstruct_ux09_proof_successor(data, path, value)
         if path in CLOUD_INTAKE_CI_SUCCESSOR_EDITS:
             value = reconstruct_cloud_intake_ci_successor(data, path, value)
         if path == INVENTORY:

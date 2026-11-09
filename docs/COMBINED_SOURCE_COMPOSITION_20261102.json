@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "81b263b85f4fb64c6c17891d1784b0ab94c3b4d85cc9abb18d1168637bf2a629",
+  "verifier_sha256": "f110b8359c8f54d3a8b3801d717bafbfa8235952c3db662fb86f08a339a28c22",
   "regression_sha256": "2cfd5791ce838722753f6601db2db78e4ae36442a99e73fb66fa3d0dbfe399b0",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1715,7 +1715,7 @@
     },
     "tests/account_notification_workflow_contract.py": {
       "original_sha256": "92a0c02dc2108b6a1c913e9334caab7e6accb248b3222a3019fe0679d9fa49a5",
-      "current_sha256": "8e119d1f951a9b12f128f769ae2a2762e5dc0cd703a0516c6467cfea2881cf4a",
+      "current_sha256": "2c348e84a881a2902739d83309a1f3c2995ef7049015e7e31a41481fa69e2b9e",
       "edits": [
         [
           "LEGACY = '.github/workflows/account-notifications-combined.yml'\nPROTECTED = '.github/workflows/application-tests.yml'\nLEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'\nPROTECTED_SHA256 = '9bf0f8442d3a63b7f4f441a6c6ee4288048db04d34333b41ec668e4cfb20f03c'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\nPARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',\n           'ebcbbb56336249fee2073c8f02e9d6998740b64e')\n",
@@ -1736,6 +1736,22 @@
         [
           "PROTECTED_SHA256 = '5ddd172b5ede5221799575b5a604e32f43e6415e7cf824fd7cf4c4222f706d09'\n",
           "PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'\n"
+        ],
+        [
+          "The source-building workflow remains an immutable historical lane. Its complete\nacceptance and checkpoint jobs are the command/condition/report baseline here;\nthe new read-only lane must execute those same bytes for its admitted commit.\nThis is source and workflow verification, not a hosted SQL or browser result.\n",
+          "The source-building workflow retains an immutable historical predecessor. Its\ncomplete acceptance and checkpoint jobs are the command/condition/report\nbaseline here; the current workflow may add only the exact reviewed UX-09\nnative commands before being projected back to those predecessor bytes. This\nis source and workflow verification, not a hosted SQL or browser result.\n"
+        ],
+        [
+          "PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\n",
+          "PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'\nPROTECTED_ADDITIONS = (\n    '          \"$PHP_BINARY\" tests/client_identity_policy.php > qa/client-identity-policy-results.json\\n',\n    '          \"$PHP_BINARY\" tests/client_identity_native.php\\n',\n)\nPROTECTED_ADDITIONS_AFTER = '          \"$PHP_BINARY\" tests/client_authority_native.php\\n'\nIMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'\n"
+        ],
+        [
+          "    check('Legacy source builder and focused workflow remain byte-identical', digest(legacy) == LEGACY_SHA256)\n    check('Protected complete application workflow remains byte-identical', digest(protected) == PROTECTED_SHA256)\n",
+          "    check('Legacy source builder and focused workflow remain byte-identical', digest(legacy) == LEGACY_SHA256)\n    protected_predecessor = protected\n    for addition in reversed(PROTECTED_ADDITIONS):\n        check('Reviewed UX-09 application command is present exactly once',\n              protected_predecessor.count(addition) == 1)\n        protected_predecessor = protected_predecessor.replace(addition, '', 1)\n    protected_block = PROTECTED_ADDITIONS_AFTER + ''.join(PROTECTED_ADDITIONS)\n    check('Reviewed UX-09 application commands are additive and ordered',\n          protected.count(protected_block) == 1)\n    check('Protected complete application workflow retains its byte-identical predecessor',\n          digest(protected_predecessor) == PROTECTED_SHA256)\n"
+        ],
+        [
+          "    return {'passed': True, 'scope': __doc__.splitlines()[0] + ' Not hosted or installed acceptance.',\n            'workflow_sha256': digest(workflow), 'legacy_sha256': digest(legacy), 'checks': checks}\n",
+          "    for name, changed in (\n        ('lost UX-09 policy command', protected.replace(PROTECTED_ADDITIONS[0], '', 1)),\n        ('changed UX-09 native command', protected.replace('tests/client_identity_native.php',\n                                                            'tests/client_identity_policy.php', 1)),\n        ('extra protected workflow command', protected.replace(\n            PROTECTED_ADDITIONS[1], PROTECTED_ADDITIONS[1] + '          true # unreviewed command\\n', 1)),\n    ):\n        try:\n            validate(workflow, legacy, changed)\n        except AssertionError:\n            checks.append({'name': 'Regression rejected: ' + name, 'passed': True})\n        else:\n            raise AssertionError('Regression accepted: ' + name)\n    return {'passed': True, 'scope': __doc__.splitlines()[0] + ' Not hosted or installed acceptance.',\n            'workflow_sha256': digest(workflow), 'legacy_sha256': digest(legacy), 'checks': checks}\n"
         ]
       ]
     },
