@@ -3,7 +3,8 @@
 Called before provider_cloud_sites_cases restores its synthetic dictionaries. All
 business creation/approval/linking uses real HTTP forms. The sole direct history
 fault removes this continuation's final event and restores its exact saved row.
-No native fixture state, clock edits, quota resets or live 20i calls are used.
+Only unrelated synthetic reads are aged through the existing bounded helper;
+all retained cloud-source timestamps and bytes remain unchanged.
 """
 import copy
 import hashlib
@@ -14,6 +15,7 @@ import time
 from urllib.parse import parse_qs, urljoin, urlparse
 
 from playwright.sync_api import expect
+from cloud_assignment_fixture import age_unprotected_refreshes
 from release_cases import db
 from owner_browser_forms import refuse_owner_action
 
@@ -40,6 +42,11 @@ def run_browser(env, browser, owner, client, other, profile):
         if path.exists() or path.is_symlink():
             raise RuntimeError('Cloud request output already exists.')
     checks, captures, names = [], [], set()
+
+    # This continuation adds four authenticated reads to a long shared browser
+    # fixture. Age only unrelated synthetic reads before adding them; the
+    # helper proves every retained cloud-server source byte is unchanged.
+    age_unprotected_refreshes(7200, profile['id'])
 
     def check(name, condition):
         name = 'Client cloud website: ' + name
