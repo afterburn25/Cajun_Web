@@ -43,7 +43,7 @@ function client_identity_validate_table(string $name): void {
     foreach($actual as &$parts)ksort($parts);unset($parts);
     $required=$name==='studio_client_registrations'
         ?['PRIMARY'=>[[0,'client_id']],'registration_email'=>[[0,'email_fingerprint']]]
-        :['PRIMARY'=>[[0,'token_digest']],'token_client_purpose'=>[[0,'client_id'],[0,'purpose']],'token_expiry'=>[[1,'expires_at']]];
+        :['PRIMARY'=>[[0,'token_digest']],'token_client_purpose'=>[[1,'client_id'],[1,'purpose'],[1,'created_at']],'token_expiry'=>[[1,'expires_at']]];
     $actualNames=array_keys($actual);$requiredNames=array_keys($required);sort($actualNames);sort($requiredNames);if($actualNames!==$requiredNames)client_identity_schema_error();
     foreach($required as $key=>$parts)if(array_values($actual[$key]??[])!==$parts)client_identity_schema_error();
     $foreign=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[$table]);

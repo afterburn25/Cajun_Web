@@ -14,7 +14,7 @@ function smtp_read($stream, array $expected): string {
 }
 function smtp_write($stream,string $data): void { $len=strlen($data);$pos=0;while($pos<$len){smtp_remaining($stream);$n=fwrite($stream,substr($data,$pos));if($n===false||$n===0)throw new RuntimeException('SMTP write failed.');$pos+=$n;} }
 function smtp_command($stream,string $command,array $expected): string { smtp_write($stream,$command."\r\n");return smtp_read($stream,$expected); }
-function send_message(string $recipient,string $subject,string $body,?string $replyTo=null): string {
+function send_message(string $recipient,string $subject,string $body,?string $replyTo=null,?float $smtpBudget=null): string {
     $mode=setting('email_mode','disabled');if($mode==='disabled')return 'not_configured';
     $from=setting('mail_from');foreach([$from,$recipient] as $address)if(!filter_var($address,FILTER_VALIDATE_EMAIL)||preg_match('/[\r\n]/',$address))throw new RuntimeException('A valid sender and notification email are required.');
     if($replyTo && (!filter_var($replyTo,FILTER_VALIDATE_EMAIL)||preg_match('/[\r\n]/',$replyTo)))throw new RuntimeException('Invalid reply address.');
@@ -28,8 +28,9 @@ function send_message(string $recipient,string $subject,string $body,?string $re
     $host=setting('smtp_host');$port=(int)setting('smtp_port','587');$security=setting('smtp_security','tls');
     if(!preg_match('/^[a-zA-Z0-9.-]+$/D',$host)||strlen($host)>253||!in_array($port,[465,587,2525],true)||!in_array($security,['tls','ssl'],true))throw new RuntimeException('Invalid SMTP host, port or encryption mode.');
     $ctx=stream_context_create(['ssl'=>['verify_peer'=>true,'verify_peer_name'=>true,'allow_self_signed'=>false,'peer_name'=>$host,'SNI_enabled'=>true]]);
-    $GLOBALS['cwp_smtp_deadline']=microtime(true)+22;
-    $s=@stream_socket_client(($security==='ssl'?'ssl':'tcp').'://'.$host.':'.$port,$errno,$errstr,8,STREAM_CLIENT_CONNECT,$ctx);if(!$s)throw new RuntimeException('Cannot connect securely to SMTP. Check the host, port and outbound-mail policy.');
+    $smtpBudget=$smtpBudget===null?22.0:$smtpBudget;if($smtpBudget<1.0||$smtpBudget>22.0)throw new LogicException('SMTP delivery budget is outside the supported range.');
+    $GLOBALS['cwp_smtp_deadline']=microtime(true)+$smtpBudget;$connectTimeout=(int)max(1,min(8,ceil($smtpBudget)));
+    $s=@stream_socket_client(($security==='ssl'?'ssl':'tcp').'://'.$host.':'.$port,$errno,$errstr,$connectTimeout,STREAM_CLIENT_CONNECT,$ctx);if(!$s)throw new RuntimeException('Cannot connect securely to SMTP. Check the host, port and outbound-mail policy.');
     smtp_remaining($s);
     try { smtp_read($s,[220]);$greeting=smtp_command($s,'EHLO cajunwebpro.local',[250]);
         if($security==='tls'){if(stripos($greeting,'STARTTLS')===false)throw new RuntimeException('The SMTP server does not advertise STARTTLS.');smtp_command($s,'STARTTLS',[220]);smtp_remaining($s);if(!stream_socket_enable_crypto($s,true,STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT|STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT))throw new RuntimeException('TLS negotiation failed.');smtp_command($s,'EHLO cajunwebpro.local',[250]);}

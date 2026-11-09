@@ -4,6 +4,7 @@ from email.parser import BytesParser
 from email.utils import getaddresses
 from copy import deepcopy
 import re
+import time
 from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit
 
 import requests
@@ -149,6 +150,11 @@ def run_browser(env, browser):
         except requests.RequestException:
             raise AssertionError('Account-security POST did not complete')
 
+    def timed_identity(session, url, response, action, changes):
+        started = time.perf_counter()
+        result = post_identity(session, url, response, action, changes)
+        return result, time.perf_counter() - started
+
     def has_form(response, action):
         return any(
             field.get('value') == action
@@ -231,6 +237,16 @@ def run_browser(env, browser):
     before_commercial = commercial_state()
     before_provider = provider_state()
     try:
+        db("UPDATE ci_settings SET value='disabled' WHERE name='email_mode'")
+        unavailable_registration = requests.Session().get(register_url, timeout=15)
+        unavailable_login = requests.Session().get(login_url, timeout=15)
+        check('Mail-disabled installation hides public registration recovery and resend',
+              unavailable_registration.status_code == 200
+              and not has_form(unavailable_registration, 'public_register')
+              and 'not available yet' in unavailable_registration.text
+              and '?register=1' not in unavailable_login.text
+              and '?forgot=1' not in unavailable_login.text
+              and '?resend=1' not in unavailable_login.text)
         db("UPDATE ci_settings SET value='mail' WHERE name='email_mode'")
         db("UPDATE ci_settings SET value='studio@example.invalid' WHERE name='mail_from'")
         check('Installed public identity storage is prepared',
@@ -269,7 +285,7 @@ def run_browser(env, browser):
 
         registration = visitor.get(register_url, timeout=15)
         initial_mail = mail_offset()
-        created = post_identity(visitor, register_url, registration, 'public_register', {
+        created, created_seconds = timed_identity(visitor, register_url, registration, 'public_register', {
             'name': 'Identity Browser Customer',
             'email': EMAIL,
             'password': 'Ignored preregistration input',
@@ -297,12 +313,17 @@ def run_browser(env, browser):
         duplicate_mail = mail_offset()
         duplicate_session = requests.Session()
         duplicate_page = duplicate_session.get(register_url, timeout=15)
-        duplicate = post_identity(duplicate_session, register_url, duplicate_page, 'public_register',
-                                  {'name': 'Duplicate Probe', 'email': EMAIL})
+        duplicate, duplicate_seconds = timed_identity(
+            duplicate_session, register_url, duplicate_page, 'public_register',
+            {'name': 'Duplicate Probe', 'email': EMAIL},
+        )
         check('Duplicate registration keeps the same neutral public response',
               'If that address can be registered, a verification link has been sent.' in duplicate.text
               and len(db('SELECT id FROM ci_studio_clients WHERE email=?', [EMAIL])) == 1
               and mail_offset() == duplicate_mail)
+        check('Eligible and duplicate registration share the bounded neutral timing envelope',
+              6.5 <= created_seconds <= 10.0 and 6.5 <= duplicate_seconds <= 10.0
+              and abs(created_seconds - duplicate_seconds) <= 1.5)
 
         db("UPDATE ci_studio_client_tokens t JOIN ci_studio_clients c ON c.id=t.client_id SET t.expires_at=? WHERE c.email=? AND t.purpose='verify'",
            [1, EMAIL])
@@ -314,7 +335,9 @@ def run_browser(env, browser):
         unknown_resend = requests.Session()
         unknown_page = unknown_resend.get(resend_url, timeout=15)
         unknown_mail = mail_offset()
-        unknown_response = post_identity(unknown_resend, resend_url, unknown_page, 'public_resend', {'email': UNKNOWN_EMAIL})
+        unknown_response, unknown_resend_seconds = timed_identity(
+            unknown_resend, resend_url, unknown_page, 'public_resend', {'email': UNKNOWN_EMAIL},
+        )
         check('Unknown resend remains neutral without producing mail',
               'If that address belongs to a pending account' in unknown_response.text
               and mail_offset() == unknown_mail)
@@ -322,9 +345,14 @@ def run_browser(env, browser):
         resend = requests.Session()
         resend_page = resend.get(resend_url, timeout=15)
         replacement_mail = mail_offset()
-        resend_response = post_identity(resend, resend_url, resend_page, 'public_resend', {'email': EMAIL})
+        resend_response, resend_seconds = timed_identity(
+            resend, resend_url, resend_page, 'public_resend', {'email': EMAIL},
+        )
         check('Pending resend uses the neutral replacement response',
               'If that address belongs to a pending account' in resend_response.text)
+        check('Eligible and unknown resend share the bounded neutral timing envelope',
+              6.5 <= unknown_resend_seconds <= 10.0 and 6.5 <= resend_seconds <= 10.0
+              and abs(unknown_resend_seconds - resend_seconds) <= 1.5)
         verify_url, verify_token = captured_link(
             replacement_mail, 'verify', '24 hours', 'Replacement verification',
         )
@@ -364,7 +392,7 @@ def run_browser(env, browser):
         unknown_recovery = requests.Session()
         unknown_recovery_page = unknown_recovery.get(forgot_url, timeout=15)
         unknown_recovery_mail = mail_offset()
-        unknown_recovery_response = post_identity(
+        unknown_recovery_response, unknown_recovery_seconds = timed_identity(
             unknown_recovery, forgot_url, unknown_recovery_page, 'public_recovery_request',
             {'email': UNKNOWN_EMAIL},
         )
@@ -375,11 +403,14 @@ def run_browser(env, browser):
         recovery = requests.Session()
         recovery_page = recovery.get(forgot_url, timeout=15)
         recovery_mail = mail_offset()
-        recovery_response = post_identity(
+        recovery_response, recovery_seconds = timed_identity(
             recovery, forgot_url, recovery_page, 'public_recovery_request', {'email': EMAIL},
         )
         check('Eligible recovery uses the same neutral public response',
               'If that address is eligible for recovery' in recovery_response.text)
+        check('Eligible and unknown recovery share the bounded neutral timing envelope',
+              6.5 <= unknown_recovery_seconds <= 10.0 and 6.5 <= recovery_seconds <= 10.0
+              and abs(unknown_recovery_seconds - recovery_seconds) <= 1.5)
         reset_url, _ = captured_link(recovery_mail, 'reset', 'one hour', 'Recovery')
         reset_session = requests.Session()
         reset_metadata = token_metadata('recover')
