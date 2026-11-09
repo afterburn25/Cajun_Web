@@ -778,7 +778,7 @@
       "site/app/providers/cloud_site_requests.php": "aaafdf5210e00e92a946b19186e5e72f2c0025f0277da38c368d844b5f49e84d",
       "site/app/providers/cloud_site_requests_views.php": "0a5f61bee9af8c9ca805bdfc0bf820c34ea70eec15aed6559428b6fb93bb5539",
       "tests/cloud_site_requests_ui_contract.php": "01016f139e72c31aedb53bfa10a5e5e477e1247cd29efa16e0095049c7210234",
-      "tests/provider_cloud_site_requests_cases.py": "66e9c9c8febe28604b93b3eaaee12ce4a5367fbf2c555597f1db54553c1eb0ed",
+      "tests/provider_cloud_site_requests_cases.py": "d47561b91d788b742905173f2ec24ff3103760ef4492d19d2a8f233280623d1a",
       "tests/provider_cloud_site_requests_native.php": "365d9bb50af2dbf8f61d931f096cc52e870c23205f51febedb5407f18986c059",
       "tests/cloud_site_intake_contract.php": "0afa7765917c2f26937884c9baea5559c62aa90e17fea152f735b9ea4eb6e03b",
       "tests/cloud_site_intake_wiring.py": "5b38379d10d44ceb903bb77fdfe7849ad8feecd1cd5585ebe741e21ad959be8f"
