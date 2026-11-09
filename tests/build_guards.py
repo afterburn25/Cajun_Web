@@ -39,6 +39,20 @@ def release_fixture(root,commit='a'*40,version='9.8.7'):
     return commit,version
 try:
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+    check('Builder excludes single-level Cline Markdown guidance from FULL-PROJECT',
+        build.source_only_agent_guidance('.clinerules/01-cajunwebpro-continuity.md'))
+    check('Builder does not exclude Cline runtime PHP',
+        not build.source_only_agent_guidance('.clinerules/runtime.php'))
+    check('Builder does not exclude Cline key material',
+        not build.source_only_agent_guidance('.clinerules/secret.key'))
+    check('Builder does not exclude Cline JSON configuration',
+        not build.source_only_agent_guidance('.clinerules/config.json'))
+    check('Builder does not exclude nested Cline Markdown',
+        not build.source_only_agent_guidance('.clinerules/deep/agent.md'))
+    check('Builder does not exclude another-agent Markdown',
+        not build.source_only_agent_guidance('.other-agent/01-continuity.md'))
+    rejects('Builder still refuses unknown Cline runtime paths',
+        lambda:build.full_project_area('.clinerules/runtime.php'))
     long_name='site/includes/foundation/mail-receiving/vendor/zbateson/mail-mime-parser/src/Header/Consumer/QuotedStringMimeLiteralPartTokenSplitPatternTrait.php'
     check('Builder reads the exact long dependency Git blob without filesystem path ambiguity',build.source_bytes(commit,long_name)==(ROOT/long_name).read_bytes())
     version_root=WORK/'version-check';version_root.mkdir();(version_root/'VERSION').write_text((ROOT/'VERSION').read_text())

@@ -99,6 +99,8 @@ jobs:
       - name: Build exact direct-extract candidate packages
         run: python3 tools/build.py --commit "$GITHUB_SHA"
       - name: Prepare pristine public historical fixtures
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python3 tests/prepare_legacy.py
       - name: Seed the real installed-site browser fixture
         run: php8.3 tests/native.php

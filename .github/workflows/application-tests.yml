@@ -118,9 +118,21 @@ jobs:
           python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt
       - name: Prepare only pristine public historical fixtures
         id: fixtures
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
-          python3 tests/prepare_legacy.py | tee qa/legacy-preparation.txt
+          : > qa/legacy-preparation.txt
+          for attempt in 1 2 3; do
+            if python3 tests/prepare_legacy.py 2>&1 | tee -a qa/legacy-preparation.txt; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            printf 'Historical fixture preparation attempt %s failed; retrying after bounded delay.\n' "$attempt" | tee -a qa/legacy-preparation.txt
+            sleep "$((attempt * 10))"
+          done
       - name: Seal exact build and public inputs
         id: inputs
         run: python3 tools/acceptance_artifacts.py pack-inputs

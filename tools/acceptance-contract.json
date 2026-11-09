@@ -656,6 +656,9 @@
         "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
         "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6"
       },
+      "current_source_sha256": {
+        "tests/prepare_legacy.py": "66e1620ce25ea6f7bfc5c6a0c8a66690d26df2cda15bae9f430da8bcd716bb60"
+      },
       "unchanged_historical_versions": 27,
       "new_members": 2895,
       "input_guard_correction": {

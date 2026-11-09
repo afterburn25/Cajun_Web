@@ -110,6 +110,8 @@ DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = 'ac
 DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '368048a13179629c5ce37f8b355b425a928724f72821e7eb9e29ba830405ee4f'
 DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657c225ee8dcd1af78ebafe1fe7beb7220af868c792e30ec5530c16e4b'
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
+DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['current'] = '26243783910e73df36b0efe90137b56d37d8832f2df7191796ee9fb21c21248c'
+DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['delta'] = '334c53286ccf214c8c9ddd210bd53e5105e2508e4b1311bfffe6890ffd3d2fbd'
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
 DATABASE_WORKFLOW_SOURCE = 'aeeea87e4d0d31dcfc187daed1a29cb9946d907c'
@@ -278,10 +280,30 @@ REPAIRS = REPAIRS | frozenset((
 # UX-07 extends the repair set only with existing files from the immutable
 # repair checkpoint. Its seven genuinely new source files remain disjoint.
 REPAIRS = REPAIRS | DATABASE_WORKFLOW_REPAIRS
+# Release-asset delivery repairs only the four additional existing fixture,
+# workflow and test paths; Application and its guard are already retained repairs.
+REPAIRS = REPAIRS | frozenset((
+    '.github/workflows/license-financing-browser.yml',
+    '.github/workflows/software-release-125-upgrade.yml',
+    'tests/prepare_legacy.py',
+    'tests/software_release_125_harness_tests.py',
+))
+# The staff-invite observability successor changes only this retained browser
+# fixture. Its exact predecessor remains reconstructed for component checks.
+REPAIRS = REPAIRS | frozenset(('tests/staff_cases.py',))
+DATABASE_WORKFLOW_SUCCESSOR_EDITS = {
+    '.github/workflows/application-tests.yml': 6,
+    'tests/acceptance_artifacts_test.py': 5,
+    'tests/account_notification_workflow_contract.py': 4,
+    'tools/acceptance-contract.json': 17,
+}
 # Session narratives may be prefixed by the integration owner. They are not
 # executable/source receipts; every other historical document remains bound.
 NARRATIVES = frozenset((
+    'AGENTS.md', '.clinerules/01-cajunwebpro-continuity.md',
     'CHANGELOG.md', 'PROJECT_STATUS.md', 'SESSION_HANDOFF.md',
+    'docs/AI_AGENT_CONTINUITY.md',
+    'docs/agent-handoffs/2026-11-08-codex-release-stack-integration.md',
     'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
     'docs/RELEASES.md', 'docs/ROADMAP.md', 'docs/SESSION_LOG.md',
 ))
@@ -337,7 +359,7 @@ REPAIR_SHA256['site/admin/controllers/studio.php'] = '77501d58a9c577587fd8052025
 REPAIR_SHA256['site/admin/views/studio/upgrade.php'] = '37fe5df5ca0bf48e0d2843f7dbaf07412c8b8a345daa53879573da370c352e49'
 REPAIR_SHA256['site/app/staff/accounts.php'] = '149eb237a32b304b19edc5fbd3c556978834c6de22f00247ccd9609755df4ea6'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '10c42783e6be677e2a4d630adbf4583f53bf1065b256706c6fb3517d3a135fa5'
-REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '0d04682880e1b5ffee147f446ec332e857e2e4f6bed35eee0fe3a968343be046'
+REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = 'bc4317c73f9e9c1e7b1b99671c7627d9701aa4cc9c0ce58f35cd7fb228bc4fcf'
 REPAIR_SHA256['tests/admin_20i_populated_upgrade.py'] = '23980a8fb6da772c101a4a33e1db5e3d9e77768a8f75aeac377d6b509dd1f8a2'
 REPAIR_SHA256['tests/browser_acceptance.py'] = '76cc1bebf0cff397a46bb920db598d25669d6a205a22cc8467d23abfc01a86a1'
 REPAIR_SHA256['tests/owner_update_session_policy.php'] = 'b12346f03f23d130bd32f9c03fe862abb0fe75c8cdff5a7d26ded960290df6b5'
@@ -347,6 +369,22 @@ REPAIR_SHA256['tools/acceptance-contract.json'] = 'a4f6d568865513547c86f20269176
 REPAIR_SHA256['tools/acceptance-reports.json'] = 'e7d9d2b1f66f72109c434c96303611062c7236bfe24cdcf296e5a0080c88a2b8'
 REPAIR_SHA256['tools/update/owner-update.php'] = 'f151c1f042841853bfd36cc60ec0629cd8cc1b8d4c0da5af57562d4239e9cec5'
 # END GENERATED DATABASE WORKFLOW REPAIR IDENTITIES
+REPAIR_SHA256['tools/build.py'] = '85d3a6762852afa633c047ec7c138b8afe7cb0df08724034ba6a0d39d6065c77'
+REPAIR_SHA256['tests/build_guards.py'] = 'b85c6c2de743b6df813362c3714eab02dbe70a63f0e5a9d71e74ebd9d873a1c8'
+REPAIR_SHA256['.github/workflows/application-tests.yml'] = 'a4ece2460ea61f9fa9ed8f77c80bba9956c0eeea18b1232ef2a0a28972a3d599'
+REPAIR_SHA256['.github/workflows/software-release-125-upgrade.yml'] = 'e66c3724bbc0f5ce0d65f7b711037c2b9f53108a43097b061c465b4b561ba4eb'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '25723015f3b3578cb1e0334c125e93f7b40da827d46458154b6c97607e454684'
+REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = '34efecf23833da592141292e0c1a12c6bbff3dd165a07749057afe60cf0b458e'
+REPAIR_SHA256['.github/workflows/application-tests.yml'] = '5ddd172b5ede5221799575b5a604e32f43e6415e7cf824fd7cf4c4222f706d09'
+REPAIR_SHA256['.github/workflows/software-release-125-upgrade.yml'] = '95a66a528da11ad358a9e9fba711afb4461d4a1d9fed25fed78908e0647fe51d'
+REPAIR_SHA256['tests/prepare_legacy.py'] = '66e1620ce25ea6f7bfc5c6a0c8a66690d26df2cda15bae9f430da8bcd716bb60'
+REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = 'aed628120c02169b833042992b3bd2bee520870029ed0ddfdfc91623c9b18a0d'
+REPAIR_SHA256['.github/workflows/license-financing-browser.yml'] = '46e929ef2652ff8f6ecb2cf3ccdfc21289f4fb32d449ede6045303c88a040abc'
+REPAIR_SHA256['tests/software_release_125_harness_tests.py'] = 'd5f802cc6774179c35fafab703951d89633fed2f22377ef291d5ab31f79546d3'
+REPAIR_SHA256['tests/cloud_site_requests_wiring.py'] = 'a6cde5e837c572a9c2bf3fa5ea6572fc4f506146ac35be291b8189c6ee23a36e'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '7ec735ad0c767b6d450df7ffe66355f65d0244e900048343ad61885bfa08abda'
+REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = 'aed38862b2b66cdcc01262b2daaf639994d53599733ed9c8b00b259692cccf1d'
+REPAIR_SHA256['tests/staff_cases.py'] = '9446930e4f511848dfa1de1be20b20569b351d5e77990336fc733fac05fcc0ee'
 # END GENERATED INTEGRATION REPAIR IDENTITIES
 
 _PROJECTIONS = {}
@@ -688,6 +726,24 @@ def reconstruct_repair(data, path, current):
     return original
 
 
+def reconstruct_database_workflow_successor(data, path, current):
+    """Reverse only the final post-UX07 edit before proving the exact UX07 source."""
+    require(path in DATABASE_WORKFLOW_SUCCESSOR_EDITS, 'Unknown database workflow successor')
+    row = data['integration_repairs'][path]
+    require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path]
+            and len(row['edits']) == DATABASE_WORKFLOW_SUCCESSOR_EDITS[path],
+            'Current database workflow successor changed: ' + path)
+    before, after = row['edits'][-1]
+    text = current.decode('utf-8')
+    require(text.count(after) == 1, 'Nonunique database workflow successor inverse: ' + path)
+    predecessor = text.replace(after, before, 1)
+    require(predecessor.count(before) == 1,
+            'Nonunique database workflow successor forward change: ' + path)
+    require(predecessor.replace(before, after, 1).encode('utf-8') == current,
+            'Database workflow successor is not reversible: ' + path)
+    return predecessor.encode('utf-8')
+
+
 def reconstruct_addition(data, path, current):
     """Retain each exact new PR331 file while running its current reviewed bytes."""
     require(path in ADDITIONS, 'Unknown contact addition')
@@ -849,8 +905,10 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        require(ordinary(root, path)
-                == git(root, 'cat-file', 'blob', DATABASE_WORKFLOW_SOURCE + ':' + path)
+        value = ordinary(root, path)
+        if path in DATABASE_WORKFLOW_SUCCESSOR_EDITS:
+            value = reconstruct_database_workflow_successor(data, path, value)
+        require(value == git(root, 'cat-file', 'blob', DATABASE_WORKFLOW_SOURCE + ':' + path)
                 and mode(root, path) == database_source_entries[path][0],
                 'Current database workflow bytes or mode differ from exact source: ' + path)
     for path in sorted(DATABASE_WORKFLOW_ADDITIONS):

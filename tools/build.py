@@ -74,6 +74,12 @@ def safe(name):
                    or part.split('.')[0].upper() in reserved for part in p.parts)):
         raise RuntimeError('Unsafe path: '+str(name))
 
+def source_only_agent_guidance(name):
+    safe(name)
+    parts=PurePosixPath(name).parts
+    return (len(parts)==2 and parts[0]=='.clinerules'
+            and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*\.md',parts[1]) is not None)
+
 def recorded_source(root,revision):
     if not re.fullmatch(r'[0-9a-f]{40}',revision or ''):raise RuntimeError('A full recorded commit is required')
     commit=subprocess.check_output(['git','rev-parse',revision+'^{commit}'],cwd=root,text=True).strip()
@@ -344,6 +350,7 @@ def main():
         for n in tracked:
             safe(n);p=ROOT/n
             if p.is_symlink():raise RuntimeError('Project contains symlink')
+            if source_only_agent_guidance(n):continue
             full_project_area(n)
             # Repository ZIP fixtures are useful for upgrade/installer tests but
             # must never be embedded inside a distributed archive. Keep them in

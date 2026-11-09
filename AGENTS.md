@@ -1,16 +1,16 @@
 # Working agreement for CajunWebPro
 
-## Current owner directive - 2026-10-19
+## Current owner directive - 2026-11-04
 
-**Devin is the sole end-to-end implementation, integration and release owner for `afterburn25/Cajun_Web`. First review and merge completed work from BOTH workers into current main; then continue ALL remaining 20i and non-20i work through tested incremental releases.** Read [DEVIN_START_HERE.md](DEVIN_START_HERE.md) and [the full takeover directive](docs/DEVIN_FULL_SITE_TAKEOVER.md).
+**Codex owns all 20i and non-20i implementation, integration and release coordination for `afterburn25/Cajun_Web` for now.** [Issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) is the authoritative master queue, [PR #360](https://github.com/afterburn25/Cajun_Web/pull/360) is the prepared documentation handoff, and the active coordinator marker in [PR #340](https://github.com/afterburn25/Cajun_Web/pull/340) controls shared ownership. Refresh that marker before shared work and respect any newer active coordinator.
 
-This supersedes historical instructions reserving 20i/provider/SSH/shared seams/main merges/releases to Codex or restricting Devin to non-20i. Devin must not wait for Codex to execute the next task. Other workers preserve their source/evidence and do not start overlapping implementation without a later owner assignment. Publishing this directive does not stop or start external sessions. Preserve independent review and repository protection requirements; ownership transfer is not permission to bypass checks.
+This supersedes historical Devin-only ownership assignments, but not product, review, source-verification, data-preservation, repository-protection or live-operation requirements. Use one integration lead and at most three bounded workers on separate files and branches when parallel work is supported. Shared routing, authorization, schema, billing, source-proof and release changes remain with the integration lead. Other workers preserve their source/evidence and do not start overlapping implementation without an active assignment. Publishing this directive does not stop or start external sessions, and ownership transfer is not permission to bypass checks.
 
-The authoritative application integration branch is main. At handoff its source was `a86f6f4fa592e6f715a9420aec8de4622258642e`, and the latest published release was v1.25.0 at `b79c67110829126916e3a65e616191542448bccc`. Refresh those facts at session start. Preserve previous tags/assets. Development code and published downloads are different states.
+The authoritative application integration branch is main. The 2026-11-08 verified checkpoint is `a77533e18e96e62fb6fa1ff49def589597470760`, tree `0c3408bed891cdd59938b2011498ff96d322bb7b`, development version 1.26.1. The latest published v1.26.1 source is `f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391`; refresh all facts at session start. Preserve previous tags/assets. Development code, an accepted main commit and published downloads are different states.
 
 ## Standing owner directive - merge-first (2026-10-20, reaffirmed)
 
-**Merging completed, tested work into `main` is a standing top priority; keep `main` caught up with completed development.** This applies to all existing Codex/Devin work and every future feature. Do not let finished work accumulate on feature or integration branches.
+**Merging completed, tested work into `main` is a standing top priority; keep `main` caught up with completed development.** This applies to retained work from every agent and candidate and to every future feature. Do not let finished work accumulate on feature or integration branches.
 
 - Clear the integration backlog first: reconcile every candidate against current `main` (integrated / ready / blocked-with-specific-blocker / incomplete) in `docs/DEVIN_INTEGRATION_QUEUE.md`. Preserve and reuse existing work; never rebuild because a PR is closed or a branch name is confusing.
 - Normal cycle: implement a coherent feature, test it, complete required review, merge to `main`, verify `main`, then start the next feature. A completed branch is still pending delivery until its accepted implementation reaches `main`. Prefer small independent increments over one large integration batch; keep each candidate stable while its acceptance runs.
@@ -24,9 +24,9 @@ This directive persists across sessions and qualifies under the existing owner a
 
 ## Begin every session
 
-Read the current status, handoff, project direction, complete roadmap, relevant feature guides, coordination and release workflow. Inspect current main, PR ancestry, exact heads, review discussions and actual test results before choosing work. Preserve local uncommitted edits and other workers' frozen heads. Create a Devin-owned integration/feature branch; do not force-push or reset another checkout.
+Read the current status, handoff, project direction, complete roadmap, relevant feature guides, coordination and release workflow. Inspect current main, PR ancestry, exact heads, review discussions and actual test results before choosing work. Preserve local uncommitted edits and other workers' frozen heads. Create a task-specific integration or feature branch under the active coordinator; do not force-push or reset another checkout.
 
-The P0 task is the integration inventory and first ready merge group, not another broad speculative foundation. Use the full directive's READY / NEEDS CORRECTION OR ACCEPTANCE / INCOMPLETE / ALREADY INTEGRATED distinctions. Do not treat a draft, branch count, old passing parent or mergeable flag as current acceptance. Normal-merge accepted histories sequentially, resolve shared auth/schema/billing/navigation/installer behavior intentionally, regenerate mirrors and test the combined result. Do not leave accepted work unmerged solely because an old document assigns integration to Codex.
+The P0 task is the integration inventory and first ready merge group, not another broad speculative foundation. Use the current integration queue and master issue classifications: READY / NEEDS CORRECTION OR ACCEPTANCE / INCOMPLETE / ALREADY INTEGRATED. Do not treat a draft, branch count, old passing parent or mergeable flag as current acceptance. Normal-merge accepted histories sequentially, resolve shared auth/schema/billing/navigation/installer behavior intentionally, regenerate mirrors and test the combined result. Do not leave accepted work unmerged solely because an older document names a different owner.
 
 ## Preserve the product and data
 
@@ -47,7 +47,7 @@ Use valid exact-source evidence instead of repeating finished investigations. Pr
 
 Normal-merge reviewed accepted source to current main, then complete required exact-main acceptance. Publish immutable versioned FULL-PROJECT, COMPLETE-UPLOAD and UPDATE artifacts plus current manifests/checksums/reports/evidence/migration instructions. Download draft/public assets as required and verify them against the accepted bytes. Provide actual build screenshots and the owner-ready ZIP links. A branch build is not a release, and a release is not live deployment. Do not wait for the entire roadmap before delivering safe incremental releases.
 
-Independent review remains required where the repository requires it. Devin now coordinates it; Codex specifically is not a prerequisite. Label same-agent checks as self-review. Do not bypass required external approval; report the narrow dependency and continue independent work.
+Independent review remains required where the repository requires it. The active integration lead coordinates review; Codex ownership is not independent approval. Label same-agent checks as self-review. Do not bypass required external approval; report the narrow dependency and continue independent work.
 
 ## Authority
 
@@ -70,3 +70,7 @@ Maintain PROJECT_STATUS.md, SESSION_HANDOFF.md, CHANGELOG.md, docs/ROADMAP.md, d
 Use stable requirement IDs and distinct implemented/tested/integrated/released/live columns; do not inherit chat percentages as audited counters or inflate progress to maintain an upward trend. Preserve historical reports, but put the current ownership and next action first. Commit the handoff before a session limit; do not claim continued background execution without an active supported runner.
 
 The full [previous working agreement](https://github.com/afterburn25/Cajun_Web/blob/a86f6f4fa592e6f715a9420aec8de4622258642e/AGENTS.md) remains available as historical evidence. Its product/safety/acceptance requirements continue except where the current explicit owner directive supersedes ownership or sequencing. Earlier source-discovery and 1.25 release-freeze tasks must not be repeated as though they are still pending.
+
+## Local and cross-agent GitHub continuity - 2026-11-08
+
+Cline/Ollama, Codex and future agents must follow [the shared continuity protocol](docs/AI_AGENT_CONTINUITY.md) and preserve task-scoped, evidence-backed handoffs under `docs/agent-handoffs/`. Cline also loads the repository's [workspace rule](.clinerules/01-cajunwebpro-continuity.md). These additions supplement the existing session/status/decision documents; they do not change the current assignment or active PR #340 coordinator, authorize overlapping implementation, or relax GitHub write, review, release or live-operation gates. A newer active coordinator wins. A handoff exists on GitHub only after an actual permitted push; never claim durable publication from local edits alone.
