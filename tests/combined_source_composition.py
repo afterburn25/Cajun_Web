@@ -215,16 +215,16 @@ CLOUD_INTAKE_SUCCESSOR_EDIT_COUNTS = {
     'site/app/providers/cloud_site_requests_views.php': 1,
     'tests/acceptance_artifacts_test.py': 8,
     'tests/cloud_site_requests_ui_contract.php': 1,
-    'tests/provider_cloud_site_requests_cases.py': 6,
+    'tests/provider_cloud_site_requests_cases.py': 9,
     'tests/provider_cloud_site_requests_native.php': 4,
-    'tools/acceptance-contract.json': 20,
+    'tools/acceptance-contract.json': 21,
     'tools/acceptance-reports.json': 7,
 }
 CLOUD_INTAKE_CI_SUCCESSOR_EDITS = {
     'tests/acceptance_artifacts_test.py': 1,
     'tests/account_notification_workflow_contract.py': 1,
-    'tests/provider_cloud_site_requests_cases.py': 1,
-    'tools/acceptance-contract.json': 1,
+    'tests/provider_cloud_site_requests_cases.py': 4,
+    'tools/acceptance-contract.json': 2,
 }
 CLOUD_INTAKE_CI_PREDECESSOR_SHA256 = {
     'tests/acceptance_artifacts_test.py': '93a31d163c487716e74f60ed005a2f19e9d7b9dcca66be452f0f26194867599e',
@@ -235,8 +235,8 @@ CLOUD_INTAKE_CI_PREDECESSOR_SHA256 = {
 CLOUD_INTAKE_CI_EDIT_COUNTS = {
     'tests/acceptance_artifacts_test.py': 8,
     'tests/account_notification_workflow_contract.py': 5,
-    'tests/provider_cloud_site_requests_cases.py': 6,
-    'tools/acceptance-contract.json': 20,
+    'tests/provider_cloud_site_requests_cases.py': 9,
+    'tools/acceptance-contract.json': 21,
 }
 REPAIRS = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
@@ -482,9 +482,9 @@ REPAIR_SHA256['site/app/providers/cloud_site_requests.php'] = 'aaafdf5210e00e92a
 REPAIR_SHA256['site/app/providers/cloud_site_requests_views.php'] = '0a5f61bee9af8c9ca805bdfc0bf820c34ea70eec15aed6559428b6fb93bb5539'
 REPAIR_SHA256['tests/acceptance_artifacts_test.py'] = '93a31d163c487716e74f60ed005a2f19e9d7b9dcca66be452f0f26194867599e'
 REPAIR_SHA256['tests/cloud_site_requests_ui_contract.php'] = '01016f139e72c31aedb53bfa10a5e5e477e1247cd29efa16e0095049c7210234'
-REPAIR_SHA256['tests/provider_cloud_site_requests_cases.py'] = 'd47561b91d788b742905173f2ec24ff3103760ef4492d19d2a8f233280623d1a'
+REPAIR_SHA256['tests/provider_cloud_site_requests_cases.py'] = '1620f07cd900791ec309aefc445a2f5295272d83a38633f552d6b14e973571cb'
 REPAIR_SHA256['tests/provider_cloud_site_requests_native.php'] = '365d9bb50af2dbf8f61d931f096cc52e870c23205f51febedb5407f18986c059'
-REPAIR_SHA256['tools/acceptance-contract.json'] = '41d7ad6ac5966d6ab83da88ba55a9f66b58c05d7ab661ce9875dca4eec74697a'
+REPAIR_SHA256['tools/acceptance-contract.json'] = '726470f1599cc9352a39445cd965bdcd44a4512ff4a077420686c3ba4df0d913'
 REPAIR_SHA256['tools/acceptance-reports.json'] = '0bb0377061c504fcc4b7c1740558217d726b358a8edd99d5591b0afec989d8cb'
 # END GENERATED CLOUD INTAKE REPAIR IDENTITIES
 REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '8e119d1f951a9b12f128f769ae2a2762e5dc0cd703a0516c6467cfea2881cf4a'

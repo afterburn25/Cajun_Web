@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "7bad9b02d2b59ed0113ce463a76c1993c3669639281b9b71c73d55e9981dbfec",
+  "verifier_sha256": "ea89fe50851bdfc12a28e5bf58af85be05642e85502b42bf12164d8389dc94e8",
   "regression_sha256": "e11251696b493912e28380ba3fdb28238644d9f22caaee45dcd87c25df4989de",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -1239,7 +1239,7 @@
     },
     "tools/acceptance-contract.json": {
       "original_sha256": "9643215ae460885d52fb241ca441893767b0449e9dcbb1bdd5f52190aa3a9558",
-      "current_sha256": "41d7ad6ac5966d6ab83da88ba55a9f66b58c05d7ab661ce9875dca4eec74697a",
+      "current_sha256": "726470f1599cc9352a39445cd965bdcd44a4512ff4a077420686c3ba4df0d913",
       "edits": [
         [
           "      \"tests/release_cases.py\": \"807837a2d42796a8b3661c3fe5da647a4a6f88fc75c25a5a81c42c35943b41af\",\n",
@@ -1320,6 +1320,10 @@
         [
           "      \"tests/provider_cloud_site_requests_cases.py\": \"66e9c9c8febe28604b93b3eaaee12ce4a5367fbf2c555597f1db54553c1eb0ed\",\n",
           "      \"tests/provider_cloud_site_requests_cases.py\": \"d47561b91d788b742905173f2ec24ff3103760ef4492d19d2a8f233280623d1a\",\n"
+        ],
+        [
+          "      \"tests/provider_cloud_site_requests_cases.py\": \"d47561b91d788b742905173f2ec24ff3103760ef4492d19d2a8f233280623d1a\",\n",
+          "      \"tests/provider_cloud_site_requests_cases.py\": \"1620f07cd900791ec309aefc445a2f5295272d83a38633f552d6b14e973571cb\",\n"
         ]
       ]
     },
@@ -1429,7 +1433,7 @@
     },
     "tests/provider_cloud_site_requests_cases.py": {
       "original_sha256": "84e42344a2a03d42cb9bbb5d063b69e601224a0a1c9dce2bc20d19704df73bfb",
-      "current_sha256": "d47561b91d788b742905173f2ec24ff3103760ef4492d19d2a8f233280623d1a",
+      "current_sha256": "1620f07cd900791ec309aefc445a2f5295272d83a38633f552d6b14e973571cb",
       "edits": [
         [
           "            'audit': db('SELECT * FROM ci_audit WHERE action IN (?,?) ORDER BY id',\n                        ['provider.cloud_site_request_prepared', 'provider.cloud_site_request_event']),\n            'calls': provider.calls,\n            'posts': copy.deepcopy(provider.posts),\n        }\n\n    def refresh(action, operation, label):\n        # Admission uses this actual profile's latest immutable refresh start.\n        # Wait at most 32 seconds; never change an authenticated timestamp.\n        latest = db('SELECT MAX(started_epoch) AS epoch FROM ci_provider_refreshes WHERE profile_id=?',\n                    [profile['id']])[0]['epoch']\n        delay = max(0.0, float(latest or 0) + 31 - time.time())\n        if delay > 32:\n",
@@ -1454,6 +1458,18 @@
         [
           "        refused_dispatch = post(owner, settings, prior_dispatch, reviewed='1', current_password=OWNER)\n",
           "        refused_dispatch = post(owner, settings, prior_dispatch, reviewed='1')\n"
+        ],
+        [
+          "No native fixture state, clock edits, quota resets or live 20i calls are used.\n",
+          "Only unrelated synthetic reads are aged through the existing bounded helper;\nall retained cloud-source timestamps and bytes remain unchanged.\n"
+        ],
+        [
+          "from playwright.sync_api import expect\nfrom release_cases import db\n",
+          "from playwright.sync_api import expect\nfrom cloud_assignment_fixture import age_unprotected_refreshes\nfrom release_cases import db\n"
+        ],
+        [
+          "    checks, captures, names = [], [], set()\n\n    def check(name, condition):\n",
+          "    checks, captures, names = [], [], set()\n\n    # This continuation adds four authenticated reads to a long shared browser\n    # fixture. Age only unrelated synthetic reads before adding them; the\n    # helper proves every retained cloud-server source byte is unchanged.\n    age_unprotected_refreshes(7200, profile['id'])\n\n    def check(name, condition):\n"
         ]
       ]
     },
