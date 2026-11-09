@@ -317,6 +317,22 @@ UX09_MAIL_REVIEW_SHA256 = {
     'tests/client_identity_policy.php': '8e83106f2ea03275bb806b4413cd2da8dc07a4ebd2b4a42176b4ed98a86f8530',
     'tools/acceptance-contract.json': '647284bd38be6094e699dbe317d9cdffacb9a868560d97c0aee98db741d9a1a8',
 }
+UX09_SMTP_REJECTION_BASE = 'bb64fe65c1b99c3e90da70ba21345cfdb615457d'
+UX09_SMTP_REJECTION_BASE_TREE = '088bab54a414c2661a1cba1bb3c3278267fe5afe'
+UX09_SMTP_REJECTION_SOURCE = '26930e830544d6fe68ef426999e8d81de688a4fe'
+UX09_SMTP_REJECTION_SOURCE_TREE = 'dc05d778d289bb955568dfca546d3bede5d81b7e'
+UX09_SMTP_REJECTION_MODIFIED = frozenset((
+    'site/app/mail/transport.php',
+    'site/install/inventory.generated.php',
+    'tests/client_identity_policy.php',
+    'tools/acceptance-contract.json',
+))
+UX09_SMTP_REJECTION_SHA256 = {
+    'site/app/mail/transport.php': '3b4e684a05ccb7de31b81ae4fed76304ff8faee5befb716a5be58aee0971a8ce',
+    'site/install/inventory.generated.php': '8f34c3841018f675fc3d7fad32b145b3521a8fea12846efce3d9bb928ace46c0',
+    'tests/client_identity_policy.php': 'f613746da519f5ea009d1cad8c7c7736bc6a3e93ff5cabae2e86ace85baca436',
+    'tools/acceptance-contract.json': '6cba59bbdc8116bd14147febb1463a43a62a31aef298987b20559d85dac098c8',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -733,6 +749,8 @@ def hydration_origin(root, head):
         (UX09_CLOUD_PROOF_SOURCE, UX09_CLOUD_PROOF_SOURCE_TREE, 'UX-09 cloud-proof source'),
         (UX09_MAIL_REVIEW_BASE, UX09_MAIL_REVIEW_BASE_TREE, 'UX-09 mail-review base'),
         (UX09_MAIL_REVIEW_SOURCE, UX09_MAIL_REVIEW_SOURCE_TREE, 'UX-09 mail-review source'),
+        (UX09_SMTP_REJECTION_BASE, UX09_SMTP_REJECTION_BASE_TREE, 'UX-09 SMTP-rejection base'),
+        (UX09_SMTP_REJECTION_SOURCE, UX09_SMTP_REJECTION_SOURCE_TREE, 'UX-09 SMTP-rejection source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -986,7 +1004,8 @@ def validate_ux09_source(root):
         row = data['modified'][path]
         before = git(root, 'cat-file', 'blob', UX09_BASE + ':' + path)
         current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
-        actual = project_ux09_mail_review(root, path, ordinary(root, path))
+        actual = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        actual = project_ux09_mail_review(root, path, actual)
         actual = project_ux09_cloud_proof(root, path, actual)
         actual = project_ux09_security(root, path, actual)
         require(isinstance(row, dict) and set(row) == {'base_sha256', 'source_sha256', 'mode'}
@@ -997,7 +1016,8 @@ def validate_ux09_source(root):
                 'UX-09 modified source identity changed: ' + path)
     for path in sorted(UX09_ADDITIONS):
         row = data['added'][path];current = git(root, 'cat-file', 'blob', UX09_SOURCE + ':' + path)
-        actual = project_ux09_mail_review(root, path, ordinary(root, path))
+        actual = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        actual = project_ux09_mail_review(root, path, actual)
         actual = project_ux09_cloud_proof(root, path, actual)
         actual = project_ux09_security(root, path, actual)
         require(isinstance(row, dict) and set(row) == {'source_sha256', 'mode'}
@@ -1065,7 +1085,8 @@ def validate_ux09_security_source(root):
             'UX-09 security successor changed a different path or status set')
     base_entries = entries(root, UX09_SECURITY_BASE);source_entries = entries(root, UX09_SECURITY_SOURCE)
     for path in sorted(UX09_SECURITY_MODIFIED):
-        current = project_ux09_mail_review(root, path, ordinary(root, path))
+        current = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        current = project_ux09_mail_review(root, path, current)
         current = project_ux09_cloud_proof(root, path, current)
         require(current == git(root, 'cat-file', 'blob', UX09_SECURITY_SOURCE + ':' + path)
                 and digest(current) == UX09_SECURITY_SHA256[path]
@@ -1097,7 +1118,8 @@ def validate_ux09_cloud_proof_source(root):
             'UX-09 cloud-proof successor changed a different path or status set')
     base_entries = entries(root, UX09_CLOUD_PROOF_BASE);source_entries = entries(root, UX09_CLOUD_PROOF_SOURCE)
     for path in sorted(UX09_CLOUD_PROOF_MODIFIED):
-        current = project_ux09_mail_review(root, path, ordinary(root, path))
+        current = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        current = project_ux09_mail_review(root, path, current)
         require(current == git(root, 'cat-file', 'blob', UX09_CLOUD_PROOF_SOURCE + ':' + path)
                 and digest(current) == UX09_CLOUD_PROOF_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1129,7 +1151,7 @@ def validate_ux09_mail_review_source(root):
     base_entries = entries(root, UX09_MAIL_REVIEW_BASE)
     source_entries = entries(root, UX09_MAIL_REVIEW_SOURCE)
     for path in sorted(UX09_MAIL_REVIEW_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux09_smtp_rejection(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_SOURCE + ':' + path)
                 and digest(current) == UX09_MAIL_REVIEW_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1144,6 +1166,38 @@ def project_ux09_mail_review(root, path, current):
     require(current == source and digest(current) == UX09_MAIL_REVIEW_SHA256[path],
             'Current UX-09 mail-review successor changed before predecessor projection: ' + path)
     return git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_BASE + ':' + path)
+
+
+def validate_ux09_smtp_rejection_source(root):
+    """Bind the explicit SMTP-rejection certainty successor."""
+    require(git(root, 'rev-parse', UX09_SMTP_REJECTION_BASE + '^{tree}').decode().strip()
+            == UX09_SMTP_REJECTION_BASE_TREE
+            and git(root, 'rev-parse', UX09_SMTP_REJECTION_SOURCE + '^{tree}').decode().strip()
+            == UX09_SMTP_REJECTION_SOURCE_TREE, 'UX-09 SMTP-rejection successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_SMTP_REJECTION_BASE, UX09_SMTP_REJECTION_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_SMTP_REJECTION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_SMTP_REJECTION_BASE, UX09_SMTP_REJECTION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_SMTP_REJECTION_MODIFIED)],
+            'UX-09 SMTP-rejection successor changed a different path or status set')
+    base_entries = entries(root, UX09_SMTP_REJECTION_BASE)
+    source_entries = entries(root, UX09_SMTP_REJECTION_SOURCE)
+    for path in sorted(UX09_SMTP_REJECTION_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', UX09_SMTP_REJECTION_SOURCE + ':' + path)
+                and digest(current) == UX09_SMTP_REJECTION_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 SMTP-rejection successor source identity changed: ' + path)
+
+
+def project_ux09_smtp_rejection(root, path, current):
+    """Restore pre-SMTP-rejection bytes only for older source receipts."""
+    if path not in UX09_SMTP_REJECTION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_SMTP_REJECTION_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_SMTP_REJECTION_SHA256[path],
+            'Current UX-09 SMTP-rejection successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX09_SMTP_REJECTION_BASE + ':' + path)
 
 
 def reconstruct_adapter(data, path, current):
@@ -1353,6 +1407,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_smtp_rejection_source(root)
     validate_ux09_mail_review_source(root)
     validate_ux09_cloud_proof_source(root)
     validate_ux09_security_source(root)
@@ -1460,7 +1515,8 @@ def verify_current(root):
             and CLOUD_INTAKE_ADDITIONS <= set(cloud_source_entries),
             'Cloud intake addition did not originate in its exact source range')
     for path in sorted(CLOUD_INTAKE_SOURCE_PATHS):
-        value = project_ux09_mail_review(root, path, ordinary(root, path))
+        value = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
         value = project_ux09_security(root, path, value)
         value = project_ux09(root, ux09, path, value)
@@ -1476,7 +1532,8 @@ def verify_current(root):
                 and mode(root, path) == cloud_source_entries[path][0],
                 'Current cloud intake bytes or mode differ from exact source: ' + path)
     for path in sorted(CLOUD_INTAKE_ADDITIONS):
-        value = project_ux09_mail_review(root, path, ordinary(root, path))
+        value = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
         row = data['cloud_intake_additions'][path]
         require(digest(value) == row['sha256'] == CLOUD_INTAKE_ADDITION_SHA256[path]
@@ -1498,7 +1555,8 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = project_ux09_mail_review(root, path, ordinary(root, path))
+        value = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
         value = project_ux09_security(root, path, value)
         value = project_ux09(root, ux09, path, value)
@@ -1518,7 +1576,8 @@ def verify_current(root):
                 and mode(root, path) == database_source_entries[path][0],
                 'Current database workflow bytes or mode differ from exact source: ' + path)
     for path in sorted(DATABASE_WORKFLOW_ADDITIONS):
-        value = project_ux09_mail_review(root, path, ordinary(root, path))
+        value = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
         value = project_ux09_security(root, path, value)
         value = project_ux09(root, ux09, path, value)
@@ -1535,7 +1594,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux09_mail_review(root, path, ordinary(root, path))
+        value = project_ux09_smtp_rejection(root, path, ordinary(root, path))
+        value = project_ux09_mail_review(root, path, value)
         value = project_ux09_cloud_proof(root, path, value)
         value = project_ux09_security(root, path, value)
         value = project_ux09_ci(root, path, value)
