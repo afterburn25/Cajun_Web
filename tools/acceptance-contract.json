@@ -69,6 +69,8 @@
     "\"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json",
     "\"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json",
     "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
+    "\"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json",
+    "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
     "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
@@ -736,6 +738,55 @@
     "source_sha256": {
       "tests/backups_native.php": "92ba3b341e3bae4b53c2372ce7aedc23065f6170095cbd0208e3adba5aaf54ce"
     }
+  },
+  "cloud_site_intake": {
+    "full_native_count": 169,
+    "call_native_count": 162,
+    "predecessor_native_count": 160,
+    "predecessor_native_sha256": "5c9a32393a073603e7f448566774ece57584e854227f6fc24e92289fc0bca8fe",
+    "additions_after": "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json",
+      "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json"
+    ],
+    "reports": [
+      "cloud-site-intake-default.json",
+      "cloud-site-intake-minimal.json"
+    ],
+    "current_reports": {
+      "browser": {
+        "count": 180,
+        "sha256": "0c2616e43bc9ee97b0ccb1b5ab279eb924bbb381bea1438a1beb8ea0353281c4"
+      },
+      "final": {
+        "count": 226,
+        "sha256": "f553631dd39a7ae3c355bbcdac2b1e937fa2f3cf032c0051f0b01c15f51ce019"
+      }
+    },
+    "predecessor_reports": {
+      "browser": {
+        "count": 178,
+        "sha256": "83614ec0984f2cec00db99a2df3aa1bde1be7f839d20d4fe975035c7912bd759"
+      },
+      "final": {
+        "count": 224,
+        "sha256": "022d85a908714dcc6b3cbf1df9584731c3270e7a4918f30ba6450fac07def57d"
+      }
+    },
+    "source_sha256": {
+      "docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md": "2272a5666ca8a218074c6334e03bb078a987c028d9513b9fc058c768dd50e320",
+      "site/app/providers/cloud_site_requests.php": "aaafdf5210e00e92a946b19186e5e72f2c0025f0277da38c368d844b5f49e84d",
+      "site/app/providers/cloud_site_requests_views.php": "0a5f61bee9af8c9ca805bdfc0bf820c34ea70eec15aed6559428b6fb93bb5539",
+      "tests/cloud_site_requests_ui_contract.php": "01016f139e72c31aedb53bfa10a5e5e477e1247cd29efa16e0095049c7210234",
+      "tests/provider_cloud_site_requests_cases.py": "66e9c9c8febe28604b93b3eaaee12ce4a5367fbf2c555597f1db54553c1eb0ed",
+      "tests/provider_cloud_site_requests_native.php": "365d9bb50af2dbf8f61d931f096cc52e870c23205f51febedb5407f18986c059",
+      "tests/cloud_site_intake_contract.php": "0afa7765917c2f26937884c9baea5559c62aa90e17fea152f735b9ea4eb6e03b",
+      "tests/cloud_site_intake_wiring.py": "5b38379d10d44ceb903bb77fdfe7849ad8feecd1cd5585ebe741e21ad959be8f"
+    },
+    "predecessor_source_sha256": {
+      "tests/cloud_site_requests_wiring.py": "a6cde5e837c572a9c2bf3fa5ea6572fc4f506146ac35be291b8189c6ee23a36e"
+    },
+    "scope": "Local signed-assignment cloud-site intake with fresh owner dispatch binding and portable default/minimal contracts; genuine expiry is confined to the opted-in native lane. No live provider execution, customer messages, paid provisioning, production access or deployment."
   },
   "backups_browser_extension": {
     "hook": "            from backups_cases import run_browser as backups_browser\n            backups_browser(globals(),browser)\n",
