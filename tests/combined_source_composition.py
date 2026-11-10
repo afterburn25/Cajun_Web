@@ -365,6 +365,18 @@ UX09_COMMERCIAL_SNAPSHOT_SHA256 = {
     'tests/client_identity_native.php': 'cf1204220ff950783a3774985ee25784cd0462599d1424c8f6f719dc462ad68b',
     'tools/acceptance-contract.json': '294647ae675ef0f9168ba5431aebb539838c6d7a293552e344486e4f6b04ab74',
 }
+UX09_AUDIT_ROLLBACK_BASE = '6c1f9788c83573e09226ec8e6d259424f4409002'
+UX09_AUDIT_ROLLBACK_BASE_TREE = 'fb36caaaf5adfb0e2e29538a690b271cd4853f7d'
+UX09_AUDIT_ROLLBACK_SOURCE = '7f075128cdb426e72da699e3187e92108eeb9007'
+UX09_AUDIT_ROLLBACK_SOURCE_TREE = '8e674aef10b5cd5ec33b2dab83463b06d99dc10b'
+UX09_AUDIT_ROLLBACK_MODIFIED = frozenset((
+    'tests/client_identity_native.php',
+    'tools/acceptance-contract.json',
+))
+UX09_AUDIT_ROLLBACK_SHA256 = {
+    'tests/client_identity_native.php': '07d7facdcebab76f8e099908f759c1431772385d88679267db5e74da0eb480f8',
+    'tools/acceptance-contract.json': '54050615e7c338335ce73ac84ab8097707f750ee63d703bc487918a326c22695',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -792,6 +804,10 @@ def hydration_origin(root, head):
          'UX-09 commercial-snapshot base'),
         (UX09_COMMERCIAL_SNAPSHOT_SOURCE, UX09_COMMERCIAL_SNAPSHOT_SOURCE_TREE,
          'UX-09 commercial-snapshot source'),
+        (UX09_AUDIT_ROLLBACK_BASE, UX09_AUDIT_ROLLBACK_BASE_TREE,
+         'UX-09 audit-rollback base'),
+        (UX09_AUDIT_ROLLBACK_SOURCE, UX09_AUDIT_ROLLBACK_SOURCE_TREE,
+         'UX-09 audit-rollback source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -1219,6 +1235,39 @@ def project_ux09_mail_review(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_BASE + ':' + path)
 
 
+def validate_ux09_audit_rollback_source(root):
+    """Bind the synthetic delivery-ready registration rollback fixture."""
+    require(git(root, 'rev-parse', UX09_AUDIT_ROLLBACK_BASE + '^{tree}').decode().strip()
+            == UX09_AUDIT_ROLLBACK_BASE_TREE
+            and git(root, 'rev-parse', UX09_AUDIT_ROLLBACK_SOURCE + '^{tree}').decode().strip()
+            == UX09_AUDIT_ROLLBACK_SOURCE_TREE,
+            'UX-09 audit-rollback successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_AUDIT_ROLLBACK_BASE, UX09_AUDIT_ROLLBACK_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_AUDIT_ROLLBACK_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_AUDIT_ROLLBACK_BASE, UX09_AUDIT_ROLLBACK_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_AUDIT_ROLLBACK_MODIFIED)],
+            'UX-09 audit-rollback successor changed a different path or status set')
+    base_entries = entries(root, UX09_AUDIT_ROLLBACK_BASE)
+    source_entries = entries(root, UX09_AUDIT_ROLLBACK_SOURCE)
+    for path in sorted(UX09_AUDIT_ROLLBACK_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', UX09_AUDIT_ROLLBACK_SOURCE + ':' + path)
+                and digest(current) == UX09_AUDIT_ROLLBACK_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 audit-rollback successor source identity changed: ' + path)
+
+
+def project_ux09_audit_rollback(root, path, current):
+    """Restore pre-audit-rollback bytes only for older source proofs."""
+    if path not in UX09_AUDIT_ROLLBACK_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_AUDIT_ROLLBACK_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_AUDIT_ROLLBACK_SHA256[path],
+            'Current UX-09 audit-rollback successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX09_AUDIT_ROLLBACK_BASE + ':' + path)
+
+
 def validate_ux09_commercial_snapshot_source(root):
     """Bind the exact physical-table commercial-side-effect snapshot repair."""
     require(git(root, 'rev-parse', UX09_COMMERCIAL_SNAPSHOT_BASE + '^{tree}').decode().strip()
@@ -1236,7 +1285,7 @@ def validate_ux09_commercial_snapshot_source(root):
     base_entries = entries(root, UX09_COMMERCIAL_SNAPSHOT_BASE)
     source_entries = entries(root, UX09_COMMERCIAL_SNAPSHOT_SOURCE)
     for path in sorted(UX09_COMMERCIAL_SNAPSHOT_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux09_audit_rollback(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob', UX09_COMMERCIAL_SNAPSHOT_SOURCE + ':' + path)
                 and digest(current) == UX09_COMMERCIAL_SNAPSHOT_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1245,6 +1294,7 @@ def validate_ux09_commercial_snapshot_source(root):
 
 def project_ux09_commercial_snapshot(root, path, current):
     """Restore pre-commercial-snapshot bytes only for older source proofs."""
+    current = project_ux09_audit_rollback(root, path, current)
     if path not in UX09_COMMERCIAL_SNAPSHOT_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX09_COMMERCIAL_SNAPSHOT_SOURCE + ':' + path)
@@ -1558,6 +1608,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_audit_rollback_source(root)
     validate_ux09_commercial_snapshot_source(root)
     validate_ux09_fixture_receipt_source(root)
     validate_ux09_identity_snapshot_source(root)
