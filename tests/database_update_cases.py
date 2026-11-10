@@ -85,6 +85,10 @@ def run_browser(env,browser):
     identity_marker=lambda:db("SELECT value FROM ci_settings WHERE name='client_identity_schema_version'")
     identity_tables=lambda:db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND TABLE_NAME IN ('ci_studio_client_registrations','ci_studio_client_tokens') ORDER BY TABLE_NAME")
     check('Published existing installation begins without public identity adoption',identity_marker()==[] and identity_tables()==[])
+    retained_client=db('SELECT id FROM ci_studio_clients ORDER BY id LIMIT 1')[0]['id']
+    db("INSERT INTO ci_studio_contacts (client_id,name,email,password_hash,auth_version,permissions,enabled,created_at) VALUES (?,?,?,?,?,'[]',0,?)",[retained_client,'Migration Retained Contact','migration-retained-contact@example.invalid','','d'*32,'2026-11-10 00:00:00'])
+    identity_clients_before=db('SELECT * FROM ci_studio_clients ORDER BY id')
+    identity_contacts_before=db('SELECT * FROM ci_studio_contacts ORDER BY id')
     planned,identity_location,identity_review=database_plan(owner,upgrade,['client_identity_schema_version'],soup,form_for)
     identity_form=form_for(identity_review,'studio_database_apply')
     check('Public identity review closes over current contacts without another hidden step',planned.status_code==303 and identity_form.select_one('[name="database_updates[]"][value="client_identity_schema_version"]') is not None and identity_form.select_one('[name="database_updates[]"][value="contacts_schema_version"]') is None and identity_marker()==[] and identity_tables()==[])
@@ -92,7 +96,7 @@ def run_browser(env,browser):
     identity_history=db("SELECT action,detail FROM ci_audit WHERE action IN ('database.update.started','database.update.completed') ORDER BY id DESC LIMIT 2")
     identity_outcomes=[(entry['action'],json.loads(entry['detail'])['marker']) for entry in reversed(identity_history)]
     check('Owner-reviewed migration enables isolated public identity storage','Database updates completed: Client Identity' in response.text and identity_marker()==[{'value':'1'}] and len(identity_tables())==2 and identity_outcomes==[('database.update.started','client_identity_schema_version'),('database.update.completed','client_identity_schema_version')])
-    check('Migration preserves every established client and contact identity',len(db('SELECT id FROM ci_studio_clients'))>=2 and bool(db('SELECT id FROM ci_studio_contacts')) and db('SELECT * FROM ci_studio_client_registrations')==[] and db('SELECT * FROM ci_studio_client_tokens')==[])
+    check('Migration preserves every established client and contact identity',len(identity_clients_before)>=2 and bool(identity_contacts_before) and db('SELECT * FROM ci_studio_clients ORDER BY id')==identity_clients_before and db('SELECT * FROM ci_studio_contacts ORDER BY id')==identity_contacts_before and db('SELECT * FROM ci_studio_client_registrations')==[] and db('SELECT * FROM ci_studio_client_tokens')==[])
 
     context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');browser_page=context.new_page();errors=[];browser_page.on('pageerror',lambda error:errors.append(str(error)))
     browser_page.goto(admin+'?view=login');browser_page.locator('[name=email]').fill('owner@example.invalid');browser_page.locator('[name=password]').fill(OWNER);browser_page.locator('button[type=submit],button:not([type])').first.click();browser_page.wait_for_url('**/admin/index.php?view=dashboard')
