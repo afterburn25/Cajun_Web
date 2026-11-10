@@ -353,6 +353,18 @@ UX09_FIXTURE_RECEIPT_MODIFIED = frozenset((
 UX09_FIXTURE_RECEIPT_SHA256 = {
     'tools/acceptance-contract.json': 'fa43b8a278a72d9975b29858e45cb41bc9637643ed457ad0dc4d51af4014df69',
 }
+UX09_COMMERCIAL_SNAPSHOT_BASE = 'defe92eafef2c928ae24bfa4793d3708ccfe47ea'
+UX09_COMMERCIAL_SNAPSHOT_BASE_TREE = '3ec9fa3c7839d6bf7b274eae139c5cde1cc83ec7'
+UX09_COMMERCIAL_SNAPSHOT_SOURCE = '1dfc7b5ad5e403b7221092cf598f75dc8c18cb13'
+UX09_COMMERCIAL_SNAPSHOT_SOURCE_TREE = '7b1c3f6dfa921df268a5c762c3b428ab9fda674a'
+UX09_COMMERCIAL_SNAPSHOT_MODIFIED = frozenset((
+    'tests/client_identity_native.php',
+    'tools/acceptance-contract.json',
+))
+UX09_COMMERCIAL_SNAPSHOT_SHA256 = {
+    'tests/client_identity_native.php': 'cf1204220ff950783a3774985ee25784cd0462599d1424c8f6f719dc462ad68b',
+    'tools/acceptance-contract.json': '294647ae675ef0f9168ba5431aebb539838c6d7a293552e344486e4f6b04ab74',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -776,6 +788,10 @@ def hydration_origin(root, head):
          'UX-09 identity-snapshot source'),
         (UX09_FIXTURE_RECEIPT_BASE, UX09_FIXTURE_RECEIPT_BASE_TREE, 'UX-09 fixture-receipt base'),
         (UX09_FIXTURE_RECEIPT_SOURCE, UX09_FIXTURE_RECEIPT_SOURCE_TREE, 'UX-09 fixture-receipt source'),
+        (UX09_COMMERCIAL_SNAPSHOT_BASE, UX09_COMMERCIAL_SNAPSHOT_BASE_TREE,
+         'UX-09 commercial-snapshot base'),
+        (UX09_COMMERCIAL_SNAPSHOT_SOURCE, UX09_COMMERCIAL_SNAPSHOT_SOURCE_TREE,
+         'UX-09 commercial-snapshot source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -1203,6 +1219,40 @@ def project_ux09_mail_review(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_BASE + ':' + path)
 
 
+def validate_ux09_commercial_snapshot_source(root):
+    """Bind the exact physical-table commercial-side-effect snapshot repair."""
+    require(git(root, 'rev-parse', UX09_COMMERCIAL_SNAPSHOT_BASE + '^{tree}').decode().strip()
+            == UX09_COMMERCIAL_SNAPSHOT_BASE_TREE
+            and git(root, 'rev-parse', UX09_COMMERCIAL_SNAPSHOT_SOURCE + '^{tree}').decode().strip()
+            == UX09_COMMERCIAL_SNAPSHOT_SOURCE_TREE,
+            'UX-09 commercial-snapshot successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_COMMERCIAL_SNAPSHOT_BASE,
+        UX09_COMMERCIAL_SNAPSHOT_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_COMMERCIAL_SNAPSHOT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_COMMERCIAL_SNAPSHOT_BASE, UX09_COMMERCIAL_SNAPSHOT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_COMMERCIAL_SNAPSHOT_MODIFIED)],
+            'UX-09 commercial-snapshot successor changed a different path or status set')
+    base_entries = entries(root, UX09_COMMERCIAL_SNAPSHOT_BASE)
+    source_entries = entries(root, UX09_COMMERCIAL_SNAPSHOT_SOURCE)
+    for path in sorted(UX09_COMMERCIAL_SNAPSHOT_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', UX09_COMMERCIAL_SNAPSHOT_SOURCE + ':' + path)
+                and digest(current) == UX09_COMMERCIAL_SNAPSHOT_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 commercial-snapshot successor source identity changed: ' + path)
+
+
+def project_ux09_commercial_snapshot(root, path, current):
+    """Restore pre-commercial-snapshot bytes only for older source proofs."""
+    if path not in UX09_COMMERCIAL_SNAPSHOT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_COMMERCIAL_SNAPSHOT_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_COMMERCIAL_SNAPSHOT_SHA256[path],
+            'Current UX-09 commercial-snapshot successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX09_COMMERCIAL_SNAPSHOT_BASE + ':' + path)
+
+
 def validate_ux09_fixture_receipt_source(root):
     """Bind the exact-source receipt for the repaired identity fixture."""
     require(git(root, 'rev-parse', UX09_FIXTURE_RECEIPT_BASE + '^{tree}').decode().strip()
@@ -1218,7 +1268,7 @@ def validate_ux09_fixture_receipt_source(root):
     base_entries = entries(root, UX09_FIXTURE_RECEIPT_BASE)
     source_entries = entries(root, UX09_FIXTURE_RECEIPT_SOURCE)
     for path in sorted(UX09_FIXTURE_RECEIPT_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux09_commercial_snapshot(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob', UX09_FIXTURE_RECEIPT_SOURCE + ':' + path)
                 and digest(current) == UX09_FIXTURE_RECEIPT_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -1227,6 +1277,7 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_ux09_commercial_snapshot(root, path, current)
     if path not in UX09_FIXTURE_RECEIPT_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX09_FIXTURE_RECEIPT_SOURCE + ':' + path)
@@ -1507,6 +1558,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_commercial_snapshot_source(root)
     validate_ux09_fixture_receipt_source(root)
     validate_ux09_identity_snapshot_source(root)
     validate_ux09_smtp_rejection_source(root)
