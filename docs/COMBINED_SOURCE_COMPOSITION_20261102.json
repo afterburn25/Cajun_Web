@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "013f105e874a2a471cb5aa02939a6d710ee220b870a2d27a01c3352f905f0959",
+  "verifier_sha256": "b1714044d5179408500c5028b8c722de178722f631a7e70a1346e01c0fce28f8",
   "regression_sha256": "d7afdbfeab6475be8b34f21dffd6914e9f26f7940a996681b229bc1b70a4ef41",
   "adapters": {
     "tests/tickets_integration_contract.py": {
@@ -2475,14 +2475,14 @@
     },
     "tests/diagnostic_acceptance_test.py": {
       "source_sha256": "ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655",
-      "current_sha256": "6fa76fc60584158ae29729995e091f43efb5cd1373cf0853a75234150db8ef61",
-      "delta_sha256": "acead1f82b00128a776321dc79495d72b51e4f45042618bc935cdf78fed44b19",
+      "current_sha256": "1558fbe6e463794743ecb3722b9bb49dcdaeae96f54f4132cb7b37c219647bc2",
+      "delta_sha256": "6b10fbb5ddfad45b31439be09a97ef5af00c03cde66fc2cd89ca60ca3708060d",
       "mode": "100644"
     },
     "tests/diagnostic_registry.py": {
       "source_sha256": "1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34",
-      "current_sha256": "368048a13179629c5ce37f8b355b425a928724f72821e7eb9e29ba830405ee4f",
-      "delta_sha256": "cccc34657c225ee8dcd1af78ebafe1fe7beb7220af868c792e30ec5530c16e4b",
+      "current_sha256": "19c911bd6fcd4aa4150910bc6b2ce8a57bbbb174582f5f133bce6cd33c7d6f2d",
+      "delta_sha256": "6f34e940d3e60c774d4da3ce41cfbd5754d5987114a9c119d6402139dc0de749",
       "mode": "100644"
     },
     "tests/diagnostic_report.py": {
