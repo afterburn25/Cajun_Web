@@ -105,10 +105,10 @@ DIAGNOSTIC_ADDITION_SHA256 = {
     'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'e1b06b07dfd74b862e6ccdba78f208982377e5805d9ac43b6b0e736fa86b5181', 'delta': '3e2dd2ca6211956be8b454c73dd9f4c7ac1870a6be15120f6b1214d6b5278863'},
 }
 # BEGIN GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '6fa76fc60584158ae29729995e091f43efb5cd1373cf0853a75234150db8ef61'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = 'acead1f82b00128a776321dc79495d72b51e4f45042618bc935cdf78fed44b19'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '368048a13179629c5ce37f8b355b425a928724f72821e7eb9e29ba830405ee4f'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = 'cccc34657c225ee8dcd1af78ebafe1fe7beb7220af868c792e30ec5530c16e4b'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '1558fbe6e463794743ecb3722b9bb49dcdaeae96f54f4132cb7b37c219647bc2'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = '6b10fbb5ddfad45b31439be09a97ef5af00c03cde66fc2cd89ca60ca3708060d'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '19c911bd6fcd4aa4150910bc6b2ce8a57bbbb174582f5f133bce6cd33c7d6f2d'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = '6f34e940d3e60c774d4da3ce41cfbd5754d5987114a9c119d6402139dc0de749'
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
 DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['current'] = '26243783910e73df36b0efe90137b56d37d8832f2df7191796ee9fb21c21248c'
 DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['delta'] = '334c53286ccf214c8c9ddd210bd53e5105e2508e4b1311bfffe6890ffd3d2fbd'
@@ -400,6 +400,18 @@ UX09_MIGRATION_PRESERVATION_MODIFIED = frozenset((
 UX09_MIGRATION_PRESERVATION_SHA256 = {
     'tests/database_update_cases.py': '239c55f65e0d41ab5612013673239d1adbe03338d1f03bd18d75ca820f1a2278',
     'tools/acceptance-contract.json': 'f68d2d5b5623423bce060c0e3fdec4f95340ed448c8f640e7ea2c7d1fc89de04',
+}
+UX09_DIAGNOSTIC_REGISTRY_BASE = 'e524f8db249f33431db9a0b6424ab09fe469cd6e'
+UX09_DIAGNOSTIC_REGISTRY_BASE_TREE = 'dedc3dc7ffbaf28a0e4cd374021dc373c2d9f47a'
+UX09_DIAGNOSTIC_REGISTRY_SOURCE = '9aa577fb2ea3850f5b6c7b4af8c1b49222e06ee3'
+UX09_DIAGNOSTIC_REGISTRY_SOURCE_TREE = '4dda631be94941d503e8f3b05a07b6fa8cce3d97'
+UX09_DIAGNOSTIC_REGISTRY_MODIFIED = frozenset((
+    'tests/diagnostic_acceptance_test.py',
+    'tests/diagnostic_registry.py',
+))
+UX09_DIAGNOSTIC_REGISTRY_SHA256 = {
+    'tests/diagnostic_acceptance_test.py': '1558fbe6e463794743ecb3722b9bb49dcdaeae96f54f4132cb7b37c219647bc2',
+    'tests/diagnostic_registry.py': '19c911bd6fcd4aa4150910bc6b2ce8a57bbbb174582f5f133bce6cd33c7d6f2d',
 }
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
@@ -1267,6 +1279,43 @@ def project_ux09_mail_review(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_BASE + ':' + path)
 
 
+def validate_ux09_diagnostic_registry_source(root):
+    """Bind the exact resulting-main diagnostic registry successor."""
+    require(git(root, 'rev-parse', UX09_DIAGNOSTIC_REGISTRY_BASE + '^{tree}').decode().strip()
+            == UX09_DIAGNOSTIC_REGISTRY_BASE_TREE
+            and git(root, 'rev-parse', UX09_DIAGNOSTIC_REGISTRY_SOURCE + '^{tree}').decode().strip()
+            == UX09_DIAGNOSTIC_REGISTRY_SOURCE_TREE,
+            'UX-09 diagnostic-registry successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_DIAGNOSTIC_REGISTRY_BASE,
+        UX09_DIAGNOSTIC_REGISTRY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_DIAGNOSTIC_REGISTRY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_DIAGNOSTIC_REGISTRY_BASE,
+                  UX09_DIAGNOSTIC_REGISTRY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_DIAGNOSTIC_REGISTRY_MODIFIED)],
+            'UX-09 diagnostic-registry successor changed a different path or status set')
+    base_entries = entries(root, UX09_DIAGNOSTIC_REGISTRY_BASE)
+    source_entries = entries(root, UX09_DIAGNOSTIC_REGISTRY_SOURCE)
+    for path in sorted(UX09_DIAGNOSTIC_REGISTRY_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob',
+                               UX09_DIAGNOSTIC_REGISTRY_SOURCE + ':' + path)
+                and digest(current) == UX09_DIAGNOSTIC_REGISTRY_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 diagnostic-registry successor source identity changed: ' + path)
+
+
+def project_ux09_diagnostic_registry(root, path, current):
+    """Restore resulting-main bytes before replaying older source receipts."""
+    if path not in UX09_DIAGNOSTIC_REGISTRY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_DIAGNOSTIC_REGISTRY_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_DIAGNOSTIC_REGISTRY_SHA256[path],
+            'Current UX-09 diagnostic-registry successor changed before predecessor projection: '
+            + path)
+    return git(root, 'cat-file', 'blob', UX09_DIAGNOSTIC_REGISTRY_BASE + ':' + path)
+
+
 def validate_ux09_migration_preservation_source(root):
     """Bind the populated client/contact migration-preservation fixture."""
     require(git(root, 'rev-parse', UX09_MIGRATION_PRESERVATION_BASE + '^{tree}').decode().strip()
@@ -1716,6 +1765,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_diagnostic_registry_source(root)
     validate_ux09_migration_preservation_source(root)
     validate_ux09_bounded_token_refusal_source(root)
     validate_ux09_audit_rollback_source(root)
@@ -1874,7 +1924,8 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux09_diagnostic_registry(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
