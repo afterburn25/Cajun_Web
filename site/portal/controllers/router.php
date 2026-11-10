@@ -3,6 +3,17 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
 require_once CWP_CODE_ROOT.'/includes/layout/proposals.php';require_once CWP_CODE_ROOT.'/includes/layout/notifications.php';
 require_once CWP_CODE_ROOT.'/app/clients/account_security.php';
+$identityRoute='';$identityToken='';$identityKeys=[];
+foreach(['register','verify','resend','forgot','reset'] as $key)if(array_key_exists($key,$_GET))$identityKeys[]=$key;
+if($identityKeys){
+    header('Cache-Control: no-store, private');
+    if(count($identityKeys)!==1||array_key_exists('support',$_GET))fail_page('Invalid account security request.',400);
+    $identityRoute=$identityKeys[0];$value=$_GET[$identityRoute];
+    if(!is_string($value)||(in_array($identityRoute,['register','resend','forgot'],true)&&$value!=='1')||(in_array($identityRoute,['verify','reset'],true)&&!preg_match('/\A[a-f0-9]{64}\z/D',$value)))fail_page('Invalid account security request.',400);
+    $allowed=[$identityRoute,'hosting','offer','offer_sha256','p'];
+    if(array_diff(array_keys($_GET),$allowed))fail_page('Invalid account security request.',400);
+    if(in_array($identityRoute,['verify','reset'],true))$identityToken=$value;
+}
 $accountRequested=array_key_exists('account',$_GET);
 if($accountRequested||($_POST['action']??null)==='account_password'){
     header('Cache-Control: no-store, private');
@@ -74,7 +85,9 @@ if(!$supportRequested&&!support_current()&&(
     require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout.php';
     try{hosting_checkout_reject_contact();}catch(RuntimeException $e){fail_page($e->getMessage(),403);}
 }
-$client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
+$client=studio_client();
+if($client&&$identityRoute!=='')redirect(studio_url(client_identity_destination($_GET)));
+$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';$cinvite=is_string($_GET['cinvite']??null)?$_GET['cinvite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity'])){if($client&&!contact_can('projects'))fail_page('Your contact permissions do not include project access.',403);activity_render('client',$error);}
 if(isset($_GET['download_release'])){if($client&&!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);delivery_download(is_string($_GET['download_release'])?$_GET['download_release']:'');}

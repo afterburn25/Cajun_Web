@@ -11,8 +11,16 @@ def verify(root, contract, workflow, commands, check):
     full_contract = json.loads((root / 'tools/acceptance-contract.json').read_text())
     item = full_contract['cloud_site_intake']
     additions = item['additions']
+    full_native = full_contract['native_commands']
+    identity = full_contract.get('client_identity_native_command_extension')
+    if identity:
+        identity_additions = identity['additions']
+        check('Static intake projects only the exact later public-identity commands',
+              len(identity_additions) == len(set(identity_additions)) == 2
+              and all(full_native.count(command) == 1 for command in identity_additions))
+        full_native = [command for command in full_native if command not in identity_additions]
     check('Static intake retains the complete169-command native recipe',
-          len(full_contract['native_commands']) == item['full_native_count'] == 169)
+          len(full_native) == item['full_native_count'] == 169)
     check('Static intake receives the exact162-command projected recipe',
           len(commands) == item['call_native_count'] == 162
           and commands == contract['native_commands'])
@@ -29,6 +37,12 @@ def verify(root, contract, workflow, commands, check):
     reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
     for key, expected_count in (('browser', 180), ('final', 226)):
         current = reports[key]
+        if identity:
+            identity_reports = identity['reports']
+            check('Static intake projects only the exact later public-identity reports in ' + key,
+                  len(identity_reports) == len(set(identity_reports)) == 2
+                  and all(current.count(name) == 1 for name in identity_reports))
+            current = [name for name in current if name not in identity_reports]
         check('Static intake requires both portable reports exactly once in ' + key,
               len(current) == item['current_reports'][key]['count'] == expected_count
               and digest(current) == item['current_reports'][key]['sha256']

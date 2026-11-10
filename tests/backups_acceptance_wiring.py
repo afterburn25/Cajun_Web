@@ -13,9 +13,12 @@ def predecessor_browser(root, contract):
         if contract.get('backups_browser_extension') != actual_contract.get('backups_browser_extension'):
             raise AssertionError('Unreviewed backup comparison contract')
         receipt = json.loads(composition.ordinary(root, composition.RECEIPT))
+        ux09 = composition.validate_ux09_source(root)
+        driver = composition.project_ux09_security(root, 'tests/browser_acceptance.py', driver.encode())
+        driver = composition.project_ux09(root, ux09, 'tests/browser_acceptance.py', driver)
         driver = composition.reconstruct_repair(
             receipt, 'tests/browser_acceptance.py',
-            composition.ordinary(root, 'tests/browser_acceptance.py')).decode('utf-8')
+            driver).decode('utf-8')
     item = contract.get('backups_browser_extension')
     if item is None:
         return driver

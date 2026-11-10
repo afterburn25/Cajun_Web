@@ -33,7 +33,7 @@ if(($argv[1]??'')==='worker'){
     try{domain_registration_drafts_client_change((int)$argv[6],$argv[2],(int)$argv[3],$argv[4],$argv[5],'submit');echo 'saved';}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo $e->getMessage();}exit;
 }
 try{
-    $base=['settings','users','audit','studio_clients','staff_profiles','resets','rate_limits'];foreach(schema_statements($prefix) as $name=>$sql)if(in_array($name,$base,true))db()->exec($sql);
+    $base=['settings','users','audit','studio_clients','staff_profiles','resets','rate_limits','studio_client_registrations','studio_client_tokens'];foreach(schema_statements($prefix) as $name=>$sql)if(in_array($name,$base,true))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Draft owner '.$id,'draft-owner'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(array_keys(staff_permissions()))]);
     foreach([1,2] as $id)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Draft client '.$id,'draft-client'.$id.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);

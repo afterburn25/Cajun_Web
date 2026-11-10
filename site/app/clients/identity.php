@@ -16,16 +16,18 @@ function studio_client(): ?array {
 
 require_once CWP_CODE_ROOT.'/app/clients/accounts.php';
 require_once CWP_CODE_ROOT.'/app/clients/contacts.php';
+require_once CWP_CODE_ROOT.'/app/clients/public_identity.php';
 
 function studio_login(string $email,string $password): void {
  if(support_current())throw new RuntimeException('Client login is blocked during support.');
- $allow1=consume_rate(ip_key('client-login'),15,900);$allow2=consume_rate(hash_hmac('sha256','client|'.$email,config()['key']),8,900);if(!$allow1||!$allow2)throw new RuntimeException('Too many attempts. Wait 15 minutes.');
- $c=one('SELECT * FROM '.table('studio_clients').' WHERE email=? AND active=1',[$email]);$contact=null;
- if(!$c&&contacts_ready()){
-  $contact=one('SELECT * FROM '.table('studio_contacts').' WHERE email=? AND enabled=1',[$email]);
-  if($contact)$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=? AND active=1',[(int)$contact['client_id']]);
-  if(!$c)$contact=null;
+ $email=client_identity_email($email);$allow1=consume_rate(ip_key('client-login'),15,900);$allow2=consume_rate(hash_hmac('sha256','client|'.$email,config()['key']),8,900);if(!$allow1||!$allow2)throw new RuntimeException('Too many attempts. Wait 15 minutes.');
+ $namespace=client_identity_namespace($email);$c=null;$contact=null;
+ if(!$namespace['ambiguous']){
+  if($namespace['primary']&&(int)$namespace['primary']['active']===1)$c=$namespace['primary'];
+  elseif($namespace['contact']&&(int)$namespace['contact']['enabled']===1){$contact=$namespace['contact'];$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=? AND active=1',[(int)$contact['client_id']]);if(!$c)$contact=null;}
  }
- $row=$contact?:$c;$hash=$row['password_hash']??'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';$ok=password_verify($password,$hash);if(!$row||!$ok)throw new InvalidArgumentException('Email or password not recognized.');session_regenerate_id(true);unset($_SESSION['contact_id'],$_SESSION['contact_auth']);$_SESSION['client_id']=(int)$c['id'];$_SESSION['client_auth']=$c['auth_version'];if($contact){$_SESSION['contact_id']=(int)$contact['id'];$_SESSION['contact_auth']=$contact['auth_version'];}$_SESSION['client_last']=$_SESSION['client_login']=time();$_SESSION['csrf']=bin2hex(random_bytes(32));
+ $row=$contact?:$c;$hash=$row['password_hash']??'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';$ok=password_verify($password,$hash);
+ if(!$row||!$ok||(!$contact&&client_identity_pending((int)$c['id'])))throw new InvalidArgumentException('Email or password not recognized.');
+ client_identity_session_start($c,$contact);
 }
 /** Decision attached to an immutable version, with a project row lock shared by publication. */

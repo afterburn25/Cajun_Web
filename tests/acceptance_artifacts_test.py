@@ -213,6 +213,7 @@ def software_authority_report_checks(tmp):
     acceptance_contract=a.load(ROOT/'tools/acceptance-contract.json')
     database_reports=set(acceptance_contract.get('database_schema_native_command_extension',{}).get('reports',[]))
     cloud_intake_reports=set(acceptance_contract.get('cloud_site_intake',{}).get('reports',[]))
+    identity_reports=set(acceptance_contract.get('client_identity_native_command_extension',{}).get('reports',[]))
     for mode, count, digest in [
         ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
         ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
@@ -220,7 +221,7 @@ def software_authority_report_checks(tmp):
         current = registry[mode]
         check('Software authority named report is required exactly once in ' + mode,
               current.count(name) == 1 and len(current) == len(set(current)))
-        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports]
+        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports]
         check('Software authority inventory retains every original ordered ' + mode + ' report',
               len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
     body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
@@ -528,6 +529,26 @@ def run(tmp):
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     cloud_intake_additions=contract['cloud_site_intake']['additions']
+    identity_ext=contract.get('client_identity_native_command_extension')
+    if identity_ext:
+        additions=identity_ext['additions'];position=native_commands.index(identity_ext['additions_after'])+1
+        check('Public client identity commands are one exact additive extension',
+              len(native_commands)==identity_ext['predecessor_native_count']+len(additions)
+              and native_commands==contract['native_commands']
+              and native_commands[position:position+len(additions)]==additions
+              and all(native_commands.count(command)==1 for command in additions))
+        retained=[command for command in native_commands if command not in additions]
+        check('Public client identity additions retain the complete predecessor recipe',
+              len(retained)==identity_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==identity_ext['predecessor_native_sha256'])
+        for path,expected_hash in identity_ext['source_sha256'].items():
+            check('Public client identity source identity '+path,
+                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        registry=a.load(ROOT/'tools/acceptance-reports.json')
+        for report in identity_ext['reports']:
+            check('Public client identity report is required in browser and final evidence '+report,
+                  registry['browser'].count(report)==1 and registry['final'].count(report)==1)
+        native_commands=retained;contract={**contract,'native_commands':native_commands}
     database_ext=contract.get('database_schema_native_command_extension')
     if database_ext:
         additions=database_ext['additions'];position=native_commands.index(database_ext['additions_after'])+1

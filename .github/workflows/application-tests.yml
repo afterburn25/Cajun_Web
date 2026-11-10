@@ -475,6 +475,8 @@ jobs:
           "$PHP_BINARY" tests/hosting_delete_retry_native.php
           "$PHP_BINARY" tests/hosting_reconciliation_native.php
           "$PHP_BINARY" tests/client_authority_native.php
+          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json
+          "$PHP_BINARY" tests/client_identity_native.php
           "$PHP_BINARY" tests/license_native.php
           "$PHP_BINARY" tests/software_commerce_native.php
       - name: Real HTTP and Chromium application workflows

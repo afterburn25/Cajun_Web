@@ -1,9 +1,10 @@
 """Prove current-source admission retains the existing focused acceptance gates.
 
-The source-building workflow remains an immutable historical lane. Its complete
-acceptance and checkpoint jobs are the command/condition/report baseline here;
-the new read-only lane must execute those same bytes for its admitted commit.
-This is source and workflow verification, not a hosted SQL or browser result.
+The source-building workflow retains an immutable historical predecessor. Its
+complete acceptance and checkpoint jobs are the command/condition/report
+baseline here; the current workflow may add only the exact reviewed UX-09
+native commands before being projected back to those predecessor bytes. This
+is source and workflow verification, not a hosted SQL or browser result.
 """
 from pathlib import Path
 import hashlib
@@ -17,6 +18,11 @@ LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+PROTECTED_ADDITIONS = (
+    '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
+    '          "$PHP_BINARY" tests/client_identity_native.php\n',
+)
+PROTECTED_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/client_authority_native.php\n'
 IMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'
 PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
@@ -90,7 +96,16 @@ def validate(workflow, legacy, protected):
         checks.append({'name': name, 'passed': True})
 
     check('Legacy source builder and focused workflow remain byte-identical', digest(legacy) == LEGACY_SHA256)
-    check('Protected complete application workflow remains byte-identical', digest(protected) == PROTECTED_SHA256)
+    protected_predecessor = protected
+    for addition in reversed(PROTECTED_ADDITIONS):
+        check('Reviewed UX-09 application command is present exactly once',
+              protected_predecessor.count(addition) == 1)
+        protected_predecessor = protected_predecessor.replace(addition, '', 1)
+    protected_block = PROTECTED_ADDITIONS_AFTER + ''.join(PROTECTED_ADDITIONS)
+    check('Reviewed UX-09 application commands are additive and ordered',
+          protected.count(protected_block) == 1)
+    check('Protected complete application workflow retains its byte-identical predecessor',
+          digest(protected_predecessor) == PROTECTED_SHA256)
     check('Workflow has ordinary indentation and no alternate YAML documents',
           '\t' not in workflow and not re.search(r'^(---|\.\.\.)', workflow, re.M))
     actual, historical = jobs(workflow), jobs(legacy)
@@ -202,6 +217,19 @@ def self_test(root=ROOT):
                             ('protected acceptance drift', legacy, protected + '\n')):
         try:
             validate(workflow, old, full)
+        except AssertionError:
+            checks.append({'name': 'Regression rejected: ' + name, 'passed': True})
+        else:
+            raise AssertionError('Regression accepted: ' + name)
+    for name, changed in (
+        ('lost UX-09 policy command', protected.replace(PROTECTED_ADDITIONS[0], '', 1)),
+        ('changed UX-09 native command', protected.replace('tests/client_identity_native.php',
+                                                            'tests/client_identity_policy.php', 1)),
+        ('extra protected workflow command', protected.replace(
+            PROTECTED_ADDITIONS[1], PROTECTED_ADDITIONS[1] + '          true # unreviewed command\n', 1)),
+    ):
+        try:
+            validate(workflow, legacy, changed)
         except AssertionError:
             checks.append({'name': 'Regression rejected: ' + name, 'passed': True})
         else:
