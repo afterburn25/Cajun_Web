@@ -389,6 +389,18 @@ UX09_BOUNDED_TOKEN_REFUSAL_SHA256 = {
     'tests/client_identity_native.php': '2032d7f58be86267cb1cd98443acb81caa56f8995db1ccc23a784cb00fbde7b6',
     'tools/acceptance-contract.json': '052a73eac648aac088eea50f4f80c3114a76b4e8f2ab73b1866f02d4568ce7b3',
 }
+UX09_MIGRATION_PRESERVATION_BASE = '8e5deea056a1bc31b43b27fd5fcd8db0f9318e1e'
+UX09_MIGRATION_PRESERVATION_BASE_TREE = '2dd0e788949af43e037228a64165af9fefac078b'
+UX09_MIGRATION_PRESERVATION_SOURCE = 'ec6cfdb1ee89a0fc84b194fb571887fb6975d5ad'
+UX09_MIGRATION_PRESERVATION_SOURCE_TREE = '9368e65bd354033f5326f3a86bdfa281028527da'
+UX09_MIGRATION_PRESERVATION_MODIFIED = frozenset((
+    'tests/database_update_cases.py',
+    'tools/acceptance-contract.json',
+))
+UX09_MIGRATION_PRESERVATION_SHA256 = {
+    'tests/database_update_cases.py': '239c55f65e0d41ab5612013673239d1adbe03338d1f03bd18d75ca820f1a2278',
+    'tools/acceptance-contract.json': 'f68d2d5b5623423bce060c0e3fdec4f95340ed448c8f640e7ea2c7d1fc89de04',
+}
 UX09_SOURCE_RECEIPT = 'docs/UX09_PUBLIC_IDENTITY_SOURCE.json'
 UX09_BASE = '4d10251e4f9c7ad85f42a5b49c3c23344057d66e'
 UX09_BASE_TREE = '54d1fc56bbe27ab7f5665f47323eb13d88d4a2e2'
@@ -824,6 +836,10 @@ def hydration_origin(root, head):
          'UX-09 bounded-token-refusal base'),
         (UX09_BOUNDED_TOKEN_REFUSAL_SOURCE, UX09_BOUNDED_TOKEN_REFUSAL_SOURCE_TREE,
          'UX-09 bounded-token-refusal source'),
+        (UX09_MIGRATION_PRESERVATION_BASE, UX09_MIGRATION_PRESERVATION_BASE_TREE,
+         'UX-09 migration-preservation base'),
+        (UX09_MIGRATION_PRESERVATION_SOURCE, UX09_MIGRATION_PRESERVATION_SOURCE_TREE,
+         'UX-09 migration-preservation source'),
     ):
         require(git(source, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
                 'Local history source has a different ' + label + ' tree')
@@ -1251,6 +1267,43 @@ def project_ux09_mail_review(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_MAIL_REVIEW_BASE + ':' + path)
 
 
+def validate_ux09_migration_preservation_source(root):
+    """Bind the populated client/contact migration-preservation fixture."""
+    require(git(root, 'rev-parse', UX09_MIGRATION_PRESERVATION_BASE + '^{tree}').decode().strip()
+            == UX09_MIGRATION_PRESERVATION_BASE_TREE
+            and git(root, 'rev-parse', UX09_MIGRATION_PRESERVATION_SOURCE + '^{tree}').decode().strip()
+            == UX09_MIGRATION_PRESERVATION_SOURCE_TREE,
+            'UX-09 migration-preservation successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX09_MIGRATION_PRESERVATION_BASE,
+        UX09_MIGRATION_PRESERVATION_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX09_MIGRATION_PRESERVATION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX09_MIGRATION_PRESERVATION_BASE,
+                  UX09_MIGRATION_PRESERVATION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX09_MIGRATION_PRESERVATION_MODIFIED)],
+            'UX-09 migration-preservation successor changed a different path or status set')
+    base_entries = entries(root, UX09_MIGRATION_PRESERVATION_BASE)
+    source_entries = entries(root, UX09_MIGRATION_PRESERVATION_SOURCE)
+    for path in sorted(UX09_MIGRATION_PRESERVATION_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob',
+                               UX09_MIGRATION_PRESERVATION_SOURCE + ':' + path)
+                and digest(current) == UX09_MIGRATION_PRESERVATION_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-09 migration-preservation successor source identity changed: ' + path)
+
+
+def project_ux09_migration_preservation(root, path, current):
+    """Restore pre-migration-preservation bytes for older source proofs."""
+    if path not in UX09_MIGRATION_PRESERVATION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX09_MIGRATION_PRESERVATION_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX09_MIGRATION_PRESERVATION_SHA256[path],
+            'Current UX-09 migration-preservation successor changed before predecessor projection: '
+            + path)
+    return git(root, 'cat-file', 'blob', UX09_MIGRATION_PRESERVATION_BASE + ':' + path)
+
+
 def validate_ux09_bounded_token_refusal_source(root):
     """Bind the fixture's intentional bounded token-issuance refusal."""
     require(git(root, 'rev-parse', UX09_BOUNDED_TOKEN_REFUSAL_BASE + '^{tree}').decode().strip()
@@ -1269,7 +1322,7 @@ def validate_ux09_bounded_token_refusal_source(root):
     base_entries = entries(root, UX09_BOUNDED_TOKEN_REFUSAL_BASE)
     source_entries = entries(root, UX09_BOUNDED_TOKEN_REFUSAL_SOURCE)
     for path in sorted(UX09_BOUNDED_TOKEN_REFUSAL_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux09_migration_preservation(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob',
                                UX09_BOUNDED_TOKEN_REFUSAL_SOURCE + ':' + path)
                 and digest(current) == UX09_BOUNDED_TOKEN_REFUSAL_SHA256[path]
@@ -1279,6 +1332,7 @@ def validate_ux09_bounded_token_refusal_source(root):
 
 def project_ux09_bounded_token_refusal(root, path, current):
     """Restore pre-token-refusal bytes only for older source proofs."""
+    current = project_ux09_migration_preservation(root, path, current)
     if path not in UX09_BOUNDED_TOKEN_REFUSAL_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX09_BOUNDED_TOKEN_REFUSAL_SOURCE + ':' + path)
@@ -1662,6 +1716,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux09_migration_preservation_source(root)
     validate_ux09_bounded_token_refusal_source(root)
     validate_ux09_audit_rollback_source(root)
     validate_ux09_commercial_snapshot_source(root)
