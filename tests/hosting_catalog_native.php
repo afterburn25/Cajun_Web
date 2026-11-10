@@ -5,6 +5,7 @@ if (PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';
 if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')require_once __DIR__.'/hosting_catalog_recovery_native.php';
 if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')require_once __DIR__.'/hosting_catalog_recovery_http.php';

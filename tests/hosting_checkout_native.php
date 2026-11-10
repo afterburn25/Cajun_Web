@@ -6,6 +6,7 @@ $port=filter_var(getenv('CWP_TEST_PORT')?:'33306',FILTER_VALIDATE_INT,['options'
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';
 require_once __DIR__.'/../site/app/hosting/catalog_checkout.php';
 require_once __DIR__.'/../site/app/hosting/order_link_views.php';

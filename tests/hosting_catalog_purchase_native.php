@@ -13,6 +13,7 @@ foreach([$runtime,$qa] as $path){if(!is_dir($path)||realpath($path)!==$path)thro
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require_once CWP_CODE_ROOT.'/database/migrations/hosting_storefront_migrate.php';
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers.php';
 require_once CWP_CODE_ROOT.'/app/hosting/order_link_views.php';
 require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_views.php';

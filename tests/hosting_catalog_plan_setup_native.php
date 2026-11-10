@@ -4,7 +4,7 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY!=='Linux'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOSTING_PLAN_SETUP')!=='1'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1'||count($argv)!==1)exit(2);
 $port=filter_var(getenv('CWP_TEST_PORT')?:'33306',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);if($port===false)exit(2);
 define('CWP_BOOT',true);
-require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/hosting/catalog_offer_setup.php';
+require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';require __DIR__.'/../site/app/hosting/catalog_offer_setup.php';
 use CajunWebPro\Foundation\Provider\TransportResponse;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\PackageTypes;
