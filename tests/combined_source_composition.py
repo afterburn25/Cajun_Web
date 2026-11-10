@@ -104,6 +104,20 @@ UX08_INVENTORY_BASE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
 UX08_INVENTORY_SOURCE = '19ddbb7038ad6148295c9f2d08cb666b2950713c'
 UX08_INVENTORY_SOURCE_TREE = '346585a348db5def3d3acba8bdc5519a507b80bd'
 UX08_INVENTORY_SHA256 = '54f88be487638ba66e96a7c518c8a64a8d11458ca4e5a7c78661306367942482'
+UX08_REVIEW_BASE = '6201a0ad224bafbed988fd29c72b1e1599dba4d8'
+UX08_REVIEW_BASE_TREE = '59facd3a2e4b9e009b07dd566de1720bf45124b0'
+UX08_REVIEW_SOURCE = 'de79afa5a44f7d0167f1962f77717d364d557c46'
+UX08_REVIEW_SOURCE_TREE = '80432630e55382670d1444d333c1adce53066fb8'
+UX08_REVIEW_MODIFIED = frozenset((
+    'site/app/hosting/catalog_offers_context.php',
+    'site/app/hosting/storefront_categories.php',
+    'site/install/inventory.generated.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/hosting_catalog_billing.php',
+    'tests/hosting_catalog_billing_browser.py',
+    'tests/hosting_catalog_billing_http_fixture.php',
+    'tests/hosting_storefront_routes.php',
+))
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1597,6 +1611,39 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_review_source(root):
+    """Bind the bounded read-scope review successor and refreshed inventory."""
+    require(git(root, 'rev-parse', UX08_REVIEW_BASE + '^{tree}').decode().strip()
+            == UX08_REVIEW_BASE_TREE
+            and git(root, 'rev-parse', UX08_REVIEW_SOURCE + '^{tree}').decode().strip()
+            == UX08_REVIEW_SOURCE_TREE, 'UX-08 read-scope successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_REVIEW_BASE, UX08_REVIEW_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_REVIEW_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_REVIEW_BASE, UX08_REVIEW_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_REVIEW_MODIFIED)],
+            'UX-08 read-scope successor changed a different path or status set')
+    base_entries = entries(root, UX08_REVIEW_BASE)
+    source_entries = entries(root, UX08_REVIEW_SOURCE)
+    for path in sorted(UX08_REVIEW_MODIFIED):
+        current = ordinary(root, path)
+        require(current
+                == git(root, 'cat-file', 'blob', UX08_REVIEW_SOURCE + ':' + path)
+                and (path != INVENTORY or current == canonical_inventory(root))
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0],
+                'UX-08 read-scope successor source identity changed: ' + path)
+
+
+def project_ux08_review(root, path, current):
+    """Restore pre-review bytes only for the exact eight-path successor."""
+    if path not in UX08_REVIEW_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_REVIEW_SOURCE + ':' + path)
+    require(current == source,
+            'Current UX-08 read-scope successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX08_REVIEW_BASE + ':' + path)
+
+
 def validate_ux08_storefront_source(root):
     """Bind the complete classified Shared/VPS storefront source range."""
     require(git(root, 'rev-parse', UX08_STOREFRONT_BASE + '^{tree}').decode().strip()
@@ -1619,12 +1666,14 @@ def validate_ux08_storefront_source(root):
             and UX08_STOREFRONT_ADDITIONS <= set(source_entries),
             'UX-08 storefront additions did not originate in the exact source range')
     for path in sorted(UX08_STOREFRONT_MODIFIED):
-        require(ordinary(root, path)
+        current = project_ux08_review(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0],
                 'UX-08 storefront modified source identity changed: ' + path)
     for path in sorted(UX08_STOREFRONT_ADDITIONS):
-        require(ordinary(root, path)
+        current = project_ux08_review(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
                 and mode(root, path) == source_entries[path][0],
                 'UX-08 storefront addition source identity changed: ' + path)
@@ -1654,10 +1703,9 @@ def validate_ux08_inventory_source(root):
             'UX-08 inventory successor changed a different path or status set')
     base_entries = entries(root, UX08_INVENTORY_BASE)
     source_entries = entries(root, UX08_INVENTORY_SOURCE)
-    current = ordinary(root, INVENTORY)
+    current = project_ux08_review(root, INVENTORY, ordinary(root, INVENTORY))
     require(current == git(root, 'cat-file', 'blob', UX08_INVENTORY_SOURCE + ':' + INVENTORY)
             and digest(current) == UX08_INVENTORY_SHA256
-            and current == canonical_inventory(root)
             and mode(root, INVENTORY) == base_entries[INVENTORY][0]
             == source_entries[INVENTORY][0] == '100644',
             'UX-08 inventory successor source identity changed')
@@ -1688,7 +1736,8 @@ def validate_ux09_smtp_rejection_source(root):
     base_entries = entries(root, UX09_SMTP_REJECTION_BASE)
     source_entries = entries(root, UX09_SMTP_REJECTION_SOURCE)
     for path in sorted(UX09_SMTP_REJECTION_MODIFIED):
-        current = project_ux08_inventory(root, path, ordinary(root, path))
+        current = project_ux08_review(root, path, ordinary(root, path))
+        current = project_ux08_inventory(root, path, current)
         current = project_ux08_storefront(root, path, current)
         current = project_ux09_fixture_receipt(root, path, current)
         current = project_ux09_identity_snapshot(root, path, current)
@@ -1700,6 +1749,7 @@ def validate_ux09_smtp_rejection_source(root):
 
 def project_ux09_smtp_rejection(root, path, current):
     """Restore pre-SMTP-rejection bytes only for older source receipts."""
+    current = project_ux08_review(root, path, current)
     current = project_ux08_inventory(root, path, current)
     current = project_ux08_storefront(root, path, current)
     if path not in UX09_SMTP_REJECTION_MODIFIED:
@@ -1917,6 +1967,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_review_source(root)
     validate_ux08_storefront_source(root)
     validate_ux08_inventory_source(root)
     validate_ux09_diagnostic_registry_source(root)
@@ -2149,7 +2200,7 @@ def verify_current(root):
                 and path not in entries(root, ONBOARDING_BASE),
                 'Software onboarding addition identity changed: ' + path)
     for path in sorted(UX08_STOREFRONT_ADDITIONS):
-        value = ordinary(root, path)
+        value = project_ux08_review(root, path, ordinary(root, path))
         require(value == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'UX-08 storefront addition no longer matches its exact source: ' + path)
