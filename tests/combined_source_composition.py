@@ -32,6 +32,115 @@ RECEIPT = 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
 VERIFIER = 'tests/combined_source_composition.py'
 REGRESSION = 'tests/combined_source_composition_test.py'
 INVENTORY = 'site/install/inventory.generated.php'
+UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
+UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
+UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
+UX08_STOREFRONT_SOURCE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
+UX08_STOREFRONT_MODIFIED = frozenset((
+    'site/admin/controllers/hosting_catalog.php',
+    'site/admin/views/hosting_catalog.php',
+    'site/app/clients/public_identity.php',
+    'site/app/hosting/catalog_login.php',
+    'site/app/hosting/catalog_offer_views.php',
+    'site/app/hosting/catalog_offers.php',
+    'site/app/hosting/catalog_offers_context.php',
+    'site/app/hosting/catalog_offers_document.php',
+    'site/app/hosting/catalog_offers_storage.php',
+    'site/app/providers/catalog_import.php',
+    'site/app/providers/catalog_variants.php',
+    'site/app/settings/database_schemas.php',
+    'site/assets/css/admin.css',
+    'site/assets/css/premium.css',
+    'site/includes/layout/hosting_catalog.php',
+    'site/includes/layout/public.php',
+    'site/pages/controller.php',
+    'site/pages/services/hosting.php',
+    'site/portal/controllers/hosting_catalog.php',
+    'site/portal/controllers/hosting_checkout.php',
+    'site/portal/views/hosting_catalog.php',
+    'site/portal/views/hosting_checkout.php',
+    'tests/catalog_storefront_checkout_cases.py',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/hosting_billing_options_cases.py',
+    'tests/hosting_catalog_billing.php',
+    'tests/hosting_catalog_billing_browser.py',
+    'tests/hosting_catalog_billing_http_fixture.php',
+    'tests/hosting_catalog_billing_native.php',
+    'tests/hosting_catalog_comparison.php',
+    'tests/hosting_catalog_comparison_browser.py',
+    'tests/hosting_catalog_document.php',
+    'tests/hosting_catalog_login.php',
+    'tests/hosting_catalog_native.php',
+    'tests/hosting_catalog_plan_setup_native.php',
+    'tests/hosting_catalog_plan_setup_views.php',
+    'tests/hosting_catalog_purchase_native.php',
+    'tests/hosting_catalog_variants_browser.py',
+    'tests/hosting_catalog_variants_contract.php',
+    'tests/hosting_catalog_variants_http_fixture.php',
+    'tests/hosting_catalog_variants_native.php',
+    'tests/hosting_checkout_document.php',
+    'tests/hosting_checkout_native.php',
+    'tests/hosting_checkout_purchases_native.php',
+    'tests/hosting_checkout_views.php',
+    'tests/recurring-billing/checkout.php',
+    'tests/recurring_billing_checkout_native.php',
+    'tests/service-plans/checkout_documents.php',
+    'tests/service_plans_checkout_native.php',
+    'tools/integration/portable_checks.py',
+))
+UX08_STOREFRONT_ADDITIONS = frozenset((
+    'site/app/hosting/storefront_categories.php',
+    'site/app/hosting/storefront_categories_document.php',
+    'site/database/migrations/hosting_storefront_migrate.php',
+    'site/database/schema/hosting_storefront_schema.php',
+    'site/pages/services/hosting-overview.php',
+    'site/pages/services/vps-hosting.php',
+    'tests/hosting_storefront_routes.php',
+    'tests/hosting_storefront_schema.php',
+))
+UX08_INVENTORY_BASE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
+UX08_INVENTORY_BASE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
+UX08_INVENTORY_SOURCE = '19ddbb7038ad6148295c9f2d08cb666b2950713c'
+UX08_INVENTORY_SOURCE_TREE = '346585a348db5def3d3acba8bdc5519a507b80bd'
+UX08_INVENTORY_SHA256 = '54f88be487638ba66e96a7c518c8a64a8d11458ca4e5a7c78661306367942482'
+UX08_REVIEW_BASE = '6201a0ad224bafbed988fd29c72b1e1599dba4d8'
+UX08_REVIEW_BASE_TREE = '59facd3a2e4b9e009b07dd566de1720bf45124b0'
+UX08_REVIEW_SOURCE = 'de79afa5a44f7d0167f1962f77717d364d557c46'
+UX08_REVIEW_SOURCE_TREE = '80432630e55382670d1444d333c1adce53066fb8'
+UX08_REVIEW_MODIFIED = frozenset((
+    'site/app/hosting/catalog_offers_context.php',
+    'site/app/hosting/storefront_categories.php',
+    'site/install/inventory.generated.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/hosting_catalog_billing.php',
+    'tests/hosting_catalog_billing_browser.py',
+    'tests/hosting_catalog_billing_http_fixture.php',
+    'tests/hosting_storefront_routes.php',
+))
+UX08_ARTIFACT_PROOF_BASE = '50efb5e5d47db0e3fb2b770475691c9578a2f11a'
+UX08_ARTIFACT_PROOF_BASE_TREE = 'da9a8f106d824ff7f7bb9a08f0f2ef105b21eb75'
+UX08_ARTIFACT_PROOF_SOURCE = '01804464017ef444d9e2c24c913a14930d258f3c'
+UX08_ARTIFACT_PROOF_SOURCE_TREE = '116501633cc00b6e47f58819056f0e58f4d40d68'
+UX08_ARTIFACT_PROOF_PATH = 'tests/acceptance_artifacts_test.py'
+UX08_FIXTURE_DEPENDENCY_BASE = 'ae53cb070b1753b2b0c639ec1187ba2bcb3ebd05'
+UX08_FIXTURE_DEPENDENCY_BASE_TREE = '9c652b42feafd236816058a0f1f2576868fb1d40'
+UX08_FIXTURE_DEPENDENCY_SOURCE = '7e2f608f0c1c0fea9f28d15209ceb6f7b15eab3f'
+UX08_FIXTURE_DEPENDENCY_SOURCE_TREE = 'bf81d5a83003569bf220abb22031b24a1603e426'
+UX08_FIXTURE_DEPENDENCY_MODIFIED = frozenset((
+    'tests/hosting_catalog_billing_native.php',
+    'tests/hosting_catalog_native.php',
+    'tests/hosting_catalog_plan_setup_native.php',
+    'tests/hosting_catalog_purchase_native.php',
+    'tests/hosting_catalog_variants_native.php',
+    'tests/hosting_checkout_native.php',
+    'tests/hosting_checkout_purchases_native.php',
+))
+UX08_BROWSER_NAVIGATION_BASE = 'a52a3b4aab527aa95ca1afb6f54360caa3063534'
+UX08_BROWSER_NAVIGATION_BASE_TREE = 'eac7d1e7c5cc5bdf489846e0dd07191b93870eae'
+UX08_BROWSER_NAVIGATION_SOURCE = 'bdba2c03622d9de4e8fdc99ecd11820c497a7c12'
+UX08_BROWSER_NAVIGATION_SOURCE_TREE = 'def24e13ff1bda9e7c2f42507a8a9344a4c0c717'
+UX08_BROWSER_NAVIGATION_PATH = 'tests/release_cases.py'
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1484,6 +1593,7 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_ux08_browser_navigation(root, path, current)
     current = project_ux09_commercial_snapshot(root, path, current)
     if path not in UX09_FIXTURE_RECEIPT_MODIFIED:
         return current
@@ -1525,6 +1635,214 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_browser_navigation_source(root):
+    """Bind the installed-browser contract to the native Hosting disclosure."""
+    require(git(root, 'rev-parse', UX08_BROWSER_NAVIGATION_BASE + '^{tree}').decode().strip()
+            == UX08_BROWSER_NAVIGATION_BASE_TREE
+            and git(root, 'rev-parse', UX08_BROWSER_NAVIGATION_SOURCE + '^{tree}').decode().strip()
+            == UX08_BROWSER_NAVIGATION_SOURCE_TREE, 'UX-08 browser-navigation source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_BROWSER_NAVIGATION_BASE,
+        UX08_BROWSER_NAVIGATION_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_BROWSER_NAVIGATION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_BROWSER_NAVIGATION_BASE, UX08_BROWSER_NAVIGATION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_BROWSER_NAVIGATION_PATH],
+            'UX-08 browser-navigation source changed a different path or status set')
+    base_entries = entries(root, UX08_BROWSER_NAVIGATION_BASE)
+    source_entries = entries(root, UX08_BROWSER_NAVIGATION_SOURCE)
+    require(ordinary(root, UX08_BROWSER_NAVIGATION_PATH)
+            == git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_SOURCE + ':'
+                   + UX08_BROWSER_NAVIGATION_PATH)
+            and mode(root, UX08_BROWSER_NAVIGATION_PATH)
+            == base_entries[UX08_BROWSER_NAVIGATION_PATH][0]
+            == source_entries[UX08_BROWSER_NAVIGATION_PATH][0] == '100644',
+            'UX-08 browser-navigation source identity changed')
+
+
+def project_ux08_browser_navigation(root, path, current):
+    """Restore the pre-disclosure browser assertion for older source proofs."""
+    if path != UX08_BROWSER_NAVIGATION_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_SOURCE + ':' + path)
+    require(current == source, 'Current UX-08 browser-navigation source changed')
+    return git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_BASE + ':' + path)
+
+
+def validate_ux08_fixture_dependency_source(root):
+    """Bind the exact seven native fixtures that load storefront setup."""
+    require(git(root, 'rev-parse', UX08_FIXTURE_DEPENDENCY_BASE + '^{tree}').decode().strip()
+            == UX08_FIXTURE_DEPENDENCY_BASE_TREE
+            and git(root, 'rev-parse', UX08_FIXTURE_DEPENDENCY_SOURCE + '^{tree}').decode().strip()
+            == UX08_FIXTURE_DEPENDENCY_SOURCE_TREE, 'UX-08 fixture-dependency source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_FIXTURE_DEPENDENCY_BASE,
+        UX08_FIXTURE_DEPENDENCY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_FIXTURE_DEPENDENCY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_FIXTURE_DEPENDENCY_BASE, UX08_FIXTURE_DEPENDENCY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_FIXTURE_DEPENDENCY_MODIFIED)]
+            and UX08_FIXTURE_DEPENDENCY_MODIFIED <= UX08_STOREFRONT_MODIFIED,
+            'UX-08 fixture-dependency source changed a different path or status set')
+    base_entries = entries(root, UX08_FIXTURE_DEPENDENCY_BASE)
+    source_entries = entries(root, UX08_FIXTURE_DEPENDENCY_SOURCE)
+    for path in sorted(UX08_FIXTURE_DEPENDENCY_MODIFIED):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-08 fixture-dependency source identity changed: ' + path)
+
+
+def project_ux08_fixture_dependency(root, path, current):
+    """Restore the pre-fixture-dependency bytes for older UX-08 receipts."""
+    if path not in UX08_FIXTURE_DEPENDENCY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
+    require(current == source, 'Current UX-08 fixture-dependency source changed: ' + path)
+    return git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_BASE + ':' + path)
+
+
+def validate_ux08_artifact_proof_source(root):
+    """Bind the five exact artifact predecessor projections exposed by Linux CI."""
+    require(git(root, 'rev-parse', UX08_ARTIFACT_PROOF_BASE + '^{tree}').decode().strip()
+            == UX08_ARTIFACT_PROOF_BASE_TREE
+            and git(root, 'rev-parse', UX08_ARTIFACT_PROOF_SOURCE + '^{tree}').decode().strip()
+            == UX08_ARTIFACT_PROOF_SOURCE_TREE, 'UX-08 artifact-proof successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_ARTIFACT_PROOF_BASE, UX08_ARTIFACT_PROOF_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_ARTIFACT_PROOF_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_ARTIFACT_PROOF_BASE, UX08_ARTIFACT_PROOF_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_ARTIFACT_PROOF_PATH],
+            'UX-08 artifact-proof successor changed a different path or status set')
+    base_entries = entries(root, UX08_ARTIFACT_PROOF_BASE)
+    source_entries = entries(root, UX08_ARTIFACT_PROOF_SOURCE)
+    require(ordinary(root, UX08_ARTIFACT_PROOF_PATH)
+            == git(root, 'cat-file', 'blob', UX08_ARTIFACT_PROOF_SOURCE + ':' + UX08_ARTIFACT_PROOF_PATH)
+            and mode(root, UX08_ARTIFACT_PROOF_PATH) == base_entries[UX08_ARTIFACT_PROOF_PATH][0]
+            == source_entries[UX08_ARTIFACT_PROOF_PATH][0] == '100644',
+            'UX-08 artifact-proof successor source identity changed')
+
+
+def project_ux08_artifact_proof(root, path, current):
+    """Restore the exact pre-artifact-proof helper for older source proofs."""
+    current = project_ux08_fixture_dependency(root, path, current)
+    if path != UX08_ARTIFACT_PROOF_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_ARTIFACT_PROOF_SOURCE + ':' + path)
+    require(current == source,
+            'Current UX-08 artifact-proof successor changed before predecessor projection')
+    return git(root, 'cat-file', 'blob', UX08_ARTIFACT_PROOF_BASE + ':' + path)
+
+
+def validate_ux08_review_source(root):
+    """Bind the bounded read-scope review successor and refreshed inventory."""
+    require(git(root, 'rev-parse', UX08_REVIEW_BASE + '^{tree}').decode().strip()
+            == UX08_REVIEW_BASE_TREE
+            and git(root, 'rev-parse', UX08_REVIEW_SOURCE + '^{tree}').decode().strip()
+            == UX08_REVIEW_SOURCE_TREE, 'UX-08 read-scope successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_REVIEW_BASE, UX08_REVIEW_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_REVIEW_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_REVIEW_BASE, UX08_REVIEW_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_REVIEW_MODIFIED)],
+            'UX-08 read-scope successor changed a different path or status set')
+    base_entries = entries(root, UX08_REVIEW_BASE)
+    source_entries = entries(root, UX08_REVIEW_SOURCE)
+    for path in sorted(UX08_REVIEW_MODIFIED):
+        current = project_ux08_artifact_proof(root, path, ordinary(root, path))
+        require(current
+                == git(root, 'cat-file', 'blob', UX08_REVIEW_SOURCE + ':' + path)
+                and (path != INVENTORY or current == canonical_inventory(root))
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0],
+                'UX-08 read-scope successor source identity changed: ' + path)
+
+
+def project_ux08_review(root, path, current):
+    """Restore pre-review bytes only for the exact eight-path successor."""
+    current = project_ux08_artifact_proof(root, path, current)
+    if path not in UX08_REVIEW_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_REVIEW_SOURCE + ':' + path)
+    require(current == source,
+            'Current UX-08 read-scope successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX08_REVIEW_BASE + ':' + path)
+
+
+def validate_ux08_storefront_source(root):
+    """Bind the complete classified Shared/VPS storefront source range."""
+    require(git(root, 'rev-parse', UX08_STOREFRONT_BASE + '^{tree}').decode().strip()
+            == UX08_STOREFRONT_BASE_TREE
+            and git(root, 'rev-parse', UX08_STOREFRONT_SOURCE + '^{tree}').decode().strip()
+            == UX08_STOREFRONT_SOURCE_TREE, 'UX-08 storefront source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_STOREFRONT_BASE, UX08_STOREFRONT_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_STOREFRONT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_STOREFRONT_BASE, UX08_STOREFRONT_SOURCE).decode().splitlines()
+    observed_modified = {line.split('\t', 1)[1] for line in changes if line.startswith('M\t')}
+    observed_added = {line.split('\t', 1)[1] for line in changes if line.startswith('A\t')}
+    require(len(changes) == len(UX08_STOREFRONT_MODIFIED | UX08_STOREFRONT_ADDITIONS)
+            and observed_modified == UX08_STOREFRONT_MODIFIED
+            and observed_added == UX08_STOREFRONT_ADDITIONS,
+            'UX-08 storefront source changed a different path or status set')
+    base_entries = entries(root, UX08_STOREFRONT_BASE)
+    source_entries = entries(root, UX08_STOREFRONT_SOURCE)
+    require(not UX08_STOREFRONT_ADDITIONS & set(base_entries)
+            and UX08_STOREFRONT_ADDITIONS <= set(source_entries),
+            'UX-08 storefront additions did not originate in the exact source range')
+    for path in sorted(UX08_STOREFRONT_MODIFIED):
+        current = project_ux08_review(root, path, ordinary(root, path))
+        require(current
+                == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0],
+                'UX-08 storefront modified source identity changed: ' + path)
+    for path in sorted(UX08_STOREFRONT_ADDITIONS):
+        current = project_ux08_review(root, path, ordinary(root, path))
+        require(current
+                == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0],
+                'UX-08 storefront addition source identity changed: ' + path)
+
+
+def project_ux08_storefront(root, path, current):
+    """Restore pre-storefront bytes only for older exact-source proofs."""
+    if path not in UX08_STOREFRONT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
+    require(current == source,
+            'Current UX-08 storefront source changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', UX08_STOREFRONT_BASE + ':' + path)
+
+
+def validate_ux08_inventory_source(root):
+    """Bind the canonical inventory refresh for the UX-08 storefront source."""
+    require(git(root, 'rev-parse', UX08_INVENTORY_BASE + '^{tree}').decode().strip()
+            == UX08_INVENTORY_BASE_TREE
+            and git(root, 'rev-parse', UX08_INVENTORY_SOURCE + '^{tree}').decode().strip()
+            == UX08_INVENTORY_SOURCE_TREE, 'UX-08 inventory successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_INVENTORY_BASE, UX08_INVENTORY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_INVENTORY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_INVENTORY_BASE, UX08_INVENTORY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + INVENTORY],
+            'UX-08 inventory successor changed a different path or status set')
+    base_entries = entries(root, UX08_INVENTORY_BASE)
+    source_entries = entries(root, UX08_INVENTORY_SOURCE)
+    current = project_ux08_review(root, INVENTORY, ordinary(root, INVENTORY))
+    require(current == git(root, 'cat-file', 'blob', UX08_INVENTORY_SOURCE + ':' + INVENTORY)
+            and digest(current) == UX08_INVENTORY_SHA256
+            and mode(root, INVENTORY) == base_entries[INVENTORY][0]
+            == source_entries[INVENTORY][0] == '100644',
+            'UX-08 inventory successor source identity changed')
+
+
+def project_ux08_inventory(root, path, current):
+    """Restore the pre-UX-08 inventory only for older exact-source proofs."""
+    if path != INVENTORY:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_INVENTORY_SOURCE + ':' + path)
+    require(current == source and digest(current) == UX08_INVENTORY_SHA256,
+            'Current UX-08 inventory successor changed before predecessor projection')
+    return git(root, 'cat-file', 'blob', UX08_INVENTORY_BASE + ':' + path)
+
+
 def validate_ux09_smtp_rejection_source(root):
     """Bind the explicit SMTP-rejection certainty successor."""
     require(git(root, 'rev-parse', UX09_SMTP_REJECTION_BASE + '^{tree}').decode().strip()
@@ -1540,7 +1858,10 @@ def validate_ux09_smtp_rejection_source(root):
     base_entries = entries(root, UX09_SMTP_REJECTION_BASE)
     source_entries = entries(root, UX09_SMTP_REJECTION_SOURCE)
     for path in sorted(UX09_SMTP_REJECTION_MODIFIED):
-        current = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        current = project_ux08_review(root, path, ordinary(root, path))
+        current = project_ux08_inventory(root, path, current)
+        current = project_ux08_storefront(root, path, current)
+        current = project_ux09_fixture_receipt(root, path, current)
         current = project_ux09_identity_snapshot(root, path, current)
         require(current == git(root, 'cat-file', 'blob', UX09_SMTP_REJECTION_SOURCE + ':' + path)
                 and digest(current) == UX09_SMTP_REJECTION_SHA256[path]
@@ -1550,6 +1871,9 @@ def validate_ux09_smtp_rejection_source(root):
 
 def project_ux09_smtp_rejection(root, path, current):
     """Restore pre-SMTP-rejection bytes only for older source receipts."""
+    current = project_ux08_review(root, path, current)
+    current = project_ux08_inventory(root, path, current)
+    current = project_ux08_storefront(root, path, current)
     if path not in UX09_SMTP_REJECTION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX09_SMTP_REJECTION_SOURCE + ':' + path)
@@ -1576,9 +1900,29 @@ def reconstruct_adapter(data, path, current):
     return original
 
 
+def project_ux08_storefront_repair_input(root, path, current):
+    """Accept exact storefront or base bytes before an older repair inverse."""
+    if path not in UX08_STOREFRONT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_STOREFRONT_BASE + ':' + path)
+    if path in UX08_FIXTURE_DEPENDENCY_MODIFIED:
+        fixture_source = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
+        fixture_base = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_BASE + ':' + path)
+        require(fixture_base == source,
+                'UX-08 fixture repair base differs from storefront source: ' + path)
+        if current == fixture_source:
+            current = fixture_base
+    if current == source:
+        return base
+    require(current == base, 'Unexpected UX-08 storefront repair input: ' + path)
+    return current
+
+
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_ux08_storefront_repair_input(Path(__file__).resolve().parents[1], path, current)
     row = data['integration_repairs'][path]
     require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path],
             'Current integration repair changed: ' + path)
@@ -1765,6 +2109,12 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_browser_navigation_source(root)
+    validate_ux08_fixture_dependency_source(root)
+    validate_ux08_artifact_proof_source(root)
+    validate_ux08_review_source(root)
+    validate_ux08_storefront_source(root)
+    validate_ux08_inventory_source(root)
     validate_ux09_diagnostic_registry_source(root)
     validate_ux09_migration_preservation_source(root)
     validate_ux09_bounded_token_refusal_source(root)
@@ -1961,7 +2311,7 @@ def verify_current(root):
                 'Database workflow addition bytes or mode changed: ' + path)
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
-               | UX09_ADDITIONS
+               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
@@ -1994,6 +2344,11 @@ def verify_current(root):
         require(onboarding['added'][path] == digest(value) and mode(root, path) == '100644'
                 and path not in entries(root, ONBOARDING_BASE),
                 'Software onboarding addition identity changed: ' + path)
+    for path in sorted(UX08_STOREFRONT_ADDITIONS):
+        value = project_ux08_review(root, path, ordinary(root, path))
+        require(value == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
+                and mode(root, path) == '100644',
+                'UX-08 storefront addition no longer matches its exact source: ' + path)
     for path in sorted(ADDITIONS):
         original = reconstruct_addition(data, path, ordinary(root, path))
         require(mode(root, path) == addition_entries[path][0] == '100644'
@@ -2034,6 +2389,7 @@ def verify_current(root):
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
+        {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},

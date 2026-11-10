@@ -31,6 +31,10 @@ function provider_catalog_import_context(string $source): array {provider_catalo
 function provider_package_types_ready(): bool {return true;}
 function provider_package_types_observation(array $saved): array {return ['types'=>[['id'=>'811','label'=>'Original hosting type']]];}
 function provider_catalog_import_record(int $id): ?array {foreach($GLOBALS['m']['imports'] as $row)if((int)$row['product_id']===$id)return $row;foreach($GLOBALS['m']['variants'] as $row)if((int)$row['product_id']===$id)return provider_catalog_variant_resolve($row);return null;}
+function hosting_storefront_classify_import(int $product,array $actor,string $source='twentyi-addweb-import'): ?array {
+    provider_catalog_import_transaction();if($actor!==$GLOBALS['m']['actor']||$source!=='twentyi-addweb-import')throw new LogicException('Unexpected storefront classification input.');
+    $GLOBALS['m']['storefront_classifications'][]=$product;return null;
+}
 function provider_settings_profile(): ?array {return $GLOBALS['m']['profile'];}
 function provider_inventory_authority(string $id,int $revision): array {if(!$GLOBALS['m']['authority'])throw new RuntimeException('Authority changed');return [null,['id'=>$id,'environment'=>'live','credentials'=>'synthetic-ciphertext']];}
 function provider_settings_unseal(string $id,string $environment,string $credentials): string {return $GLOBALS['m']['secret'];}
@@ -73,7 +77,7 @@ function query(string $sql,array $params=[]): object {
 function cvc_reset(): void {
     $_SESSION=[];$_GET=[];$origin=['id'=>3,'profile_id'=>str_repeat('a',32),'type_ref'=>'811','product_id'=>17,'source_revision'=>2,'refresh_id'=>str_repeat('b',32),'source_key_fingerprint'=>hash('sha256','synthetic-key'),'type_name'=>'Original hosting type','source_hash'=>'','actor_id'=>9,'created_at'=>'2023-11-14 22:13:20','media_id'=>str_repeat('e',32),'media_revision'=>1];
     $origin['source_hash']=hash('sha256',json_encode([$origin['profile_id'],2,$origin['refresh_id'],$origin['source_key_fingerprint'],'811',$origin['type_name']],JSON_THROW_ON_ERROR));
-    $GLOBALS['m']=['exists'=>false,'schema_valid'=>true,'canonical_exists'=>true,'canonical_ready'=>true,'lock'=>false,'tx'=>false,'owner'=>true,'owner_calls'=>0,'actor'=>['id'=>9,'auth_version'=>'owner-v1'],'profile'=>['id'=>$origin['profile_id'],'revision'=>2],'authority'=>true,'secret'=>'synthetic-key','context_valid'=>true,'context'=>['profile_id'=>$origin['profile_id'],'source_key_fingerprint'=>$origin['source_key_fingerprint'],'hash'=>hash('sha256','current-source'),'document'=>ProviderCatalogImportDocument::fromRows([['type_ref'=>'811','package_type_name'=>'Current type name']])],'settings'=>['provider_catalog_import_version'=>'1'],'audits'=>[],'variants'=>[],'imports'=>[3=>$origin],'products'=>[17=>['id'=>17,'revision'=>4,'sku'=>'HOST-MONTH','title'=>'Monthly hosting','family'=>'hosting','status'=>'draft','term'=>'month','amount_cents'=>2500]],'revisions'=>[17=>[4=>'{}']],'next_product'=>20,'fail_audit'=>null];
+    $GLOBALS['m']=['exists'=>false,'schema_valid'=>true,'canonical_exists'=>true,'canonical_ready'=>true,'lock'=>false,'tx'=>false,'owner'=>true,'owner_calls'=>0,'actor'=>['id'=>9,'auth_version'=>'owner-v1'],'profile'=>['id'=>$origin['profile_id'],'revision'=>2],'authority'=>true,'secret'=>'synthetic-key','context_valid'=>true,'context'=>['profile_id'=>$origin['profile_id'],'source_key_fingerprint'=>$origin['source_key_fingerprint'],'hash'=>hash('sha256','current-source'),'document'=>ProviderCatalogImportDocument::fromRows([['type_ref'=>'811','package_type_name'=>'Current type name']])],'settings'=>['provider_catalog_import_version'=>'1'],'audits'=>[],'variants'=>[],'storefront_classifications'=>[],'imports'=>[3=>$origin],'products'=>[17=>['id'=>17,'revision'=>4,'sku'=>'HOST-MONTH','title'=>'Monthly hosting','family'=>'hosting','status'=>'draft','term'=>'month','amount_cents'=>2500]],'revisions'=>[17=>[4=>'{}']],'next_product'=>20,'fail_audit'=>null];
 }
 try{
     cvc_reset();$original=$GLOBALS['m']['imports'];
@@ -89,7 +93,7 @@ try{
     provider_catalog_variant_prepare('owner-password');cvc_ok('Preparation replay does not append history',count($GLOBALS['m']['audits'])===1);
     $preview=provider_catalog_variant_preview(17);$id=str_repeat('c',32);$call=fn()=>provider_catalog_variant_create($id,17,4,$preview['review_sha256'],'HOST-YEAR','year','owner-password');
     $before=$GLOBALS['m'];$GLOBALS['m']['fail_audit']='provider_variant.create';cvc_bad('Creation audit failure rolls back product mapping and count',$call);cvc_ok('Creation rollback preserves original product and all imports',$GLOBALS['m']['products']===$before['products']&&$GLOBALS['m']['variants']===[]&&$GLOBALS['m']['imports']===$original);$GLOBALS['m']['fail_audit']=null;
-    $created=$call();cvc_ok('One explicit creation returns independent child',$created===20&&provider_catalog_variant_ready()&&count($GLOBALS['m']['variants'])===1);
+    $created=$call();cvc_ok('One explicit creation returns independent child and requests explicit Shared classification',$created===20&&provider_catalog_variant_ready()&&count($GLOBALS['m']['variants'])===1&&$GLOBALS['m']['storefront_classifications']===[20]);
     $row=provider_catalog_import_record(20);cvc_ok('Normalized pair retains exact source and independent empty image',$row['id']===3&&$row['product_id']===20&&$row['source_hash']===$original[3]['source_hash']&&$row['media_id']===null&&$row['media_revision']===0);
     cvc_ok('Canonical physical row and media remain unchanged',$GLOBALS['m']['imports']===$original);
     cvc_ok('Resolver authenticates canonical and variant together',cvc_scope(fn()=>provider_catalog_import_canonical_record($row))===$original[3]);
@@ -109,7 +113,7 @@ try{
     $GLOBALS['m']['actor']['auth_version']='owner-v2';cvc_bad('Replay refuses changed owner authentication',$call);$GLOBALS['m']['actor']['auth_version']='owner-v1';
     cvc_bad('Stale selected revision cannot create another option',fn()=>provider_catalog_variant_create(str_repeat('d',32),17,4,$preview['review_sha256'],'HOST-YEAR-2','year','owner-password'));
     $GLOBALS['m']['revisions'][20][2]=json_encode($GLOBALS['m']['products'][20]);$childPreview=provider_catalog_variant_preview(20);cvc_ok('Selecting child shows same canonical family',$childPreview['origin_product']['id']===17&&count($childPreview['variants'])===2);
-    $child=provider_catalog_variant_create(str_repeat('d',32),20,2,$childPreview['review_sha256'],'HOST-MONTH-2','month','owner-password');cvc_ok('Child selection creates sibling under original canonical source',$child===21&&$GLOBALS['m']['variants'][str_repeat('d',32)]['canonical_product_id']===17);
+    $child=provider_catalog_variant_create(str_repeat('d',32),20,2,$childPreview['review_sha256'],'HOST-MONTH-2','month','owner-password');cvc_ok('Child selection creates sibling under original canonical source and storefront classification',$child===21&&$GLOBALS['m']['variants'][str_repeat('d',32)]['canonical_product_id']===17&&$GLOBALS['m']['storefront_classifications']===[20,21]);
     $GLOBALS['m']['full_variant_scans']=0;$origins=cvc_scope(fn()=>provider_catalog_import_origins(array_fill(0,20,provider_catalog_import_record(20))));
     cvc_ok('Actual origins validates complete variant store once for twenty child records',$GLOBALS['m']['full_variant_scans']===1&&$origins===[20=>['origin_operation'=>'package.types','origin_name'=>'Original hosting type']]);
     $GLOBALS['m']['full_variant_scans']=0;cvc_scope(fn()=>provider_catalog_import_records_in_scope([17,20,21]));

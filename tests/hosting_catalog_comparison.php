@@ -20,7 +20,7 @@ function hc_ok(string $name,bool $passed):void {global $checks;$checks[]=['name'
 function hc_render(array $page):string {ob_start();try {hosting_catalog_comparison($page);return ob_get_contents();}finally{ob_end_clean();}}
 function hc_refuse(string $name,array $page):void {try{hc_render($page);}catch(InvalidArgumentException){hc_ok($name,true);return;}hc_ok($name,false);}
 function hc_offer(int $id=1,bool $checkout=true):array {
-    $offer=['publication_id'=>sprintf('%032x',$id),'publication_sha256'=>hash('sha256','offer-'.$id),'product_id'=>$id,'product_revision'=>1,'sku'=>'PLAN-'.$id,
+    $offer=['publication_id'=>sprintf('%032x',$id),'publication_sha256'=>hash('sha256','offer-'.$id),'product_id'=>$id,'product_revision'=>1,'sku'=>'PLAN-'.$id,'category'=>'shared-hosting','category_label'=>'Shared hosting',
         'title'=>'Studio '.$id,'summary'=>'Hosting for a focused website.','currency'=>'USD','amount_cents'=>1900,'cadence'=>'monthly',
         'image_id'=>str_repeat('a',32),'inclusions'=>['Website hosting','Daily backup review'],'exclusions'=>['Website redesign'],
         'limits'=>['websites'=>1,'mailboxes'=>0],'support'=>'Email support during published business hours.'];
@@ -58,7 +58,7 @@ try {
     hc_ok('Product image is local media with decorative alt and dimensions',str_contains($html,'src="/nested/media/index.php?id='.str_repeat('a',32).'" alt="" width="240" height="144"'));
     preg_match_all('/href="([^"]+)"/',$html,$links);$checkout=[];
     foreach($links[1] as $link){$url=html_entity_decode($link,ENT_QUOTES,'UTF-8');parse_str(parse_url($url,PHP_URL_QUERY)??'',$query);if(($query['hosting']??null)==='checkout')$checkout[]=$query;}
-    hc_ok('Per-offer checkout link carries only exact publication and hash',$checkout===[['hosting'=>'checkout','offer'=>$offer['publication_id'],'offer_sha256'=>$offer['publication_sha256']]]);
+    hc_ok('Per-offer checkout link binds category, current configuration, publication and hash',$checkout===[['hosting'=>'checkout','category'=>'shared-hosting','config'=>hosting_catalog_config_hash($offer),'offer'=>$offer['publication_id'],'offer_sha256'=>$offer['publication_sha256']]]);
     hc_ok('Checkout link has a unique descriptive accessible name',str_contains($html,'aria-label="Review Studio 1 and first invoice"'));
     hc_ok('Checkout explains unpaid invoice and separate activation',str_contains($html,'first unpaid invoice')&&str_contains($html,'verified payment and owner approval')&&str_contains($html,'America/Chicago'));
     hc_ok('Comparison introduces no form or automatic action',!str_contains($html,'<form')&&!str_contains($html,'<script'));
@@ -83,7 +83,7 @@ try {
         hc_ok($count.' offers produce unique caption and help IDs',count($ids[1])===count(array_unique($ids[1])));
     }
     $more=hc_render(hc_page([$offer],false,true));
-    hc_ok('Remaining offers link to the existing second portal page',str_contains($more,'hosting=offers&amp;p=2'));
+    hc_ok('Remaining offers link to the category-bound second portal page',str_contains($more,'hosting=offers&amp;category=shared-hosting&amp;p=2'));
     $empty=hc_render(hc_page([]));$unavailable=hc_render(hc_page([],true));$partial=hc_render(hc_page([$offer],true));
     hc_ok('Unprepared empty state offers consultation without a fake plan',str_contains($empty,'No shared hosting plans are published yet.')&&!str_contains($empty,'<table')&&str_contains($empty,'page=consultation'));
     hc_ok('Unavailable state is distinct and contains no internal error',str_contains($unavailable,'We cannot show hosting plans right now.')&&!str_contains($unavailable,'<table'));

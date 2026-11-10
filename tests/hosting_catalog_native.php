@@ -5,6 +5,7 @@ if (PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';
 if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')require_once __DIR__.'/hosting_catalog_recovery_native.php';
 if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')require_once __DIR__.'/hosting_catalog_recovery_http.php';
@@ -97,7 +98,17 @@ try {
     $sessionBeforeDenial=$_SESSION; $_SESSION['last_activity']=time()-1801;
     try { hcn_deny('Hosting preparation requires the current owner password — invalid current session',fn()=>hosting_catalog_prepare('')); } finally { $_SESSION=$sessionBeforeDenial; }
     hcn_owner(2);hcn_deny('Delegated administrator cannot prepare hosting offer storage',fn()=>hosting_catalog_prepare($password));hcn_owner();
-    hosting_catalog_prepare($password);$before=hcn_state();hosting_catalog_prepare($password);hcn_ok('Repeated hosting preparation preserves all database rows',hcn_ready()&&hcn_state()===$before);
+    $reviewProduct=catalog_save(0,0,array_replace($input,['sku'=>'HOSTING-OWNER-REVIEW','title'=>'Owner classified hosting','amount'=>'30.00']));
+    hosting_catalog_prepare($password);hosting_storefront_prepare($password);$before=hcn_state();hosting_catalog_prepare($password);hosting_storefront_prepare($password);hcn_ok('Repeated hosting and storefront preparation preserve all database rows',hcn_ready()&&hcn_state()===$before);
+    $unbound=staff_locked(fn()=>staff_transaction(fn()=>hosting_storefront_current_classification($reviewProduct)));
+    hcn_ok('Migration retains an unimported hosting product as explicit review instead of title inference',$unbound['state']==='review'&&$unbound['category_slug']===null&&$unbound['source']==='migration-review');
+    $binding=hosting_storefront_binding_preview($reviewProduct,'shared-hosting');$bindingId=hcn_id(910);
+    hcn_owner(2);hcn_deny('Delegated administrator cannot assign a storefront category',fn()=>hosting_storefront_bind($bindingId,$reviewProduct,'shared-hosting',$binding['review_sha256'],$password));hcn_owner();
+    hcn_deny('Owner category assignment rejects a stale exact review',fn()=>hosting_storefront_bind($bindingId,$reviewProduct,'shared-hosting',str_repeat('0',64),$password));
+    $bound=hosting_storefront_bind($bindingId,$reviewProduct,'shared-hosting',$binding['review_sha256'],$password);$beforeBindingReplay=hcn_state();
+    hcn_ok('Owner assignment appends a retained Shared classification',$bound['id']===$bindingId&&$bound['state']==='bound'&&$bound['source']==='owner'&&$bound['category_slug']==='shared-hosting');
+    hcn_ok('Exact category assignment replay preserves all history',hosting_storefront_bind($bindingId,$reviewProduct,'shared-hosting',$binding['review_sha256'],$password)['id']===$bindingId&&hcn_state()===$beforeBindingReplay);
+    hcn_deny('A different classification identity cannot alias an existing assignment',fn()=>hosting_storefront_bind(hcn_id(911),$reviewProduct,'shared-hosting',$binding['review_sha256'],$password));
     hcn_ok('Prepared empty hosting page validates history once without writes',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')hcr_phase('empty');
     if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')hch_phase('empty');
@@ -117,7 +128,7 @@ try {
     if(getenv('CWP_TEST_HOSTING_RECOVERY')==='1')hcr_phase('published');
     if(getenv('CWP_TEST_HOSTING_RECOVERY_HTTP')==='1')hch_phase('published');
     $_SESSION=[];$public=hosting_catalog_public();$card=$publication->historicalProjection();
-    hcn_ok('Anonymous hosting cards have exactly the closed safe projection',$public===['offers'=>[$card],'has_more'=>false,'unavailable'=>false]&&array_keys($card)===['publication_id','publication_sha256','product_id','product_revision','sku','title','summary','amount_cents','currency','cadence','inclusions','exclusions','limits','support','image_id']);
+    hcn_ok('Anonymous hosting cards have exactly the closed safe projection',$public===['offers'=>[$card],'has_more'=>false,'unavailable'=>false]&&array_keys($card)===['publication_id','publication_sha256','product_id','product_revision','category','category_label','sku','title','summary','amount_cents','currency','cadence','inclusions','exclusions','limits','support','image_id']&&$card['category']==='shared-hosting');
     $bytes=json_encode($public,JSON_THROW_ON_ERROR);hcn_ok('Hosting public cards expose plan terms without private import or provider values',!str_contains($bytes,$secret)&&!str_contains($bytes,$profile)&&!str_contains($bytes,'PRIVATE_')&&!str_contains($bytes,'credential_sha256')&&!str_contains($bytes,'source_key_fingerprint')&&$card['inclusions']===$terms['inclusions']&&$card['exclusions']===$terms['exclusions']&&$card['support']===$terms['support']);
     hcn_ok('Anonymous projection makes no transport or database writes',$calls===1&&hcn_state()===$before);
     hcn_ok('Nonempty public page validates hosting history exactly once',hcn_public_probe()===$public&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0);

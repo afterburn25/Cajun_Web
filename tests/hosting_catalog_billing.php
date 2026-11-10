@@ -24,17 +24,17 @@ function hcb_load(): void {
     $body=substr($source,$start,$end+2-$start);$GLOBALS['fragments']['hosting_catalog_public']=hash('sha256',$body);eval($body);
 }
 function hcb_reset(): void {
-    $GLOBALS['hcb']=['lock'=>false,'locks'=>0,'ready'=>true,'ready_calls'=>0,'queries'=>[],'origin_checks'=>0,'source_reads'=>0,'projection_calls'=>[],
+    $GLOBALS['hcb']=['lock'=>false,'locks'=>0,'ready'=>true,'storefront_ready'=>true,'ready_calls'=>0,'storefront_ready_calls'=>0,'queries'=>[],'origin_checks'=>0,'source_reads'=>0,'projection_calls'=>[],
         'scope_valid'=>true,'profile_revision'=>3,'source_revision'=>3,'source_state'=>'complete','bad_projection'=>null,'unavailable'=>[],
         'products'=>[],'projections'=>[],'import_pages'=>[],'provider_calls'=>0,'writes'=>0];
     // Opposite-period rows precede the monthly products. Sorting is product order, not publication time.
     for ($id=1;$id<=44;$id++) {
         $term=$id<=22?'year':'month';$publication=str_pad(dechex($id),32,'0',STR_PAD_LEFT);
-        $GLOBALS['hcb']['products'][]=['id'=>$id,'publication'=>$publication,'term'=>$term,'sort_order'=>0,'status'=>'draft','revision'=>2,'publication_revision'=>2,'withdrawn'=>false,'latest'=>true];
+        $GLOBALS['hcb']['products'][]=['id'=>$id,'publication'=>$publication,'category'=>'shared-hosting','term'=>$term,'sort_order'=>0,'status'=>'draft','revision'=>2,'publication_revision'=>2,'withdrawn'=>false,'latest'=>true];
         $GLOBALS['hcb']['projections'][$publication]=['publication_id'=>$publication,'publication_sha256'=>hash('sha256','publication '.$id),'title'=>'Hosting option '.$id,
             'summary'=>'Exact independently published option','amount_cents'=>$term==='year'?11301:1500,'currency'=>'USD','cadence'=>$term==='year'?'annually':'monthly',
             'image_id'=>str_pad(dechex(100+$id),32,'0',STR_PAD_LEFT),'inclusions'=>['One package'],'exclusions'=>[],'limits'=>['sites'=>1],'support'=>'Reviewed support',
-            'checkout_policy'=>$id===44?null:['format'=>1,'timezone'=>'UTC','alignment'=>'day']];
+            'category'=>'shared-hosting','category_label'=>'Shared hosting','checkout_policy'=>$id===44?null:['format'=>1,'timezone'=>'UTC','alignment'=>'day']];
     }
 }
 function recurring_billing_locked(callable $work): mixed {
@@ -44,6 +44,16 @@ function recurring_billing_locked(callable $work): mixed {
 }
 function hosting_catalog_guard(): void {if (!$GLOBALS['hcb']['lock']) throw new LogicException('Owning read guard required.');}
 function hosting_catalog_ready(): bool {hosting_catalog_guard();$GLOBALS['hcb']['ready_calls']++;return $GLOBALS['hcb']['ready'];}
+function hosting_storefront_ready(): bool {hosting_catalog_guard();$GLOBALS['hcb']['storefront_ready_calls']++;return $GLOBALS['hcb']['storefront_ready'];}
+final class HostingStorefrontReadScope {
+    private function __construct() {}
+    public static function open(): ?self {hosting_catalog_guard();return hosting_storefront_ready()?new self:null;}
+    public static function require(): self {$scope=self::open();if(!$scope)throw new RuntimeException('Storefront unavailable.');return $scope;}
+}
+function hosting_storefront_slug(mixed $value): string {
+    if (!is_string($value)||!in_array($value,['shared-hosting','vps-hosting'],true)) throw new InvalidArgumentException('Choose an available hosting category.');
+    return $value;
+}
 function service_plans_actor(int $id): void {if ($id<1) throw new InvalidArgumentException('Invalid product.');}
 function table(string $name): string {return 'test_'.$name;}
 function catalog_ready(): bool {return true;}
@@ -57,14 +67,15 @@ function all(string $sql,array $parameters=[]): array {
     hosting_catalog_guard();$GLOBALS['hcb']['queries'][]=[$sql,$parameters];
     if (str_contains($sql,'FROM test_provider_profiles')) return [['id'=>str_repeat('a',32),'revision'=>$GLOBALS['hcb']['profile_revision'],'enabled'=>1,'credentials'=>'PRIVATE_SYNTHETIC_CIPHERTEXT']];
     if (!str_starts_with($sql,'SELECT p.id,p.product_id FROM test_hosting_catalog_publications')) throw new LogicException('Unexpected modeled query.');
-    foreach (["c.status='draft'",'c.revision=p.product_revision','w.id IS NULL','n.product_id=p.product_id AND n.seq>p.seq'] as $predicate) if (!str_contains($sql,$predicate)) throw new LogicException('A retained selection condition disappeared.');
+    foreach (["BINARY sf.category_slug=?","c.status='draft'",'c.revision=p.product_revision','w.id IS NULL','n.product_id=p.product_id AND n.seq>p.seq','nc.product_id=p.product_id AND nc.seq>sc.seq','ng.slug=cg.slug AND ng.seq>cg.seq'] as $predicate) if (!str_contains($sql,$predicate)) throw new LogicException('A retained selection condition disappeared.');
     if (!preg_match('/ ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ([0-9]+)\z/',$sql,$m)) throw new LogicException('Unexpected modeled pagination.');
-    $term=null;
+    if (!isset($parameters[0])||!in_array($parameters[0],['shared-hosting','vps-hosting'],true)) throw new LogicException('Missing category boundary.');
+    $category=$parameters[0];$term=null;
     if (str_contains($sql,' AND BINARY c.term=?')) {
-        if (count($parameters)!==1||!in_array($parameters[0],['month','year'],true)||strpos($sql,' AND BINARY c.term=?')>strpos($sql,' ORDER BY')) throw new LogicException('Unbounded or misplaced period predicate.');
-        $term=$parameters[0];
-    } elseif ($parameters!==[]) throw new LogicException('Unmodeled parameters.');
-    $rows=array_values(array_filter($GLOBALS['hcb']['products'],fn($row)=>$row['status']==='draft'&&$row['revision']===$row['publication_revision']&&!$row['withdrawn']&&$row['latest']&&($term===null||$row['term']===$term)));
+        if (count($parameters)!==2||!in_array($parameters[1],['month','year'],true)||strpos($sql,' AND BINARY c.term=?')>strpos($sql,' ORDER BY')) throw new LogicException('Unbounded or misplaced period predicate.');
+        $term=$parameters[1];
+    } elseif (count($parameters)!==1) throw new LogicException('Unmodeled parameters.');
+    $rows=array_values(array_filter($GLOBALS['hcb']['products'],fn($row)=>$row['category']===$category&&$row['status']==='draft'&&$row['revision']===$row['publication_revision']&&!$row['withdrawn']&&$row['latest']&&($term===null||$row['term']===$term)));
     usort($rows,fn($a,$b)=>[$a['sort_order'],$a['id']]<=>[$b['sort_order'],$b['id']]);
     return array_map(fn($row)=>['id'=>$row['publication'],'product_id'=>$row['id']],array_slice($rows,(int)$m[1],21));
 }
@@ -110,12 +121,14 @@ try {
     hcb_bad('Internal page key cannot select arbitrary query fields',fn()=>hosting_catalog_billing_query(['redirect'=>'1'],'redirect'));
     hcb_reset();$original=[$GLOBALS['hcb']['products'],$GLOBALS['hcb']['projections']];
     $all=hosting_catalog_public();hcb_ok('Default all preserves first twenty products and continuation',hcb_ids($all)===range(1,20)&&$all['has_more']&&$all['unavailable']===false);
-    hcb_ok('Default all keeps the prior unfiltered query and no bound period',!str_contains($GLOBALS['hcb']['queries'][0][0],'BINARY c.term')&&$GLOBALS['hcb']['queries'][0][1]===[]);
+    hcb_ok('One offer page validates complete storefront history exactly once',$GLOBALS['hcb']['storefront_ready_calls']===1);
+    hcb_ok('Default all binds Shared before pagination and leaves period unfiltered',!str_contains($GLOBALS['hcb']['queries'][0][0],'BINARY c.term')&&$GLOBALS['hcb']['queries'][0][1]===['shared-hosting']);
     $monthly=hosting_catalog_public(1,'monthly');hcb_ok('Monthly products beyond twenty annual products remain reachable',hcb_ids($monthly)===range(23,42)&&$monthly['has_more']&&$monthly['unavailable']===false);
     $second=hosting_catalog_public(2,'monthly');hcb_ok('Second monthly page contains only remaining matches',hcb_ids($second)===[43,44]&&!$second['has_more']);
     $annual=hosting_catalog_public(1,'annually');$annual2=hosting_catalog_public(2,'annually');
     hcb_ok('Annual selection paginates independently of monthly products',hcb_ids($annual)===range(1,20)&&$annual['has_more']&&hcb_ids($annual2)===[21,22]&&!$annual2['has_more']);
     hcb_ok('All retains monthly and annual alternatives without family collapse',hcb_ids(hosting_catalog_public(2))===range(21,40)&&hcb_ids(hosting_catalog_public(3))===[41,42,43,44]);
+    hcb_ok('A different explicit category cannot leak Shared products',hosting_catalog_public(1,'all','vps-hosting')===['offers'=>[],'has_more'=>false,'unavailable'=>false]);
     $empty=hosting_catalog_public(3,'monthly');hcb_ok('A later matching page is empty without a false continuation',$empty===['offers'=>[],'has_more'=>false,'unavailable'=>false]);
     hcb_ok('Exact publication identity hash amount and own image survive selection',$monthly['offers'][0]===$original[1][str_pad(dechex(23),32,'0',STR_PAD_LEFT)]&&$annual['offers'][0]===$original[1][str_repeat('0',31).'1']);
     hcb_ok('Annual price stays the full published charge',$annual['offers'][0]['amount_cents']===11301&&$annual['offers'][0]['cadence']==='annually');
@@ -126,8 +139,10 @@ try {
     hcb_ok('Reading uses no provider operation or business write',$GLOBALS['hcb']['provider_calls']===0&&$GLOBALS['hcb']['writes']===0&&!$GLOBALS['hcb']['lock']);
     hcb_reset();foreach ([0,100001] as $page) hcb_bad('Reject invalid direct page '.$page,fn()=>hosting_catalog_public($page,'monthly'));
     foreach (['weekly',' monthly',"annually\0",['monthly']] as $i=>$bad) hcb_bad('Reject direct filter before read scope '.$i,fn()=>hosting_catalog_public(1,$bad));
+    foreach (['', '../admin', 'Shared-Hosting', ['shared-hosting']] as $i=>$bad) hcb_bad('Reject invalid category before read scope '.$i,fn()=>hosting_catalog_public(1,'all',$bad));
     hcb_ok('Invalid browsing values acquire no lock or source',$GLOBALS['hcb']['locks']===0&&$GLOBALS['hcb']['queries']===[]);
     hcb_reset();$GLOBALS['hcb']['ready']=false;hcb_ok('Never prepared offers remain unavailable for selection without setup',hosting_catalog_public(1,'monthly')===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcb']['queries']===[]);
+    hcb_reset();$GLOBALS['hcb']['storefront_ready']=false;hcb_ok('Unprepared storefront reports unavailable without querying uncategorized offers',hosting_catalog_public(1,'monthly')===['offers'=>[],'has_more'=>false,'unavailable'=>true]&&$GLOBALS['hcb']['queries']===[]);
     foreach (['failed',null] as $state) {hcb_reset();$GLOBALS['hcb']['source_state']=$state;hcb_bad('Latest '.($state??'unfinished').' catalog is not replaced by older data',fn()=>hosting_catalog_public(1,'monthly'));}
     hcb_reset();$GLOBALS['hcb']['source_revision']=2;hcb_bad('Changed provider settings retain the existing source gate',fn()=>hosting_catalog_public(1,'annually'));
     hcb_reset();$GLOBALS['hcb']['scope_valid']=false;hcb_bad('Missing retained import or variant history cannot become an empty filter',fn()=>hosting_catalog_public(1,'monthly'));

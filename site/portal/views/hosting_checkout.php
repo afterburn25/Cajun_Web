@@ -24,9 +24,9 @@ if ($unavailable) {
     }
     echo '<p><a class="btn outline" href="'.esc(studio_url(['hosting'=>'offers'])).'">Return to available plans</a></p>';return;
 }
-$offer=$data['offer'];$context=['hosting'=>'checkout','offer'=>$values['publication_id'],'offer_sha256'=>$values['publication_sha256'],'project_search'=>$data['search']];
+$offer=$data['offer'];$resume=array_intersect_key($data['destination'],['category'=>true,'config'=>true]);$context=['hosting'=>'checkout']+$resume+['offer'=>$values['publication_id'],'offer_sha256'=>$values['publication_sha256'],'project_search'=>$data['search']];
 echo '<section class="workspace-card">';hosting_catalog_card($offer,'h2');echo '<h3>Choose the project</h3><p>Use an existing website project or create a dedicated project for this hosting service.</p><form method="get">';
-foreach(['hosting'=>'checkout','offer'=>$values['publication_id'],'offer_sha256'=>$values['publication_sha256']] as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc($value).'">';
+foreach(['hosting'=>'checkout']+$resume+['offer'=>$values['publication_id'],'offer_sha256'=>$values['publication_sha256']] as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc($value).'">';
 echo '<label>Find an existing project<input type="search" name="project_search" maxlength="160" value="'.esc($data['search']).'"></label><button class="btn outline">Find projects</button></form><div class="button-row">';
 if($data['page']>1)echo '<a class="btn outline" href="'.esc(studio_url($context+['p'=>$data['page']-1])).'">Previous projects</a>';
 if($data['has_more'])echo '<a class="btn outline" href="'.esc(studio_url($context+['p'=>$data['page']+1])).'">More projects</a>';

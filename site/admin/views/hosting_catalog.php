@@ -4,10 +4,10 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 echo '<p>Publish hosting offers from your imported drafts and reviewed service plans. Choose studio-reviewed requests or a client confirmation that creates an unpaid first invoice. Invoice checkout requires verified payment and a separate owner approval before hosting setup.</p>';
 echo '<div class="button-row"><a class="btn outline" href="'.esc(admin_url('hosting-offers')).'">Offers</a><a class="btn outline" href="'.esc(admin_url('hosting-offers',['tab'=>'requests'])).'">Client requests</a><a class="btn outline" href="'.esc(admin_url('hosting-purchases')).'">Hosting purchases</a><a class="btn outline" href="'.esc(admin_url('catalog')).'">Edit products and images</a><a class="btn outline" href="'.esc(admin_url('service-plans')).'">Service plans</a></div>';
 if (!$data['ready']) {
-    echo '<section class="workspace-card"><h2>Enable hosting offers</h2><p>Prepare the offer and request history after setting up your product catalog, service plans and hosting mappings. Existing products stay as drafts.</p><form method="post">';
+    echo '<section class="workspace-card"><h2>Enable hosting offers and storefront categories</h2><p>Prepare the offer, request and category histories after setting up your product catalog, retained 20i imports, service plans and hosting mappings. Existing products stay as drafts. Existing 20i addWeb-compatible products and publications are explicitly migrated to Shared Hosting; other hosting families remain queued for owner review.</p><form method="post">';
     hosting_catalog_admin_fields('hosting_catalog_setup',[]);
     hosting_catalog_admin_confirmation('I confirm that hosting offer history should be enabled.');
-    echo '<button class="btn gold">Enable hosting offers</button></form></section>';
+    echo '<button class="btn gold">Enable hosting storefront</button></form></section>';
     if ($setup['retry']) hosting_catalog_setup_form($setup);
     return;
 }
@@ -62,6 +62,23 @@ foreach ($data['products'] as $item) {
 hosting_catalog_admin_pagination($data['page'],$data['has_more'],['search'=>$data['search']]);echo '</section>';
 if (!$data['product']) {if ($setup['retry']) hosting_catalog_setup_form($setup);return;}
 $product=$data['product'];
+$currentCategory=$data['classification']['state']??'review';
+echo '<section class="workspace-card"><h2>Storefront category for '.esc($product['title']).'</h2>';
+if ($currentCategory==='bound') echo '<p>Current assignment: <strong>'.esc($data['classification']['category_slug']).'</strong>. Existing publications keep their original category snapshot; publish a new offer after changing this assignment.</p>';
+else echo '<p class="notice warning">This product needs an explicit storefront category before it can be published.</p>';
+$classificationId=in_array($values['action'],['hosting_catalog_category_preview','hosting_catalog_category_bind'],true)?$values['classification_id']:bin2hex(random_bytes(16));
+$selectedCategory=in_array($values['action'],['hosting_catalog_category_preview','hosting_catalog_category_bind'],true)?$values['category_slug']:($data['classification']['category_slug']??'shared-hosting');
+echo '<form method="post">';hosting_catalog_admin_fields('hosting_catalog_category_preview',['classification_id'=>$classificationId,'product_id'=>(string)$product['id']]);
+$categoryOptions=[];foreach($data['categories'] as $slug=>$category)$categoryOptions[$slug]=$category['label'].' · '.($category['purchase_mode']==='online'?'Online checkout eligible':'Unavailable for online checkout');
+if ($selectedCategory!==''&&!array_key_exists($selectedCategory,$categoryOptions))$categoryOptions[$selectedCategory]='Previously selected category · review required';
+admin_select('category_slug','Storefront category',$categoryOptions,$selectedCategory);echo '<button class="btn outline">Review category assignment</button></form>';
+if ($categoryPreviewError!=='') echo '<p class="notice warning" role="alert">'.esc($categoryPreviewError).'</p>';
+if ($categoryPreview!==null) {
+    echo '<h3>Review assignment</h3><p><strong>'.esc($categoryPreview['category']['label']).'</strong> · '.esc($categoryPreview['category']['summary']).'</p><p>Required fulfillment family: '.esc($categoryPreview['category']['required_family']).' · Purchase mode: '.esc($categoryPreview['category']['purchase_mode']).'.</p><form method="post">';
+    hosting_catalog_admin_fields('hosting_catalog_category_bind',['classification_id'=>$categoryPreview['classification_id'],'product_id'=>(string)$product['id'],'category_slug'=>$categoryPreview['category']['slug'],'category_review_sha256'=>$categoryPreview['review_sha256']]);
+    hosting_catalog_admin_confirmation('I confirm this exact product and storefront category assignment.');echo '<button class="btn gold">Save category assignment</button></form>';
+}
+echo '</section>';
 hosting_catalog_setup_form($setup);
 echo '<section class="workspace-card"><h2>Prepare '.esc($product['title']).'</h2><p>Choose an active plan. Its hosting mapping and the latest saved 20i catalog are checked when you preview.</p><form method="get"><input type="hidden" name="view" value="hosting-offers"><input type="hidden" name="product_id" value="'.(int)$product['id'].'">';
 admin_input('plan_search','Find a matching plan by saved text or plan ID',$data['plan_search'],'search','maxlength="120"');

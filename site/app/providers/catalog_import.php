@@ -7,6 +7,7 @@ require_once CWP_CODE_ROOT.'/app/providers/package_types.php';
 require_once __DIR__.'/catalog_import_document.php';
 require_once __DIR__.'/catalog_import_storage.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_catalog_import_migrate.php';
+require_once CWP_CODE_ROOT.'/app/hosting/storefront_categories.php';
 
 function provider_catalog_import_owner(#[\SensitiveParameter] ?string $password=null): array {
     $actor=provider_settings_manager(false);
@@ -111,6 +112,8 @@ function provider_catalog_import_create_locked(array $context,array $actor,strin
         if($count>=999999999)throw new RuntimeException('Import history has reached its supported bound.');
         save_setting('provider_catalog_import_count',(string)($count+1));
         catalog_audit((int)$actor['id'],'provider_import.create','Product '.$product.' source '.$sourceHash);
+        // Explicit retained addWeb imports default to Shared only. Existing owner classifications are never overwritten.
+        hosting_storefront_classify_import($product,$actor);
         return $product;
 }
 /** At most 50 new local drafts. Preflight all saved identities and SKUs before writing. */

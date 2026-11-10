@@ -5,6 +5,8 @@ is local synthetic artwork; no account signup, provider call or payment occurs.
 The runner owns source/package validation, server lifetime and evidence reports.
 """
 import base64
+import hashlib
+import json
 import math
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urljoin, urlparse
@@ -21,6 +23,11 @@ CAPTURES = (
 SYNTHETIC_PNG = base64.b64decode(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGOQC6gAAAF2AOe0MgrYAAAAAElFTkSuQmCC'
 )
+
+
+def storefront_config_hash(amount_cents, cadence):
+    payload = json.dumps({'category': 'shared-hosting', 'cadence': cadence, 'amount_cents': amount_cents, 'currency': 'USD'}, separators=(',', ':'))
+    return hashlib.sha256(payload.encode()).hexdigest()
 
 
 def run_browser(env, browser):
@@ -216,7 +223,7 @@ def run_browser(env, browser):
               publication['id'] == publish['publication_id']
               and published['counts'] == {**uploaded['counts'], 'publications': uploaded['counts']['publications'] + 1}
               and published['results'] == uploaded['results'])
-        expected_query = {'hosting': ['checkout'], 'offer': [publication['id']],
+        expected_query = {'hosting': ['checkout'], 'category': ['shared-hosting'], 'config': [storefront_config_hash(2500, 'monthly')], 'offer': [publication['id']],
                           'offer_sha256': [publication['document_sha256']]}
 
         public_url = site + '/index.php?page=shared-hosting'

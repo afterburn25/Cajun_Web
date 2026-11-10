@@ -8,6 +8,7 @@ from collections import Counter
 from datetime import date, timedelta
 import calendar
 import hashlib
+import json
 import math
 import re
 import struct
@@ -30,6 +31,11 @@ ANNUAL_DETAILS = {'inclusions': 'One managed website\nAnnual hosting service rev
                   'exclusions': 'Domain registration\nCustom development',
                   'limits': 'websites = 1\nsupport_requests = 12',
                   'support': 'Email support during stated studio hours for this annual plan'}
+
+
+def storefront_config_hash(offer):
+    payload = json.dumps({'category': 'shared-hosting', 'cadence': offer['cadence'], 'amount_cents': offer['amount_cents'], 'currency': 'USD'}, separators=(',', ':'))
+    return hashlib.sha256(payload.encode()).hexdigest()
 
 
 def billing_snapshot(value):
@@ -412,7 +418,7 @@ def run_browser(env, browser):
             links = cp.locator('#hosting-plans a[href*="hosting=checkout"]')
             check('Installed public ' + cadence + ' filter shows only its exact full-price offer',
                   parse_qs(urlparse(cp.url).query).get('billing') == [cadence] and links.count() == 1
-                  and parse_qs(urlparse(links.get_attribute('href')).query) == {'hosting': ['checkout'], 'offer': [offer['publication_id']], 'offer_sha256': [offer['publication_sha256']]}
+                  and parse_qs(urlparse(links.get_attribute('href')).query) == {'hosting': ['checkout'], 'category': ['shared-hosting'], 'config': [storefront_config_hash(offer)], 'offer': [offer['publication_id']], 'offer_sha256': [offer['publication_sha256']]}
                   and cp.locator('#hosting-plans .hosting-comparison-price').inner_text() == '$' + format(offer['amount_cents'] / 100, '.2f')
                   and cp.get_by_role('navigation', name='Hosting billing period').get_by_role('link', name=label, exact=True).get_attribute('aria-current') == 'page')
             image_ready(cp, cp.locator('#hosting-plans .hosting-catalog-image'), image_url, cadence + ' public comparison')
@@ -431,7 +437,7 @@ def run_browser(env, browser):
             click(cp, cp.get_by_role('navigation', name='Hosting billing period').get_by_role('link', name=label, exact=True))
             choice = cp.get_by_role('link', name='Review plan and first invoice', exact=True)
             check('Installed client ' + cadence + ' filter keeps exact price cadence image and checkout identity', choice.count() == 1
-                  and parse_qs(urlparse(choice.get_attribute('href')).query) == {'hosting': ['checkout'], 'offer': [offer['publication_id']], 'offer_sha256': [offer['publication_sha256']]}
+                  and parse_qs(urlparse(choice.get_attribute('href')).query) == {'hosting': ['checkout'], 'category': ['shared-hosting'], 'config': [storefront_config_hash(offer)], 'offer': [offer['publication_id']], 'offer_sha256': [offer['publication_sha256']]}
                   and '$' + format(offer['amount_cents'] / 100, '.2f') in cp.inner_text('body')
                   and ('per month' if cadence == 'monthly' else 'per year') in cp.inner_text('body'))
             click(cp, choice)

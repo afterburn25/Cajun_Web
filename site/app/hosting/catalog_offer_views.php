@@ -12,12 +12,12 @@ function hosting_catalog_admin_owner(): array {
     return $actor;
 }
 function hosting_catalog_admin_actions(): array {
-    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_finish_plan','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
+    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_category_preview','hosting_catalog_category_bind','hosting_catalog_finish_plan','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
 }
 /** Secrets and confirmation never enter redisplay state. An invalid value becomes empty, not a fresh identity. */
 function hosting_catalog_admin_values(array $input): array {
     $out=[];
-    foreach (['action'=>40,'product_id'=>10,'plan_id'=>32,'publication_id'=>32,'review_sha256'=>64,'publication_sha256'=>64,'request_id'=>32,'request_sha256'=>64,'decision_id'=>32,'withdrawal_id'=>32,'job_id'=>10,'reason'=>1000,'checkout_mode'=>30,'billing_timezone'=>64,'billing_alignment'=>16] as $key=>$max) {
+    foreach (['action'=>40,'product_id'=>10,'classification_id'=>32,'category_slug'=>63,'category_review_sha256'=>64,'plan_id'=>32,'publication_id'=>32,'review_sha256'=>64,'publication_sha256'=>64,'request_id'=>32,'request_sha256'=>64,'decision_id'=>32,'withdrawal_id'=>32,'job_id'=>10,'reason'=>1000,'checkout_mode'=>30,'billing_timezone'=>64,'billing_alignment'=>16] as $key=>$max) {
         $value=$input[$key]??'';
         $out[$key]=is_string($value)&&strlen($value)<=$max&&preg_match('//u',$value)===1&&!str_contains($value,"\0")?$value:'';
     }
@@ -46,7 +46,10 @@ function hosting_catalog_admin_intent(string $action,array $input): array {
     if (!in_array($action,hosting_catalog_admin_actions(),true)) throw new InvalidArgumentException('Unknown hosting offer action.');
     if ($action==='hosting_catalog_finish_plan') return ['action'=>$action]+hosting_catalog_setup_intent($input);
     $result=['action'=>$action];
-    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish'],true)) {
+    if (in_array($action,['hosting_catalog_category_preview','hosting_catalog_category_bind'],true)) {
+        $result+=['classification_id'=>service_plans_form_id($input,'classification_id'),'product_id'=>hosting_catalog_admin_positive($input,'product_id'),'category_slug'=>hosting_storefront_slug(service_plans_form_text($input,'category_slug',63))];
+        if ($action==='hosting_catalog_category_bind') $result['review_sha256']=service_plans_form_hash($input,'category_review_sha256');
+    } elseif (in_array($action,['hosting_catalog_preview','hosting_catalog_publish'],true)) {
         $result+=['publication_id'=>service_plans_form_id($input,'publication_id'),'product_id'=>hosting_catalog_admin_positive($input,'product_id'),'plan_id'=>service_plans_form_id($input,'plan_id')];
         if ($action==='hosting_catalog_publish') $result['review_sha256']=service_plans_form_hash($input,'review_sha256');
         $policy=hosting_catalog_admin_checkout_policy($input);if ($policy!==null) $result['checkout_policy']=$policy;
@@ -58,7 +61,7 @@ function hosting_catalog_admin_intent(string $action,array $input): array {
         if ($action==='hosting_catalog_convert') $result['job_id']=hosting_catalog_admin_positive($input,'job_id');
         else $result['reason']=service_plans_form_text($input,'reason',1000,true);
     }
-    if ($action!=='hosting_catalog_preview') service_plans_form_confirm($input);
+    if (!in_array($action,['hosting_catalog_preview','hosting_catalog_category_preview'],true)) service_plans_form_confirm($input);
     return $result;
 }
 function hosting_catalog_admin_plan_matches(array $product,ServicePlanDocument $plan): bool {
@@ -85,11 +88,11 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
     $tab=service_plans_form_text($query,'tab',12);
     if ($tab==='') $tab='offers';
     if (!in_array($tab,['offers','requests'],true)) throw new InvalidArgumentException('Choose offers or client requests.');
-    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_finish_plan'],true)) $tab='offers';
+    if (in_array($action,['hosting_catalog_category_preview','hosting_catalog_category_bind','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_finish_plan'],true)) $tab='offers';
     if (in_array($action,['hosting_catalog_convert','hosting_catalog_decline'],true)) $tab='requests';
     $productText=service_plans_form_text($query,'product_id',10);
     $requestText=service_plans_form_text($query,'request_id',32);
-    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_finish_plan'],true)) $productText=$values['product_id'];
+    if (in_array($action,['hosting_catalog_category_preview','hosting_catalog_category_bind','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_finish_plan'],true)) $productText=$values['product_id'];
     if (in_array($action,['hosting_catalog_convert','hosting_catalog_decline'],true)) $requestText=$values['request_id'];
     $productId=$productText===''?null:hosting_catalog_admin_positive(['product_id'=>$productText],'product_id');
     if ($requestText!=='') service_plans_id($requestText);
@@ -99,9 +102,10 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
     $search=service_plans_form_text($query,'search',120,true);$planSearch=service_plans_form_text($query,'plan_search',120,true);$jobSearch=service_plans_form_text($query,'job_search',160,true);
     return recurring_billing_locked(function()use($tab,$productId,$requestText,$page,$planPage,$jobPage,$search,$planSearch,$jobSearch,$action,$values,$selectedPlan):array {
         hosting_catalog_admin_owner();
+        $catalogReady=hosting_catalog_ready();$storefrontReady=$catalogReady&&hosting_storefront_ready();
         $data=['tab'=>$tab,'page'=>$page,'plan_page'=>$planPage,'job_page'=>$jobPage,'search'=>$search,'plan_search'=>$planSearch,'job_search'=>$jobSearch,
-            'ready'=>hosting_catalog_ready(),'products'=>[],'requests'=>[],'has_more'=>false,'product'=>null,'latest'=>null,'withdrawal_offer'=>null,
-            'plans'=>[],'plans_more'=>false,'selected_plan_id'=>'','plan_notice'=>'','request'=>null,'jobs'=>[],'jobs_more'=>false];
+            'ready'=>$catalogReady&&$storefrontReady,'catalog_ready'=>$catalogReady,'storefront_ready'=>$storefrontReady,'products'=>[],'requests'=>[],'has_more'=>false,'product'=>null,'latest'=>null,'withdrawal_offer'=>null,
+            'categories'=>[],'classification'=>null,'plans'=>[],'plans_more'=>false,'selected_plan_id'=>'','plan_notice'=>'','request'=>null,'jobs'=>[],'jobs_more'=>false];
         if (!$data['ready']) return $data;
         if ($tab==='requests') {
             $rows=all('SELECT r.id FROM '.table('hosting_catalog_requests').' r JOIN '.table('studio_clients').' c ON c.id=r.client_id WHERE LOCATE(?,c.name)>0 ORDER BY r.created_epoch DESC,r.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$search]);
@@ -116,6 +120,10 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
             return $data;
         }
         if (!provider_catalog_import_ready()||!catalog_ready()) throw new RuntimeException('Prepare imported hosting drafts in Products first.');
+        foreach (['shared-hosting','vps-hosting'] as $slug) {
+            $category=hosting_storefront_current_category($slug);
+            if ($category!==null) $data['categories'][$slug]=hosting_storefront_category_projection(array_diff_key($category,['sha256'=>true]));
+        }
         $importPredicate=provider_catalog_import_product_predicate('p');
         $rows=all('SELECT p.id,p.title,p.sku,p.amount_cents,p.currency,p.term FROM '.table('catalog_products')." p WHERE ".$importPredicate." AND p.family='hosting' AND p.status='draft' AND (LOCATE(?,p.title)>0 OR LOCATE(?,p.sku)>0) ORDER BY p.sort_order,p.id LIMIT 21 OFFSET ".(($page-1)*20),[$search,$search]);
         $data['has_more']=count($rows)>20;
@@ -129,6 +137,7 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
             if (!$row) throw new InvalidArgumentException('Choose an imported hosting product.');
             foreach (['id','revision','amount_cents','setup_cents'] as $key) $row[$key]=$row[$key]===null?null:(int)$row[$key];
             $data['product']=$row;
+            $data['classification']=hosting_storefront_current_classification($productId);
             $latest=one('SELECT id FROM '.table('hosting_catalog_publications').' WHERE product_id=? ORDER BY seq DESC LIMIT 1',[$productId]);
             if ($latest) {
                 $doc=hosting_catalog_publication($latest['id']);

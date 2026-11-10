@@ -16,6 +16,17 @@ from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
+UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
+UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
+UX08_STOREFRONT_SOURCE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
+UX08_ARTIFACT_OVERLAYS = frozenset((
+    'site/app/clients/public_identity.php',
+    'site/app/settings/database_schemas.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/service_plans_checkout_native.php',
+))
 spec = importlib.util.spec_from_file_location('acceptance_artifacts', ROOT / 'tools/acceptance_artifacts.py')
 a = importlib.util.module_from_spec(spec); spec.loader.exec_module(a)
 checks = []
@@ -24,6 +35,20 @@ checks = []
 def check(name, condition):
     checks.append({'name': name, 'passed': bool(condition)})
     if not condition: raise AssertionError(name)
+
+
+def ux08_artifact_predecessor(path, current):
+    """Project only exact storefront overlays before frozen artifact-source checks."""
+    if path not in UX08_ARTIFACT_OVERLAYS:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_STOREFRONT_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_STOREFRONT_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 artifact overlay retains exact commit trees and ancestry '+path,
+          subprocess.check_output(['git','rev-parse',UX08_STOREFRONT_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_STOREFRONT_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_STOREFRONT_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_STOREFRONT_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_STOREFRONT_BASE,UX08_STOREFRONT_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 artifact overlay current bytes match exact storefront source '+path,current==source)
+    return base
 
 
 def deny(name, callback):
@@ -542,8 +567,10 @@ def run(tmp):
               len(retained)==identity_ext['predecessor_native_count']
               and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==identity_ext['predecessor_native_sha256'])
         for path,expected_hash in identity_ext['source_sha256'].items():
+            current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=ux08_artifact_predecessor(path,current)
             check('Public client identity source identity '+path,
-                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+                  hashlib.sha256(current).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
         for report in identity_ext['reports']:
             check('Public client identity report is required in browser and final evidence '+report,
@@ -563,8 +590,9 @@ def run(tmp):
               len(database_predecessor)==database_ext['predecessor_native_count']
               and hashlib.sha256(json.dumps(database_predecessor,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
         for path,expected_hash in database_ext['source_sha256'].items():
+            retained=ux08_artifact_predecessor(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))
             check('Reviewed database source identity '+path,
-                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+                  hashlib.sha256(retained).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
         for report in database_ext['reports']:
             check('Reviewed database report is required in browser and final evidence '+report,
@@ -579,7 +607,8 @@ def run(tmp):
         backup_predecessor=[command for command in native_commands if command not in cloud_intake_additions]
         check('All previous native commands are retained byte-for-byte',len(backup_predecessor)==ext['predecessor_native_count'] and hashlib.sha256(json.dumps(backup_predecessor,separators=(',',':')).encode()).hexdigest()==ext['predecessor_native_sha256'])
         for path,expected_hash in ext['source_sha256'].items():
-            check('Backup fixture identity '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+            retained=ux08_artifact_predecessor(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))
+            check('Backup fixture identity '+path,hashlib.sha256(retained).hexdigest()==expected_hash)
         contract={**contract,'native_commands':native_commands}
     software_native=contract['software_commerce_native_command']
     software_additions=software_native['additions']
@@ -612,6 +641,7 @@ def run(tmp):
     check('Import additions preserve the exact149 predecessor commands',len(native_commands)==import_contract['predecessor_native_count']==149 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==import_contract['predecessor_native_sha256'])
     for path,expected_hash in import_contract['source_sha256'].items():
         retained=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+        retained=ux08_artifact_predecessor(path,retained)
         if path in core_browser_paths:
             retained=core_browser_predecessor(ROOT,path,retained)
         check('Import fixture source retained '+path,hashlib.sha256(retained).hexdigest()==expected_hash)

@@ -13,6 +13,7 @@ foreach([$runtime,$qa] as $path){if(!is_dir($path)||realpath($path)!==$path)thro
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require_once CWP_CODE_ROOT.'/database/migrations/hosting_storefront_migrate.php';
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers.php';
 require_once CWP_CODE_ROOT.'/app/hosting/order_link_views.php';
 require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_views.php';
@@ -138,7 +139,7 @@ try{
         catalog_save($product,1,['sku'=>'JOINED-HOSTING','title'=>'Joined hosting','family'=>'hosting','status'=>'draft','term'=>'month','currency'=>'USD','amount'=>'25.00','setup'=>'0.00','cost'=>'9.87','provider_ref'=>'PRIVATE_JOINED_PROVIDER','summary'=>'Reviewed joined hosting service','features'=>'One website','terms'=>'Studio business hours','sort_order'=>'0']);
         service_plans_migrate(HPC_PASSWORD);$plan=service_plans_create(hp_id(1),$terms,HPC_PASSWORD);$plan=service_plans_change(hp_id(1),$plan->revision(),hp_id(2),'activate',[],HPC_PASSWORD);provider_plan_catalog_prepare(HPC_PASSWORD);
         $config=['reseller_id'=>42,'type'=>'7001','label'=>'Reviewed joined account','region'=>'Reviewed region','limits'=>['websites'=>1],'cost'=>['amount'=>'9.87','currency'=>'USD','period_months'=>1,'tax'=>'unknown','basis'=>'per-package','reference'=>'PRIVATE_JOINED_COST']];
-        $mapping=provider_plan_catalog_save(hp_id(10),hp_id(1),$plan->revision(),$plan->fingerprint(),null,$profile,1,$config,7,true,HPC_PASSWORD);hosting_catalog_prepare(HPC_PASSWORD);
+        $mapping=provider_plan_catalog_save(hp_id(10),hp_id(1),$plan->revision(),$plan->fingerprint(),null,$profile,1,$config,7,true,HPC_PASSWORD);hosting_catalog_prepare(HPC_PASSWORD);hosting_storefront_prepare(HPC_PASSWORD);
         $step='publication-request-conversion';$review=hosting_catalog_preview(hp_id(20),$product,hp_id(1));$pub=hosting_catalog_publish(hp_id(20),$product,hp_id(1),$review['review_sha256'],HPC_PASSWORD);
         hp_client();$request=hosting_catalog_request(hp_id(30),hp_id(20),$pub->fingerprint(),1);$before=hp_state();
         hp_ok('Joined request replay preserves all rows',hosting_catalog_request(hp_id(30),hp_id(20),$pub->fingerprint(),1)->json()===$request->json()&&hp_state()===$before);

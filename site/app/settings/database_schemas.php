@@ -19,6 +19,7 @@ function database_schema_versions(): array {
         'domain_renewals_schema_version'=>'1',
         'hosting_catalog_version'=>'1',
         'hosting_checkout_version'=>'1',
+        'hosting_storefront_version'=>'1',
         'hosting_fulfillment_schema_version'=>'1',
         'hosting_operations_schema_version'=>'1',
         'hosting_order_links_schema_version'=>'1',
@@ -258,7 +259,8 @@ function database_schema_migrations(): array {
         'domain_renewal_agreements_schema_version'=>['depends'=>['domain_renewals_schema_version','provider_registrar_schema_version','service_plans_schema_version'],'file'=>'app/providers/domain_renewal_agreements_storage.php','function'=>'domain_renewal_agreements_prepare','arguments'=>'password'],
         'domain_renewal_dispatch_schema_version'=>['depends'=>['domain_renewal_agreements_schema_version','provider_operations_schema_version','payments_schema_version','invoice_ledger_schema_version'],'file'=>'app/providers/domain_renewal_dispatch_storage.php','function'=>'domain_renewal_dispatch_prepare','arguments'=>'password'],
         'hosting_catalog_version'=>['depends'=>['catalog_schema_version','provider_plan_catalog_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_catalog_migrate.php','function'=>'hosting_catalog_prepare','arguments'=>'password'],
-        'hosting_checkout_version'=>['depends'=>['hosting_catalog_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_checkout_migrate.php','function'=>'hosting_checkout_prepare','arguments'=>'password'],
+        'hosting_storefront_version'=>['depends'=>['hosting_catalog_version','provider_catalog_import_version'],'note'=>'Seeds explicit Shared and unavailable VPS categories; it performs no payment or provider operation.','file'=>'database/migrations/hosting_storefront_migrate.php','function'=>'hosting_storefront_prepare','arguments'=>'password'],
+        'hosting_checkout_version'=>['depends'=>['hosting_catalog_version','hosting_storefront_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_checkout_migrate.php','function'=>'hosting_checkout_prepare','arguments'=>'password'],
     ];
 }
 

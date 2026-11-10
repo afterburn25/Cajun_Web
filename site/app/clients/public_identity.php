@@ -69,7 +69,9 @@ function client_identity_public_offer(array $destination): ?array {
             $publication=hosting_checkout_publication($destination['offer']);
             if(!hash_equals($publication->fingerprint(),$destination['offer_sha256']))return null;
             $scope=hosting_catalog_read_scope([$publication->data()['product']['id']]);
-            return $publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());
+            $offer=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());
+            if (isset($destination['category']) && ($offer['category']!==$destination['category'] || !hash_equals(hosting_catalog_config_hash($offer),$destination['config']))) return null;
+            return $offer;
         });
     }catch(PDOException $e){report_error($e);return null;}
     catch(RuntimeException|InvalidArgumentException){return null;}

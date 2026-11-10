@@ -23,12 +23,15 @@ function hcb_load(string $path,array $names,bool $class=false):void {
     }
     if(count($found)!==count($names))throw new LogicException('Missing fixture declaration.');
 }
+hcb_load('app/hosting/storefront_categories.php',['HostingStorefrontReadScope'],true);
 hcb_load('app/hosting/catalog_offers_context.php',['HostingCatalogRead'],true);
 hcb_load('app/hosting/catalog_offers.php',['hosting_catalog_public']);
+hcb_load('app/hosting/catalog_login.php',['hosting_catalog_login_destination']);
 hcb_load('app/plans/forms.php',['service_plans_form_text','service_plans_form_number','service_plans_form_id','service_plans_form_hash','service_plans_form_confirm']);
-hcb_load('app/plans/documents.php',['service_plans_actor','service_plans_id','service_plans_keys']);
+hcb_load('app/plans/documents.php',['service_plans_actor','service_plans_id','service_plans_keys','service_plans_json']);
+hcb_load('app/hosting/storefront_categories_document.php',['hosting_storefront_slug']);
 hcb_load('app/plans/records.php',['service_plans_current_client','service_plans_client_row','service_plans_require_ready']);
-hcb_load('app/hosting/catalog_offers_document.php',['hosting_checkout_policy']);
+hcb_load('app/hosting/catalog_offers_document.php',['hosting_catalog_config_hash','hosting_checkout_policy']);
 hcb_load('app/hosting/catalog_checkout.php',['hosting_checkout_reject_contact','hosting_checkout_primary_client','hosting_checkout_require']);
 hcb_load('app/marketing/growth.php',['gmoney']);
 hcb_load('includes/urls.php',['page_url']);
@@ -50,6 +53,7 @@ function recurring_billing_locked(callable $work):mixed {if(($GLOBALS['hcb_depth
 function recurring_billing_touch(callable $work,bool $ready=true):mixed{return $work();}
 function hosting_checkout_locked(callable $work):mixed{hosting_checkout_reject_contact();return recurring_billing_locked($work);}
 function hosting_catalog_guard():void {if(!db()->inTransaction())throw new LogicException('Read outside modeled owning transaction.');}
+function hosting_storefront_guard():void {hosting_catalog_guard();}
 function table(string $name):string{return 'model_'.$name;}
 function catalog_ready():bool{return true;}
 function service_plans_ready():bool{return true;}
@@ -61,11 +65,13 @@ function provider_package_types_ready():bool{return true;}
 function provider_plan_catalog_state():array{return ['ready'=>true];}
 function hosting_checkout_ready():bool{return true;}
 function hosting_catalog_ready():bool {hcb_count('history_read');if(($_SESSION['scenario']??'')==='unavailable')throw new RuntimeException('PRIVATE_HISTORY_DIAGNOSTIC');return true;}
+function hosting_storefront_ready():bool {hcb_count('storefront_history_read');return true;}
 function provider_package_types_observation(array $source):array{return ['observed_epoch'=>time(),'types'=>[]];}
 function provider_catalog_import_records_in_scope(array $ids):array {return array_map(static fn($id)=>['product_id'=>$id],$ids);}
 function provider_catalog_import_origins(array $records):void {hcb_count('origin_read');}
 function support_current():?array{return !empty($_SESSION['resolved_support'])?['client'=>['id'=>1]]:null;}
-function report_error(Throwable $error):string{hcb_count('safe_errors');return 'synthetic-reference';}
+function contact_require_permission(string $permission,int $client):void {if($permission!=='billing'||$client<1)throw new InvalidArgumentException('Unknown contact permission.');if(array_key_exists('contact_id',$_SESSION)||array_key_exists('contact_auth',$_SESSION))throw new RuntimeException('Contact permission unavailable.');}
+function report_error(Throwable $error):string{hcb_count('safe_errors');$_SESSION['last_error']=['class'=>$error::class,'message'=>$error->getMessage()];return 'synthetic-reference';}
 function show_flash():void{}
 function site_url(string $path=''):string{return '/'.$path;}
 function studio_url(array $query=[]):string{return '/portal/index.php'.($query?'?'.http_build_query($query):'');}
@@ -80,7 +86,7 @@ function site_foot(bool $cta=true):void{echo '</main></body></html>';}
 function hcb_offers():array{
     $policy=['mode'=>'invoice-on-confirmation','client'=>'primary-only','project'=>'existing-or-new-hosting','collection'=>'invoice-only','first_period'=>'full-period-today','requires_verified_payment'=>true,'requires_owner_provisioning'=>true,'timezone'=>'America/Chicago','alignment'=>'day-of-month','review_ttl_seconds'=>900];
     $out=[];for($n=1;$n<=47;$n++){$annual=$n>24;$id=100+$n;$cadence=$annual?'annually':'monthly';
-        $out[]=['product_id'=>$id,'publication_id'=>sprintf('%032x',$id),'publication_sha256'=>hash('sha256','publication-'.$id),'currency'=>'USD','cadence'=>$cadence,'amount_cents'=>$annual?12000+$n:1200+$n,'title'=>'Plan '.$id.' <img src=x onerror=alert(1)>','summary'=>'Independent '.$cadence.' price','support'=>'Studio <b>support</b>','image_id'=>str_repeat($annual?'b':'a',32),'inclusions'=>['One website'],'exclusions'=>['Domain registration'],'limits'=>['websites'=>1],'checkout_policy'=>$policy];}
+        $out[]=['product_id'=>$id,'publication_id'=>sprintf('%032x',$id),'publication_sha256'=>hash('sha256','publication-'.$id),'category'=>'shared-hosting','category_label'=>'Shared Hosting','currency'=>'USD','cadence'=>$cadence,'amount_cents'=>$annual?12000+$n:1200+$n,'title'=>'Plan '.$id.' <img src=x onerror=alert(1)>','summary'=>'Independent '.$cadence.' price','support'=>'Studio <b>support</b>','image_id'=>str_repeat($annual?'b':'a',32),'inclusions'=>['One website'],'exclusions'=>['Domain registration'],'limits'=>['websites'=>1],'checkout_policy'=>$policy];}
     return $out;
 }
 function all(string $sql,array $args=[]):array{
@@ -90,8 +96,9 @@ function all(string $sql,array $args=[]):array{
     if(str_starts_with($sql,'SELECT p.id,p.product_id FROM model_hosting_catalog_publications ')){
         if(!preg_match('/ LIMIT 21 OFFSET ([0-9]+)\z/',$sql,$m))throw new LogicException('Unknown page SQL.');
         $offers=hcb_offers();
-        if(str_contains($sql,'c.term=?')){if(count($args)!==1||!in_array($args[0],['month','year'],true))throw new LogicException('Unknown period binding.');$period=$args[0]==='month'?'monthly':'annually';$offers=array_values(array_filter($offers,static fn($r)=>$r['cadence']===$period));}
-        elseif($args!==[])throw new LogicException('Unexpected unfiltered query arguments.');
+        if(($args[0]??null)!=='shared-hosting')throw new LogicException('Unknown category binding.');
+        if(str_contains($sql,'c.term=?')){if(count($args)!==2||!in_array($args[1],['month','year'],true))throw new LogicException('Unknown period binding.');$period=$args[1]==='month'?'monthly':'annually';$offers=array_values(array_filter($offers,static fn($r)=>$r['cadence']===$period));}
+        elseif(count($args)!==1)throw new LogicException('Unexpected unfiltered query arguments.');
         if(($_SESSION['scenario']??'')==='annual-empty')$offers=array_values(array_filter($offers,static fn($r)=>$r['cadence']!=='annually'));
         $_SESSION['last_selection']=['sql'=>$sql,'args'=>$args,'offset'=>(int)$m[1]];
         return array_map(static fn($r)=>['id'=>$r['publication_id'],'product_id'=>$r['product_id']],array_slice($offers,(int)$m[1],21));
@@ -128,8 +135,8 @@ if($path==='/__seed'){
     header('Content-Type: application/json');echo json_encode(['csrf'=>csrf()]);exit;
 }
 if($path==='/__scenario'){if(!in_array($_GET['name']??null,['','unavailable','annual-empty','one-unavailable'],true)){http_response_code(400);exit;}$_SESSION['scenario']=$_GET['name'];echo '{"set":true}';exit;}
-if($path==='/__state'){header('Content-Type: application/json');echo json_encode(['counts'=>(object)($_SESSION['counts']??[]),'forbidden_calls'=>is_file(CWP_ROOT.'/forbidden-calls.log')?file(CWP_ROOT.'/forbidden-calls.log',FILE_IGNORE_NEW_LINES):[],'selection'=>$_SESSION['last_selection']??null,'business'=>['invoices'=>0,'publications'=>47,'purchases'=>0,'requests'=>0,'provider_calls'=>0]]);exit;}
-if($path==='/hosting'||($path==='/index.php'&&($_GET['page']??null)==='hosting')){
+if($path==='/__state'){header('Content-Type: application/json');echo json_encode(['counts'=>(object)($_SESSION['counts']??[]),'forbidden_calls'=>is_file(CWP_ROOT.'/forbidden-calls.log')?file(CWP_ROOT.'/forbidden-calls.log',FILE_IGNORE_NEW_LINES):[],'selection'=>$_SESSION['last_selection']??null,'last_error'=>$_SESSION['last_error']??null,'business'=>['invoices'=>0,'publications'=>47,'purchases'=>0,'requests'=>0,'provider_calls'=>0]]);exit;}
+if(in_array($path,['/hosting','/shared-hosting'],true)||($path==='/index.php'&&in_array($_GET['page']??null,['hosting','shared-hosting'],true))){
     $source=(string)file_get_contents(CWP_CODE_ROOT.'/pages/services/hosting.php');
     if(substr_count($source,'declare(strict_types=1);')!==1)throw new LogicException('Public strict declaration changed.');
     $source=str_replace('declare(strict_types=1);','',$source); // Fixture itself is already strict; eval starts in template mode.

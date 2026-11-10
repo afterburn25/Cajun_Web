@@ -44,7 +44,7 @@ function site_head(string $title, string $active='home', string $description='')
 <link rel="icon" type="image/png" sizes="32x32" href="<?=esc(asset('favicon.png'))?>">
 <link rel="stylesheet" href="<?=esc(asset('site.css'))?>">
 <link rel="stylesheet" href="<?=esc(asset('premium.css'))?>">
-<?php if (in_array($active,['hosting','shared-hosting'],true)): ?><link rel="stylesheet" href="<?=esc(asset('hosting-comparison.css'))?>"><?php endif; ?>
+<?php if (in_array($active,['hosting','shared-hosting','vps-hosting'],true)): ?><link rel="stylesheet" href="<?=esc(asset('hosting-comparison.css'))?>"><?php endif; ?>
 <?php if($active==='portal'): ?><link rel="stylesheet" href="<?=esc(asset('tickets.css'))?>"><?php endif; ?>
 <?php if ($active === 'home'): ?><link rel="preload" as="image" href="<?=esc(asset('hero-detail.webp'))?>"><?php endif; ?>
 <link rel="stylesheet" href="<?=esc(asset('growth.css'))?>"><script defer src="<?=esc(asset('growth.js'))?>"></script><script defer src="<?=esc(asset('site.js'))?>"></script><script defer src="<?=esc(asset('activity.js'))?>"></script><link rel="stylesheet" href="<?=esc(asset('mail-notices.css'))?>"><script defer src="<?=esc(asset('mail-notices.js'))?>"></script>
@@ -58,9 +58,12 @@ function site_head(string $title, string $active='home', string $description='')
         <a class="brand" href="<?=esc(page_url())?>" aria-label="CajunWebPro home"><img src="<?=esc(asset('logo.png'))?>" width="1080" height="302" alt="CajunWebPro — Web Design & Development"></a>
         <button class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="site-nav" aria-expanded="false"><span></span><span></span><span></span></button>
         <nav id="site-nav" aria-label="Main navigation">
-        <?php foreach(['home'=>'Home','about'=>'About','hosting'=>'Hosting','services'=>'Web Design','products'=>'Products','work'=>'Portfolio','process'=>'Process','contact'=>'Contact'] as $key=>$label): $selected=$active===$key||($active==='project'&&$key==='work'); ?>
-            <a class="<?=$selected?'active':''?>" href="<?=esc(page_url($key))?>" <?=$selected?'aria-current="page"':''?>><?=$label?></a>
-        <?php endforeach; ?>
+        <?php foreach(['home'=>'Home','about'=>'About','hosting'=>'Hosting','services'=>'Web Design','products'=>'Products','work'=>'Portfolio','process'=>'Process','contact'=>'Contact'] as $key=>$label):
+            if ($key==='hosting'): $hostingSelected=in_array($active,['hosting','shared-hosting','vps-hosting'],true); ?>
+                <details class="nav-dropdown<?=$hostingSelected?' active':''?>"><summary<?=$hostingSelected?' aria-current="page"':''?>>Hosting</summary><div><a href="<?=esc(page_url('hosting'))?>"<?=$active==='hosting'?' aria-current="page"':''?>>Overview</a><a href="<?=esc(page_url('shared-hosting'))?>"<?=$active==='shared-hosting'?' aria-current="page"':''?>>Shared Hosting</a><a href="<?=esc(page_url('vps-hosting'))?>"<?=$active==='vps-hosting'?' aria-current="page"':''?>>VPS Hosting</a></div></details>
+            <?php else: $selected=$active===$key||($active==='project'&&$key==='work'); ?>
+                <a class="<?=$selected?'active':''?>" href="<?=esc(page_url($key))?>" <?=$selected?'aria-current="page"':''?>><?=$label?></a>
+            <?php endif; endforeach; ?>
         </nav>
         <?php if(!array_key_exists('support',$_GET)&&(!function_exists('support_current')||!support_current())): ?><span hidden data-mail-notice-bell data-mail-notice-endpoint="<?=esc(site_url('api/mail-notices.php'))?>"></span><?php endif; ?>
         <a class="btn outline nav-cta" href="<?=esc(page_url('contact'))?>">Start a Project <?=icon('arrow')?></a>

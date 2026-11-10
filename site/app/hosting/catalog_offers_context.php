@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once __DIR__.'/catalog_offers_document.php';
 require_once __DIR__.'/catalog_offers_storage.php';
 require_once __DIR__.'/catalog_billing.php';
+require_once __DIR__.'/storefront_categories.php';
 require_once CWP_CODE_ROOT.'/app/providers/catalog_import.php';
 require_once CWP_CODE_ROOT.'/app/providers/plan_catalog.php';
 
@@ -23,10 +24,10 @@ final class HostingCatalogRead {
     public static function forProducts(array $productIds): array {
         self::products($productIds);
         if (!hosting_catalog_ready()) throw new RuntimeException('Hosting offers are not ready for new requests.');
-        return self::scope($productIds);
+        return self::scope($productIds,HostingStorefrontReadScope::require());
     }
     /** Only called synchronously after this entrypoint validated history under its owning guard. */
-    private static function scope(array $productIds): array {
+    private static function scope(array $productIds,HostingStorefrontReadScope $storefront): array {
         if (!catalog_ready() || !service_plans_ready() || !staff_ready() || !provider_settings_ready() || !provider_catalog_import_ready() || !provider_package_types_ready() || !provider_plan_catalog_state()['ready']) throw new RuntimeException('Hosting offers are not ready for new requests.');
         $profiles=all('SELECT * FROM '.table('provider_profiles').' WHERE provider_code=? AND environment=? LIMIT 2',['twenty-i','live']);
         if (count($profiles)!==1 || (int)$profiles[0]['enabled']!==1 || $profiles[0]['credentials']==='') throw new RuntimeException('The reviewed hosting connection is unavailable.');
@@ -41,23 +42,25 @@ final class HostingCatalogRead {
         $imports=[];foreach ($records as $record) $imports[(int)$record['product_id']]=$record;
         return ['profile'=>['id'=>$profile['id'],'revision'=>(int)$profile['revision'],'enabled'=>true,'credential_sha256'=>hash('sha256',$profile['credentials']),'key_fingerprint'=>$source['key_fingerprint']],
             'observation'=>['refresh_id'=>$source['id'],'profile_id'=>$source['profile_id'],'profile_revision'=>(int)$source['profile_revision'],'key_fingerprint'=>$source['key_fingerprint'],'observed_epoch'=>$observation['observed_epoch'],'types'=>$observation['types']],
-            'imports'=>$imports];
+            'imports'=>$imports,'storefront'=>$storefront];
     }
-    public static function publicPage(int $page=1,string $billing='all'): array {
+    public static function publicPage(int $page=1,string $billing='all',string $category='shared-hosting'): array {
         if ($page<1 || $page>100000) throw new InvalidArgumentException('Choose an available hosting page.');
-        $billing=hosting_catalog_billing($billing);
-        return recurring_billing_locked(function()use($page,$billing):array {
+        $billing=hosting_catalog_billing($billing);hosting_storefront_slug($category);
+        return recurring_billing_locked(function()use($page,$billing,$category):array {
             if (!hosting_catalog_ready()) return ['offers'=>[],'has_more'=>false,'unavailable'=>false];
+            $storefront=HostingStorefrontReadScope::open();if (!$storefront) return ['offers'=>[],'has_more'=>false,'unavailable'=>true];
             $publications=table('hosting_catalog_publications');$withdrawals=table('hosting_catalog_withdrawals');$products=table('catalog_products');
+            $links=table('hosting_storefront_publications');$classifications=table('hosting_storefront_classifications');$categories=table('hosting_storefront_categories');
             // Select the period before pagination; later matching offers must remain reachable.
             $filter=$billing==='all'?'':' AND BINARY c.term=?';
-            $parameters=$billing==='all'?[]:[['monthly'=>'month','annually'=>'year'][$billing]];
-            $rows=all("SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq)$filter ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ".(($page-1)*20),$parameters);
+            $parameters=[$category,...($billing==='all'?[]:[['monthly'=>'month','annually'=>'year'][$billing]])];
+            $rows=all("SELECT p.id,p.product_id FROM $publications p JOIN $links sf ON sf.id=p.id JOIN $classifications sc ON sc.id=sf.classification_id JOIN $categories cg ON cg.slug=sf.category_slug AND cg.revision=sf.category_revision JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE BINARY sf.category_slug=? AND c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq) AND NOT EXISTS (SELECT 1 FROM $classifications nc WHERE nc.product_id=p.product_id AND nc.seq>sc.seq) AND NOT EXISTS (SELECT 1 FROM $categories ng WHERE ng.slug=cg.slug AND ng.seq>cg.seq)$filter ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ".(($page-1)*20),$parameters);
             $more=count($rows)>20;$rows=array_slice($rows,0,20);
             if (!$rows) return ['offers'=>[],'has_more'=>$more,'unavailable'=>false];
             $productIds=array_map(static fn(array $row):int=>(int)$row['product_id'],$rows);
             self::products($productIds);
-            $scope=self::scope($productIds);
+            $scope=self::scope($productIds,$storefront);
             $offers=[];$unavailable=false;
             foreach ($rows as $row) {
                 $publication=hosting_catalog_publication($row['id']);
@@ -116,6 +119,9 @@ function hosting_catalog_sources(int $productId,string $planId,int $publisherId,
     $mappingRow=one('SELECT binding_json,binding_sha256 FROM '.table('provider_plan_catalog').' WHERE id=?',[$mapping['id']]);
     if (!$mappingRow || $mappingRow['binding_sha256']!==$mapping['sha256'] || hash('sha256',$mappingRow['binding_json'])!==$mapping['sha256']) throw new RuntimeException('The original provider mapping is unavailable.');
     $observed=hosting_catalog_observation($scope['observation'],$import['type_ref']);
+    $storefrontScope=$scope['storefront']??null;
+    if (!$storefrontScope instanceof HostingStorefrontReadScope) throw new LogicException('The hosting read scope lacks validated storefront history.');
+    $storefront=hosting_storefront_product_context($productId,$storefrontScope);
     $context=['publication'=>null,
         'product'=>['id'=>$productId,'revision'=>$product['revision'],'sha256'=>hash('sha256',service_plans_json($product))],
         'plan'=>['id'=>$planId,'revision'=>$plan->revision(),'sha256'=>$plan->fingerprint(),'status'=>$plan->model()->status()],
@@ -124,8 +130,9 @@ function hosting_catalog_sources(int $productId,string $planId,int $publisherId,
         'catalog'=>['refresh_id'=>$observed['refresh_id'],'state'=>'complete','profile_id'=>$observed['profile_id'],'profile_revision'=>$observed['profile_revision'],'key_fingerprint'=>$observed['key_fingerprint'],'observed_epoch'=>$observed['observed_epoch'],'types_sha256'=>$observed['types_sha256']],
         'publisher'=>hosting_catalog_review_actor($publisherId),
         'mapping_reviewer'=>hosting_catalog_review_actor($mapping['created_by']),
+        'storefront'=>['category_slug'=>$storefront['projection']['slug'],'category_sha256'=>$storefront['category_sha256'],'classification_sha256'=>$storefront['classification_sha256'],'available'=>true],
         'support_session'=>support_current()!==null || array_key_exists('support',$_GET)];
-    return ['product'=>$product,'import'=>$import,'observation'=>$scope['observation'],'plan'=>$plan,'mapping_json'=>$mappingRow['binding_json'],'context'=>$context];
+    return ['product'=>$product,'import'=>$import,'observation'=>$scope['observation'],'plan'=>$plan,'mapping_json'=>$mappingRow['binding_json'],'category_json'=>$storefront['category_json'],'classification_json'=>$storefront['classification_json'],'context'=>$context];
 }
 
 /** Existing publication eligibility is read from current SQL, never inferred from a displayed card. */
@@ -136,5 +143,7 @@ function hosting_catalog_current_context(HostingCatalogPublication $publication,
     $latest=one('SELECT id,document_sha256 FROM '.table('hosting_catalog_publications').' WHERE product_id=? ORDER BY seq DESC LIMIT 1',[$document['product']['id']]);
     $withdrawn=one('SELECT id FROM '.table('hosting_catalog_withdrawals').' WHERE publication_id=? LIMIT 1',[$document['id']])!==null;
     $sources['context']['publication']=['id'=>$latest['id']??null,'sha256'=>$latest['document_sha256']??null,'enabled'=>!$withdrawn];
+    $storefront=hosting_storefront_publication($document['id']);
+    if ($storefront['product_id']!==$document['product']['id'] || $storefront['category_slug']!==$sources['context']['storefront']['category_slug'] || !hash_equals($storefront['category_sha256'],$sources['context']['storefront']['category_sha256']) || !hash_equals($storefront['classification_sha256'],$sources['context']['storefront']['classification_sha256'])) throw new RuntimeException('The publication storefront binding is no longer current.');
     return $sources['context'];
 }

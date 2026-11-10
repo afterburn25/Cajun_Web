@@ -4,7 +4,7 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY!=='Linux'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOSTING_PLAN_SETUP')!=='1'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1'||count($argv)!==1)exit(2);
 $port=filter_var(getenv('CWP_TEST_PORT')?:'33306',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);if($port===false)exit(2);
 define('CWP_BOOT',true);
-require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/hosting/catalog_offer_setup.php';
+require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';require __DIR__.'/../site/app/hosting/catalog_offer_setup.php';
 use CajunWebPro\Foundation\Provider\TransportResponse;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\PackageTypes;
@@ -74,7 +74,7 @@ try{
     foreach([1,2,3] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Plan setup staff '.$id,'plan-setup'.$id.'@example.invalid',password_hash(HPS_PASSWORD,PASSWORD_DEFAULT),str_repeat(dechex($id),32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>'owner',3=>'administrator'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()),JSON_THROW_ON_ERROR)]);
     query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Plan setup client','plan-setup-client@example.invalid',password_hash(HPS_PASSWORD,PASSWORD_DEFAULT),str_repeat('c',32),gmdate('Y-m-d H:i:s')]);
-    hps_owner();catalog_migrate(HPS_PASSWORD);provider_catalog_import_prepare(HPS_PASSWORD);provider_settings_migrate(HPS_PASSWORD);$profile=provider_settings_save('',0,'Synthetic imported plan',true,$secret,HPS_PASSWORD);provider_inventory_migrate(HPS_PASSWORD);provider_package_types_prepare(HPS_PASSWORD);service_plans_migrate(HPS_PASSWORD);provider_plan_catalog_prepare(HPS_PASSWORD);hosting_catalog_prepare(HPS_PASSWORD);
+    hps_owner();catalog_migrate(HPS_PASSWORD);provider_catalog_import_prepare(HPS_PASSWORD);provider_settings_migrate(HPS_PASSWORD);$profile=provider_settings_save('',0,'Synthetic imported plan',true,$secret,HPS_PASSWORD);provider_inventory_migrate(HPS_PASSWORD);provider_package_types_prepare(HPS_PASSWORD);service_plans_migrate(HPS_PASSWORD);provider_plan_catalog_prepare(HPS_PASSWORD);hosting_catalog_prepare(HPS_PASSWORD);hosting_storefront_prepare(HPS_PASSWORD);
     $engines=all('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,?)=BINARY ?',[strlen(HPS_PREFIX),HPS_PREFIX]);
     hps_ok('Actual prepared catalog plan mapping and hosting tables are InnoDB',$engines!==[]&&!array_filter($engines,static fn($r)=>strtolower($r['ENGINE'])!=='innodb')&&recurring_billing_locked(fn()=>hosting_catalog_ready())&&service_plans_ready()&&provider_plan_catalog_state()['ready']);
     $stage='import';$source=hps_refresh($profile);hps_ok('Actual package-types lifecycle retains four synthetic catalog types',$source['state']==='complete'&&$reads===1&&$dns===1);

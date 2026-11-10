@@ -4,7 +4,7 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY!=='Linux'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOSTING_PURCHASES')!=='1'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1'||count($argv)!==1)exit(2);
 $port=filter_var(getenv('CWP_TEST_PORT')?:'33306',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);if($port===false)exit(2);
 define('CWP_BOOT',true);
-require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
+require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';require_once __DIR__.'/../site/app/hosting/catalog_checkout.php';
 require_once __DIR__.'/../site/app/hosting/checkout_purchases.php';require_once __DIR__.'/../site/app/hosting/order_views.php';
 require_once __DIR__.'/../site/app/clients/accounts.php';
@@ -78,7 +78,7 @@ try{
     service_plans_migrate(HCP_PASSWORD);$terms=['name'=>'Reviewed purchase hosting','cadence'=>'monthly','price'=>2500,'currency'=>'USD','inclusions'=>['One reviewed website'],'exclusions'=>['Domain registration'],'limits'=>['websites'=>1],'support'=>'Email during stated hours'];
     $plan=service_plans_create(hcp_id(1),$terms,HCP_PASSWORD);$plan=service_plans_change(hcp_id(1),0,hcp_id(2),'activate',[],HCP_PASSWORD);provider_plan_catalog_prepare(HCP_PASSWORD);
     $config=['reseller_id'=>42,'type'=>'7001','label'=>'Synthetic reviewed account','region'=>'Reviewed region','limits'=>['websites'=>1],'cost'=>['amount'=>'9.87','currency'=>'USD','period_months'=>1,'tax'=>'unknown','basis'=>'per-package','reference'=>'PRIVATE_COST_REFERENCE']];provider_plan_catalog_save(hcp_id(10),hcp_id(1),1,$plan->fingerprint(),null,$profile,1,$config,7,true,HCP_PASSWORD);
-    hosting_catalog_prepare(HCP_PASSWORD);payments_migrate(HCP_PASSWORD);attempts_migrate(HCP_PASSWORD);ledger_migrate(HCP_PASSWORD);service_plans_checkout_migrate(HCP_PASSWORD);recurring_billing_migrate(HCP_PASSWORD);recurring_billing_checkout_migrate(HCP_PASSWORD);
+    hosting_catalog_prepare(HCP_PASSWORD);hosting_storefront_prepare(HCP_PASSWORD);payments_migrate(HCP_PASSWORD);attempts_migrate(HCP_PASSWORD);ledger_migrate(HCP_PASSWORD);service_plans_checkout_migrate(HCP_PASSWORD);recurring_billing_migrate(HCP_PASSWORD);recurring_billing_checkout_migrate(HCP_PASSWORD);
     $stage='unprepared';$before=hcp_effects();$page=hosting_purchases_owner_page();hcp_ok('Unprepared inbox is explicit and does not enable checkout storage',$page===['items'=>[],'page'=>1,'has_more'=>false,'ready'=>false]&&hcp_effects()===$before);
     hosting_checkout_prepare(HCP_PASSWORD);$before=hcp_effects();$page=hosting_purchases_owner_page();hcp_ok('Explicit setup yields an empty ready read-only inbox',$page===['items'=>[],'page'=>1,'has_more'=>false,'ready'=>true]&&hcp_effects()===$before);
     $engines=all('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,?)=BINARY ?',[strlen(HCP_PREFIX),HCP_PREFIX]);hcp_ok('Actual fixture tables use InnoDB',$engines!==[]&&!array_filter($engines,static fn($r)=>strtolower($r['ENGINE'])!=='innodb'));

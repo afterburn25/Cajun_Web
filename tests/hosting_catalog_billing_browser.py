@@ -23,7 +23,7 @@ from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandle
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_PATHS = (
  'tests/hosting_catalog_billing_browser.py','tests/hosting_catalog_billing_http_fixture.php',
- 'site/app/hosting/catalog_offers_context.php','site/app/hosting/catalog_offers.php',
+ 'site/app/hosting/catalog_offers_context.php','site/app/hosting/storefront_categories.php','site/app/hosting/catalog_offers.php',
  'site/app/hosting/catalog_offers_document.php','site/app/hosting/catalog_checkout.php',
  'site/pages/services/hosting.php','site/includes/layout/hosting_catalog.php',
  'site/portal/controllers/hosting_catalog.php','site/portal/views/hosting_catalog.php',
@@ -221,14 +221,17 @@ def run(php, executable, checks, preview_dir=None):
                 client.seed('client')
                 business_before = client.state()['business']
                 status, headers, body = client.request('/hosting')
-                check('Actual public default preserves all-plan ordering and first twenty offers', status == 200 and offer_ids(body) == list(range(101, 121)))
+                default_ids=offer_ids(body)
+                default_state=client.state()
+                check('Actual public default preserves all-plan ordering and first twenty offers', status == 200 and default_ids == list(range(101, 121)), {'status':status,'offer_ids':default_ids,'body_prefix':body[:160],'fixture_error':default_state.get('last_error')})
+                check('One public offer page validates complete storefront history exactly once', client.state()['counts'].get('storefront_history_read', 0) == 1)
                 check('Public comparison remains no-store and does not expose internal model diagnostics', 'no-store' in headers.get('Cache-Control', '') and 'PRIVATE_' not in body)
                 check('Default selector visibly marks all periods rather than silently choosing monthly', any(r.get('aria-current') in ('page', 'true') and parse_qs(urlparse(r.get('href', '')).query).get('billing', ['all']) == ['all'] for r in Links(body).rows))
                 for billing, first, last in [('monthly', 101, 120), ('annually', 125, 144)]:
                     status, _, body = client.request('/hosting?' + urlencode({'billing': billing}))
                     check('Actual public reader selects ' + billing + ' before the twenty-offer cutoff', status == 200 and offer_ids(body) == list(range(first, last + 1)))
                     selection = client.state()['selection']
-                    check('Actual SQL binds the closed local product term for ' + billing, selection['args'] == ['month' if billing == 'monthly' else 'year'] and selection['offset'] == 0)
+                    check('Actual SQL binds category and the closed local product term for ' + billing, selection['args'] == ['shared-hosting', 'month' if billing == 'monthly' else 'year'] and selection['offset'] == 0)
                     check('Public next-page link preserves ' + billing, any(parse_qs(urlparse(r['href']).query).get('billing') == [billing] for r in page_link(body, 2, 'hosting_page')))
                 status, _, annual = client.request('/hosting?billing=annually&hosting_page=2')
                 check('Annual public second page contains only the three remaining annual products', status == 200 and offer_ids(annual) == [145, 146, 147])
@@ -239,7 +242,8 @@ def run(php, executable, checks, preview_dir=None):
                     status, _, body = client.request('/hosting?' + query)
                     check('Public malformed query refuses before catalog reads: ' + query, status == 404 and not offer_ids(body) and client.state()['counts'].get('sql_read', 0) == before)
                 status, _, portal = client.request('/portal/index.php?hosting=offers&billing=annually&p=1')
-                check('Actual portal controller applies annual selection before pagination', status == 200 and offer_ids(portal) == list(range(125, 145)))
+                portal_ids = offer_ids(portal)
+                check('Actual portal controller applies annual selection before pagination', status == 200 and portal_ids == list(range(125, 145)), {'status': status, 'offer_ids': portal_ids, 'safe_error': 'Hosting requests are temporarily unavailable.' in portal, 'fixture_error': client.state().get('last_error')})
                 check('Portal next-page link preserves annual selection', any(parse_qs(urlparse(r['href']).query).get('billing') == ['annually'] for r in page_link(portal, 2, 'p')))
                 status, _, portal2 = client.request('/portal/index.php?hosting=offers&billing=annually&p=2')
                 check('Portal second page preserves exact selected annual products', status == 200 and offer_ids(portal2) == [145, 146, 147])
@@ -253,7 +257,9 @@ def run(php, executable, checks, preview_dir=None):
                     digest = hashlib.sha256(('publication-' + str(product)).encode()).hexdigest()
                     _, _, body = client.request('/hosting?' + urlencode({'billing': cadence, 'hosting_page': 2 if product == 147 else 1}))
                     query = next(q for q in choice_queries(body) if q['offer'] == [publication])
-                    check('Choice link retains exact original publication and hash for ' + str(product), query == {'hosting': ['checkout'], 'offer': [publication], 'offer_sha256': [digest]})
+                    amount = 1200 + product - 100 if product < 125 else 12000 + product - 100
+                    config = hashlib.sha256(json.dumps({'category': 'shared-hosting', 'cadence': cadence, 'amount_cents': amount, 'currency': 'USD'}, separators=(',', ':')).encode()).hexdigest()
+                    check('Choice link retains category, configuration, publication and hash for ' + str(product), query == {'hosting': ['checkout'], 'category': ['shared-hosting'], 'config': [config], 'offer': [publication], 'offer_sha256': [digest]})
                     status, _, selection = client.request('/portal/index.php?' + urlencode({k: v[0] for k, v in query.items()}))
                     check('Actual checkout selection retains the selected offer without creating a review for ' + str(product), status == 200 and 'name="publication_id" value="' + publication + '"' in selection and 'name="publication_sha256" value="' + digest + '"' in selection and 'Plan ' + str(product) in selection)
                     check('Selected checkout shows independent amount and cadence for ' + str(product), ('$' + f'{(1200 + product - 100 if product < 125 else 12000 + product - 100) / 100:.2f}' + ' USD') in selection and ('per month' if cadence == 'monthly' else 'per year') in selection)

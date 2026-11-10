@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/plans/records.php';
 require_once __DIR__.'/catalog_offers_document.php';
+require_once __DIR__.'/storefront_categories_document.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_catalog_schema.php';
 require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
 
@@ -169,6 +170,12 @@ function hosting_catalog_validate_links(string $name,array $row): void {
         if ($plan->json()!==$d['plan_json']) hosting_catalog_recovery();
         $mapping=one('SELECT binding_json,binding_sha256 FROM '.table('provider_plan_catalog').' WHERE id=?',[$row['mapping_id']]);
         if (!$mapping || $mapping['binding_json']!==$d['mapping_json'] || !hash_equals(hash('sha256',$d['mapping_json']),$mapping['binding_sha256'])) hosting_catalog_recovery();
+        if ($d['format']===3) {
+            $category=hosting_storefront_category_data($d['category_json']);$classification=hosting_storefront_classification_data($d['classification_json']);
+            $savedCategory=one('SELECT document_json,document_sha256 FROM '.table('hosting_storefront_categories').' WHERE id=?',[$category['id']]);
+            $savedClassification=one('SELECT document_json,document_sha256 FROM '.table('hosting_storefront_classifications').' WHERE id=?',[$classification['id']]);
+            if (!$savedCategory || !$savedClassification || $savedCategory['document_json']!==$d['category_json'] || $savedClassification['document_json']!==$d['classification_json'] || !hash_equals($savedCategory['document_sha256'],hash('sha256',$d['category_json'])) || !hash_equals($savedClassification['document_sha256'],hash('sha256',$d['classification_json']))) hosting_catalog_recovery();
+        }
     } elseif ($name==='hosting_catalog_requests'||$name==='hosting_catalog_withdrawals') {
         $publication=HostingCatalogPublication::fromJson(hosting_catalog_row('hosting_catalog_publications',$row['publication_id'])['document_json']);
         if ($name==='hosting_catalog_requests') $value->assertPublication($publication);
