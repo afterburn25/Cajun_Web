@@ -24,10 +24,10 @@ final class HostingCatalogRead {
     public static function forProducts(array $productIds): array {
         self::products($productIds);
         if (!hosting_catalog_ready()) throw new RuntimeException('Hosting offers are not ready for new requests.');
-        return self::scope($productIds);
+        return self::scope($productIds,HostingStorefrontReadScope::require());
     }
     /** Only called synchronously after this entrypoint validated history under its owning guard. */
-    private static function scope(array $productIds): array {
+    private static function scope(array $productIds,HostingStorefrontReadScope $storefront): array {
         if (!catalog_ready() || !service_plans_ready() || !staff_ready() || !provider_settings_ready() || !provider_catalog_import_ready() || !provider_package_types_ready() || !provider_plan_catalog_state()['ready']) throw new RuntimeException('Hosting offers are not ready for new requests.');
         $profiles=all('SELECT * FROM '.table('provider_profiles').' WHERE provider_code=? AND environment=? LIMIT 2',['twenty-i','live']);
         if (count($profiles)!==1 || (int)$profiles[0]['enabled']!==1 || $profiles[0]['credentials']==='') throw new RuntimeException('The reviewed hosting connection is unavailable.');
@@ -42,14 +42,14 @@ final class HostingCatalogRead {
         $imports=[];foreach ($records as $record) $imports[(int)$record['product_id']]=$record;
         return ['profile'=>['id'=>$profile['id'],'revision'=>(int)$profile['revision'],'enabled'=>true,'credential_sha256'=>hash('sha256',$profile['credentials']),'key_fingerprint'=>$source['key_fingerprint']],
             'observation'=>['refresh_id'=>$source['id'],'profile_id'=>$source['profile_id'],'profile_revision'=>(int)$source['profile_revision'],'key_fingerprint'=>$source['key_fingerprint'],'observed_epoch'=>$observation['observed_epoch'],'types'=>$observation['types']],
-            'imports'=>$imports];
+            'imports'=>$imports,'storefront'=>$storefront];
     }
     public static function publicPage(int $page=1,string $billing='all',string $category='shared-hosting'): array {
         if ($page<1 || $page>100000) throw new InvalidArgumentException('Choose an available hosting page.');
         $billing=hosting_catalog_billing($billing);hosting_storefront_slug($category);
         return recurring_billing_locked(function()use($page,$billing,$category):array {
             if (!hosting_catalog_ready()) return ['offers'=>[],'has_more'=>false,'unavailable'=>false];
-            if (!hosting_storefront_ready()) return ['offers'=>[],'has_more'=>false,'unavailable'=>true];
+            $storefront=HostingStorefrontReadScope::open();if (!$storefront) return ['offers'=>[],'has_more'=>false,'unavailable'=>true];
             $publications=table('hosting_catalog_publications');$withdrawals=table('hosting_catalog_withdrawals');$products=table('catalog_products');
             $links=table('hosting_storefront_publications');$classifications=table('hosting_storefront_classifications');$categories=table('hosting_storefront_categories');
             // Select the period before pagination; later matching offers must remain reachable.
@@ -60,7 +60,7 @@ final class HostingCatalogRead {
             if (!$rows) return ['offers'=>[],'has_more'=>$more,'unavailable'=>false];
             $productIds=array_map(static fn(array $row):int=>(int)$row['product_id'],$rows);
             self::products($productIds);
-            $scope=self::scope($productIds);
+            $scope=self::scope($productIds,$storefront);
             $offers=[];$unavailable=false;
             foreach ($rows as $row) {
                 $publication=hosting_catalog_publication($row['id']);
@@ -119,7 +119,9 @@ function hosting_catalog_sources(int $productId,string $planId,int $publisherId,
     $mappingRow=one('SELECT binding_json,binding_sha256 FROM '.table('provider_plan_catalog').' WHERE id=?',[$mapping['id']]);
     if (!$mappingRow || $mappingRow['binding_sha256']!==$mapping['sha256'] || hash('sha256',$mappingRow['binding_json'])!==$mapping['sha256']) throw new RuntimeException('The original provider mapping is unavailable.');
     $observed=hosting_catalog_observation($scope['observation'],$import['type_ref']);
-    $storefront=hosting_storefront_product_context($productId);
+    $storefrontScope=$scope['storefront']??null;
+    if (!$storefrontScope instanceof HostingStorefrontReadScope) throw new LogicException('The hosting read scope lacks validated storefront history.');
+    $storefront=hosting_storefront_product_context($productId,$storefrontScope);
     $context=['publication'=>null,
         'product'=>['id'=>$productId,'revision'=>$product['revision'],'sha256'=>hash('sha256',service_plans_json($product))],
         'plan'=>['id'=>$planId,'revision'=>$plan->revision(),'sha256'=>$plan->fingerprint(),'status'=>$plan->model()->status()],

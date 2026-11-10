@@ -169,8 +169,16 @@ function hosting_storefront_publication(string $id): array {
     hosting_storefront_guard();service_plans_id($id);$row=one('SELECT * FROM '.table('hosting_storefront_publications').' WHERE id=?',[$id]);
     if (!$row) hosting_storefront_recovery();$d=hosting_storefront_row_document('hosting_storefront_publications',$row);hosting_storefront_assert_witness('hosting_storefront_publications',$row);hosting_storefront_validate_links('hosting_storefront_publications',$row);return $d+['sha256'=>$row['document_sha256']];
 }
-function hosting_storefront_product_context(int $product): array {
-    hosting_storefront_guard();if (!hosting_storefront_ready()) throw new RuntimeException('Prepare storefront categories before publishing hosting offers.');
+/** Entry-point-local proof that the complete storefront history was validated under the owning guard. */
+final class HostingStorefrontReadScope {
+    private function __construct() {}
+    public static function open(): ?self { hosting_storefront_guard();return hosting_storefront_ready()?new self:null; }
+    public static function require(): self {
+        $scope=self::open();if (!$scope) throw new RuntimeException('Prepare storefront categories before publishing hosting offers.');return $scope;
+    }
+}
+function hosting_storefront_product_context(int $product,HostingStorefrontReadScope $scope): array {
+    hosting_storefront_guard();
     $classification=hosting_storefront_current_classification($product);
     if (!$classification || $classification['state']!=='bound') throw new RuntimeException('Review and assign this product to a storefront category before publication.');
     $category=hosting_storefront_current_category($classification['category_slug']);
@@ -183,14 +191,14 @@ function hosting_storefront_product_context(int $product): array {
     return ['category_json'=>$categoryJson,'category_sha256'=>hash('sha256',$categoryJson),'classification_json'=>$classificationJson,'classification_sha256'=>hash('sha256',$classificationJson),'projection'=>hosting_storefront_category_projection($categoryData)];
 }
 function hosting_storefront_link_publication(HostingCatalogPublication $publication): array {
-    hosting_storefront_guard();if (!hosting_storefront_ready()) throw new RuntimeException('Prepare storefront categories before publishing hosting offers.');
+    hosting_storefront_guard();$scope=HostingStorefrontReadScope::require();
     $d=$publication->data();$old=one('SELECT id FROM '.table('hosting_storefront_publications').' WHERE id=?',[$d['id']]);
     if ($old) {
         $link=hosting_storefront_publication($d['id']);
         if (!hash_equals($link['publication_sha256'],$publication->fingerprint())) throw new RuntimeException('This publication already has different storefront history.');
         return $link;
     }
-    $context=hosting_storefront_product_context($d['product']['id']);$category=hosting_storefront_category_data($context['category_json']);$classification=hosting_storefront_classification_data($context['classification_json']);
+    $context=hosting_storefront_product_context($d['product']['id'],$scope);$category=hosting_storefront_category_data($context['category_json']);$classification=hosting_storefront_classification_data($context['classification_json']);
     if ($d['format']<3) {
         if ($category['slug']!=='shared-hosting') throw new RuntimeException('Historical hosting publications can only be linked as Shared.');
     } elseif ($d['category_json']!==$context['category_json'] || $d['classification_json']!==$context['classification_json']) throw new RuntimeException('The publication storefront snapshots changed before they were recorded.');

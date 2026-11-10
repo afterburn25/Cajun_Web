@@ -23,7 +23,7 @@ from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandle
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_PATHS = (
  'tests/hosting_catalog_billing_browser.py','tests/hosting_catalog_billing_http_fixture.php',
- 'site/app/hosting/catalog_offers_context.php','site/app/hosting/catalog_offers.php',
+ 'site/app/hosting/catalog_offers_context.php','site/app/hosting/storefront_categories.php','site/app/hosting/catalog_offers.php',
  'site/app/hosting/catalog_offers_document.php','site/app/hosting/catalog_checkout.php',
  'site/pages/services/hosting.php','site/includes/layout/hosting_catalog.php',
  'site/portal/controllers/hosting_catalog.php','site/portal/views/hosting_catalog.php',
@@ -221,7 +221,10 @@ def run(php, executable, checks, preview_dir=None):
                 client.seed('client')
                 business_before = client.state()['business']
                 status, headers, body = client.request('/hosting')
-                check('Actual public default preserves all-plan ordering and first twenty offers', status == 200 and offer_ids(body) == list(range(101, 121)))
+                default_ids=offer_ids(body)
+                default_state=client.state()
+                check('Actual public default preserves all-plan ordering and first twenty offers', status == 200 and default_ids == list(range(101, 121)), {'status':status,'offer_ids':default_ids,'body_prefix':body[:160],'fixture_error':default_state.get('last_error')})
+                check('One public offer page validates complete storefront history exactly once', client.state()['counts'].get('storefront_history_read', 0) == 1)
                 check('Public comparison remains no-store and does not expose internal model diagnostics', 'no-store' in headers.get('Cache-Control', '') and 'PRIVATE_' not in body)
                 check('Default selector visibly marks all periods rather than silently choosing monthly', any(r.get('aria-current') in ('page', 'true') and parse_qs(urlparse(r.get('href', '')).query).get('billing', ['all']) == ['all'] for r in Links(body).rows))
                 for billing, first, last in [('monthly', 101, 120), ('annually', 125, 144)]:

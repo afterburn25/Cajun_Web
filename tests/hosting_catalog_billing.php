@@ -24,7 +24,7 @@ function hcb_load(): void {
     $body=substr($source,$start,$end+2-$start);$GLOBALS['fragments']['hosting_catalog_public']=hash('sha256',$body);eval($body);
 }
 function hcb_reset(): void {
-    $GLOBALS['hcb']=['lock'=>false,'locks'=>0,'ready'=>true,'storefront_ready'=>true,'ready_calls'=>0,'queries'=>[],'origin_checks'=>0,'source_reads'=>0,'projection_calls'=>[],
+    $GLOBALS['hcb']=['lock'=>false,'locks'=>0,'ready'=>true,'storefront_ready'=>true,'ready_calls'=>0,'storefront_ready_calls'=>0,'queries'=>[],'origin_checks'=>0,'source_reads'=>0,'projection_calls'=>[],
         'scope_valid'=>true,'profile_revision'=>3,'source_revision'=>3,'source_state'=>'complete','bad_projection'=>null,'unavailable'=>[],
         'products'=>[],'projections'=>[],'import_pages'=>[],'provider_calls'=>0,'writes'=>0];
     // Opposite-period rows precede the monthly products. Sorting is product order, not publication time.
@@ -44,7 +44,12 @@ function recurring_billing_locked(callable $work): mixed {
 }
 function hosting_catalog_guard(): void {if (!$GLOBALS['hcb']['lock']) throw new LogicException('Owning read guard required.');}
 function hosting_catalog_ready(): bool {hosting_catalog_guard();$GLOBALS['hcb']['ready_calls']++;return $GLOBALS['hcb']['ready'];}
-function hosting_storefront_ready(): bool {hosting_catalog_guard();return $GLOBALS['hcb']['storefront_ready'];}
+function hosting_storefront_ready(): bool {hosting_catalog_guard();$GLOBALS['hcb']['storefront_ready_calls']++;return $GLOBALS['hcb']['storefront_ready'];}
+final class HostingStorefrontReadScope {
+    private function __construct() {}
+    public static function open(): ?self {hosting_catalog_guard();return hosting_storefront_ready()?new self:null;}
+    public static function require(): self {$scope=self::open();if(!$scope)throw new RuntimeException('Storefront unavailable.');return $scope;}
+}
 function hosting_storefront_slug(mixed $value): string {
     if (!is_string($value)||!in_array($value,['shared-hosting','vps-hosting'],true)) throw new InvalidArgumentException('Choose an available hosting category.');
     return $value;
@@ -116,6 +121,7 @@ try {
     hcb_bad('Internal page key cannot select arbitrary query fields',fn()=>hosting_catalog_billing_query(['redirect'=>'1'],'redirect'));
     hcb_reset();$original=[$GLOBALS['hcb']['products'],$GLOBALS['hcb']['projections']];
     $all=hosting_catalog_public();hcb_ok('Default all preserves first twenty products and continuation',hcb_ids($all)===range(1,20)&&$all['has_more']&&$all['unavailable']===false);
+    hcb_ok('One offer page validates complete storefront history exactly once',$GLOBALS['hcb']['storefront_ready_calls']===1);
     hcb_ok('Default all binds Shared before pagination and leaves period unfiltered',!str_contains($GLOBALS['hcb']['queries'][0][0],'BINARY c.term')&&$GLOBALS['hcb']['queries'][0][1]===['shared-hosting']);
     $monthly=hosting_catalog_public(1,'monthly');hcb_ok('Monthly products beyond twenty annual products remain reachable',hcb_ids($monthly)===range(23,42)&&$monthly['has_more']&&$monthly['unavailable']===false);
     $second=hosting_catalog_public(2,'monthly');hcb_ok('Second monthly page contains only remaining matches',hcb_ids($second)===[43,44]&&!$second['has_more']);

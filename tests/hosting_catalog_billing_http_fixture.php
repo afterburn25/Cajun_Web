@@ -23,6 +23,7 @@ function hcb_load(string $path,array $names,bool $class=false):void {
     }
     if(count($found)!==count($names))throw new LogicException('Missing fixture declaration.');
 }
+hcb_load('app/hosting/storefront_categories.php',['HostingStorefrontReadScope'],true);
 hcb_load('app/hosting/catalog_offers_context.php',['HostingCatalogRead'],true);
 hcb_load('app/hosting/catalog_offers.php',['hosting_catalog_public']);
 hcb_load('app/hosting/catalog_login.php',['hosting_catalog_login_destination']);
@@ -52,6 +53,7 @@ function recurring_billing_locked(callable $work):mixed {if(($GLOBALS['hcb_depth
 function recurring_billing_touch(callable $work,bool $ready=true):mixed{return $work();}
 function hosting_checkout_locked(callable $work):mixed{hosting_checkout_reject_contact();return recurring_billing_locked($work);}
 function hosting_catalog_guard():void {if(!db()->inTransaction())throw new LogicException('Read outside modeled owning transaction.');}
+function hosting_storefront_guard():void {hosting_catalog_guard();}
 function table(string $name):string{return 'model_'.$name;}
 function catalog_ready():bool{return true;}
 function service_plans_ready():bool{return true;}
@@ -63,7 +65,7 @@ function provider_package_types_ready():bool{return true;}
 function provider_plan_catalog_state():array{return ['ready'=>true];}
 function hosting_checkout_ready():bool{return true;}
 function hosting_catalog_ready():bool {hcb_count('history_read');if(($_SESSION['scenario']??'')==='unavailable')throw new RuntimeException('PRIVATE_HISTORY_DIAGNOSTIC');return true;}
-function hosting_storefront_ready():bool {return true;}
+function hosting_storefront_ready():bool {hcb_count('storefront_history_read');return true;}
 function provider_package_types_observation(array $source):array{return ['observed_epoch'=>time(),'types'=>[]];}
 function provider_catalog_import_records_in_scope(array $ids):array {return array_map(static fn($id)=>['product_id'=>$id],$ids);}
 function provider_catalog_import_origins(array $records):void {hcb_count('origin_read');}

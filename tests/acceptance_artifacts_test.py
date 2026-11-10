@@ -16,6 +16,11 @@ from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
+UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
+UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
+UX08_STOREFRONT_SOURCE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
+UX08_PUBLIC_IDENTITY = 'site/app/clients/public_identity.php'
 spec = importlib.util.spec_from_file_location('acceptance_artifacts', ROOT / 'tools/acceptance_artifacts.py')
 a = importlib.util.module_from_spec(spec); spec.loader.exec_module(a)
 checks = []
@@ -542,8 +547,18 @@ def run(tmp):
               len(retained)==identity_ext['predecessor_native_count']
               and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==identity_ext['predecessor_native_sha256'])
         for path,expected_hash in identity_ext['source_sha256'].items():
+            current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            if path==UX08_PUBLIC_IDENTITY:
+                source=subprocess.check_output(['git','cat-file','blob',UX08_STOREFRONT_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+                base=subprocess.check_output(['git','cat-file','blob',UX08_STOREFRONT_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+                check('UX-08 public identity overlay retains exact commit trees and ancestry',
+                      subprocess.check_output(['git','rev-parse',UX08_STOREFRONT_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_STOREFRONT_BASE_TREE
+                      and subprocess.check_output(['git','rev-parse',UX08_STOREFRONT_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_STOREFRONT_SOURCE_TREE
+                      and subprocess.run(['git','merge-base','--is-ancestor',UX08_STOREFRONT_BASE,UX08_STOREFRONT_SOURCE],cwd=ROOT).returncode==0)
+                check('UX-08 public identity overlay current bytes match its exact storefront source',current==source)
+                current=base
             check('Public client identity source identity '+path,
-                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+                  hashlib.sha256(current).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
         for report in identity_ext['reports']:
             check('Public client identity report is required in browser and final evidence '+report,
