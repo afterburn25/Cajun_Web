@@ -15,6 +15,7 @@ function hc_context(array $p,array $o,ServicePlanDocument $plan,array $m,?Hostin
         'catalog'=>['refresh_id'=>$o['refresh_id'],'state'=>'complete','profile_id'=>$o['profile_id'],'profile_revision'=>$o['profile_revision'],'key_fingerprint'=>$o['key_fingerprint'],'observed_epoch'=>$o['observed_epoch'],'types_sha256'=>hosting_catalog_types_hash($o['types'])],
         'publisher'=>['id'=>2,'role'=>'owner','enabled'=>true,'auth_version'=>'publisher-opaque-token'],
         'mapping_reviewer'=>['id'=>1,'role'=>'owner','enabled'=>true,'auth_version'=>$m['owner_auth']],
+        'storefront'=>['category_slug'=>'shared-hosting','category_sha256'=>str_repeat('0',64),'classification_sha256'=>str_repeat('1',64),'available'=>true],
         'support_session'=>false];
 }
 try {
@@ -37,7 +38,8 @@ try {
     $public=$pub->publicProjection($current,131);
     $reorderedContext=array_reverse($current,true);foreach(['publication','product','plan','mapping','profile','catalog','publisher','mapping_reviewer'] as $key)$reorderedContext[$key]=array_reverse($reorderedContext[$key],true);
     hc_ok('Current fact maps retain strict values regardless of key insertion order',$pub->publicProjection($reorderedContext,131)===$public);
-    hc_ok('Public projection has exact closed keys',array_keys($public)===['publication_id','publication_sha256','product_id','product_revision','sku','title','summary','amount_cents','currency','cadence','inclusions','exclusions','limits','support','image_id']);
+    hc_ok('Public projection has exact closed keys',array_keys($public)===['publication_id','publication_sha256','product_id','product_revision','category','category_label','sku','title','summary','amount_cents','currency','cadence','inclusions','exclusions','limits','support','image_id']);
+    hc_ok('Historical formats normalize only to explicit Shared category facts',$public['category']==='shared-hosting'&&$public['category_label']==='Shared Hosting');
     hc_ok('Published customer terms and price come only from the pinned plan',$public['amount_cents']===2500&&$public['currency']==='USD'&&$public['cadence']==='monthly'&&$public['inclusions']===$terms['inclusions']&&$public['exclusions']===$terms['exclusions']&&$public['limits']===$terms['limits']&&$public['support']===$terms['support']);
     $publicBytes=service_plans_json($public);
     foreach(['Private legacy draft wording','Private legacy draft terms','Private supplier reference',$i['source_key_fingerprint'],$o['key_fingerprint'],$m['credential_sha256'],$m['owner_auth'],$initial['publisher']['auth_version']] as $n=>$private)hc_ok('Public projection excludes private value '.$n,!str_contains($publicBytes,$private));
@@ -63,6 +65,20 @@ try {
     hc_bad('Future publication refused for current use',fn()=>$pub->assertCurrent($current,129));hc_bad('Mapping expiry boundary is exclusive',fn()=>$pub->assertCurrent($current,1000));
     hc_ok('Historical publication remains parseable after expiration',HostingCatalogPublication::fromJson($pub->json())->fingerprint()===$pub->fingerprint());
     hc_ok('Owned historical terms retain the same safe fields without asserting availability',$pub->historicalProjection()===$public);
+
+    $category=['format'=>1,'id'=>str_repeat('5',32),'slug'=>'shared-hosting','revision'=>1,'label'=>'Shared Hosting','summary'=>'Reviewed Shared plans.','required_family'=>'hosting','purchase_mode'=>'online','created_by'=>2,'created_at'=>100];
+    $categoryJson=hosting_storefront_category_document($category);
+    $classification=['format'=>1,'id'=>str_repeat('6',32),'product_id'=>42,'product_revision'=>3,'state'=>'bound','category_id'=>$category['id'],'category_slug'=>$category['slug'],'category_revision'=>1,'category_sha256'=>hash('sha256',$categoryJson),'source'=>'owner','created_by'=>2,'created_at'=>120];
+    $classificationJson=hosting_storefront_classification_document($classification);
+    $categorizedContext=$initial;$categorizedContext['storefront']=['category_slug'=>'shared-hosting','category_sha256'=>hash('sha256',$categoryJson),'classification_sha256'=>hash('sha256',$classificationJson),'available'=>true];
+    $categorized=HostingCatalogPublication::createCategorized(str_repeat('1',32),130,$p,$i,$o,$plan,service_plans_json($m),$categoryJson,$classificationJson,$categorizedContext,null);
+    $categorizedCurrent=$categorizedContext;$categorizedCurrent['publication']['sha256']=$categorized->fingerprint();$categorized->assertCurrent($categorizedCurrent,131);
+    hc_ok('Format3 pins exact explicit category and product classification history',$categorized->data()['format']===3&&$categorized->data()['category_json']===$categoryJson&&$categorized->data()['classification_json']===$classificationJson&&$categorized->historicalProjection()['category']==='shared-hosting');
+    hc_ok('Format3 round trip remains canonical',HostingCatalogPublication::fromJson($categorized->json())->json()===$categorized->json());
+    $changedCategory=$categorizedCurrent;$changedCategory['storefront']['category_sha256']=str_repeat('0',64);hc_bad('Current category revision change requires offer republication',fn()=>$categorized->assertCurrent($changedCategory,131));
+    $changedBinding=$categorizedCurrent;$changedBinding['storefront']['classification_sha256']=str_repeat('0',64);hc_bad('Current product classification change requires offer republication',fn()=>$categorized->assertCurrent($changedBinding,131));
+    $wrongClassification=$classification;$wrongClassification['product_id']=43;hc_bad('Categorized publication refuses another product classification',fn()=>HostingCatalogPublication::createCategorized(str_repeat('1',32),130,$p,$i,$o,$plan,service_plans_json($m),$categoryJson,hosting_storefront_classification_document($wrongClassification),$categorizedContext,null));
+    $vps=$category;$vps['id']=str_repeat('7',32);$vps['slug']='vps-hosting';$vps['label']='VPS Hosting';$vps['required_family']='vps';hc_bad('VPS category cannot claim online purchase without a qualified contract',fn()=>hosting_storefront_category_document($vps));
     hc_bad('Noncanonical publication whitespace refused',fn()=>HostingCatalogPublication::fromJson(' '.$pub->json()));hc_bad('Extra publication field refused',fn()=>HostingCatalogPublication::fromJson(service_plans_json($pub->data()+['public'=>true])));
     hc_bad('Oversized publication refused',fn()=>HostingCatalogPublication::fromJson(str_repeat(' ',HostingCatalogPublication::MAX_BYTES+1)));
     $client=['id'=>9,'active'=>true,'support_session'=>false];$request=HostingCatalogRequest::create(str_repeat('3',32),$pub,$client,131,$current);$request->assertClient($client);$request->assertPublication($pub);

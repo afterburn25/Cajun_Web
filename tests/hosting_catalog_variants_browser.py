@@ -27,6 +27,7 @@ SOURCE_PATHS = (
  'site/admin/views/catalog_variants.php','site/admin/controllers/actions.php','site/admin/controllers/auth.php',
  'site/admin/controllers/studio.php','site/app/staff/accounts.php','site/app/providers/settings.php',
  'site/app/providers/catalog_import.php','site/app/providers/catalog_variants.php','site/app/billing/catalog.php','site/app/marketing/growth.php',
+ 'site/app/billing/catalog_browse.php',
  'site/app/plans/documents.php','site/app/hosting/catalog_offers_document.php',
  'site/includes/layout/admin.php','site/includes/layout/hosting_catalog.php',
  'site/includes/security/input.php','site/includes/security/csrf.php','site/includes/security/http.php',
@@ -166,7 +167,6 @@ def run(php, executable, checks, preview_dir=None):
         hidden, consent, _ = form_fields(html, 'data-catalog-variant-create')
         return all(hidden.get(k) == original[k] for k in ('variant_request_id', 'source_product_id', 'source_revision', 'variant_review_sha256')) and not consent
 
-    password = 'Synthetic catalog variant owner passphrase'
     owner_path = '/owner?view=catalog&id=101'
     with tempfile.TemporaryDirectory(prefix='cwp-catalog-variants-http-') as temporary:
         directory = Path(temporary)
@@ -199,7 +199,7 @@ def run(php, executable, checks, preview_dir=None):
                 before = business(owner)
                 status, _, html = owner.request(owner_path)
                 prepare, checked, action = form_fields(html, 'data-catalog-variant-prepare')
-                check('Cold variants show explicit preparation on selected imported product without writes', status == 200 and prepare['source_product_id'] == '101' and not checked and business(owner) == before)
+                check('Cold variants show explicit preparation on selected imported product without writes', status == 200 and prepare.get('source_product_id') == '101' and not checked and business(owner) == before)
                 check('Preparation keeps exact selected catalog navigation', action == owner_path)
                 for mode in ('anonymous', 'client', 'staff', 'support', 'owner-contact-null', 'owner-client-null', 'owner-support-null'):
                     denied = LocalSession(base)
@@ -207,22 +207,21 @@ def run(php, executable, checks, preview_dir=None):
                     initial = business(denied)
                     status, _, html = denied.request(owner_path)
                     check('Variant controls hidden from modeled nonowner or support: ' + mode, 'data-catalog-variant-' not in html and status in (200, 403))
-                    status, _, html = denied.request(owner_path, {**prepare, 'csrf': token, 'confirm': '1', 'owner_password': password})
+                    status, _, html = denied.request(owner_path, {**prepare, 'csrf': token, 'confirm': '1'})
                     check('Actual dispatcher/owner gate prevents preparation side effect: ' + mode, business(denied) == initial and denied.state()['counts'].get('prepare', 0) == 0)
-                bad = {**prepare, 'confirm': '1', 'owner_password': password, 'csrf': 'wrong'}
+                bad = {**prepare, 'confirm': '1', 'csrf': 'wrong'}
                 status, _, html = owner.request(owner_path, bad)
                 check('Actual CSRF gate rejects preparation before modeled service', status == 200 and 'Your session expired.' in html and business(owner) == before)
-                status, headers, _ = owner.request(owner_path, {**prepare, 'confirm': '1', 'owner_password': password})
+                status, headers, _ = owner.request(owner_path, {**prepare, 'confirm': '1'})
                 check('Actual preparation action redirects to original product', status == 303 and headers.get('Location') == owner_path and owner.state()['model']['writes']['prepare'] == 1)
                 status, _, html = owner.request(owner_path)
                 fields, checked, action = form_fields(html, 'data-catalog-variant-create')
                 check('New form has original selected revision and review with unchecked consent', status == 200 and len(fields['variant_request_id']) == 32 and fields['source_product_id'] == '101' and fields['source_revision'] == '1' and len(fields['variant_review_sha256']) == 64 and not checked and action == owner_path)
                 baseline = business(owner)
-                create = {**fields, 'sku': 'EXTRA-YEAR', 'term': 'year', 'owner_password': password, 'confirm': '1'}
+                create = {**fields, 'sku': 'EXTRA-YEAR', 'term': 'year', 'confirm': '1'}
                 for label, values, error in (
                     ('unchecked confirmation', {**create, 'confirm': ''}, 'Confirm this billing option action'),
                     ('bad CSRF', {**create, 'csrf': 'wrong'}, 'Your session expired.'),
-                    ('wrong password', {**create, 'owner_password': 'INCORRECT_PRIVATE_PASSWORD'}, 'Your current password is not correct.'),
                     ('stale review', {**create, 'variant_review_sha256': '0' * 64}, 'This product review changed.'),
                     ('malformed original identity', {**create, 'variant_request_id': '<broken>'}, 'Review the original billing option values.'),
                     ('unsupported period', {**create, 'term': 'once'}, 'Review the original billing option values.'),
@@ -231,13 +230,13 @@ def run(php, executable, checks, preview_dir=None):
                     ('duplicate SKU', {**create, 'sku': 'BASE-MONTH'}, 'That SKU already exists.'),
                 ):
                     status, _, html = owner.request(owner_path, values)
-                    check('Actual failed POST retains original proof and refuses writes: ' + label, status == 200 and error in html and retained(html, values) and business(owner) == baseline and 'INCORRECT_PRIVATE_PASSWORD' not in html)
+                    check('Actual failed POST retains original proof and refuses writes: ' + label, status == 200 and error in html and retained(html, values) and business(owner) == baseline)
                     if label in ('unsupported period', 'hostile period'):
                         from html import escape
                         check('Malformed period remains escaped and selected for review: ' + label, 'value="' + escape(values['term'], quote=True) + '" selected' in html and 'Previously entered:' in html)
                     if label in ('stale review', 'malformed source'):
                         check('Stale source retry is disabled with explicit safe GET review link: ' + label, '<button class="btn gold" disabled>Create billing option</button>' in html and 'href="/owner?view=catalog&amp;id=101">Reload product review</a>' in html)
-                    check('Actual failed POST clears owner password and opens retry disclosure: ' + label, 'name="owner_password" type="password" value=""' in html and 'class="catalog-variant-create" open' in html)
+                    check('Actual failed POST keeps password re-entry absent and opens retry disclosure: ' + label, 'name="owner_password"' not in html and 'class="catalog-variant-create" open' in html)
                 owner.request('/__scenario?name=unavailable')
                 status, _, html = owner.request(owner_path, create)
                 check('Unavailable source preserves exact original retry in disabled form', 'href="/owner?view=catalog&amp;id=101">Reload product review</a>' in html and status == 200 and retained(html, create) and 'Create billing option</button>' in html and ' disabled' in html and business(owner) == baseline)
@@ -277,11 +276,11 @@ def run(php, executable, checks, preview_dir=None):
                     original = {e['name']: e['value'] for e in form.locator('input[type=hidden]').evaluate_all('(es)=>es.map(e=>({name:e.name,value:e.value}))')}
                     form.locator('[name=sku]').fill('BROWSER-MONTH')
                     form.locator('[name=term]').select_option('month')
-                    form.locator('[name=owner_password]').fill(password)
+                    check('Current-session policy keeps administrator password re-entry out of the actual form', form.locator('[name=owner_password]').count() == 0)
                     form.locator('button').click()
                     form = page.locator('[data-catalog-variant-create]')
                     check('Real browser unchecked POST retains SKU term and original identity', form.locator('[name=sku]').input_value() == 'BROWSER-MONTH' and form.locator('[name=term]').input_value() == 'month' and all(form.locator(f'[name={k}]').input_value() == v for k, v in original.items() if k != 'csrf') and not form.locator('[name=confirm]').is_checked())
-                    check('Real browser retry clears password and remains expanded', form.locator('[name=owner_password]').input_value() == '' and page.locator('details.catalog-variant-create').evaluate('(e)=>e.open'))
+                    check('Real browser retry keeps password re-entry absent and remains expanded', form.locator('[name=owner_password]').count() == 0 and page.locator('details.catalog-variant-create').evaluate('(e)=>e.open'))
                     check('Untrusted product metadata is text in actual admin renderer', page.locator('[data-catalog-variants] script').count() == 0 and '<script>bad()</script>' in page.locator('[data-catalog-variants]').inner_text())
                     for width in (1440, 390):
                         page.set_viewport_size({'width': width, 'height': 1000})
@@ -304,7 +303,8 @@ def run(php, executable, checks, preview_dir=None):
                     destinations = [links.nth(i).get_attribute('href') for i in range(links.count())]
                     for index, (product, amount, cadence, identity, digest) in enumerate(((101, 1200, 'monthly', 'c', 'd'), (102, 12000, 'annually', 'e', 'f'))):
                         query = parse_qs(urlparse(destinations[index]).query)
-                        check('Actual choice link binds exact publication and digest for product ' + str(product), query == {'hosting': ['checkout'], 'offer': [identity * 32], 'offer_sha256': [digest * 64]})
+                        config = hashlib.sha256(json.dumps({'category': 'shared-hosting', 'cadence': cadence, 'amount_cents': amount, 'currency': 'USD'}, separators=(',', ':')).encode()).hexdigest()
+                        check('Actual choice link binds category, configuration, publication and digest for product ' + str(product), query == {'hosting': ['checkout'], 'category': ['shared-hosting'], 'config': [config], 'offer': [identity * 32], 'offer_sha256': [digest * 64]})
                         page.goto(base + destinations[index])
                         payload = json.loads(page.locator('body').inner_text())
                         check('Selected renderer link arrives at corresponding modeled product destination ' + str(product), payload['product_id'] == product and payload['amount_cents'] == amount and payload['cadence'] == cadence)
@@ -344,6 +344,7 @@ def main():
         result['passed'] = True
     except Exception as error:
         result['error'] = type(error).__name__
+        result['error_message'] = str(error)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     with args.report.open('x', encoding='utf-8', newline='\n') as stream:
         json.dump(result, stream, indent=2)

@@ -9,6 +9,7 @@ import struct
 import subprocess
 import sys
 import zlib
+from urllib.parse import urlencode
 
 from playwright.sync_api import sync_playwright
 
@@ -21,6 +22,11 @@ CAPTURES = (
     "Hosting-Comparison-Four-Mobile-First.png",
     "Hosting-Comparison-Four-Mobile-Last.png",
 )
+
+
+def config_hash(amount_cents: int, cadence: str) -> str:
+    payload = json.dumps({"category": "shared-hosting", "cadence": cadence, "amount_cents": amount_cents, "currency": "USD"}, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(payload.encode()).hexdigest()
 
 
 def png_fixture() -> bytes:
@@ -101,7 +107,8 @@ def main() -> int:
                     page.evaluate("document.fonts.ready")
                     region = page.locator(".hosting-comparison-scroll")
                     check(label + " has no document horizontal overflow", page.evaluate("document.documentElement.scrollWidth <= window.innerWidth") is True)
-                    expected_links = ["/nested/portal/index.php?hosting=checkout&offer=" + f"{i:032x}" + "&offer_sha256=" + hashlib.sha256(f"offer-{i}".encode()).hexdigest() for i in range(1, count + 1)]
+                    amounts = (900, 1900, 2900, 4900)
+                    expected_links = ["/nested/portal/index.php?" + urlencode({"hosting": "checkout", "category": "shared-hosting", "config": config_hash(amounts[i - 1], "monthly"), "offer": f"{i:032x}", "offer_sha256": hashlib.sha256(f"offer-{i}".encode()).hexdigest()}) for i in range(1, count + 1)]
                     check(label + " retains every column and exact checkout identity", page.locator("thead th[scope=col]").count() == count + 1 and page.locator("a[href*='hosting=checkout']").evaluate_all("nodes => nodes.map(n => n.getAttribute('href'))") == expected_links)
                     check(label + " loads all local synthetic product images", page.locator(".hosting-comparison-image").evaluate_all("nodes => nodes.length > 0 && nodes.every(n => n.complete && n.naturalWidth === 240 && n.naturalHeight === 144)") is True)
                     check(label + " aligns every comparison row", page.locator("tbody tr").evaluate_all("rows => rows.every(r => { const b = [...r.cells].map(c => c.getBoundingClientRect()); return b.every(v => Math.abs(v.top-b[0].top)<1 && Math.abs(v.bottom-b[0].bottom)<1); })") is True)

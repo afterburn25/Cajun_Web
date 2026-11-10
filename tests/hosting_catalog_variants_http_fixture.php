@@ -32,13 +32,15 @@ hcv_load('admin/views/catalog_variants.php');
 hcv_load('includes/layout/admin.php',['admin_action','admin_input','admin_select','admin_check','admin_textarea']);
 hcv_load('admin/controllers/studio.php',['studio_hidden']);
 hcv_load('app/billing/catalog.php',['catalog_families','catalog_terms']);
+hcv_load('app/billing/catalog_browse.php',['catalog_admin_browse','catalog_admin_browse_url','catalog_admin_new_family','catalog_admin_product_readiness']);
 hcv_load('app/marketing/growth.php',['gmoney','gint']);
 hcv_load('app/providers/settings.php',['provider_settings_manager']);
 hcv_load('app/providers/catalog_import.php',['provider_catalog_import_owner']);
 hcv_load('app/providers/catalog_variants.php',['provider_catalog_variant_owner']);
 hcv_load('app/staff/accounts.php',['staff_action_permission','staff_view_permission']);
-hcv_load('app/plans/documents.php',['service_plans_keys']);
-hcv_load('app/hosting/catalog_offers_document.php',['hosting_checkout_policy']);
+hcv_load('app/plans/documents.php',['service_plans_keys','service_plans_json']);
+hcv_load('app/hosting/storefront_categories_document.php',['hosting_storefront_slug']);
+hcv_load('app/hosting/catalog_offers_document.php',['hosting_catalog_config_hash','hosting_checkout_policy']);
 hcv_load('includes/layout/hosting_catalog.php');
 
 function hcv_count(string $name):void {$_SESSION['counts'][$name]=(int)($_SESSION['counts'][$name]??0)+1;}
@@ -58,6 +60,7 @@ function admin_user():?array {
     hcv_count('admin_user');$role=$_SESSION['role']??null;
     return $role?['id'=>1,'role'=>$role,'name'=>'Synthetic owner','auth_version'=>'synthetic-owner-auth','password_hash'=>'$2y$12$YLX6cWH84nCTjYSLPyWO7eujQIQxCmpP5brxHldO1yqLoqQGBOhxq']:null;
 }
+function admin_session_matches(array $actor):bool {return ($actor['id']??null)===1&&($actor['auth_version']??null)==='synthetic-owner-auth'&&($_SESSION['role']??null)==='owner';}
 function staff_ready():bool{return true;}
 function studio_ready():bool{return true;}
 function staff_can(string $permission,?array $user=null):bool {$user??=admin_user();return ($user['role']??null)==='owner'||(($user['role']??null)==='administrator'&&$permission==='catalog.manage');}
@@ -73,9 +76,12 @@ function one(string $sql,array $args=[]):?array {
     throw new LogicException('Unmodeled selected-product query.');
 }
 function all(string $sql,array $args=[]):array {
-    hcv_count('model_select');if($sql==='SELECT * FROM model_catalog_products ORDER BY sort_order,id LIMIT 200')return array_values(hcv_store()['products']);
+    hcv_count('model_select');if(in_array($sql,['SELECT * FROM model_catalog_products ORDER BY sort_order,id LIMIT 200','SELECT * FROM model_catalog_products ORDER BY id DESC LIMIT 51 OFFSET 0'],true))return array_values(hcv_store()['products']);
     if($sql==='SELECT r.*,u.name FROM model_catalog_revisions r LEFT JOIN model_users u ON u.id=r.actor_id WHERE r.product_id=? ORDER BY r.revision DESC LIMIT 20')return [];
     throw new LogicException('Unmodeled catalog projection query.');
+}
+function catalog_admin_product_contexts(array $products):array {
+    $contexts=[];foreach($products as $product)$contexts[(int)$product['id']]=catalog_admin_product_readiness($product,provider_catalog_import_record((int)$product['id']),null,false);return $contexts;
 }
 function provider_catalog_import_admin_view(array $user):void {} // Existing discovery panel is outside this finite renderer fixture.
 function provider_catalog_import_image_view(array $product,array $user):void {} // No upload/publish workflow is modeled.
@@ -121,7 +127,7 @@ function admin_head(string $title,string $view,array $user):void {hcv_head($titl
 function admin_foot():void {echo '</main></body></html>';}
 function hcv_offers():array {
     $policy=['mode'=>'invoice-on-confirmation','client'=>'primary-only','project'=>'existing-or-new-hosting','collection'=>'invoice-only','first_period'=>'full-period-today','requires_verified_payment'=>true,'requires_owner_provisioning'=>true,'timezone'=>'America/Chicago','alignment'=>'day-of-month','review_ttl_seconds'=>900];
-    $offers=[];foreach([[101,1200,'monthly','a','c','d'],[102,12000,'annually','b','e','f']]as[$id,$price,$cadence,$image,$publication,$sha])$offers[]=['product_id'=>$id,'publication_id'=>str_repeat($publication,32),'publication_sha256'=>str_repeat($sha,64),'currency'=>'USD','cadence'=>$cadence,'amount_cents'=>$price,'title'=>'Hosting '.$cadence.' <img src=x onerror=alert(1)>','summary'=>'Independent retail choice','support'=>'Studio support','image_id'=>str_repeat($image,32),'inclusions'=>['One website'],'exclusions'=>['Domain registration'],'limits'=>['websites'=>1],'checkout_policy'=>$policy];
+    $offers=[];foreach([[101,1200,'monthly','a','c','d'],[102,12000,'annually','b','e','f']]as[$id,$price,$cadence,$image,$publication,$sha])$offers[]=['product_id'=>$id,'publication_id'=>str_repeat($publication,32),'publication_sha256'=>str_repeat($sha,64),'category'=>'shared-hosting','category_label'=>'Shared Hosting','currency'=>'USD','cadence'=>$cadence,'amount_cents'=>$price,'title'=>'Hosting '.$cadence.' <img src=x onerror=alert(1)>','summary'=>'Independent retail choice','support'=>'Studio support','image_id'=>str_repeat($image,32),'inclusions'=>['One website'],'exclusions'=>['Domain registration'],'limits'=>['websites'=>1],'checkout_policy'=>$policy];
     return $offers;
 }
 $path=parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
@@ -145,7 +151,7 @@ if($path==='/__scenario'){
 if($path==='/__state'){header('Content-Type: application/json');echo json_encode(['counts'=>(object)($_SESSION['counts']??[]),'model'=>hcv_store()]);exit;}
 if($path==='/hosting'){hcv_head('Hosting comparison',false);hosting_catalog_comparison(['offers'=>hcv_offers(),'has_more'=>false,'unavailable'=>false]);admin_foot();exit;}
 if($path==='/portal/index.php'){
-    foreach(hcv_offers()as$offer)if(($_GET['hosting']??'')==='checkout'&&($_GET['offer']??'')===$offer['publication_id']&&($_GET['offer_sha256']??'')===$offer['publication_sha256']){header('Content-Type: application/json');echo json_encode(['scope'=>'Modeled destination only; no checkout authority','product_id'=>$offer['product_id'],'amount_cents'=>$offer['amount_cents'],'cadence'=>$offer['cadence']]);exit;}
+    foreach(hcv_offers()as$offer)if(($_GET['hosting']??'')==='checkout'&&($_GET['category']??'')===$offer['category']&&($_GET['config']??'')===hosting_catalog_config_hash($offer)&&($_GET['offer']??'')===$offer['publication_id']&&($_GET['offer_sha256']??'')===$offer['publication_sha256']){header('Content-Type: application/json');echo json_encode(['scope'=>'Modeled destination only; no checkout authority','product_id'=>$offer['product_id'],'amount_cents'=>$offer['amount_cents'],'cadence'=>$offer['cadence']]);exit;}
     http_response_code(404);exit;
 }
 if($path==='/owner'){

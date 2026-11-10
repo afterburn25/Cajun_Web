@@ -28,7 +28,7 @@ def run(name,args,report=None,scope='portable PHP; synthetic inputs, no SQL/prov
     results.append(info);print(json.dumps(info),flush=True)
 for t in ['admin_session_no_reentry','provider_workspace_policy','owner_update_session_policy','support_open_form_policy']:
     run(t,['php','tests/'+t+'.php'])
-portable=['provider_package_types','provider_catalog_import','hosting_catalog_document','hosting_checkout_document','hosting_catalog_plan_setup_document','hosting_catalog_variants_document','hosting_catalog_billing','hosting_catalog_comparison','hosting_catalog_login','hosting_checkout_views','hosting_catalog_plan_setup_views','hosting_catalog_variants_contract','hosting_checkout_purchases_guards']
+portable=['provider_package_types','provider_catalog_import','hosting_catalog_document','hosting_storefront_schema','hosting_storefront_routes','hosting_checkout_document','hosting_catalog_plan_setup_document','hosting_catalog_variants_document','hosting_catalog_billing','hosting_catalog_comparison','hosting_catalog_login','hosting_checkout_views','hosting_catalog_plan_setup_views','hosting_catalog_variants_contract','hosting_checkout_purchases_guards']
 file_reports={'hosting_catalog_document','hosting_checkout_document','hosting_catalog_plan_setup_document'}
 for t in portable:
     p=str(E/(t+'.json')) if t in file_reports else None

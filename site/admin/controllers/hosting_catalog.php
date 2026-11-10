@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_offer_views.php';
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_offer_setup.php';
+require_once CWP_CODE_ROOT.'/database/migrations/hosting_storefront_migrate.php';
 require_once CWP_CODE_ROOT.'/includes/layout/hosting_catalog.php';
 
 function hosting_catalog_admin_action(string $action): void {
@@ -10,6 +11,10 @@ function hosting_catalog_admin_action(string $action): void {
     if (($_SERVER['REQUEST_METHOD']??'')!=='POST') throw new InvalidArgumentException('Use the hosting offer form.');
     check_csrf();hosting_catalog_admin_owner();
     $intent=hosting_catalog_admin_intent($action,$_POST);
+    if ($action==='hosting_catalog_category_preview') {
+        $GLOBALS['hosting_catalog_category_preview']=hosting_storefront_binding_preview($intent['product_id'],$intent['category_slug'])+['classification_id'=>$intent['classification_id']];
+        return;
+    }
     if ($action==='hosting_catalog_preview') {
         $GLOBALS['hosting_catalog_admin_preview']=hosting_catalog_preview($intent['publication_id'],$intent['product_id'],$intent['plan_id'],$intent['checkout_policy']??null);
         return;
@@ -20,8 +25,13 @@ function hosting_catalog_admin_action(string $action): void {
         flash('Matching plan and hosting setup saved. Preview the offer before publishing.');
         redirect(admin_url('hosting-offers',['product_id'=>$created['product_id'],'plan_id'=>$created['plan_id']]));
     }
+    if ($action==='hosting_catalog_category_bind') {
+        hosting_storefront_bind($intent['classification_id'],$intent['product_id'],$intent['category_slug'],$intent['review_sha256'],$password);
+        flash('Storefront category assignment saved. Publish a new offer to use the current assignment.');redirect(admin_url('hosting-offers',['product_id'=>$intent['product_id']]));
+    }
     if ($action==='hosting_catalog_setup') {
-        hosting_catalog_prepare($password);flash('Hosting offers are ready.');redirect(admin_url('hosting-offers'));
+        hosting_catalog_prepare($password);hosting_storefront_prepare($password);
+        flash('Hosting offers and storefront categories are ready.');redirect(admin_url('hosting-offers'));
     }
     if ($action==='hosting_catalog_checkout_setup') {
         require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout.php';
@@ -97,6 +107,18 @@ function hosting_catalog_admin_render(string $error): never {
     try {
         $data=hosting_catalog_admin_data($_GET,$_POST);$values=hosting_catalog_admin_values($_POST);
         $setup=hosting_catalog_setup_screen($data['product'],$_POST);
+        $categoryPreview=$GLOBALS['hosting_catalog_category_preview']??null;$categoryPreviewError='';
+        if ($values['action']==='hosting_catalog_category_bind') {
+            try {
+                $intent=hosting_catalog_admin_intent('hosting_catalog_category_preview',$_POST);
+                $review=service_plans_form_hash($_POST,'category_review_sha256');$current=hosting_storefront_binding_preview($intent['product_id'],$intent['category_slug']);
+                if (!hash_equals($review,$current['review_sha256'])) throw new RuntimeException('The product or storefront category changed. Start a new category review.');
+                $categoryPreview=$current+['classification_id'=>$intent['classification_id']];
+            } catch (RuntimeException|InvalidArgumentException|LogicException $e) {
+                if ($e instanceof PDOException) throw $e;
+                $categoryPreview=null;$categoryPreviewError=$e->getMessage();
+            }
+        }
         $preview=$GLOBALS['hosting_catalog_admin_preview']??null;$previewError='';
         if ($values['action']==='hosting_catalog_publish') {
             // Redisplay a password/transport failure only if the card still matches the submitted review.

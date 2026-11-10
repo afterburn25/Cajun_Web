@@ -41,13 +41,15 @@ function hosting_checkout_portal_selection(array $client,array $values,array $qu
     $publication=service_plans_form_id($values,'publication_id');$hash=service_plans_form_hash($values,'publication_sha256');
     $search=service_plans_form_text($query,'project_search',160);$page=service_plans_form_number(['page'=>$query['p']??'1'],'page',100000);
     if ($page<1) throw new InvalidArgumentException('Choose an available project page.');
-    return hosting_checkout_locked(function()use($client,$publication,$hash,$search,$page):array {
+    $destination=hosting_catalog_login_destination($query);
+    return hosting_checkout_locked(function()use($client,$publication,$hash,$search,$page,$destination):array {
         hosting_checkout_primary_client((int)$client['id']);hosting_checkout_require();$doc=hosting_checkout_publication($publication);
         if (!hash_equals($doc->fingerprint(),$hash)) throw new RuntimeException('This hosting offer changed. Review the current offer before continuing.');
         $scope=hosting_catalog_read_scope([$doc->data()['product']['id']]);$offer=$doc->publicProjection(hosting_catalog_current_context($doc,$scope),time());
+        if (isset($destination['category']) && ($offer['category']!==$destination['category'] || !hash_equals(hosting_catalog_config_hash($offer),$destination['config']))) throw new RuntimeException('The selected hosting category, period, or current price changed. Review the current offer again.');
         $rows=all('SELECT id,title FROM '.table('studio_jobs').' WHERE client_id=? AND LOCATE(?,title)>0 ORDER BY id DESC LIMIT 21 OFFSET '.(($page-1)*20),[(int)$client['id'],$search]);
         $projects=[];foreach(array_slice($rows,0,20) as $row)$projects[]=['id'=>(int)$row['id'],'title'=>$row['title']];
-        return ['offer'=>$offer,'projects'=>$projects,'has_more'=>count($rows)>20,'page'=>$page,'search'=>$search];
+        return ['offer'=>$offer,'projects'=>$projects,'has_more'=>count($rows)>20,'page'=>$page,'search'=>$search,'destination'=>$destination];
     });
 }
 /** Reload exact retained review; an invalid submitted fingerprint never receives a replacement. */

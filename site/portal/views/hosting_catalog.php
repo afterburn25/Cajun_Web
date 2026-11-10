@@ -2,24 +2,24 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 echo '<nav class="studio-tabs" aria-label="Hosting">';
-foreach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href="'.esc(studio_url(['hosting'=>$key]+($key==='offers'?['billing'=>$query['billing']]:[]))).'"'.($query['tab']===$key?' aria-current="page"':'').'>'.esc($label).'</a>';
+foreach (['offers'=>'Available plans','requests'=>'My requests'] as $key=>$label) echo '<a href="'.esc(studio_url(['hosting'=>$key]+($key==='offers'?['category'=>$query['category'],'billing'=>$query['billing']]:[]))).'"'.($query['tab']===$key?' aria-current="page"':'').'>'.esc($label).'</a>';
 echo '<a href="'.esc(studio_url(['hosting_purchases'=>1])).'">My hosting purchases</a></nav>';
 if ($unavailable||($page['unavailable']??false)) echo '<p class="notice">Some hosting information is temporarily unavailable. Please try again later or contact the studio.</p>';
 $attemptShown=false;
 if ($query['tab']==='offers') {
-    hosting_catalog_billing_options($query['billing'],true);
+    hosting_catalog_billing_options($query['billing'],true,$query['category']);
     echo '<p class="hint">A request does not take payment or activate hosting. The studio will review your request before offering a service agreement.</p>';
     foreach ($page['offers'] as $offer) {
         echo '<article class="workspace-card">';hosting_catalog_card($offer,'h2');
         if (isset($offer['checkout_policy'])) {
-            echo '<p><a class="btn gold" href="'.esc(studio_url(['hosting'=>'checkout','offer'=>$offer['publication_id'],'offer_sha256'=>$offer['publication_sha256']])).'">Review plan and first invoice</a></p></article>';
+            echo '<p><a class="btn gold" href="'.esc(studio_url(['hosting'=>'checkout','category'=>$offer['category'],'config'=>hosting_catalog_config_hash($offer),'offer'=>$offer['publication_id'],'offer_sha256'=>$offer['publication_sha256']])).'">Review plan and first invoice</a></p></article>';
             continue;
         }
         if ($attempt&&$attempt['action']==='hosting_catalog_request'&&$attempt['publication_id']===$offer['publication_id']) {
             $values=$attempt;$attemptShown=true;$current=hash_equals($offer['publication_sha256'],$attempt['publication_sha256']);
             if (!$current) echo '<p class="notice warning">These details changed. Reload and review the plan before trying again.</p>';
         } else {$values=['action'=>'hosting_catalog_request','request_id'=>bin2hex(random_bytes(16)),'publication_id'=>$offer['publication_id'],'publication_sha256'=>$offer['publication_sha256']];$current=true;}
-        hosting_catalog_portal_form($values,$current,$query['page'],$query['billing']);echo '</article>';
+        hosting_catalog_portal_form($values,$current,$query['page'],$query['billing'],$query['category']);echo '</article>';
     }
     if (!$page['offers']&&!$unavailable&&!($page['unavailable']??false)) echo '<section class="workspace-card"><h2>No plans for this billing period on this page</h2><p>Choose another billing period or contact the studio to discuss hosting for your website.</p></section>';
 } else {
@@ -45,9 +45,9 @@ if ($query['tab']==='offers') {
 }
 if ($attempt&&!$attemptShown) {
     echo '<section class="workspace-card"><h2>Earlier submission</h2><p class="notice warning">These details changed. Reload and review the plan or request before trying again.</p>';
-    hosting_catalog_portal_form($attempt,false,$query['page'],$query['billing']);echo '</section>';
+    hosting_catalog_portal_form($attempt,false,$query['page'],$query['billing'],$query['category']);echo '</section>';
 }
-if ($query['tab']==='offers') hosting_catalog_billing_pages($page,$query,true);
+if ($query['tab']==='offers') hosting_catalog_billing_pages($page,$query,true,$query['category']);
 else {
     echo '<nav class="button-row" aria-label="Hosting pages">';
     if ($query['page']>1) echo '<a class="btn outline" href="'.esc(studio_url(['hosting'=>$query['tab'],'p'=>$query['page']-1])).'">Previous</a>';

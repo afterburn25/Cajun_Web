@@ -82,7 +82,7 @@ try {
     $plan=service_plans_create(hcc_id(1),$terms,$password);$plan=service_plans_change(hcc_id(1),$plan->revision(),hcc_id(2),'activate',[],$password);
     provider_plan_catalog_prepare($password);$config=['reseller_id'=>42,'type'=>'7001','label'=>'Synthetic owner account','region'=>'Reviewed region','limits'=>['websites'=>1],'cost'=>['amount'=>'9.87','currency'=>'USD','period_months'=>1,'tax'=>'unknown','basis'=>'per-package','reference'=>'PRIVATE_COST_REFERENCE']];
     provider_plan_catalog_save(hcc_id(10),hcc_id(1),$plan->revision(),$plan->fingerprint(),null,$profile,1,$config,7,true,$password);
-    hosting_catalog_prepare($password);payments_migrate($password);attempts_migrate($password);ledger_migrate($password);service_plans_checkout_migrate($password);recurring_billing_migrate($password);recurring_billing_checkout_migrate($password);
+    hosting_catalog_prepare($password);hosting_storefront_prepare($password);payments_migrate($password);attempts_migrate($password);ledger_migrate($password);service_plans_checkout_migrate($password);recurring_billing_migrate($password);recurring_billing_checkout_migrate($password);
     $stage='setup';$before=hcc_state();hcc_ok('Unprepared checkout readiness is a no-write false result',!hcc_ready()&&hcc_state()===$before);
     db()->exec('CREATE TABLE hcc_hosting_checkout_unknown (id INT PRIMARY KEY) ENGINE=InnoDB');$before=hcc_state();hcc_deny('Unknown unprepared checkout namespace refuses setup',fn()=>hosting_checkout_prepare($password));hcc_ok('Unknown namespace refusal preserves rows',hcc_state()===$before);db()->exec('DROP TABLE hcc_hosting_checkout_unknown');
     $sessionBeforeDenial=$_SESSION; $_SESSION['last_activity']=time()-1801;

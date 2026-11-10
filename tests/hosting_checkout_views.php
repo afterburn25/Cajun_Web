@@ -34,6 +34,7 @@ foreach([
     'includes/layout/plans.php'=>['service_plans_cadences','service_plans_terms_view','service_plans_agreement_history'],
     'includes/layout/recurring_billing.php'=>['recurring_ui_money','recurring_ui_hidden','recurring_ui_input','recurring_ui_pages','recurring_ui_terms','recurring_ui_command_label','recurring_ui_invoice_card','recurring_ui_detail'],
     'app/hosting/catalog_checkout.php'=>['hosting_checkout_reject_contact','hosting_checkout_projection'],
+    'app/hosting/catalog_login.php'=>['hosting_catalog_login_destination'],
     'portal/controllers/hosting_catalog.php'=>['hosting_catalog_portal_query','hosting_catalog_portal_action','hosting_catalog_portal_form'],
 ] as $file=>$names)foreach($names as $name)hcv_load_function(CWP_CODE_ROOT.'/'.$file,$name,$name==='hosting_catalog_portal_action');
 // Reuse the existing pure commercial fixture, without executing its standalone suite.

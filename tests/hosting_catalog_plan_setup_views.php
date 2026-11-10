@@ -45,6 +45,19 @@ final class HsvRedirect extends Exception {}
 function redirect(string $url): never {$GLOBALS['redirect']=$url;throw new HsvRedirect();}
 function recurring_billing_locked(callable $call): mixed {$GLOBALS['calls'][]='lock';return $call();}
 function hosting_catalog_ready(): bool {return true;}
+function hosting_storefront_ready(): bool {return true;}
+function hosting_storefront_slug(mixed $value): string {if(!is_string($value)||!preg_match('/\A[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\z/',$value))throw new InvalidArgumentException('Invalid category.');return $value;}
+function hosting_storefront_category_projection(array $category): array {return ['slug'=>$category['slug'],'label'=>$category['label'],'summary'=>$category['summary'],'required_family'=>$category['required_family'],'purchase_mode'=>$category['purchase_mode'],'revision'=>$category['revision'],'sha256'=>hash('sha256',json_encode($category,JSON_THROW_ON_ERROR))];}
+function hosting_storefront_current_category(string $slug): ?array {
+    if(!in_array($slug,['shared-hosting','vps-hosting'],true))return null;
+    return ['format'=>1,'id'=>str_repeat($slug==='shared-hosting'?'5':'6',32),'slug'=>$slug,'revision'=>1,'label'=>$slug==='shared-hosting'?'Shared Hosting':'VPS Hosting','summary'=>$slug==='shared-hosting'?'Managed Shared plans.':'VPS is not available online.','required_family'=>$slug==='shared-hosting'?'hosting':'vps','purchase_mode'=>$slug==='shared-hosting'?'online':'unavailable','created_by'=>1,'created_at'=>1700000000,'sha256'=>str_repeat($slug==='shared-hosting'?'7':'8',64)];
+}
+function hosting_storefront_current_classification(int $product): ?array {return ['state'=>'bound','category_slug'=>'shared-hosting','product_id'=>$product,'sha256'=>str_repeat('9',64)];}
+function hosting_storefront_binding_preview(int $product,string $slug): array {
+    $GLOBALS['calls'][]=['category-preview',$product,$slug];$category=hosting_storefront_current_category($slug);if(!$category||$product!==7||$category['required_family']!=='hosting')throw new InvalidArgumentException('Category mismatch.');
+    return ['review_sha256'=>str_repeat('c',64),'product'=>['id'=>$product,'revision'=>2,'family'=>'hosting'],'category'=>hosting_storefront_category_projection(array_diff_key($category,['sha256'=>true])),'current_sha256'=>str_repeat('9',64)];
+}
+function hosting_storefront_bind(string $id,int $product,string $slug,string $review,string $password): array {$GLOBALS['calls'][]=['category-bind',$id,$product,$slug,$review,$password];return ['id'=>$id];}
 function provider_catalog_import_ready(): bool {return true;}
 function provider_catalog_variant_ready(): bool {return false;}
 function catalog_ready(): bool {return true;}
@@ -77,6 +90,11 @@ try {
     $_POST=hsv_post();$_GET=[];$_SERVER['REQUEST_METHOD']='POST';
     $intent=hosting_catalog_admin_intent('hosting_catalog_finish_plan',$_POST);
     hsv_ok('Setup action is admitted without removing existing publication or request actions',in_array('hosting_catalog_finish_plan',hosting_catalog_admin_actions(),true)&&in_array('hosting_catalog_publish',hosting_catalog_admin_actions(),true)&&in_array('hosting_catalog_convert',hosting_catalog_admin_actions(),true));
+    $categoryPost=['action'=>'hosting_catalog_category_preview','classification_id'=>str_repeat('d',32),'product_id'=>'7','category_slug'=>'shared-hosting'];
+    $categoryIntent=hosting_catalog_admin_intent('hosting_catalog_category_preview',$categoryPost);
+    hsv_ok('Category preview retains only exact product, category, and new history identity',$categoryIntent===['action'=>'hosting_catalog_category_preview','classification_id'=>str_repeat('d',32),'product_id'=>7,'category_slug'=>'shared-hosting']);
+    $bindPost=$categoryPost+['category_review_sha256'=>str_repeat('c',64),'confirm'=>'1','current_password'=>'owner-secret'];$bindPost['action']='hosting_catalog_category_bind';
+    hsv_ok('Category binding requires and retains the exact reviewed fingerprint',hosting_catalog_admin_intent('hosting_catalog_category_bind',$bindPost)['review_sha256']===str_repeat('c',64));
     hsv_ok('Intent retains five exact identities and digest',$intent['product_id']===7&&$intent['plan_id']===$_POST['plan_id']&&$intent['activation_event_id']===$_POST['activation_event_id']&&$intent['mapping_id']===$_POST['mapping_id']&&$intent['review_sha256']===$_POST['review_sha256']);
     hsv_ok('Details contain only client service terms',array_keys($intent['details'])===['inclusions','exclusions','limits','support']&&$intent['details']['limits']===['support_requests'=>4,'websites'=>1]);
     hsv_ok('Provider configuration excludes imported type and profile',array_keys($intent['configuration'])===['reseller_id','label','region','limits','cost']&&$intent['configuration']['reseller_id']===18);
@@ -136,16 +154,16 @@ try {
     $retired=$plan->append(str_repeat('4',32),'retire',1,1700000002,[]);$model['plans'][$intent['plan_id']]=['journal_json'=>$retired->json()];hsv_ok('Retired exact plan cannot be selected',hosting_catalog_admin_selected_plan($product,$intent['plan_id'])===null);
     $model['page_rows']=[];$data=hosting_catalog_admin_data(['product_id'=>'7','plan_id'=>$intent['plan_id']]);hsv_ok('Unavailable match gives local notice and preserves page',$data['selected_plan_id']===''&&$data['plan_notice']!==''&&$data['product']['id']===7);
     $model['plans'][$intent['plan_id']]=['journal_json'=>$plan->json()];$data=hosting_catalog_admin_data(['product_id'=>'7','plan_id'=>$intent['plan_id']]);
-    $_POST=[];$values=hosting_catalog_admin_values([]);$setup=hosting_catalog_setup_screen($product,[]);$preview=null;$previewError='';
-    $page=hsv_render(function()use($data,$values,$setup,$preview,$previewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
+    $_POST=[];$values=hosting_catalog_admin_values([]);$setup=hosting_catalog_setup_screen($product,[]);$preview=null;$previewError='';$categoryPreview=null;$categoryPreviewError='';
+    $page=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
     hsv_ok('Actual offers view keeps original chooser and explicit preview action',str_contains($page,'data-hosting-plan-setup')&&str_contains($page,'name="action" value="hosting_catalog_preview"')&&str_contains($page,'value="'.$intent['plan_id'].'" selected'));
     hsv_ok('Creating a plan never renders an automatic publish submission',!str_contains($page,'name="action" value="hosting_catalog_publish"'));
     hsv_ok('Actual offers view renders the setup section once',substr_count($page,'id="finish-hosting-offer"')===1);
     $_POST=hsv_post();$model['preview_error']=true;$setup=hosting_catalog_setup_screen(null,$_POST);$data['ready']=false;
-    $notReady=hsv_render(function()use($data,$values,$setup,$preview,$previewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
+    $notReady=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
     hsv_ok('Unprepared history page retains failed setup form alongside preparation',str_contains($notReady,'Enable hosting offers')&&str_contains($notReady,'name="mapping_id" value="'.$_POST['mapping_id'].'"')&&str_contains($notReady,'disabled>Create matching plan'));
     $data['ready']=true;$data['product']=null;
-    $noProduct=hsv_render(function()use($data,$values,$setup,$preview,$previewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
+    $noProduct=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
     hsv_ok('Missing selected product still retains rejected setup fields',str_contains($noProduct,'data-hosting-finish-plan')&&str_contains($noProduct,'Email support within two business days'));
     $model['preview_error']='pdo';$pdoPropagated=false;
     try {hosting_catalog_setup_screen(null,$_POST);} catch (PDOException) {$pdoPropagated=true;}

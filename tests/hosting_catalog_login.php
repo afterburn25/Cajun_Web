@@ -49,8 +49,14 @@ try{
         hcl_ok('Invalid digest falls back to local offers '.$i,hosting_catalog_login_destination(['hosting'=>'checkout','offer'=>$id,'offer_sha256'=>$bad])===['hosting'=>'offers']);
     }
     foreach(['',null,[],false,'synthetic'] as $i=>$support)hcl_ok('Any support query key discards hosting destination '.$i,hosting_catalog_login_destination($selected+['support'=>$support])===[]);
-    foreach(['1'=>1,'42'=>42,'100000'=>100000] as $input=>$page)hcl_ok('Offers pagination admits bounded page '.$page,hosting_catalog_login_destination(['hosting'=>'offers','p'=>(string)$input]+$private)===['hosting'=>'offers','p'=>$page]);
-    foreach(['0','01','-1','100001','9999999','1.0',"1\n",[],null,42] as $i=>$page)hcl_ok('Invalid offers page defaults to one '.$i,hosting_catalog_login_destination(['hosting'=>'offers','p'=>$page])===['hosting'=>'offers','p'=>1]);
+    foreach(['1'=>1,'42'=>42,'100000'=>100000] as $input=>$page)hcl_ok('Offers pagination admits bounded page '.$page,hosting_catalog_login_destination(['hosting'=>'offers','p'=>(string)$input]+$private)===['hosting'=>'offers','category'=>'shared-hosting','billing'=>'all','p'=>$page]);
+    foreach(['0','01','-1','100001','9999999','1.0',"1\n",[],null,42] as $i=>$page)hcl_ok('Invalid offers page defaults to one '.$i,hosting_catalog_login_destination(['hosting'=>'offers','p'=>$page])===['hosting'=>'offers','category'=>'shared-hosting','billing'=>'all','p'=>1]);
+    hcl_ok('Offers destination retains only a valid category and billing filter',hosting_catalog_login_destination(['hosting'=>'offers','category'=>'vps-hosting','billing'=>'annually','p'=>'2']+$private)===['hosting'=>'offers','category'=>'vps-hosting','billing'=>'annually','p'=>2]);
+    hcl_ok('Malformed offers filters fall back to the safe Shared catalog',hosting_catalog_login_destination(['hosting'=>'offers','category'=>'../admin','billing'=>'weekly'])===['hosting'=>'offers','category'=>'shared-hosting','billing'=>'all','p'=>1]);
+    $categorized=$selected+['category'=>'shared-hosting','config'=>str_repeat('c',64)];
+    $categorizedDestination=['hosting'=>'checkout','category'=>'shared-hosting','config'=>str_repeat('c',64),'offer'=>$id,'offer_sha256'=>$hash];
+    hcl_ok('Categorized checkout retains its exact configuration proof',hosting_catalog_login_destination($categorized)===$categorizedDestination);
+    foreach([['category'=>'shared-hosting'],['config'=>str_repeat('c',64)],['category'=>'../admin','config'=>str_repeat('c',64)],['category'=>'shared-hosting','config'=>str_repeat('C',64)]] as $i=>$extra) hcl_ok('Partial or malformed checkout configuration falls back to offers '.$i,hosting_catalog_login_destination($selected+$extra)===['hosting'=>'offers']);
     $expected=site_url('portal/index.php').'?'.http_build_query($selected);
     $result=hcl_action($selected+$private);
     hcl_ok('Actual login branch preserves exact offer and hash after success',$result['redirects']===[$expected]&&$result['error']==='');
@@ -68,7 +74,7 @@ try{
     hcl_ok('Malformed login input never reaches authentication or redirect',$result['credentials']===[]&&$result['redirects']===[]&&$result['error']!=='');
     $result=hcl_action($selected+['support'=>'synthetic'],support:['session'=>['id'=>'synthetic'],'actor'=>['id'=>2]]);
     hcl_ok('Resolved support action cannot authenticate or redirect into checkout',$result['credentials']===[]&&$result['redirects']===[]&&$result['trace']===['support_csrf','ready','support_blocked']&&$result['error']!=='');
-    foreach([[$private,[]],[['hosting'=>'checkout','offer'=>'bad','offer_sha256'=>$hash],['hosting'=>'offers']],[['hosting'=>'offers','p'=>'42']+$private,['hosting'=>'offers','p'=>42]]] as $i=>[$query,$destination]){
+    foreach([[$private,[]],[['hosting'=>'checkout','offer'=>'bad','offer_sha256'=>$hash],['hosting'=>'offers']],[['hosting'=>'offers','p'=>'42']+$private,['hosting'=>'offers','category'=>'shared-hosting','billing'=>'all','p'=>42]]] as $i=>[$query,$destination]){
         $result=hcl_action($query);$local=site_url('portal/index.php').($destination?'?'.http_build_query($destination):'');
         hcl_ok('Actual login discards unapproved destination data '.$i,$result['redirects']===[$local]&&$result['error']==='');
     }

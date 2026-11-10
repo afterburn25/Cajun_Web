@@ -72,6 +72,7 @@ function provider_catalog_variant_create(string $requestId,int $selectedId,int $
         query('INSERT INTO '.table('catalog_provider_variants').' (id,canonical_import_id,canonical_product_id,product_id,document_json,document_sha256,actor_id,created_at,media_id,media_revision) VALUES (?,?,?,?,?,?,?,?,NULL,0)',[$input['id'],$origin['id'],$origin['product_id'],$product,$bytes,$hash,(int)$actor['id'],gmdate('Y-m-d H:i:s',$doc['created_epoch'])]);
         save_setting('provider_catalog_variant_count',(string)($count+1));
         catalog_audit((int)$actor['id'],'provider_variant.create','Variant '.$input['id'].' product '.$product.' source '.$hash);
+        hosting_storefront_classify_import($product,$actor);
         return $product;
     }));
 }
