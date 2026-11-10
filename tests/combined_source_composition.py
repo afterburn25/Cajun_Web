@@ -136,6 +136,11 @@ UX08_FIXTURE_DEPENDENCY_MODIFIED = frozenset((
     'tests/hosting_checkout_native.php',
     'tests/hosting_checkout_purchases_native.php',
 ))
+UX08_BROWSER_NAVIGATION_BASE = 'a52a3b4aab527aa95ca1afb6f54360caa3063534'
+UX08_BROWSER_NAVIGATION_BASE_TREE = 'eac7d1e7c5cc5bdf489846e0dd07191b93870eae'
+UX08_BROWSER_NAVIGATION_SOURCE = 'bdba2c03622d9de4e8fdc99ecd11820c497a7c12'
+UX08_BROWSER_NAVIGATION_SOURCE_TREE = 'def24e13ff1bda9e7c2f42507a8a9344a4c0c717'
+UX08_BROWSER_NAVIGATION_PATH = 'tests/release_cases.py'
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1588,6 +1593,7 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_ux08_browser_navigation(root, path, current)
     current = project_ux09_commercial_snapshot(root, path, current)
     if path not in UX09_FIXTURE_RECEIPT_MODIFIED:
         return current
@@ -1627,6 +1633,39 @@ def project_ux09_identity_snapshot(root, path, current):
     require(current == source and digest(current) == UX09_IDENTITY_SNAPSHOT_SHA256[path],
             'Current UX-09 identity-snapshot successor changed before predecessor projection: ' + path)
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
+
+
+def validate_ux08_browser_navigation_source(root):
+    """Bind the installed-browser contract to the native Hosting disclosure."""
+    require(git(root, 'rev-parse', UX08_BROWSER_NAVIGATION_BASE + '^{tree}').decode().strip()
+            == UX08_BROWSER_NAVIGATION_BASE_TREE
+            and git(root, 'rev-parse', UX08_BROWSER_NAVIGATION_SOURCE + '^{tree}').decode().strip()
+            == UX08_BROWSER_NAVIGATION_SOURCE_TREE, 'UX-08 browser-navigation source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_BROWSER_NAVIGATION_BASE,
+        UX08_BROWSER_NAVIGATION_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_BROWSER_NAVIGATION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_BROWSER_NAVIGATION_BASE, UX08_BROWSER_NAVIGATION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_BROWSER_NAVIGATION_PATH],
+            'UX-08 browser-navigation source changed a different path or status set')
+    base_entries = entries(root, UX08_BROWSER_NAVIGATION_BASE)
+    source_entries = entries(root, UX08_BROWSER_NAVIGATION_SOURCE)
+    require(ordinary(root, UX08_BROWSER_NAVIGATION_PATH)
+            == git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_SOURCE + ':'
+                   + UX08_BROWSER_NAVIGATION_PATH)
+            and mode(root, UX08_BROWSER_NAVIGATION_PATH)
+            == base_entries[UX08_BROWSER_NAVIGATION_PATH][0]
+            == source_entries[UX08_BROWSER_NAVIGATION_PATH][0] == '100644',
+            'UX-08 browser-navigation source identity changed')
+
+
+def project_ux08_browser_navigation(root, path, current):
+    """Restore the pre-disclosure browser assertion for older source proofs."""
+    if path != UX08_BROWSER_NAVIGATION_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_SOURCE + ':' + path)
+    require(current == source, 'Current UX-08 browser-navigation source changed')
+    return git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_BASE + ':' + path)
 
 
 def validate_ux08_fixture_dependency_source(root):
@@ -2070,6 +2109,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_browser_navigation_source(root)
     validate_ux08_fixture_dependency_source(root)
     validate_ux08_artifact_proof_source(root)
     validate_ux08_review_source(root)
@@ -2349,6 +2389,7 @@ def verify_current(root):
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
+        {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
