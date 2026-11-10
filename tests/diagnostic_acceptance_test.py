@@ -29,9 +29,10 @@ def main():
     strict = reg.discover_strict_modules()
     registry = [m[1] for m in reg.MODULES]
     ok('Registry lists every strict *_cases module in order', registry == strict)
-    ok('Registry covers all 59 current strict modules', len(registry) == 59)
-    ok('Late finance/contact modules cannot be omitted', registry[-3:] == [
-        'software_commerce_cases', 'license_financing_cases', 'contacts_cases'])
+    ok('Registry covers all 60 current strict modules', len(registry) == 60)
+    ok('Late finance/contact/identity modules cannot be omitted', registry[-4:] == [
+        'software_commerce_cases', 'license_financing_cases', 'contacts_cases',
+        'client_identity_cases'])
 
     keys = [m[0] for m in reg.MODULES]
     ok('Module keys are unique', len(set(keys)) == len(keys))
@@ -51,7 +52,7 @@ def main():
     ok('Every group has a repair assignment', all(g in reg.ASSIGNMENTS for g in reg.GROUPS))
     required_groups = {'website', 'installer', 'portal', 'billing', 'mail', 'stackcp', 'security'}
     ok('Required categories are covered', required_groups <= set(reg.GROUPS))
-    expected_counts = {'website': 2, 'installer': 2, 'portal': 3, 'billing': 9, 'mail': 9,
+    expected_counts = {'website': 2, 'installer': 2, 'portal': 4, 'billing': 9, 'mail': 9,
                        'twentyi-inventory': 9, 'twentyi-domains': 9,
                        'twentyi-packages': 10, 'stackcp': 2, 'security': 4}
     ok('Exact current group partition is retained',

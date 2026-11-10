@@ -148,6 +148,7 @@ MODULE_SPECS = {
     'software_commerce_cases': ('software-commerce', 'billing', []),
     'license_financing_cases': ('license-financing', 'billing', ['software-commerce']),
     'contacts_cases': ('contacts', 'portal', ['recurring-billing', 'registration-drafts', 'software-commerce', 'license-financing', 'database-updates']),
+    'client_identity_cases': ('client-identity', 'portal', ['contacts']),
 }
 
 STRICT_MODULES = discover_strict_modules()
