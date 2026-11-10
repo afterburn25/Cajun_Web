@@ -123,6 +123,19 @@ UX08_ARTIFACT_PROOF_BASE_TREE = 'da9a8f106d824ff7f7bb9a08f0f2ef105b21eb75'
 UX08_ARTIFACT_PROOF_SOURCE = '01804464017ef444d9e2c24c913a14930d258f3c'
 UX08_ARTIFACT_PROOF_SOURCE_TREE = '116501633cc00b6e47f58819056f0e58f4d40d68'
 UX08_ARTIFACT_PROOF_PATH = 'tests/acceptance_artifacts_test.py'
+UX08_FIXTURE_DEPENDENCY_BASE = 'ae53cb070b1753b2b0c639ec1187ba2bcb3ebd05'
+UX08_FIXTURE_DEPENDENCY_BASE_TREE = '9c652b42feafd236816058a0f1f2576868fb1d40'
+UX08_FIXTURE_DEPENDENCY_SOURCE = '7e2f608f0c1c0fea9f28d15209ceb6f7b15eab3f'
+UX08_FIXTURE_DEPENDENCY_SOURCE_TREE = 'bf81d5a83003569bf220abb22031b24a1603e426'
+UX08_FIXTURE_DEPENDENCY_MODIFIED = frozenset((
+    'tests/hosting_catalog_billing_native.php',
+    'tests/hosting_catalog_native.php',
+    'tests/hosting_catalog_plan_setup_native.php',
+    'tests/hosting_catalog_purchase_native.php',
+    'tests/hosting_catalog_variants_native.php',
+    'tests/hosting_checkout_native.php',
+    'tests/hosting_checkout_purchases_native.php',
+))
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1616,6 +1629,38 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_fixture_dependency_source(root):
+    """Bind the exact seven native fixtures that load storefront setup."""
+    require(git(root, 'rev-parse', UX08_FIXTURE_DEPENDENCY_BASE + '^{tree}').decode().strip()
+            == UX08_FIXTURE_DEPENDENCY_BASE_TREE
+            and git(root, 'rev-parse', UX08_FIXTURE_DEPENDENCY_SOURCE + '^{tree}').decode().strip()
+            == UX08_FIXTURE_DEPENDENCY_SOURCE_TREE, 'UX-08 fixture-dependency source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_FIXTURE_DEPENDENCY_BASE,
+        UX08_FIXTURE_DEPENDENCY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_FIXTURE_DEPENDENCY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_FIXTURE_DEPENDENCY_BASE, UX08_FIXTURE_DEPENDENCY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_FIXTURE_DEPENDENCY_MODIFIED)]
+            and UX08_FIXTURE_DEPENDENCY_MODIFIED <= UX08_STOREFRONT_MODIFIED,
+            'UX-08 fixture-dependency source changed a different path or status set')
+    base_entries = entries(root, UX08_FIXTURE_DEPENDENCY_BASE)
+    source_entries = entries(root, UX08_FIXTURE_DEPENDENCY_SOURCE)
+    for path in sorted(UX08_FIXTURE_DEPENDENCY_MODIFIED):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-08 fixture-dependency source identity changed: ' + path)
+
+
+def project_ux08_fixture_dependency(root, path, current):
+    """Restore the pre-fixture-dependency bytes for older UX-08 receipts."""
+    if path not in UX08_FIXTURE_DEPENDENCY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
+    require(current == source, 'Current UX-08 fixture-dependency source changed: ' + path)
+    return git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_BASE + ':' + path)
+
+
 def validate_ux08_artifact_proof_source(root):
     """Bind the five exact artifact predecessor projections exposed by Linux CI."""
     require(git(root, 'rev-parse', UX08_ARTIFACT_PROOF_BASE + '^{tree}').decode().strip()
@@ -1639,6 +1684,7 @@ def validate_ux08_artifact_proof_source(root):
 
 def project_ux08_artifact_proof(root, path, current):
     """Restore the exact pre-artifact-proof helper for older source proofs."""
+    current = project_ux08_fixture_dependency(root, path, current)
     if path != UX08_ARTIFACT_PROOF_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_ARTIFACT_PROOF_SOURCE + ':' + path)
@@ -1821,6 +1867,13 @@ def project_ux08_storefront_repair_input(root, path, current):
         return current
     source = git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', UX08_STOREFRONT_BASE + ':' + path)
+    if path in UX08_FIXTURE_DEPENDENCY_MODIFIED:
+        fixture_source = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
+        fixture_base = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_BASE + ':' + path)
+        require(fixture_base == source,
+                'UX-08 fixture repair base differs from storefront source: ' + path)
+        if current == fixture_source:
+            current = fixture_base
     if current == source:
         return base
     require(current == base, 'Unexpected UX-08 storefront repair input: ' + path)
@@ -2017,6 +2070,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_fixture_dependency_source(root)
     validate_ux08_artifact_proof_source(root)
     validate_ux08_review_source(root)
     validate_ux08_storefront_source(root)
