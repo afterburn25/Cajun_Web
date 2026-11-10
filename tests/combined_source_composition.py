@@ -1815,9 +1815,22 @@ def reconstruct_adapter(data, path, current):
     return original
 
 
+def project_ux08_storefront_repair_input(root, path, current):
+    """Accept exact storefront or base bytes before an older repair inverse."""
+    if path not in UX08_STOREFRONT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_STOREFRONT_BASE + ':' + path)
+    if current == source:
+        return base
+    require(current == base, 'Unexpected UX-08 storefront repair input: ' + path)
+    return current
+
+
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_ux08_storefront_repair_input(Path(__file__).resolve().parents[1], path, current)
     row = data['integration_repairs'][path]
     require(digest(current) == row['current_sha256'] == REPAIR_SHA256[path],
             'Current integration repair changed: ' + path)
