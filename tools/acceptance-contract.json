@@ -717,7 +717,7 @@
       "site/portal/controllers/actions.php": "b429615c2577f0d7a47160cf043719caf3400e1d97424e3a545e35eaa65a7da1",
       "site/portal/views/auth.php": "a1b875bad315ac56c65e87761d60371baffebf7f3d18a09e5fc6de6e037a05e3",
       "tests/client_identity_policy.php": "f613746da519f5ea009d1cad8c7c7736bc6a3e93ff5cabae2e86ace85baca436",
-      "tests/client_identity_native.php": "74b25adc1dcd6028a7ef332de1aa0dbc00fba285139ff40d5eeab77ada36555b",
+      "tests/client_identity_native.php": "cf1204220ff950783a3774985ee25784cd0462599d1424c8f6f719dc462ad68b",
       "tests/client_identity_cases.py": "7f49245e4947acf80f3245d7c4dc46d456edc9f1323e40756c340ad12fa5def7",
       "tests/browser_acceptance.py": "e49534668d13ba62f06747e9ce47438b7e02d5f5a66de26c40ab21b69ac55564"
     },
