@@ -43,6 +43,7 @@ def main():
     source = {path: (runner.ROOT/path).read_text(encoding='utf-8') for path in (
         'site/admin/controllers/actions.php', 'site/admin/controllers/hosting_purchases.php',
         'site/app/hosting/checkout_purchases_views.php', 'site/app/billing/ledger.php',
+        'site/database/migrations/hosting_payments_migrate.php',
         'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php')}
     check('Owner payment reconciliation is a shipping CSRF-routed confirmed action',
           "str_starts_with($action,'hosting_payment_')" in source['site/admin/controllers/actions.php']
@@ -53,6 +54,13 @@ def main():
     check('Every ledger writer serializes against unresolved hosting captures',
           'function ledger_hosting_attempt_assert_clear' in source['site/app/billing/ledger.php']
           and 'ledger_hosting_attempt_assert_clear((int)$i[\'id\'],$hostingAttempt);' in source['site/app/billing/ledger.php'])
+    migration = source['site/database/migrations/hosting_payments_migrate.php']
+    check('Hosting payment setup validates checkout readiness under its owning lock and transaction',
+          'staff_locked(function()use($password):void {' in migration
+          and '$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());' in migration
+          and migration.index('staff_locked(function()use($password):void {')
+              < migration.index('$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());')
+              < migration.index("if(!$checkoutReady||setting('gateway_receipts_schema_version')!=='1')"))
     for name in ('gateway_receipts_schema.php', 'hosting_payments_schema.php'):
         schema = source['site/database/schema/' + name]
         check(name + ' requires same-database foreign-key targets',

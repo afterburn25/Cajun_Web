@@ -444,7 +444,7 @@ function setup_expected_files(): array { return [
     'database/migrations/hosting_fulfillment_migrate.php'=>'46dee6effdfb41ed4e88afbbe3f70d540bb4c32ad6520b69b52cf688d577c35b',
     'database/migrations/hosting_operations_migrate.php'=>'88a024b22b0e27cbd740fec5486e1def0503fe5c810be5f72eb3f4e17f927e28',
     'database/migrations/hosting_order_links_migrate.php'=>'62c4e80fc7d4c961a7ba659aa9fb6ee91f05db0b1dae83287f9a09280f75748f',
-    'database/migrations/hosting_payments_migrate.php'=>'6b27dafe2a3cfabad895d0e3aa28b5c0cbec1af1c0ee8205a2d96eb344aa7548',
+    'database/migrations/hosting_payments_migrate.php'=>'6947d2bf7a90c07b43a4c935b2840487d715113168b0091be63174bdb1626dc0',
     'database/migrations/hosting_reconciliation_migrate.php'=>'9db169b2f946a8566d76760325e5a340f787416852d89bd52c583430d0970f81',
     'database/migrations/hosting_records_migrate.php'=>'28e1b716875ae3219335994dac54fe2762ea9c29550df828646aacbecf971098',
     'database/migrations/hosting_storefront_migrate.php'=>'c2cd727d38ae07a7baa4ce6e23a1b5e2b344d43e7735ab44ac8e0862f2868629',

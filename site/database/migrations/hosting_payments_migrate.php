@@ -7,7 +7,8 @@ function hosting_payments_prepare(#[\SensitiveParameter] string $password):void 
     if(db()->inTransaction())throw new LogicException('Hosting payment setup cannot inherit a transaction.');
     staff_locked(function()use($password):void {
         unset($GLOBALS['cwp_settings']);$actor=payments_owner($password);
-        if(!hosting_checkout_ready()||setting('gateway_receipts_schema_version')!=='1')throw new RuntimeException('Prepare hosting checkout and verified gateway receipts first.');
+        $checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());
+        if(!$checkoutReady||setting('gateway_receipts_schema_version')!=='1')throw new RuntimeException('Prepare hosting checkout and verified gateway receipts first.');
         foreach(hosting_payments_schema(config()['db']['prefix']) as $name=>$sql){
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
             hosting_payments_validate_schema($name,$sql);
