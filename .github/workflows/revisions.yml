@@ -2,10 +2,10 @@ name: Revision-history model checks
 
 on:
   pull_request:
-    paths: ['foundation/revisions/**', 'tests/revisions/**', '.github/workflows/revisions.yml']
+    paths: ['foundation/revisions/**', 'site/includes/foundation/revisions/**', 'site/app/settings/revisions.php', 'site/admin/views/studio/history.php', 'site/assets/css/admin.css', 'tests/revisions/**', 'tools/build.py', '.github/workflows/revisions.yml']
   push:
     branches: [main, 'devin/non20i-*']
-    paths: ['foundation/revisions/**', 'tests/revisions/**', '.github/workflows/revisions.yml']
+    paths: ['foundation/revisions/**', 'site/includes/foundation/revisions/**', 'site/app/settings/revisions.php', 'site/admin/views/studio/history.php', 'site/assets/css/admin.css', 'tests/revisions/**', 'tools/build.py', '.github/workflows/revisions.yml']
   workflow_dispatch:
 
 permissions:
@@ -34,8 +34,9 @@ jobs:
           docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/revisions/*.php tests/revisions/*.php; do php -l "$source"; done
             php tests/revisions/run.php
+            php tests/revisions/integration.php
           '
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Isolated revision-model checks only. No persistence, permissions, admin UI or application integration is tested by this job.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Revision model plus offline application-adapter, canonical-mirror and escaped-view contracts. No database persistence, browser session or live operation is tested by this job.' >> "$GITHUB_STEP_SUMMARY"
