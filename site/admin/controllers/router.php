@@ -34,7 +34,7 @@ if($view==='studio-licenses'||(is_string($_POST['action']??null)&&(str_starts_wi
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
-if(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&(str_starts_with($_POST['action'],'hosting_catalog_')||str_starts_with($_POST['action'],'hosting_payment_')))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['proposals','proposal'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'proposal_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';

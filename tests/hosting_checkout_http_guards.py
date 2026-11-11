@@ -40,6 +40,24 @@ def main():
     deny('Oversized original report refuses', lambda: runner.validate_native(b' '*(256*1024+1), producer, '8.3'))
     deny('Altered producer label count refuses', lambda: runner.native_labels(producer + "\nhcc_ok('unexpected',true);"))
     check('Twelve exact unique capture names retained', len(runner.CAPTURES) == 12 and len(set(runner.CAPTURES)) == 12)
+    source = {path: (runner.ROOT/path).read_text(encoding='utf-8') for path in (
+        'site/admin/controllers/actions.php', 'site/admin/controllers/hosting_purchases.php',
+        'site/app/hosting/checkout_purchases_views.php', 'site/app/billing/ledger.php',
+        'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php')}
+    check('Owner payment reconciliation is a shipping CSRF-routed confirmed action',
+          "str_starts_with($action,'hosting_payment_')" in source['site/admin/controllers/actions.php']
+          and "function hosting_purchases_admin_action" in source['site/admin/controllers/hosting_purchases.php']
+          and "posted('confirm',1)!=='1'" in source['site/admin/controllers/hosting_purchases.php']
+          and "hosting_payment_reconcile(" in source['site/admin/controllers/hosting_purchases.php']
+          and "data-hosting-payment-reconcile" in source['site/app/hosting/checkout_purchases_views.php'])
+    check('Every ledger writer serializes against unresolved hosting captures',
+          'function ledger_hosting_attempt_assert_clear' in source['site/app/billing/ledger.php']
+          and 'ledger_hosting_attempt_assert_clear((int)$i[\'id\'],$hostingAttempt);' in source['site/app/billing/ledger.php'])
+    for name in ('gateway_receipts_schema.php', 'hosting_payments_schema.php'):
+        schema = source['site/database/schema/' + name]
+        check(name + ' requires same-database foreign-key targets',
+              'k.REFERENCED_TABLE_SCHEMA' in schema
+              and "$relation['REFERENCED_TABLE_SCHEMA']!==config()['db']['name']" in schema)
     old_root, old_web, old_site, old_sessions = runner.ROOT, runner.WEB, runner.SITE, runner.SESSIONS
     try:
         with tempfile.TemporaryDirectory(prefix='cwp-checkout-output-') as temp:

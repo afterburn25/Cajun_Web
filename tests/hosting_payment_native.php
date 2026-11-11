@@ -17,6 +17,7 @@ require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.ph
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';
 require_once __DIR__.'/../site/app/hosting/catalog_checkout.php';
 require_once __DIR__.'/../site/app/hosting/payments.php';
+require_once __DIR__.'/../site/app/billing/software_subscription_settle.php';
 require_once __DIR__.'/../site/database/migrations/gateway_receipts_migrate.php';
 require_once __DIR__.'/../site/database/migrations/hosting_payments_migrate.php';
 require_once __DIR__.'/../site/app/hosting/order_link_views.php';
@@ -37,6 +38,22 @@ function hp_deny(string $name,callable $work):void {try{$work();}catch(InvalidAr
 function hp_id(int $n):string{return str_pad(dechex($n),32,'0',STR_PAD_LEFT);}
 function hp_key(int $n):string{return hash('sha256','hosting-payment-attempt-'.$n);}
 function hp_count(string $name):int{return(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
+function hp_identifier(string $name):string {if(!preg_match('/\A[a-zA-Z][a-zA-Z0-9_]{0,63}\z/',$name))throw new LogicException('Invalid fixture identifier.');return '`'.$name.'`';}
+function hp_cross_schema_fk_refused(string $child,string $column,string $parent,string $parentColumn,callable $validate):void {
+    $database=config()['db']['name'];$foreign='cwp_hpay_foreign';$childTable=config()['db']['prefix'].$child;$parentTable=config()['db']['prefix'].$parent;
+    $relation=one('SELECT r.CONSTRAINT_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS r JOIN information_schema.KEY_COLUMN_USAGE k ON k.CONSTRAINT_SCHEMA=r.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME=r.CONSTRAINT_NAME AND k.TABLE_NAME=r.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.COLUMN_NAME=? AND k.REFERENCED_TABLE_NAME=?',[$childTable,$column,$parentTable]);
+    if(!$relation)throw new RuntimeException('Expected local fixture relationship missing.');$constraint=(string)$relation['CONSTRAINT_NAME'];
+    db()->exec('CREATE DATABASE '.hp_identifier($foreign));
+    try{
+        db()->exec('CREATE TABLE '.hp_identifier($foreign).'.'.hp_identifier($parentTable).' LIKE '.hp_identifier($database).'.'.hp_identifier($parentTable));
+        db()->exec('ALTER TABLE '.hp_identifier($childTable).' DROP FOREIGN KEY '.hp_identifier($constraint));
+        db()->exec('ALTER TABLE '.hp_identifier($childTable).' ADD CONSTRAINT '.hp_identifier($constraint).' FOREIGN KEY ('.hp_identifier($column).') REFERENCES '.hp_identifier($foreign).'.'.hp_identifier($parentTable).' ('.hp_identifier($parentColumn).') ON DELETE '.$relation['DELETE_RULE'].' ON UPDATE '.$relation['UPDATE_RULE']);
+        hp_deny('Cross-database '.$child.' relationship is refused before schema adoption',$validate);
+        db()->exec('ALTER TABLE '.hp_identifier($childTable).' DROP FOREIGN KEY '.hp_identifier($constraint));
+        db()->exec('ALTER TABLE '.hp_identifier($childTable).' ADD CONSTRAINT '.hp_identifier($constraint).' FOREIGN KEY ('.hp_identifier($column).') REFERENCES '.hp_identifier($database).'.'.hp_identifier($parentTable).' ('.hp_identifier($parentColumn).') ON DELETE '.$relation['DELETE_RULE'].' ON UPDATE '.$relation['UPDATE_RULE']);
+        $validate();
+    }finally{db()->exec('DROP DATABASE IF EXISTS '.hp_identifier($foreign));}
+}
 function hp_owner():void {$u=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];unset($GLOBALS['cwp_support']);$_GET=[];$_POST=[];}
 function hp_client(int $id=1):void {$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION=['client_id'=>$id,'client_auth'=>$c['auth_version'],'client_login'=>time(),'client_last'=>time()];unset($GLOBALS['cwp_support']);$_GET=[];$_POST=[];}
 function hp_state():string {
@@ -135,8 +152,15 @@ try {
     provider_plan_catalog_save(hp_id(10),hp_id(1),$plan->revision(),$plan->fingerprint(),null,$profile,1,$configuration,7,true,$password);
     hosting_catalog_prepare($password);hosting_storefront_prepare($password);payments_migrate($password);attempts_migrate($password);ledger_migrate($password);service_plans_checkout_migrate($password);recurring_billing_migrate($password);recurring_billing_checkout_migrate($password);hosting_checkout_prepare($password);
     gateway_receipts_prepare($password);hosting_payments_prepare($password);
+    $ledgerColumn=one('SHOW FULL COLUMNS FROM '.table('gateway_receipts').' WHERE Field=?',['ledger_entry_id']);
+    hp_ok('Gateway receipt ledger foreign key has the exact BIGINT UNSIGNED width',(string)($ledgerColumn['Type']??'')==='bigint(20) unsigned'||(string)($ledgerColumn['Type']??'')==='bigint unsigned');
+    hp_cross_schema_fk_refused('gateway_receipts','client_id','studio_clients','id','gateway_receipts_validate_schema');
+    $paymentSchemas=hosting_payments_schema(config()['db']['prefix']);
+    hp_cross_schema_fk_refused('hosting_payment_events','request_id','hosting_payment_charges','request_id',fn()=>hosting_payments_validate_schema('hosting_payment_events',$paymentSchemas['hosting_payment_events']));
     payments_save('production',0,['api_login_id'=>'SYNTHETICLOGIN','transaction_key'=>'1234567890ABCDEF','signature_key'=>str_repeat('a',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY'],$password);
     hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);
+    $sharedWebhook=authorize_net_webhook_hosting_gateway(['mode'=>'production','login'=>'SYNTHETICLOGIN']);
+    hp_ok('Shared webhook preserves the current hosting gateway revision',is_array($sharedWebhook)&&$sharedWebhook['mode']==='production'&&$sharedWebhook['revision']===1&&$sharedWebhook['account_sha256']===gateway_receipt_account_hash('SYNTHETICLOGIN'));
     $review=hosting_catalog_preview(hp_id(20),$product,hp_id(1),hp_policy());$publication=hosting_catalog_publish(hp_id(20),$product,hp_id(1),$review['review_sha256'],$password,hp_policy());
     $approved=hp_checkout($publication,30);$declined=hp_checkout($publication,31);$uncertain=hp_checkout($publication,32);$forged=hp_checkout($publication,33);$rotation=hp_checkout($publication,34);$sandboxRotation=hp_checkout($publication,35);
     hp_ok('Six actual Shared checkout confirmations begin as separate unpaid invoices',count(array_unique(array_column([$approved,$declined,$uncertain,$forged,$rotation,$sandboxRotation],'invoice_id')))==6&&hp_count('invoice_payments')===0&&array_reduce([$approved,$declined,$uncertain,$forged,$rotation,$sandboxRotation],static fn(bool$ok,array$row):bool=>$ok&&$row['invoice_status']==='issued'&&!$row['automatic_charge']&&!$row['provider_activation'],true));
@@ -160,6 +184,8 @@ try {
     hp_ok('Unknown authoritative readback fences the invoice for review',$uncertainStatus==='review'&&in_array($uncertainProjection['charge_state'],['uncertain','review'],true)&&$uncertainProjection['invoice_status']==='issued'&&$uncertainProjection['payment_stage']==='payment_review'&&hp_count('gateway_receipts')===1);
     hp_deny('Uncertain result refuses a second charge attempt',fn()=>hosting_payment_run(hp_id(32),1,hp_key(21),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token-2',hp_gateway('approved','8800021',$uncertain['invoice_id'],hp_id(32))));
     hp_ok('Refused uncertain retry is inert',hp_state()===$uncertainBefore);
+    hp_owner();$manualBefore=hp_state();hp_deny('Unresolved hosting capture blocks a concurrent manual invoice receipt',fn()=>ledger_receive($uncertain['invoice_id'],2500,'bank','Synthetic conflicting bank transfer',gmdate('Y-m-d'),hp_key(22),ledger_review_hash(ledger_invoice($uncertain['invoice_id']))));
+    hp_ok('Blocked manual receipt leaves the complete payment graph unchanged',hp_state()===$manualBefore);
     hp_owner();$reconciled=hosting_payment_reconcile(hp_id(32),'8800020',$password,hp_gateway('approved','8800020',$uncertain['invoice_id'],hp_id(32)));hp_client();
     hp_ok('Owner exact readback reconciliation settles the retained uncertain attempt',$reconciled==='paid'&&hosting_payment_projection(hp_id(32),1)['payment_stage']==='paid_setup_pending');
 
@@ -196,6 +222,9 @@ try {
     hp_owner();hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);$sandboxRotatedState=hp_state();$sandboxRotationCalls=0;
     hp_deny('Owner reconciliation refuses a sandbox intent after production activation',fn()=>hosting_payment_reconcile(hp_id(35),'8800060',$password,static function()use(&$sandboxRotationCalls):array{$sandboxRotationCalls++;throw new LogicException('Cross-environment transport must remain closed.');}));
     hp_ok('Sandbox to production refusal is inert before transport',$sandboxRotationCalls===0&&hp_state()===$sandboxRotatedState);
+
+    $stage='historical-owner-read';query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');$inactive=hosting_payment_source_locked(hp_id(30),1,false);hp_ok('Inactive client history remains available to the owner without reopening payment authority',$inactive['request_id']===hp_id(30)&&$inactive['client_id']===1);
+    hp_deny('Inactive client cannot initiate or project a new payment',fn()=>hosting_payment_source_locked(hp_id(30),1,true));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
 
     $stage='shared-lifecycle';hp_owner();service_orders_migrate($password);hosting_order_links_prepare($password);hosting_operations_migrate($password);hosting_reconciliation_migrate($password);provider_operations_migrate($password);hosting_fulfillment_migrate($password);hosting_fulfillment_confirmation_prepare($password);
     $agreement=service_plans_validate(service_plans_row($approved['agreement_id'],true),true);$order=service_orders_offer(hp_id(70),$approved['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$approved['invoice_id'],ledger_invoice_hash($invoice),$password);

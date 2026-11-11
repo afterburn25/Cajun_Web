@@ -4,6 +4,15 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/hosting/checkout_purchases.php';
 require_once CWP_CODE_ROOT.'/app/hosting/checkout_purchases_views.php';
 
+function hosting_purchases_admin_action(string $action):never {
+    if($action!=='hosting_payment_reconcile')throw new InvalidArgumentException('Unknown hosting payment action.');
+    $user=require_admin();
+    if(($user['role']??null)!=='owner'||support_current()||!staff_can('payments.manage',$user))throw new RuntimeException('Current owner financial access outside support is required.');
+    if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm the retained transaction before reconciliation.');
+    $state=hosting_payment_reconcile(posted('request_id',32),posted('transaction_id',30),'');
+    flash('Hosting payment reconciliation: '.str_replace('_',' ',$state).'.');redirect(admin_url('hosting-purchases'));
+}
+
 function hosting_purchases_admin_data(array $query): array {
     $user=require_admin();
     if (($user['role']??null)!=='owner'||support_current()||array_key_exists('support',$query)) throw new RuntimeException('Sign in as the owner outside support access.');

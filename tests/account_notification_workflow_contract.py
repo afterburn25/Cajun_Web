@@ -23,6 +23,17 @@ PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
 )
 PROTECTED_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/client_authority_native.php\n'
+PROTECTED_PAYMENT_ADDITIONS = (
+    '          CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log\n',
+    '          test ! -s qa/hosting-checkout-native.stderr.log\n',
+    '          CWP_TEST_HOSTING_PAYMENT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/hosting-payment-native.stdout.log 2> qa/hosting-payment-native.stderr.log\n',
+    '          test ! -s qa/hosting-payment-native.stderr.log\n',
+)
+PROTECTED_PAYMENT_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/software_commerce_native.php\n'
+PROTECTED_BROWSER_PREDECESSOR = '        run: .ci-venv/bin/python tests/browser_acceptance.py\n'
+PROTECTED_BROWSER_SUCCESSOR = ('        run: |\n'
+                               '          .ci-venv/bin/python tests/browser_acceptance.py\n'
+                               '          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite\n')
 IMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'
 PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
@@ -104,6 +115,16 @@ def validate(workflow, legacy, protected):
     protected_block = PROTECTED_ADDITIONS_AFTER + ''.join(PROTECTED_ADDITIONS)
     check('Reviewed UX-09 application commands are additive and ordered',
           protected.count(protected_block) == 1)
+    for addition in reversed(PROTECTED_PAYMENT_ADDITIONS):
+        check('Reviewed UX-08 application command is present exactly once',
+              protected_predecessor.count(addition) == 1)
+        protected_predecessor = protected_predecessor.replace(addition, '', 1)
+    payment_block = PROTECTED_PAYMENT_ADDITIONS_AFTER + ''.join(PROTECTED_PAYMENT_ADDITIONS)
+    check('Reviewed UX-08 native commands are additive and ordered', protected.count(payment_block) == 1)
+    check('Reviewed UX-08 browser continuation retains the original command first',
+          protected_predecessor.count(PROTECTED_BROWSER_SUCCESSOR) == 1)
+    protected_predecessor = protected_predecessor.replace(
+        PROTECTED_BROWSER_SUCCESSOR, PROTECTED_BROWSER_PREDECESSOR, 1)
     check('Protected complete application workflow retains its byte-identical predecessor',
           digest(protected_predecessor) == PROTECTED_SHA256)
     check('Workflow has ordinary indentation and no alternate YAML documents',
@@ -225,6 +246,10 @@ def self_test(root=ROOT):
         ('lost UX-09 policy command', protected.replace(PROTECTED_ADDITIONS[0], '', 1)),
         ('changed UX-09 native command', protected.replace('tests/client_identity_native.php',
                                                             'tests/client_identity_policy.php', 1)),
+        ('lost UX-08 payment command', protected.replace(PROTECTED_PAYMENT_ADDITIONS[2], '', 1)),
+        ('changed UX-08 browser continuation', protected.replace(
+            'tests/hosting_checkout_http_browser.py --full-suite',
+            'tests/hosting_checkout_http_browser.py', 1)),
         ('extra protected workflow command', protected.replace(
             PROTECTED_ADDITIONS[1], PROTECTED_ADDITIONS[1] + '          true # unreviewed command\n', 1)),
     ):

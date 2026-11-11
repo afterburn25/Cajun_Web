@@ -95,7 +95,7 @@ function hosting_payment_source_locked(string $request,int $client,bool $primary
         ||(int)$i['amount_cents']>99999999||(int)$v['id']!==(int)$i['id']||(int)$v['job_id']!==(int)$i['job_id']
         ||(int)$v['amount_cents']!==(int)$i['amount_cents']||$v['currency']!==$i['currency']||$v['reference']!==$i['reference']
         ||$v['title']!==$i['title']||$v['instructions']!==$i['instructions'])throw new RuntimeException('Hosting invoice identity changed.');
-    $account=service_plans_client_row($client,false);if((int)$account['active']!==1)throw new RuntimeException('The primary client account is inactive.');
+    $account=service_plans_client_row($client,false);if($primary&&(int)$account['active']!==1)throw new RuntimeException('The primary client account is inactive.');
     return ['request_id'=>$request,'client_id'=>$client,'project_id'=>(int)$i['job_id'],'agreement_id'=>$d['agreement_id'],'invoice_id'=>(int)$i['id'],
         'amount_cents'=>(int)$i['amount_cents'],'currency'=>$i['currency'],'invoice_sha256'=>ledger_invoice_hash($i),'invoice_status'=>$i['status'],
         'paid_cents'=>$balance['paid_cents'],'due_cents'=>$balance['due_cents'],'email'=>(string)$account['email'],'invoice'=>$i];
@@ -161,7 +161,7 @@ function hosting_payment_record_paid(string $request,int $client,string $attempt
         $origin=one('SELECT attempt_key FROM '.table('hosting_payment_attempts').' WHERE environment=? AND account_sha256=? AND transaction_id=? FOR UPDATE',[$current['mode'],$current['account_sha256'],$transactionId]);
         if($origin&&!hash_equals($origin['attempt_key'],$attemptKey))throw new RuntimeException('Gateway transaction belongs to another hosting attempt.');
         $requestHash=hash('sha256',gateway_receipt_json(['source'=>'hosting_checkout','request_id'=>$request,'client_id'=>$client,'invoice_id'=>$source['invoice_id'],'invoice_sha256'=>$source['invoice_sha256'],'attempt_key'=>$attemptKey]));
-        $entry=ledger_insert($source['invoice'],0,'gateway',$source['amount_cents'],'authorize_net','Verified hosting transaction '.$transactionId,gmdate('Y-m-d'),$attemptKey,$requestHash,hash('sha256','authorize-net|'.$transactionId));
+        $entry=ledger_insert($source['invoice'],0,'gateway',$source['amount_cents'],'authorize_net','Verified hosting transaction '.$transactionId,gmdate('Y-m-d'),$attemptKey,$requestHash,hash('sha256','authorize-net|'.$transactionId),null,$attemptKey);
         $receipt=gateway_receipt_record($source['invoice'],$entry,['environment'=>'production','account_sha256'=>$current['account_sha256'],'gateway_revision'=>$current['revision'],
             'transaction_id'=>$transactionId,'source'=>'hosting_checkout','source_id'=>$request,'attempt_key'=>$attemptKey,'transaction_status'=>$readback['transaction_status']],$readback);
         $now=gmdate('Y-m-d H:i:s');query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',['paid','Verified hosting gateway receipt '.$receipt['id'],$now,$source['invoice_id']]);
@@ -200,6 +200,7 @@ function hosting_payment_reconcile(string $request,string $transactionId,#[\Sens
         $source=hosting_payment_source_locked($request,(int)$charge['client_id'],false);return ['paid'=>false,'charge'=>$charge,'source'=>$source];
     }));
     if($snapshot['paid']){if((string)$snapshot['charge']['transaction_id']!==$transactionId)throw new RuntimeException('Paid hosting charge references a different transaction.');return 'already_paid';}
+    if($snapshot['charge']['transaction_id']!==null&&!hash_equals((string)$snapshot['charge']['transaction_id'],$transactionId))throw new RuntimeException('Retained hosting charge references a different transaction.');
     $gateway=hosting_anet_settings();$retained=hosting_payment_row_context($snapshot['charge']);
     if(!hosting_anet_context_matches($retained,$gateway))throw new RuntimeException('The retained payment intent belongs to a different gateway account, environment or revision.');
     $execute??=fn(string $method,array $body,array $context):array=>hosting_anet_execute($method,$body,$context);
