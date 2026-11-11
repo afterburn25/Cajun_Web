@@ -55,9 +55,9 @@ function hp_gateway_details(string $transaction,int $invoice,string $request,int
         'customer'=>['id'=>hosting_anet_customer_id($request),'email'=>'hosting-payment-client'.$client.'@example.invalid']]];
 }
 /** Closed gateway script. Every call verifies the exact nonsecret production context. */
-function hp_gateway(string $outcome,string $transaction,int $invoice,string $checkoutRequest,int $client=1,int $cents=2500):callable {
-    return static function(string $method,array $request,array $context)use($outcome,$transaction,$invoice,$checkoutRequest,$client,$cents):array{
-        if(($context['mode']??null)!=='production'||(int)($context['revision']??0)!==1
+function hp_gateway(string $outcome,string $transaction,int $invoice,string $checkoutRequest,int $client=1,int $cents=2500,string $mode='production'):callable {
+    return static function(string $method,array $request,array $context)use($outcome,$transaction,$invoice,$checkoutRequest,$client,$cents,$mode):array{
+        if(($context['mode']??null)!==$mode||(int)($context['revision']??0)<1
             ||!preg_match('/\A[a-f0-9]{64}\z/',(string)($context['account_sha256']??'')))throw new LogicException('Synthetic gateway context differs.');
         if($method==='createTransactionRequest'){
             $charge=$request['transactionRequest']??null;
@@ -138,8 +138,8 @@ try {
     payments_save('production',0,['api_login_id'=>'SYNTHETICLOGIN','transaction_key'=>'1234567890ABCDEF','signature_key'=>str_repeat('a',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY'],$password);
     hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);
     $review=hosting_catalog_preview(hp_id(20),$product,hp_id(1),hp_policy());$publication=hosting_catalog_publish(hp_id(20),$product,hp_id(1),$review['review_sha256'],$password,hp_policy());
-    $approved=hp_checkout($publication,30);$declined=hp_checkout($publication,31);$uncertain=hp_checkout($publication,32);$forged=hp_checkout($publication,33);
-    hp_ok('Four actual Shared checkout confirmations begin as separate unpaid invoices',count(array_unique(array_column([$approved,$declined,$uncertain,$forged],'invoice_id')))==4&&hp_count('invoice_payments')===0&&array_reduce([$approved,$declined,$uncertain,$forged],static fn(bool$ok,array$row):bool=>$ok&&$row['invoice_status']==='issued'&&!$row['automatic_charge']&&!$row['provider_activation'],true));
+    $approved=hp_checkout($publication,30);$declined=hp_checkout($publication,31);$uncertain=hp_checkout($publication,32);$forged=hp_checkout($publication,33);$rotation=hp_checkout($publication,34);$sandboxRotation=hp_checkout($publication,35);
+    hp_ok('Six actual Shared checkout confirmations begin as separate unpaid invoices',count(array_unique(array_column([$approved,$declined,$uncertain,$forged,$rotation,$sandboxRotation],'invoice_id')))==6&&hp_count('invoice_payments')===0&&array_reduce([$approved,$declined,$uncertain,$forged,$rotation,$sandboxRotation],static fn(bool$ok,array$row):bool=>$ok&&$row['invoice_status']==='issued'&&!$row['automatic_charge']&&!$row['provider_activation'],true));
 
     $stage='binding';hp_client();$initial=hosting_payment_projection(hp_id(30),1);$before=hp_state();
     $_GET=['payment'=>'success','transactionId'=>'999999999'];$returned=hosting_payment_projection(hp_id(30),1);$_GET=[];
@@ -184,6 +184,19 @@ try {
     finally{query('INSERT INTO '.table('audit').' ('.implode(',',array_keys($audit)).') VALUES ('.implode(',',array_fill(0,count($audit),'?')).')',array_values($audit));}
     hp_ok('Restoring exact receipt history restores fulfillment evidence',staff_locked(fn()=>staff_transaction(fn()=>ledger_fulfillment_evidence($approved['invoice_id'],1)))===$evidence);
 
+    $stage='gateway-rotation';hp_client();$rotationStatus=hosting_payment_run(hp_id(34),1,hp_key(50),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800050',$rotation['invoice_id'],hp_id(34)));
+    hp_ok('Production account rotation fixture retains one uncertain original-account intent',$rotationStatus==='review'&&hosting_payment_projection(hp_id(34),1)['payment_stage']==='payment_review');
+    hp_owner();payments_save('production',1,['api_login_id'=>'SYNTHETICLOGINB','transaction_key'=>'ABCDEF1234567890','signature_key'=>str_repeat('b',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY_B'],$password);unset($GLOBALS['cwp_settings']);$rotatedState=hp_state();$rotationCalls=0;
+    hp_deny('Owner reconciliation refuses an intent retained under a prior production account revision',fn()=>hosting_payment_reconcile(hp_id(34),'8800050',$password,static function()use(&$rotationCalls):array{$rotationCalls++;throw new LogicException('Rotated transport must remain closed.');}));
+    hp_ok('Production rotation refusal is inert before transport',$rotationCalls===0&&hp_state()===$rotatedState);
+
+    payments_save('sandbox',0,['api_login_id'=>'SYNTHETICSANDBOX','transaction_key'=>'0123456789ABCDEF','signature_key'=>str_repeat('c',128),'public_client_key'=>'SYNTHETIC_SANDBOX_KEY'],$password);hosting_payment_configure('sandbox',false,$password);unset($GLOBALS['cwp_settings']);hp_client();
+    $sandboxStatus=hosting_payment_run(hp_id(35),1,hp_key(60),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800060',$sandboxRotation['invoice_id'],hp_id(35),1,2500,'sandbox'));
+    hp_ok('Sandbox uncertainty remains an unpaid retained sandbox intent',$sandboxStatus==='review'&&hosting_payment_projection(hp_id(35),1)['invoice_status']==='issued');
+    hp_owner();hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);$sandboxRotatedState=hp_state();$sandboxRotationCalls=0;
+    hp_deny('Owner reconciliation refuses a sandbox intent after production activation',fn()=>hosting_payment_reconcile(hp_id(35),'8800060',$password,static function()use(&$sandboxRotationCalls):array{$sandboxRotationCalls++;throw new LogicException('Cross-environment transport must remain closed.');}));
+    hp_ok('Sandbox to production refusal is inert before transport',$sandboxRotationCalls===0&&hp_state()===$sandboxRotatedState);
+
     $stage='shared-lifecycle';hp_owner();service_orders_migrate($password);hosting_order_links_prepare($password);hosting_operations_migrate($password);hosting_reconciliation_migrate($password);provider_operations_migrate($password);hosting_fulfillment_migrate($password);hosting_fulfillment_confirmation_prepare($password);
     $agreement=service_plans_validate(service_plans_row($approved['agreement_id'],true),true);$order=service_orders_offer(hp_id(70),$approved['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$approved['invoice_id'],ledger_invoice_hash($invoice),$password);
     hp_client();$order=service_orders_decide(hp_id(70),1,0,hp_id(71),'accept',['domain_name'=>'paid.example','review_sha256'=>$order->fingerprint()],true);hp_owner();
@@ -199,9 +212,9 @@ try {
     hp_ok('Verified Shared payment authorizes exactly one closed provider attempt',$sent===['state'=>'accepted_pending','attempt_started'=>true]&&HpProviderTransport::$calls===1);
     hp_client();hp_ok('Provider acknowledgement is still Paid setup pending',hosting_payment_projection(hp_id(30),1)['payment_stage']==='paid_setup_pending');hp_owner();
     $approval=one('SELECT binding_sha256 FROM '.table('hosting_fulfillments').' WHERE id=?',[$dispatch]);
-    // Age only the synthetic catalog read so the distinct authenticated status
-    // operation can run without adding a real thirty-second CI sleep.
-    query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>?',[time()-30]);
+    $latest=filter_var(query('SELECT MAX(started_epoch) FROM '.table('provider_refreshes').' WHERE profile_id=?',[$profile])->fetchColumn(),FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);if($latest===false)throw new RuntimeException('Provider refresh history required.');
+    $readyAt=hch_refresh_ready_at($latest,time());$deadline=hrtime(true)+35000000000;
+    while(time()<$readyAt){if(hrtime(true)>=$deadline)throw new RuntimeException('Bounded provider status cooldown wait expired.');usleep(100000);}
     $confirmed=hosting_fulfillment_confirm($order->data()['id'],1,$dispatch,$approval['binding_sha256'],$password,static fn()=>'8.8.8.8','hp_inventory_read');
     hp_ok('Authenticated exact package observation confirms the Shared service',$confirmed==='confirmed');
     hp_client();$active=hosting_payment_projection(hp_id(30),1);hp_ok('Shared status becomes Active only after provider confirmation',$active['payment_stage']==='active'&&$active['invoice_status']==='paid');hp_owner();

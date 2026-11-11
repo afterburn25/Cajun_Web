@@ -8,9 +8,9 @@ $checks=[];$failure=null;
 function ds_ok(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 try{
     $registry=database_schema_registry();
-    ds_ok('Registry has one descriptor for every version marker',count($registry)===80&&array_keys($registry)===array_keys(database_schema_versions()));
+    ds_ok('Registry has one descriptor for every version marker',count($registry)===82&&array_keys($registry)===array_keys(database_schema_versions()));
     $migrations=database_schema_migrations();$unmapped=array_values(array_diff(array_keys(database_schema_versions()),array_keys($migrations)));sort($unmapped);$separate=array_keys(database_schema_separate_setups());sort($separate);
-    ds_ok('Unified workflow maps every pure migration and leaves six disclosed feature setups separate',count($migrations)===74&&$unmapped===['delivery_schema_version','provider_stackcp_access_schema_version','provider_stackcp_assignment_schema_version','provider_stackcp_auth_schema_version','registration_drafts_schema_version','support_schema_version']&&$separate===$unmapped);
+    ds_ok('Unified workflow maps every pure migration and leaves six disclosed feature setups separate',count($migrations)===76&&$unmapped===['delivery_schema_version','provider_stackcp_access_schema_version','provider_stackcp_assignment_schema_version','provider_stackcp_auth_schema_version','registration_drafts_schema_version','support_schema_version']&&$separate===$unmapped);
     $metadataValid=true;foreach($migrations as $marker=>$migration){$metadataValid=$metadataValid&&isset($registry[$marker])&&is_file(CWP_CODE_ROOT.'/'.$migration['file'])&&is_string($migration['function'])&&$migration['function']!==''&&in_array($migration['arguments'],['none','password','owner'],true)&&array_is_list($migration['depends']);foreach([...$migration['depends'],...($migration['effects']??[])] as $related)$metadataValid=$metadataValid&&isset($registry[$related]);}
     ds_ok('Every unified migration has a shipping source, supported dispatcher contract and registered dependencies',$metadataValid);
     $allMissing=[];foreach($registry as $marker=>$entry)$allMissing[$marker]=database_schema_classify($entry,'');$plannable=true;
@@ -37,13 +37,13 @@ try{
     ds_ok('Grouping keeps provider, billing, mail and domain families distinct',
         $registry['provider_settings_schema_version']['group']==='Provider'&&$registry['payments_schema_version']['group']==='Billing'&&$registry['mail_accounts_schema_version']['group']==='Mail'&&$registry['domain_renewals_schema_version']['group']==='Domains');
     $rows=[];foreach($registry as $marker=>$entry)$rows[$marker]=database_schema_classify($entry,$entry['current']);
-    $summary=database_schema_summary($rows);ds_ok('All-current summary needs no update and has no blocker',$summary['current']===80&&$summary['all_current']&&$summary['needs_update']===0&&$summary['blocking']===0);
+    $summary=database_schema_summary($rows);ds_ok('All-current summary needs no update and has no blocker',$summary['current']===82&&$summary['all_current']&&$summary['needs_update']===0&&$summary['blocking']===0);
     $rows['studio_schema_version']=database_schema_classify($registry['studio_schema_version'],'');
     $rows['contacts_schema_version']=database_schema_classify($registry['contacts_schema_version'],'');
     $rows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');
     $rows['provider_settings_schema_version']=database_schema_classify($registry['provider_settings_schema_version'],'99');
     $summary=database_schema_summary($rows);ds_ok('Summary separates required, optional, update and unsupported states',$summary['required']===1&&$summary['optional']===1&&$summary['update']===1&&$summary['unsupported']===1&&$summary['needs_update']===2&&$summary['blocking']===1&&!$summary['all_current']);
-    $groups=database_schema_groups($rows);ds_ok('Grouped rows retain all registered entries',array_sum(array_map('count',$groups))===80&&isset($groups['Provider'],$groups['Billing'],$groups['Mail'],$groups['Domains'],$groups['Customer experience']));
+    $groups=database_schema_groups($rows);ds_ok('Grouped rows retain all registered entries',array_sum(array_map('count',$groups))===82&&isset($groups['Provider'],$groups['Billing'],$groups['Mail'],$groups['Domains'],$groups['Customer experience']));
     $currentRows=[];foreach($registry as $marker=>$entry)$currentRows[$marker]=database_schema_classify($entry,$entry['current']);
     $currentRows['license_schema_version']=database_schema_classify($registry['license_schema_version'],'2');
     $currentRows['software_commerce_version']=database_schema_classify($registry['software_commerce_version'],'2');

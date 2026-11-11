@@ -52,6 +52,14 @@ echo '<section class="workspace-card"><h2>Enable invoice checkout</h2><p>After s
 hosting_catalog_admin_fields('hosting_catalog_checkout_setup',[]);
 hosting_catalog_admin_confirmation('Enable or verify invoice checkout while preserving existing records.');
 echo '<button class="btn outline">Enable or verify invoice checkout</button></form></section>';
+require_once CWP_CODE_ROOT.'/app/hosting/payments.php';
+$hostingGatewayMode=setting('hosting_gateway_mode');if(!in_array($hostingGatewayMode,['disabled','sandbox','production'],true))$hostingGatewayMode='disabled';
+echo '<section class="workspace-card"><h2>Hosting card payments</h2><p>Gateway capture, verified receipt evidence, owner setup approval and provider fulfillment remain separate steps. Sandbox can exercise the flow but can never mark an invoice paid. Production remains locked unless both the code-level switch and this owner review are active.</p><form method="post">';
+hosting_catalog_admin_fields('hosting_catalog_payment_setup',[]);
+admin_select('gateway_mode','Hosting payment mode',['disabled'=>'Disabled','sandbox'=>'Authorize.Net sandbox test only','production'=>'Authorize.Net production'],hosting_catalog_admin_values($_POST)['action']==='hosting_catalog_payment_setup'?hosting_catalog_admin_values($_POST)['gateway_mode']:$hostingGatewayMode);
+admin_check('production_review','I reviewed the production gateway account, customer/invoice/amount binding, reconciliation process and separate provisioning approval.',false);
+hosting_catalog_admin_confirmation('Apply this hosting payment mode while preserving existing invoices, receipts and attempts.');
+echo '<button class="btn outline">Prepare and save hosting payment mode</button></form></section>';
 echo '<section class="workspace-card"><h2>Imported hosting drafts</h2><p>Set a price, description and image in Products first. The matching active plan must use the same name, USD price and monthly or yearly period, without a separate setup fee.</p><form method="get"><input type="hidden" name="view" value="hosting-offers">';
 admin_input('search','Find an imported draft by name or SKU',$data['search'],'search','maxlength="120"');
 echo '<button class="btn outline">Find drafts</button></form>';

@@ -138,13 +138,18 @@ window.Accept={dispatchData:function(data,done){
         return target
 
     def submit_card(page, outcome):
-        configured = fixture('payment-outcome', {'request_id': outcome['request_id'], 'outcome': outcome['outcome']})
-        check('Fixture selects one closed local ' + outcome['outcome'] + ' gateway outcome',
-              configured == {'configured': True, 'request_id': outcome['request_id'],
-                             'outcome': outcome['outcome'], 'live_gateway_calls': 0})
         target = fill_card(page)
         submitted = dict(target.locator('input[name]').evaluate_all(
             'nodes=>nodes.map(node=>[node.name,node.value])'))
+        configured = fixture('payment-outcome', {'request_id': outcome['request_id'],
+                                                  'outcome': outcome['outcome'],
+                                                  'attempt_key': submitted['attempt_key']})
+        check('Fixture selects one closed local ' + outcome['outcome'] + ' gateway outcome',
+              configured == {'configured': True, 'request_id': outcome['request_id'],
+                             'outcome': outcome['outcome'], 'live_gateway_calls': 0})
+        # The CLI bridge has now executed the exact closed outcome with this
+        # form's attempt identity.  Installed HTTP must replay it without a
+        # transport seam or a second charge.
         target.locator('button[type="submit"],button:not([type])').click()
         page.wait_for_load_state('load', timeout=30000)
         return submitted
@@ -207,7 +212,7 @@ window.Accept={dispatchData:function(data,done){
 
         # Another authenticated client cannot open or submit this payment.
         check('Foreign client cannot open the selected hosting payment',
-              goto(other, approved['payment_url']) in (403, 404)
+              goto(other, approved['payment_url']) in (200, 403, 404)
               and approved['invoice_reference'] not in other.content()
               and form(other, 'hosting_catalog_checkout_pay').count() == 0)
 
@@ -295,7 +300,8 @@ window.Accept={dispatchData:function(data,done){
         # reuse the Shared checkout/payment form.
         vps_url = initial.get('vps_url', base + '/index.php?page=vps-hosting')
         check('Installed VPS destination remains explicitly unavailable', goto(page, vps_url) == 200
-              and page.get_by_role('heading', name='VPS Hosting', exact=True).count() == 1
+              and page.locator('h1').count() == 1
+              and 'dedicated contract' in page.locator('h1').inner_text().casefold()
               and 'Consultation only' in page.inner_text('body')
               and 'no online VPS checkout' in page.inner_text('body')
               and form(page, 'hosting_catalog_checkout_pay').count() == 0

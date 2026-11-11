@@ -8,7 +8,8 @@ require_once CWP_CODE_ROOT.'/includes/layout/hosting_catalog.php';
 
 function hosting_checkout_portal_values(array $input): array {
     $values=[];
-    foreach (['action'=>40,'request_id'=>32,'publication_id'=>32,'publication_sha256'=>64,'review_sha256'=>64,'project_mode'=>16,'project_id'=>10] as $key=>$max) {
+    // Tokenized payment data is parsed only by the payment action and is never retained for redisplay.
+    foreach (['action'=>40,'request_id'=>32,'publication_id'=>32,'publication_sha256'=>64,'review_sha256'=>64,'project_mode'=>16,'project_id'=>10,'attempt_key'=>64] as $key=>$max) {
         $v=$input[$key]??'';
         $values[$key]=is_string($v)&&strlen($v)<=$max&&preg_match('//u',$v)===1&&!str_contains($v,"\0")?$v:'';
     }
@@ -23,13 +24,20 @@ function hosting_checkout_portal_project(array $input): array {
 function hosting_checkout_portal_action(string $action,array $client): void {
     if (($_SERVER['REQUEST_METHOD']??'')!=='POST') throw new InvalidArgumentException('Use the reviewed hosting form.');
     check_csrf();hosting_checkout_reject_contact();
-    if (!in_array($action,['hosting_catalog_checkout_preview','hosting_catalog_checkout_confirm'],true)) throw new InvalidArgumentException('Choose an available checkout action.');
+    if (!in_array($action,['hosting_catalog_checkout_preview','hosting_catalog_checkout_confirm','hosting_catalog_checkout_pay'],true)) throw new InvalidArgumentException('Choose an available checkout action.');
     $request=service_plans_form_id($_POST,'request_id');
     if ($action==='hosting_catalog_checkout_preview') {
         $publication=service_plans_form_id($_POST,'publication_id');$hash=service_plans_form_hash($_POST,'publication_sha256');$project=hosting_checkout_portal_project($_POST);
         if (!consume_rate('client-hosting-checkout-'.(int)$client['id'],20,3600)) throw new RuntimeException('Please wait before reviewing another hosting purchase.');
         $GLOBALS['hosting_checkout_review']=hosting_checkout_preview($request,$publication,$hash,(int)$client['id'],$project);
         return;
+    }
+    if($action==='hosting_catalog_checkout_pay'){
+        if(!consume_rate('client-hosting-payment-'.(int)$client['id'],8,3600))throw new RuntimeException('Please wait before another hosting payment attempt.');
+        require_once CWP_CODE_ROOT.'/app/hosting/payments.php';
+        $status=hosting_payment_run($request,(int)$client['id'],service_plans_form_hash($_POST,'attempt_key'),service_plans_form_text($_POST,'descriptor',128),service_plans_form_text($_POST,'payment_token',8192));
+        flash(match($status){'paid'=>'Payment verified. Hosting setup now awaits separate owner approval.','already_paid'=>'This hosting invoice is already paid.','declined'=>'The card was declined. No payment was recorded.','sandbox'=>'Sandbox test verified. No real payment was recorded.','sandbox_test'=>'This sandbox attempt is already closed. No real payment was recorded.',default=>'The payment outcome needs owner review. Do not retry until it is reconciled.'});
+        redirect(studio_url(['hosting'=>'checkout','checkout_result'=>$request]));
     }
     $hash=service_plans_form_hash($_POST,'review_sha256');service_plans_form_confirm($_POST);
     if (!consume_rate('client-hosting-checkout-'.(int)$client['id'],20,3600)) throw new RuntimeException('Please wait before submitting again. Your saved review and invoice remain available.');
@@ -76,7 +84,7 @@ function hosting_checkout_portal_hidden(array $fields): void {
 function hosting_checkout_portal_render(array $client,string $error): never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     $attempt=($_SERVER['REQUEST_METHOD']??'GET')==='POST'?hosting_checkout_portal_values($_POST):null;
-    $data=[];$unavailable=false;$review=null;$result=null;$values=$attempt;
+    $data=[];$unavailable=false;$review=null;$result=null;$values=$attempt;$payment=null;$gateway=null;
     try {
         if (array_key_exists('checkout_result',$_GET)) {
             $request=service_plans_form_id($_GET,'checkout_result');$result=hosting_checkout_result($request,(int)$client['id']);
@@ -96,9 +104,20 @@ function hosting_checkout_portal_render(array $client,string $error): never {
         elseif ($error==='') $error=$e->getMessage();
         $unavailable=true;
     }
+    if($result!==null){
+        try{
+            require_once CWP_CODE_ROOT.'/app/hosting/payments.php';$payment=hosting_payment_projection($result['request_id'],(int)$client['id']);
+            if($payment['payment_stage']==='awaiting_payment'&&$payment['retryable']&&hosting_payments_ready()){$gateway=hosting_anet_settings();authorize_net_security_headers($gateway['mode']);}
+        }catch(Throwable $paymentError){
+            if($paymentError instanceof PDOException)throw $paymentError;
+            $gateway=null;if($payment===null)$payment=['payment_stage'=>'awaiting_payment','charge_state'=>null,'retryable'=>false,'service_active'=>false];
+        }
+    }
     site_head('Review hosting','portal');
     echo '<section class="page-hero compact"><div class="container"><span class="eyebrow">YOUR CLIENT WORKSPACE</span><h1>Review <span class="gold-text">hosting</span></h1><p>Choose a project, review the service and billing dates, then confirm your first invoice.</p><a class="btn outline" href="'.esc(studio_url(['hosting'=>'offers'])).'">Available plans</a></div></section><section class="section"><div class="container narrow">';show_flash();
     if ($error!=='') echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     require CWP_CODE_ROOT.'/portal/views/hosting_checkout.php';
-    echo '</div></section>';site_foot(false);exit;
+    echo '</div></section>';
+    if($gateway!==null){$external=$gateway['mode']==='sandbox'?'https://jstest.authorize.net/v1/Accept.js':'https://js.authorize.net/v1/Accept.js';echo '<script nonce="'.nonce().'" defer src="'.esc($external).'"></script><script nonce="'.nonce().'" defer src="'.esc(site_url('assets/js/authorize-net-checkout.js')).'"></script>';}
+    site_foot(false);exit;
 }

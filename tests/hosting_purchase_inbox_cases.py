@@ -28,7 +28,7 @@ def snapshot(value):
         if not isinstance(value[key], dict) or set(value[key]) != names or any(type(n) is not int or n < 0 for n in value[key].values()):
             raise AssertionError('Exact nonnegative predecessor counters required')
     counts, rows = value['counts'], value['results']
-    if counts['results'] != 5 or counts['invoices'] != 5 or counts['receipts'] != 1 or counts['attempts'] != 0 or not isinstance(rows, dict) or len(rows) != 5:
+    if counts['results'] != 5 or counts['invoices'] != 5 or counts['receipts'] != 2 or counts['attempts'] != 0 or not isinstance(rows, dict) or len(rows) != 5:
         raise AssertionError('Five original results and invoices with one original local receipt required')
     for key, row in rows.items():
         if not isinstance(key, str) or re.fullmatch('[a-f0-9]{32}', key) is None or not isinstance(row, dict) or row.get('request_id') != key:

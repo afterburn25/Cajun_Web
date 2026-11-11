@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once __DIR__.'/catalog_checkout.php';
 require_once __DIR__.'/orders.php';
+require_once __DIR__.'/payments.php';
 
 /** Missing established order history must never become a new, unstarted purchase. */
 function hosting_purchases_orders_ready(): bool {
@@ -42,10 +43,12 @@ function hosting_purchases_item(array $row,bool $owner,bool $ordersReady,?int $c
             throw new RuntimeException('Hosting order history is missing. Restore the original database.');
         }
     }
+    $payment=hosting_payments_ready()?hosting_payment_projection_locked(hosting_payment_source_locked($d['request_id'],$d['client_id'],false)):
+        ['payment_stage'=>$invoice['status']==='issued'?'awaiting_payment':'payment_review','charge_state'=>null,'receipt_id'=>null,'service_active'=>false];
     $item=['request_id'=>$d['request_id'],'created_epoch'=>$d['accepted_at'],'offer_title'=>$validated['publication']->data()['product']['title'],
         'invoice'=>['id'=>$d['invoice_id'],'reference'=>$invoice['reference'],'status'=>$invoice['status'],'amount_cents'=>(int)$invoice['amount_cents'],'currency'=>$invoice['currency']],
         'project'=>['id'=>$d['project_id'],'title'=>$project['title']],
-        'agreement'=>['id'=>$d['agreement_id'],'state'=>$agreement->model()->state()],'order'=>$order];
+        'agreement'=>['id'=>$d['agreement_id'],'state'=>$agreement->model()->state()],'order'=>$order,'payment'=>$payment];
     if ($owner) {
         $account=service_plans_client_row($d['client_id'],false);
         $item['client']=['id'=>$d['client_id'],'name'=>$account['name']];

@@ -31,7 +31,17 @@ function software_anet_execute(string $method,array $request):array{
         'ARBGetSubscriptionRequest','ARBCancelSubscriptionRequest','createCustomerProfileRequest'];
     if(!in_array($method,$methods,true))throw new InvalidArgumentException('Unsupported gateway method.');
     $cfg=software_anet_settings();
-    if(!function_exists('curl_init'))throw new RuntimeException('cURL is required.');
+    return authorize_net_execute_configured('Software',$method,$request,$cfg);
+}
+/** Shared transport only; each product adapter owns settings, authority and exact-context checks. */
+function authorize_net_execute_configured(string $label,string $method,array $request,array $cfg):array{
+    if(!in_array($method,['createTransactionRequest','getTransactionDetailsRequest','ARBCreateSubscriptionRequest',
+        'ARBGetSubscriptionRequest','ARBCancelSubscriptionRequest','createCustomerProfileRequest','createCustomerProfileFromTransactionRequest'],true)){
+        throw new InvalidArgumentException('Unsupported gateway method.');
+    }
+    foreach(['mode','login','key'] as $key)if(!is_string($cfg[$key]??null)||$cfg[$key]==='')throw new RuntimeException($label.' gateway configuration is incomplete.');
+    if(!in_array($cfg['mode'],['sandbox','production'],true))throw new RuntimeException($label.' gateway mode is invalid.');
+    if(!function_exists('curl_init'))throw new RuntimeException('cURL is required for '.$label.' payments.');
     $url=$cfg['mode']==='sandbox'?'https://apitest.authorize.net/xml/v1/request.api':
         'https://api.authorize.net/xml/v1/request.api';
     $payload=json_encode([$method=>['merchantAuthentication'=>[
@@ -44,7 +54,7 @@ function software_anet_execute(string $method,array $request):array{
             CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_FOLLOWLOCATION=>false]);
         $body=curl_exec($ch);$status=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);
         if($status!==200||!is_string($body)){
-            throw new RuntimeException('Payment outcome unknown. Reconcile at the gateway before another attempt.');
+            throw new RuntimeException($label.' payment outcome unknown. Reconcile at the gateway before another attempt.');
         }
         $reply=json_decode(ltrim($body,"\xEF\xBB\xBF"),true,32,JSON_THROW_ON_ERROR);
         if(!is_array($reply))throw new RuntimeException('Unrecognized gateway response.');

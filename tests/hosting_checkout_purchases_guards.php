@@ -55,6 +55,9 @@ function service_plans_current_client(int $client): array {
     if ($client!==($GLOBALS['model']['current_client']??7)||($GLOBALS['model']['support']??false)||($GLOBALS['model']['revoked']??false)) throw new RuntimeException('Client denied.');return ['id'=>$client];
 }
 function hosting_checkout_ready(): bool {$GLOBALS['calls'][]='checkout-ready';if ($GLOBALS['model']['history_error']??false) throw new RuntimeException('History needs recovery.');return $GLOBALS['model']['ready']??true;}
+function hosting_payments_ready(): bool {return $GLOBALS['model']['payments_ready']??false;}
+function hosting_payment_source_locked(string $request,int $client,bool $primary): array {hosting_catalog_guard();$GLOBALS['calls'][]=['payment-source',$request,$client,$primary];return ['request_id'=>$request,'client_id'=>$client];}
+function hosting_payment_projection_locked(array $source): array {hosting_catalog_guard();$GLOBALS['calls'][]=['payment-projection',$source['request_id']];return $GLOBALS['model']['payment_projection']??['payment_stage'=>'paid_setup_pending','charge_state'=>'paid','receipt_id'=>9,'service_active'=>false];}
 function service_orders_storage(): array {return $GLOBALS['model']['storage']??['version'=>'1','existing'=>['service_orders','service_order_events'],'complete'=>true];}
 function service_orders_require(): void {if (!service_orders_storage()['complete']) throw new RuntimeException('Order history missing.');}
 function service_orders_schema(string $prefix): array {return ['service_orders'=>'orders-schema','service_order_events'=>'events-schema'];}
@@ -110,10 +113,13 @@ try {
     hpg_reset();$GLOBALS['cwp_settings']=['stale'=>true];$data=hosting_purchases_client_page(7);
     hpg_ok('Client query binds current client and returns only their purchase',count($data['items'])===1&&in_array(['all','SELECT * FROM `hosting_checkout_results` WHERE client_id=? ORDER BY created_epoch DESC,id DESC LIMIT 21 OFFSET 0',[7]],$calls,true));
     $item=$data['items'][0];
-    hpg_ok('Client projection has only the agreed public fields',array_keys($item)===['request_id','created_epoch','offer_title','invoice','project','agreement','order']&&!str_contains(json_encode($item),'PRIVATE'));
+    hpg_ok('Client projection has only the agreed public fields',array_keys($item)===['request_id','created_epoch','offer_title','invoice','project','agreement','order','payment']&&!str_contains(json_encode($item),'PRIVATE'));
+    hpg_ok('Unprepared payment storage fails closed without rewriting invoice history',$item['payment']===['payment_stage'=>'awaiting_payment','charge_state'=>null,'receipt_id'=>null,'service_active'=>false]);
     hpg_ok('Original invoice and offer are retained',$item['invoice']['id']===4&&$item['offer_title']==='Original <Gold>'&&$item['invoice']['amount_cents']===2500);
     hpg_reset(['rows'=>[['client_id'=>7]]]);$GLOBALS['cwp_settings']=['stale'=>true];$data=hosting_purchases_owner_page();
     hpg_ok('Owner reader rechecks current financial authority after locking',array_slice($calls,0,3)===['lock',['owner',false],['permission','payments.manage',1]]&&$data['items'][0]['client']===['id'=>7,'name'=>'Client <Name>']);
+    hpg_reset(['rows'=>[['client_id'=>7]],'payments_ready'=>true]);$item=hosting_purchases_client_page(7)['items'][0];
+    hpg_ok('Prepared payment storage projects the exact bound checkout payment stage',$item['payment']['payment_stage']==='paid_setup_pending'&&in_array(['payment-source',str_repeat('1',32),7,false],$calls,true)&&in_array(['payment-projection',str_repeat('1',32)],$calls,true));
     foreach (['owner','financial'] as $key) {hpg_reset([$key=>false]);hpg_bad('Denied '.$key.' cannot read purchases',fn()=>hosting_purchases_owner_page());hpg_ok('Denied '.$key.' stops before history scan',!in_array('checkout-ready',$calls,true));}
     foreach (['contact_id','contact_auth'] as $key) {hpg_reset();$_SESSION[$key]=null;hpg_bad('Contact provenance rejected '.$key,fn()=>hosting_purchases_client_page(7));hpg_ok('Contact rejected before authority normalization '.$key,$calls===[]);}
     foreach (['support','revoked'] as $key) {hpg_reset([$key=>true]);hpg_bad('Current client refusal '.$key,fn()=>hosting_purchases_client_page(7));}

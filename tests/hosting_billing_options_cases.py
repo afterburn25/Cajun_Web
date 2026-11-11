@@ -298,7 +298,7 @@ def run_browser(env, browser):
               setup.get('passed') is True and setup.get('publication_submitted') is False
               and setup['product_id'] == env['seed']['product_id']
               and initial['counts']['results'] == initial['counts']['invoices'] == 5
-              and initial['counts']['receipts'] == 1 and initial['counts']['attempts'] == 0
+              and initial['counts']['receipts'] == 2 and initial['counts']['attempts'] == 0
               and not initial['variants_ready'] and initial['counts']['variants'] == 0
               and set(initial['results']) == set(old['results']))
         monthly_id = setup['product_id']
@@ -503,7 +503,7 @@ def run_browser(env, browser):
         counts('Final installed billing has only two new purchases publications and one annual setup', initial, final,
                {'reviews': 2, 'results': 2, 'invoices': 2, 'publications': 2, 'products': 1, 'variants': 1, 'media': 1, 'plans': 1, 'plan_events': 1, 'mappings': 1})
         check('Final installed billing has seven invoices and one retained receipt with no payment attempts',
-              final['counts']['results'] == final['counts']['invoices'] == 7 and final['counts']['receipts'] == 1 and final['counts']['attempts'] == 0
+              final['counts']['results'] == final['counts']['invoices'] == 7 and final['counts']['receipts'] == 2 and final['counts']['attempts'] == 0
               and len({row['invoice_id'] for row in final['results'].values()}) == 7
               and final['products'][str(monthly_id)] == monthly_product)
         retained('Final original row hashes and provider histories remain exactly preserved', final)

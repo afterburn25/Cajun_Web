@@ -12,12 +12,12 @@ function hosting_catalog_admin_owner(): array {
     return $actor;
 }
 function hosting_catalog_admin_actions(): array {
-    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_category_preview','hosting_catalog_category_bind','hosting_catalog_finish_plan','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
+    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_payment_setup','hosting_catalog_category_preview','hosting_catalog_category_bind','hosting_catalog_finish_plan','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
 }
 /** Secrets and confirmation never enter redisplay state. An invalid value becomes empty, not a fresh identity. */
 function hosting_catalog_admin_values(array $input): array {
     $out=[];
-    foreach (['action'=>40,'product_id'=>10,'classification_id'=>32,'category_slug'=>63,'category_review_sha256'=>64,'plan_id'=>32,'publication_id'=>32,'review_sha256'=>64,'publication_sha256'=>64,'request_id'=>32,'request_sha256'=>64,'decision_id'=>32,'withdrawal_id'=>32,'job_id'=>10,'reason'=>1000,'checkout_mode'=>30,'billing_timezone'=>64,'billing_alignment'=>16] as $key=>$max) {
+    foreach (['action'=>40,'product_id'=>10,'classification_id'=>32,'category_slug'=>63,'category_review_sha256'=>64,'plan_id'=>32,'publication_id'=>32,'review_sha256'=>64,'publication_sha256'=>64,'request_id'=>32,'request_sha256'=>64,'decision_id'=>32,'withdrawal_id'=>32,'job_id'=>10,'reason'=>1000,'checkout_mode'=>30,'billing_timezone'=>64,'billing_alignment'=>16,'gateway_mode'=>12,'production_review'=>1] as $key=>$max) {
         $value=$input[$key]??'';
         $out[$key]=is_string($value)&&strlen($value)<=$max&&preg_match('//u',$value)===1&&!str_contains($value,"\0")?$value:'';
     }
@@ -46,7 +46,12 @@ function hosting_catalog_admin_intent(string $action,array $input): array {
     if (!in_array($action,hosting_catalog_admin_actions(),true)) throw new InvalidArgumentException('Unknown hosting offer action.');
     if ($action==='hosting_catalog_finish_plan') return ['action'=>$action]+hosting_catalog_setup_intent($input);
     $result=['action'=>$action];
-    if (in_array($action,['hosting_catalog_category_preview','hosting_catalog_category_bind'],true)) {
+    if($action==='hosting_catalog_payment_setup'){
+        $mode=service_plans_form_text($input,'gateway_mode',12);
+        if(!in_array($mode,['disabled','sandbox','production'],true))throw new InvalidArgumentException('Choose disabled, sandbox or production hosting payments.');
+        $result+=['gateway_mode'=>$mode,'production_review'=>($input['production_review']??'')==='1'];
+        if($mode==='production'&&!$result['production_review'])throw new InvalidArgumentException('Confirm the production-payment review before selecting production.');
+    } elseif (in_array($action,['hosting_catalog_category_preview','hosting_catalog_category_bind'],true)) {
         $result+=['classification_id'=>service_plans_form_id($input,'classification_id'),'product_id'=>hosting_catalog_admin_positive($input,'product_id'),'category_slug'=>hosting_storefront_slug(service_plans_form_text($input,'category_slug',63))];
         if ($action==='hosting_catalog_category_bind') $result['review_sha256']=service_plans_form_hash($input,'category_review_sha256');
     } elseif (in_array($action,['hosting_catalog_preview','hosting_catalog_publish'],true)) {
