@@ -41,9 +41,11 @@ def run(root=ROOT):
                      | proof.DIAGNOSTIC_ADDITIONS | proof.DATABASE_WORKFLOW_ADDITIONS
                      | proof.CLOUD_INTAKE_ADDITIONS | proof.UX09_MODIFIED | proof.UX09_ADDITIONS
                      | proof.UX09_CI_MODIFIED
+                     | proof.NOTIFICATION_HEALTH_MODIFIED | proof.NOTIFICATION_HEALTH_ADDITIONS
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, proof.UX09_SOURCE_RECEIPT,
+                        proof.NOTIFICATION_HEALTH_SOURCE_RECEIPT,
                         'tools/acceptance-contract.json'}):
             target = fixture / path
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -103,6 +105,31 @@ def run(root=ROOT):
 
         refuses('Refuses an untracked additional source file', lambda: addition('tests/unreviewed_composition.py'))
         refuses('Refuses a hidden additional shipping file', lambda: addition('site/.unreviewed-composition.php'))
+
+        for path in sorted(proof.NOTIFICATION_HEALTH_SOURCE_PATHS):
+            refuses('Refuses altered exact notification health source ' + path,
+                    lambda path=path: modified(
+                        path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed health source\n')))
+        health_addition = next(iter(proof.NOTIFICATION_HEALTH_ADDITIONS))
+        refuses('Refuses missing exact notification health test addition',
+                lambda: modified(health_addition, lambda target: target.unlink()))
+        refuses('Refuses executable mode on notification health test addition',
+                lambda: modified(health_addition, lambda target: target.chmod(0o755)))
+
+        def altered_health_receipt(change):
+            def rewrite(target):
+                data = json.loads(target.read_bytes())
+                change(data)
+                target.write_text(json.dumps(data))
+            modified(proof.NOTIFICATION_HEALTH_SOURCE_RECEIPT, rewrite)
+
+        refuses('Refuses substituted notification health base',
+                lambda: altered_health_receipt(lambda data: data.__setitem__('base_commit', '0' * 40)))
+        refuses('Refuses substituted notification health source',
+                lambda: altered_health_receipt(lambda data: data.__setitem__('source_commit', '0' * 40)))
+        refuses('Refuses omitted notification health source admission',
+                lambda: altered_health_receipt(
+                    lambda data: data['modified'].pop('site/admin/views/health.php')))
 
         for path in sorted(proof.UX09_ADDITIONS):
             refuses('Refuses altered exact UX-09 addition ' + path,

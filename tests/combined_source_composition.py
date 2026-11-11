@@ -151,6 +151,7 @@ NOTIFICATION_HEALTH_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
 NOTIFICATION_HEALTH_BASE_TREE = '7ccd5cd2384b5adecbd66fd98b7719a92a38887e'
 NOTIFICATION_HEALTH_SOURCE = '6dc156a02a912bdf65fa6f1969c1b6386937ac5a'
 NOTIFICATION_HEALTH_SOURCE_TREE = '82227a1573855f389ad90ee9b3cf2a0369caf420'
+NOTIFICATION_HEALTH_SOURCE_RECEIPT = 'docs/NOTIFICATION_HEALTH_VIEW_SOURCE.json'
 NOTIFICATION_HEALTH_MODIFIED = frozenset((
     'site/admin/views/health.php',
     'site/install/inventory.generated.php',
@@ -748,7 +749,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'd7afdbfeab6475be8b34f21dffd6914e9f26f7940a996681b229bc1b70a4ef41'
+REGRESSION_SHA256 = 'dd0148096d051befe4264252154ce0892326c4b9842382fcd939e0824bad12d2'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -1655,6 +1656,20 @@ def project_ux09_identity_snapshot(root, path, current):
 
 def validate_notification_health_source(root):
     """Bind the exact current-main successor that exposes retained notification metrics."""
+    data = json.loads(ordinary(root, NOTIFICATION_HEALTH_SOURCE_RECEIPT))
+    require(isinstance(data, dict) and set(data) == {
+        'schema', 'base_commit', 'base_tree', 'source_commit', 'source_tree',
+        'modified', 'added', 'scope'},
+        'Unexpected notification health source receipt fields')
+    require(data['schema'] == 1 and data['base_commit'] == NOTIFICATION_HEALTH_BASE
+            and data['base_tree'] == NOTIFICATION_HEALTH_BASE_TREE
+            and data['source_commit'] == NOTIFICATION_HEALTH_SOURCE
+            and data['source_tree'] == NOTIFICATION_HEALTH_SOURCE_TREE
+            and isinstance(data['scope'], str) and bool(data['scope']),
+            'Unreviewed notification health source identity')
+    require(set(data['modified']) == NOTIFICATION_HEALTH_MODIFIED
+            and set(data['added']) == NOTIFICATION_HEALTH_ADDITIONS,
+            'Unreviewed notification health source path set')
     require(git(root, 'rev-parse', NOTIFICATION_HEALTH_BASE + '^{tree}').decode().strip()
             == NOTIFICATION_HEALTH_BASE_TREE
             and git(root, 'rev-parse', NOTIFICATION_HEALTH_SOURCE + '^{tree}').decode().strip()
@@ -1662,6 +1677,9 @@ def validate_notification_health_source(root):
             'Notification health successor source tree changed')
     git(root, 'merge-base', '--is-ancestor', NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_SOURCE)
     git(root, 'merge-base', '--is-ancestor', NOTIFICATION_HEALTH_SOURCE, 'HEAD')
+    require(git(root, 'rev-parse', NOTIFICATION_HEALTH_SOURCE + '^').decode().strip()
+            == NOTIFICATION_HEALTH_BASE,
+            'Notification health source is not the single exact implementation commit')
     changes = git(root, 'diff', '--name-status', '--no-renames',
                   NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_SOURCE).decode().splitlines()
     observed_modified = {line.split('\t', 1)[1] for line in changes if line.startswith('M\t')}
@@ -1676,15 +1694,25 @@ def validate_notification_health_source(root):
             and NOTIFICATION_HEALTH_ADDITIONS <= set(source_entries),
             'Notification health test addition did not originate in its exact source range')
     for path in sorted(NOTIFICATION_HEALTH_MODIFIED):
+        row = data['modified'][path]
+        before = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+        source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
         current = ordinary(root, path)
-        require(current == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
-                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+        require(isinstance(row, dict) and set(row) == {'base_sha256', 'source_sha256', 'mode'}
+                and row['base_sha256'] == digest(before)
+                and row['source_sha256'] == digest(source)
+                and current == source
+                and row['mode'] == mode(root, path)
+                == base_entries[path][0] == source_entries[path][0] == '100644'
                 and (path != INVENTORY or current == canonical_inventory(root)),
                 'Notification health successor source identity changed: ' + path)
     for path in sorted(NOTIFICATION_HEALTH_ADDITIONS):
-        require(ordinary(root, path)
-                == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
-                and mode(root, path) == source_entries[path][0] == '100644',
+        row = data['added'][path]
+        source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+        require(isinstance(row, dict) and set(row) == {'source_sha256', 'mode'}
+                and row['source_sha256'] == digest(source)
+                and ordinary(root, path) == source
+                and row['mode'] == mode(root, path) == source_entries[path][0] == '100644',
                 'Notification health test addition source identity changed: ' + path)
 
 
@@ -2245,7 +2273,8 @@ def verify_current(root):
             'Software onboarding source receipt path set changed')
     require(git(root, 'rev-parse', ONBOARDING_BASE + '^{tree}').decode().strip() == ONBOARDING_BASE_TREE,
             'Software onboarding base tree changed')
-    require(mode(root, VERIFIER) == mode(root, RECEIPT) == mode(root, REGRESSION) == '100644',
+    require(mode(root, VERIFIER) == mode(root, RECEIPT) == mode(root, REGRESSION)
+            == mode(root, NOTIFICATION_HEALTH_SOURCE_RECEIPT) == '100644',
             'Composition proof file mode changed')
     require(digest(ordinary(root, REGRESSION)) == REGRESSION_SHA256, 'Composition regression changed')
     require(git(root, 'rev-parse', REPAIR_BASE + '^{tree}').decode().strip() == REPAIR_BASE_TREE,
@@ -2286,7 +2315,8 @@ def verify_current(root):
                                                  | CLOUD_INTAKE_ADDITIONS | UX09_ADDITIONS
                                                  | UX08_STOREFRONT_ADDITIONS | NARRATIVES
                                                  | {INVENTORY, RECEIPT, VERIFIER, REGRESSION,
-                                                    ONBOARDING_SOURCE, UX09_SOURCE_RECEIPT}),
+                                                    ONBOARDING_SOURCE, UX09_SOURCE_RECEIPT,
+                                                    NOTIFICATION_HEALTH_SOURCE_RECEIPT}),
             'Notification health addition cannot replace admitted source or proof files')
     require(CLOUD_INTAKE_SOURCE_NARRATIVES <= NARRATIVES,
             'Cloud intake source narratives must remain non-executable exceptions')
@@ -2429,7 +2459,7 @@ def verify_current(root):
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
-                  UX09_SOURCE_RECEIPT})
+                  UX09_SOURCE_RECEIPT, NOTIFICATION_HEALTH_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
