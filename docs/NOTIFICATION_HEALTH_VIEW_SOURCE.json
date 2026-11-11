@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "base_commit": "ebcb7a1e52982c742996e10e2042c69764890fed",
+  "base_tree": "7ccd5cd2384b5adecbd66fd98b7719a92a38887e",
+  "source_commit": "6dc156a02a912bdf65fa6f1969c1b6386937ac5a",
+  "source_tree": "82227a1573855f389ad90ee9b3cf2a0369caf420",
+  "modified": {
+    "site/admin/views/health.php": {
+      "base_sha256": "0b52c3685b0bd1cc557d485d352bb5771ca2f3a7ada8925fda0c0003381c6d24",
+      "source_sha256": "284efdac3c69646c1c24791b58e541f216dc0ae454cc9d9f7d2a4d3313aa5f43",
+      "mode": "100644"
+    },
+    "site/install/inventory.generated.php": {
+      "base_sha256": "572f54c635712c04ec01f48277a44190c15d26b2d41038ad0847015675ff316c",
+      "source_sha256": "40fd06980bbb85f26b13789a672c5ea33fd6b23b937a24922213602f34475333",
+      "mode": "100644"
+    },
+    "tests/notification_center_browser.py": {
+      "base_sha256": "1758d4d12416f166e30cd372d88d3693a4e22b062fa6cb9b87020a0a462f8d97",
+      "source_sha256": "ed74c1034aaf4eab876467676d8605c440b21a7eaa46443093a3fc7b58c394c6",
+      "mode": "100644"
+    },
+    "tests/notification_center_native.php": {
+      "base_sha256": "b1ff20e8e5def94fd23a91fb8f5180c42c99c759491d02e873555033c3aa135e",
+      "source_sha256": "38e5e5c2d2aff7df3ea3465a5eff30c6e876ec010d6513fe2c2c4237bfade2f2",
+      "mode": "100644"
+    }
+  },
+  "added": {
+    "tests/notification_health_view_contract.php": {
+      "source_sha256": "ea5c12d568a339abbce68d3ba22b3f0a21f02e18b655ae2172ab89f061612424",
+      "mode": "100644"
+    }
+  },
+  "scope": "Administration-only presentation of already-retained first-party notification freshness metrics, with offline, disposable-SQL and installed-browser evidence. No live email, customer message, provider, payment, deployment or release operation."
+}

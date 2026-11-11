@@ -78,7 +78,7 @@ function setup_expected_files(): array { return [
     'admin/views/domain_renewal_agreements.php'=>'6cd348d3703983af5d307059dd41403637199fb2dd2a7a141c57ec40627303d4',
     'admin/views/domain_renewals.php'=>'b9ec093e2e1fd04b985e8a1fb93878f0a93a92edaa926a55415f7d70e82318b3',
     'admin/views/email.php'=>'68822ce380626737bf48c9b5232bab8d8c92dd879460398c8b0bbd8aabc836a4',
-    'admin/views/health.php'=>'0b52c3685b0bd1cc557d485d352bb5771ca2f3a7ada8925fda0c0003381c6d24',
+    'admin/views/health.php'=>'284efdac3c69646c1c24791b58e541f216dc0ae454cc9d9f7d2a4d3313aa5f43',
     'admin/views/hosting_catalog.php'=>'7ef420ec893f7bdda62396bc5279e8686b40b666eb2da3e0dd3e9f3e448441c4',
     'admin/views/hosting_purchases.php'=>'47c00f6f09a6fb90a9a9120be0470903f0f3892df4c6368e07cffb5e37f35b5a',
     'admin/views/lead.php'=>'0e7045f16f487f21df5b8b746665102bbc873459fa54d1a89e5fb9f2f1d93cd1',
