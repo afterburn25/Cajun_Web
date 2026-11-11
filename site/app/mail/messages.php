@@ -49,8 +49,16 @@ function mail_message_record(array $started,string $code,int $elapsed,#[\Sensiti
         mail_accounts_audit((int)$started['actor_id'],'message_finished','Read '.$started['id'].' '.$code);
     });
 }
-/** Test seams are internal PHP callables; never exposed through owner/HTTP configuration. */
-function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {
+/**
+ * Internal finite request engine. The optional copy mode never returns raw
+ * MIME: after the successful journal commits, exact bytes are consumed into
+ * one non-serializable CopiedDraftSource and cleared before return.
+ * Test resolver/transport seams are never exposed through owner/HTTP state.
+ */
+function mail_message_request_internal(string $id,int $revision,string $validity,string $uid,?string $copyMode,?string $copySelf,?callable $resolver,?callable $transport,?string $noticeHandle):array {
+    if($copyMode!==null&&!in_array($copyMode,['reply','reply-all','forward'],true))throw new LogicException('Invalid copied-message request mode.');
+    // Reply-all is the only copy mode with an exact chosen-sender context.
+    if(($copyMode===null&&$copySelf!==null)||($copyMode==='reply-all')!==($copySelf!==null))throw new LogicException('Invalid copied-message request context.');
     mail_message_identity($validity,$uid);
     if($noticeHandle!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_handle($noticeHandle);}
     if(db()->inTransaction())throw new LogicException('Message reads cannot run inside a transaction.');
@@ -74,7 +82,7 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
     catch(InvalidArgumentException) {$code='destination';}
     catch(ProbeFailure $e) {$code=$e->getMessage();}
     catch(Throwable) {$code='connection';}
-    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle):array {
+    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle,$copyMode,$copySelf):array {
         $authorize=static function()use($started,$noticeHandle):array {
             try {[$actor,$row]=mail_message_authority($started['account_id'],$started['account_revision']);
                 if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');
@@ -82,7 +90,7 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
                 return $row;
             }catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;throw new ReceivingFailure('access_changed');}
         };
-        $content=null;
+        $content=null;$source=null;$copyUnsupported=false;
         try {$current=$authorize();}catch(ReceivingFailure) {$code='access_changed';}
         if($code==='ok') {
             try {$secrets=mail_accounts_unseal($current['id'],$current['credentials']);mail_accounts_passwords($secrets);}
@@ -92,15 +100,32 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
                     $response=($transport??'mail_message_transport')($current,$secrets,$addresses[0],$started['uidvalidity'],$started['uid'],$authorize);
                     $authorize();
                     $content=mail_message_content($response,$started['uidvalidity'],$started['uid']);
+                    if($copyMode!==null) {
+                        require_once CWP_CODE_ROOT.'/includes/foundation/mail-compose/CopiedDraftSource.php';
+                        try{$source=\CajunWebPro\Foundation\MailCompose\CopiedDraftSource::fromRead((int)$started['actor_id'],$started['account_id'],(int)$started['account_revision'],$started['uidvalidity'],$started['uid'],$started['id'],$copyMode,$response['raw'],$copySelf);}
+                        catch(InvalidArgumentException){$copyUnsupported=true;$source=null;}
+                    }
                     $authorize();
-                }catch(ReceivingFailure $e) {$code=$e->getMessage();$content=null;}
-                catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$content=null;}
+                }catch(ReceivingFailure $e) {$code=$e->getMessage();$content=null;$source=null;$copyUnsupported=false;}
+                catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$content=null;$source=null;$copyUnsupported=false;}
                 finally {unset($secrets,$response);}
             }
         }
         mail_message_record($started,$code,(int)((hrtime(true)-$begin)/1e6),$content);
-        return ['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
+        if($copyUnsupported)throw new InvalidArgumentException('This message cannot be copied into a supported draft. The successful read was recorded without saving message content.');
+        $result=['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
+        return ['result'=>$result,'source'=>$source];
     });
+}
+/** Existing exact-message display behavior and signature remain unchanged. */
+function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null):array {
+    return mail_message_request_internal($id,$revision,$validity,$uid,null,null,$resolver,$transport,$noticeHandle)['result'];
+}
+/** Dedicated raw-to-derived copy read; no raw bytes or generic retain flag escape. */
+function mail_message_copy_source(string $id,int $revision,string $validity,string $uid,string $mode,?string $self=null,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null):array {
+    if(($mode==='reply-all')!==($self!==null))throw new InvalidArgumentException('Reply-all sender context must be exact.');
+    if(!in_array($mode,['reply','reply-all','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
+    return mail_message_request_internal($id,$revision,$validity,$uid,$mode,$self,$resolver,$transport,$noticeHandle);
 }
 function mail_message_history(string $id,int $page=1): array {
     [$actor]=mail_message_authority($id,null,false);if(!mail_messages_ready())return [];

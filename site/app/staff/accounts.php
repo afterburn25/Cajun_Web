@@ -174,7 +174,7 @@ function staff_action_permission(string $action): ?string {
     if($action==='mail_notices_setup')return 'staff.manage';
     if($action==='mail_notices_dismiss')return null; // Current mail actor plus exact tuple/grant rechecked by the action.
     if($action==='mail_message_setup')return 'staff.manage';
-    if($action==='mail_message_read')return null; // mail_message_read enforces the exact current account scope.
+    if(in_array($action,['mail_message_read','mail_message_reply','mail_message_reply_all','mail_message_forward'],true))return null; // Exact current Read and chosen Send are enforced inside each message action.
     if($action==='mail_inbox_setup')return 'staff.manage';
     if($action==='mail_inbox_read')return null; // mail_inbox_read enforces the exact account scope.
     if(str_starts_with($action,'mail_inbox_'))return 'mail.read';

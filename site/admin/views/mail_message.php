@@ -13,6 +13,25 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?>
 <button class="btn gold"><?=$result===null?'Load message':'Load message again'?></button></form>
 <p class="hint">Allow 2 seconds between requests for this account. Each account and administrator can make up to 240 message requests per hour. This page does not refresh automatically.</p>
+<?php if($mailCopyAllowed): ?>
+<section class="workspace-card" data-mail-copy-controls><h3>Copy directly into a protected draft</h3>
+<p class="hint">Reply, Reply all, or Forward performs one exact message read and immediately saves only bounded derived text in your private draft. Raw MIME, hidden recipients, and attachments are not saved. Nothing is submitted or sent.</p>
+<p class="hint">Choose this directly instead of Load message to use one request. If you loaded the message first, allow the unchanged two-second interval before copying it.</p>
+<?php if($replySenders): ?>
+<form method="post" action="<?=esc(admin_url('mail-message',$route+['sender_page'=>$senderPage]))?>" data-mail-copy-form>
+<?=csrf_field()?><?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?>
+<input type="hidden" name="draft_id" value="<?=esc(bin2hex(random_bytes(16)))?>">
+<label>From account<select name="sender" required><?php foreach($replySenders as $senderAccount): ?><option value="<?=esc($senderAccount['id'].':'.$senderAccount['revision'])?>"><?=esc($senderAccount['label'].' · '.$senderAccount['address'])?></option><?php endforeach; ?></select></label>
+<button class="btn gold" name="action" value="mail_message_reply">Reply</button>
+<button class="btn outline" name="action" value="mail_message_reply_all">Reply all</button>
+<button class="btn outline" name="action" value="mail_message_forward">Forward</button></form>
+<?php else: ?><p class="notice">No current Send-capable account appears on this page. An owner can review your email account assignments.</p><?php endif; ?>
+<nav aria-label="Sending account pages">
+<?php if($senderPage>1): ?><a class="text-link" href="<?=esc(admin_url('mail-message',$route+['sender_page'=>$senderPage-1]))?>">Previous sending accounts</a><?php endif; ?>
+<?php if($moreReplySenders): ?><a class="text-link" href="<?=esc(admin_url('mail-message',$route+['sender_page'=>$senderPage+1]))?>">More sending accounts</a><?php endif; ?>
+</nav></section>
+<?php elseif(!$mailCopyReady): ?><p class="hint">An owner must prepare local drafts and protected Reply/Forward storage before copied-message drafting is available.</p>
+<?php else: ?><p class="hint">Current email Send permission is required to create a copied-message draft.</p><?php endif; ?>
 <?php if($result===null): ?><p>No message loaded for this page.</p>
 <?php elseif($result['code']!=='ok'): ?><p class="notice error" role="alert"><?=esc(mail_message_outcome($result['code']))?></p>
 <?php else: $content=$result['content']; ?>

@@ -35,8 +35,8 @@ function mail_drafts_form_revision(array $input,string $key):int {
     return (int)$value;
 }
 function mail_drafts_form_reference(string $value):array {
-    if(!preg_match('/^([a-f0-9]{32}):([1-9][0-9]{0,9})$/D',$value,$parts)||(int)$parts[2]>=2147483647)throw new InvalidArgumentException('Choose a current saved account or template.');
-    return [$parts[1],(int)$parts[2]];
+    try{return mail_drafts_reference($value);}
+    catch(InvalidArgumentException){throw new InvalidArgumentException('Choose a current saved account or template.');}
 }
 /** Used only to decide whether to show navigation/setup. Data still needs exact mailbox authority. */
 function mail_drafts_admin_access(array $actor):bool {
@@ -123,8 +123,8 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         $account=is_string($_GET['account_id']??null)?$_GET['account_id']:'';
         if($row)$account=$row['account_id'];
         $accountPage=max(1,min((int)($post?($_POST['account_page']??1):($_GET['account_page']??1)),100000));
-        $assigned=mail_accounts_assigned($accountPage);$moreAccounts=count($assigned)>20;$accounts=[];
-        foreach(array_slice($assigned,0,20) as $assignedRow)if($assignedRow['can_send'])$accounts[$assignedRow['id']]=mail_drafts_account($assignedRow['id']);
+        $assigned=mail_drafts_senders($accountPage);$moreAccounts=count($assigned)>20;$accounts=[];
+        foreach(array_slice($assigned,0,20) as $assignedRow)$accounts[$assignedRow['id']]=$assignedRow;
         if($account!=='')$accounts[$account]=mail_drafts_account($account);
         elseif($accounts)$account=array_key_first($accounts);
         $page=max(1,min((int)($_GET['p']??1),100000));$status=is_string($_GET['status']??null)?$_GET['status']:'draft';

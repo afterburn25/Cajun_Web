@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 require_once CWP_CODE_ROOT.'/app/mail/notices.php';
+require_once CWP_CODE_ROOT.'/app/mail/copied_drafts.php';
 function mail_message_route(): array {
     $id=$_GET['account_id']??null;$revision=$_GET['revision']??null;$validity=$_GET['uidvalidity']??null;$uid=$_GET['uid']??null;
     if(!is_string($id)||!is_string($revision)||!preg_match('/\A[1-9][0-9]{0,9}\z/D',$revision)||(float)$revision>4294967295)throw new InvalidArgumentException('Open a message from the current inbox headers.');
@@ -15,10 +16,16 @@ function mail_message_admin_action(string $action): array {
     if($action==='mail_message_setup') {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
-    if($action!=='mail_message_read'||($_GET['view']??null)!=='mail-message')throw new InvalidArgumentException('Open the current message form before requesting content.');
+    $copyModes=['mail_message_reply'=>'reply','mail_message_reply_all'=>'reply-all','mail_message_forward'=>'forward'];
+    if(($_GET['view']??null)!=='mail-message'||($action!=='mail_message_read'&&!isset($copyModes[$action])))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
     foreach($route as $key=>$value)if(posted($key,32)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
-    return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
+    if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
+    $draftId=posted('draft_id',32);mail_drafts_id($draftId);[$sender,$senderRevision]=mail_drafts_reference(posted('sender',43));
+    $created=mail_copied_draft_create($draftId,$route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],$copyModes[$action],$sender,$senderRevision,$route['notice']??null);
+    if($created['state']==='read_failed')return $created['result'];
+    flash($created['state']==='existing'?'Your existing copied-message draft is open. No email was sent.':'A protected copied-message draft was created. No email was sent.');
+    redirect(admin_url('mail-draft',['draft_id'=>$created['draft_id']]));
 }
 /** Caller supplies only BodyDecoder's sanitized output in a currently authorized response. */
 function mail_message_document(#[\SensitiveParameter] string $sanitized): string {
@@ -38,6 +45,12 @@ function mail_message_admin_render(string $error,#[\SensitiveParameter] ?array $
         if($result!==null) {
             [$current]=mail_message_authority($accountId,(int)$route['revision']);
             if($result['account_id']!==$accountId||$result['actor_id']!==(int)$current['id']||$result['account_revision']!==(int)$route['revision']||$result['uidvalidity']!==$route['uidvalidity']||$result['uid']!==$route['uid']||($result['notice_handle']??null)!==($route['notice']??null))throw new RuntimeException('Reload the current inbox before viewing this message.');
+        }
+        $senderPage=max(1,min((int)($_GET['sender_page']??1),100000));$replySenders=[];$moreReplySenders=false;
+        $mailCopyReady=mail_replies_ready()&&mail_drafts_ready();$mailCopyAllowed=$mailCopyReady&&staff_can('mail.send',$actor);
+        if($mailCopyAllowed){
+            $assigned=mail_drafts_senders($senderPage);$moreReplySenders=count($assigned)>20;
+            foreach(array_slice($assigned,0,20) as $senderAccount)$replySenders[$senderAccount['id']]=$senderAccount;
         }
     }catch(InvalidArgumentException|RuntimeException $e) {
         if($e instanceof PDOException)throw $e;
