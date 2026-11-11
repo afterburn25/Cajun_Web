@@ -180,7 +180,11 @@
     "\"$PHP_BINARY\" tests/client_identity_policy.php > qa/client-identity-policy-results.json",
     "\"$PHP_BINARY\" tests/client_identity_native.php",
     "\"$PHP_BINARY\" tests/license_native.php",
-    "\"$PHP_BINARY\" tests/software_commerce_native.php"
+    "\"$PHP_BINARY\" tests/software_commerce_native.php",
+    "CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log",
+    "test ! -s qa/hosting-checkout-native.stderr.log",
+    "CWP_TEST_HOSTING_PAYMENT=1 \"$PHP_BINARY\" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/hosting-payment-native.stdout.log 2> qa/hosting-payment-native.stderr.log",
+    "test ! -s qa/hosting-payment-native.stderr.log"
   ],
   "native_command_baseline": {
     "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
@@ -831,5 +835,49 @@
     "hook": "            from backups_cases import run_browser as backups_browser\n            backups_browser(globals(),browser)\n",
     "source_sha256": "0a1f1248faaef87afa5ce07c03118bd4f5163035f73e6fe3715cc5b8e36ef114",
     "predecessor_sha256": "254886b44387f6d59fdfbc1bfdac412e81d69df886f639ad389fe98bebb20c10"
+  },
+  "hosting_payment_acceptance_extension": {
+    "additions_after": "\"$PHP_BINARY\" tests/software_commerce_native.php",
+    "additions": [
+      "CWP_TEST_HOSTING_CHECKOUT=1 \"$PHP_BINARY\" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log",
+      "test ! -s qa/hosting-checkout-native.stderr.log",
+      "CWP_TEST_HOSTING_PAYMENT=1 \"$PHP_BINARY\" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/hosting-payment-native.stdout.log 2> qa/hosting-payment-native.stderr.log",
+      "test ! -s qa/hosting-payment-native.stderr.log"
+    ],
+    "predecessor_native_count": 171,
+    "predecessor_native_sha256": "9affe8b5cb4bcc39d875940fa880fb82339c520236d3525382273bdf51b6ea66",
+    "browser_addition_after": ".ci-venv/bin/python tests/browser_acceptance.py",
+    "browser_addition": ".ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite",
+    "reports": [
+      "hosting-checkout-http-results.json",
+      "hosting-checkout-native-results.json",
+      "hosting-payment-native-results.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 182,
+        "sha256": "60160c887c245647977d2d8e5d2268ea9db470cb5f2a99badcf52b4bb4e41cc9"
+      },
+      "final": {
+        "count": 228,
+        "sha256": "9897c43ae264ae19b663f108202099c9ba4ba6cbe91f29511a5db977dbc8c85c"
+      }
+    },
+    "screenshots": [
+      "Hosting-Payment-Awaiting-Desktop.png",
+      "Hosting-Payment-Awaiting-Mobile.png",
+      "Hosting-Payment-Paid-Setup-Pending-Desktop.png",
+      "Hosting-Payment-Paid-Setup-Pending-Mobile.png",
+      "Hosting-Payment-Active-Desktop.png",
+      "Hosting-Payment-Active-Mobile.png",
+      "Hosting-Payment-VPS-Unavailable-Desktop.png",
+      "Hosting-Payment-VPS-Unavailable-Mobile.png"
+    ],
+    "source_sha256": {
+      "tests/hosting_checkout_native.php": "6b268fb41d30608c82767d0d81c64bf81c074aa910291a7ddcd04da38d58f7de",
+      "tests/hosting_payment_native.php": "b0815b893f25c4f070f641cebfff6e274b08b04ab147b3569bbb792b31d961de",
+      "tests/hosting_payment_cases.py": "9afb2e6a108bf64a142af9a3a3640ed3edbefe0cb1240eabdbe9f34c751123ba"
+    },
+    "scope": "Disposable Linux SQL checkout and payment proofs plus installed packaged HTTP/Chromium Shared payment lifecycle with closed local gateway/provider callbacks. No live charge, paid provisioning, customer message, production access, deployment or VPS checkout claim."
   }
 }

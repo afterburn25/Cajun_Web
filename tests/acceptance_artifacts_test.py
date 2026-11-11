@@ -239,6 +239,7 @@ def software_authority_report_checks(tmp):
     database_reports=set(acceptance_contract.get('database_schema_native_command_extension',{}).get('reports',[]))
     cloud_intake_reports=set(acceptance_contract.get('cloud_site_intake',{}).get('reports',[]))
     identity_reports=set(acceptance_contract.get('client_identity_native_command_extension',{}).get('reports',[]))
+    hosting_payment_reports=set(acceptance_contract.get('hosting_payment_acceptance_extension',{}).get('reports',[]))
     for mode, count, digest in [
         ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
         ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
@@ -246,7 +247,7 @@ def software_authority_report_checks(tmp):
         current = registry[mode]
         check('Software authority named report is required exactly once in ' + mode,
               current.count(name) == 1 and len(current) == len(set(current)))
-        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports]
+        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports and item not in hosting_payment_reports]
         check('Software authority inventory retains every original ordered ' + mode + ' report',
               len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
     body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
@@ -554,6 +555,38 @@ def run(tmp):
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     cloud_intake_additions=contract['cloud_site_intake']['additions']
+    payment_ext=contract.get('hosting_payment_acceptance_extension')
+    if payment_ext:
+        additions=payment_ext['additions'];position=native_commands.index(payment_ext['additions_after'])+1
+        check('Hosting checkout and payment commands are one exact additive extension',
+              len(native_commands)==payment_ext['predecessor_native_count']+len(additions)
+              and native_commands==contract['native_commands']
+              and native_commands[position:position+len(additions)]==additions
+              and all(native_commands.count(command)==1 for command in additions))
+        retained=[command for command in native_commands if command not in additions]
+        check('Hosting payment additions retain the complete predecessor recipe',
+              len(retained)==payment_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==payment_ext['predecessor_native_sha256'])
+        browser=workflow.split('      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: |\n',1)[1].split('      - name: Verify shipping source after this job, including failure',1)[0]
+        browser_commands=[line.strip() for line in browser.splitlines()]
+        check('Packaged hosting browser proof is one exact additive application command',
+              browser_commands==[payment_ext['browser_addition_after'],payment_ext['browser_addition']])
+        for path,expected_hash in payment_ext['source_sha256'].items():
+            check('Hosting payment acceptance source identity '+path,
+                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        registry=a.load(ROOT/'tools/acceptance-reports.json')
+        for mode in ('browser','final'):
+            current=registry[mode]
+            check('Hosting payment reports are required once in '+mode,
+                  all(current.count(report)==1 for report in payment_ext['reports']) and len(current)==len(set(current)))
+            predecessor=[report for report in current if report not in payment_ext['reports']]
+            expected=payment_ext['predecessor_reports'][mode]
+            check('Hosting payment reports retain the exact '+mode+' predecessor inventory',
+                  len(predecessor)==expected['count']
+                  and hashlib.sha256(json.dumps(predecessor,separators=(',',':')).encode()).hexdigest()==expected['sha256'])
+        expected_captures=['Hosting-Payment-'+stage+'-'+size+'.png' for stage in ('Awaiting','Paid-Setup-Pending','Active','VPS-Unavailable') for size in ('Desktop','Mobile')]
+        check('Hosting payment extension binds all eight exact installed captures',payment_ext['screenshots']==expected_captures)
+        native_commands=retained;contract={**contract,'native_commands':native_commands}
     identity_ext=contract.get('client_identity_native_command_extension')
     if identity_ext:
         additions=identity_ext['additions'];position=native_commands.index(identity_ext['additions_after'])+1

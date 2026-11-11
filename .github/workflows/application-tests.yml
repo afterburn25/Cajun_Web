@@ -479,9 +479,15 @@ jobs:
           "$PHP_BINARY" tests/client_identity_native.php
           "$PHP_BINARY" tests/license_native.php
           "$PHP_BINARY" tests/software_commerce_native.php
+          CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log
+          test ! -s qa/hosting-checkout-native.stderr.log
+          CWP_TEST_HOSTING_PAYMENT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/hosting-payment-native.stdout.log 2> qa/hosting-payment-native.stderr.log
+          test ! -s qa/hosting-payment-native.stderr.log
       - name: Real HTTP and Chromium application workflows
         id: browser
-        run: .ci-venv/bin/python tests/browser_acceptance.py
+        run: |
+          .ci-venv/bin/python tests/browser_acceptance.py
+          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
