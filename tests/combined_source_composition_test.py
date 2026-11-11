@@ -230,11 +230,30 @@ def run(root=ROOT):
             assert proof.digest(predecessors[path]) == expected
             assert predecessors[path] != billing_before[path]
             passed('Billing predecessor comparison retains its original fixed bytes: ' + path)
+        billing_projected = {
+            path: proof.project_ux08_payment(fixture, path, billing_before[path]).replace(b'\r\n', b'\n')
+            for path in (RUNNER, BRIDGE, CASES)
+        }
+        for path, projected in billing_projected.items():
+            expected = proof.git(root, 'cat-file', 'blob', proof.UX08_PAYMENT_BASE + ':' + path)
+            assert projected == expected.replace(b'\r\n', b'\n')
+            assert projected != billing_before[path].replace(b'\r\n', b'\n')
+            passed('Billing runtime projection retains its exact payment predecessor: ' + path)
         assert all(billing_source(fixture, path) == billing_before[path].replace(b'\r\n', b'\n')
                    for path in (RUNNER, BRIDGE, CASES))
-        passed('Billing runner, bridge and validators continue to read actual current source')
+        passed('Billing source reader retains the actual current runner, bridge and validators')
         assert all(proof.ordinary(fixture, path) == raw for path, raw in billing_before.items())
         passed('Billing historical comparison leaves every current callback and runtime input unchanged')
+
+        def changed_payment_runner():
+            runner = fixture / RUNNER
+            original = runner.read_bytes()
+            try:
+                runner.write_bytes(original + b'\n# unreviewed payment runner change\n')
+                proof.project_ux08_payment(fixture, RUNNER, proof.ordinary(fixture, RUNNER))
+            finally:
+                runner.write_bytes(original)
+        refuses('Payment predecessor projection refuses a changed current runner', changed_payment_runner)
 
         from hosting_billing_options_wiring import (
             OLD_CHECKS_SHA256, RESULT_CHECK, portable_check_dump)
@@ -247,7 +266,7 @@ def run(root=ROOT):
                     and node.func.id == 'check' and not (node.args and isinstance(node.args[0], ast.Constant)
                                                         and node.args[0].value == RESULT_CHECK)]
 
-        old_nodes, current_nodes = runner_checks(historical_runner), runner_checks(billing_before[RUNNER])
+        old_nodes, current_nodes = runner_checks(historical_runner), runner_checks(billing_projected[RUNNER])
         snapshots = [ast.dump(node, include_attributes=True) for node in current_nodes]
         assert [ast.dump(node, include_attributes=False) for node in old_nodes] == [
             ast.dump(node, include_attributes=False) for node in current_nodes]
