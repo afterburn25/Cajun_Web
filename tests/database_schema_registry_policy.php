@@ -95,6 +95,9 @@ try{
     $mailRows=$currentRows;foreach(['mail_accounts_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_notices_schema_version'] as $marker)$mailRows[$marker]=database_schema_classify($registry[$marker],'');
     $mailPlan=database_schema_plan(['mail_notices_schema_version'],$mailRows);
     ds_ok('Mail notice setup closes over accounts, inbox and messages in dependency order',$mailPlan['order']===['mail_accounts_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_notices_schema_version']);
+    $replyRows=$currentRows;foreach(['mail_accounts_schema_version','mail_drafts_schema_version','mail_messages_schema_version','mail_replies_schema_version'] as $marker)$replyRows[$marker]=database_schema_classify($registry[$marker],'');
+    $replyPlan=database_schema_plan(['mail_replies_schema_version'],$replyRows);
+    ds_ok('Copied-draft setup closes over accounts, drafts and exact message reads in dependency order',$replyPlan['order']===['mail_accounts_schema_version','mail_drafts_schema_version','mail_messages_schema_version','mail_replies_schema_version']);
     $backupRows=$currentRows;$backupRows['backups_schema_version']=database_schema_classify($registry['backups_schema_version'],'1');$backupPlan=database_schema_plan(['backups_schema_version'],$backupRows);
     ds_ok('Review rows disclose non-database side effects',str_contains($backupPlan['rows'][0]['note'],'private backup directory'));
 }catch(Throwable $e){$failure=$e->getMessage();}
