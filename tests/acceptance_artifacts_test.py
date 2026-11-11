@@ -20,6 +20,16 @@ UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
 UX08_STOREFRONT_SOURCE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
+UX08_PAYMENT_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
+UX08_PAYMENT_BASE_TREE = '7ccd5cd2384b5adecbd66fd98b7719a92a38887e'
+UX08_PAYMENT_SOURCE = '7a8537afba765017dbb71d2c2a2f943b2572529a'
+UX08_PAYMENT_SOURCE_TREE = '1e5ec17d7d615654ee9537c8f2856f67deedb491'
+UX08_PAYMENT_ARTIFACT_OVERLAYS = frozenset((
+    'site/app/settings/database_schemas.php',
+    'site/portal/controllers/router.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+))
 UX08_ARTIFACT_OVERLAYS = frozenset((
     'site/app/clients/public_identity.php',
     'site/app/settings/database_schemas.php',
@@ -39,6 +49,15 @@ def check(name, condition):
 
 def ux08_artifact_predecessor(path, current):
     """Project only exact storefront overlays before frozen artifact-source checks."""
+    if path in UX08_PAYMENT_ARTIFACT_OVERLAYS:
+        source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+        base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+        check('UX-08 payment artifact overlay retains exact commit trees and ancestry '+path,
+              subprocess.check_output(['git','rev-parse',UX08_PAYMENT_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_BASE_TREE
+              and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_SOURCE_TREE
+              and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_BASE,UX08_PAYMENT_SOURCE],cwd=ROOT).returncode==0)
+        check('UX-08 payment artifact overlay current bytes match exact payment source '+path,current==source)
+        current=base
     if path not in UX08_ARTIFACT_OVERLAYS:
         return current
     source=subprocess.check_output(['git','cat-file','blob',UX08_STOREFRONT_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
