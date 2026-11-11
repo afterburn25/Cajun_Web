@@ -30,6 +30,14 @@ PROTECTED_PAYMENT_ADDITIONS = (
     '          test ! -s qa/hosting-payment-native.stderr.log\n',
 )
 PROTECTED_PAYMENT_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/software_commerce_native.php\n'
+PROTECTED_PAYMENT_ENV_ADDITION = '      CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE: cwp_hpay_foreign\n'
+PROTECTED_PAYMENT_ENV_AFTER = '      CWP_TEST_PASSWORD: local-ci-only\n'
+PROTECTED_PAYMENT_SETUP_ADDITION = ('          docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e '
+                                    '"CREATE DATABASE cwp_hpay_foreign; GRANT SELECT,CREATE,DROP,REFERENCES ON cwp_hpay_foreign.* TO \'cwp_test\'@\'%\';"\n')
+PROTECTED_PAYMENT_SETUP_AFTER = ('          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then\n'
+                                 "            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n"
+                                 "            docker exec -e MYSQL_PWD=isolated-checkout-root-only ${{ job.services.checkout_mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n"
+                                 '          fi\n')
 PROTECTED_BROWSER_PREDECESSOR = '        run: .ci-venv/bin/python tests/browser_acceptance.py\n'
 PROTECTED_BROWSER_SUCCESSOR = ('        run: |\n'
                                '          .ci-venv/bin/python tests/browser_acceptance.py\n'
@@ -121,6 +129,15 @@ def validate(workflow, legacy, protected):
         protected_predecessor = protected_predecessor.replace(addition, '', 1)
     payment_block = PROTECTED_PAYMENT_ADDITIONS_AFTER + ''.join(PROTECTED_PAYMENT_ADDITIONS)
     check('Reviewed UX-08 native commands are additive and ordered', protected.count(payment_block) == 1)
+    for name, addition, after in (
+        ('environment declaration', PROTECTED_PAYMENT_ENV_ADDITION, PROTECTED_PAYMENT_ENV_AFTER),
+        ('least-privilege foreign fixture bootstrap', PROTECTED_PAYMENT_SETUP_ADDITION, PROTECTED_PAYMENT_SETUP_AFTER),
+    ):
+        check('Reviewed UX-08 payment '+name+' is present exactly once',
+              protected_predecessor.count(addition) == 1)
+        check('Reviewed UX-08 payment '+name+' is additive and ordered',
+              protected.count(after + addition) == 1)
+        protected_predecessor = protected_predecessor.replace(addition, '', 1)
     check('Reviewed UX-08 browser continuation retains the original command first',
           protected_predecessor.count(PROTECTED_BROWSER_SUCCESSOR) == 1)
     protected_predecessor = protected_predecessor.replace(
@@ -247,6 +264,9 @@ def self_test(root=ROOT):
         ('changed UX-09 native command', protected.replace('tests/client_identity_native.php',
                                                             'tests/client_identity_policy.php', 1)),
         ('lost UX-08 payment command', protected.replace(PROTECTED_PAYMENT_ADDITIONS[2], '', 1)),
+        ('lost UX-08 payment foreign-schema environment', protected.replace(PROTECTED_PAYMENT_ENV_ADDITION, '', 1)),
+        ('lost UX-08 payment foreign-schema bootstrap', protected.replace(PROTECTED_PAYMENT_SETUP_ADDITION, '', 1)),
+        ('broadened UX-08 payment foreign-schema grant', protected.replace('GRANT SELECT,CREATE,DROP,REFERENCES', 'GRANT ALL', 1)),
         ('changed UX-08 browser continuation', protected.replace(
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),

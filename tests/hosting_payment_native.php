@@ -7,7 +7,8 @@
  */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||PHP_OS_FAMILY!=='Linux'||getenv('CWP_TEST_HOSTING_PAYMENT')!=='1'
-    ||getenv('CWP_TEST_DATABASE')!=='cwp_test'||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1')exit(2);
+    ||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE')!=='cwp_hpay_foreign'
+    ||(getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1')exit(2);
 $port=filter_var(getenv('CWP_TEST_PORT')?:'33306',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);if($port===false)exit(2);
 define('CWP_HOSTING_PRODUCTION_PAYMENTS',true);
 define('CWP_BOOT',true);
@@ -40,19 +41,29 @@ function hp_key(int $n):string{return hash('sha256','hosting-payment-attempt-'.$
 function hp_count(string $name):int{return(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
 function hp_identifier(string $name):string {if(!preg_match('/\A[a-zA-Z][a-zA-Z0-9_]{0,63}\z/',$name))throw new LogicException('Invalid fixture identifier.');return '`'.$name.'`';}
 function hp_cross_schema_fk_refused(string $child,string $column,string $parent,string $parentColumn,callable $validate):void {
-    $database=config()['db']['name'];$foreign='cwp_hpay_foreign';$childTable=config()['db']['prefix'].$child;$parentTable=config()['db']['prefix'].$parent;
-    $relation=one('SELECT r.CONSTRAINT_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.REFERENTIAL_CONSTRAINTS r JOIN information_schema.KEY_COLUMN_USAGE k ON k.CONSTRAINT_SCHEMA=r.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME=r.CONSTRAINT_NAME AND k.TABLE_NAME=r.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.COLUMN_NAME=? AND k.REFERENCED_TABLE_NAME=?',[$childTable,$column,$parentTable]);
+    $database=config()['db']['name'];$foreign=(string)getenv('CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE');$childTable=config()['db']['prefix'].$child;$parentTable=config()['db']['prefix'].$parent;
+    if($foreign!=='cwp_hpay_foreign'||$foreign===$database||!one('SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=?',[$foreign]))throw new RuntimeException('Exact isolated foreign fixture schema unavailable.');
+    if(one('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=? LIMIT 1',[$foreign]))throw new RuntimeException('Preserve unexpected foreign fixture data.');
+    $relation=one('SELECT r.CONSTRAINT_NAME,r.DELETE_RULE,r.UPDATE_RULE,k.REFERENCED_TABLE_SCHEMA FROM information_schema.REFERENTIAL_CONSTRAINTS r JOIN information_schema.KEY_COLUMN_USAGE k ON k.CONSTRAINT_SCHEMA=r.CONSTRAINT_SCHEMA AND k.CONSTRAINT_NAME=r.CONSTRAINT_NAME AND k.TABLE_NAME=r.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.COLUMN_NAME=? AND k.REFERENCED_TABLE_NAME=?',[$childTable,$column,$parentTable]);
     if(!$relation)throw new RuntimeException('Expected local fixture relationship missing.');$constraint=(string)$relation['CONSTRAINT_NAME'];
-    db()->exec('CREATE DATABASE '.hp_identifier($foreign));
+    if($relation['REFERENCED_TABLE_SCHEMA']!==$database)throw new RuntimeException('Expected local fixture relationship is already cross-database.');$created=false;
     try{
         db()->exec('CREATE TABLE '.hp_identifier($foreign).'.'.hp_identifier($parentTable).' LIKE '.hp_identifier($database).'.'.hp_identifier($parentTable));
+        $created=true;
         db()->exec('ALTER TABLE '.hp_identifier($childTable).' DROP FOREIGN KEY '.hp_identifier($constraint));
         db()->exec('ALTER TABLE '.hp_identifier($childTable).' ADD CONSTRAINT '.hp_identifier($constraint).' FOREIGN KEY ('.hp_identifier($column).') REFERENCES '.hp_identifier($foreign).'.'.hp_identifier($parentTable).' ('.hp_identifier($parentColumn).') ON DELETE '.$relation['DELETE_RULE'].' ON UPDATE '.$relation['UPDATE_RULE']);
         hp_deny('Cross-database '.$child.' relationship is refused before schema adoption',$validate);
         db()->exec('ALTER TABLE '.hp_identifier($childTable).' DROP FOREIGN KEY '.hp_identifier($constraint));
         db()->exec('ALTER TABLE '.hp_identifier($childTable).' ADD CONSTRAINT '.hp_identifier($constraint).' FOREIGN KEY ('.hp_identifier($column).') REFERENCES '.hp_identifier($database).'.'.hp_identifier($parentTable).' ('.hp_identifier($parentColumn).') ON DELETE '.$relation['DELETE_RULE'].' ON UPDATE '.$relation['UPDATE_RULE']);
         $validate();
-    }finally{db()->exec('DROP DATABASE IF EXISTS '.hp_identifier($foreign));}
+    }finally{
+        $current=one('SELECT k.REFERENCED_TABLE_SCHEMA,k.REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE k WHERE k.CONSTRAINT_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.CONSTRAINT_NAME=? AND k.COLUMN_NAME=?',[$childTable,$constraint,$column]);
+        if(!$current||$current['REFERENCED_TABLE_SCHEMA']!==$database||$current['REFERENCED_TABLE_NAME']!==$parentTable){
+            if($current)db()->exec('ALTER TABLE '.hp_identifier($childTable).' DROP FOREIGN KEY '.hp_identifier($constraint));
+            db()->exec('ALTER TABLE '.hp_identifier($childTable).' ADD CONSTRAINT '.hp_identifier($constraint).' FOREIGN KEY ('.hp_identifier($column).') REFERENCES '.hp_identifier($database).'.'.hp_identifier($parentTable).' ('.hp_identifier($parentColumn).') ON DELETE '.$relation['DELETE_RULE'].' ON UPDATE '.$relation['UPDATE_RULE']);
+        }
+        if($created)db()->exec('DROP TABLE '.hp_identifier($foreign).'.'.hp_identifier($parentTable));
+    }
 }
 function hp_owner():void {$u=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];unset($GLOBALS['cwp_support']);$_GET=[];$_POST=[];}
 function hp_client(int $id=1):void {$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION=['client_id'=>$id,'client_auth'=>$c['auth_version'],'client_login'=>time(),'client_last'=>time()];unset($GLOBALS['cwp_support']);$_GET=[];$_POST=[];}

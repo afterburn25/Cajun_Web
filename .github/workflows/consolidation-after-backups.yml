@@ -245,6 +245,7 @@ jobs:
       CWP_TEST_HOST: 127.0.0.1
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE: cwp_hpay_foreign
       PHP_BINARY: /usr/bin/php${{ matrix.php }}
       PYTHONDONTWRITEBYTECODE: '1'
       TZ: UTC
@@ -347,6 +348,7 @@ jobs:
           if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
             docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.checkout_database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
           fi
+          docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.checkout_database.id }} mysql -uroot -e "CREATE DATABASE cwp_hpay_foreign; GRANT SELECT,CREATE,DROP,REFERENCES ON cwp_hpay_foreign.* TO 'cwp_test'@'%';"
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
           .ci-venv/bin/python -m playwright install --with-deps chromium
