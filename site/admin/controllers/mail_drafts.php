@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
+require_once CWP_CODE_ROOT.'/app/mail/replies.php';
 
 use CajunWebPro\Foundation\MailCompose\DraftContent;
 
@@ -42,28 +43,58 @@ function mail_drafts_admin_access(array $actor):bool {
     $permissions=json_decode($actor['permissions']??'[]',true);
     return !support_current()&&(($actor['role']??'')==='owner'||(is_array($permissions)&&in_array('mail.send',$permissions,true)));
 }
+/** A copied placeholder and protected row must exist together or dispatch fails closed. */
+function mail_drafts_admin_copied(?array $row,bool $protected):bool {
+    if($row===null){if($protected)throw new RuntimeException('Draft storage is inconsistent. Existing data was preserved.');return false;}
+    if(!isset($row['status'])||!is_string($row['status'])||!in_array($row['status'],['draft','discarded','source'],true))throw new RuntimeException('Draft storage is inconsistent. Existing data was preserved.');
+    $source=$row['status']==='source';
+    if($source!==$protected)throw new RuntimeException('Draft storage is inconsistent. Existing data was preserved.');
+    return $source;
+}
+/** Submission integration is deliberately absent from this held slice. */
+function mail_drafts_admin_can_review_send(?array $row):bool {
+    return $row!==null&&($row['status']??null)==='draft'&&empty($row['copied']);
+}
+function mail_drafts_admin_origin_action(string $mode):string {
+    return match($mode){'reply'=>'replying to','reply-all'=>'replying to everyone on','forward'=>'forwarding',default=>throw new RuntimeException('Protected draft origin is inconsistent. Existing data was preserved.')};
+}
+function mail_drafts_admin_omission(string $flag):string {
+    return match($flag){
+        'subject_or_header_shortened'=>'a long subject or header was shortened',
+        'plain_text_unavailable'=>'no plain-text body was available in the source',
+        'additional_inline_parts'=>'additional inline message parts were not copied',
+        'quoted_text_shortened'=>'quoted text was shortened to fit the draft',
+        default=>throw new RuntimeException('Protected draft origin is inconsistent. Existing data was preserved.'),
+    };
+}
 function mail_drafts_admin_action(string $action):?DraftContent {
     if($action==='mail_drafts_setup') {
         mail_drafts_migrate(posted('current_password',200));flash('Local email drafts are ready.');redirect(admin_url('mail-drafts'));
     }
+    if($action==='mail_drafts_replies_setup') {
+        mail_replies_migrate(posted('current_password',200));flash('Protected Reply and Forward drafts are ready.');redirect(admin_url('mail-drafts'));
+    }
     return staff_locked(function()use($action):?DraftContent {
         $actor=mail_drafts_actor();$id=posted('draft_id',32);mail_drafts_id($id);
         $revision=mail_drafts_form_revision($_POST,'revision');
+        $stored=one('SELECT id,status FROM '.table('mail_drafts').' WHERE id=?',[$id]);$repliesReady=mail_replies_ready();
+        $protected=$repliesReady&&(bool)one('SELECT id FROM '.table('mail_reply_drafts').' WHERE id=?',[$id]);$copied=mail_drafts_admin_copied($stored,$protected);
         if($action==='mail_drafts_discard') {
-            $old=mail_drafts_get($id);mail_drafts_discard($id,$revision);
+            $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);
+            if($copied)mail_reply_drafts_discard($id,$revision);else mail_drafts_discard($id,$revision);
             flash('Draft discarded locally.');redirect(admin_url('mail-drafts',['account_id'=>$old['account_id'],'status'=>'discarded']));
         }
         [$account,$accountRevision]=mail_drafts_form_reference(posted('sender',43));
         mail_drafts_account($account,$accountRevision);
         // Preview/filter/insertion may not disclose or reuse a different author's saved draft.
-        $old=one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$id]);
+        $old=$stored;
         if($old) {
-            $old=mail_drafts_get($id);
+            $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);
             if($old['status']!=='draft'||(int)$old['revision']!==$revision) {
                 // Only save owns the exact initial-create replay rule.
-                if(!($action==='mail_drafts_save'&&$revision===0))throw new RuntimeException('The draft changed. Reload before continuing.');
+                if(!($action==='mail_drafts_save'&&$revision===0&&!$copied))throw new RuntimeException('The draft changed. Reload before continuing.');
             }
-        }elseif($revision!==0)throw new RuntimeException('The draft changed. Reload before continuing.');
+        }elseif($revision!==0||$copied)throw new RuntimeException('The draft changed. Reload before continuing.');
         if(in_array($action,['mail_drafts_accounts','mail_drafts_templates'],true))return null;
         $content=mail_drafts_form_content($_POST);
         if($action==='mail_drafts_preview')return $content;
@@ -74,7 +105,8 @@ function mail_drafts_admin_action(string $action):?DraftContent {
             return mail_drafts_template($account,$accountRevision,$template,$templateRevision,$samples,$content->to,$content->cc,$content->bcc);
         }
         if($action!=='mail_drafts_save')throw new InvalidArgumentException('Unknown draft action.');
-        mail_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');
+        if($copied)mail_reply_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');
+        else mail_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');
         flash('Draft saved locally. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$id]));
     });
 }
@@ -83,7 +115,11 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
     return staff_locked(function()use($view,$preview):array {
         $actor=mail_drafts_actor();$post=$_SERVER['REQUEST_METHOD']==='POST';
         $id=is_string($_GET['draft_id']??null)?$_GET['draft_id']:'';
-        $row=$id!==''?mail_drafts_get($id):null;
+        $row=$id!==''?mail_drafts_get($id):null;$repliesReady=mail_replies_ready();
+        $protected=$id!==''&&$repliesReady&&(bool)one('SELECT id FROM '.table('mail_reply_drafts').' WHERE id=?',[$id]);
+        if(mail_drafts_admin_copied($row,$protected)) {
+            $row=mail_reply_drafts_get($id)+['copied'=>true];
+        }
         $account=is_string($_GET['account_id']??null)?$_GET['account_id']:'';
         if($row)$account=$row['account_id'];
         $accountPage=max(1,min((int)($post?($_POST['account_page']??1):($_GET['account_page']??1)),100000));
@@ -92,7 +128,10 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         if($account!=='')$accounts[$account]=mail_drafts_account($account);
         elseif($accounts)$account=array_key_first($accounts);
         $page=max(1,min((int)($_GET['p']??1),100000));$status=is_string($_GET['status']??null)?$_GET['status']:'draft';
-        if($view==='mail-drafts')return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$account!==''?mail_drafts_list($account,$status,$page):[]];
+        if($view==='mail-drafts') {
+            $rows=$account===''?[]:(mail_replies_ready()?mail_drafts_combined_list($account,$status,$page):mail_drafts_list($account,$status,$page));
+            return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$rows];
+        }
         $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>''];$revision=0;
         if($row) {
             foreach(['to','cc','bcc'] as $key)$values[$key]=implode(', ',$row[$key]);
@@ -125,7 +164,7 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         }
         $templates=[];$templatePage=max(1,min((int)($_POST['template_page']??1),100000));$templateSearch=mail_drafts_form_text($_POST,'template_search',120);
         if(staff_can('mail.templates.manage',$actor)&&mail_templates_ready())$templates=mail_templates_list('active',$templateSearch,$templatePage);
-        $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?mail_drafts_history($id,$historyPage):[];
+        $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?(!empty($row['copied'])?mail_reply_drafts_history($id,$historyPage):mail_drafts_history($id,$historyPage)):[];
         return compact('actor','row','accounts','account','accountPage','moreAccounts','id','values','revision','sender','editable','preview','templates','templatePage','templateSearch','historyPage','history','unsaved');
     });
 }
@@ -148,6 +187,12 @@ function mail_drafts_admin_render(string $view,string $error,?DraftContent $prev
         }else echo '<p>An owner must prepare drafts before you can use them.</p>';
         echo '</section>';
     }else {
+        if(!mail_replies_ready()) {
+            echo '<section class="workspace-card"><h2>Prepare protected Reply and Forward drafts</h2><p>Replying to or forwarding an inbox message copies only bounded derived content into a protected private draft. An owner prepares this storage once; existing drafts and read history are preserved.</p>';
+            if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_replies_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare Reply and Forward drafts</button></form>';}
+            else echo '<p>An owner must prepare protected drafts before copied-message editing becomes available.</p>';
+            echo '</section>';
+        }
         try {$data=mail_drafts_admin_data($view,$preview);require CWP_CODE_ROOT.'/admin/views/mail_drafts.php';}
         catch(InvalidArgumentException|RuntimeException $e) {
             if($e instanceof PDOException)throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';
