@@ -147,6 +147,56 @@ UX08_BROWSER_STABILITY_SOURCE = '85173f76a7383fe1b1de42c9ba1697dafc9c41a4'
 UX08_BROWSER_STABILITY_SOURCE_TREE = '17c62dff821a67da5d704a7c63c3c454facf7e59'
 UX08_BROWSER_STABILITY_PATH = 'tests/release_cases.py'
 UX08_BROWSER_STABILITY_SHA256 = '04308784931c7cff22a120b81453304ee105c2b5c2878e653570a5cb06d7af9f'
+UX08_PAYMENT_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
+UX08_PAYMENT_BASE_TREE = '7ccd5cd2384b5adecbd66fd98b7719a92a38887e'
+UX08_PAYMENT_SOURCE = '9f4ae1c195997557d6b363278a2fe76393798dc9'
+UX08_PAYMENT_SOURCE_TREE = 'b6aa7a326ad515bda5231baa4d98cd001ee50fbd'
+UX08_PAYMENT_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/consolidation-after-backups.yml',
+    'site/admin/controllers/actions.php',
+    'site/admin/controllers/hosting_catalog.php',
+    'site/admin/controllers/hosting_purchases.php',
+    'site/admin/controllers/router.php',
+    'site/admin/views/hosting_catalog.php',
+    'site/app/billing/authorize_net_client.php',
+    'site/app/billing/ledger.php',
+    'site/app/billing/ledger_fulfillment.php',
+    'site/app/billing/software_subscription_settle.php',
+    'site/app/hosting/catalog_offer_views.php',
+    'site/app/hosting/checkout_purchases.php',
+    'site/app/hosting/checkout_purchases_views.php',
+    'site/app/hosting/orders.php',
+    'site/app/settings/database_schemas.php',
+    'site/install/inventory.generated.php',
+    'site/portal/controllers/hosting_checkout.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/hosting_checkout.php',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tests/cloud_site_intake_wiring.py',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/hosting_billing_options_cases.py',
+    'tests/hosting_checkout_http_browser.py',
+    'tests/hosting_checkout_http_fixture.php',
+    'tests/hosting_checkout_http_guards.py',
+    'tests/hosting_checkout_native.php',
+    'tests/hosting_checkout_purchases_guards.php',
+    'tests/hosting_purchase_inbox_cases.py',
+    'tools/acceptance-contract.json',
+    'tools/acceptance-reports.json',
+))
+UX08_PAYMENT_ADDITIONS = frozenset((
+    'site/app/billing/gateway_receipts.php',
+    'site/app/hosting/payments.php',
+    'site/database/migrations/gateway_receipts_migrate.php',
+    'site/database/migrations/hosting_payments_migrate.php',
+    'site/database/schema/gateway_receipts_schema.php',
+    'site/database/schema/hosting_payments_schema.php',
+    'tests/hosting_payment_cases.py',
+    'tests/hosting_payment_native.php',
+))
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1449,7 +1499,7 @@ def validate_ux09_migration_preservation_source(root):
     base_entries = entries(root, UX09_MIGRATION_PRESERVATION_BASE)
     source_entries = entries(root, UX09_MIGRATION_PRESERVATION_SOURCE)
     for path in sorted(UX09_MIGRATION_PRESERVATION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_payment(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob',
                                UX09_MIGRATION_PRESERVATION_SOURCE + ':' + path)
                 and digest(current) == UX09_MIGRATION_PRESERVATION_SHA256[path]
@@ -1459,6 +1509,7 @@ def validate_ux09_migration_preservation_source(root):
 
 def project_ux09_migration_preservation(root, path, current):
     """Restore pre-migration-preservation bytes for older source proofs."""
+    current = project_ux08_payment(root, path, current)
     if path not in UX09_MIGRATION_PRESERVATION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX09_MIGRATION_PRESERVATION_SOURCE + ':' + path)
@@ -1641,6 +1692,54 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_payment_source(root):
+    """Bind the complete Shared payment, receipt, fulfillment and acceptance successor."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_SOURCE_TREE, 'UX-08 payment successor tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_BASE, UX08_PAYMENT_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_BASE, UX08_PAYMENT_SOURCE).decode().splitlines()
+    observed_modified = {line.split('\t', 1)[1] for line in changes if line.startswith('M\t')}
+    observed_added = {line.split('\t', 1)[1] for line in changes if line.startswith('A\t')}
+    require(observed_modified == UX08_PAYMENT_MODIFIED
+            and observed_added == UX08_PAYMENT_ADDITIONS
+            and len(changes) == len(UX08_PAYMENT_MODIFIED | UX08_PAYMENT_ADDITIONS),
+            'UX-08 payment successor changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_BASE)
+    source_entries = entries(root, UX08_PAYMENT_SOURCE)
+    require(not UX08_PAYMENT_ADDITIONS & set(base_entries)
+            and UX08_PAYMENT_ADDITIONS <= set(source_entries),
+            'UX-08 payment additions did not originate in the exact source range')
+    for path in sorted(UX08_PAYMENT_MODIFIED):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0],
+                'UX-08 payment modified source identity changed: ' + path)
+    for path in sorted(UX08_PAYMENT_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'UX-08 payment addition source identity changed: ' + path)
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'UX-08 payment source inventory is not canonical')
+
+
+def project_ux08_payment(root, path, current):
+    """Restore resulting-main bytes only while evaluating older source receipts."""
+    if path not in UX08_PAYMENT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_BASE + ':' + path)
+    if current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 payment successor changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_browser_stability_source(root):
     """Bind the final owner-network gate to a completed page lifecycle."""
     require(git(root, 'rev-parse', UX08_BROWSER_STABILITY_BASE + '^{tree}').decode().strip()
@@ -1708,6 +1807,7 @@ def validate_ux08_browser_navigation_source(root):
 
 def project_ux08_browser_navigation(root, path, current):
     """Restore the pre-disclosure browser assertion for older source proofs."""
+    current = project_ux08_payment(root, path, current)
     current = project_ux08_browser_stability(root, path, current)
     if path != UX08_BROWSER_NAVIGATION_PATH:
         return current
@@ -1733,7 +1833,8 @@ def validate_ux08_fixture_dependency_source(root):
     base_entries = entries(root, UX08_FIXTURE_DEPENDENCY_BASE)
     source_entries = entries(root, UX08_FIXTURE_DEPENDENCY_SOURCE)
     for path in sorted(UX08_FIXTURE_DEPENDENCY_MODIFIED):
-        require(ordinary(root, path)
+        current = project_ux08_payment(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
                 'UX-08 fixture-dependency source identity changed: ' + path)
@@ -1741,6 +1842,7 @@ def validate_ux08_fixture_dependency_source(root):
 
 def project_ux08_fixture_dependency(root, path, current):
     """Restore the pre-fixture-dependency bytes for older UX-08 receipts."""
+    current = project_ux08_payment(root, path, current)
     if path not in UX08_FIXTURE_DEPENDENCY_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_FIXTURE_DEPENDENCY_SOURCE + ':' + path)
@@ -1762,7 +1864,9 @@ def validate_ux08_artifact_proof_source(root):
             'UX-08 artifact-proof successor changed a different path or status set')
     base_entries = entries(root, UX08_ARTIFACT_PROOF_BASE)
     source_entries = entries(root, UX08_ARTIFACT_PROOF_SOURCE)
-    require(ordinary(root, UX08_ARTIFACT_PROOF_PATH)
+    current = project_ux08_payment(root, UX08_ARTIFACT_PROOF_PATH,
+                                   ordinary(root, UX08_ARTIFACT_PROOF_PATH))
+    require(current
             == git(root, 'cat-file', 'blob', UX08_ARTIFACT_PROOF_SOURCE + ':' + UX08_ARTIFACT_PROOF_PATH)
             and mode(root, UX08_ARTIFACT_PROOF_PATH) == base_entries[UX08_ARTIFACT_PROOF_PATH][0]
             == source_entries[UX08_ARTIFACT_PROOF_PATH][0] == '100644',
@@ -1798,7 +1902,7 @@ def validate_ux08_review_source(root):
         current = project_ux08_artifact_proof(root, path, ordinary(root, path))
         require(current
                 == git(root, 'cat-file', 'blob', UX08_REVIEW_SOURCE + ':' + path)
-                and (path != INVENTORY or current == canonical_inventory(root))
+                and (path != INVENTORY or ordinary(root, INVENTORY) == canonical_inventory(root))
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0],
                 'UX-08 read-scope successor source identity changed: ' + path)
 
@@ -2157,6 +2261,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_payment_source(root)
     validate_ux08_browser_stability_source(root)
     validate_ux08_browser_navigation_source(root)
     validate_ux08_fixture_dependency_source(root)
@@ -2221,6 +2326,14 @@ def verify_current(root):
                                   | CLOUD_INTAKE_ADDITIONS | NARRATIVES
                                   | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, UX09_SOURCE_RECEIPT}),
             'UX-09 additions cannot replace existing admitted source or proof files')
+    require(not UX08_PAYMENT_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
+                                          | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
+                                          | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
+                                          | CLOUD_INTAKE_ADDITIONS | UX09_ADDITIONS
+                                          | UX08_STOREFRONT_ADDITIONS | NARRATIVES
+                                          | {INVENTORY, RECEIPT, VERIFIER, REGRESSION,
+                                             UX09_SOURCE_RECEIPT}),
+            'UX-08 payment additions cannot replace existing admitted source or proof files')
     require(CLOUD_INTAKE_SOURCE_NARRATIVES <= NARRATIVES,
             'Cloud intake source narratives must remain non-executable exceptions')
     require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
@@ -2360,7 +2473,7 @@ def verify_current(root):
                 'Database workflow addition bytes or mode changed: ' + path)
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
-               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS
+               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
@@ -2394,10 +2507,16 @@ def verify_current(root):
                 and path not in entries(root, ONBOARDING_BASE),
                 'Software onboarding addition identity changed: ' + path)
     for path in sorted(UX08_STOREFRONT_ADDITIONS):
-        value = project_ux08_review(root, path, ordinary(root, path))
+        value = project_ux08_payment(root, path, ordinary(root, path))
+        value = project_ux08_review(root, path, value)
         require(value == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'UX-08 storefront addition no longer matches its exact source: ' + path)
+    for path in sorted(UX08_PAYMENT_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
+                and mode(root, path) == '100644',
+                'UX-08 payment addition no longer matches its exact source: ' + path)
     for path in sorted(ADDITIONS):
         original = reconstruct_addition(data, path, ordinary(root, path))
         require(mode(root, path) == addition_entries[path][0] == '100644'
@@ -2438,6 +2557,7 @@ def verify_current(root):
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
+        {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
         {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
