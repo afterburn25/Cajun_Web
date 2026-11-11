@@ -875,8 +875,8 @@
     ],
     "source_sha256": {
       "tests/hosting_checkout_native.php": "6b268fb41d30608c82767d0d81c64bf81c074aa910291a7ddcd04da38d58f7de",
-      "tests/hosting_payment_native.php": "b0815b893f25c4f070f641cebfff6e274b08b04ab147b3569bbb792b31d961de",
-      "tests/hosting_payment_cases.py": "9afb2e6a108bf64a142af9a3a3640ed3edbefe0cb1240eabdbe9f34c751123ba"
+      "tests/hosting_payment_native.php": "ac78e3c67d3c8a443b5c163c2407db09c7a91f81317c36a43d1104cde417d3b2",
+      "tests/hosting_payment_cases.py": "1d104e7f30c0e44e9b2b9f0f8b31ad0268e0baf8554389a89a83af759ebef6cc"
     },
     "scope": "Disposable Linux SQL checkout and payment proofs plus installed packaged HTTP/Chromium Shared payment lifecycle with closed local gateway/provider callbacks. No live charge, paid provisioning, customer message, production access, deployment or VPS checkout claim."
   }
