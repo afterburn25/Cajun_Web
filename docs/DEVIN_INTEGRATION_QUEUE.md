@@ -2,6 +2,8 @@
 
 Held work that may proceed without advancing main: exact-main backlog/evidence audit; release planning without a version bump; current-main successors that avoid checkout/payment/hosting-payment paths; local source/build/proof preparation; draft coordination records. Current preparations are `codex/comparison-source-successor-20261111` at `c05594af09528ea756f4e06d8acd3cefd4db0d88`, with its expected source-composition refusal preserved, and draft/held PR #390 at `8d451978e635503dc1b8d4693144221837517401` for the independent notification-health UI. PR #390 is not accepted or mergeable yet; Linux source proof, SQL/browser/package gates and the post-#388 sequence remain mandatory.
 
+Local held revision-history preparation is `codex/revision-history-successor-20261111` at `eb64c01d2e26fb763f7c548b85220b3c8c8bd9a7`, tree `d564733d4f802672e20caea04b76fe4b70718e4a`. It reconstructs only #338's still-useful low-conflict mirrors/adapter/view/CSS delta and fixes the old reorder/duplicate false-identical behavior. Its expected shared-inventory proof refusal is preserved; no PR, hosted acceptance or merge claim exists.
+
 ## 2026-11-06 12:50 UTC — PR #367 managed-media serving proof successor
 
 The exact c074 analysis is complete: 0 bugs, 0 vulnerabilities, the prior bug and flag resolved, and one new applicable flag because a static SVG proved only that a thumbnail element existed. The local successor is test-only and executes the shipping managed-media server over loopback with a guarded PNG, an exact media row, HTTP 200 and successful browser decoding.
