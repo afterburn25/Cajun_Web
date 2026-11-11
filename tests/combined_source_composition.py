@@ -141,6 +141,12 @@ UX08_BROWSER_NAVIGATION_BASE_TREE = 'eac7d1e7c5cc5bdf489846e0dd07191b93870eae'
 UX08_BROWSER_NAVIGATION_SOURCE = 'bdba2c03622d9de4e8fdc99ecd11820c497a7c12'
 UX08_BROWSER_NAVIGATION_SOURCE_TREE = 'def24e13ff1bda9e7c2f42507a8a9344a4c0c717'
 UX08_BROWSER_NAVIGATION_PATH = 'tests/release_cases.py'
+UX08_BROWSER_STABILITY_BASE = '8c6e1f2b44fd2ab0717fd25b175de6bad5d8b412'
+UX08_BROWSER_STABILITY_BASE_TREE = '7db87e72ba8b93b8b5153f87e7029eb3304d71fb'
+UX08_BROWSER_STABILITY_SOURCE = '85173f76a7383fe1b1de42c9ba1697dafc9c41a4'
+UX08_BROWSER_STABILITY_SOURCE_TREE = '17c62dff821a67da5d704a7c63c3c454facf7e59'
+UX08_BROWSER_STABILITY_PATH = 'tests/release_cases.py'
+UX08_BROWSER_STABILITY_SHA256 = '04308784931c7cff22a120b81453304ee105c2b5c2878e653570a5cb06d7af9f'
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1635,6 +1641,45 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_browser_stability_source(root):
+    """Bind the final owner-network gate to a completed page lifecycle."""
+    require(git(root, 'rev-parse', UX08_BROWSER_STABILITY_BASE + '^{tree}').decode().strip()
+            == UX08_BROWSER_STABILITY_BASE_TREE
+            and git(root, 'rev-parse', UX08_BROWSER_STABILITY_SOURCE + '^{tree}').decode().strip()
+            == UX08_BROWSER_STABILITY_SOURCE_TREE,
+            'UX-08 browser-stability source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_BROWSER_STABILITY_BASE,
+        UX08_BROWSER_STABILITY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_BROWSER_STABILITY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_BROWSER_STABILITY_BASE, UX08_BROWSER_STABILITY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_BROWSER_STABILITY_PATH],
+            'UX-08 browser-stability source changed a different path or status set')
+    base_entries = entries(root, UX08_BROWSER_STABILITY_BASE)
+    source_entries = entries(root, UX08_BROWSER_STABILITY_SOURCE)
+    current = ordinary(root, UX08_BROWSER_STABILITY_PATH)
+    require(current == git(root, 'cat-file', 'blob', UX08_BROWSER_STABILITY_SOURCE + ':'
+                           + UX08_BROWSER_STABILITY_PATH)
+            and digest(current) == UX08_BROWSER_STABILITY_SHA256
+            and mode(root, UX08_BROWSER_STABILITY_PATH)
+            == base_entries[UX08_BROWSER_STABILITY_PATH][0]
+            == source_entries[UX08_BROWSER_STABILITY_PATH][0] == '100644',
+            'UX-08 browser-stability source identity changed')
+
+
+def project_ux08_browser_stability(root, path, current):
+    """Restore the pre-stability browser driver for older source proofs."""
+    if path != UX08_BROWSER_STABILITY_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_BROWSER_STABILITY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_BROWSER_STABILITY_BASE + ':' + path)
+    if current == base:
+        return current
+    require(current == source and digest(current) == UX08_BROWSER_STABILITY_SHA256,
+            'Current UX-08 browser-stability source changed')
+    return base
+
+
 def validate_ux08_browser_navigation_source(root):
     """Bind the installed-browser contract to the native Hosting disclosure."""
     require(git(root, 'rev-parse', UX08_BROWSER_NAVIGATION_BASE + '^{tree}').decode().strip()
@@ -1650,7 +1695,9 @@ def validate_ux08_browser_navigation_source(root):
             'UX-08 browser-navigation source changed a different path or status set')
     base_entries = entries(root, UX08_BROWSER_NAVIGATION_BASE)
     source_entries = entries(root, UX08_BROWSER_NAVIGATION_SOURCE)
-    require(ordinary(root, UX08_BROWSER_NAVIGATION_PATH)
+    current = project_ux08_browser_stability(
+        root, UX08_BROWSER_NAVIGATION_PATH, ordinary(root, UX08_BROWSER_NAVIGATION_PATH))
+    require(current
             == git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_SOURCE + ':'
                    + UX08_BROWSER_NAVIGATION_PATH)
             and mode(root, UX08_BROWSER_NAVIGATION_PATH)
@@ -1661,6 +1708,7 @@ def validate_ux08_browser_navigation_source(root):
 
 def project_ux08_browser_navigation(root, path, current):
     """Restore the pre-disclosure browser assertion for older source proofs."""
+    current = project_ux08_browser_stability(root, path, current)
     if path != UX08_BROWSER_NAVIGATION_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_BROWSER_NAVIGATION_SOURCE + ':' + path)
@@ -2109,6 +2157,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_browser_stability_source(root)
     validate_ux08_browser_navigation_source(root)
     validate_ux08_fixture_dependency_source(root)
     validate_ux08_artifact_proof_source(root)
