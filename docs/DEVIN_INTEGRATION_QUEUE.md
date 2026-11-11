@@ -1,4 +1,6 @@
-> **Current queue:** issue #157 is authoritative; UX-09, then UX-08, then REL-01/1.27.0. The Codex override at the end of this retained record supersedes historical ownership and P2 ordering.
+> **Current queue — 2026-11-11:** issue #157 is authoritative. UX-09 is verified on main; UX-08 PR #388 is frozen at `d489b27504d65c24457a6cf134e64ba5ba8bb309` (implementation `1dd1784ef3146576b62d8f80e9676907d0b4b45a`) behind an external GitHub-hosted Ubuntu/Launchpad network blocker. Do not modify, merge, retry or bypass it. Its only remaining action is the documented fresh exact-source first-attempt process after network recovery. REL-01 remains planning only. #344/#345/#347/#348 and other P2 integration remain held until the required UX/REL sequence permits them. See [the refreshed backlog disposition](BLOCKED_BACKLOG_PREPARATION_20261111.md) and [1.27.0 plan](RELEASE_1.27.0_PLAN.md).
+
+Held work that may proceed without advancing main: exact-main backlog/evidence audit; release planning without a version bump; current-main successors that avoid checkout/payment/hosting-payment paths; local source/build/proof preparation; draft coordination records. Current local preparation is `codex/comparison-source-successor-20261111` at `c05594af09528ea756f4e06d8acd3cefd4db0d88`; its expected source-composition refusal remains an explicit blocker, not a test to weaken.
 
 ## 2026-11-06 12:50 UTC — PR #367 managed-media serving proof successor
 

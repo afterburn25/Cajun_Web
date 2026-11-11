@@ -1,4 +1,6 @@
-> **Current handoff:** UX-09 public customer identity is the only active implementation priority. See the detailed 2026-11-09 handoff at the end of this retained chronological record.
+> **Current handoff — 2026-11-11:** PR #388 is frozen at `d489b27504d65c24457a6cf134e64ba5ba8bb309` (implementation `1dd1784ef3146576b62d8f80e9676907d0b4b45a`) on verified main `ebcb7a1e52982c742996e10e2042c69764890fed`. Its only remaining action is fresh exact-source first-attempt hosted acceptance after GitHub runner networking recovers. Do not modify, merge, retry or bypass it. Continue only held, non-conflicting audit/preparation from [the current backlog record](docs/BLOCKED_BACKLOG_PREPARATION_20261111.md) and [REL-01 plan](docs/RELEASE_1.27.0_PLAN.md); do not advance main if that invalidates the frozen sequence.
+
+Current held branches: `codex/blocked-backlog-audit-20261111` (documentation only, from exact main) and `codex/comparison-source-successor-20261111` at local commit `c05594af09528ea756f4e06d8acd3cefd4db0d88`, tree `3503d903863feb3fc69497cc2055d8a2ed7687f3`. The latter changes six public comparison/test/inventory paths and no #388 file. PHP/Python syntax, official-source review, canonical refresh and 94 build guards pass. Full composition stops at the exact expected UX-08 inventory identity because the new projection has not yet been admitted; preserve that refusal. No hosted acceptance, merge, release or live operation is claimed.
 
 ## 2026-11-06 12:50 UTC — managed-image serving proof pending publication
 
