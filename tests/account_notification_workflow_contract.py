@@ -42,6 +42,32 @@ PROTECTED_BROWSER_PREDECESSOR = '        run: .ci-venv/bin/python tests/browser_
 PROTECTED_BROWSER_SUCCESSOR = ('        run: |\n'
                                '          .ci-venv/bin/python tests/browser_acceptance.py\n'
                                '          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite\n')
+PROTECTED_APT_MIRRORS = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+'''
+PROTECTED_APT_MIRRORS_COUNT = 4
 PROTECTED_APT_WRAPPER = '''          cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do
@@ -160,6 +186,9 @@ def validate(workflow, legacy, protected):
           protected_predecessor.count(PROTECTED_BROWSER_SUCCESSOR) == 1)
     protected_predecessor = protected_predecessor.replace(
         PROTECTED_BROWSER_SUCCESSOR, PROTECTED_BROWSER_PREDECESSOR, 1)
+    check('Protected application workflow has every reviewed canonical mirror selection',
+          protected_predecessor.count(PROTECTED_APT_MIRRORS) == PROTECTED_APT_MIRRORS_COUNT)
+    protected_predecessor = protected_predecessor.replace(PROTECTED_APT_MIRRORS, '')
     check('Protected application workflow has every reviewed bounded reconnect wrapper',
           protected_predecessor.count(PROTECTED_APT_WRAPPER) == PROTECTED_APT_WRAPPER_COUNT)
     protected_predecessor = protected_predecessor.replace(PROTECTED_APT_WRAPPER, '')
@@ -296,6 +325,7 @@ def self_test(root=ROOT):
         ('changed UX-08 browser continuation', protected.replace(
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),
+        ('lost canonical application mirror selection', protected.replace(PROTECTED_APT_MIRRORS, '', 1)),
         ('lost bounded application reconnect wrapper', protected.replace(PROTECTED_APT_WRAPPER, '', 1)),
         ('lost bounded application mirror retry', protected.replace(
             PROTECTED_APT_CALL_SUCCESSOR, PROTECTED_APT_CALL_PREDECESSOR, 1)),

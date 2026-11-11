@@ -50,6 +50,30 @@ jobs:
         id: setup
         run: |
           mkdir -p qa
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
           cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do
@@ -246,6 +270,30 @@ jobs:
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
           cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do
@@ -568,6 +616,30 @@ jobs:
         id: setup
         run: |
           mkdir -p qa
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
           cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do
@@ -717,6 +789,30 @@ jobs:
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
           cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do

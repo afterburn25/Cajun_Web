@@ -20,6 +20,31 @@ def main():
     producer = (runner.ROOT/'tests/hosting_checkout_native.php').read_text(encoding='utf-8')
     labels = runner.native_labels(producer)
     workflow = (runner.ROOT/'.github/workflows/consolidation-after-backups.yml').read_text(encoding='utf-8')
+    apt_mirrors = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+'''
     apt_wrapper = '''          cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do
@@ -35,7 +60,8 @@ def main():
           }
 '''
     check('Checkout apt calls preserve mirror failover and hard-fail bounded reconnects',
-          workflow.count(apt_wrapper) == 1
+          workflow.count(apt_mirrors) == 1
+          and workflow.count(apt_wrapper) == 1
           and workflow.count('cwp_apt_get -o Acquire::Retries=1') == 4
           and 'sudo apt-get -o Acquire::Retries' not in workflow
           and 'Acquire::Retries=5' not in workflow)
