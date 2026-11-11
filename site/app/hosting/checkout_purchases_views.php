@@ -53,7 +53,7 @@ function hosting_purchases_ui_card(array $row,bool $owner): void {
     echo '<dt>Purchase status</dt><dd data-hosting-payment-stage>'.esc($purchase).'</dd><dt>Service agreement</dt><dd>'.esc($agreement).'</dd><dt>Hosting setup</dt><dd>'.esc($setup).'</dd>';
     if ($order!==null&&is_string($order['domain_name'])&&$order['domain_name']!=='') echo '<dt>Website address</dt><dd>'.esc($order['domain_name']).'</dd>';
     echo '</dl>';
-    if($owner&&($row['payment']['payment_stage']??null)==='payment_review'&&in_array($row['payment']['charge_state']??null,['processing','uncertain','review'],true)){
+    if($owner&&($row['invoice']['status']??null)==='issued'&&($row['payment']['payment_stage']??null)==='payment_review'&&in_array($row['payment']['charge_state']??null,['processing','uncertain','review'],true)){
         echo '<form method="post" data-hosting-payment-reconcile>';admin_action('hosting_payment_reconcile');
         echo '<input type="hidden" name="request_id" value="'.esc($row['request_id']).'">';
         admin_input('transaction_id','Verified Authorize.Net transaction ID',is_string($row['payment']['transaction_id']??null)?$row['payment']['transaction_id']:'','text','required pattern="[0-9]{5,30}" maxlength="30" autocomplete="off"');

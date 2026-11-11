@@ -18,7 +18,7 @@ function hosting_purchases_admin_data(array $query): array {
     if (($user['role']??null)!=='owner'||support_current()||array_key_exists('support',$query)) throw new RuntimeException('Sign in as the owner outside support access.');
     return hosting_purchases_owner_page(hosting_purchases_ui_page($query));
 }
-function hosting_purchases_admin_render(): never {
+function hosting_purchases_admin_render(string $error=''): never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     $user=require_admin();
     if (($user['role']??null)!=='owner'||support_current()||array_key_exists('support',$_GET)) {fail_page('Hosting purchases are available to the owner outside support access.',403);}
@@ -26,6 +26,7 @@ function hosting_purchases_admin_render(): never {
     $page=null;
     try {$page=hosting_purchases_admin_data($_GET);} catch (Throwable $e) {report_error($e);http_response_code(503);}
     admin_head('Hosting purchases','hosting-purchases',$user);
+    if($error!=='')echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     require CWP_CODE_ROOT.'/admin/views/hosting_purchases.php';
     admin_foot();exit;
 }

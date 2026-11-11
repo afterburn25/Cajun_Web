@@ -88,6 +88,7 @@ def main():
     check('Twelve exact unique capture names retained', len(runner.CAPTURES) == 12 and len(set(runner.CAPTURES)) == 12)
     source = {path: (runner.ROOT/path).read_text(encoding='utf-8') for path in (
         'site/admin/controllers/actions.php', 'site/admin/controllers/hosting_purchases.php',
+        'site/admin/controllers/router.php',
         'site/app/hosting/checkout_purchases_views.php', 'site/app/billing/ledger.php',
         'site/database/migrations/hosting_payments_migrate.php',
         'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php')}
@@ -97,6 +98,12 @@ def main():
           and "posted('confirm',1)!=='1'" in source['site/admin/controllers/hosting_purchases.php']
           and "hosting_payment_reconcile(" in source['site/admin/controllers/hosting_purchases.php']
           and "data-hosting-payment-reconcile" in source['site/app/hosting/checkout_purchases_views.php'])
+    check('Failed owner reconciliation returns escaped visible feedback',
+          "hosting_purchases_admin_render($error)" in source['site/admin/controllers/router.php']
+          and "function hosting_purchases_admin_render(string $error='')" in source['site/admin/controllers/hosting_purchases.php']
+          and "role=\"alert\">'.esc($error)" in source['site/admin/controllers/hosting_purchases.php'])
+    check('Paid reversal review never presents initial-capture reconciliation',
+          "$row['invoice']['status']??null)==='issued'" in source['site/app/hosting/checkout_purchases_views.php'])
     check('Every ledger writer serializes against unresolved hosting captures',
           'function ledger_hosting_attempt_assert_clear' in source['site/app/billing/ledger.php']
           and 'ledger_hosting_attempt_assert_clear((int)$i[\'id\'],$hostingAttempt);' in source['site/app/billing/ledger.php'])
