@@ -1721,9 +1721,12 @@ def project_notification_health(root, path, current):
     if path not in NOTIFICATION_HEALTH_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+    if current == base:
+        return current
     require(current == source,
             'Current notification health successor changed before predecessor projection: ' + path)
-    return git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+    return base
 
 
 def validate_ux08_browser_stability_source(root):
