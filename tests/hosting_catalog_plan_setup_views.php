@@ -27,6 +27,19 @@ set_error_handler(static function(int $level,string $message,string $file,int $l
 function hsv_ok(string $name,bool $passed): void {$GLOBALS['checks'][]=['name'=>$name,'passed'=>$passed];if (!$passed) throw new RuntimeException($name);}
 function hsv_bad(string $name,callable $call): void {try {$call();} catch (InvalidArgumentException|RuntimeException|LogicException $e) {if ($e instanceof PDOException) throw $e;hsv_ok($name,true);return;}hsv_ok($name,false);}
 function hsv_render(callable $call): string {ob_start();try {$call();return ob_get_contents();}finally {ob_end_clean();}}
+function hsv_catalog_page(array $scope): void {
+    static $executed=null;
+    if ($executed===null) {
+        $source=file_get_contents(CWP_CODE_ROOT.'/admin/views/hosting_catalog.php');
+        $include="require_once CWP_CODE_ROOT.'/app/hosting/payments.php';";
+        $header="<?php\ndeclare(strict_types=1);\n";
+        if (substr_count($source,$include)!==1||substr_count($source,$header)!==1) throw new RuntimeException('Unexpected hosting payment view seam.');
+        $executed=str_replace($header,'',$source);
+        $executed=str_replace($include,'/* Payment services are exercised by their native suites; this view uses the modeled disabled setting. */',$executed);
+        $GLOBALS['fragments'][]=['file'=>'admin/views/hosting_catalog.php','function'=>'whole view','sha256'=>hash('sha256',$source),'executed_sha256'=>hash('sha256',$executed),'payment_include_omitted'=>true];
+    }
+    extract($scope,EXTR_SKIP);eval($executed);
+}
 function esc(mixed $value): string {return htmlspecialchars((string)$value,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');}
 function admin_url(string $page='',array $query=[]): string {return '/studio/admin.php?'.http_build_query(['view'=>$page]+$query);}
 function csrf_field(): string {return '<input type="hidden" name="csrf" value="synthetic-csrf">';}
@@ -48,6 +61,7 @@ function hosting_catalog_ready(): bool {return true;}
 function hosting_storefront_ready(): bool {return true;}
 function hosting_storefront_slug(mixed $value): string {if(!is_string($value)||!preg_match('/\A[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\z/',$value))throw new InvalidArgumentException('Invalid category.');return $value;}
 function hosting_storefront_category_projection(array $category): array {return ['slug'=>$category['slug'],'label'=>$category['label'],'summary'=>$category['summary'],'required_family'=>$category['required_family'],'purchase_mode'=>$category['purchase_mode'],'revision'=>$category['revision'],'sha256'=>hash('sha256',json_encode($category,JSON_THROW_ON_ERROR))];}
+function setting(string $name): string {if($name!=='hosting_gateway_mode')throw new LogicException('Unexpected modeled setting.');return 'disabled';}
 function hosting_storefront_current_category(string $slug): ?array {
     if(!in_array($slug,['shared-hosting','vps-hosting'],true))return null;
     return ['format'=>1,'id'=>str_repeat($slug==='shared-hosting'?'5':'6',32),'slug'=>$slug,'revision'=>1,'label'=>$slug==='shared-hosting'?'Shared Hosting':'VPS Hosting','summary'=>$slug==='shared-hosting'?'Managed Shared plans.':'VPS is not available online.','required_family'=>$slug==='shared-hosting'?'hosting':'vps','purchase_mode'=>$slug==='shared-hosting'?'online':'unavailable','created_by'=>1,'created_at'=>1700000000,'sha256'=>str_repeat($slug==='shared-hosting'?'7':'8',64)];
@@ -155,15 +169,16 @@ try {
     $model['page_rows']=[];$data=hosting_catalog_admin_data(['product_id'=>'7','plan_id'=>$intent['plan_id']]);hsv_ok('Unavailable match gives local notice and preserves page',$data['selected_plan_id']===''&&$data['plan_notice']!==''&&$data['product']['id']===7);
     $model['plans'][$intent['plan_id']]=['journal_json'=>$plan->json()];$data=hosting_catalog_admin_data(['product_id'=>'7','plan_id'=>$intent['plan_id']]);
     $_POST=[];$values=hosting_catalog_admin_values([]);$setup=hosting_catalog_setup_screen($product,[]);$preview=null;$previewError='';$categoryPreview=null;$categoryPreviewError='';
-    $page=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
+    $page=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){hsv_catalog_page(compact('data','values','setup','preview','previewError','categoryPreview','categoryPreviewError'));});
     hsv_ok('Actual offers view keeps original chooser and explicit preview action',str_contains($page,'data-hosting-plan-setup')&&str_contains($page,'name="action" value="hosting_catalog_preview"')&&str_contains($page,'value="'.$intent['plan_id'].'" selected'));
+    hsv_ok('Actual offers view renders disabled hosting payment setup without loading payment services',str_contains($page,'name="action" value="hosting_catalog_payment_setup"')&&str_contains($page,'name="gateway_mode"')&&str_contains($page,'value="disabled" selected'));
     hsv_ok('Creating a plan never renders an automatic publish submission',!str_contains($page,'name="action" value="hosting_catalog_publish"'));
     hsv_ok('Actual offers view renders the setup section once',substr_count($page,'id="finish-hosting-offer"')===1);
     $_POST=hsv_post();$model['preview_error']=true;$setup=hosting_catalog_setup_screen(null,$_POST);$data['ready']=false;
-    $notReady=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
+    $notReady=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){hsv_catalog_page(compact('data','values','setup','preview','previewError','categoryPreview','categoryPreviewError'));});
     hsv_ok('Unprepared history page retains failed setup form alongside preparation',str_contains($notReady,'Enable hosting offers')&&str_contains($notReady,'name="mapping_id" value="'.$_POST['mapping_id'].'"')&&str_contains($notReady,'disabled>Create matching plan'));
     $data['ready']=true;$data['product']=null;
-    $noProduct=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){require CWP_CODE_ROOT.'/admin/views/hosting_catalog.php';});
+    $noProduct=hsv_render(function()use($data,$values,$setup,$preview,$previewError,$categoryPreview,$categoryPreviewError){hsv_catalog_page(compact('data','values','setup','preview','previewError','categoryPreview','categoryPreviewError'));});
     hsv_ok('Missing selected product still retains rejected setup fields',str_contains($noProduct,'data-hosting-finish-plan')&&str_contains($noProduct,'Email support within two business days'));
     $model['preview_error']='pdo';$pdoPropagated=false;
     try {hosting_catalog_setup_screen(null,$_POST);} catch (PDOException) {$pdoPropagated=true;}
