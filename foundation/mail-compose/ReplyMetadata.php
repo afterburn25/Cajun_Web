@@ -16,11 +16,21 @@ require_once __DIR__.'/MessageThread.php';
 /** Bounded received-header metadata. This does not establish mailbox authority. */
 final readonly class ReplyMetadata
 {
-    private function __construct(public array $recipients, public MessageThread $thread) {}
+    private function __construct(public array $recipients, public MessageThread $thread, public array $to=[], public array $cc=[]) {}
 
     public static function decode(#[\SensitiveParameter] string $headers): self
     {
-        try {return self::decodeHeaders($headers);}
+        return self::decodeMode($headers,false);
+    }
+
+    public static function decodeForReplyAll(#[\SensitiveParameter] string $headers): self
+    {
+        return self::decodeMode($headers,true);
+    }
+
+    private static function decodeMode(#[\SensitiveParameter] string $headers,bool $copyRecipients):self
+    {
+        try {return self::decodeHeaders($headers,$copyRecipients);}
         catch(\CajunWebPro\Foundation\MailReceiving\ReceivingFailure $e) {throw $e;}
         catch(\Throwable) {
             // Never surface dependency diagnostics containing addresses or raw headers.
@@ -28,7 +38,7 @@ final readonly class ReplyMetadata
         }
     }
 
-    private static function decodeHeaders(#[\SensitiveParameter] string $headers): self
+    private static function decodeHeaders(#[\SensitiveParameter] string $headers,bool $copyRecipients): self
     {
         // Reuse the receiving envelope limits and its CRLF/body/control validation.
         HeaderDecoder::decode($headers);
@@ -40,7 +50,9 @@ final readonly class ReplyMetadata
                 continue;
             }
             $colon=strpos($line,':'); $name=strtolower(substr($line,0,$colon));
-            if(!in_array($name,['from','reply-to','message-id','references','in-reply-to'],true))continue;
+            $selected=['from','reply-to','message-id','references','in-reply-to'];
+            if($copyRecipients)$selected=[...$selected,'to','cc'];
+            if(!in_array($name,$selected,true))continue;
             if(isset($fields[$name])) throw new InvalidArgumentException('Duplicate reply metadata is unsupported.');
             $fields[$name]=substr($line,$colon+1);
         }
@@ -48,19 +60,22 @@ final readonly class ReplyMetadata
         $recipientField=array_key_exists('reply-to',$fields)?'reply-to':'from';
         if(!isset($fields[$recipientField])) throw new InvalidArgumentException('The message has no supported reply address.');
         $safe='';
-        foreach([$recipientField,'message-id','references','in-reply-to'] as $key) if(isset($fields[$key])) {
+        $keys=[$recipientField,'message-id','references','in-reply-to'];
+        if($copyRecipients)$keys=[...$keys,'to','cc'];
+        foreach($keys as $key) if(isset($fields[$key])) {
             self::boundedComments($fields[$key]);
             $value=preg_replace('/\r\n[ \t]+/',' ',$fields[$key]);
-            self::syntax($value,$key===$recipientField);
+            self::syntax($value,in_array($key,[$recipientField,'to','cc'],true));
             $safe.=$key.':'.$fields[$key]."\r\n";
         }
-        static $parser=null;
-        $parser??=new MailMimeParser(new NullLogger(),[
+        static $parsers=[];
+        $parserKey=$copyRecipients?1:0;
+        $parsers[$parserKey]??=new MailMimeParser(new NullLogger(),[
             'maxCommentDepth'=>12,'maxHeaderTokenCount'=>1024,'maxMessageHeaderTokenCount'=>3072,
-            'maxHeaderCount'=>5,'maxMessageHeaderCount'=>5,'maxHeaderSizeBytes'=>16384,
+            'maxHeaderCount'=>$copyRecipients?7:5,'maxMessageHeaderCount'=>$copyRecipients?7:5,'maxHeaderSizeBytes'=>16384,
             'maxMessageHeaderSizeBytes'=>16384,'maxMessagePartCount'=>1,'maxMimePartDepth'=>1,
         ],false);
-        $message=$parser->parse($safe."\r\n",false);
+        $message=$parsers[$parserKey]->parse($safe."\r\n",false);
         $address=$message->getHeader($recipientField);
         if(!$address instanceof AddressHeader || $address->getGroups()!==[] || $address->getAllErrors(true)) {
             throw new InvalidArgumentException('The message has no supported reply address.');
@@ -69,6 +84,22 @@ final readonly class ReplyMetadata
         if($recipients===[]) throw new InvalidArgumentException('The message has no supported reply address.');
         // Apply the same exact address, duplicate and total-recipient rules as Send.
         $recipients=(new DraftContent($recipients,[],[],'',''))->to;
+        $lists=[];
+        foreach(['to','cc'] as $key) {
+            $lists[$key]=[];
+            if(!$copyRecipients||!isset($fields[$key]))continue;
+            $header=$message->getHeader($key);
+            if(!$header instanceof AddressHeader||$header->getGroups()!==[]||$header->getAllErrors(true)) {
+                throw new InvalidArgumentException('Unsupported recipient header in reply metadata.');
+            }
+            foreach($header->getAddresses() as $part) {
+                // Validate every received address before de-duplication or self
+                // exclusion so an invalid address can never disappear silently.
+                $email=(new DraftContent([$part->getEmail()],[],[],'',''))->to[0];
+                if(!in_array($email,$lists[$key],true))$lists[$key][]=$email;
+            }
+        }
+        if(count($lists['to'])>20||count($lists['cc'])>20)throw new InvalidArgumentException('This message has too many recipients to reply to all.');
         $ids=[];
         foreach(['message-id','references','in-reply-to'] as $key) {
             $header=$message->getHeader($key); $ids[$key]=[];
@@ -79,7 +110,7 @@ final readonly class ReplyMetadata
             }
         }
         if(count($ids['message-id'])>1 || $message->getAllErrors(false)) throw new InvalidArgumentException('Unsupported conversation identifiers.');
-        return new self($recipients,MessageThread::reply($ids['message-id'][0]??null,$ids['references'],$ids['in-reply-to']));
+        return new self($recipients,MessageThread::reply($ids['message-id'][0]??null,$ids['references'],$ids['in-reply-to']),$lists['to'],$lists['cc']);
     }
 
     private static function boundedComments(string $value):void
