@@ -16,9 +16,10 @@ function studio_upload_authority(int $jobId,string $actor,?array $client,?array 
 }
 /** Serialized upload commit shared by the web and worker paths; client and contact writes run under the account mutex so concurrent account/contact changes cannot interleave between admission and this boundary. */
 function studio_upload_write(int $jobId,string $actor,?array $client,?array $contact,string $id,string $path,string $name,string $mime,int $size,string $bytes): void {
- $commit=function()use($jobId,$actor,$client,$contact,$id,$path,$name,$mime,$size,$bytes): void {
+ $supportAttributed=false;$commit=function()use($jobId,$actor,$client,$contact,$id,$path,$name,$mime,$size,$bytes,&$supportAttributed): void {
   db()->beginTransaction();$written=false;try {
    if($ctx=support_current()){
+    $supportAttributed=true;
     $fresh=support_check($ctx['session']['id']);if(!$fresh||!staff_can('support.write',$fresh['actor']))throw new RuntimeException('Support upload is no longer permitted.');
     if(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? AND client_id=? FOR UPDATE',[$jobId,$fresh['client']['id']]))throw new InvalidArgumentException('Project not found.');
    }else studio_upload_authority($jobId,$actor,$client,$contact);
@@ -28,6 +29,7 @@ function studio_upload_write(int $jobId,string $actor,?array $client,?array $con
   }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();if($written)@unlink($path);throw $e;}
  };
  if($actor==='client'||$actor==='contact')staff_locked($commit);else $commit();
+ require_once CWP_CODE_ROOT.'/app/notifications/events.php';notification_project_file($jobId,$id,$supportAttributed?'support':($actor==='admin'?'staff':$actor));
 }
 function studio_upload(int $jobId,string $actor): void {
  $c=null;$ct=null;

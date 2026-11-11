@@ -70,6 +70,7 @@ try{
     sort($outputs);nc_ok('Two simultaneous dispatchers send the same item once',$outputs===['not_due','sent']&&file_get_contents($private.'/transport-calls.log')==="accepted\n"&&(int)nc_delivery($parallel)['attempts']===1);
     notification_email_configure(false);$before=nc_state();nc_denied('Paused delivery retains queue records',fn()=>notification_outbox_pump(),'Enable notification email');nc_ok('Pausing does not discard queued history',nc_state()===$before);
     require __DIR__.'/notification_ticket_native_cases.php';
+    require __DIR__.'/notification_project_native_cases.php';
     save_setting('notification_feed_version','');nc_denied('Missing schema marker cannot adopt unknown notification history',fn()=>notification_feed_migrate(),'Unrecognized notification');save_setting('notification_feed_version','1');
     db()->exec('RENAME TABLE notifyci_notification_deliveries TO notifyci_saved_deliveries');$error=null;try{notification_feed_migrate();}catch(RuntimeException $e){$error=$e;}finally{db()->exec('RENAME TABLE notifyci_saved_deliveries TO notifyci_notification_deliveries');}nc_ok('Missing known history is not recreated as empty',$error!==null&&str_contains($error->getMessage(),'Restore the original'));
     nc_ok('Existing project metadata remains unchanged',one('SELECT title,summary,milestones FROM '.table('studio_jobs').' WHERE id=1')===['title'=>'Synthetic existing project','summary'=>'Retain this summary','milestones'=>'Retain milestones']);

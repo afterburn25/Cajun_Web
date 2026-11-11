@@ -21,6 +21,31 @@ function notification_ticket_event(string $ticket,int $client,string $event,stri
         foreach($recipients as $id)notification_emit($plan['audience'],(int)$id,$plan['kind'],$plan['ref'],$plan['title'],$plan['body'],$plan['event_key']);
     }catch(Throwable $e){report_error($e);}
 }
+/** Privacy-minimal recipient plan for one immutable project event. */
+function notification_project_projection(int $job,int $client,string $event,string $actor):array {
+    if($job<1||$client<1||!preg_match('/\A(created|version|file):([a-z0-9]+)\z/',$event,$match))throw new InvalidArgumentException('Invalid project notification identity.');
+    $type=$match[1];$identity=$match[2];if(($type==='file'&&!preg_match('/\A[a-f0-9]{32}\z/',$identity))||($type!=='file'&&(!preg_match('/\A[1-9][0-9]{0,9}\z/',$identity)||(int)$identity>2147483647))||($type==='created'&&(int)$identity!==$job))throw new InvalidArgumentException('Invalid project notification identity.');
+    if(!in_array($actor,['staff','client','contact','support'],true)||($type!=='file'&&$actor!=='staff'))throw new InvalidArgumentException('Invalid project notification actor.');
+    if($actor==='support')return [];$toClient=$actor==='staff';
+    $title=match($type){'created'=>'Project workspace opened','version'=>'Project review ready',default=>$toClient?'New project file':'New client project file'};
+    $body=match($type){'created'=>'Sign in to review your project workspace.','version'=>'Sign in to review the latest project version.',default=>$toClient?'Sign in to review the new private project file.':'A client shared a file with a project you can manage.'};
+    return ['audience'=>$toClient?'client':'staff','recipient_id'=>$toClient?$client:null,'permission'=>$toClient?null:'clients.manage','kind'=>$type==='version'?'approval-request':'project-update','ref'=>'job:'.$job,'title'=>$title,'body'=>$body,'event_key'=>match($type){'created'=>'project-created:'.$identity,'version'=>'version-ready:'.$identity,default=>'file-shared:'.$identity}];
+}
+function notification_project_emit(array $plan):void {
+    $recipients=$plan['audience']==='staff'?notification_staff_ids($plan['permission']):[$plan['recipient_id']];
+    foreach($recipients as $id)notification_emit($plan['audience'],(int)$id,$plan['kind'],$plan['ref'],$plan['title'],$plan['body'],$plan['event_key']);
+}
+function notification_project_created(int $job):void {
+    try{if(support_current()||!notifications_feed_ready())return;$row=one('SELECT client_id FROM '.table('studio_jobs').' WHERE id=?',[$job]);if($row)notification_project_emit(notification_project_projection($job,(int)$row['client_id'],'created:'.$job,'staff'));}catch(Throwable $e){report_error($e);}
+}
+function notification_project_version_ready(int $job,int $version):void {
+    try{if(support_current()||!notifications_feed_ready())return;$row=one('SELECT j.client_id FROM '.table('studio_versions').' v JOIN '.table('studio_jobs')." j ON j.id=v.job_id WHERE v.id=? AND v.job_id=? AND v.decision='pending'",[$version,$job]);if($row)notification_project_emit(notification_project_projection($job,(int)$row['client_id'],'version:'.$version,'staff'));}catch(Throwable $e){report_error($e);}
+}
+function notification_project_file(int $job,string $file,string $actor):void {
+    try{if(!notifications_feed_ready())return;if(!preg_match('/\A[a-f0-9]{32}\z/',$file)||!in_array($actor,['staff','client','contact','support'],true))throw new InvalidArgumentException('Invalid project file notification.');if($actor==='support')return;
+        $storedActor=$actor==='staff'?'admin':$actor;$row=one('SELECT j.client_id FROM '.table('studio_files').' f JOIN '.table('studio_jobs').' j ON j.id=f.job_id WHERE f.id=? AND f.job_id=? AND f.author_type=?',[$file,$job,$storedActor]);if($row)notification_project_emit(notification_project_projection($job,(int)$row['client_id'],'file:'.$file,$actor));
+    }catch(Throwable $e){report_error($e);}
+}
 function notification_project_message(int $jobId,int $messageId,string $from):void {
     if(!notifications_feed_ready())return;
     try{$job=one('SELECT client_id FROM '.table('studio_jobs').' WHERE id=?',[$jobId]);if(!$job)return;
