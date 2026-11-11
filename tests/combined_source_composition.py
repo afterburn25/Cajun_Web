@@ -147,6 +147,18 @@ UX08_BROWSER_STABILITY_SOURCE = '85173f76a7383fe1b1de42c9ba1697dafc9c41a4'
 UX08_BROWSER_STABILITY_SOURCE_TREE = '17c62dff821a67da5d704a7c63c3c454facf7e59'
 UX08_BROWSER_STABILITY_PATH = 'tests/release_cases.py'
 UX08_BROWSER_STABILITY_SHA256 = '04308784931c7cff22a120b81453304ee105c2b5c2878e653570a5cb06d7af9f'
+NOTIFICATION_HEALTH_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
+NOTIFICATION_HEALTH_BASE_TREE = '7ccd5cd2384b5adecbd66fd98b7719a92a38887e'
+NOTIFICATION_HEALTH_SOURCE = '6dc156a02a912bdf65fa6f1969c1b6386937ac5a'
+NOTIFICATION_HEALTH_SOURCE_TREE = '82227a1573855f389ad90ee9b3cf2a0369caf420'
+NOTIFICATION_HEALTH_MODIFIED = frozenset((
+    'site/admin/views/health.php',
+    'site/install/inventory.generated.php',
+    'tests/notification_center_browser.py',
+    'tests/notification_center_native.php',
+))
+NOTIFICATION_HEALTH_ADDITIONS = frozenset(('tests/notification_health_view_contract.php',))
+NOTIFICATION_HEALTH_SOURCE_PATHS = NOTIFICATION_HEALTH_MODIFIED | NOTIFICATION_HEALTH_ADDITIONS
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1641,6 +1653,51 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_notification_health_source(root):
+    """Bind the exact current-main successor that exposes retained notification metrics."""
+    require(git(root, 'rev-parse', NOTIFICATION_HEALTH_BASE + '^{tree}').decode().strip()
+            == NOTIFICATION_HEALTH_BASE_TREE
+            and git(root, 'rev-parse', NOTIFICATION_HEALTH_SOURCE + '^{tree}').decode().strip()
+            == NOTIFICATION_HEALTH_SOURCE_TREE,
+            'Notification health successor source tree changed')
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_HEALTH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_SOURCE).decode().splitlines()
+    observed_modified = {line.split('\t', 1)[1] for line in changes if line.startswith('M\t')}
+    observed_added = {line.split('\t', 1)[1] for line in changes if line.startswith('A\t')}
+    require(len(changes) == len(NOTIFICATION_HEALTH_SOURCE_PATHS)
+            and observed_modified == NOTIFICATION_HEALTH_MODIFIED
+            and observed_added == NOTIFICATION_HEALTH_ADDITIONS,
+            'Notification health successor changed a different path or status set')
+    base_entries = entries(root, NOTIFICATION_HEALTH_BASE)
+    source_entries = entries(root, NOTIFICATION_HEALTH_SOURCE)
+    require(not NOTIFICATION_HEALTH_ADDITIONS & set(base_entries)
+            and NOTIFICATION_HEALTH_ADDITIONS <= set(source_entries),
+            'Notification health test addition did not originate in its exact source range')
+    for path in sorted(NOTIFICATION_HEALTH_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and (path != INVENTORY or current == canonical_inventory(root)),
+                'Notification health successor source identity changed: ' + path)
+    for path in sorted(NOTIFICATION_HEALTH_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Notification health test addition source identity changed: ' + path)
+
+
+def project_notification_health(root, path, current):
+    """Restore exact current-main bytes before validating older source ranges."""
+    if path not in NOTIFICATION_HEALTH_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+    require(current == source,
+            'Current notification health successor changed before predecessor projection: ' + path)
+    return git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+
+
 def validate_ux08_browser_stability_source(root):
     """Bind the final owner-network gate to a completed page lifecycle."""
     require(git(root, 'rev-parse', UX08_BROWSER_STABILITY_BASE + '^{tree}').decode().strip()
@@ -1771,6 +1828,7 @@ def validate_ux08_artifact_proof_source(root):
 
 def project_ux08_artifact_proof(root, path, current):
     """Restore the exact pre-artifact-proof helper for older source proofs."""
+    current = project_notification_health(root, path, current)
     current = project_ux08_fixture_dependency(root, path, current)
     if path != UX08_ARTIFACT_PROOF_PATH:
         return current
@@ -1798,7 +1856,7 @@ def validate_ux08_review_source(root):
         current = project_ux08_artifact_proof(root, path, ordinary(root, path))
         require(current
                 == git(root, 'cat-file', 'blob', UX08_REVIEW_SOURCE + ':' + path)
-                and (path != INVENTORY or current == canonical_inventory(root))
+                and (path != INVENTORY or ordinary(root, path) == canonical_inventory(root))
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0],
                 'UX-08 read-scope successor source identity changed: ' + path)
 
@@ -2157,6 +2215,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_notification_health_source(root)
     validate_ux08_browser_stability_source(root)
     validate_ux08_browser_navigation_source(root)
     validate_ux08_fixture_dependency_source(root)
@@ -2221,6 +2280,14 @@ def verify_current(root):
                                   | CLOUD_INTAKE_ADDITIONS | NARRATIVES
                                   | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, UX09_SOURCE_RECEIPT}),
             'UX-09 additions cannot replace existing admitted source or proof files')
+    require(not NOTIFICATION_HEALTH_ADDITIONS & (set(expected) | ADAPTERS | REPAIRS | ADDITIONS
+                                                 | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
+                                                 | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS
+                                                 | CLOUD_INTAKE_ADDITIONS | UX09_ADDITIONS
+                                                 | UX08_STOREFRONT_ADDITIONS | NARRATIVES
+                                                 | {INVENTORY, RECEIPT, VERIFIER, REGRESSION,
+                                                    ONBOARDING_SOURCE, UX09_SOURCE_RECEIPT}),
+            'Notification health addition cannot replace admitted source or proof files')
     require(CLOUD_INTAKE_SOURCE_NARRATIVES <= NARRATIVES,
             'Cloud intake source narratives must remain non-executable exceptions')
     require(git(root, 'rev-parse', ADDITION_SOURCE + '^{tree}').decode().strip() == ADDITION_SOURCE_TREE,
@@ -2360,14 +2427,15 @@ def verify_current(root):
                 'Database workflow addition bytes or mode changed: ' + path)
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
-               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS
+               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_notification_health(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
@@ -2398,6 +2466,11 @@ def verify_current(root):
         require(value == git(root, 'cat-file', 'blob', UX08_STOREFRONT_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'UX-08 storefront addition no longer matches its exact source: ' + path)
+    for path in sorted(NOTIFICATION_HEALTH_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+                and mode(root, path) == '100644',
+                'Notification health addition no longer matches its exact source: ' + path)
     for path in sorted(ADDITIONS):
         original = reconstruct_addition(data, path, ordinary(root, path))
         require(mode(root, path) == addition_entries[path][0] == '100644'
@@ -2443,6 +2516,7 @@ def verify_current(root):
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
+        {'name': 'Exact notification-health successor binds four modified paths, one disjoint test addition and reversible current-main bytes', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
