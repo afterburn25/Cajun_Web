@@ -42,9 +42,24 @@ PROTECTED_BROWSER_PREDECESSOR = '        run: .ci-venv/bin/python tests/browser_
 PROTECTED_BROWSER_SUCCESSOR = ('        run: |\n'
                                '          .ci-venv/bin/python tests/browser_acceptance.py\n'
                                '          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite\n')
-PROTECTED_APT_RETRY_SUCCESSOR = 'Acquire::Retries=1'
-PROTECTED_APT_RETRY_PREDECESSOR = 'Acquire::Retries=5'
-PROTECTED_APT_RETRY_COUNT = 16
+PROTECTED_APT_WRAPPER = '''          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
+'''
+PROTECTED_APT_WRAPPER_COUNT = 4
+PROTECTED_APT_CALL_SUCCESSOR = 'cwp_apt_get -o Acquire::Retries=1'
+PROTECTED_APT_CALL_PREDECESSOR = 'sudo apt-get -o Acquire::Retries=5'
+PROTECTED_APT_CALL_COUNT = 16
 IMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'
 PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
@@ -145,11 +160,14 @@ def validate(workflow, legacy, protected):
           protected_predecessor.count(PROTECTED_BROWSER_SUCCESSOR) == 1)
     protected_predecessor = protected_predecessor.replace(
         PROTECTED_BROWSER_SUCCESSOR, PROTECTED_BROWSER_PREDECESSOR, 1)
-    check('Protected application workflow has every reviewed bounded mirror retry',
-          protected_predecessor.count(PROTECTED_APT_RETRY_SUCCESSOR) == PROTECTED_APT_RETRY_COUNT
-          and protected_predecessor.count(PROTECTED_APT_RETRY_PREDECESSOR) == 0)
+    check('Protected application workflow has every reviewed bounded reconnect wrapper',
+          protected_predecessor.count(PROTECTED_APT_WRAPPER) == PROTECTED_APT_WRAPPER_COUNT)
+    protected_predecessor = protected_predecessor.replace(PROTECTED_APT_WRAPPER, '')
+    check('Protected application workflow routes every reviewed apt call through bounded reconnects',
+          protected_predecessor.count(PROTECTED_APT_CALL_SUCCESSOR) == PROTECTED_APT_CALL_COUNT
+          and protected_predecessor.count(PROTECTED_APT_CALL_PREDECESSOR) == 0)
     protected_predecessor = protected_predecessor.replace(
-        PROTECTED_APT_RETRY_SUCCESSOR, PROTECTED_APT_RETRY_PREDECESSOR)
+        PROTECTED_APT_CALL_SUCCESSOR, PROTECTED_APT_CALL_PREDECESSOR)
     check('Protected complete application workflow retains its byte-identical predecessor',
           digest(protected_predecessor) == PROTECTED_SHA256)
     check('Workflow has ordinary indentation and no alternate YAML documents',
@@ -278,9 +296,10 @@ def self_test(root=ROOT):
         ('changed UX-08 browser continuation', protected.replace(
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),
+        ('lost bounded application reconnect wrapper', protected.replace(PROTECTED_APT_WRAPPER, '', 1)),
         ('lost bounded application mirror retry', protected.replace(
-            PROTECTED_APT_RETRY_SUCCESSOR, PROTECTED_APT_RETRY_PREDECESSOR, 1)),
-        ('extra bounded application mirror retry', protected + PROTECTED_APT_RETRY_SUCCESSOR + '\n'),
+            PROTECTED_APT_CALL_SUCCESSOR, PROTECTED_APT_CALL_PREDECESSOR, 1)),
+        ('extra bounded application mirror retry', protected + PROTECTED_APT_CALL_SUCCESSOR + '\n'),
         ('extra protected workflow command', protected.replace(
             PROTECTED_ADDITIONS[1], PROTECTED_ADDITIONS[1] + '          true # unreviewed command\n', 1)),
     ):

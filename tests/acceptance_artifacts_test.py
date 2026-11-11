@@ -216,8 +216,24 @@ def orchestration_evidence_checks(tmp, ctx):
     # Execute the workflow's actual reporting command against copied public source,
     # then exercise the real partition sealer. No application or provider runs.
     workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
-    check('Application apt calls preserve runner mirror failover',
-          workflow.count('Acquire::Retries=1') == 16
+    apt_wrapper = '''          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
+'''
+    check('Application apt calls preserve mirror failover and hard-fail bounded reconnects',
+          workflow.count(apt_wrapper) == 4
+          and workflow.count('cwp_apt_get -o Acquire::Retries=1') == 16
+          and 'sudo apt-get -o Acquire::Retries' not in workflow
           and 'Acquire::Retries=5' not in workflow)
     commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
     check('Exactly one build orchestration report command exists', len(commands) == 1)

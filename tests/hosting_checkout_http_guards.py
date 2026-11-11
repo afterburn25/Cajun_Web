@@ -20,8 +20,24 @@ def main():
     producer = (runner.ROOT/'tests/hosting_checkout_native.php').read_text(encoding='utf-8')
     labels = runner.native_labels(producer)
     workflow = (runner.ROOT/'.github/workflows/consolidation-after-backups.yml').read_text(encoding='utf-8')
-    check('Checkout apt calls preserve runner mirror failover',
-          workflow.count('Acquire::Retries=1') == 4
+    apt_wrapper = '''          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
+'''
+    check('Checkout apt calls preserve mirror failover and hard-fail bounded reconnects',
+          workflow.count(apt_wrapper) == 1
+          and workflow.count('cwp_apt_get -o Acquire::Retries=1') == 4
+          and 'sudo apt-get -o Acquire::Retries' not in workflow
           and 'Acquire::Retries=5' not in workflow)
     report = {'passed': True, 'checks': [{'name': n, 'passed': True} for n in labels], 'runtime': {'php': '8.3.30', 'database': 'synthetic guard value'}}
     def encoded(value): return json.dumps(value).encode()
