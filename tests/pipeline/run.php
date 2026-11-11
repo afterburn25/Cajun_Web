@@ -81,6 +81,8 @@ check('stage object resolved', $lead->stage()->label === 'New');
 
 $lead->moveTo('consultation', 'staff-9', 't1');
 check('valid move applied', $lead->stageId() === 'consultation');
+$moveHistory = $lead->history();
+check('ordinary move history retains exact source and target stages', end($moveHistory)['event'] === 'moved:new->consultation');
 rejects('invalid move rejected', fn () => $lead->moveTo('won', 'staff-9', 't2'));
 check('stage unchanged after rejected move', $lead->stageId() === 'consultation');
 
@@ -94,6 +96,8 @@ check('actor attributed', end($hist)['actor'] === 'staff-9');
 // Re-opening a lost lead is a configured transition
 $lead->moveTo('new', 'owner-1', 't5');
 check('lost lead re-opened', $lead->stageId() === 'new');
+$moveHistory = $lead->history();
+check('re-open history retains the lost source stage', end($moveHistory)['event'] === 'moved:not-proceeding->new');
 
 // Won is terminal
 $lead->moveTo('consultation', 'staff-9', 't6');

@@ -45,12 +45,13 @@ final class LeadRecord
     /** Move to a new stage — only configured transitions succeed. */
     public function moveTo(string $stageId, string $actorId, string $at, string $note = ''): self
     {
-        if (!$this->board->canTransition($this->stageId, $stageId)) {
-            throw new LogicException('Cannot move ' . $this->id . ' from ' . $this->stageId . ' to ' . $stageId . '.');
+        $sourceStageId = $this->stageId;
+        if (!$this->board->canTransition($sourceStageId, $stageId)) {
+            throw new LogicException('Cannot move ' . $this->id . ' from ' . $sourceStageId . ' to ' . $stageId . '.');
         }
         $target = $this->board->stage($stageId);
         $this->stageId = $stageId;
-        $event = 'moved:' . $this->stageId . '->' . $stageId;
+        $event = 'moved:' . $sourceStageId . '->' . $stageId;
         if ($target->isWon) {
             $event = 'won';
         } elseif ($target->isLost) {
