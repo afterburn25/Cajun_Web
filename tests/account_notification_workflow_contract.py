@@ -42,6 +42,9 @@ PROTECTED_BROWSER_PREDECESSOR = '        run: .ci-venv/bin/python tests/browser_
 PROTECTED_BROWSER_SUCCESSOR = ('        run: |\n'
                                '          .ci-venv/bin/python tests/browser_acceptance.py\n'
                                '          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite\n')
+PROTECTED_APT_RETRY_SUCCESSOR = 'Acquire::Retries=1'
+PROTECTED_APT_RETRY_PREDECESSOR = 'Acquire::Retries=5'
+PROTECTED_APT_RETRY_COUNT = 16
 IMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'
 PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
@@ -142,6 +145,11 @@ def validate(workflow, legacy, protected):
           protected_predecessor.count(PROTECTED_BROWSER_SUCCESSOR) == 1)
     protected_predecessor = protected_predecessor.replace(
         PROTECTED_BROWSER_SUCCESSOR, PROTECTED_BROWSER_PREDECESSOR, 1)
+    check('Protected application workflow has every reviewed bounded mirror retry',
+          protected_predecessor.count(PROTECTED_APT_RETRY_SUCCESSOR) == PROTECTED_APT_RETRY_COUNT
+          and protected_predecessor.count(PROTECTED_APT_RETRY_PREDECESSOR) == 0)
+    protected_predecessor = protected_predecessor.replace(
+        PROTECTED_APT_RETRY_SUCCESSOR, PROTECTED_APT_RETRY_PREDECESSOR)
     check('Protected complete application workflow retains its byte-identical predecessor',
           digest(protected_predecessor) == PROTECTED_SHA256)
     check('Workflow has ordinary indentation and no alternate YAML documents',
@@ -270,6 +278,9 @@ def self_test(root=ROOT):
         ('changed UX-08 browser continuation', protected.replace(
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),
+        ('lost bounded application mirror retry', protected.replace(
+            PROTECTED_APT_RETRY_SUCCESSOR, PROTECTED_APT_RETRY_PREDECESSOR, 1)),
+        ('extra bounded application mirror retry', protected + PROTECTED_APT_RETRY_SUCCESSOR + '\n'),
         ('extra protected workflow command', protected.replace(
             PROTECTED_ADDITIONS[1], PROTECTED_ADDITIONS[1] + '          true # unreviewed command\n', 1)),
     ):
