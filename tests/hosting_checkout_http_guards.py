@@ -19,6 +19,10 @@ def main():
     # Installed source is provided by the normal tests path, not copied report strings.
     producer = (runner.ROOT/'tests/hosting_checkout_native.php').read_text(encoding='utf-8')
     labels = runner.native_labels(producer)
+    workflow = (runner.ROOT/'.github/workflows/consolidation-after-backups.yml').read_text(encoding='utf-8')
+    check('Checkout apt calls preserve runner mirror failover',
+          workflow.count('Acquire::Retries=1') == 4
+          and 'Acquire::Retries=5' not in workflow)
     report = {'passed': True, 'checks': [{'name': n, 'passed': True} for n in labels], 'runtime': {'php': '8.3.30', 'database': 'synthetic guard value'}}
     def encoded(value): return json.dumps(value).encode()
     check('Exact 82 native producer labels are retained', len(labels) == 82 and len(set(labels)) == 82)

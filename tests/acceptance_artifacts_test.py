@@ -216,6 +216,9 @@ def orchestration_evidence_checks(tmp, ctx):
     # Execute the workflow's actual reporting command against copied public source,
     # then exercise the real partition sealer. No application or provider runs.
     workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
+    check('Application apt calls preserve runner mirror failover',
+          workflow.count('Acquire::Retries=1') == 16
+          and 'Acquire::Retries=5' not in workflow)
     commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
     check('Exactly one build orchestration report command exists', len(commands) == 1)
     command = commands[0]
