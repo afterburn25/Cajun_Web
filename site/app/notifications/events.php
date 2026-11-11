@@ -46,6 +46,13 @@ function notification_project_file(int $job,string $file,string $actor):void {
         $storedActor=$actor==='staff'?'admin':$actor;$row=one('SELECT j.client_id FROM '.table('studio_files').' f JOIN '.table('studio_jobs').' j ON j.id=f.job_id WHERE f.id=? AND f.job_id=? AND f.author_type=?',[$file,$job,$storedActor]);if($row)notification_project_emit(notification_project_projection($job,(int)$row['client_id'],'file:'.$file,$actor));
     }catch(Throwable $e){report_error($e);}
 }
+function notification_invoice_projection(int $job,int $invoice,int $client):array {
+    if($job<1||$invoice<1||$client<1)throw new InvalidArgumentException('Invalid invoice notification identity.');
+    return ['audience'=>'client','recipient_id'=>$client,'kind'=>'billing','ref'=>'invoice:'.$invoice,'title'=>'New invoice available','body'=>'Sign in to review the new invoice in your account.','event_key'=>'invoice-issued:'.$invoice];
+}
+function notification_invoice_issued(int $job,int $invoice):void {
+    try{if(support_current()||!notifications_feed_ready())return;$row=one('SELECT j.client_id FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs')." j ON j.id=i.job_id WHERE i.id=? AND i.job_id=? AND i.status='issued'",[$invoice,$job]);if($row){$plan=notification_invoice_projection($job,$invoice,(int)$row['client_id']);notification_emit($plan['audience'],$plan['recipient_id'],$plan['kind'],$plan['ref'],$plan['title'],$plan['body'],$plan['event_key']);}}catch(Throwable $e){report_error($e);}
+}
 function notification_project_message(int $jobId,int $messageId,string $from):void {
     if(!notifications_feed_ready())return;
     try{$job=one('SELECT client_id FROM '.table('studio_jobs').' WHERE id=?',[$jobId]);if(!$job)return;
