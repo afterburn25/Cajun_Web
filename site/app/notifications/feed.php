@@ -36,13 +36,14 @@ function notification_staff_ids(string $permission):array {
 }
 /** Recheck the current resource owner/permission; an old feed row is not an access grant. */
 function notification_recipient(string $audience,int $id,string $ref,string $kind):?array {
-    if(!preg_match('/\A(job|invoice|release|inquiry):([a-zA-Z0-9_-]+)\z/',$ref,$m)||!in_array($kind,Notification::KINDS,true))return null;
+    if(!preg_match('/\A(job|invoice|release|inquiry|ticket):([a-zA-Z0-9_-]+)\z/',$ref,$m)||!in_array($kind,Notification::KINDS,true))return null;
     [$unused,$type,$key]=$m;
     if($audience==='client'){
         $client=one('SELECT * FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]);if(!$client)return null;
         if($type==='job'&&ctype_digit($key))$ok=one('SELECT id FROM '.table('studio_jobs').' WHERE id=? AND client_id=?',[(int)$key,$id]);
         elseif($type==='invoice'&&ctype_digit($key))$ok=one('SELECT i.id FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE i.id=? AND j.client_id=?',[(int)$key,$id]);
         elseif($type==='release'&&function_exists('delivery_ready')&&delivery_ready())$ok=one('SELECT r.id FROM '.table('website_releases').' r JOIN '.table('studio_jobs').' j ON j.id=r.job_id WHERE r.id=? AND r.client_id=? AND j.client_id=? AND r.status=?',[$key,$id,$id,'published']);
+        elseif($type==='ticket'&&preg_match('/\A[a-f0-9]{32}\z/',$key))$ok=one('SELECT id FROM '.table('support_tickets').' WHERE id=? AND client_id=?',[$key,$id]);
         else $ok=null;
         return $ok?$client:null;
     }
@@ -50,12 +51,13 @@ function notification_recipient(string $audience,int $id,string $ref,string $kin
     $user=one('SELECT u.*,p.role,p.enabled,p.permissions FROM '.table('users').' u JOIN '.table('staff_profiles').' p ON p.user_id=u.id WHERE u.id=? AND p.enabled=1',[$id]);
     if(!$user||!in_array($user['role'],['owner','administrator'],true))return null;
     $permissions=json_decode($user['permissions'],true);if(!is_array($permissions)||!array_is_list($permissions))return null;
-    $required=$type==='inquiry'?['website.manage']:($type==='invoice'?['clients.manage','payments.manage']:['clients.manage']);
+    $required=$type==='inquiry'?['website.manage']:($type==='invoice'?['clients.manage','payments.manage']:($type==='ticket'?['support.tickets']:['clients.manage']));
     if($user['role']!=='owner'&&array_diff($required,$permissions))return null;
     if($type==='job'&&ctype_digit($key))$exists=one('SELECT id FROM '.table('studio_jobs').' WHERE id=?',[(int)$key]);
     elseif($type==='invoice'&&ctype_digit($key))$exists=one('SELECT id FROM '.table('studio_invoices').' WHERE id=?',[(int)$key]);
     elseif($type==='inquiry'&&ctype_digit($key))$exists=one('SELECT id FROM '.table('leads').' WHERE id=?',[(int)$key]);
     elseif($type==='release'&&function_exists('delivery_ready')&&delivery_ready())$exists=one('SELECT id FROM '.table('website_releases').' WHERE id=?',[$key]);
+    elseif($type==='ticket'&&preg_match('/\A[a-f0-9]{32}\z/',$key))$exists=one('SELECT t.id FROM '.table('support_tickets').' t JOIN '.table('studio_clients').' c ON c.id=t.client_id WHERE t.id=? AND c.active=1',[$key]);
     else $exists=null;
     return $exists?$user:null;
 }
@@ -105,8 +107,8 @@ function notification_mark_all(string $audience,int $id):void {
     }));
 }
 function notification_url(string $audience,string $ref):string {
-    if(!preg_match('/\A(job|invoice|release|inquiry):([a-zA-Z0-9_-]+)\z/',$ref,$m))return '#';
-    if($audience==='client')return match($m[1]){'job'=>studio_url(['job'=>(int)$m[2]]),'release'=>studio_url(['release'=>$m[2]]),'invoice'=>studio_url(['invoice'=>(int)$m[2]]),default=>studio_url()};
-    return match($m[1]){'inquiry'=>admin_url('lead',['id'=>(int)$m[2]]),'job'=>admin_url('studio-job',['id'=>(int)$m[2]]),'invoice'=>admin_url('invoice-payments',['invoice_id'=>(int)$m[2]]),default=>admin_url('notifications')};
+    if(!preg_match('/\A(job|invoice|release|inquiry|ticket):([a-zA-Z0-9_-]+)\z/',$ref,$m))return '#';
+    if($audience==='client')return match($m[1]){'job'=>studio_url(['job'=>(int)$m[2]]),'release'=>studio_url(['release'=>$m[2]]),'invoice'=>studio_url(['invoice'=>(int)$m[2]]),'ticket'=>studio_url(['ticket'=>$m[2]]),default=>studio_url()};
+    return match($m[1]){'inquiry'=>admin_url('lead',['id'=>(int)$m[2]]),'job'=>admin_url('studio-job',['id'=>(int)$m[2]]),'invoice'=>admin_url('invoice-payments',['invoice_id'=>(int)$m[2]]),'ticket'=>admin_url('ticket',['ticket'=>$m[2]]),default=>admin_url('notifications')};
 }
 require_once CWP_CODE_ROOT.'/app/notifications/outbox.php';
