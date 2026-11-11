@@ -21,7 +21,7 @@ def main():
     labels = runner.native_labels(producer)
     report = {'passed': True, 'checks': [{'name': n, 'passed': True} for n in labels], 'runtime': {'php': '8.3.30', 'database': 'synthetic guard value'}}
     def encoded(value): return json.dumps(value).encode()
-    check('Exact 80 native producer labels are retained', len(labels) == 80 and len(set(labels)) == 80)
+    check('Exact 82 native producer labels are retained', len(labels) == 82 and len(set(labels)) == 82)
     check('Complete synthetic report shape is accepted only as a guard example', runner.validate_native(encoded(report), producer, '8.3') == report)
     for name, mutate in [
         ('False outer pass refuses', lambda x: x.update(passed=False)),
