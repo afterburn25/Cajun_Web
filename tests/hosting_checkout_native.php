@@ -164,9 +164,14 @@ try {
     $hash=one('SELECT document_sha256 FROM '.table('hosting_checkout_reviews').' WHERE id=?',[hcc_id(30)])['document_sha256'];query('UPDATE '.table('hosting_checkout_reviews').' SET document_sha256=? WHERE id=?',[str_repeat('0',64),hcc_id(30)]);hcc_deny('Changed retained review fingerprint refuses historical access',fn()=>hosting_checkout_result(hcc_id(30),1));query('UPDATE '.table('hosting_checkout_reviews').' SET document_sha256=? WHERE id=?',[$hash,hcc_id(30)]);
     hcc_ok('Restoring exact retained bytes returns complete history ready',hcc_ready()&&hosting_checkout_result(hcc_id(30),1)['invoice_id']===$result['invoice_id']);
     hcc_ok('Invoice confirmation alone records no receipt card request or provider write',hcc_count('invoice_payments')===0&&hcc_count('payment_requests')===0&&$calls===1);
-    $stage='local-receipt-policy';hcc_owner();gateway_receipts_prepare($password);hosting_payments_prepare($password);
-    payments_save('production',0,['api_login_id'=>'SYNTHETICCHECKOUT','transaction_key'=>'1234567890ABCDEF','signature_key'=>str_repeat('a',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY'],$password);
-    hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);service_orders_migrate($password);hosting_order_links_prepare($password);
+    $stage='local-receipt-owner';hcc_owner();
+    $stage='local-receipt-storage';gateway_receipts_prepare($password);
+    $stage='local-payment-storage';hosting_payments_prepare($password);
+    $stage='local-payment-credentials';payments_save('production',0,['api_login_id'=>'SYNTHETICCHECKOUT','transaction_key'=>'1234567890ABCDEF','signature_key'=>str_repeat('a',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY'],$password);
+    $stage='local-payment-configuration';hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);
+    $stage='local-order-storage';service_orders_migrate($password);
+    $stage='local-fulfillment-storage';hosting_order_links_prepare($password);
+    $stage='local-receipt-policy';
     $agreement=service_plans_validate(service_plans_row($result['agreement_id'],true),true);$invoice=ledger_invoice($result['invoice_id']);$otherInvoice=ledger_invoice($new['invoice_id']);$before=hcc_state();
     hcc_deny('Checkout order cannot substitute another same-client invoice',fn()=>service_orders_offer(hcc_id(72),$result['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$new['invoice_id'],ledger_invoice_hash($otherInvoice),$password));hcc_ok('Wrong invoice refusal preserves exact checkout and payment rows',hcc_state()===$before);
     $order=service_orders_offer(hcc_id(70),$result['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$result['invoice_id'],ledger_invoice_hash($invoice),$password);
