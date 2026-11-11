@@ -234,8 +234,8 @@ try {
     hp_deny('Owner reconciliation refuses a sandbox intent after production activation',fn()=>hosting_payment_reconcile(hp_id(35),'8800060',$password,static function()use(&$sandboxRotationCalls):array{$sandboxRotationCalls++;throw new LogicException('Cross-environment transport must remain closed.');}));
     hp_ok('Sandbox to production refusal is inert before transport',$sandboxRotationCalls===0&&hp_state()===$sandboxRotatedState);
 
-    $stage='historical-owner-read';query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');$inactive=hosting_payment_source_locked(hp_id(30),1,false);hp_ok('Inactive client history remains available to the owner without reopening payment authority',$inactive['request_id']===hp_id(30)&&$inactive['client_id']===1);
-    hp_deny('Inactive client cannot initiate or project a new payment',fn()=>hosting_payment_source_locked(hp_id(30),1,true));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
+    $stage='historical-owner-read';query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');$inactive=hosting_checkout_locked(fn():array=>hosting_payment_source_locked(hp_id(30),1,false));hp_ok('Inactive client history remains available to the owner without reopening payment authority',$inactive['request_id']===hp_id(30)&&$inactive['client_id']===1);
+    hp_deny('Inactive client cannot initiate or project a new payment',fn()=>hosting_checkout_locked(fn():array=>hosting_payment_source_locked(hp_id(30),1,true)));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
 
     $stage='shared-lifecycle';hp_owner();service_orders_migrate($password);hosting_order_links_prepare($password);hosting_operations_migrate($password);hosting_reconciliation_migrate($password);provider_operations_migrate($password);hosting_fulfillment_migrate($password);hosting_fulfillment_confirmation_prepare($password);
     $agreement=service_plans_validate(service_plans_row($approved['agreement_id'],true),true);$order=service_orders_offer(hp_id(70),$approved['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$approved['invoice_id'],ledger_invoice_hash($invoice),$password);
