@@ -6,6 +6,8 @@ PR #388 is frozen at proof head `d489b27504d65c24457a6cf134e64ba5ba8bb309`, tree
 
 The only remaining #388 action is the documented fresh exact-source successor/first-attempt acceptance after GitHub-hosted runner networking recovers. No work in this document is merge authorization, and no prepared branch may advance main before the required #388 sequence if doing so would invalidate its base or resulting-main qualification.
 
+The pure pending-review projection now has a current-authority runtime child held locally on `codex/project-action-items-runtime-20261112` at `9f51d293ab31e53a7f6d9ec46c8ae614df826f1f`, tree `a96b09ce1176d38a6e8c0c466612363e95f452aa`. It stacks only on the reviewed internal-note and pure-action commits. Support sessions stop before the action query; ordinary clients/contacts are freshly reauthorized for the exact project; only `id`, `kind`, `version_no` and `decision` are read under a 1001-row fail-closed bound; the model returns immutable review id/kind/version and the view constructs the escaped focus route. Four lints, 45 pure checks per PHP mode, 17 runtime checks per mode, 34 retained internal-note checks per mode, 47 portal checks and 94 build guards pass. Independent review is clear and the four-path runtime delta has zero frozen-#388 overlap. The normal builder correctly refuses stale generated inventory; do not change that #388-owned path. SQL/browser/concurrency, mobile/accessibility, source proof, inventory/package, hosted first-attempt and resulting-main qualification remain post-#388 gates.
+
 ## Inventory method
 
 - Refreshed origin heads/tags and confirmed current main, version, #388 base/head/tree and PR state.
