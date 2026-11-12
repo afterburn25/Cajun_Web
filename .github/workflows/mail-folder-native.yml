@@ -1,0 +1,243 @@
+name: Mail folder current-source native acceptance
+on:
+  push:
+    branches: [main]
+    paths: ['foundation/mail-receiving/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'site/app/settings/database_schemas.php', 'site/admin/controllers/mail_inbox.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_inbox.php', 'site/admin/views/mail_message.php', 'site/admin/views/mail_notices.php', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/current_owner_authority.php', 'tests/database_schema_registry_policy.php', 'tests/communication_session_installed.py', 'tests/mail-receiving/**', 'tests/mail_inbox*', 'tests/mail_message*', 'tests/mail_notices*', 'tests/mail_folder_native_workflow_contract.py', '.github/workflows/mail-folder-native.yml']
+  pull_request:
+    branches: [main]
+    paths: ['foundation/mail-receiving/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'site/app/settings/database_schemas.php', 'site/admin/controllers/mail_inbox.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_inbox.php', 'site/admin/views/mail_message.php', 'site/admin/views/mail_notices.php', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/current_owner_authority.php', 'tests/database_schema_registry_policy.php', 'tests/communication_session_installed.py', 'tests/mail-receiving/**', 'tests/mail_inbox*', 'tests/mail_message*', 'tests/mail_notices*', 'tests/mail_folder_native_workflow_contract.py', '.github/workflows/mail-folder-native.yml']
+permissions:
+  contents: read
+concurrency:
+  group: mail-folder-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify bounded workflow source mirrors and syntax
+        run: |
+          mkdir -p qa/mail-folder-native/source
+          test "$CWP_RUN_ATTEMPT" = "1"
+          python3 tests/mail_folder_native_workflow_contract.py > qa/mail-folder-native/source/workflow-contract.json
+          for file in \
+            site/admin/controllers/mail_inbox.php site/admin/controllers/mail_message.php \
+            site/admin/views/mail_inbox.php site/admin/views/mail_message.php site/admin/views/mail_notices.php \
+            site/app/mail/inbox.php site/app/mail/messages.php site/app/mail/notices.php \
+            site/app/settings/database_schemas.php \
+            site/database/schema/mail_inbox_schema.php site/database/schema/mail_messages_schema.php \
+            site/database/migrations/mail_inbox_migrate.php site/database/migrations/mail_messages_migrate.php \
+            site/includes/foundation/mail-receiving/HeaderSession.php \
+            site/includes/foundation/mail-receiving/InboxReader.php \
+            site/includes/foundation/mail-receiving/MessageReader.php \
+            site/includes/foundation/mail-receiving/ReadSession.php \
+            site/includes/foundation/mail-receiving/ReceivingFailure.php \
+            site/install/actions/deploy.php site/install/inventory.generated.php \
+            tests/current_owner_authority.php tests/mail_inbox_native.php tests/mail_message_native.php \
+            tests/mail_notices_native.php tests/mail_notices_hook_cases.php; do
+            php -l "$file"
+          done > qa/mail-folder-native/source/lint.log
+          python3 -m py_compile tests/mail_inbox_cases.py tests/mail_inbox_http_server.py tests/mail_message_cases.py tests/communication_session_installed.py
+          php tests/database_schema_registry_policy.php > qa/mail-folder-native/source/database-schema-registry.json
+          for file in HeaderSession.php InboxReader.php MessageReader.php ReadSession.php ReceivingFailure.php; do
+            cmp -s "foundation/mail-receiving/$file" "site/includes/foundation/mail-receiving/$file"
+          done
+          git diff --exit-code
+      - name: Admit only the immutable checked-out commit
+        id: record
+        run: |
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$CWP_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'sha=%s\n' "$actual" >> "$GITHUB_OUTPUT"
+      - name: Retain exact source and failure evidence
+        if: always()
+        run: |
+          mkdir -p qa/mail-folder-native/source
+          git archive --format=tar.gz HEAD > qa/mail-folder-native/source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/mail-folder-native/source/identity.txt
+          printf 'run_id=%s\nrun_attempt=%s\n' "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" >> qa/mail-folder-native/source/identity.txt
+          git status --porcelain > qa/mail-folder-native/source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: mail-folder-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: qa/mail-folder-native/source/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare disposable official PHP
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
+          mkdir -p "$cell"
+          actual=$(git rev-parse HEAD)
+          tree=$(git rev-parse HEAD^{tree})
+          test "$actual" = "$CWP_SOURCE_SHA"
+          test "$CWP_RUN_ATTEMPT" = "1"
+          printf 'source=%s\ntree=%s\nrun_id=%s\nrun_attempt=%s\nphp=%s\ndatabase=%s\n' \
+            "$actual" "$tree" "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" '${{ matrix.php }}' '${{ matrix.database }}' > "$cell/identity.txt"
+          status=0
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-mail-folder-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev libxml2-dev && docker-php-ext-install pdo_mysql mbstring dom && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          test "$status" -eq 0
+      - name: Prove the synthetic database is ready for the assigned user
+        run: |
+          cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
+          if [ '${{ matrix.database }}' = 'mysql' ]; then
+            docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} \
+              mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1' \
+              > "$cell/mysql-global.stdout.log" 2> "$cell/mysql-global.stderr.log"
+          fi
+          status=0
+          docker run --rm --network host \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-mail-folder-native php -r '
+              $last=null;
+              for($i=0;$i<60;$i++){
+                try{
+                  $pdo=new PDO("mysql:host=".getenv("CWP_TEST_HOST").";port=".getenv("CWP_TEST_PORT").";dbname=".getenv("CWP_TEST_DATABASE"),getenv("CWP_TEST_USER"),getenv("CWP_TEST_PASSWORD"),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+                  fwrite(STDOUT,"ready\n");exit(0);
+                }catch(Throwable $e){$last=$e;usleep(500000);}
+              }
+              fwrite(STDERR,get_class($last).": ".$last->getMessage()."\n");exit(1);
+            ' > "$cell/readiness.stdout.log" 2> "$cell/readiness.stderr.log" || status=$?
+          test "$status" -eq 0
+      - name: Run isolated folder receiving and SQL acceptance
+        run: |
+          cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
+          status=0
+          docker run --rm --network host --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" -w /workspace \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA \
+            cwp-mail-folder-native sh -ec '
+              cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
+              mkdir -p "$cell" test-runtime/mail-folder-private qa
+              chmod 700 test-runtime/mail-folder-private
+              php -r '\''
+                $storage=realpath("test-runtime/mail-folder-private");
+                if($storage===false)throw new RuntimeException("Missing synthetic private storage");
+                $cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>$storage,"key"=>str_repeat("synthetic-folder-key-",4),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"folderci_"]];
+                file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");
+              '\''
+              header=0; php tests/mail-receiving/session_test.php > "$cell/header-session.json" 2> "$cell/header-session.stderr.log" || header=$?
+              message_session=0; php tests/mail-receiving/message_session_test.php > "$cell/message-session.json" 2> "$cell/message-session.stderr.log" || message_session=$?
+              inbox=0; php tests/mail_inbox_native.php > "$cell/inbox.stdout.log" 2> "$cell/inbox.stderr.log" || inbox=$?
+              if [ -f qa/mail-inbox-native-results.json ]; then cp qa/mail-inbox-native-results.json "$cell/inbox-results.json"; fi
+              message=0; php tests/mail_message_native.php > "$cell/message.stdout.log" 2> "$cell/message.stderr.log" || message=$?
+              if [ -f qa/mail-message-native-results.json ]; then cp qa/mail-message-native-results.json "$cell/message-results.json"; fi
+              notices=0; php tests/mail_notices_native.php > "$cell/notices.stdout.log" 2> "$cell/notices.stderr.log" || notices=$?
+              if [ -f qa/mail-notices-native-results.json ]; then cp qa/mail-notices-native-results.json "$cell/notices-results.json"; fi
+              printf "header=%s\nmessage_session=%s\ninbox=%s\nmessage=%s\nnotices=%s\n" "$header" "$message_session" "$inbox" "$message" "$notices" > "$cell/status.txt"
+              test "$header" -eq 0
+              test "$message_session" -eq 0
+              test "$inbox" -eq 0
+              test "$message" -eq 0
+              test "$notices" -eq 0
+            ' || status=$?
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          cell = Path('qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}')
+          reports = {
+              'header': (cell / 'header-session.json', 56),
+              'message_session': (cell / 'message-session.json', 46),
+              'inbox': (cell / 'inbox-results.json', 72),
+              'message': (cell / 'message-results.json', 83),
+              'notices': (cell / 'notices-results.json', 81),
+          }
+          loaded = {}
+          for name, (path, minimum) in reports.items():
+              report = json.loads(path.read_text())
+              assert report['passed'] is True, name
+              assert len(report['checks']) >= minimum, (name, len(report['checks']))
+              assert all(check['passed'] is True for check in report['checks']), name
+              loaded[name] = {check['name'] for check in report['checks']}
+          assert 'Legacy inbox migration preserves request and result with INBOX backfill' in loaded['inbox']
+          assert 'Declared-current refusal does not heal the table' in loaded['inbox']
+          assert 'Folder-scoped request records the exact allowed folder' in loaded['inbox']
+          assert 'Legacy message migration preserves request and result while widening folder identity' in loaded['message']
+          assert 'Declared-current refusal does not widen the table' in loaded['message']
+          assert 'Folder-scoped message read binds and records the exact folder' in loaded['message']
+          assert 'Non-inbox folder success leaves the inbox notice window and latest outcome unchanged' in loaded['notices']
+          assert 'Non-inbox message open records its folder without creating notice state' in loaded['notices']
+          for name in ('header-session.stderr.log', 'message-session.stderr.log',
+                       'inbox.stderr.log', 'message.stderr.log', 'notices.stderr.log'):
+              path = cell / name
+              assert path.stat().st_size == 0, path
+          print(cell, {name: len(checks) for name, checks in loaded.items()})
+          PY
+          test "$status" -eq 0
+          git diff --exit-code
+      - name: Preserve named exact-matrix evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mail-folder-${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source, native]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Confirm exact-source matrix completion
+        env:
+          CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+        run: test -n "$CWP_SOURCE_SHA"
