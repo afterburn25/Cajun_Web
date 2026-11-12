@@ -10,13 +10,27 @@ def run_browser(env, browser):
     check, fixture, qa, seed = env['check'], env['fixture'], env['QA'], env['seed']
     site = env['BASE'] + '/hosting-checkout'; portal = site + '/portal/index.php'; admin = site + '/admin/index.php'
     owner_password = 'Synthetic native checkout owner'; client_password = 'Synthetic checkout client'
-    contexts = []; errors = []; blocked = []; captures = []
+    contexts = []; errors = []; blocked = []; tokenization_scripts = []; captures = []
+    production_tokenization_script = 'https://js.authorize.net/v1/Accept.js'
 
     def context():
         ctx = browser.new_context(viewport={'width': 1440, 'height': 1050})
         def route(request):
-            if request.request.url.startswith(env['BASE'] + '/') or request.request.url.startswith(('data:', 'about:')): request.continue_()
-            else: blocked.append(urlparse(request.request.url).scheme); request.abort()
+            url = request.request.url
+            if url.startswith(env['BASE'] + '/') or url.startswith(('data:', 'about:')):
+                request.continue_()
+            elif (url == production_tokenization_script and request.request.method == 'GET'
+                  and request.request.resource_type == 'script'):
+                # The installed production fixture must expose the reviewed
+                # tokenization dependency, but hosted acceptance never fetches it.
+                tokenization_scripts.append({'method': 'GET', 'url': url, 'resource_type': 'script'})
+                request.fulfill(status=200, content_type='application/javascript', body='window.Accept={};\n')
+            else:
+                parsed = urlparse(url)
+                blocked.append({'method': request.request.method, 'scheme': parsed.scheme.lower(),
+                                'host': (parsed.hostname or '').lower(), 'path': parsed.path[:256],
+                                'query_present': bool(parsed.query), 'fragment_present': bool(parsed.fragment)})
+                request.abort()
         ctx.route('**/*', route); contexts.append(ctx); page = ctx.new_page()
         page.on('pageerror', lambda e: errors.append(type(e).__name__))
         return ctx, page
@@ -179,7 +193,15 @@ def run_browser(env, browser):
         check('Dedicated-project HTTP retry returns its original result', response.status == 303 and parse_qs(urlparse(response.headers['location']).query).get('checkout_result') == [new_confirm['request_id']])
         unchanged('Dedicated project and invoice are never duplicated by exact retry', last)
         check('Checkout browser has no JavaScript page errors', not errors)
-        check('Checkout browser requests only local resources', not blocked)
-        return {'captures': captures, 'existing_project_result': result, 'new_project_result': new, 'contact_probe': 'Established-key negative only; not contact-login acceptance', 'live_charge_or_provider_write': False}
+        expected_script = {'method': 'GET', 'url': production_tokenization_script, 'resource_type': 'script'}
+        check('Checkout browser intercepts only the exact production tokenization dependency',
+              bool(tokenization_scripts) and all(row == expected_script for row in tokenization_scripts))
+        check('Checkout browser requests no unreviewed external resources', not blocked)
+        return {'captures': captures, 'existing_project_result': result, 'new_project_result': new,
+                'tokenization_dependency': {'url': production_tokenization_script,
+                                            'intercepted_requests': len(tokenization_scripts),
+                                            'live_fetches': 0},
+                'contact_probe': 'Established-key negative only; not contact-login acceptance',
+                'live_charge_or_provider_write': False}
     finally:
         for ctx in contexts: ctx.close()
