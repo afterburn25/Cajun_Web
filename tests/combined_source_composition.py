@@ -268,6 +268,11 @@ UX08_INBOX_NETWORK_FIX_BASE_TREE = 'a4c45794c8d5559727fecc4298aa7e2da00a5add'
 UX08_INBOX_NETWORK_FIX_SOURCE = '8639e019f87b632e22b2523648d64e76632cf42e'
 UX08_INBOX_NETWORK_FIX_SOURCE_TREE = 'cc31dd823e65ba7ad0390dff9e3ce6bf1543485b'
 UX08_INBOX_NETWORK_FIX_PATH = 'tests/hosting_purchase_inbox_cases.py'
+UX08_BILLING_NETWORK_FIX_BASE = 'f7a7c6e1b8a6853becdfc4698d22481d6b495f96'
+UX08_BILLING_NETWORK_FIX_BASE_TREE = '990eb62baf9cb109f03f645dde30c468091ed451'
+UX08_BILLING_NETWORK_FIX_SOURCE = '4e3512772553709d5c515dd7b85227dc23417905'
+UX08_BILLING_NETWORK_FIX_SOURCE_TREE = '27010185b4799dc1813b8ad72fd2720f447fe39b'
+UX08_BILLING_NETWORK_FIX_PATH = 'tests/hosting_billing_options_cases.py'
 UX08_CHECKOUT_PIN_FIX_BASE = 'a69b4ae04e9087707ddad59a60cc6afda26b57fd'
 UX08_CHECKOUT_PIN_FIX_BASE_TREE = '732d83a18dd6a666369ecfa1b7598583cd4b02dd'
 UX08_CHECKOUT_PIN_FIX_SOURCE = 'e27d57a74962dffa1f595504e4aa9e570050a496'
@@ -1988,6 +1993,7 @@ def validate_ux08_agreement_link_fix_source(root):
 
 def project_ux08_agreement_link_fix(root, path, current):
     """Restore the accepted fcdd proof head for every older source receipt."""
+    current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_inbox_network_fix(root, path, current)
     current = project_ux08_agreement_duplicate_fix(root, path, current)
     if path not in UX08_AGREEMENT_LINK_FIX_MODIFIED:
@@ -2088,6 +2094,51 @@ def project_ux08_inbox_network_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 inbox network fix changed before predecessor projection')
+    return base
+
+
+def validate_ux08_billing_network_fix_source(root):
+    """Bind exact closed interception of billing-option payment dependencies."""
+    require(git(root, 'rev-parse', UX08_BILLING_NETWORK_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_BILLING_NETWORK_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_BILLING_NETWORK_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_BILLING_NETWORK_FIX_SOURCE_TREE,
+            'UX-08 billing network fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_BILLING_NETWORK_FIX_BASE,
+        UX08_BILLING_NETWORK_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_BILLING_NETWORK_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_BILLING_NETWORK_FIX_BASE, UX08_BILLING_NETWORK_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_BILLING_NETWORK_FIX_PATH],
+            'UX-08 billing network fix changed a different path or status set')
+    base_entries = entries(root, UX08_BILLING_NETWORK_FIX_BASE)
+    source_entries = entries(root, UX08_BILLING_NETWORK_FIX_SOURCE)
+    current = ordinary(root, UX08_BILLING_NETWORK_FIX_PATH)
+    source = git(root, 'cat-file', 'blob', UX08_BILLING_NETWORK_FIX_SOURCE + ':'
+                 + UX08_BILLING_NETWORK_FIX_PATH)
+    base = git(root, 'cat-file', 'blob', UX08_BILLING_NETWORK_FIX_BASE + ':'
+               + UX08_BILLING_NETWORK_FIX_PATH)
+    require(current == source
+            and mode(root, UX08_BILLING_NETWORK_FIX_PATH)
+            == base_entries[UX08_BILLING_NETWORK_FIX_PATH][0]
+            == source_entries[UX08_BILLING_NETWORK_FIX_PATH][0] == '100644'
+            and project_ux08_billing_network_fix(root, UX08_BILLING_NETWORK_FIX_PATH, current) == base
+            and project_ux08_billing_network_fix(root, UX08_BILLING_NETWORK_FIX_PATH, base) == base,
+            'UX-08 billing network fix identity or projection changed')
+
+
+def project_ux08_billing_network_fix(root, path, current):
+    """Restore the accepted inbox-network proof head for older receipts."""
+    if path != UX08_BILLING_NETWORK_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_BILLING_NETWORK_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_BILLING_NETWORK_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 billing network fix changed before predecessor projection')
     return base
 
 
@@ -2319,7 +2370,8 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        current = project_ux08_payment_native_fix(root, path, ordinary(root, path))
+        current = project_ux08_billing_network_fix(root, path, ordinary(root, path))
+        current = project_ux08_payment_native_fix(root, path, current)
         require(current
                 == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0],
@@ -2336,6 +2388,7 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_payment_native_fix(root, path, current)
     if path not in UX08_PAYMENT_MODIFIED:
         return current
@@ -2874,6 +2927,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_billing_network_fix_source(root)
     validate_ux08_inbox_network_fix_source(root)
     validate_ux08_agreement_duplicate_fix_source(root)
     validate_ux08_agreement_link_fix_source(root)
