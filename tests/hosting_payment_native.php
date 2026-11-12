@@ -104,6 +104,36 @@ function hp_gateway(string $outcome,string $transaction,int $invoice,string $che
         return hp_gateway_details($transaction,$invoice,$checkoutRequest,$client,$cents);
     };
 }
+/** Capture one deliberately exercised review-path diagnostic without hiding any unexpected output. */
+function hp_expected_report(callable $work,string $origin,int $line):array {
+    if(PHP_SAPI!=='cli'||getenv('CWP_TEST_HOSTING_PAYMENT')!=='1'||config()['db']['prefix']!=='hpay_'
+        ||!in_array([$origin,$line],[['hosting_payment_native.php',102],['payments.php',79]],true))throw new LogicException('Expected diagnostic scope differs.');
+    $path=tempnam(sys_get_temp_dir(),'cwp-hosting-payment-fault-');if($path===false)throw new RuntimeException('Could not capture expected hosting payment diagnostic.');
+    $old=ini_get('error_log');$value=null;$escaped=null;$restoreFailed=false;$readFailed=false;$log='';
+    try{
+        if(ini_set('error_log',$path)===false)throw new RuntimeException('Could not isolate expected hosting payment diagnostic.');
+        $value=$work();
+    }catch(Throwable $error){
+        $escaped=$error;
+    }finally{
+        $restoreFailed=ini_set('error_log',$old===false?'':$old)===false;
+        $captured=@file_get_contents($path);$readFailed=$captured===false;$log=$readFailed?'':$captured;
+    }
+    $expected=$escaped===null&&!$restoreFailed&&!$readFailed
+        &&preg_match('/\A(?:\[[^\r\n]+\] )?CWP \[[A-F0-9]{8}\] RuntimeException code=0 in '.preg_quote($origin,'/').':'.$line.'\r?\n\z/D',$log)===1;
+    $preserve=static function(string $bytes):void{$offset=0;$length=strlen($bytes);while($offset<$length){$written=fwrite(STDERR,substr($bytes,$offset));if($written===false||$written===0)throw new RuntimeException('Could not preserve unexpected hosting payment diagnostic.');$offset+=$written;}};
+    if(!$expected){
+        $preserve($log);
+    }
+    if(!@unlink($path)){
+        if($expected)$preserve($log);
+        throw new RuntimeException('Could not remove expected hosting payment diagnostic storage.');
+    }
+    if($escaped!==null)throw $escaped;
+    if($restoreFailed)throw new RuntimeException('Could not restore hosting payment diagnostic destination.');
+    if($readFailed)throw new RuntimeException('Could not read expected hosting payment diagnostic.');
+    return ['value'=>$value,'expected'=>$expected];
+}
 
 final class HpProviderTransport implements HttpTransport {
     public static int $calls=0;
@@ -191,9 +221,9 @@ try {
     $retryStatus=hosting_payment_run(hp_id(31),1,hp_key(11),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token-2',hp_gateway('approved','8800011',$declined['invoice_id'],hp_id(31)));
     hp_ok('A fresh retry after a definite decline settles once',$retryStatus==='paid'&&hosting_payment_projection(hp_id(31),1)['payment_stage']==='paid_setup_pending');
 
-    $uncertainStatus=hosting_payment_run(hp_id(32),1,hp_key(20),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800020',$uncertain['invoice_id'],hp_id(32)));
+    $uncertainCapture=hp_expected_report(fn()=>hosting_payment_run(hp_id(32),1,hp_key(20),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800020',$uncertain['invoice_id'],hp_id(32))),'hosting_payment_native.php',102);$uncertainStatus=$uncertainCapture['value'];
     $uncertainProjection=hosting_payment_projection(hp_id(32),1);$uncertainBefore=hp_state();
-    hp_ok('Unknown authoritative readback fences the invoice for review',$uncertainStatus==='review'&&in_array($uncertainProjection['charge_state'],['uncertain','review'],true)&&$uncertainProjection['invoice_status']==='issued'&&$uncertainProjection['payment_stage']==='payment_review'&&hp_count('gateway_receipts')===1);
+    hp_ok('Unknown authoritative readback fences the invoice for review',$uncertainCapture['expected']&&$uncertainStatus==='review'&&in_array($uncertainProjection['charge_state'],['uncertain','review'],true)&&$uncertainProjection['invoice_status']==='issued'&&$uncertainProjection['payment_stage']==='payment_review'&&hp_count('gateway_receipts')===1);
     hp_deny('Uncertain result refuses a second charge attempt',fn()=>hosting_payment_run(hp_id(32),1,hp_key(21),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token-2',hp_gateway('approved','8800021',$uncertain['invoice_id'],hp_id(32))));
     hp_ok('Refused uncertain retry is inert',hp_state()===$uncertainBefore);
     hp_owner();$manualBefore=hp_state();hp_deny('Unresolved hosting capture blocks a concurrent manual invoice receipt',fn()=>ledger_receive($uncertain['invoice_id'],2500,'bank','Synthetic conflicting bank transfer',gmdate('Y-m-d'),hp_key(22),ledger_review_hash(ledger_invoice($uncertain['invoice_id']))));
@@ -201,8 +231,8 @@ try {
     hp_owner();$reconciled=hosting_payment_reconcile(hp_id(32),'8800020',$password,hp_gateway('approved','8800020',$uncertain['invoice_id'],hp_id(32)));hp_client();
     hp_ok('Owner exact readback reconciliation settles the retained uncertain attempt',$reconciled==='paid'&&hosting_payment_projection(hp_id(32),1)['payment_stage']==='paid_setup_pending');
 
-    $forgedStatus=hosting_payment_run(hp_id(33),1,hp_key(30),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('forged','8800030',$forged['invoice_id'],hp_id(33)));
-    hp_ok('Wrong invoice in authoritative readback never creates a paid receipt',$forgedStatus==='review'&&hosting_payment_projection(hp_id(33),1)['invoice_status']==='issued'&&hosting_payment_projection(hp_id(33),1)['payment_stage']==='payment_review');
+    $forgedCapture=hp_expected_report(fn()=>hosting_payment_run(hp_id(33),1,hp_key(30),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('forged','8800030',$forged['invoice_id'],hp_id(33))),'payments.php',79);$forgedStatus=$forgedCapture['value'];
+    hp_ok('Wrong invoice in authoritative readback never creates a paid receipt',$forgedCapture['expected']&&$forgedStatus==='review'&&hosting_payment_projection(hp_id(33),1)['invoice_status']==='issued'&&hosting_payment_projection(hp_id(33),1)['payment_stage']==='payment_review');
 
     $paid=hosting_payment_run(hp_id(30),1,hp_key(40),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('approved','8800040',$approved['invoice_id'],hp_id(30)));
     $paidProjection=hosting_payment_projection(hp_id(30),1);$paidState=hp_state();
@@ -222,15 +252,15 @@ try {
     finally{query('INSERT INTO '.table('audit').' ('.implode(',',array_keys($audit)).') VALUES ('.implode(',',array_fill(0,count($audit),'?')).')',array_values($audit));}
     hp_ok('Restoring exact receipt history restores fulfillment evidence',staff_locked(fn()=>staff_transaction(fn()=>ledger_fulfillment_evidence($approved['invoice_id'],1)))===$evidence);
 
-    $stage='gateway-rotation';hp_client();$rotationStatus=hosting_payment_run(hp_id(34),1,hp_key(50),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800050',$rotation['invoice_id'],hp_id(34)));
-    hp_ok('Production account rotation fixture retains one uncertain original-account intent',$rotationStatus==='review'&&hosting_payment_projection(hp_id(34),1)['payment_stage']==='payment_review');
+    $stage='gateway-rotation';hp_client();$rotationCapture=hp_expected_report(fn()=>hosting_payment_run(hp_id(34),1,hp_key(50),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800050',$rotation['invoice_id'],hp_id(34))),'hosting_payment_native.php',102);$rotationStatus=$rotationCapture['value'];
+    hp_ok('Production account rotation fixture retains one uncertain original-account intent',$rotationCapture['expected']&&$rotationStatus==='review'&&hosting_payment_projection(hp_id(34),1)['payment_stage']==='payment_review');
     hp_owner();payments_save('production',1,['api_login_id'=>'SYNTHETICLOGINB','transaction_key'=>'ABCDEF1234567890','signature_key'=>str_repeat('b',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY_B'],$password);unset($GLOBALS['cwp_settings']);$rotatedState=hp_state();$rotationCalls=0;
     hp_deny('Owner reconciliation refuses an intent retained under a prior production account revision',fn()=>hosting_payment_reconcile(hp_id(34),'8800050',$password,static function()use(&$rotationCalls):array{$rotationCalls++;throw new LogicException('Rotated transport must remain closed.');}));
     hp_ok('Production rotation refusal is inert before transport',$rotationCalls===0&&hp_state()===$rotatedState);
 
     payments_save('sandbox',0,['api_login_id'=>'SYNTHETICSANDBOX','transaction_key'=>'0123456789ABCDEF','signature_key'=>str_repeat('c',128),'public_client_key'=>'SYNTHETIC_SANDBOX_KEY'],$password);hosting_payment_configure('sandbox',false,$password);unset($GLOBALS['cwp_settings']);hp_client();
-    $sandboxStatus=hosting_payment_run(hp_id(35),1,hp_key(60),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800060',$sandboxRotation['invoice_id'],hp_id(35),1,2500,'sandbox'));
-    hp_ok('Sandbox uncertainty remains an unpaid retained sandbox intent',$sandboxStatus==='review'&&hosting_payment_projection(hp_id(35),1)['invoice_status']==='issued');
+    $sandboxCapture=hp_expected_report(fn()=>hosting_payment_run(hp_id(35),1,hp_key(60),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-opaque-token',hp_gateway('uncertain','8800060',$sandboxRotation['invoice_id'],hp_id(35),1,2500,'sandbox')),'hosting_payment_native.php',102);$sandboxStatus=$sandboxCapture['value'];
+    hp_ok('Sandbox uncertainty remains an unpaid retained sandbox intent',$sandboxCapture['expected']&&$sandboxStatus==='review'&&hosting_payment_projection(hp_id(35),1)['invoice_status']==='issued');
     hp_owner();hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);$sandboxRotatedState=hp_state();$sandboxRotationCalls=0;
     hp_deny('Owner reconciliation refuses a sandbox intent after production activation',fn()=>hosting_payment_reconcile(hp_id(35),'8800060',$password,static function()use(&$sandboxRotationCalls):array{$sandboxRotationCalls++;throw new LogicException('Cross-environment transport must remain closed.');}));
     hp_ok('Sandbox to production refusal is inert before transport',$sandboxRotationCalls===0&&hp_state()===$sandboxRotatedState);
