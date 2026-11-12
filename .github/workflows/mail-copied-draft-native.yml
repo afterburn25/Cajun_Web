@@ -1,0 +1,174 @@
+name: Mail copied-draft current-source native acceptance
+on:
+  push:
+    branches: [main]
+    paths: ['site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'foundation/mail-compose/**', 'tests/mail_copied_draft_*.php', 'tests/mail_copied_draft_native_workflow_contract.py', 'tests/current_owner_authority.php', 'tests/mail_message_native.php', '.github/workflows/mail-copied-draft-native.yml']
+  pull_request:
+    branches: [main]
+    paths: ['site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'foundation/mail-compose/**', 'tests/mail_copied_draft_*.php', 'tests/mail_copied_draft_native_workflow_contract.py', 'tests/current_owner_authority.php', 'tests/mail_message_native.php', '.github/workflows/mail-copied-draft-native.yml']
+permissions:
+  contents: read
+concurrency:
+  group: mail-copied-draft-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the bounded workflow and exact source
+        run: |
+          mkdir -p qa/mail-copied-draft-native/source
+          test "$CWP_RUN_ATTEMPT" = "1"
+          python3 tests/mail_copied_draft_native_workflow_contract.py > qa/mail-copied-draft-native/source/workflow-contract.json
+          php -l site/app/mail/copied_drafts.php > qa/mail-copied-draft-native/source/lint.log
+          php -l tests/mail_copied_draft_create_native.php >> qa/mail-copied-draft-native/source/lint.log
+          git diff --exit-code
+      - name: Admit only the immutable checked-out commit
+        id: record
+        run: |
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$CWP_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'sha=%s\n' "$actual" >> "$GITHUB_OUTPUT"
+      - name: Retain exact source and failure evidence
+        if: always()
+        run: |
+          mkdir -p qa/mail-copied-draft-native/source
+          git archive --format=tar.gz HEAD > qa/mail-copied-draft-native/source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/mail-copied-draft-native/source/identity.txt
+          printf 'run_id=%s\nrun_attempt=%s\n' "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" >> qa/mail-copied-draft-native/source/identity.txt
+          git status --porcelain > qa/mail-copied-draft-native/source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: mail-copied-draft-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: qa/mail-copied-draft-native/source/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare disposable official PHP
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          cell=qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}
+          mkdir -p "$cell"
+          status=0
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-copied-draft-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev && docker-php-ext-install pdo_mysql mbstring && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          test "$status" -eq 0
+      - name: Prove the synthetic database is ready for the assigned user
+        run: |
+          cell=qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}
+          status=0
+          docker run --rm --network host \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-copied-draft-native php -r '
+              $last=null;
+              for($i=0;$i<60;$i++){
+                try{
+                  $pdo=new PDO("mysql:host=".getenv("CWP_TEST_HOST").";port=".getenv("CWP_TEST_PORT").";dbname=".getenv("CWP_TEST_DATABASE"),getenv("CWP_TEST_USER"),getenv("CWP_TEST_PASSWORD"),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+                  fwrite(STDOUT,"ready\n");exit(0);
+                }catch(Throwable $e){$last=$e;usleep(500000);}
+              }
+              fwrite(STDERR,get_class($last).": ".$last->getMessage()."\n");exit(1);
+            ' > "$cell/readiness.stdout.log" 2> "$cell/readiness.stderr.log" || status=$?
+          test "$status" -eq 0
+      - name: Run isolated copied-draft SQL acceptance
+        run: |
+          cell=qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}
+          status=0
+          docker run --rm --network host --user "$(id -u):$(id -g)" \
+            -v "$PWD:/workspace" -w /workspace \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA \
+            cwp-copied-draft-native sh -ec '
+              php -l site/app/mail/copied_drafts.php
+              php -l tests/mail_copied_draft_create_native.php
+              php tests/mail_copied_draft_create_native.php
+            ' > "$cell/stdout.log" 2> "$cell/stderr.log" || status=$?
+          if [ -f qa/mail-copied-draft-create-native-results.json ]; then
+            cp qa/mail-copied-draft-create-native-results.json "$cell/results.json"
+          fi
+          test "$status" -eq 0
+          test ! -s "$cell/stderr.log"
+          test -f "$cell/results.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}/results.json')
+          report = json.loads(path.read_text())
+          assert report['passed'] is True
+          assert len(report['checks']) >= 21
+          assert all(check['passed'] is True for check in report['checks'])
+          print(path, len(report['checks']))
+          PY
+          git diff --exit-code
+      - name: Preserve named exact-matrix evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mail-copied-draft-${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source, native]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Confirm exact-source matrix completion
+        env:
+          CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+        run: test -n "$CWP_SOURCE_SHA"
