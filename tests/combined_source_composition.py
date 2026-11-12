@@ -201,6 +201,14 @@ UX08_PAYMENT_ADDITIONS = frozenset((
     'tests/hosting_payment_cases.py',
     'tests/hosting_payment_native.php',
 ))
+UX08_PAYMENT_NATIVE_FIX_BASE = '71899fa2a9380bd614c0163b8974e8e39eba22e7'
+UX08_PAYMENT_NATIVE_FIX_BASE_TREE = '8288fcbbdc7d9cf7bcd15a067522502765075ab5'
+UX08_PAYMENT_NATIVE_FIX_SOURCE = '0e3e44b7da454dfa9278f5524774d770d92ac64b'
+UX08_PAYMENT_NATIVE_FIX_SOURCE_TREE = 'fd29018dbd98e80a26a0ee097d95099d001d92f3'
+UX08_PAYMENT_NATIVE_FIX_MODIFIED = frozenset((
+    'tests/hosting_payment_native.php',
+    'tools/acceptance-contract.json',
+))
 ONBOARDING_SOURCE = 'docs/SOFTWARE_ONBOARDING_SOURCE.json'
 ONBOARDING_BASE = '3ddaa97cd9bf46f9a447b33828c2b1bf3114a77c'
 ONBOARDING_BASE_TREE = '9f77b938f343d1f7c6e56e121ed60fdd9a9446b4'
@@ -1696,6 +1704,42 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_payment_native_fix_source(root):
+    """Bind the isolated native cooldown-helper correction and its contract hash."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_NATIVE_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_NATIVE_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_NATIVE_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_NATIVE_FIX_SOURCE_TREE,
+            'UX-08 native payment fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_NATIVE_FIX_BASE,
+        UX08_PAYMENT_NATIVE_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_NATIVE_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_NATIVE_FIX_BASE, UX08_PAYMENT_NATIVE_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_PAYMENT_NATIVE_FIX_MODIFIED)],
+            'UX-08 native payment fix changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_NATIVE_FIX_BASE)
+    source_entries = entries(root, UX08_PAYMENT_NATIVE_FIX_SOURCE)
+    for path in sorted(UX08_PAYMENT_NATIVE_FIX_MODIFIED):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', UX08_PAYMENT_NATIVE_FIX_SOURCE + ':' + path)
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'UX-08 native payment fix source identity changed: ' + path)
+
+
+def project_ux08_payment_native_fix(root, path, current):
+    """Restore the first recovery-attempt bytes for older source receipts."""
+    if path not in UX08_PAYMENT_NATIVE_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_NATIVE_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_NATIVE_FIX_BASE + ':' + path)
+    if current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 native payment fix changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_source(root):
     """Bind the complete Shared payment, receipt, fulfillment and acceptance successor."""
     require(git(root, 'rev-parse', UX08_PAYMENT_BASE + '^{tree}').decode().strip()
@@ -1718,12 +1762,14 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        require(ordinary(root, path)
+        current = project_ux08_payment_native_fix(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0],
                 'UX-08 payment modified source identity changed: ' + path)
     for path in sorted(UX08_PAYMENT_ADDITIONS):
-        require(ordinary(root, path)
+        current = project_ux08_payment_native_fix(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
                 and mode(root, path) == source_entries[path][0] == '100644',
                 'UX-08 payment addition source identity changed: ' + path)
@@ -1733,10 +1779,13 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_ux08_payment_native_fix(root, path, current)
     if path not in UX08_PAYMENT_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', UX08_PAYMENT_BASE + ':' + path)
+    if current == source:
+        return base
     if current != ordinary(root, path):
         return current
     require(current == source,
@@ -2267,6 +2316,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_payment_native_fix_source(root)
     validate_ux08_payment_source(root)
     validate_ux08_browser_stability_source(root)
     validate_ux08_browser_navigation_source(root)
@@ -2519,7 +2569,8 @@ def verify_current(root):
                 and mode(root, path) == '100644',
                 'UX-08 storefront addition no longer matches its exact source: ' + path)
     for path in sorted(UX08_PAYMENT_ADDITIONS):
-        require(ordinary(root, path)
+        value = project_ux08_payment_native_fix(root, path, ordinary(root, path))
+        require(value
                 == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'UX-08 payment addition no longer matches its exact source: ' + path)
@@ -2564,6 +2615,7 @@ def verify_current(root):
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
+        {'name': 'Exact recovery-head-to-native-payment-fix range binds two reversible test and contract paths', 'passed': True},
         {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
