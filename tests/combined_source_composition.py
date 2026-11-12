@@ -244,6 +244,16 @@ UX08_INBOX_RECORD_FIX_BASE_TREE = '8097ab6983a642af5d05fa813cc84b3b43f07376'
 UX08_INBOX_RECORD_FIX_SOURCE = 'd6a64ee8c2a393b2663337ef1c7b3ac272127583'
 UX08_INBOX_RECORD_FIX_SOURCE_TREE = 'd876b7d52e90b9ace273852aacfc82d6036d5330'
 UX08_INBOX_RECORD_FIX_MODIFIED = UX08_INBOX_OPERATIONS_FIX_MODIFIED
+UX08_AGREEMENT_LINK_FIX_BASE = 'fcddf1d0b7039677dd0d55f676ea4ff8e0c15d1a'
+UX08_AGREEMENT_LINK_FIX_BASE_TREE = 'b29eea35661896fe804644270a8df5d4e7e67185'
+UX08_AGREEMENT_LINK_FIX_SOURCE = 'ae3db0a92735085b9161b22730b9bd42102b67a9'
+UX08_AGREEMENT_LINK_FIX_SOURCE_TREE = '88ce5c8f39b210cbc77dcd412bd43f35f335f9fa'
+UX08_AGREEMENT_LINK_FIX_MODIFIED = frozenset((
+    'site/app/hosting/checkout_purchases_views.php',
+    'site/install/inventory.generated.php',
+    'tests/hosting_purchase_inbox_cases.py',
+    'tests/hosting_purchases_views.php',
+))
 UX08_CHECKOUT_PIN_FIX_BASE = 'a69b4ae04e9087707ddad59a60cc6afda26b57fd'
 UX08_CHECKOUT_PIN_FIX_BASE_TREE = '732d83a18dd6a666369ecfa1b7598583cd4b02dd'
 UX08_CHECKOUT_PIN_FIX_SOURCE = 'e27d57a74962dffa1f595504e4aa9e570050a496'
@@ -1771,7 +1781,8 @@ def validate_ux08_inbox_state_correction_source(root):
             'UX-08 inbox state correction changed a different path or status set')
     base_entries = entries(root, UX08_INBOX_STATE_CORRECTION_BASE)
     source_entries = entries(root, UX08_INBOX_STATE_CORRECTION_SOURCE)
-    current = ordinary(root, UX08_INBOX_STATE_FIX_PATH)
+    current = project_ux08_agreement_link_fix(
+        root, UX08_INBOX_STATE_FIX_PATH, ordinary(root, UX08_INBOX_STATE_FIX_PATH))
     require(current == git(root, 'cat-file', 'blob', UX08_INBOX_STATE_CORRECTION_SOURCE + ':'
                            + UX08_INBOX_STATE_FIX_PATH)
             and mode(root, UX08_INBOX_STATE_FIX_PATH)
@@ -1782,11 +1793,14 @@ def validate_ux08_inbox_state_correction_source(root):
 
 def project_ux08_inbox_state_correction(root, path, current):
     """Restore the first inbox-state proof head for predecessor projection."""
+    current = project_ux08_agreement_link_fix(root, path, current)
     if path != UX08_INBOX_STATE_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_CORRECTION_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_CORRECTION_BASE + ':' + path)
-    if current != ordinary(root, path):
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
         return current
     require(current == source,
             'Current UX-08 inbox state correction changed before predecessor projection')
@@ -1903,7 +1917,7 @@ def validate_ux08_inbox_record_fix_source(root):
     base_entries = entries(root, UX08_INBOX_RECORD_FIX_BASE)
     source_entries = entries(root, UX08_INBOX_RECORD_FIX_SOURCE)
     for path in sorted(UX08_INBOX_RECORD_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_agreement_link_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_BASE + ':' + path)
         require(current == source
@@ -1915,6 +1929,7 @@ def validate_ux08_inbox_record_fix_source(root):
 
 def project_ux08_inbox_record_fix(root, path, current):
     """Restore the first inbox-read correction before older source projections."""
+    current = project_ux08_agreement_link_fix(root, path, current)
     if path not in UX08_INBOX_RECORD_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_SOURCE + ':' + path)
@@ -1925,6 +1940,49 @@ def project_ux08_inbox_record_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 inbox record fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_ux08_agreement_link_fix_source(root):
+    """Bind explicit agreement access without replacing pending-payment actions."""
+    require(git(root, 'rev-parse', UX08_AGREEMENT_LINK_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_AGREEMENT_LINK_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_AGREEMENT_LINK_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_AGREEMENT_LINK_FIX_SOURCE_TREE,
+            'UX-08 agreement-link fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_AGREEMENT_LINK_FIX_BASE,
+        UX08_AGREEMENT_LINK_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_AGREEMENT_LINK_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_AGREEMENT_LINK_FIX_BASE,
+                  UX08_AGREEMENT_LINK_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_AGREEMENT_LINK_FIX_MODIFIED)],
+            'UX-08 agreement-link fix changed a different path or status set')
+    base_entries = entries(root, UX08_AGREEMENT_LINK_FIX_BASE)
+    source_entries = entries(root, UX08_AGREEMENT_LINK_FIX_SOURCE)
+    for path in sorted(UX08_AGREEMENT_LINK_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_AGREEMENT_LINK_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_AGREEMENT_LINK_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_agreement_link_fix(root, path, current) == base
+                and project_ux08_agreement_link_fix(root, path, base) == base,
+                'UX-08 agreement-link fix identity or projection changed: ' + path)
+
+
+def project_ux08_agreement_link_fix(root, path, current):
+    """Restore the accepted fcdd proof head for every older source receipt."""
+    if path not in UX08_AGREEMENT_LINK_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_AGREEMENT_LINK_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_AGREEMENT_LINK_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 agreement-link fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -2117,6 +2175,7 @@ def validate_ux08_payment_native_fix_source(root):
 
 def project_ux08_payment_native_fix(root, path, current):
     """Restore the first recovery-attempt bytes for older source receipts."""
+    current = project_ux08_agreement_link_fix(root, path, current)
     current = project_ux08_inbox_record_fix(root, path, current)
     current = project_ux08_inbox_operations_fix(root, path, current)
     current = project_ux08_payment_diagnostic_fix(root, path, current)
@@ -2710,6 +2769,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_agreement_link_fix_source(root)
     validate_ux08_inbox_record_fix_source(root)
     validate_ux08_inbox_operations_fix_source(root)
     validate_ux08_inbox_state_correction_source(root)
@@ -2937,7 +2997,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux09_fixture_receipt(root, path, ordinary(root, path))
+        value = project_ux08_agreement_link_fix(root, path, ordinary(root, path))
+        value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
         value = project_ux09_mail_review(root, path, value)
