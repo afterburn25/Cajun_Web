@@ -53,6 +53,7 @@ try {
     $owner=hpv_render($page,true);$client=hpv_render($page,false);$ol=hpv_links($owner);$cl=hpv_links($client);
     hpv_ok('Owner unpaid primary retains the exact invoice destination',$ol['Payment pending']===admin_url('invoice-payments',['invoice_id'=>7]));
     hpv_ok('Owner uses exact explicit agreement destination',$ol['View agreement']===admin_url('service-agreement',['record'=>$row['agreement']['id']]));
+    hpv_ok('Owner unpaid card has exact primary agreement invoice and project links',$ol===['Payment pending'=>admin_url('invoice-payments',['invoice_id'=>7]),'View agreement'=>admin_url('service-agreement',['record'=>$row['agreement']['id']]),'View invoice'=>admin_url('invoice-payments',['invoice_id'=>7]),'View project'=>admin_url('studio-job',['id'=>99])]);
     hpv_ok('Old original invoice ID remains the exact owner link',$ol['View invoice']===admin_url('invoice-payments',['invoice_id'=>7]));
     parse_str(parse_url($ol['View invoice'],PHP_URL_QUERY),$_GET);$calls=[];$reached=false;
     ob_start();try{payments_admin_render($_GET['view'],$user,'');}catch(HpvInvoiceReached){$reached=true;}finally{ob_end_clean();}$_GET=[];
@@ -60,6 +61,7 @@ try {
     hpv_ok('Owner exact original project link',$ol['View project']===admin_url('studio-job',['id'=>99]));
     hpv_ok('Client unpaid primary retains exact checkout destination',$cl['Pay securely']===studio_url(['hosting'=>'checkout','checkout_result'=>$row['request_id']]));
     hpv_ok('Client exact agreement invoice and project links',$cl['View agreement']===studio_url(['agreement'=>$row['agreement']['id']])&&$cl['View invoice']===studio_url(['invoice'=>7])&&$cl['View project']===studio_url(['job'=>99]));
+    hpv_ok('Client unpaid card has exact primary agreement invoice and project links',$cl===['Pay securely'=>studio_url(['hosting'=>'checkout','checkout_result'=>$row['request_id']]),'View agreement'=>studio_url(['agreement'=>$row['agreement']['id']]),'View invoice'=>studio_url(['invoice'=>7]),'View project'=>studio_url(['job'=>99])]);
     hpv_ok('Saved labels are escaped as text',str_contains($owner,'Saved &lt;script&gt;alert(&quot;offer&quot;)&lt;/script&gt; &amp; plan')&&str_contains($owner,'INV-7 &lt;tag&gt;')&&str_contains($owner,'Original &lt;project&gt; &amp; website')&&!str_contains($owner,'<script>'));
     hpv_ok('Owner sees escaped client label',str_contains($owner,'Private client &lt;name&gt;'));
     hpv_ok('Client does not render owner client label',!str_contains($client,'Private client')&&!str_contains($client,'<dt>Client</dt>'));
@@ -67,6 +69,8 @@ try {
     hpv_ok('Read-only markup has no forms passwords or hidden input',preg_match('/<(?:form|input|textarea|select)\b/i',$owner.$client)===0);
     hpv_ok('Agreement and payment are separately labeled',str_contains($client,'<dt>Service agreement</dt><dd>Active agreement</dd>')&&str_contains($client,'USD · Awaiting payment'));
     $page['items'][0]['payment']=['payment_stage'=>'paid_setup_pending'];
+    $paidUnstarted=hpv_render($page,false);
+    hpv_ok('Paid unstarted client has exactly one agreement action',hpv_links($paidUnstarted)===['View agreement'=>studio_url(['agreement'=>$row['agreement']['id']]),'View invoice'=>studio_url(['invoice'=>7]),'View project'=>studio_url(['job'=>99])]&&substr_count($paidUnstarted,'>View agreement</a>')===1);
     $page['items'][0]['order']=['id'=>str_repeat('c',32),'phase'=>'offered','domain_name'=>null];$offered=hpv_render($page,false);
     hpv_ok('Offered client has existing website-address agreement link',hpv_links($offered)['Add website address']===studio_url(['agreement'=>$row['agreement']['id']]));
     hpv_ok('Owner offered row explains the client decision',str_contains(hpv_render($page,true),'The client can review this hosting offer and add their website address'));
