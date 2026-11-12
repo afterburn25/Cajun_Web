@@ -2,10 +2,10 @@ name: Project review action current-source native acceptance
 on:
   push:
     branches: [main]
-    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/support/**', 'site/includes/foundation/projects/**', 'foundation/projects/**', 'site/database/schema/workspace.php', 'site/database/schema/contacts_schema.php', 'tests/project_action_items*.php', 'tests/project-actions/**', 'tests/project_action_items_native_workflow_contract.py', '.github/workflows/project-action-items-native.yml']
+    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/support/**', 'site/portal/views/workspace.php', 'site/portal/controllers/actions.php', 'site/portal/controllers/router.php', 'site/includes/foundation/projects/**', 'foundation/projects/**', 'site/database/schema/workspace.php', 'site/database/schema/contacts_schema.php', 'tests/project_action_items*.php', 'tests/project-actions/**', 'tests/project_action_items_native_workflow_contract.py', '.github/workflows/project-action-items-native.yml']
   pull_request:
     branches: [main]
-    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/support/**', 'site/includes/foundation/projects/**', 'foundation/projects/**', 'site/database/schema/workspace.php', 'site/database/schema/contacts_schema.php', 'tests/project_action_items*.php', 'tests/project-actions/**', 'tests/project_action_items_native_workflow_contract.py', '.github/workflows/project-action-items-native.yml']
+    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/support/**', 'site/portal/views/workspace.php', 'site/portal/controllers/actions.php', 'site/portal/controllers/router.php', 'site/includes/foundation/projects/**', 'foundation/projects/**', 'site/database/schema/workspace.php', 'site/database/schema/contacts_schema.php', 'tests/project_action_items*.php', 'tests/project-actions/**', 'tests/project_action_items_native_workflow_contract.py', '.github/workflows/project-action-items-native.yml']
 permissions:
   contents: read
 concurrency:
@@ -106,6 +106,12 @@ jobs:
         run: |
           cell=qa/project-action-items-native/${{ matrix.php }}-${{ matrix.database }}
           mkdir -p "$cell"
+          actual=$(git rev-parse HEAD)
+          tree=$(git rev-parse HEAD^{tree})
+          test "$actual" = "$CWP_SOURCE_SHA"
+          test "$CWP_RUN_ATTEMPT" = "1"
+          printf 'source=%s\ntree=%s\nrun_id=%s\nrun_attempt=%s\nphp=%s\ndatabase=%s\n' \
+            "$actual" "$tree" "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" '${{ matrix.php }}' '${{ matrix.database }}' > "$cell/identity.txt"
           status=0
           docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-project-action-items-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
           ARG PHP_VERSION

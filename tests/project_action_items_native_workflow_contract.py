@@ -28,6 +28,9 @@ def validate(text):
           and text.count("'.github/workflows/project-action-items-native.yml'") == 2
           and text.count("'site/app/projects/**'") == 2
           and text.count("'site/app/clients/**'") == 2
+          and text.count("'site/portal/views/workspace.php'") == 2
+          and text.count("'site/portal/controllers/actions.php'") == 2
+          and text.count("'site/portal/controllers/router.php'") == 2
           and text.count('branches: [main]') == 2)
     check('Manual redispatch cannot replace a natural first attempt', 'workflow_dispatch:' not in text)
     immutable = '${{ github.event.pull_request.head.sha || github.sha }}'
@@ -42,7 +45,7 @@ def validate(text):
     check('Only attempt one is admitted and run provenance is retained',
           text.count('CWP_RUN_ID: ${{ github.run_id }}') == 2
           and text.count('CWP_RUN_ATTEMPT: ${{ github.run_attempt }}') == 2
-          and 'test "$CWP_RUN_ATTEMPT" = "1"' in text
+          and text.count('test "$CWP_RUN_ATTEMPT" = "1"') == 2
           and text.count('${{ github.run_id }}-attempt-${{ github.run_attempt }}') == 2)
     check('Source admission runs model runtime mirror and syntax contracts',
           'python3 tests/project_action_items_native_workflow_contract.py' in text
@@ -78,6 +81,15 @@ def validate(text):
     check('Image build failure retains logs before enforcing its status',
           'build.stdout.log' in text and 'build.stderr.log' in text
           and text.index('mkdir -p "$cell"') < text.index('docker build --build-arg PHP_VERSION='))
+    build = text.split('      - name: Prepare disposable official PHP\n', 1)[1]
+    check('Every matrix artifact carries exact self-contained identity before build failure',
+          'actual=$(git rev-parse HEAD)' in build
+          and 'tree=$(git rev-parse HEAD^{tree})' in build
+          and 'test "$actual" = "$CWP_SOURCE_SHA"' in build
+          and 'test "$CWP_RUN_ATTEMPT" = "1"' in build
+          and "printf 'source=%s\\ntree=%s\\nrun_id=%s\\nrun_attempt=%s\\nphp=%s\\ndatabase=%s\\n'" in build
+          and '> "$cell/identity.txt"' in build
+          and build.index('> "$cell/identity.txt"') < build.index('docker build --build-arg PHP_VERSION='))
     check('Workflow contains no softened failure secret or live-operation channel',
           all(token not in text for token in ('continue-on-error', 'set +e', '|| true',
                                                'secrets.', 'authorize.net', 'smtp', 'ssh ',
@@ -95,6 +107,8 @@ def self_test(text):
         ('write permission', 'contents: read', 'contents: write'),
         ('cancelled main evidence', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", 'cancel-in-progress: true'),
         ('rerun admission', 'test "$CWP_RUN_ATTEMPT" = "1"', 'test -n "$CWP_RUN_ATTEMPT"'),
+        ('lost workspace trigger', "'site/portal/views/workspace.php'", "'site/portal/views/other.php'"),
+        ('lost matrix identity', 'tree=$(git rev-parse HEAD^{tree})', 'tree=unknown'),
         ('lost PDO MySQL', 'docker-php-ext-install pdo_mysql mbstring', 'docker-php-ext-install mbstring'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost report pass gate', "assert report['passed'] is True", 'assert True'),
