@@ -289,6 +289,16 @@ UX08_PAYMENT_PUBLICATION_PIN_FIX_MODIFIED = frozenset((
     'tests/hosting_checkout_http_fixture.php',
     'tests/hosting_checkout_http_guards.py',
 ))
+UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE = '066f8f5b791acaddadc10a5e2274971c5a11a42f'
+UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE_TREE = '2a49c5e3d0c1f11ce685c5d5b67bb582e03b4ee5'
+UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE = '7a9278ecaeb52f8bdedc3abb002ae3db4d02d77f'
+UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE_TREE = '8d8c1464167acf31267e413ddba1a43a86eab442'
+UX08_PAYMENT_CURRENT_PUBLICATION_FIX_MODIFIED = frozenset((
+    'tests/hosting_checkout_http_browser.py',
+    'tests/hosting_checkout_http_fixture.php',
+    'tests/hosting_checkout_http_guards.py',
+    'tests/hosting_payment_cases.py',
+))
 UX08_CHECKOUT_PIN_FIX_BASE = 'a69b4ae04e9087707ddad59a60cc6afda26b57fd'
 UX08_CHECKOUT_PIN_FIX_BASE_TREE = '732d83a18dd6a666369ecfa1b7598583cd4b02dd'
 UX08_CHECKOUT_PIN_FIX_SOURCE = 'e27d57a74962dffa1f595504e4aa9e570050a496'
@@ -2159,6 +2169,49 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_ux08_payment_current_publication_fix_source(root):
+    """Bind the exact current billing publication used by payment journeys."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE_TREE,
+            'UX-08 payment current publication fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE,
+        UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE,
+                  UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_PAYMENT_CURRENT_PUBLICATION_FIX_MODIFIED)],
+            'UX-08 payment current publication fix changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE)
+    source_entries = entries(root, UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE)
+    for path in sorted(UX08_PAYMENT_CURRENT_PUBLICATION_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_payment_current_publication_fix(root, path, current) == base
+                and project_ux08_payment_current_publication_fix(root, path, base) == base,
+                'UX-08 payment current publication fix identity or projection changed: ' + path)
+
+
+def project_ux08_payment_current_publication_fix(root, path, current):
+    """Restore the accepted publication-pin proof head for older receipts."""
+    if path not in UX08_PAYMENT_CURRENT_PUBLICATION_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 payment current publication fix changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_publication_pin_fix_source(root):
     """Bind the exact prepared publication identity used by payment journeys."""
     require(git(root, 'rev-parse', UX08_PAYMENT_PUBLICATION_PIN_FIX_BASE + '^{tree}').decode().strip()
@@ -2177,7 +2230,7 @@ def validate_ux08_payment_publication_pin_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_PUBLICATION_PIN_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_PUBLICATION_PIN_FIX_SOURCE)
     for path in sorted(UX08_PAYMENT_PUBLICATION_PIN_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_payment_current_publication_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_PAYMENT_PUBLICATION_PIN_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_PAYMENT_PUBLICATION_PIN_FIX_BASE + ':' + path)
         require(current == source
@@ -2189,6 +2242,7 @@ def validate_ux08_payment_publication_pin_fix_source(root):
 
 def project_ux08_payment_publication_pin_fix(root, path, current):
     """Restore the accepted payment-fixture-lock proof head for older receipts."""
+    current = project_ux08_payment_current_publication_fix(root, path, current)
     if path not in UX08_PAYMENT_PUBLICATION_PIN_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_PUBLICATION_PIN_FIX_SOURCE + ':' + path)
@@ -3033,6 +3087,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_payment_current_publication_fix_source(root)
     validate_ux08_payment_publication_pin_fix_source(root)
     validate_ux08_payment_fixture_lock_fix_source(root)
     validate_ux08_billing_network_fix_source(root)
