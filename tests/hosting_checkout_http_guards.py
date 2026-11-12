@@ -92,6 +92,7 @@ def main():
         'site/app/hosting/checkout_purchases_views.php', 'site/app/billing/ledger.php',
         'site/database/migrations/hosting_payments_migrate.php',
         'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php',
+        'tests/hosting_checkout_http_browser.py', 'tests/hosting_payment_cases.py',
         'tests/hosting_checkout_http_fixture.php')}
     check('Owner payment reconciliation is a shipping CSRF-routed confirmed action',
           "str_starts_with($action,'hosting_payment_')" in source['site/admin/controllers/actions.php']
@@ -116,15 +117,24 @@ def main():
               < migration.index('$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());')
               < migration.index("if(!$checkoutReady||setting('gateway_receipts_schema_version')!=='1')"))
     payment_fixture = source['tests/hosting_checkout_http_fixture.php']
-    check('Payment continuation binds the exact prepared publication under the checkout lock',
-          payment_fixture.count("'publication_id'=>$initial['publication']") == 1
-          and payment_fixture.count("'publication_sha256'=>$initial['publication_sha256']") == 1
-          and payment_fixture.count("$publicationId=$seed['publication_id']??null") == 1
-          and payment_fixture.count("$publicationHash=$seed['publication_sha256']??null") == 1
+    payment_runner = source['tests/hosting_checkout_http_browser.py']
+    payment_cases = source['tests/hosting_payment_cases.py']
+    check('Payment continuation binds the exact current billing publication under the checkout lock',
+          "'payment_publication': result['billing_options']['monthly']" in payment_runner
+          and "fixture('payment-state', {" in payment_cases
+          and "'publication_id': publication['publication_id']" in payment_cases
+          and "'publication_sha256': publication['publication_sha256']" in payment_cases
+          and "'amount_cents': payment_amount" in payment_cases
+          and "$publicationId=$input['publication_id']??null" in payment_fixture
+          and "$publicationHash=$input['publication_sha256']??null" in payment_fixture
+          and "$amountCents=$input['amount_cents']??null" in payment_fixture
           and payment_fixture.count('hosting_catalog_publication($publicationId)') == 1
           and '$publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationId));'
               in payment_fixture
           and "hash_equals($publicationHash,$publication->fingerprint())" in payment_fixture
+          and "'publication_id'=>$publicationId" in payment_fixture
+          and "'publication_sha256'=>$publicationHash" in payment_fixture
+          and "'amount_cents'=>$amountCents" in payment_fixture
           and 'WHERE product_id=? ORDER BY seq DESC LIMIT 1' not in payment_fixture)
     for name in ('gateway_receipts_schema.php', 'hosting_payments_schema.php'):
         schema = source['site/database/schema/' + name]

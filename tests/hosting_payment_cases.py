@@ -30,6 +30,20 @@ def run_browser(env, browser):
         checks.append({'name': name, 'passed': passed})
         driver_check(name, passed)
 
+    publication = env.get('payment_publication')
+    publication_ok = (
+        isinstance(publication, dict)
+        and re.fullmatch(r'[a-f0-9]{32}', str(publication.get('publication_id', ''))) is not None
+        and re.fullmatch(r'[a-f0-9]{64}', str(publication.get('publication_sha256', ''))) is not None
+        and publication.get('product_id') == env['seed']['product_id']
+        and publication.get('amount_cents') == 2700
+        and publication.get('currency') == 'USD'
+        and publication.get('cadence') == 'monthly'
+    )
+    check('Hosting payment binds the exact current monthly billing publication', publication_ok)
+    payment_amount = publication['amount_cents']
+    payment_price = f'${payment_amount // 100}.{payment_amount % 100:02d}'
+
     def route_handler(route):
         url = route.request.url
         host = (urlparse(url).hostname or '').lower()
@@ -88,9 +102,17 @@ window.Accept={dispatchData:function(data,done){
               and form(page, 'login').count() == 0)
 
     def state():
-        value = fixture('payment-state')
+        value = fixture('payment-state', {
+            'publication_id': publication['publication_id'],
+            'publication_sha256': publication['publication_sha256'],
+            'amount_cents': payment_amount,
+        })
         if not isinstance(value, dict) or value.get('prepared') is not True:
             raise AssertionError('Bounded prepared hosting payment state required')
+        if (value.get('publication_id') != publication['publication_id']
+                or value.get('publication_sha256') != publication['publication_sha256']
+                or value.get('amount_cents') != payment_amount):
+            raise AssertionError('Exact current payment publication state required')
         journeys = value.get('journeys')
         if not isinstance(journeys, dict) or set(journeys) != {'approved', 'declined', 'uncertain'}:
             raise AssertionError('Exact approved, declined and uncertain fixture journeys required')
@@ -196,7 +218,7 @@ window.Accept={dispatchData:function(data,done){
               and parse_qs(urlparse(invoice_link.get_attribute('href')).query).get('invoice') == [str(approved['invoice_id'])])
         check('Owned checkout result binds the exact request and invoice before tokenization',
               approved['invoice_reference'] in page.inner_text('body')
-              and '$25.00' in page.inner_text('body')
+              and payment_price in page.inner_text('body')
               and form(page, 'hosting_catalog_checkout_pay').count() == 1 and safe(page))
         target = page.locator('section').filter(has=form(page, 'hosting_catalog_checkout_pay')).first
         for width, height, name in ((1440, 1050, CAPTURES[0]), (390, 844, CAPTURES[1])):

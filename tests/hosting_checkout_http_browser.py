@@ -215,7 +215,10 @@ def main(full_suite=False):
                 result['billing_options'] = billing_options_browser({**browser_env, 'plan_setup': result['catalog_storefront']['plan_setup']}, browser)
                 check('Installed monthly and annual billing options preserve exact invoices and prior history',
                       billing_options_complete(result['billing_options'], qa))
-                result['hosting_payment'] = payment_browser(browser_env, browser)
+                result['hosting_payment'] = payment_browser({
+                    **browser_env,
+                    'payment_publication': result['billing_options']['monthly'],
+                }, browser)
                 check('Installed Shared payment and fulfillment journey uses exact closed evidence only',
                       result['hosting_payment']['passed'] is True
                       and tuple(c['name'] for c in result['hosting_payment']['captures']) == PAYMENT_CAPTURES
