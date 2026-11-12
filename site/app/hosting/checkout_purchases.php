@@ -25,7 +25,7 @@ function hosting_purchases_orders_ready(): bool {
 }
 
 /** Whitelist the visible fields; payment status and local setup phase remain separate facts. */
-function hosting_purchases_item(array $row,bool $owner,bool $ordersReady,?int $client): array {
+function hosting_purchases_item(array $row,bool $owner,bool $ordersReady,?int $client,?bool $paymentsReady=null): array {
     hosting_catalog_guard();
     $validated=hosting_checkout_result_row($row);$d=$validated['document'];$invoice=$validated['invoice'];
     if ($client!==null && $d['client_id']!==$client) throw new RuntimeException('Hosting purchase unavailable.');
@@ -43,7 +43,8 @@ function hosting_purchases_item(array $row,bool $owner,bool $ordersReady,?int $c
             throw new RuntimeException('Hosting order history is missing. Restore the original database.');
         }
     }
-    $payment=hosting_payments_ready()?hosting_payment_projection_locked(hosting_payment_source_locked($d['request_id'],$d['client_id'],false)):
+    $paymentsReady??=hosting_payments_ready();
+    $payment=$paymentsReady?hosting_payment_projection_locked(hosting_payment_source_locked($d['request_id'],$d['client_id'],false),true):
         ['payment_stage'=>$invoice['status']==='issued'?'awaiting_payment':'payment_review','charge_state'=>null,'receipt_id'=>null,'service_active'=>false];
     $item=['request_id'=>$d['request_id'],'created_epoch'=>$d['accepted_at'],'offer_title'=>$validated['publication']->data()['product']['title'],
         'invoice'=>['id'=>$d['invoice_id'],'reference'=>$invoice['reference'],'status'=>$invoice['status'],'amount_cents'=>(int)$invoice['amount_cents'],'currency'=>$invoice['currency']],
@@ -65,8 +66,8 @@ function hosting_purchases_page(int $page,?int $client): array {
     $ordersReady=hosting_purchases_orders_ready();
     $where=$client===null?'':' WHERE client_id=?';$parameters=$client===null?[]:[$client];
     $rows=all('SELECT * FROM '.table('hosting_checkout_results').$where.' ORDER BY created_epoch DESC,id DESC LIMIT 21 OFFSET '.(($page-1)*20),$parameters);
-    $result['has_more']=count($rows)>20;
-    foreach (array_slice($rows,0,20) as $row) $result['items'][]=hosting_purchases_item($row,$client===null,$ordersReady,$client);
+    $result['has_more']=count($rows)>20;$selected=array_slice($rows,0,20);$paymentsReady=$selected===[]?false:hosting_payments_ready();
+    foreach ($selected as $row) $result['items'][]=hosting_purchases_item($row,$client===null,$ordersReady,$client,$paymentsReady);
     return $result;
 }
 

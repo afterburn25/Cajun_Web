@@ -256,8 +256,9 @@ function hosting_payment_service_active_locked(string $agreement):bool {
     hosting_storage_require('operations');$journal=hosting_operations_validate($row);
     return $journal->account()->status()==='active'&&$journal->account()->providerRef()!==null;
 }
-function hosting_payment_projection_locked(array $source):array {
-        $request=$source['request_id'];$charge=hosting_payments_ready()?one('SELECT * FROM '.table('hosting_payment_charges').' WHERE request_id=?',[$request]):null;
+function hosting_payment_projection_locked(array $source,?bool $paymentsReady=null):array {
+        $request=$source['request_id'];$paymentsReady??=hosting_payments_ready();
+        $charge=$paymentsReady?one('SELECT * FROM '.table('hosting_payment_charges').' WHERE request_id=?',[$request]):null;
         $receipt=null;if($charge&&$charge['receipt_id']!==null){$payment=one('SELECT p.* FROM '.table('invoice_payments').' p JOIN '.table('gateway_receipts').' g ON g.ledger_entry_id=p.id WHERE g.id=?',[$charge['receipt_id']]);if(!$payment)throw new RuntimeException('Hosting payment receipt history is missing.');$receipt=gateway_receipt_for_entry($payment,$source['invoice']);}
         $active=$source['invoice_status']==='paid'&&$receipt&&$receipt['status']==='verified'&&hosting_payment_service_active_locked($source['agreement_id']);
         $stage=$active?'active':($source['invoice_status']==='paid'&&$receipt&&$receipt['status']==='verified'?'paid_setup_pending':($source['invoice_status']==='issued'?'awaiting_payment':'payment_review'));
