@@ -222,6 +222,10 @@ UX08_INBOX_STATE_FIX_BASE_TREE = '950138189b42761fd27ef5af75449d79ed8194af'
 UX08_INBOX_STATE_FIX_SOURCE = '1200cd1af38829fe0127888e6f11dc04bc7d7985'
 UX08_INBOX_STATE_FIX_SOURCE_TREE = '6765efc94c65a16002add7b3dd1645e7215b82a6'
 UX08_INBOX_STATE_FIX_PATH = 'tests/hosting_purchase_inbox_cases.py'
+UX08_INBOX_STATE_CORRECTION_BASE = '76799a2ecc97bf4b7e481a9455b2eae08d5fb413'
+UX08_INBOX_STATE_CORRECTION_BASE_TREE = 'd864771b285782828498b90b436110d4cd86f22e'
+UX08_INBOX_STATE_CORRECTION_SOURCE = '0b3ef632ee3eeb728ef5c2175b06a4258f45aa53'
+UX08_INBOX_STATE_CORRECTION_SOURCE_TREE = '8d5eb1087764b5ceefe6aa814020c8d0c0d7352f'
 UX08_STOREFRONT_NETWORK_FIX_BASE = '3019274622c502e82b13e650b82ca05fe32afc4c'
 UX08_STOREFRONT_NETWORK_FIX_BASE_TREE = 'baab97e10b0d04cb4654fcb59fac93c536203111'
 UX08_STOREFRONT_NETWORK_FIX_SOURCE = '14186fc141838334ec20a6b215968b8422798153'
@@ -1727,6 +1731,45 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_inbox_state_correction_source(root):
+    """Bind accepted manual-payment display state to its exact correction."""
+    require(git(root, 'rev-parse', UX08_INBOX_STATE_CORRECTION_BASE + '^{tree}').decode().strip()
+            == UX08_INBOX_STATE_CORRECTION_BASE_TREE
+            and git(root, 'rev-parse', UX08_INBOX_STATE_CORRECTION_SOURCE + '^{tree}').decode().strip()
+            == UX08_INBOX_STATE_CORRECTION_SOURCE_TREE,
+            'UX-08 inbox state correction source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_STATE_CORRECTION_BASE,
+        UX08_INBOX_STATE_CORRECTION_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_STATE_CORRECTION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_INBOX_STATE_CORRECTION_BASE,
+                  UX08_INBOX_STATE_CORRECTION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_INBOX_STATE_FIX_PATH],
+            'UX-08 inbox state correction changed a different path or status set')
+    base_entries = entries(root, UX08_INBOX_STATE_CORRECTION_BASE)
+    source_entries = entries(root, UX08_INBOX_STATE_CORRECTION_SOURCE)
+    current = ordinary(root, UX08_INBOX_STATE_FIX_PATH)
+    require(current == git(root, 'cat-file', 'blob', UX08_INBOX_STATE_CORRECTION_SOURCE + ':'
+                           + UX08_INBOX_STATE_FIX_PATH)
+            and mode(root, UX08_INBOX_STATE_FIX_PATH)
+            == base_entries[UX08_INBOX_STATE_FIX_PATH][0]
+            == source_entries[UX08_INBOX_STATE_FIX_PATH][0] == '100644',
+            'UX-08 inbox state correction source identity changed')
+
+
+def project_ux08_inbox_state_correction(root, path, current):
+    """Restore the first inbox-state proof head for predecessor projection."""
+    if path != UX08_INBOX_STATE_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_CORRECTION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_CORRECTION_BASE + ':' + path)
+    if current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 inbox state correction changed before predecessor projection')
+    return base
+
+
 def validate_ux08_inbox_state_fix_source(root):
     """Bind the retained two-paid-invoice inbox fixture to its exact source."""
     require(git(root, 'rev-parse', UX08_INBOX_STATE_FIX_BASE + '^{tree}').decode().strip()
@@ -1743,7 +1786,8 @@ def validate_ux08_inbox_state_fix_source(root):
             'UX-08 inbox state fix changed a different path or status set')
     base_entries = entries(root, UX08_INBOX_STATE_FIX_BASE)
     source_entries = entries(root, UX08_INBOX_STATE_FIX_SOURCE)
-    current = ordinary(root, UX08_INBOX_STATE_FIX_PATH)
+    current = project_ux08_inbox_state_correction(
+        root, UX08_INBOX_STATE_FIX_PATH, ordinary(root, UX08_INBOX_STATE_FIX_PATH))
     require(current == git(root, 'cat-file', 'blob', UX08_INBOX_STATE_FIX_SOURCE + ':'
                            + UX08_INBOX_STATE_FIX_PATH)
             and mode(root, UX08_INBOX_STATE_FIX_PATH)
@@ -1754,12 +1798,11 @@ def validate_ux08_inbox_state_fix_source(root):
 
 def project_ux08_inbox_state_fix(root, path, current):
     """Restore the storefront-network proof head for older source receipts."""
+    current = project_ux08_inbox_state_correction(root, path, current)
     if path != UX08_INBOX_STATE_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_FIX_BASE + ':' + path)
-    if current != ordinary(root, path):
-        return current
     require(current == source,
             'Current UX-08 inbox state fix changed before predecessor projection')
     return base
@@ -2497,6 +2540,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_inbox_state_correction_source(root)
     validate_ux08_inbox_state_fix_source(root)
     validate_ux08_storefront_network_fix_source(root)
     validate_ux08_browser_network_fix_source(root)
