@@ -263,6 +263,11 @@ UX08_AGREEMENT_DUPLICATE_FIX_MODIFIED = frozenset((
     'site/install/inventory.generated.php',
     'tests/hosting_purchases_views.php',
 ))
+UX08_INBOX_NETWORK_FIX_BASE = 'b6bbadc61a515aed37abb636aceef035aa74c165'
+UX08_INBOX_NETWORK_FIX_BASE_TREE = 'a4c45794c8d5559727fecc4298aa7e2da00a5add'
+UX08_INBOX_NETWORK_FIX_SOURCE = '8639e019f87b632e22b2523648d64e76632cf42e'
+UX08_INBOX_NETWORK_FIX_SOURCE_TREE = 'cc31dd823e65ba7ad0390dff9e3ce6bf1543485b'
+UX08_INBOX_NETWORK_FIX_PATH = 'tests/hosting_purchase_inbox_cases.py'
 UX08_CHECKOUT_PIN_FIX_BASE = 'a69b4ae04e9087707ddad59a60cc6afda26b57fd'
 UX08_CHECKOUT_PIN_FIX_BASE_TREE = '732d83a18dd6a666369ecfa1b7598583cd4b02dd'
 UX08_CHECKOUT_PIN_FIX_SOURCE = 'e27d57a74962dffa1f595504e4aa9e570050a496'
@@ -1970,7 +1975,8 @@ def validate_ux08_agreement_link_fix_source(root):
     base_entries = entries(root, UX08_AGREEMENT_LINK_FIX_BASE)
     source_entries = entries(root, UX08_AGREEMENT_LINK_FIX_SOURCE)
     for path in sorted(UX08_AGREEMENT_LINK_FIX_MODIFIED):
-        current = project_ux08_agreement_duplicate_fix(root, path, ordinary(root, path))
+        current = project_ux08_inbox_network_fix(root, path, ordinary(root, path))
+        current = project_ux08_agreement_duplicate_fix(root, path, current)
         source = git(root, 'cat-file', 'blob', UX08_AGREEMENT_LINK_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_AGREEMENT_LINK_FIX_BASE + ':' + path)
         require(current == source
@@ -1982,6 +1988,7 @@ def validate_ux08_agreement_link_fix_source(root):
 
 def project_ux08_agreement_link_fix(root, path, current):
     """Restore the accepted fcdd proof head for every older source receipt."""
+    current = project_ux08_inbox_network_fix(root, path, current)
     current = project_ux08_agreement_duplicate_fix(root, path, current)
     if path not in UX08_AGREEMENT_LINK_FIX_MODIFIED:
         return current
@@ -2036,6 +2043,51 @@ def project_ux08_agreement_duplicate_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 agreement duplicate fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_ux08_inbox_network_fix_source(root):
+    """Bind exact closed interception of the inbox payment dependency."""
+    require(git(root, 'rev-parse', UX08_INBOX_NETWORK_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_INBOX_NETWORK_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_INBOX_NETWORK_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_INBOX_NETWORK_FIX_SOURCE_TREE,
+            'UX-08 inbox network fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_NETWORK_FIX_BASE,
+        UX08_INBOX_NETWORK_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_NETWORK_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_INBOX_NETWORK_FIX_BASE, UX08_INBOX_NETWORK_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_INBOX_NETWORK_FIX_PATH],
+            'UX-08 inbox network fix changed a different path or status set')
+    base_entries = entries(root, UX08_INBOX_NETWORK_FIX_BASE)
+    source_entries = entries(root, UX08_INBOX_NETWORK_FIX_SOURCE)
+    current = ordinary(root, UX08_INBOX_NETWORK_FIX_PATH)
+    source = git(root, 'cat-file', 'blob', UX08_INBOX_NETWORK_FIX_SOURCE + ':'
+                 + UX08_INBOX_NETWORK_FIX_PATH)
+    base = git(root, 'cat-file', 'blob', UX08_INBOX_NETWORK_FIX_BASE + ':'
+               + UX08_INBOX_NETWORK_FIX_PATH)
+    require(current == source
+            and mode(root, UX08_INBOX_NETWORK_FIX_PATH)
+            == base_entries[UX08_INBOX_NETWORK_FIX_PATH][0]
+            == source_entries[UX08_INBOX_NETWORK_FIX_PATH][0] == '100644'
+            and project_ux08_inbox_network_fix(root, UX08_INBOX_NETWORK_FIX_PATH, current) == base
+            and project_ux08_inbox_network_fix(root, UX08_INBOX_NETWORK_FIX_PATH, base) == base,
+            'UX-08 inbox network fix identity or projection changed')
+
+
+def project_ux08_inbox_network_fix(root, path, current):
+    """Restore the single-agreement proof head for older receipts."""
+    if path != UX08_INBOX_NETWORK_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_INBOX_NETWORK_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_INBOX_NETWORK_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 inbox network fix changed before predecessor projection')
     return base
 
 
@@ -2822,6 +2874,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_inbox_network_fix_source(root)
     validate_ux08_agreement_duplicate_fix_source(root)
     validate_ux08_agreement_link_fix_source(root)
     validate_ux08_inbox_record_fix_source(root)
