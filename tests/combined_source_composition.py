@@ -273,6 +273,14 @@ UX08_BILLING_NETWORK_FIX_BASE_TREE = '990eb62baf9cb109f03f645dde30c468091ed451'
 UX08_BILLING_NETWORK_FIX_SOURCE = '4e3512772553709d5c515dd7b85227dc23417905'
 UX08_BILLING_NETWORK_FIX_SOURCE_TREE = '27010185b4799dc1813b8ad72fd2720f447fe39b'
 UX08_BILLING_NETWORK_FIX_PATH = 'tests/hosting_billing_options_cases.py'
+UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE = 'e1fb72035bec339435d1e6ab5c7b2654d0a5026f'
+UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE_TREE = 'c24b845a33ed3f04de1720d18f63c53bcb89f701'
+UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE = '1eb4497ba15ca737f0c032c09a5c3576f53d3f35'
+UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE_TREE = '76ab2b7d79f7f861429161f0981e4176f57f5274'
+UX08_PAYMENT_FIXTURE_LOCK_FIX_MODIFIED = frozenset((
+    'tests/hosting_checkout_http_fixture.php',
+    'tests/hosting_checkout_http_guards.py',
+))
 UX08_CHECKOUT_PIN_FIX_BASE = 'a69b4ae04e9087707ddad59a60cc6afda26b57fd'
 UX08_CHECKOUT_PIN_FIX_BASE_TREE = '732d83a18dd6a666369ecfa1b7598583cd4b02dd'
 UX08_CHECKOUT_PIN_FIX_SOURCE = 'e27d57a74962dffa1f595504e4aa9e570050a496'
@@ -1993,6 +2001,7 @@ def validate_ux08_agreement_link_fix_source(root):
 
 def project_ux08_agreement_link_fix(root, path, current):
     """Restore the accepted fcdd proof head for every older source receipt."""
+    current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_inbox_network_fix(root, path, current)
     current = project_ux08_agreement_duplicate_fix(root, path, current)
@@ -2139,6 +2148,49 @@ def project_ux08_billing_network_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 billing network fix changed before predecessor projection')
+    return base
+
+
+def validate_ux08_payment_fixture_lock_fix_source(root):
+    """Bind the exact locked publication read used to seed payment journeys."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE_TREE,
+            'UX-08 payment fixture lock fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE,
+        UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE,
+                  UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_PAYMENT_FIXTURE_LOCK_FIX_MODIFIED)],
+            'UX-08 payment fixture lock fix changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE)
+    source_entries = entries(root, UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE)
+    for path in sorted(UX08_PAYMENT_FIXTURE_LOCK_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_payment_fixture_lock_fix(root, path, current) == base
+                and project_ux08_payment_fixture_lock_fix(root, path, base) == base,
+                'UX-08 payment fixture lock fix identity or projection changed: ' + path)
+
+
+def project_ux08_payment_fixture_lock_fix(root, path, current):
+    """Restore the billing-network proof head for older source receipts."""
+    if path not in UX08_PAYMENT_FIXTURE_LOCK_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FIXTURE_LOCK_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FIXTURE_LOCK_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 payment fixture lock fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -2370,7 +2422,8 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        current = project_ux08_billing_network_fix(root, path, ordinary(root, path))
+        current = project_ux08_payment_fixture_lock_fix(root, path, ordinary(root, path))
+        current = project_ux08_billing_network_fix(root, path, current)
         current = project_ux08_payment_native_fix(root, path, current)
         require(current
                 == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
@@ -2388,6 +2441,7 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_payment_native_fix(root, path, current)
     if path not in UX08_PAYMENT_MODIFIED:
@@ -2927,6 +2981,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_payment_fixture_lock_fix_source(root)
     validate_ux08_billing_network_fix_source(root)
     validate_ux08_inbox_network_fix_source(root)
     validate_ux08_agreement_duplicate_fix_source(root)
@@ -3238,6 +3293,7 @@ def verify_current(root):
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
+        {'name': 'Exact billing-network-proof-to-payment-fixture-lock-fix range binds two reversible test paths', 'passed': True},
         {'name': 'Exact storefront-proof-head-to-inbox-state-fix range binds one reversible read-only browser fixture path', 'passed': True},
         {'name': 'Exact browser-proof-head-to-storefront-network-fix range binds one reversible test path and performs no live tokenization fetch', 'passed': True},
         {'name': 'Exact diagnostic-proof-head-to-browser-network-fix range binds one reversible test path and performs no live tokenization fetch', 'passed': True},
