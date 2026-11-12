@@ -85,7 +85,7 @@ try:
         page.on('pageerror',lambda e:errors.append(str(e)))
         def form(action):
             return page.locator('form').filter(has=page.locator('[name=action][value="'+action+'"]'))
-        def prepare(view,action,marker):
+        def prepare(view,action,marker,expected='1'):
             url=admin+'?view='+view
             response=owner.get(url,timeout=20)
             captured=form_for(response,action)
@@ -99,17 +99,17 @@ try:
             assert_no_owner_reprompt(check,control,action)
             with page.expect_navigation(wait_until='domcontentloaded'):
                 control.locator('button[type=submit],button:not([type])').first.click()
-            check(action+' actual browser submits successfully without repeated password',db('SELECT value FROM ci_settings WHERE name=?',[marker])==[{'value':'1'}] and 'view=login' not in page.url)
+            check(action+' actual browser submits successfully without repeated password',db('SELECT value FROM ci_settings WHERE name=?',[marker])==[{'value':expected}] and 'view=login' not in page.url)
         prepare('mail-templates','mail_templates_setup','mail_templates_schema_version')
         prepare('mail-accounts','mail_accounts_setup','mail_accounts_schema_version')
-        for view,action,marker in [
-            ('mail-accounts','mail_inbox_setup','mail_inbox_schema_version'),
-            ('mail-accounts','mail_message_setup','mail_messages_schema_version'),
-            ('mail-accounts','mail_notices_setup','mail_notices_schema_version'),
-            ('mail-drafts','mail_drafts_setup','mail_drafts_schema_version'),
-            ('mail-submissions','mail_submissions_setup','mail_submissions_schema_version'),
-            ('consultation-settings','appointments_setup','appointments_schema_version')]:
-            prepare(view,action,marker)
+        for view,action,marker,expected in [
+            ('mail-accounts','mail_inbox_setup','mail_inbox_schema_version','2'),
+            ('mail-accounts','mail_message_setup','mail_messages_schema_version','2'),
+            ('mail-accounts','mail_notices_setup','mail_notices_schema_version','1'),
+            ('mail-drafts','mail_drafts_setup','mail_drafts_schema_version','1'),
+            ('mail-submissions','mail_submissions_setup','mail_submissions_schema_version','1'),
+            ('consultation-settings','appointments_setup','appointments_schema_version','1')]:
+            prepare(view,action,marker,expected)
         # Seed only an explicitly synthetic preexisting inquiry for the real review form.
         db("INSERT INTO ci_leads (reference,request_key,name,email,service,budget,timeline,message,consent,ip_hash,status,notes,created_at) VALUES (?,?,?,?,?,?,?,?,1,?,'new',?,?)",['COMM-REVIEW','d'*64,'Synthetic review prospect','communication-review@example.invalid','Website review','Synthetic','Flexible','Preserve this existing review inquiry.','e'*64,'Retain original note',time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime())])
         lead=db('SELECT * FROM ci_leads WHERE reference=?',['COMM-REVIEW'])[0]

@@ -34,10 +34,10 @@ class InboxServer:
                         if not part:raise EOFError()
                         data+=part
                         assert len(data)<4096
-                    value=data[:-2].decode();assert value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value)
+                    value=data[:-2].decode();assert value in expected if isinstance(expected,tuple) else value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value);return value
                 send('* OK Synthetic HTTP inbox fixture');expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
-                expect('CWR003 EXAMINE "INBOX"');send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
+                expect(('CWR003 EXAMINE "INBOX"','CWR003 EXAMINE "Sent"'));send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
                 if mode.startswith('message'):
                     if mode=='message-epoch':continue
                     head='From: Synthetic sender <synthetic@example.net>\r\nSubject: SYNTHETIC PRIVATE MESSAGE <img src="https://untrusted.example.invalid/header">\r\nDate: Tue, 13 Oct 2026 12:00:00 +0000\r\nMessage-ID: <synthetic-82@example.invalid>\r\nMIME-Version: 1.0\r\n'

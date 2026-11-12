@@ -10,10 +10,10 @@ from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','submit','inbox_server']})
     db('DELETE FROM ci_rate_limits');root=BASE+'/existing/admin/index.php';library=root+'?view=mail-accounts'
-    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_message_reads'))
+    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_message_reads'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     aid=db("SELECT id FROM ci_mail_accounts WHERE label='Staff inbox fixture'")[0]['id'];inbox=root+'?view=mail-inbox&account_id='+aid;detail=root+'?view=mail-account&account_id='+aid
-    route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82'};message=root+'?view=mail-message&'+urlencode(route)
+    route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82','folder':'INBOX'};message=root+'?view=mail-message&'+urlencode(route)
     before=inbox_server.connections
     check('Upgrade waits for owner message preparation','must prepare message reading' in owner.get(message).text and inbox_server.connections==before)
     r=submit(owner,library,'mail_message_setup',{'csrf':'bad','current_password':OWNER});check('Message preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_messages_schema_version'"))
@@ -27,7 +27,7 @@ def run_browser(env,browser):
         revision=db('SELECT revision FROM ci_mail_account_grants WHERE account_id=? AND user_id=?',[aid,user])[0]['revision']
         return owner.post(detail,data={'csrf':token(owner.get(detail)),'action':'mail_accounts_grant','account_id':aid,'revision':revision,'user_id':user,'can_read':read,'can_send':'1','enabled':enabled,'days':'0','current_password':OWNER})
     check('Message GET offers explicit loading without network','Load message' in owner.get(message).text and inbox_server.connections==before)
-    for overrides,phrase in [({'csrf':'bad'},'session expired'),({'uid':'81'},'no longer matches'),({'revision':'99'},'no longer matches')]:
+    for overrides,phrase in [({'csrf':'bad'},'session expired'),({'uid':'81'},'no longer matches'),({'revision':'99'},'no longer matches'),({'folder':'Sent'},'no longer matches')]:
         r=load(owner,**overrides);check('Malformed message POST refused before network '+str(overrides),phrase in r.text.lower() and inbox_server.connections==before and not db('SELECT * FROM ci_mail_message_reads'))
     check('Malformed query identity never contacts a mailbox',owner.get(message.replace('uid=82','uid=0')).status_code==403 and inbox_server.connections==before)
     inbox_server.mode='message';r=load(owner)

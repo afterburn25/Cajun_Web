@@ -19,11 +19,11 @@ function mail_reply_drafts_existing(string $id,string $source,int $revision,stri
     return $GLOBALS['copyAdapter']['existing']?$id:null;
 }
 function copy_adapter_raw():string {return "From: Source <source@example.invalid>\r\nTo: sender@example.invalid, other@example.invalid\r\nBcc: NEVER_PERSIST_COPY_RAW@example.invalid\r\nSubject: Synthetic copy\r\nMessage-ID: <copy@example.invalid>\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSynthetic copied body.";}
-function mail_message_copy_source(string $id,int $revision,string $validity,string $uid,string $mode,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null,?string $self=null):array {
+function mail_message_copy_source(string $id,int $revision,string $validity,string $uid,string $mode,?string $self=null,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null,string $folder='INBOX'):array {
     global $sourceId,$readId;$GLOBALS['copyAdapter']['read_calls'][]=compact('id','revision','validity','uid','mode','noticeHandle','self');
     $result=['code'=>$GLOBALS['copyAdapter']['read_code'],'request_id'=>$readId,'account_id'=>$sourceId,'account_revision'=>2,'actor_id'=>7,'uidvalidity'=>'9','uid'=>'44','notice_handle'=>$noticeHandle,'loaded_at'=>'2026-11-11 00:00:00','content'=>$GLOBALS['copyAdapter']['read_code']==='ok'?['subject'=>'Synthetic copy','text'=>'Synthetic copied body.']:null];
     $source=$result['code']==='ok'?CopiedDraftSource::fromRead(7,$sourceId,2,'9','44',$readId,$mode,copy_adapter_raw(),$self):null;
-    return ['result'=>$result,'source'=>$source];
+    return ['result'=>$result,'source'=>$source,'attachment'=>null];
 }
 function mail_reply_drafts_create(string $id,string $sender,int $senderRevision,CopiedDraftSource $source):string {$GLOBALS['copyAdapter']['create_calls'][]=compact('id','sender','senderRevision','source');return $id;}
 
@@ -42,22 +42,22 @@ copy_adapter_check('finite mailbox failure returns sanitized result and creates 
 copy_adapter_check('invalid action is refused before sender lookup or mailbox read',function()use($draftId,$sourceId,$senderId){copy_adapter_reset();$ok=copy_adapter_denied(fn()=>mail_copied_draft_create($draftId,$sourceId,2,'9','44','send',$senderId,4));return $ok&&$GLOBALS['copyAdapter']['account_calls']===0&&$GLOBALS['copyAdapter']['read_calls']===[];});
 copy_adapter_check('hidden raw marker never enters returned result or derived protected source',function()use($draftId,$sourceId,$senderId){copy_adapter_reset();$r=mail_copied_draft_create($draftId,$sourceId,2,'9','44','reply',$senderId,4);$derived=$GLOBALS['copyAdapter']['create_calls'][0]['source'];return !str_contains(json_encode($r,JSON_THROW_ON_ERROR),'NEVER_PERSIST_COPY_RAW')&&!str_contains(json_encode($derived,JSON_THROW_ON_ERROR),'NEVER_PERSIST_COPY_RAW');});
 
-copy_adapter_check('ordinary display read keeps its established seven-parameter signature',function(){
-    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');return str_contains($source,'function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null):array');
+copy_adapter_check('ordinary display read keeps its established parameters and adds only a bounded folder selector',function(){
+    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');return str_contains($source,"function mail_message_read(string \$id,int \$revision,string \$validity,string \$uid,?callable \$resolver=null,?callable \$transport=null,?string \$noticeHandle=null,string \$folder='INBOX'):array");
 });
 copy_adapter_check('copy read has a finite mode API and no retain-source flag',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');
     return str_contains($source,'function mail_message_copy_source(')&&!str_contains($source,'retainSource')&&!str_contains($source,"content['source']")&&!str_contains($source,'usleep(')&&!str_contains($source,'sleep(');
 });
 copy_adapter_check('derived source construction precedes terminal journal and raw transport cleanup precedes return',function(){
-    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$derive=strpos($source,'CopiedDraftSource::fromRead');$cleanup=strpos($source,'finally {unset($secrets,$response);}',(int)$derive);$record=strpos($source,'mail_message_record($started',(int)$cleanup);$return=strpos($source,"['result'=>\$result,'source'=>\$source]",(int)$record);
+    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$derive=strpos($source,'CopiedDraftSource::fromRead');$cleanup=strpos($source,'finally {unset($secrets,$response);}',(int)$derive);$record=strpos($source,'mail_message_record($started',(int)$cleanup);$return=strpos($source,"['result'=>\$result,'source'=>\$source,'attachment'=>\$attachment]",(int)$record);
     return $derive!==false&&$cleanup!==false&&$record!==false&&$return!==false&&$derive<$cleanup&&$cleanup<$record&&$record<$return;
 });
 copy_adapter_check('unsupported copy metadata is raised only after successful read recording',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$derive=strpos($source,'CopiedDraftSource::fromRead');$record=strpos($source,'mail_message_record($started',(int)$derive);$failure=strpos($source,'if($copyUnsupported)throw new InvalidArgumentException',(int)$record);return $record!==false&&$failure!==false&&$record<$failure;
 });
 copy_adapter_check('all failure catches clear any transient derived source',function(){
-    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');return substr_count($source,'$content=null;$source=null;$attachmentSource=null;$copyUnsupported=false;')===3;
+    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');return substr_count($source,'$content=null;$source=null;$attachment=null;$attachmentFailure=null;$copyUnsupported=false;$attachmentUnavailable=false;')===3;
 });
 copy_adapter_check('sender query filters current Send grants before its page boundary',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/drafts.php');$send=strpos($source,'g.can_send=1');$limit=strpos($source,'LIMIT 21 OFFSET',$send);return $send!==false&&$limit!==false&&$send<$limit;
@@ -72,7 +72,7 @@ copy_adapter_check('read-only mailbox access remains available while copy contro
     $controller=file_get_contents(CWP_CODE_ROOT.'/admin/controllers/mail_message.php');$view=file_get_contents(CWP_CODE_ROOT.'/admin/views/mail_message.php');return str_contains($controller,'$mailCopyAllowed=false')&&str_contains($controller,'$mailCopyReady&&mail_drafts_admin_access($actor)')&&str_contains($controller,'$draftActor=mail_drafts_actor()')&&str_contains($controller,"(int)\$draftActor['id']===(int)\$actor['id']")&&str_contains($controller,"hash_equals(\$draftActor['auth_version'],\$actor['auth_version'])")&&!str_contains($controller,"staff_can('mail.send',\$actor)")&&str_contains($controller,'if($mailCopyAllowed){')&&str_contains($view,'if($mailCopyAllowed)')&&str_contains($view,'Current email Send permission is required');
 });
 copy_adapter_check('controller validates exact route draft and sender before one adapter delegation',function(){
-    $source=file_get_contents(CWP_CODE_ROOT.'/admin/controllers/mail_message.php');return str_contains($source,"foreach(\$route as \$key=>\$value)if(posted(\$key,32)!==\$value)")&&str_contains($source,"mail_drafts_id(\$draftId)")&&str_contains($source,"mail_drafts_reference(posted('sender',43))")&&substr_count($source,'mail_copied_draft_create(')===1;
+    $source=file_get_contents(CWP_CODE_ROOT.'/admin/controllers/mail_message.php');return str_contains($source,"foreach(\$route as \$key=>\$value)if(posted(\$key,64)!==\$value)")&&str_contains($source,"mail_drafts_id(\$draftId)")&&str_contains($source,"mail_drafts_reference(posted('sender',43))")&&substr_count($source,'mail_copied_draft_create(')===1;
 });
 copy_adapter_check('copy actions use internal current authority instead of a coarse global permission',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/staff/accounts.php');return str_contains($source,"['mail_message_read','mail_message_attachment','mail_message_reply','mail_message_reply_all','mail_message_forward']")&&str_contains($source,'return null; // Exact current Read and chosen Send');

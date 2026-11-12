@@ -35,6 +35,7 @@ function mail_notices_same(array $left,array $right): bool {
 function mail_notices_observe(array $started,#[\SensitiveParameter] array $batch,?callable $newHandle=null): void {
     if(!db()->inTransaction())throw new LogicException('Email observations require the inbox result transaction.');
     if(!mail_notices_ready())return;
+    if(($started['folder']??null)!=='INBOX'||($batch['folder']??null)!=='INBOX')throw new LogicException('Email notices observe only the inbox.');
     [$actor]=mail_inbox_authority($started['account_id'],(int)$started['account_revision']);
     if((int)$actor['id']!==(int)$started['actor_id'])throw new RuntimeException('Email observation authority changed.');
     $batch=mail_inbox_batch($batch);
@@ -65,6 +66,7 @@ function mail_notices_observe(array $started,#[\SensitiveParameter] array $batch
 function mail_notices_opened(array $started,#[\SensitiveParameter] array $content): void {
     if(!db()->inTransaction())throw new LogicException('Email opened state requires the message result transaction.');
     if(!mail_notices_ready())return;
+    if(($started['folder']??null)!=='INBOX'||($content['folder']??null)!=='INBOX')throw new LogicException('Email notices open only inbox messages.');
     [$actor]=mail_message_authority($started['account_id'],(int)$started['account_revision']);
     if((int)$actor['id']!==(int)$started['actor_id']||!is_bool($content['seen']??null)||!mail_notices_same($started,['account_id'=>$started['account_id'],'account_revision'=>$started['account_revision']]+$content))throw new LogicException('Invalid exact-message observation.');
     $result=one('SELECT q.account_id,q.account_revision,q.actor_id,q.folder,q.uidvalidity,q.uid,r.finished_at FROM '.table('mail_message_reads').' q JOIN '.table('mail_message_results')." r ON r.id=q.id AND r.result_code='ok' WHERE q.id=?",[$started['id']]);
@@ -109,7 +111,7 @@ function mail_notices_feed(int $page=1): array {
 }
 function mail_notices_accounts(int $page=1): array {
     [$sql,$args]=mail_notices_accounts_sql(mail_notices_actor());$page=max(1,min($page,100000));
-    return all('SELECT a.id,a.label,a.address,a.revision,(SELECT w.checked_at FROM '.table('mail_notice_windows').' w WHERE w.account_id=a.id AND w.account_revision=a.revision) AS checked_at,(SELECT r.outcome FROM '.table('mail_inbox_reads').' q LEFT JOIN '.table('mail_inbox_results').' r ON r.id=q.id WHERE q.account_id=a.id AND q.account_revision=a.revision ORDER BY q.started_epoch DESC,q.id DESC LIMIT 1) AS latest_outcome'.$sql.' ORDER BY a.label,a.id LIMIT 21 OFFSET '.(($page-1)*20),$args);
+    return all('SELECT a.id,a.label,a.address,a.revision,(SELECT w.checked_at FROM '.table('mail_notice_windows').' w WHERE w.account_id=a.id AND w.account_revision=a.revision) AS checked_at,(SELECT r.outcome FROM '.table('mail_inbox_reads').' q LEFT JOIN '.table('mail_inbox_results')." r ON r.id=q.id WHERE q.account_id=a.id AND q.account_revision=a.revision AND q.folder='INBOX' ORDER BY q.started_epoch DESC,q.id DESC LIMIT 1) AS latest_outcome".$sql.' ORDER BY a.label,a.id LIMIT 21 OFFSET '.(($page-1)*20),$args);
 }
 /** The form carries the independent full identity, not merely an opaque lookup handle. */
 function mail_notices_resolve(string $handle,array $tuple): array {

@@ -6,5 +6,5 @@ use DirectoryTree\ImapEngine\Connection\Streams\StreamInterface;
 final class HeaderSession {
  private ReadSession $session;
  public function __construct(StreamInterface $stream,callable $authorize) {$this->session=new ReadSession($stream,$authorize,ReadProfile::Headers);}
- public function read(string $encryption,#[\SensitiveParameter] string $user,#[\SensitiveParameter] string $password): array {return $this->session->headers($encryption,$user,$password);}
+ public function read(string $encryption,#[\SensitiveParameter] string $user,#[\SensitiveParameter] string $password,string $folder='INBOX'): array {return $this->session->headers($encryption,$user,$password,$folder);}
 }
