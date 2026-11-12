@@ -129,7 +129,8 @@ if(in_array($operation,['payment-state','payment-outcome','payment-fulfill','pay
         hch_payment_owner();gateway_receipts_prepare($password);hosting_payments_prepare($password);unset($GLOBALS['cwp_settings']);$gateway=hosting_anet_settings();
         if($gateway['mode']!=='production'||$gateway['login']!=='SYNTHETICCHECKOUT'||$gateway['client_key']!=='SYNTHETIC_PUBLIC_KEY'||!hosting_anet_production_enabled())throw new RuntimeException('Exact retained production fixture gateway required');
         $seed=json_decode(file_get_contents($marker),true,8,JSON_THROW_ON_ERROR);$publicationRow=one('SELECT id FROM '.table('hosting_catalog_publications').' WHERE product_id=? ORDER BY seq DESC LIMIT 1',[(int)$seed['product_id']]);
-        if(!$publicationRow)throw new RuntimeException('Current Shared publication missing');$publication=hosting_catalog_publication($publicationRow['id']);
+        if(!$publicationRow)throw new RuntimeException('Current Shared publication missing');
+        $publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationRow['id']));
         $journeys=['approved'=>hch_id(510),'declined'=>hch_id(511),'uncertain'=>hch_id(512)];$created=[];
         foreach($journeys as$outcome=>$request){hch_payment_client();$review=hosting_checkout_preview($request,$publication->data()['id'],$publication->fingerprint(),1,['mode'=>'new-hosting']);$created[$outcome]=hosting_checkout_confirm($request,$review['review_sha256'],1,true);}
         if(count(array_unique(array_column($created,'invoice_id')))!==3||array_filter($created,static fn(array$row):bool=>$row['invoice_status']!=='issued'||$row['amount_cents']!==2500))throw new RuntimeException('Exact unpaid Shared payment journeys required');

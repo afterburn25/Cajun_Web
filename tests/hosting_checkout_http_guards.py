@@ -91,7 +91,8 @@ def main():
         'site/admin/controllers/router.php',
         'site/app/hosting/checkout_purchases_views.php', 'site/app/billing/ledger.php',
         'site/database/migrations/hosting_payments_migrate.php',
-        'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php')}
+        'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php',
+        'tests/hosting_checkout_http_fixture.php')}
     check('Owner payment reconciliation is a shipping CSRF-routed confirmed action',
           "str_starts_with($action,'hosting_payment_')" in source['site/admin/controllers/actions.php']
           and "function hosting_purchases_admin_action" in source['site/admin/controllers/hosting_purchases.php']
@@ -114,6 +115,11 @@ def main():
           and migration.index('staff_locked(function()use($password):void {')
               < migration.index('$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());')
               < migration.index("if(!$checkoutReady||setting('gateway_receipts_schema_version')!=='1')"))
+    payment_fixture = source['tests/hosting_checkout_http_fixture.php']
+    check('Payment continuation reads its publication under the checkout lock',
+          payment_fixture.count("hosting_catalog_publication($publicationRow['id'])") == 1
+          and "$publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationRow['id']));"
+              in payment_fixture)
     for name in ('gateway_receipts_schema.php', 'hosting_payments_schema.php'):
         schema = source['site/database/schema/' + name]
         check(name + ' requires same-database foreign-key targets',
