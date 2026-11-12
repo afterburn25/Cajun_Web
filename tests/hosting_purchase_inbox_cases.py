@@ -15,6 +15,10 @@ CAPTURES = tuple('Hosting-Purchase-Inbox-' + actor + '-' + size + '.png'
                  for actor in ('Owner', 'Client') for size in ('Desktop', 'Mobile'))
 PAID_REQUEST = format(30, '032x')
 PAID_INVOICE_REQUESTS = frozenset((PAID_REQUEST, format(40, '032x')))
+ACCEPTED_ORDER_DOMAINS = {
+    PAID_REQUEST: 'checkout.example',
+    format(40, '032x'): 'manual-only.example',
+}
 SETUP_KEYS = {'plans', 'plan_events', 'mappings', 'provider_refreshes', 'provider_checks'}
 COUNT_KEYS = {'reviews', 'results', 'jobs', 'invoices', 'receipts', 'attempts', 'publications'}
 
@@ -136,11 +140,17 @@ def run_browser(env, browser):
         for request, row in initial['results'].items():
             current = card(page, request)
             text = current.inner_text()
-            status = 'Paid' if request in PAID_INVOICE_REQUESTS else 'Awaiting payment'
-            setup = 'Hosting request accepted' if request == PAID_REQUEST else 'Awaiting studio setup review'
+            invoice_status = 'Paid' if request in PAID_INVOICE_REQUESTS else 'Awaiting payment'
+            purchase_status = ('Paid / setup pending' if request == PAID_REQUEST else
+                               'Payment review required' if request in PAID_INVOICE_REQUESTS else
+                               'Awaiting payment')
+            setup = 'Hosting request accepted' if request in ACCEPTED_ORDER_DOMAINS else 'Awaiting studio setup review'
+            expected_domain = ACCEPTED_ORDER_DOMAINS.get(request)
             check('Inbox ' + actor + ' retains original terms and distinct setup state ' + request,
-                  row['invoice_reference'] in text and '$25.00 USD' in text and status in text and setup in text and 'Active agreement' in text
-                  and ('checkout.example' in text) == (request == PAID_REQUEST)
+                  row['invoice_reference'] in text and '$25.00 USD' in text and invoice_status in text and purchase_status in text
+                  and setup in text and 'Active agreement' in text
+                  and all((domain in text) == (domain == expected_domain) for domain in ACCEPTED_ORDER_DOMAINS.values())
+                  and ('Website address' in text) == (expected_domain is not None)
                   and 'hosting service active' not in text.casefold())
         check('Inbox ' + actor + ' has no client mutation or private provider fields', wrapper.locator('form').count() == 0 and safe(page))
         return wrapper
