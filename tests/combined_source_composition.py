@@ -239,6 +239,11 @@ UX08_INBOX_OPERATIONS_FIX_MODIFIED = frozenset((
     'tests/hosting_checkout_http_guards.py',
     'tests/hosting_checkout_native.php',
 ))
+UX08_INBOX_RECORD_FIX_BASE = '94c340d954684302cc976440e8f3c793b9c67c9d'
+UX08_INBOX_RECORD_FIX_BASE_TREE = '8097ab6983a642af5d05fa813cc84b3b43f07376'
+UX08_INBOX_RECORD_FIX_SOURCE = 'd6a64ee8c2a393b2663337ef1c7b3ac272127583'
+UX08_INBOX_RECORD_FIX_SOURCE_TREE = 'd876b7d52e90b9ace273852aacfc82d6036d5330'
+UX08_INBOX_RECORD_FIX_MODIFIED = UX08_INBOX_OPERATIONS_FIX_MODIFIED
 UX08_STOREFRONT_NETWORK_FIX_BASE = '3019274622c502e82b13e650b82ca05fe32afc4c'
 UX08_STOREFRONT_NETWORK_FIX_BASE_TREE = 'baab97e10b0d04cb4654fcb59fac93c536203111'
 UX08_STOREFRONT_NETWORK_FIX_SOURCE = '14186fc141838334ec20a6b215968b8422798153'
@@ -1850,7 +1855,7 @@ def validate_ux08_inbox_operations_fix_source(root):
     base_entries = entries(root, UX08_INBOX_OPERATIONS_FIX_BASE)
     source_entries = entries(root, UX08_INBOX_OPERATIONS_FIX_SOURCE)
     for path in sorted(UX08_INBOX_OPERATIONS_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_inbox_record_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_INBOX_OPERATIONS_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_INBOX_OPERATIONS_FIX_BASE + ':' + path)
         require(current == source
@@ -1872,6 +1877,49 @@ def project_ux08_inbox_operations_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 inbox operations fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_ux08_inbox_record_fix_source(root):
+    """Bind retained-record validation before optional operations readiness."""
+    require(git(root, 'rev-parse', UX08_INBOX_RECORD_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_INBOX_RECORD_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_INBOX_RECORD_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_INBOX_RECORD_FIX_SOURCE_TREE,
+            'UX-08 inbox record fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_RECORD_FIX_BASE,
+        UX08_INBOX_RECORD_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_RECORD_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_INBOX_RECORD_FIX_BASE,
+                  UX08_INBOX_RECORD_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_INBOX_RECORD_FIX_MODIFIED)],
+            'UX-08 inbox record fix changed a different path or status set')
+    base_entries = entries(root, UX08_INBOX_RECORD_FIX_BASE)
+    source_entries = entries(root, UX08_INBOX_RECORD_FIX_SOURCE)
+    for path in sorted(UX08_INBOX_RECORD_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_inbox_record_fix(root, path, current) == base
+                and project_ux08_inbox_record_fix(root, path, base) == base,
+                'UX-08 inbox record fix identity or projection changed: ' + path)
+
+
+def project_ux08_inbox_record_fix(root, path, current):
+    """Restore the first inbox-read correction before older source projections."""
+    if path not in UX08_INBOX_RECORD_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 inbox record fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -2017,6 +2065,7 @@ def validate_ux08_payment_native_fix_source(root):
 
 def project_ux08_payment_native_fix(root, path, current):
     """Restore the first recovery-attempt bytes for older source receipts."""
+    current = project_ux08_inbox_record_fix(root, path, current)
     current = project_ux08_inbox_operations_fix(root, path, current)
     current = project_ux08_payment_diagnostic_fix(root, path, current)
     if path not in UX08_PAYMENT_NATIVE_FIX_MODIFIED:
@@ -2608,6 +2657,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_inbox_record_fix_source(root)
     validate_ux08_inbox_operations_fix_source(root)
     validate_ux08_inbox_state_correction_source(root)
     validate_ux08_inbox_state_fix_source(root)

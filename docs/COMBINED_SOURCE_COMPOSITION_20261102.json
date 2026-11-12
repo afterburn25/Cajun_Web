@@ -20,7 +20,7 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "a01e03e6dc257e8d13c2ad254b3fa55a25ecbe0cd38f5bb0b60dc7c7d8f2049e",
+  "verifier_sha256": "29302f9db1647c4fec17809459428c7faed540df989cde74ae9a645ecd869363",
   "regression_sha256": "837abfd23efbedc65ac9d72091ef3ee6d584e88cc6c53855078e3ac4be977b34",
   "adapters": {
     "tests/tickets_integration_contract.py": {
