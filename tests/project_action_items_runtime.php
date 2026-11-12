@@ -43,6 +43,8 @@ try{
     $source=file_get_contents(__DIR__.'/../site/portal/views/workspace.php');
     ar_ok('Workspace uses current-authority action adapter',str_contains($source,'project_current_review_actions('));
     ar_ok('Workspace derives review link from authorized job and minimal review identity',str_contains($source,"'focus_review'=>\$action->reviewId")&&str_contains($source,"'#review-'.\$action->reviewId"));
+    $reviews=file_get_contents(__DIR__.'/../site/app/projects/reviews.php');
+    ar_ok('Decision revalidation locks the latest version after the shared project lock',str_contains($reviews,'ORDER BY version_no DESC LIMIT 1 FOR UPDATE')&&!str_contains($reviews,'SELECT MAX(version_no)'));
     ar_ok('Packaged model exactly mirrors source model',hash_file('sha256',__DIR__.'/../foundation/projects/ProjectActionItems.php')===hash_file('sha256',__DIR__.'/../site/includes/foundation/projects/ProjectActionItems.php'));
     echo json_encode(['passed'=>true,'count'=>count($checks),'checks'=>$checks,'scope'=>'Offline current-authority project review adapter and view contract only; no message, billing, payment, mutation, schema, inventory or live operation.'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";
 }catch(Throwable $e){echo json_encode(['passed'=>false,'checks'=>$checks,'failure'=>$e->getMessage()],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";exit(1);}

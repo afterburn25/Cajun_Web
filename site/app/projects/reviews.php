@@ -13,7 +13,7 @@ function studio_decide(int $clientId,int $versionId,string $choice,string $feedb
   $initial=one('SELECT job_id FROM '.table('studio_versions').' WHERE id=?',[$versionId]);if(!$initial)throw new InvalidArgumentException('Review not found.');
   $job=one('SELECT id FROM '.table('studio_jobs').' WHERE id=? AND client_id=? FOR UPDATE',[$initial['job_id'],$clientId]);if(!$job)throw new InvalidArgumentException('Review not found or access denied.');
   $v=one('SELECT * FROM '.table('studio_versions').' WHERE id=? FOR UPDATE',[$versionId]);
-  $latest=(int)query('SELECT MAX(version_no) FROM '.table('studio_versions').' WHERE job_id=? AND kind=?',[$v['job_id'],$v['kind']])->fetchColumn();
+  $latest=(int)query('SELECT version_no FROM '.table('studio_versions').' WHERE job_id=? AND kind=? ORDER BY version_no DESC LIMIT 1 FOR UPDATE',[$v['job_id'],$v['kind']])->fetchColumn();
   if($v['decision']!=='pending'||(int)$v['version_no']!==$latest)throw new InvalidArgumentException('This review is already decided or has been superseded. Refresh the project.');
   query('UPDATE '.table('studio_versions').' SET decision=?,feedback=?,decided_by=?,decided_at=? WHERE id=?',[$choice,$feedback,$clientId,gmdate('Y-m-d H:i:s'),$versionId]);
   query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$v['job_id'],'client',$clientId,$v['kind'].' version '.$v['version_no'].': '.$choice."\n".$feedback,gmdate('Y-m-d H:i:s')]);db()->commit();
