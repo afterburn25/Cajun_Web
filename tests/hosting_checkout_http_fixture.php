@@ -17,7 +17,7 @@ if(!is_file($private.'/provider-master.key')||is_link($private.'/provider-master
 $reportFile=$root.'/qa/hosting-checkout-native-results.json';if(!is_file($reportFile)||is_link($reportFile)||filesize($reportFile)>262144)throw new RuntimeException('Bounded original native report required');$raw=file_get_contents($reportFile);$expected=getenv('CWP_CHECKOUT_NATIVE_REPORT_SHA256');
 if(!is_string($expected)||!preg_match('/\A[a-f0-9]{64}\z/',$expected)||!hash_equals($expected,hash('sha256',$raw)))throw new RuntimeException('Original native report differs');
 $report=json_decode($raw,true,32,JSON_THROW_ON_ERROR);$checks=$report['checks']??[];
-    if(($report['passed']??null)!==true||isset($report['error'])||count($checks)!==82||count(array_unique(array_column($checks,'name')))!==82||array_filter($checks,static fn(array$c):bool=>($c['passed']??null)!==true))throw new RuntimeException('All corrected native outcomes required');
+    if(($report['passed']??null)!==true||isset($report['error'])||count($checks)!==84||count(array_unique(array_column($checks,'name')))!==84||array_filter($checks,static fn(array$c):bool=>($c['passed']??null)!==true))throw new RuntimeException('All corrected native outcomes required');
 define('CWP_HOSTING_PRODUCTION_PAYMENTS',true);define('CWP_BOOT',true);define('CWP_ROOT',$site);require $site.'/includes/bootstrap.php';require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout.php';
 require_once CWP_CODE_ROOT.'/app/hosting/payments.php';
 require_once CWP_CODE_ROOT.'/database/migrations/gateway_receipts_migrate.php';
