@@ -54,22 +54,44 @@ final class AttachmentIndex
     {
         $encoding=strtolower(trim((string)$part->getContentTransferEncoding('7bit')));
         if($encoding==='base64') {
-            $compact=preg_replace('/[ \t\r\n]/','',self::encodedBody($part));
-            if($compact===null||preg_match('/\A(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?\z/D',$compact)!==1
+            $encoded=self::encodedBody($part);
+            if(preg_match('/(?<!\r)\n|\r(?!\n)|[ \t]/',$encoded))throw new ReceivingFailure('protocol');
+            $lines=explode("\r\n",$encoded);if(end($lines)==='')array_pop($lines);
+            if(!$lines)throw new ReceivingFailure('protocol');
+            foreach($lines as $line)if($line===''||strlen($line)>76||preg_match('/\A[A-Za-z0-9+\/=]+\z/D',$line)!==1)throw new ReceivingFailure('protocol');
+            $compact=implode('',$lines);
+            if(preg_match('/\A(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?\z/D',$compact)!==1
                 ||($decoded=base64_decode($compact,true))===false||base64_encode($decoded)!==$compact) {
                 throw new ReceivingFailure('protocol');
             }
         } elseif($encoding==='quoted-printable') {
             $encoded=self::encodedBody($part);
-            if(preg_match('/(?<!\r)\n|\r(?!\n)|=(?![0-9A-Fa-f]{2}|\r\n)/',$encoded))throw new ReceivingFailure('protocol');
-        } elseif(!in_array($encoding,['7bit','8bit','binary',''],true)) {
+            if(preg_match('/(?<!\r)\n|\r(?!\n)/',$encoded))throw new ReceivingFailure('protocol');
+            $lines=explode("\r\n",$encoded);if(end($lines)==='')array_pop($lines);
+            foreach($lines as $line){
+                if(strlen($line)>76||preg_match('/[ \t]\z/D',$line))throw new ReceivingFailure('protocol');
+                if(str_ends_with($line,'='))$line=substr($line,0,-1);
+                for($i=0,$length=strlen($line);$i<$length;$i++){
+                    $byte=ord($line[$i]);
+                    if($line[$i]==='='){
+                        if($i+2>=$length||preg_match('/\A[0-9A-F]{2}\z/D',substr($line,$i+1,2))!==1)throw new ReceivingFailure('protocol');
+                        $i+=2;continue;
+                    }
+                    if($byte!==9&&$byte!==32&&($byte<33||$byte>126))throw new ReceivingFailure('protocol');
+                }
+            }
+        } elseif($encoding==='7bit'||$encoding==='') {
+            $encoded=self::encodedBody($part);
+            if(preg_match('/(?<!\r)\n|\r(?!\n)|[^\x09\x20-\x7E\r\n]/',$encoded))throw new ReceivingFailure('protocol');
+            foreach(explode("\r\n",$encoded) as $line)if(strlen($line)>998)throw new ReceivingFailure('protocol');
+        } elseif(!in_array($encoding,['8bit','binary'],true)) {
             throw new ReceivingFailure('protocol');
         }
     }
     private static function bytes(IMessagePart $part): string
     {
         self::validateEncoding($part);
-        $stream=$part->getContentStream();
+        $stream=$part->getBinaryContentStream();
         if($stream===null) return '';
         $body='';
         try {
