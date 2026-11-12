@@ -217,6 +217,11 @@ UX08_PAYMENT_DIAGNOSTIC_FIX_MODIFIED = frozenset((
     'tests/hosting_payment_native.php',
     'tools/acceptance-contract.json',
 ))
+UX08_STOREFRONT_NETWORK_FIX_BASE = '3019274622c502e82b13e650b82ca05fe32afc4c'
+UX08_STOREFRONT_NETWORK_FIX_BASE_TREE = 'baab97e10b0d04cb4654fcb59fac93c536203111'
+UX08_STOREFRONT_NETWORK_FIX_SOURCE = '14186fc141838334ec20a6b215968b8422798153'
+UX08_STOREFRONT_NETWORK_FIX_SOURCE_TREE = 'cb7fa493a9b0b335d5a5d918b596cd01f3587d59'
+UX08_STOREFRONT_NETWORK_FIX_PATH = 'tests/catalog_storefront_checkout_cases.py'
 UX08_BROWSER_NETWORK_FIX_BASE = 'eafdc88104caba6909ed4614310e50c07eba1990'
 UX08_BROWSER_NETWORK_FIX_BASE_TREE = 'dd55856960a45467fde96dba5ddf8e7b300fa1f3'
 UX08_BROWSER_NETWORK_FIX_SOURCE = '4bfb6d69aa3339a1ba6957e7d798019430a48869'
@@ -1717,6 +1722,45 @@ def project_ux09_identity_snapshot(root, path, current):
     return git(root, 'cat-file', 'blob', UX09_IDENTITY_SNAPSHOT_BASE + ':' + path)
 
 
+def validate_ux08_storefront_network_fix_source(root):
+    """Bind exact closed interception in the separate storefront continuation."""
+    require(git(root, 'rev-parse', UX08_STOREFRONT_NETWORK_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_STOREFRONT_NETWORK_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_STOREFRONT_NETWORK_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_STOREFRONT_NETWORK_FIX_SOURCE_TREE,
+            'UX-08 storefront network fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_STOREFRONT_NETWORK_FIX_BASE,
+        UX08_STOREFRONT_NETWORK_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_STOREFRONT_NETWORK_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_STOREFRONT_NETWORK_FIX_BASE,
+                  UX08_STOREFRONT_NETWORK_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + UX08_STOREFRONT_NETWORK_FIX_PATH],
+            'UX-08 storefront network fix changed a different path or status set')
+    base_entries = entries(root, UX08_STOREFRONT_NETWORK_FIX_BASE)
+    source_entries = entries(root, UX08_STOREFRONT_NETWORK_FIX_SOURCE)
+    current = ordinary(root, UX08_STOREFRONT_NETWORK_FIX_PATH)
+    require(current == git(root, 'cat-file', 'blob', UX08_STOREFRONT_NETWORK_FIX_SOURCE + ':'
+                           + UX08_STOREFRONT_NETWORK_FIX_PATH)
+            and mode(root, UX08_STOREFRONT_NETWORK_FIX_PATH)
+            == base_entries[UX08_STOREFRONT_NETWORK_FIX_PATH][0]
+            == source_entries[UX08_STOREFRONT_NETWORK_FIX_PATH][0] == '100644',
+            'UX-08 storefront network fix source identity changed')
+
+
+def project_ux08_storefront_network_fix(root, path, current):
+    """Restore the preceding browser-network proof head for older receipts."""
+    if path != UX08_STOREFRONT_NETWORK_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_STOREFRONT_NETWORK_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_STOREFRONT_NETWORK_FIX_BASE + ':' + path)
+    if current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 storefront network fix changed before predecessor projection')
+    return base
+
+
 def validate_ux08_browser_network_fix_source(root):
     """Bind exact closed interception of the production tokenization dependency."""
     require(git(root, 'rev-parse', UX08_BROWSER_NETWORK_FIX_BASE + '^{tree}').decode().strip()
@@ -1744,6 +1788,7 @@ def validate_ux08_browser_network_fix_source(root):
 
 def project_ux08_browser_network_fix(root, path, current):
     """Restore the preceding diagnostic-proof head for older source receipts."""
+    current = project_ux08_storefront_network_fix(root, path, current)
     if path != UX08_BROWSER_NETWORK_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_BROWSER_NETWORK_FIX_SOURCE + ':' + path)
@@ -2408,6 +2453,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_ux08_storefront_network_fix_source(root)
     validate_ux08_browser_network_fix_source(root)
     validate_ux08_payment_diagnostic_fix_source(root)
     validate_ux08_payment_native_fix_source(root)
@@ -2709,6 +2755,7 @@ def verify_current(root):
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
+        {'name': 'Exact browser-proof-head-to-storefront-network-fix range binds one reversible test path and performs no live tokenization fetch', 'passed': True},
         {'name': 'Exact diagnostic-proof-head-to-browser-network-fix range binds one reversible test path and performs no live tokenization fetch', 'passed': True},
         {'name': 'Exact native-helper-head-to-payment-diagnostic-fix range binds two reversible test and contract paths', 'passed': True},
         {'name': 'Exact recovery-head-to-native-payment-fix range binds two reversible test and contract paths', 'passed': True},
