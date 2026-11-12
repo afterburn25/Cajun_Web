@@ -66,7 +66,8 @@ def run_browser(env, browser):
     site = env['BASE'] + '/hosting-checkout'
     admin, portal = site + '/admin/index.php', site + '/portal/index.php'
     fixture, qa = env['fixture'], env['QA']
-    contexts, checks, captures, errors, blocked = [], [], [], [], []
+    contexts, checks, captures, errors, blocked, tokenization_scripts = [], [], [], [], [], []
+    production_tokenization_script = 'https://js.authorize.net/v1/Accept.js'
     owner_password, client_password = 'Synthetic native checkout owner', 'Synthetic checkout client'
 
     def check(name, condition):
@@ -84,10 +85,20 @@ def run_browser(env, browser):
     def context():
         ctx = browser.new_context(viewport={'width': 1440, 'height': 1050}, reduced_motion='reduce')
         def route(request):
-            if request.request.url.startswith(env['BASE'] + '/') or request.request.url.startswith(('about:', 'data:')):
+            url = request.request.url
+            if url.startswith(env['BASE'] + '/') or url.startswith(('about:', 'data:')):
                 request.continue_()
+            elif (url == production_tokenization_script and request.request.method == 'GET'
+                  and request.request.resource_type == 'script'):
+                # The retained unpaid invoice result must expose the reviewed
+                # production dependency, while hosted acceptance never fetches it.
+                tokenization_scripts.append({'method': 'GET', 'url': url, 'resource_type': 'script'})
+                request.fulfill(status=200, content_type='application/javascript', body='window.Accept={};\n')
             else:
-                blocked.append(urlparse(request.request.url).scheme)
+                parsed = urlparse(url)
+                blocked.append({'method': request.request.method, 'scheme': parsed.scheme.lower(),
+                                'host': (parsed.hostname or '').lower(), 'path': parsed.path[:256],
+                                'query_present': bool(parsed.query), 'fragment_present': bool(parsed.fragment)})
                 request.abort()
         ctx.route('**/*', route)
         contexts.append(ctx)
@@ -304,11 +315,17 @@ def run_browser(env, browser):
               and goto(op, list_url(True)) == 200 and op.locator('[data-hosting-purchase]').count() == 5)
         unchanged('Inbox role and support refusals preserve all five invoices results and provider counters')
         check('Inbox browser has no JavaScript errors', not errors)
-        check('Inbox browser requests only local resources', not blocked)
+        expected_script = {'method': 'GET', 'url': production_tokenization_script, 'resource_type': 'script'}
+        check('Inbox browser intercepts only the exact production tokenization dependency',
+              bool(tokenization_scripts) and all(row == expected_script for row in tokenization_scripts))
+        check('Inbox browser requests no unreviewed external resources', not blocked)
         check('Inbox produces exactly its four scoped captures', tuple(row['name'] for row in captures) == CAPTURES)
         return {'passed': all(row['passed'] is True for row in checks), 'checks': checks, 'captures': captures,
                 'scope': 'Actual installed read-only owner/client purchase navigation. Five original invoices, one verified gateway receipt and one inherited local receipt retained; no business write, provider request or new payment. Contact-key probe is not a real contact login. Pixel approval remains separate.',
-                'invoices': 5, 'business_sha256': initial['business_sha256'], 'provider_requests': 0}
+                'invoices': 5, 'business_sha256': initial['business_sha256'], 'provider_requests': 0,
+                'tokenization_dependency': {'url': production_tokenization_script,
+                                            'intercepted_requests': len(tokenization_scripts),
+                                            'live_fetches': 0}}
     finally:
         for ctx in contexts:
             ctx.close()
