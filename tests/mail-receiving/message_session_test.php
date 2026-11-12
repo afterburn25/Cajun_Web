@@ -15,7 +15,7 @@ final class MessageFixture extends FakeStream {
 function prefix(string $validity='7',int $exists=2):string {return "* OK synthetic\r\n* CAPABILITY IMAP4rev1 AUTH=PLAIN\r\nCWR001 OK done\r\n+ \r\nCWR002 OK authenticated\r\n* $exists EXISTS\r\n* OK [UIDVALIDITY $validity] stable\r\nCWR003 OK [READ-ONLY] examined\r\n";}
 function metadata(string $uid,int $bytes,string $tag='004'):string {return "* 2 FETCH (UID $uid FLAGS (\\Seen) RFC822.SIZE $bytes)\r\nCWR$tag OK done\r\n";}
 function payload(string $uid,string $raw,?int $bytes=null):string {$bytes??=strlen($raw);return "* 2 FETCH (UID $uid FLAGS (\\Seen) RFC822.SIZE $bytes BODY[] {".strlen($raw)."}\r\n".$raw.")\r\nCWR005 OK done\r\n";}
-function runCase(string $wire,int $revoke=0,string $validity='7',string $uid='45'):array {$s=new MessageFixture($wire);$calls=0;try {$out=(new ReadSession($s,function()use(&$calls,$revoke){if(++$calls===$revoke)throw new RuntimeException('secret');},ReadProfile::Message))->message('ssl','synthetic@example.net','synthetic password',$validity,$uid);return[$out,$s,$calls];}catch(ReceivingFailure $e){return[$e,$s,$calls];}}
+function runCase(string $wire,int $revoke=0,string $validity='7',string $uid='45',string $folder='INBOX'):array {$s=new MessageFixture($wire);$calls=0;try {$out=(new ReadSession($s,function()use(&$calls,$revoke){if(++$calls===$revoke)throw new RuntimeException('secret');},ReadProfile::Message))->message('ssl','synthetic@example.net','synthetic password',$validity,$uid,$folder);return[$out,$s,$calls];}catch(ReceivingFailure $e){return[$e,$s,$calls];}}
 $checks=[];
 function check(string $name,bool $passed):void {global$checks;$checks[]=['name'=>$name,'passed'=>$passed];}
 function reject(string $name,string $wire,string $code='protocol'):void {[$out,$s]=runCase($wire);check($name,$out instanceof ReceivingFailure && $out->getMessage()===$code && !$out->getPrevious() && !$s->opened());}
@@ -27,6 +27,14 @@ check('observed flags retained without any flag write',is_array($out) && $out['s
 check('size preflight and exact UID body commands are fixed',$s->commands()[4]==="CWR004 UID FETCH 45 (UID FLAGS RFC822.SIZE)\r\n" && $s->commands()[5]==="CWR005 UID FETCH 45 (UID FLAGS RFC822.SIZE BODY.PEEK[])\r\n");
 check('current authority checked at all five session boundaries',$calls===5);
 check('successful raw message closes stream',!$s->opened());
+[$out,$s]=runCase($wire,0,'7','45','Sent Items');
+check('named-folder message examines and returns only that safe folder',is_array($out)&&$out['folder']==='Sent Items'&&in_array("CWR003 EXAMINE \"Sent Items\"\r\n",$s->commands(),true));
+[$out,$s]=runCase(str_replace('CWR003 OK [READ-ONLY] examined','CWR003 NO folder unavailable',$wire),0,'7','45','Sent Items');
+check('named-folder message EXAMINE refusal remains a finite folder outcome',$out instanceof ReceivingFailure&&$out->getMessage()==='folder');
+[$out,$s]=runCase($wire,0,'7','45','bad"folder');
+check('unsafe message folder refuses before any command',$out instanceof ReceivingFailure&&$out->getMessage()==='folder'&&$s->commands()===[]&&!$s->opened());
+[$out,$s]=runCase($wire,0,'7','45','R&D');
+check('ampersand message folder refuses before any command',$out instanceof ReceivingFailure&&$out->getMessage()==='folder'&&$s->commands()===[]&&!$s->opened());
 [$out,$s]=runCase(prefix('8').metadata('45',$size).payload('45',$raw));
 check('changed UIDVALIDITY never requests any UID', $out instanceof ReceivingFailure && $out->getMessage()==='mailbox_changed' && !array_filter($s->commands(),fn($c)=>str_contains($c,'UID FETCH')));
 [$out,$s]=runCase(prefix('7',0));
