@@ -1794,6 +1794,13 @@ def validate_ux08_inbox_state_fix_source(root):
             == base_entries[UX08_INBOX_STATE_FIX_PATH][0]
             == source_entries[UX08_INBOX_STATE_FIX_PATH][0] == '100644',
             'UX-08 inbox state fix source identity changed')
+    projected = project_ux08_inbox_state_fix(
+        root, UX08_INBOX_STATE_FIX_PATH, ordinary(root, UX08_INBOX_STATE_FIX_PATH))
+    require(projected == git(root, 'cat-file', 'blob', UX08_INBOX_STATE_FIX_BASE + ':'
+                             + UX08_INBOX_STATE_FIX_PATH)
+            and project_ux08_inbox_state_fix(
+                root, UX08_INBOX_STATE_FIX_PATH, projected) == projected,
+            'UX-08 inbox state projection is not exact and idempotent')
 
 
 def project_ux08_inbox_state_fix(root, path, current):
@@ -1803,6 +1810,10 @@ def project_ux08_inbox_state_fix(root, path, current):
         return current
     source = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', UX08_INBOX_STATE_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current != ordinary(root, path):
+        return current
     require(current == source,
             'Current UX-08 inbox state fix changed before predecessor projection')
     return base
