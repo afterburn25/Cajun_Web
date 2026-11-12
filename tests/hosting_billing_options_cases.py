@@ -128,7 +128,8 @@ def run_browser(env, browser):
     site = env['BASE'] + '/hosting-checkout'
     admin, portal = site + '/admin/index.php', site + '/portal/index.php'
     owner_password, client_password = 'Synthetic native checkout owner', 'Synthetic checkout client'
-    contexts, checks, captures, errors, blocked = [], [], [], [], []
+    contexts, checks, captures, errors, blocked, tokenization_scripts = [], [], [], [], [], []
+    production_tokenization_script = 'https://js.authorize.net/v1/Accept.js'
 
     def check(name, passed):
         if type(passed) is not bool or any(c['name'] == name for c in checks):
@@ -145,10 +146,20 @@ def run_browser(env, browser):
     def context():
         ctx = browser.new_context(viewport={'width': 1440, 'height': 1050}, reduced_motion='reduce')
         def route(request):
-            if request.request.url.startswith(env['BASE'] + '/') or request.request.url.startswith(('data:', 'about:')):
+            url = request.request.url
+            if url.startswith(env['BASE'] + '/') or url.startswith(('data:', 'about:')):
                 request.continue_()
+            elif (url == production_tokenization_script and request.request.method == 'GET'
+                  and request.request.resource_type == 'script'):
+                # Each installed unpaid result exposes the reviewed production
+                # dependency, while hosted acceptance never fetches it.
+                tokenization_scripts.append({'method': 'GET', 'url': url, 'resource_type': 'script'})
+                request.fulfill(status=200, content_type='application/javascript', body='window.Accept={};\n')
             else:
-                blocked.append(urlparse(request.request.url).scheme)
+                parsed = urlparse(url)
+                blocked.append({'method': request.request.method, 'scheme': parsed.scheme.lower(),
+                                'host': (parsed.hostname or '').lower(), 'path': parsed.path[:256],
+                                'query_present': bool(parsed.query), 'fragment_present': bool(parsed.fragment)})
                 request.abort()
         ctx.route('**/*', route)
         contexts.append(ctx)
@@ -508,13 +519,19 @@ def run_browser(env, browser):
               and final['products'][str(monthly_id)] == monthly_product)
         retained('Final original row hashes and provider histories remain exactly preserved', final)
         check('Installed billing browser has no JavaScript page errors', not errors)
-        check('Installed billing browser accesses only local resources', not blocked)
+        expected_script = {'method': 'GET', 'url': production_tokenization_script, 'resource_type': 'script'}
+        check('Installed billing browser intercepts only the exact production tokenization dependency',
+              bool(tokenization_scripts) and all(row == expected_script for row in tokenization_scripts))
+        check('Installed billing browser requests no unreviewed external resources', not blocked)
         check('Installed billing produces exactly eight new scoped captures', tuple(row['name'] for row in captures) == CAPTURES)
         return {'passed': True, 'checks': checks, 'captures': captures,
                 'scope': 'Actual installed owner monthly/annual draft, artwork, plan, publication and primary-client checkout forms. Two new full-period unpaid invoices preserve five original purchases. Synthetic local artwork; no provider I/O or payment. Image approval remains separate.',
                 'monthly': monthly, 'annual': annual, 'purchases': purchases, 'counts': final['counts'],
                 'provider_requests': 0, 'payment_attempts': 0, 'original_purchase_count': 5, 'final_purchase_count': 7,
-                'provider_io_sha256': final['provider_io_sha256']}
+                'provider_io_sha256': final['provider_io_sha256'],
+                'tokenization_dependency': {'url': production_tokenization_script,
+                                            'intercepted_requests': len(tokenization_scripts),
+                                            'live_fetches': 0}}
     finally:
         for ctx in contexts:
             ctx.close()
