@@ -100,6 +100,20 @@ check('diff reports added line', $diff->added === ['line three'] && $diff->remov
 check('diff counts changes', $diff->changedLineCount() === 1 && !$diff->identical());
 $empty = $d->compare('r1', 'r3');
 check('identical contents diff clean', $empty->identical() && $empty->changedLineCount() === 0);
+$ordered=new ContentRevision('ordered','s',1,"one\ntwo",'a','t');
+$reordered=new ContentRevision('reordered','s',2,"two\none",'a','t');
+$orderDiff=RevisionDiff::between($ordered,$reordered);
+check('reordered content is not identical even without added or removed occurrences',!$orderDiff->identical()&&$orderDiff->changedLineCount()===0);
+$duplicates=RevisionDiff::between(
+    new ContentRevision('duplicate-old','s',1,"a\na\nb",'a','t'),
+    new ContentRevision('duplicate-new','s',2,"a\nb\nc",'a','t')
+);
+check('duplicate multiplicity produces exact unmatched occurrences',$duplicates->removed===['a']&&$duplicates->added===['c']&&$duplicates->changedLineCount()===2);
+$numericLines=RevisionDiff::between(
+    new ContentRevision('numeric-old','s',1,"0\n0\n1",'a','t'),
+    new ContentRevision('numeric-new','s',2,"0\n1\n1",'a','t')
+);
+check('numeric-looking duplicate lines retain separate occurrence counts',$numericLines->removed===['0']&&$numericLines->added===['1']);
 rejects('compare unknown revision rejected', fn () => $d->compare('rX', 'r1'));
 
 // --- Approval context -----------------------------------------------------

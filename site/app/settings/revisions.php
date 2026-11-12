@@ -5,7 +5,7 @@ require_once CWP_CODE_ROOT.'/includes/foundation/revisions/ContentRevision.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/revisions/RevisionDiff.php';
 use CajunWebPro\Foundation\Revisions\{ContentRevision,RevisionDiff};
 
-/** Build a deterministic line-set comparison from one persisted revision row. */
+/** Build a deterministic occurrence-aware line comparison from one persisted revision row. */
 function studio_revision_diff(array $row): RevisionDiff {
     $id='r'.(int)$row['id'];
     return RevisionDiff::between(

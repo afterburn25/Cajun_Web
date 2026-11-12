@@ -28,7 +28,9 @@ revision_integration_ok('Persisted row adapter reports exact line sets',$diff->r
 $same=studio_revision_diff([...$row,'new_value'=>$row['old_value']]);
 revision_integration_ok('Persisted row adapter reports an identical restore honestly',$same->identical()&&$same->changedLineCount()===0);
 $reordered=studio_revision_diff([...$row,'old_value'=>"first\nsecond",'new_value'=>"second\nfirst"]);
-revision_integration_ok('Set-based model exposes the zero-unique-line reorder boundary',$reordered->identical()&&$reordered->changedLineCount()===0);
+revision_integration_ok('Reordered persisted content is not identical',!$reordered->identical()&&$reordered->changedLineCount()===0);
+$duplicates=studio_revision_diff([...$row,'old_value'=>"a\na\nb",'new_value'=>"a\nb\nc"]);
+revision_integration_ok('Persisted duplicate lines retain exact unmatched multiplicity',$duplicates->removed===['a']&&$duplicates->added===['c']&&$duplicates->changedLineCount()===2);
 
 $view=file_get_contents($root.'/site/admin/views/studio/history.php');
 $css=file_get_contents($root.'/site/assets/css/admin.css');
@@ -38,9 +40,10 @@ revision_integration_ok('History view uses the reviewed adapter and preserves fu
 revision_integration_ok('History view escapes every added and removed line',
     substr_count($view,'esc($line)')===2&&!str_contains($view,'echo $line'));
 revision_integration_ok('History view reserves identical copy for byte-identical values',
-    str_contains($view,"\$same=(string)\$r['old_value']===(string)\$r['new_value']")
+    str_contains($view,'$same=$diff->identical()')
+    &&str_contains($view,'line occurrence')
     &&str_contains($view,'Line order or repetition changed — review the full saved values')
-    &&!str_contains($view,'if($diff->identical())'));
+    &&!str_contains($view,"\$same=(string)\$r['old_value']===(string)\$r['new_value']"));
 revision_integration_ok('History view retains explicit restore confirmation and optimistic hash',
     str_contains($view,"admin_check('confirm','Restore the Before value as a new revision.',false)")
     &&str_contains($view,"hash('sha256',setting(\$r['setting_name']))"));
