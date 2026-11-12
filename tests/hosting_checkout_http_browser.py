@@ -97,7 +97,7 @@ def native_labels(source):
             text = text.replace(line, '\n'.join(body.replace('$key', repr(key)) for key in ('contact_id', 'contact_auth')))
     text = re.sub(r"'\.'(contact_id|contact_auth)'", r"\1'", text)
     labels = re.findall(r"\bhcc_(?:ok|deny)\('([^']*)'", text)
-    require(len(labels) == 84 and len(labels) == len(set(labels)), 'Exact corrected native producer required')
+    require(len(labels) == 85 and len(labels) == len(set(labels)), 'Exact corrected native producer required')
     return labels
 
 
@@ -170,7 +170,7 @@ def main(full_suite=False):
         native_raw = (ROOT/'qa/hosting-checkout-native-results.json').read_bytes()
         native = validate_native(native_raw, (ROOT/'tests/hosting_checkout_native.php').read_text(encoding='utf-8'), env['CWP_PHP_VERSION'])
         source['native_report_sha256'] = sha(native_raw); env['CWP_CHECKOUT_NATIVE_REPORT_SHA256'] = sha(native_raw); runtime['native'] = native['runtime']
-        check('Checkout browser requires all 84 exact original native outcomes', True)
+        check('Checkout browser requires all 85 exact original native outcomes', True)
         archives = list((ROOT/'dist').glob('CajunWebPro-*-COMPLETE-UPLOAD.zip'))
         check('Checkout browser uses one exact current COMPLETE package', len(archives) == 1)
         archive = archives[0]; mp = archive.with_suffix('.manifest.json'); manifest = json.loads(mp.read_bytes()); members = extract_package(archive, manifest, SITE, head)

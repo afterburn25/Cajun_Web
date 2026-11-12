@@ -67,7 +67,7 @@ def main():
           and 'Acquire::Retries=5' not in workflow)
     report = {'passed': True, 'checks': [{'name': n, 'passed': True} for n in labels], 'runtime': {'php': '8.3.30', 'database': 'synthetic guard value'}}
     def encoded(value): return json.dumps(value).encode()
-    check('Exact 84 native producer labels are retained', len(labels) == 84 and len(set(labels)) == 84)
+    check('Exact 85 native producer labels are retained', len(labels) == 85 and len(set(labels)) == 85)
     check('Complete synthetic report shape is accepted only as a guard example', runner.validate_native(encoded(report), producer, '8.3') == report)
     for name, mutate in [
         ('False outer pass refuses', lambda x: x.update(passed=False)),

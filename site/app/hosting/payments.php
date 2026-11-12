@@ -251,9 +251,9 @@ function hosting_payment_service_active_locked(string $agreement):bool {
     $marker=one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_order_links_schema_version'])['value']??'';
     if($marker!=='1')return false;$order=one('SELECT id,client_id FROM '.table('service_orders').' WHERE agreement_id=?',[$agreement]);if(!$order)return false;
     $link=one('SELECT account_id FROM '.table('hosting_order_links').' WHERE id=?',[$order['id']]);if(!$link)return false;
-    require_once CWP_CODE_ROOT.'/app/hosting/operations.php';$operations=hosting_storage_state('operations');
-    if($operations['version']===''&&$operations['existing']===[]&&!one('SELECT id FROM '.table('audit').' WHERE action=? LIMIT 1',[$operations['setup_action']]))return false;
-    hosting_storage_require('operations');$journal=hosting_operations_validate(hosting_records_row($link['account_id'],(int)$order['client_id']));
+    require_once CWP_CODE_ROOT.'/app/hosting/operations.php';$row=hosting_records_row($link['account_id'],(int)$order['client_id']);$operations=hosting_storage_state('operations');
+    if($operations['version']===''&&$operations['existing']===[]&&!one('SELECT id FROM '.table('audit').' WHERE action=? LIMIT 1',[$operations['setup_action']])){hosting_records_journal($row);return false;}
+    hosting_storage_require('operations');$journal=hosting_operations_validate($row);
     return $journal->account()->status()==='active'&&$journal->account()->providerRef()!==null;
 }
 function hosting_payment_projection_locked(array $source):array {

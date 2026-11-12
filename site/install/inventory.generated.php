@@ -228,7 +228,7 @@ function setup_expected_files(): array { return [
     'app/hosting/order_links.php'=>'9799f79b6fd9f8cc9679041d44070f761b6166c74b3e16ed77460b1513f80717',
     'app/hosting/order_views.php'=>'415f65a468c247bdce525dd11bb86b841b8d356e9c38a787d0afcc1f338323eb',
     'app/hosting/orders.php'=>'d7e8e07f9a54b66f65a343d875607ae360f68664aa8efbe6f9e5af3bb49bc101',
-    'app/hosting/payments.php'=>'778da4af4474577ad684cc9851eaf291b3244a8fd6b951c3fd1ba62d7df63c9d',
+    'app/hosting/payments.php'=>'39c75d27939398647527d07787f67cfcd88ee5ed296ae896610eebd9478bbe3c',
     'app/hosting/reconciliation.php'=>'7bc3cc923fcb7789c23dbec06d48103ac9dbe79d34b3eedd42d6efae64ea0c68',
     'app/hosting/records.php'=>'c226bb6a94df7f8cbe7525111e3179fcc99f4b8a7703592537886e5eead4ca50',
     'app/hosting/storage.php'=>'ec3b6cfc8ef37e534a8ba2b59608345a5a62236af6f86e37698e982836216c86',
