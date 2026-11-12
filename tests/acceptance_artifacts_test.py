@@ -24,6 +24,11 @@ UX08_PAYMENT_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
 UX08_PAYMENT_BASE_TREE = '7ccd5cd2384b5adecbd66fd98b7719a92a38887e'
 UX08_PAYMENT_SOURCE = '7a8537afba765017dbb71d2c2a2f943b2572529a'
 UX08_PAYMENT_SOURCE_TREE = '1e5ec17d7d615654ee9537c8f2856f67deedb491'
+UX08_PAYMENT_CURRENT_PUBLICATION_BASE = '066f8f5b791acaddadc10a5e2274971c5a11a42f'
+UX08_PAYMENT_CURRENT_PUBLICATION_BASE_TREE = '2a49c5e3d0c1f11ce685c5d5b67bb582e03b4ee5'
+UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE = '7a9278ecaeb52f8bdedc3abb002ae3db4d02d77f'
+UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE_TREE = '8d8c1464167acf31267e413ddba1a43a86eab442'
+UX08_PAYMENT_CURRENT_PUBLICATION_PATH = 'tests/hosting_payment_cases.py'
 UX08_PAYMENT_ARTIFACT_OVERLAYS = frozenset((
     'site/app/settings/database_schemas.php',
     'site/portal/controllers/router.php',
@@ -67,6 +72,20 @@ def ux08_artifact_predecessor(path, current):
           and subprocess.check_output(['git','rev-parse',UX08_STOREFRONT_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_STOREFRONT_SOURCE_TREE
           and subprocess.run(['git','merge-base','--is-ancestor',UX08_STOREFRONT_BASE,UX08_STOREFRONT_SOURCE],cwd=ROOT).returncode==0)
     check('UX-08 artifact overlay current bytes match exact storefront source '+path,current==source)
+    return base
+
+
+def ux08_payment_current_publication_predecessor(path, current):
+    """Project the reviewed payment-publication overlay before its frozen source check."""
+    if path != UX08_PAYMENT_CURRENT_PUBLICATION_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_CURRENT_PUBLICATION_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 current payment publication overlay retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_CURRENT_PUBLICATION_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_CURRENT_PUBLICATION_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_CURRENT_PUBLICATION_BASE,UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 current payment publication overlay matches its exact reviewed source',current==source)
     return base
 
 
@@ -636,8 +655,10 @@ def run(tmp):
         check('Packaged hosting browser proof is one exact additive application command',
               browser_commands==[payment_ext['browser_addition_after'],payment_ext['browser_addition']])
         for path,expected_hash in payment_ext['source_sha256'].items():
+            current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=ux08_payment_current_publication_predecessor(path,current)
             check('Hosting payment acceptance source identity '+path,
-                  hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+                  hashlib.sha256(current).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
         for mode in ('browser','final'):
             current=registry[mode]
