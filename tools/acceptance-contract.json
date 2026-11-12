@@ -874,7 +874,7 @@
       "Hosting-Payment-VPS-Unavailable-Mobile.png"
     ],
     "source_sha256": {
-      "tests/hosting_checkout_native.php": "bc12ff15d5f6c86dea486b7b3335929c3037a5960bd6bc3e8f4df6806605bbf2",
+      "tests/hosting_checkout_native.php": "555bd945b9cb9ab956e6c556f0163df42ccaa1dcc88bf8ae0d7a3e0e7192f220",
       "tests/hosting_payment_native.php": "a63abab8ae1e5ad524ffd0a000ac18d3332681aca975b3152b828c1a38a03276",
       "tests/hosting_payment_cases.py": "1d104e7f30c0e44e9b2b9f0f8b31ad0268e0baf8554389a89a83af759ebef6cc"
     },
