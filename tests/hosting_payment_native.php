@@ -39,6 +39,7 @@ function hp_deny(string $name,callable $work):void {try{$work();}catch(InvalidAr
 function hp_id(int $n):string{return str_pad(dechex($n),32,'0',STR_PAD_LEFT);}
 function hp_key(int $n):string{return hash('sha256','hosting-payment-attempt-'.$n);}
 function hp_count(string $name):int{return(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
+function hp_refresh_ready_at(int $started,int $now):int {if($now<1||$started<1||$started>$now||$started>PHP_INT_MAX-30)throw new RuntimeException('Unexpected retained refresh time.');return $started+30;}
 function hp_identifier(string $name):string {if(!preg_match('/\A[a-zA-Z][a-zA-Z0-9_]{0,63}\z/',$name))throw new LogicException('Invalid fixture identifier.');return '`'.$name.'`';}
 function hp_cross_schema_fk_refused(string $child,string $column,string $parent,string $parentColumn,callable $validate):void {
     $database=config()['db']['name'];$foreign=(string)getenv('CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE');$childTable=config()['db']['prefix'].$child;$parentTable=config()['db']['prefix'].$parent;
@@ -253,7 +254,7 @@ try {
     hp_client();hp_ok('Provider acknowledgement is still Paid setup pending',hosting_payment_projection(hp_id(30),1)['payment_stage']==='paid_setup_pending');hp_owner();
     $approval=one('SELECT binding_sha256 FROM '.table('hosting_fulfillments').' WHERE id=?',[$dispatch]);
     $latest=filter_var(query('SELECT MAX(started_epoch) FROM '.table('provider_refreshes').' WHERE profile_id=?',[$profile])->fetchColumn(),FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);if($latest===false)throw new RuntimeException('Provider refresh history required.');
-    $readyAt=hch_refresh_ready_at($latest,time());$deadline=hrtime(true)+35000000000;
+    $readyAt=hp_refresh_ready_at($latest,time());$deadline=hrtime(true)+35000000000;
     while(time()<$readyAt){if(hrtime(true)>=$deadline)throw new RuntimeException('Bounded provider status cooldown wait expired.');usleep(100000);}
     $confirmed=hosting_fulfillment_confirm($order->data()['id'],1,$dispatch,$approval['binding_sha256'],$password,static fn()=>'8.8.8.8','hp_inventory_read');
     hp_ok('Authenticated exact package observation confirms the Shared service',$confirmed==='confirmed');
