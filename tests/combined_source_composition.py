@@ -304,6 +304,16 @@ UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_BASE_TREE = '54f80ab712add0a8d764f6c8275423
 UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE = '9a726b4431b077096bd3a4d1e2755d208b793d16'
 UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE_TREE = '55c0424d14009e39fa93c7afb1be59b731abc3ae'
 UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_PATH = 'tests/acceptance_artifacts_test.py'
+UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
+UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
+UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
+UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE_TREE = '0a03a416e2166b710e96b486258632df65151457'
+UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED = frozenset((
+    'site/app/hosting/checkout_purchases.php',
+    'site/app/hosting/payments.php',
+    'site/install/inventory.generated.php',
+    'tests/hosting_checkout_purchases_guards.php',
+))
 UX08_CHECKOUT_PIN_FIX_BASE = 'a69b4ae04e9087707ddad59a60cc6afda26b57fd'
 UX08_CHECKOUT_PIN_FIX_BASE_TREE = '732d83a18dd6a666369ecfa1b7598583cd4b02dd'
 UX08_CHECKOUT_PIN_FIX_SOURCE = 'e27d57a74962dffa1f595504e4aa9e570050a496'
@@ -2024,6 +2034,7 @@ def validate_ux08_agreement_link_fix_source(root):
 
 def project_ux08_agreement_link_fix(root, path, current):
     """Restore the accepted fcdd proof head for every older source receipt."""
+    current = project_ux08_inbox_payment_readiness_fix(root, path, current)
     current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_inbox_network_fix(root, path, current)
@@ -2059,7 +2070,7 @@ def validate_ux08_agreement_duplicate_fix_source(root):
     base_entries = entries(root, UX08_AGREEMENT_DUPLICATE_FIX_BASE)
     source_entries = entries(root, UX08_AGREEMENT_DUPLICATE_FIX_SOURCE)
     for path in sorted(UX08_AGREEMENT_DUPLICATE_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_inbox_payment_readiness_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_AGREEMENT_DUPLICATE_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_AGREEMENT_DUPLICATE_FIX_BASE + ':' + path)
         require(current == source
@@ -2071,6 +2082,7 @@ def validate_ux08_agreement_duplicate_fix_source(root):
 
 def project_ux08_agreement_duplicate_fix(root, path, current):
     """Restore the first agreement-link proof head for older receipts."""
+    current = project_ux08_inbox_payment_readiness_fix(root, path, current)
     if path not in UX08_AGREEMENT_DUPLICATE_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_AGREEMENT_DUPLICATE_FIX_SOURCE + ':' + path)
@@ -2214,6 +2226,49 @@ def project_ux08_payment_artifact_projection_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 payment artifact projection fix changed before predecessor projection')
+    return base
+
+
+def validate_ux08_inbox_payment_readiness_fix_source(root):
+    """Bind the exact bounded payment-readiness correction for purchase inbox reads."""
+    require(git(root, 'rev-parse', UX08_INBOX_PAYMENT_READINESS_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE_TREE,
+            'UX-08 inbox payment readiness fix source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_PAYMENT_READINESS_FIX_BASE,
+        UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_INBOX_PAYMENT_READINESS_FIX_BASE,
+                  UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED)],
+            'UX-08 inbox payment readiness fix changed a different path or status set')
+    base_entries = entries(root, UX08_INBOX_PAYMENT_READINESS_FIX_BASE)
+    source_entries = entries(root, UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE)
+    for path in sorted(UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_inbox_payment_readiness_fix(root, path, current) == base
+                and project_ux08_inbox_payment_readiness_fix(root, path, base) == base,
+                'UX-08 inbox payment readiness fix identity or projection changed: ' + path)
+
+
+def project_ux08_inbox_payment_readiness_fix(root, path, current):
+    """Restore the exact pre-readiness-fix head for older source receipts."""
+    if path not in UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 inbox payment readiness fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -2538,6 +2593,7 @@ def validate_ux08_payment_native_fix_source(root):
 
 def project_ux08_payment_native_fix(root, path, current):
     """Restore the first recovery-attempt bytes for older source receipts."""
+    current = project_ux08_inbox_payment_readiness_fix(root, path, current)
     current = project_ux08_agreement_link_fix(root, path, current)
     current = project_ux08_inbox_record_fix(root, path, current)
     current = project_ux08_inbox_operations_fix(root, path, current)
@@ -3136,6 +3192,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_inbox_payment_readiness_fix_source(root)
     validate_ux08_payment_artifact_projection_fix_source(root)
     validate_ux08_payment_current_publication_fix_source(root)
     validate_ux08_payment_publication_pin_fix_source(root)
