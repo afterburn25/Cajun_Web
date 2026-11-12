@@ -56,10 +56,12 @@ final class AttachmentIndex
         if($encoding==='base64') {
             $encoded=self::encodedBody($part);
             if(preg_match('/(?<!\r)\n|\r(?!\n)|[ \t]/',$encoded))throw new ReceivingFailure('protocol');
-            $lines=explode("\r\n",$encoded);if(end($lines)==='')array_pop($lines);
-            if(!$lines)throw new ReceivingFailure('protocol');
-            foreach($lines as $line)if($line===''||strlen($line)>76||preg_match('/\A[A-Za-z0-9+\/=]+\z/D',$line)!==1)throw new ReceivingFailure('protocol');
-            $compact=implode('',$lines);
+            if($encoded===''||$encoded==="\r\n")$compact='';
+            else {
+                $lines=explode("\r\n",$encoded);if(end($lines)==='')array_pop($lines);
+                foreach($lines as $line)if($line===''||strlen($line)>76||preg_match('/\A[A-Za-z0-9+\/=]+\z/D',$line)!==1)throw new ReceivingFailure('protocol');
+                $compact=implode('',$lines);
+            }
             if(preg_match('/\A(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?\z/D',$compact)!==1
                 ||($decoded=base64_decode($compact,true))===false||base64_encode($decoded)!==$compact) {
                 throw new ReceivingFailure('protocol');
@@ -84,7 +86,11 @@ final class AttachmentIndex
             $encoded=self::encodedBody($part);
             if(preg_match('/(?<!\r)\n|\r(?!\n)|[^\x09\x20-\x7E\r\n]/',$encoded))throw new ReceivingFailure('protocol');
             foreach(explode("\r\n",$encoded) as $line)if(strlen($line)>998)throw new ReceivingFailure('protocol');
-        } elseif(!in_array($encoding,['8bit','binary'],true)) {
+        } elseif($encoding==='8bit') {
+            $encoded=self::encodedBody($part);
+            if(str_contains($encoded,"\0")||preg_match('/(?<!\r)\n|\r(?!\n)/',$encoded))throw new ReceivingFailure('protocol');
+            foreach(explode("\r\n",$encoded) as $line)if(strlen($line)>998)throw new ReceivingFailure('protocol');
+        } elseif($encoding!=='binary') {
             throw new ReceivingFailure('protocol');
         }
     }

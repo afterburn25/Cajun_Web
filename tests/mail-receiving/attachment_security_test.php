@@ -85,6 +85,18 @@ foreach([
 $highBit7=security_mixed(["Content-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"bad-7bit.bin\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nA\xE9B"]);
 security_check('7bit transfer refuses high-bit bytes',fn()=>security_refused(fn()=>AttachmentIndex::extract($highBit7,0)));
 
+$emptyBase64=security_mixed(["Content-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"empty.bin\"\r\nContent-Transfer-Encoding: base64\r\n\r\n"]);
+security_check('empty base64 attachment retains exact zero-byte content and size',function()use($emptyBase64){$list=AttachmentIndex::list($emptyBase64);$item=AttachmentIndex::extract($emptyBase64,0);return $item['bytes']===''&&$list[0]['size']===0;});
+
+foreach([
+    'raw NUL'=>"A\0B",
+    'bare LF'=>"A\nB",
+    'overlong physical line'=>str_repeat('A',999),
+] as $name=>$body){
+    $raw=security_mixed(["Content-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"bad-8bit.bin\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\n".$body]);
+    security_check('8bit transfer refuses '.$name,fn()=>security_refused(fn()=>AttachmentIndex::extract($raw,0)));
+}
+
 $names=array_column($checks,'name');
 if(count($names)!==count(array_unique($names)))throw new RuntimeException('Duplicate attachment security check names.');
 $passed=!array_filter($checks,fn($check)=>!$check['passed']);
