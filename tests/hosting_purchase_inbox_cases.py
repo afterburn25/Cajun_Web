@@ -230,10 +230,10 @@ def run_browser(env, browser):
                 request = row['request_id']
                 for kind, label, query in [('invoice', 'View invoice', {'view': 'invoice-payments', 'invoice_id': row['invoice_id']} if is_owner else {'invoice': row['invoice_id']}),
                                            ('project', 'View project', {'view': 'studio-job', 'id': row['project_id']} if is_owner else {'job': row['project_id']}),
-                                           ('agreement', None, {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
+                                           ('agreement', 'View agreement', {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
                     check('Inbox reloads ' + actor + ' before ' + phase + ' ' + kind, goto(page, list_url(is_owner)) == 200)
                     current = card(page, request)
-                    link = current.locator('[data-hosting-purchase-next]') if label is None else current.get_by_role('link', name=label, exact=True)
+                    link = current.get_by_role('link', name=label, exact=True)
                     title = current.locator('dt').filter(has_text='Project').evaluate('el=>el.nextElementSibling.textContent')
                     check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' binds exact route', link.count() == 1 and destination(link.get_attribute('href'), endpoint, query))
                     check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' opens actual destination', click(page, link) == 200 and destination(page.url, endpoint, query))

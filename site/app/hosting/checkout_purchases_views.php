@@ -63,7 +63,7 @@ function hosting_purchases_ui_card(array $row,bool $owner): void {
     if ($phase==='accepted') echo '<p class="hint">Open hosting progress for payment, setup and service status.</p>';
     elseif ($phase==='offered'&&$row['agreement']['state']==='active') echo '<p>'.($owner?'The client can review this hosting offer and add their website address in the agreement.':'Review the hosting offer and confirm your website address in the agreement.').'</p>';
     elseif ($order===null) echo '<p>'.($row['agreement']['state']!=='active'?'Open the agreement for its current terms and status.':($owner?'Open the agreement to review the original invoice and offer hosting setup.':'The studio will review setup. You can view your invoice and agreement below.')).'</p>';
-    echo '<div class="button-row"><a class="btn gold" data-hosting-purchase-next href="'.esc($nextUrl).'">'.esc($next).'</a><a class="btn outline" href="'.esc($links['invoice']).'">View invoice</a><a class="btn outline" href="'.esc($links['project']).'">View project</a></div></article>';
+    echo '<div class="button-row"><a class="btn gold" data-hosting-purchase-next href="'.esc($nextUrl).'">'.esc($next).'</a><a class="btn outline" data-hosting-purchase-agreement href="'.esc($links['agreement']).'">View agreement</a><a class="btn outline" href="'.esc($links['invoice']).'">View invoice</a><a class="btn outline" href="'.esc($links['project']).'">View project</a></div></article>';
 }
 /** A failed read never becomes an empty successful history. No data or action is inferred from POST. */
 function hosting_purchases_ui_render(?array $page,bool $owner): void {
