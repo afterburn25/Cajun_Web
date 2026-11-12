@@ -69,6 +69,22 @@ security_check('canonical quoted-printable remains downloadable',fn()=>Attachmen
 $invalidQuoted=security_mixed(["Content-Type: text/plain\r\nContent-Disposition: attachment; filename=\"bad-quoted.txt\"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\ninvalid=QZ"]);
 security_check('malformed quoted-printable is refused',fn()=>security_refused(fn()=>AttachmentIndex::extract($invalidQuoted,0)));
 
+$latin1=security_mixed(["Content-Type: text/plain; charset=ISO-8859-1\r\nContent-Disposition: attachment; filename=\"latin1.txt\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\ncaf\xE9"]);
+security_check('binary extraction preserves exact transfer-decoded attachment bytes and size',function()use($latin1){$list=AttachmentIndex::list($latin1);$item=AttachmentIndex::extract($latin1,0);return $item['bytes']==="caf\xE9"&&strlen($item['bytes'])===4&&$list[0]['size']===4;});
+
+foreach([
+    'lowercase escape'=>"lower=2fcase",
+    'overlong physical line'=>str_repeat('A',77),
+    'trailing whitespace'=>"trailing \t",
+    'raw NUL'=>"A\0B",
+] as $name=>$body){
+    $raw=security_mixed(["Content-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"bad-quoted.bin\"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n".$body]);
+    security_check('quoted-printable refuses '.$name,fn()=>security_refused(fn()=>AttachmentIndex::extract($raw,0)));
+}
+
+$highBit7=security_mixed(["Content-Type: application/octet-stream\r\nContent-Disposition: attachment; filename=\"bad-7bit.bin\"\r\nContent-Transfer-Encoding: 7bit\r\n\r\nA\xE9B"]);
+security_check('7bit transfer refuses high-bit bytes',fn()=>security_refused(fn()=>AttachmentIndex::extract($highBit7,0)));
+
 $names=array_column($checks,'name');
 if(count($names)!==count(array_unique($names)))throw new RuntimeException('Duplicate attachment security check names.');
 $passed=!array_filter($checks,fn($check)=>!$check['passed']);
