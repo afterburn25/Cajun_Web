@@ -116,10 +116,16 @@ def main():
               < migration.index('$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());')
               < migration.index("if(!$checkoutReady||setting('gateway_receipts_schema_version')!=='1')"))
     payment_fixture = source['tests/hosting_checkout_http_fixture.php']
-    check('Payment continuation reads its publication under the checkout lock',
-          payment_fixture.count("hosting_catalog_publication($publicationRow['id'])") == 1
-          and "$publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationRow['id']));"
-              in payment_fixture)
+    check('Payment continuation binds the exact prepared publication under the checkout lock',
+          payment_fixture.count("'publication_id'=>$initial['publication']") == 1
+          and payment_fixture.count("'publication_sha256'=>$initial['publication_sha256']") == 1
+          and payment_fixture.count("$publicationId=$seed['publication_id']??null") == 1
+          and payment_fixture.count("$publicationHash=$seed['publication_sha256']??null") == 1
+          and payment_fixture.count('hosting_catalog_publication($publicationId)') == 1
+          and '$publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationId));'
+              in payment_fixture
+          and "hash_equals($publicationHash,$publication->fingerprint())" in payment_fixture
+          and 'WHERE product_id=? ORDER BY seq DESC LIMIT 1' not in payment_fixture)
     for name in ('gateway_receipts_schema.php', 'hosting_payments_schema.php'):
         schema = source['site/database/schema/' + name]
         check(name + ' requires same-database foreign-key targets',

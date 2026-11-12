@@ -105,7 +105,7 @@ if($operation==='prepare'){
         hosting_checkout_require();$a=hosting_checkout_result_row(one('SELECT * FROM '.table('hosting_checkout_results').' WHERE id=?',[hch_id(30)]));$b=hosting_checkout_result_row(one('SELECT * FROM '.table('hosting_checkout_results').' WHERE id=?',[hch_id(40)]));
         if(hch_count('hosting_checkout_results')!==2||hch_count('studio_invoices')!==2||hch_count('invoice_payments')!==2||hch_count('gateway_receipts')!==1||hch_count('hosting_payment_attempts')!==1||hch_count('payment_attempts')!==0||$a['invoice']['status']!=='paid'||$b['invoice']['status']!=='paid'||!attempts_ready())throw new RuntimeException('Expected native graph differs');
         $old=provider_plan_catalog_lookup(hch_id(10));$pub=hosting_checkout_publication(hch_id(22));$p=provider_settings_load($old['profile_id']);if((int)$p['revision']!==2||(int)$p['enabled']!==0)throw new RuntimeException('Expected native final connection differs');
-        return['financial_sha256'=>hch_rows(true),'profile'=>$p['id'],'product'=>$pub->data()['product']['id'],'plan'=>hch_id(1),'mapping'=>$old,'unpaid_invoice'=>(int)$b['invoice']['id']];
+        return['financial_sha256'=>hch_rows(true),'profile'=>$p['id'],'product'=>$pub->data()['product']['id'],'publication'=>$pub->data()['id'],'publication_sha256'=>$pub->fingerprint(),'plan'=>hch_id(1),'mapping'=>$old,'unpaid_invoice'=>(int)$b['invoice']['id']];
     });
     provider_settings_state($initial['profile'],2,'enable',$password);$calls=0;
     // Honor the real profile cooldown without editing retained intent timestamps or retrying a refresh.
@@ -118,7 +118,7 @@ if($operation==='prepare'){
     $plan=recurring_billing_locked(static fn()=>service_plans_validate(service_plans_row($initial['plan'],false),false));
     provider_plan_catalog_save(hch_id(900),$initial['plan'],$plan->revision(),$plan->fingerprint(),hch_id(10),$initial['profile'],3,$initial['mapping']['configuration'],7,true,$password);
     if(hosting_checkout_locked(static fn():string=>hch_rows(true))!==$initial['financial_sha256'])throw new RuntimeException('Continuation changed prior commercial history');
-    $safe=['prepared'=>true,'prefix'=>'hcc_','product_id'=>$initial['product'],'plan_id'=>$initial['plan'],'mapping_id'=>hch_id(900),'unpaid_invoice'=>$initial['unpaid_invoice'],'native_report_sha256'=>$expected,'prior_financial_sha256'=>$initial['financial_sha256'],'synthetic_refresh_calls'=>$calls,'native_end_state_sealed'=>false];
+    $safe=['prepared'=>true,'prefix'=>'hcc_','product_id'=>$initial['product'],'publication_id'=>$initial['publication'],'publication_sha256'=>$initial['publication_sha256'],'plan_id'=>$initial['plan'],'mapping_id'=>hch_id(900),'unpaid_invoice'=>$initial['unpaid_invoice'],'native_report_sha256'=>$expected,'prior_financial_sha256'=>$initial['financial_sha256'],'synthetic_refresh_calls'=>$calls,'native_end_state_sealed'=>false];
     foreach([$site.'/config.php'=>'<?php define(\'CWP_HOSTING_PRODUCTION_PAYMENTS\',true); return '.var_export(config(),true).';',$site.'/.installed.php'=>CWP_GUARD.'synthetic installed guard',$marker=>json_encode($safe,JSON_THROW_ON_ERROR)]as$p=>$bytes){$f=fopen($p,'x');if(!$f)throw new RuntimeException('Existing private output');try{if(fwrite($f,$bytes)!==strlen($bytes))throw new RuntimeException('Incomplete private output');}finally{fclose($f);}if(!chmod($p,0600))throw new RuntimeException('Private output permissions failed');}
     echo json_encode($safe,JSON_THROW_ON_ERROR);exit;
 }
@@ -128,9 +128,10 @@ if(in_array($operation,['payment-state','payment-outcome','payment-fulfill','pay
     if($operation==='payment-state'&&!is_file($paymentMarker)){
         hch_payment_owner();gateway_receipts_prepare($password);hosting_payments_prepare($password);unset($GLOBALS['cwp_settings']);$gateway=hosting_anet_settings();
         if($gateway['mode']!=='production'||$gateway['login']!=='SYNTHETICCHECKOUT'||$gateway['client_key']!=='SYNTHETIC_PUBLIC_KEY'||!hosting_anet_production_enabled())throw new RuntimeException('Exact retained production fixture gateway required');
-        $seed=json_decode(file_get_contents($marker),true,8,JSON_THROW_ON_ERROR);$publicationRow=one('SELECT id FROM '.table('hosting_catalog_publications').' WHERE product_id=? ORDER BY seq DESC LIMIT 1',[(int)$seed['product_id']]);
-        if(!$publicationRow)throw new RuntimeException('Current Shared publication missing');
-        $publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationRow['id']));
+        $seed=json_decode(file_get_contents($marker),true,8,JSON_THROW_ON_ERROR);$publicationId=$seed['publication_id']??null;$publicationHash=$seed['publication_sha256']??null;
+        if(!is_string($publicationId)||!preg_match('/\A[a-f0-9]{32}\z/',$publicationId)||!is_string($publicationHash)||!preg_match('/\A[a-f0-9]{64}\z/',$publicationHash))throw new RuntimeException('Exact prepared Shared publication required');
+        $publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationId));
+        if($publication->data()['product']['id']!==(int)$seed['product_id']||!hash_equals($publicationHash,$publication->fingerprint()))throw new RuntimeException('Prepared Shared publication differs');
         $journeys=['approved'=>hch_id(510),'declined'=>hch_id(511),'uncertain'=>hch_id(512)];$created=[];
         foreach($journeys as$outcome=>$request){hch_payment_client();$review=hosting_checkout_preview($request,$publication->data()['id'],$publication->fingerprint(),1,['mode'=>'new-hosting']);$created[$outcome]=hosting_checkout_confirm($request,$review['review_sha256'],1,true);}
         if(count(array_unique(array_column($created,'invoice_id')))!==3||array_filter($created,static fn(array$row):bool=>$row['invoice_status']!=='issued'||$row['amount_cents']!==2500))throw new RuntimeException('Exact unpaid Shared payment journeys required');
