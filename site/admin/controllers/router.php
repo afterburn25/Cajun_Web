@@ -34,7 +34,7 @@ if($view==='studio-licenses'||(is_string($_POST['action']??null)&&(str_starts_wi
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
-if(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&(str_starts_with($_POST['action'],'hosting_catalog_')||str_starts_with($_POST['action'],'hosting_payment_')))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['proposals','proposal'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'proposal_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
@@ -53,7 +53,7 @@ if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accoun
 if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))service_plans_admin_render($view,$error);
 if(in_array($view,['proposals','proposal'],true))proposals_admin_render($view,$user,$error);
 if($view==='hosting-offers')hosting_catalog_admin_render($error);
-if($view==='hosting-purchases')hosting_purchases_admin_render();
+if($view==='hosting-purchases')hosting_purchases_admin_render($error);
 if($view==='recurring-billing')recurring_billing_admin_render($error);
 if(in_array($view,['tickets','ticket','ticket-new'],true))support_tickets_admin_render($view,$error);
 if($view==='registration-drafts')registration_drafts_admin_render($error);

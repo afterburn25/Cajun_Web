@@ -245,6 +245,7 @@ jobs:
       CWP_TEST_HOST: 127.0.0.1
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE: cwp_hpay_foreign
       PHP_BINARY: /usr/bin/php${{ matrix.php }}
       PYTHONDONTWRITEBYTECODE: '1'
       TZ: UTC
@@ -290,12 +291,49 @@ jobs:
           set -euo pipefail
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
           # Use one package source for the versioned CLI, extensions and Apache module.
           # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
           # require the PHP maintainer's signed Ubuntu Noble package repository.
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
-            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+            cwp_apt_get -o Acquire::Retries=1 install -y software-properties-common
             sudo add-apt-repository --yes --no-update ppa:ondrej/php
             # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
             # fixed mirror. Preserve Launchpad's original scoped publisher key.
@@ -337,8 +375,8 @@ jobs:
           print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
           CWP_PHP_MIRROR
           fi
-          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+          cwp_apt_get -o Acquire::Retries=1 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
           test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
@@ -347,6 +385,7 @@ jobs:
           if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
             docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.checkout_database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
           fi
+          docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.checkout_database.id }} mysql -uroot -e "CREATE DATABASE cwp_hpay_foreign; GRANT SELECT,CREATE,DROP,REFERENCES ON cwp_hpay_foreign.* TO 'cwp_test'@'%';"
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
           .ci-venv/bin/python -m playwright install --with-deps chromium
@@ -371,11 +410,13 @@ jobs:
           test ! -s qa/checkout-current-source/output-guards.stderr.log
           .ci-venv/bin/python tests/hosting_billing_options_wiring.py --report qa/checkout-current-source/billing-wiring.json > qa/checkout-current-source/billing-wiring.stdout.log 2> qa/checkout-current-source/billing-wiring.stderr.log
           test ! -s qa/checkout-current-source/billing-wiring.stderr.log
-      - name: Run all 79 native checkout assertions with closed synthetic transports
+      - name: Run all 85 native checkout assertions and isolated payment safety proof
         run: |
           set -euo pipefail
           CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/checkout-current-source/native.stdout.log 2> qa/checkout-current-source/native.stderr.log
           test ! -s qa/checkout-current-source/native.stderr.log
+          CWP_TEST_HOSTING_PAYMENT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/checkout-current-source/payment-native.stdout.log 2> qa/checkout-current-source/payment-native.stderr.log
+          test ! -s qa/checkout-current-source/payment-native.stderr.log
       - name: Continue the same native state through the actual packaged current-clock browser
         run: |
           set -euo pipefail
@@ -385,7 +426,7 @@ jobs:
         run: |
           set -euo pipefail
           .ci-venv/bin/python - <<'CHECKOUT_COMPLETE'
-          import hashlib, json, os, subprocess, sys
+          import hashlib, json, os, re, subprocess, sys
           from pathlib import Path
           root = Path.cwd(); qa = root/'qa'
           sys.path.insert(0, str(root/'tests'))
@@ -397,11 +438,19 @@ jobs:
               return hashlib.sha256(raw).hexdigest()
           native_raw = (qa/'hosting-checkout-native-results.json').read_bytes()
           native = driver.validate_native(native_raw, (root/'tests/hosting_checkout_native.php').read_text(), os.environ['CWP_PHP_VERSION'])
+          payment_raw = (qa/'hosting-payment-native-results.json').read_bytes()
+          payment = json.loads(payment_raw)
+          payment_source = (root/'tests/hosting_payment_native.php').read_text().split('\ntry {\n', 1)[1]
+          payment_tokens = re.findall(r"\bhp_(?:(?:ok|deny)\('([^']*)'|cross_schema_fk_refused\('([^']*)')", payment_source)
+          payment_labels = [literal or f'Cross-database {child} relationship is refused before schema adoption'
+                            for literal, child in payment_tokens]
           browser = json.loads((qa/'hosting-checkout-http-results.json').read_bytes())
           environment = json.loads((qa/'native-environment-results.json').read_bytes())
           require(environment['passed'] is True and all(row['passed'] is True for row in environment['checks']), 'Actual selected environment failed')
           require(environment['selected'] == {'php': os.environ['CWP_PHP_VERSION'], 'database': os.environ['CWP_DATABASE']}, 'Selected runtime changed')
           require(native['runtime'] == {'php': environment['cli']['version'], 'database': environment['database_version']}, 'Actual native runtime changed')
+          require(payment['passed'] is True and [row['name'] for row in payment['checks']] == payment_labels and len(payment_labels) == len(set(payment_labels)) and all(row['passed'] is True for row in payment['checks']), 'Hosting payment native outcomes failed')
+          require(payment['runtime'] == native['runtime'] and payment['live_gateway_calls'] == payment['live_provider_calls'] == 0, 'Hosting payment runtime or live-call boundary changed')
           require(browser['passed'] is True and browser['failure'] is None and browser['checks'] and all(row['passed'] is True for row in browser['checks']), 'Original browser outcomes failed')
           source = browser['source']
           require(source['commit'] == os.environ['GITHUB_SHA'] == subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(), 'Actual source changed')
@@ -409,7 +458,7 @@ jobs:
           require(source['native_report_sha256'] == sha(native_raw) and browser['runtime']['native'] == native['runtime'], 'Native-to-browser proof changed')
           require(set(source['files']) == set(driver.SOURCE_PATHS) and all(source['files'][p] == sha((root/p).read_bytes()) for p in driver.SOURCE_PATHS), 'Actual driver dependencies changed')
           require(browser['full_acceptance'] is False and browser['visual_approval'] is False, 'Do not claim full acceptance or visual approval')
-          require(len(driver.ALL_CAPTURES) == len(set(driver.ALL_CAPTURES)) == 32, 'All original capture names are required')
+          require(len(driver.ALL_CAPTURES) == len(set(driver.ALL_CAPTURES)) == 40, 'All original and payment capture names are required')
           for name in driver.ALL_CAPTURES:
               require(name in browser['files'] and (qa/name).is_file() and not (qa/name).is_symlink() and (qa/name).stat().st_size > 0, 'Missing actual capture: ' + name)
           for name, fact in browser['files'].items():
@@ -421,8 +470,9 @@ jobs:
           require(archive.is_file() and not archive.is_symlink() and sha(archive.read_bytes()) == browser['package']['sha256'] and archive.stat().st_size == browser['package']['bytes'], 'Actual tested COMPLETE package changed')
           require(sha(manifest.read_bytes()) == browser['package']['manifest_sha256'] and json.loads(manifest.read_bytes())['source_commit'] == source['commit'], 'Tested package source manifest changed')
           result = {'passed': True, 'source': source, 'runtime': native['runtime'], 'native_checks': len(native['checks']),
-                    'browser_check_entries': len(browser['checks']), 'captures': list(driver.ALL_CAPTURES),
+                    'payment_native_checks': len(payment['checks']), 'browser_check_entries': len(browser['checks']), 'captures': list(driver.ALL_CAPTURES),
                     'native_report_sha256': sha(native_raw), 'browser_report_sha256': sha((qa/'hosting-checkout-http-results.json').read_bytes()),
+                    'payment_native_report_sha256': sha(payment_raw),
                     'scope': 'Exact dedicated checkout matrix lane only. Nested callback lists repeat parent outcomes and are not added to execution counts. Visual review and full Application acceptance remain separate.'}
           (qa/'checkout-current-source/completion.json').write_text(json.dumps(result, indent=2) + '\n')
           CHECKOUT_COMPLETE

@@ -2,7 +2,28 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 if ($result!==null) {
-    echo '<section class="workspace-card"><h2>Your hosting invoice</h2><p>Invoice '.esc($result['invoice_reference']).' is saved for $'.esc(gmoney($result['amount_cents'])).' '.esc($result['currency']).'.</p><p>Invoice status: '.esc(ucfirst($result['invoice_status'])).'. Hosting setup follows verified payment and owner approval.</p><div class="button-row">';
+    $stage=match($payment['payment_stage']??'awaiting_payment'){'paid_setup_pending'=>'Paid / setup pending','active'=>'Active','payment_review'=>'Payment review required',default=>'Awaiting payment'};
+    echo '<section class="workspace-card"><h2>Your hosting invoice</h2><p>Invoice '.esc($result['invoice_reference']).' is saved for $'.esc(gmoney($result['amount_cents'])).' '.esc($result['currency']).'.</p><p><strong data-hosting-payment-stage>'.esc($stage).'</strong></p>';
+    if(($payment['payment_stage']??'')==='paid_setup_pending')echo '<p>Your production payment is verified. Hosting setup still requires a separate owner review and provider fulfillment.</p>';
+    elseif(($payment['payment_stage']??'')==='active')echo '<p>Your verified hosting service is active.</p>';
+    elseif(($payment['payment_stage']??'')==='payment_review'||in_array($payment['charge_state']??null,['processing','uncertain','review'],true))echo '<p class="notice warning">This payment needs owner reconciliation. Do not submit another charge.</p>';
+    elseif(($payment['charge_state']??null)==='declined')echo '<p class="notice info">The previous card attempt was declined and is closed. You may submit a fresh token.</p>';
+    elseif(($payment['charge_state']??null)==='sandbox_test')echo '<p class="notice info">The previous sandbox test is closed. It did not pay this invoice.</p>';
+    if(($payment['payment_stage']??'awaiting_payment')==='awaiting_payment'&&($payment['retryable']??false)&&$gateway!==null){
+        echo '<form method="post" data-authorize-net data-login="'.esc($gateway['login']).'" data-client-key="'.esc($gateway['client_key']).'">'.csrf_field();
+        hosting_checkout_portal_hidden(['action'=>'hosting_catalog_checkout_pay','request_id'=>$result['request_id'],'attempt_key'=>bin2hex(random_bytes(32))]);
+        echo '<input type="hidden" name="descriptor"><input type="hidden" name="payment_token">';
+        echo '<label>Card number<input data-card-number autocomplete="cc-number" inputmode="numeric" minlength="13" maxlength="23" required></label>';
+        echo '<label>Expiration month (MM)<input data-card-month autocomplete="cc-exp-month" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+        echo '<label>Expiration year (YY)<input data-card-year autocomplete="cc-exp-year" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" required></label>';
+        echo '<label>Security code<input data-card-code autocomplete="cc-csc" inputmode="numeric" minlength="3" maxlength="4" required></label>';
+        echo '<p class="hint">Card details are tokenized directly by Authorize.Net and are never submitted to CajunWebPro.</p>';
+        if($gateway['mode']==='sandbox')echo '<p class="notice info">Sandbox test only. This cannot settle the invoice or authorize hosting setup.</p>';
+        echo '<p role="alert" data-payment-error></p><button class="btn gold" type="submit">Pay hosting invoice securely</button></form>';
+    }elseif(($payment['payment_stage']??'awaiting_payment')==='awaiting_payment'&&!in_array($payment['charge_state']??null,['processing','uncertain','review'],true)){
+        echo '<p class="hint">Online card checkout is currently unavailable. Your invoice and its instructions remain available.</p>';
+    }
+    echo '<div class="button-row">';
     foreach (['View invoice'=>['invoice'=>$result['invoice_id']],'View project'=>['job'=>$result['project_id']],'Service agreement'=>['agreement'=>$result['agreement_id']],'Billing schedule'=>['recurring'=>1,'job'=>$result['project_id'],'schedule'=>$result['schedule_id']]] as $label=>$target) echo '<a class="btn outline" href="'.esc(studio_url($target)).'">'.esc($label).'</a>';
     echo '<a class="btn outline" href="'.esc(studio_url(['hosting_purchases'=>1])).'">My hosting purchases</a></div></section>';return;
 }

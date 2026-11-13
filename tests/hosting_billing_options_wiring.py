@@ -94,11 +94,14 @@ def constant(tree, name, environment=None):
 
 
 def run(root, work, check, deny):
-    runner_raw = source(root, RUNNER)
+    runner_raw = composition.project_ux08_payment(
+        root, RUNNER, composition.ordinary(root, RUNNER)).replace(b'\r\n', b'\n')
     runner = ast.parse(runner_raw)
-    case_raw = source(root, CASES)
+    case_raw = composition.project_ux08_payment(
+        root, CASES, composition.ordinary(root, CASES)).replace(b'\r\n', b'\n')
     cases = ast.parse(case_raw)
-    bridge = source(root, BRIDGE)
+    bridge = composition.project_ux08_payment(
+        root, BRIDGE, composition.ordinary(root, BRIDGE)).replace(b'\r\n', b'\n')
     predecessors = predecessor_sources(root)
     for path, expected in PREDECESSORS.items():
         check('Original installed callback remains byte-identical: ' + Path(path).name,

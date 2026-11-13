@@ -2,6 +2,7 @@
 import copy
 import json
 from pathlib import Path
+import re
 import tempfile
 
 import hosting_checkout_http_browser as runner
@@ -19,9 +20,55 @@ def main():
     # Installed source is provided by the normal tests path, not copied report strings.
     producer = (runner.ROOT/'tests/hosting_checkout_native.php').read_text(encoding='utf-8')
     labels = runner.native_labels(producer)
+    workflow = (runner.ROOT/'.github/workflows/consolidation-after-backups.yml').read_text(encoding='utf-8')
+    apt_mirrors = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+'''
+    apt_wrapper = '''          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
+'''
+    check('Checkout apt calls preserve mirror failover and hard-fail bounded reconnects',
+          workflow.count(apt_mirrors) == 1
+          and workflow.count(apt_wrapper) == 1
+          and workflow.count('cwp_apt_get -o Acquire::Retries=1') == 4
+          and 'sudo apt-get -o Acquire::Retries' not in workflow
+          and 'Acquire::Retries=5' not in workflow)
     report = {'passed': True, 'checks': [{'name': n, 'passed': True} for n in labels], 'runtime': {'php': '8.3.30', 'database': 'synthetic guard value'}}
     def encoded(value): return json.dumps(value).encode()
-    check('Exact 79 native producer labels are retained', len(labels) == 79 and len(set(labels)) == 79)
+    check('Exact 85 native producer labels are retained', len(labels) == 85 and len(set(labels)) == 85)
     check('Complete synthetic report shape is accepted only as a guard example', runner.validate_native(encoded(report), producer, '8.3') == report)
     for name, mutate in [
         ('False outer pass refuses', lambda x: x.update(passed=False)),
@@ -40,6 +87,73 @@ def main():
     deny('Oversized original report refuses', lambda: runner.validate_native(b' '*(256*1024+1), producer, '8.3'))
     deny('Altered producer label count refuses', lambda: runner.native_labels(producer + "\nhcc_ok('unexpected',true);"))
     check('Twelve exact unique capture names retained', len(runner.CAPTURES) == 12 and len(set(runner.CAPTURES)) == 12)
+    source = {path: (runner.ROOT/path).read_text(encoding='utf-8') for path in (
+        'site/admin/controllers/actions.php', 'site/admin/controllers/hosting_purchases.php',
+        'site/admin/controllers/router.php',
+        'site/app/hosting/checkout_purchases_views.php', 'site/app/billing/ledger.php',
+        'site/database/migrations/hosting_payments_migrate.php',
+        'site/database/schema/gateway_receipts_schema.php', 'site/database/schema/hosting_payments_schema.php',
+        'tests/hosting_checkout_http_browser.py', 'tests/hosting_payment_cases.py',
+        'tests/hosting_checkout_http_fixture.php')}
+    check('Owner payment reconciliation is a shipping CSRF-routed confirmed action',
+          "str_starts_with($action,'hosting_payment_')" in source['site/admin/controllers/actions.php']
+          and "function hosting_purchases_admin_action" in source['site/admin/controllers/hosting_purchases.php']
+          and "posted('confirm',1)!=='1'" in source['site/admin/controllers/hosting_purchases.php']
+          and "hosting_payment_reconcile(" in source['site/admin/controllers/hosting_purchases.php']
+          and "data-hosting-payment-reconcile" in source['site/app/hosting/checkout_purchases_views.php'])
+    check('Failed owner reconciliation returns escaped visible feedback',
+          "hosting_purchases_admin_render($error)" in source['site/admin/controllers/router.php']
+          and "function hosting_purchases_admin_render(string $error='')" in source['site/admin/controllers/hosting_purchases.php']
+          and "role=\"alert\">'.esc($error)" in source['site/admin/controllers/hosting_purchases.php'])
+    check('Paid reversal review never presents initial-capture reconciliation',
+          "$row['invoice']['status']??null)==='issued'" in source['site/app/hosting/checkout_purchases_views.php'])
+    check('Every ledger writer serializes against unresolved hosting captures',
+          'function ledger_hosting_attempt_assert_clear' in source['site/app/billing/ledger.php']
+          and 'ledger_hosting_attempt_assert_clear((int)$i[\'id\'],$hostingAttempt);' in source['site/app/billing/ledger.php'])
+    migration = source['site/database/migrations/hosting_payments_migrate.php']
+    check('Hosting payment setup validates checkout readiness under its owning lock and transaction',
+          'staff_locked(function()use($password):void {' in migration
+          and '$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());' in migration
+          and migration.index('staff_locked(function()use($password):void {')
+              < migration.index('$checkoutReady=staff_transaction(static fn():bool=>hosting_checkout_ready());')
+              < migration.index("if(!$checkoutReady||setting('gateway_receipts_schema_version')!=='1')"))
+    payment_fixture = source['tests/hosting_checkout_http_fixture.php']
+    payment_runner = source['tests/hosting_checkout_http_browser.py']
+    payment_cases = source['tests/hosting_payment_cases.py']
+    payment_diagnostics = re.findall(r"check\(label \+ '([^']+)'", payment_cases)
+    check('Payment form failure records precise bounded page and tokenization diagnostics',
+          len(payment_diagnostics) == len(set(payment_diagnostics)) == 12
+          and payment_diagnostics[-1] == 'hosting payment form is the actual tokenized-card form'
+          and "label = outcome['outcome'] + ' journey: '" in payment_cases
+          and "target = fill_card(page, outcome)" in payment_cases)
+    expanded_diagnostics = [outcome + ' journey: ' + label
+                            for outcome in ('declined', 'uncertain', 'approved')
+                            for label in payment_diagnostics]
+    check('All three hosting payment journeys emit unique form diagnostics',
+          len(expanded_diagnostics) == len(set(expanded_diagnostics)) == 36
+          and "check('Hosting payment form is the actual tokenized-card form'" not in payment_cases)
+    check('Payment continuation binds the exact current billing publication under the checkout lock',
+          "'payment_publication': result['billing_options']['monthly']" in payment_runner
+          and "fixture('payment-state', {" in payment_cases
+          and "'publication_id': publication['publication_id']" in payment_cases
+          and "'publication_sha256': publication['publication_sha256']" in payment_cases
+          and "'amount_cents': payment_amount" in payment_cases
+          and "$publicationId=$input['publication_id']??null" in payment_fixture
+          and "$publicationHash=$input['publication_sha256']??null" in payment_fixture
+          and "$amountCents=$input['amount_cents']??null" in payment_fixture
+          and payment_fixture.count('hosting_catalog_publication($publicationId)') == 1
+          and '$publication=hosting_checkout_locked(static fn()=>hosting_catalog_publication($publicationId));'
+              in payment_fixture
+          and "hash_equals($publicationHash,$publication->fingerprint())" in payment_fixture
+          and "'publication_id'=>$publicationId" in payment_fixture
+          and "'publication_sha256'=>$publicationHash" in payment_fixture
+          and "'amount_cents'=>$amountCents" in payment_fixture
+          and 'WHERE product_id=? ORDER BY seq DESC LIMIT 1' not in payment_fixture)
+    for name in ('gateway_receipts_schema.php', 'hosting_payments_schema.php'):
+        schema = source['site/database/schema/' + name]
+        check(name + ' requires same-database foreign-key targets',
+              'k.REFERENCED_TABLE_SCHEMA' in schema
+              and "$relation['REFERENCED_TABLE_SCHEMA']!==config()['db']['name']" in schema)
     old_root, old_web, old_site, old_sessions = runner.ROOT, runner.WEB, runner.SITE, runner.SESSIONS
     try:
         with tempfile.TemporaryDirectory(prefix='cwp-checkout-output-') as temp:

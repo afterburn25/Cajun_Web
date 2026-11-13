@@ -1,14 +1,18 @@
 <?php
-/** Isolated Linux SQL checkout: current-clock confirmation and synthetic local receipt; no charge/provider write. */
+/** Isolated Linux SQL checkout: current-clock confirmation and synthetic gateway evidence; no live charge/provider write. */
 declare(strict_types=1);
 if (PHP_SAPI!=='cli' || PHP_OS_FAMILY!=='Linux' || getenv('CWP_TEST_HOSTING_CHECKOUT')!=='1' || getenv('CWP_TEST_DATABASE')!=='cwp_test' || (getenv('CWP_TEST_HOST')?:'127.0.0.1')!=='127.0.0.1') exit(2);
 $port=filter_var(getenv('CWP_TEST_PORT')?:'33306',FILTER_VALIDATE_INT,['options'=>['min_range'=>1,'max_range'=>65535]]);if($port===false)exit(2);
+define('CWP_HOSTING_PRODUCTION_PAYMENTS',true);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/database/migrations/hosting_storefront_migrate.php';
 require_once __DIR__.'/../site/app/hosting/catalog_offers.php';
 require_once __DIR__.'/../site/app/hosting/catalog_checkout.php';
+require_once __DIR__.'/../site/app/hosting/payments.php';
+require_once __DIR__.'/../site/database/migrations/gateway_receipts_migrate.php';
+require_once __DIR__.'/../site/database/migrations/hosting_payments_migrate.php';
 require_once __DIR__.'/../site/app/hosting/order_link_views.php';
 use CajunWebPro\Foundation\Provider\TransportResponse;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventorySnapshot};
@@ -20,6 +24,7 @@ if(file_exists($qa.'/hosting-checkout-native-results.json')||is_link($qa.'/hosti
 function hcc_ok(string $name,bool $passed):void {global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException('Named checkout assertion failed.');}
 function hcc_deny(string $name,callable $fn):void {try{$fn();}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;hcc_ok($name,true);return;}hcc_ok($name,false);}
 function hcc_id(int $n):string{return str_pad(dechex($n),32,'0',STR_PAD_LEFT);}
+function hcc_payment_key(int $n):string{return hash('sha256','hosting-checkout-payment-'.$n);}
 function hcc_owner():void {$u=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];unset($GLOBALS['cwp_support']);$_GET=[];}
 function hcc_client(int $id=1):void {$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION=['client_id'=>$id,'client_auth'=>$c['auth_version'],'client_last'=>time(),'client_login'=>time()];unset($GLOBALS['cwp_support']);$_GET=[];}
 function hcc_count(string $name):int {return (int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
@@ -42,6 +47,26 @@ function hcc_read(array $row,string $key,string $address,callable $authorize,str
     global $calls,$secret;$authorize();
     if($key!==$secret || $address!=='8.8.8.8' || $operation!==InventoryRead::PACKAGE_TYPES)throw new LogicException('Unexpected synthetic transport');
     $calls++;return PackageTypes::project(new TransportResponse(200,[],'[{"id":7001,"label":"Synthetic checkout hosting"}]'),time(),'twenty-i|'.$row['id'].'|'.$operation);
+}
+/** Closed exact production-gateway readback. No socket or live credential is reachable. */
+function hcc_payment_gateway(int $invoice,string $request):callable {
+    return static function(string $method,array $body,array $context)use($invoice,$request):array {
+        if(($context['mode']??null)!=='production'||($context['login']??null)!=='SYNTHETICCHECKOUT'
+            ||($context['key']??null)!=='1234567890ABCDEF'||($context['client_key']??null)!=='SYNTHETIC_PUBLIC_KEY'
+            ||(int)($context['revision']??0)!==1||($context['account_sha256']??null)!==gateway_receipt_account_hash('SYNTHETICCHECKOUT'))throw new LogicException('Unexpected synthetic gateway context.');
+        if($method==='createTransactionRequest'){
+            $charge=$body['transactionRequest']??null;
+            if(!is_array($charge)||($charge['transactionType']??null)!=='authCaptureTransaction'||($charge['amount']??null)!=='25.00'
+                ||($charge['order']['invoiceNumber']??null)!==substr('CWP-'.$invoice,0,20)||isset($charge['payment']['creditCard'])
+                ||($charge['payment']['opaqueData']['dataDescriptor']??null)!=='COMMON.ACCEPT.INAPP.PAYMENT'
+                ||($charge['customer']['id']??null)!==hosting_anet_customer_id($request)
+                ||($charge['customer']['email']??null)!=='checkout-client1@example.invalid')throw new LogicException('Unexpected synthetic hosting charge.');
+            return ['messages'=>['resultCode'=>'Ok'],'transactionResponse'=>['responseCode'=>'1','transId'=>'9900030']];
+        }
+        if($method!=='getTransactionDetailsRequest'||($body['transId']??null)!=='9900030')throw new LogicException('Unexpected synthetic gateway readback.');
+        return ['messages'=>['resultCode'=>'Ok'],'transaction'=>['transId'=>'9900030','transactionType'=>'authCaptureTransaction','transactionStatus'=>'settledSuccessfully','authAmount'=>'25.00',
+            'order'=>['invoiceNumber'=>substr('CWP-'.$invoice,0,20)],'customer'=>['id'=>hosting_anet_customer_id($request),'email'=>'checkout-client1@example.invalid']]];
+    };
 }
 function hcc_review(int $n,HostingCatalogPublication $pub,array $project=['mode'=>'new-hosting']):array {
     return hosting_checkout_preview(hcc_id($n),$pub->data()['id'],$pub->fingerprint(),1,$project);
@@ -139,7 +164,14 @@ try {
     $hash=one('SELECT document_sha256 FROM '.table('hosting_checkout_reviews').' WHERE id=?',[hcc_id(30)])['document_sha256'];query('UPDATE '.table('hosting_checkout_reviews').' SET document_sha256=? WHERE id=?',[str_repeat('0',64),hcc_id(30)]);hcc_deny('Changed retained review fingerprint refuses historical access',fn()=>hosting_checkout_result(hcc_id(30),1));query('UPDATE '.table('hosting_checkout_reviews').' SET document_sha256=? WHERE id=?',[$hash,hcc_id(30)]);
     hcc_ok('Restoring exact retained bytes returns complete history ready',hcc_ready()&&hosting_checkout_result(hcc_id(30),1)['invoice_id']===$result['invoice_id']);
     hcc_ok('Invoice confirmation alone records no receipt card request or provider write',hcc_count('invoice_payments')===0&&hcc_count('payment_requests')===0&&$calls===1);
-    $stage='local-receipt-policy';hcc_owner();service_orders_migrate($password);hosting_order_links_prepare($password);
+    $stage='local-receipt-owner';hcc_owner();
+    $stage='local-receipt-storage';gateway_receipts_prepare($password);
+    $stage='local-payment-storage';hosting_payments_prepare($password);
+    $stage='local-payment-credentials';payments_save('production',0,['api_login_id'=>'SYNTHETICCHECKOUT','transaction_key'=>'1234567890ABCDEF','signature_key'=>str_repeat('a',128),'public_client_key'=>'SYNTHETIC_PUBLIC_KEY'],$password);
+    $stage='local-payment-configuration';hosting_payment_configure('production',true,$password);unset($GLOBALS['cwp_settings']);
+    $stage='local-order-storage';service_orders_migrate($password);
+    $stage='local-fulfillment-storage';hosting_order_links_prepare($password);
+    $stage='local-receipt-policy';
     $agreement=service_plans_validate(service_plans_row($result['agreement_id'],true),true);$invoice=ledger_invoice($result['invoice_id']);$otherInvoice=ledger_invoice($new['invoice_id']);$before=hcc_state();
     hcc_deny('Checkout order cannot substitute another same-client invoice',fn()=>service_orders_offer(hcc_id(72),$result['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$new['invoice_id'],ledger_invoice_hash($otherInvoice),$password));hcc_ok('Wrong invoice refusal preserves exact checkout and payment rows',hcc_state()===$before);
     $order=service_orders_offer(hcc_id(70),$result['agreement_id'],1,$agreement->revision(),$agreement->fingerprint(),$result['invoice_id'],ledger_invoice_hash($invoice),$password);
@@ -149,14 +181,27 @@ try {
     $manual=['reason'=>'Synthetic no-receipt bypass must refuse','expires_at'=>time()+3600];
     hcc_deny('Checkout manual-payment bypass refuses while unpaid',fn()=>service_orders_change(hcc_id(70),1,$order->revision(),hcc_id(73),'allow_manual',$manual,$password));
     hcc_deny('Unpaid checkout cannot prepare even its exact original mapping',fn()=>hosting_order_links_create(hcc_id(70),1,$order->revision(),$order->fingerprint(),hcc_id(80),$package,$profile,1,42,$password,$mapping['id']));hcc_ok('Unpaid and manual-policy refusals leave no service or altered history',hcc_state()===$before&&hcc_count('hosting_records')===0);
-    $receiptArgs=[$result['invoice_id'],2500,'bank','Synthetic verified native checkout receipt',gmdate('Y-m-d'),hash('sha256','native-checkout-receipt'),ledger_review_hash($invoice)];
-    $receipt=ledger_receive(...$receiptArgs);$before=hcc_state();hcc_ok('Exact synthetic verified-receipt retry is inert',ledger_receive(...$receiptArgs)===$receipt&&hcc_state()===$before);
-    $paid=recurring_billing_locked(fn()=>service_orders_assess($order,time()));hcc_ok('Actual local receipt enables only the exact checkout invoice',$paid['eligible']&&$paid['basis']==='verified-payment'&&$paid['payment']['payment_evidence_ready']&&$paid['manual']===null&&ledger_invoice($result['invoice_id'])['status']==='paid'&&ledger_invoice($new['invoice_id'])['status']==='issued');
+    $manualAgreement=service_plans_validate(service_plans_row($new['agreement_id'],true),true);$manualOrder=service_orders_offer(hcc_id(75),$new['agreement_id'],1,$manualAgreement->revision(),$manualAgreement->fingerprint(),$new['invoice_id'],ledger_invoice_hash($otherInvoice),$password);
+    hcc_client();$manualOrder=service_orders_decide(hcc_id(75),1,0,hcc_id(76),'accept',['domain_name'=>'manual-only.example','review_sha256'=>$manualOrder->fingerprint()],true);hcc_owner();
+    $receiptArgs=[$new['invoice_id'],2500,'bank','Synthetic historical checkout receipt',gmdate('Y-m-d'),hash('sha256','native-checkout-manual-receipt'),ledger_review_hash($otherInvoice)];
+    $receipt=ledger_receive(...$receiptArgs);$before=hcc_state();hcc_ok('Exact historical checkout receipt retry remains inert',ledger_receive(...$receiptArgs)===$receipt&&hcc_state()===$before);
+    $manualOnly=recurring_billing_locked(fn()=>service_orders_assess($manualOrder,time()));$manualPackage=provider_plan_catalog_package($mapping['configuration'],hcc_id(75));$before=hcc_state();
+    hcc_ok('Checkout-origin order rejects a historical receipt without central gateway evidence',!$manualOnly['eligible']&&$manualOnly['basis']===null&&$manualOnly['payment']['payment_evidence_ready']&&in_array('checkout-gateway-receipt-required',$manualOnly['blockers'],true)&&$manualOnly['checkout_gateway_receipt']===null&&ledger_invoice($result['invoice_id'])['status']==='issued');
+    hcc_deny('Historical receipt alone cannot prepare checkout fulfillment',fn()=>hosting_order_links_create(hcc_id(75),1,$manualOrder->revision(),$manualOrder->fingerprint(),hcc_id(85),$manualPackage,$profile,1,42,$password,$mapping['id']));
+    hcc_ok('Rejected historical receipt preserves its paid invoice and creates no service',hcc_state()===$before&&ledger_invoice($new['invoice_id'])['status']==='paid'&&one('SELECT id FROM '.table('hosting_records').' WHERE id=?',[hcc_id(85)])===null);
+    hcc_client();$payment=hosting_payment_run(hcc_id(30),1,hcc_payment_key(30),'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-checkout-opaque-token',hcc_payment_gateway($result['invoice_id'],hcc_id(30)));hcc_owner();
+    $paid=recurring_billing_locked(fn()=>service_orders_assess($order,time()));
+    hcc_ok('Exact central gateway receipt enables only its checkout invoice',$payment==='paid'&&$paid['eligible']&&$paid['basis']==='verified-payment'&&$paid['payment']['payment_evidence_ready']&&count($paid['payment']['gateway_receipts'])===1&&$paid['checkout_gateway_receipt']['source_id']===hcc_id(30)&&$paid['manual']===null&&ledger_invoice($result['invoice_id'])['status']==='paid'&&ledger_invoice($new['invoice_id'])['status']==='paid');
     $before=hcc_state();hcc_deny('Checkout manual-payment bypass refuses even after verified receipt',fn()=>service_orders_change(hcc_id(70),1,$order->revision(),hcc_id(74),'allow_manual',$manual,$password));hcc_deny('Paid checkout cannot bypass its publication mapping with manual mapping',fn()=>hosting_order_links_create(hcc_id(70),1,$order->revision(),$order->fingerprint(),hcc_id(80),$package,$profile,1,42,$password,null));hcc_ok('Paid bypass refusals preserve all rows',hcc_state()===$before);
     $link=hosting_order_links_create(hcc_id(70),1,$order->revision(),$order->fingerprint(),hcc_id(80),$package,$profile,1,42,$password,$mapping['id']);
     hcc_ok('Paid local preparation retains original invoice mapping and verified-payment basis',$order->data()['invoice']['id']===$result['invoice_id']&&$link['binding']['catalog']===['id'=>$mapping['id'],'sha256'=>$mapping['sha256']]&&$link['binding']['commercial']['basis']==='verified-payment'&&$link['binding']['commercial']['manual_event_id']===null);
     $before=hcc_state();$linked=hosting_order_links_create(hcc_id(70),1,$order->revision(),$order->fingerprint(),hcc_id(80),$package,$profile,1,42,$password,$mapping['id']);hcc_ok('Exact local preparation replay retains one hosting account',$linked['binding']===$link['binding']&&hcc_state()===$before&&hcc_count('hosting_records')===1);
-    $saved=one('SELECT * FROM '.table('hosting_checkout_results').' WHERE id=?',[hcc_id(30)]);query('DELETE FROM '.table('hosting_checkout_results').' WHERE id=?',[hcc_id(30)]);$damaged=hcc_state();hcc_deny('Lost checkout result blocks even retained paid order access',fn()=>hosting_order_links_review(hcc_id(70),1));hcc_ok('Paid lost-graph refusal never recreates checkout rows',hcc_state()===$damaged);hcc_restore('hosting_checkout_results',$saved);
+    hcc_client();hcc_ok('Paid checkout remains setup pending before optional hosting operations storage',hosting_payment_projection(hcc_id(30),1)['payment_stage']==='paid_setup_pending');hcc_owner();
+    $record=one('SELECT journal_sha256 FROM '.table('hosting_records').' WHERE id=?',[hcc_id(80)]);query('UPDATE '.table('hosting_records').' SET journal_sha256=? WHERE id=?',[str_repeat('0',64),hcc_id(80)]);hcc_client();hcc_deny('Pristine operations state never hides a damaged linked hosting record',fn()=>hosting_payment_projection(hcc_id(30),1));hcc_owner();query('UPDATE '.table('hosting_records').' SET journal_sha256=? WHERE id=?',[$record['journal_sha256'],hcc_id(80)]);
+    save_setting('hosting_operations_schema_version','1');unset($GLOBALS['cwp_settings']);hcc_client();hcc_deny('Missing established hosting operations storage still fails closed',fn()=>hosting_payment_projection(hcc_id(30),1));hcc_owner();save_setting('hosting_operations_schema_version','');unset($GLOBALS['cwp_settings']);
+    $stage='paid-history-refusal';$saved=one('SELECT * FROM '.table('hosting_checkout_results').' WHERE id=?',[hcc_id(30)]);
+    query('SET FOREIGN_KEY_CHECKS=0');try{query('DELETE FROM '.table('hosting_checkout_results').' WHERE id=?',[hcc_id(30)]);}finally{query('SET FOREIGN_KEY_CHECKS=1');}
+    $damaged=hcc_state();hcc_deny('Lost checkout result blocks even retained paid order access',fn()=>hosting_order_links_review(hcc_id(70),1));hcc_ok('Paid lost-graph refusal never recreates checkout rows',hcc_state()===$damaged);hcc_restore('hosting_checkout_results',$saved);
     $prepared=hosting_order_links_review(hcc_id(70),1);hcc_ok('Restored paid history remains local preparation without dispatch authority',$prepared['commercial']['eligible']&&$prepared['commercial']['basis']==='verified-payment'&&!$prepared['dispatch_authorized']&&!$prepared['provider_entitlement_verified']);hcc_client();
     $stage='stale-source';$stale=hcc_review(50,$pub);hcc_owner();$short=hcc_publish(21,$product,hcc_id(1),hcc_policy(5));hcc_client();
     hcc_deny('Superseded publication refuses an uncompleted review',fn()=>hosting_checkout_confirm(hcc_id(50),$stale['review_sha256'],1,true));
@@ -166,7 +211,7 @@ try {
     $long=hcc_publish(22,$product,hcc_id(1),hcc_policy());hcc_client();$connectionReview=hcc_review(53,$long);
     hcc_owner();provider_settings_state($profile,1,'disable',$password);hcc_client();$before=hcc_state();hcc_deny('Changed current provider connection refuses new confirmation',fn()=>hosting_checkout_confirm(hcc_id(53),$connectionReview['review_sha256'],1,true));hcc_ok('Changed connection refusal creates no commercial rows',hcc_state()===$before);
     $before=hcc_state();$historical=hosting_checkout_confirm(hcc_id(30),$review['review_sha256'],1,true);hcc_ok('Completed owned retry survives current offer and connection unavailability',$historical['replayed']&&$historical['invoice_id']===$result['invoice_id']&&hcc_state()===$before);
-    hcc_ok('Only one local synthetic receipt exists with no card request attempt or provider write',hcc_count('invoice_payments')===1&&hcc_count('payment_requests')===0&&hcc_count('payment_attempts')===0&&$calls===1);
-    $stage='complete';$report=['passed'=>true,'checks'=>$checks,'scope'=>'Native Linux SQL/current-client/current-clock first unpaid invoice, followed by local synthetic verified-receipt policy and local preparation; no HTTP, charge, provider write or provisioning','runtime'=>['php'=>PHP_VERSION,'database'=>(string)query('SELECT VERSION()')->fetchColumn()]];
+    hcc_ok('One historical and one central synthetic receipt exist with no live request or provider write',hcc_count('invoice_payments')===2&&hcc_count('gateway_receipts')===1&&hcc_count('hosting_payment_attempts')===1&&hcc_count('payment_requests')===0&&hcc_count('payment_attempts')===0&&$calls===1);
+    $stage='complete';$report=['passed'=>true,'checks'=>$checks,'scope'=>'Native Linux SQL/current-client/current-clock checkout with a rejected historical-only receipt and exact synthetic gateway receipt positive fulfillment proof; no HTTP, live charge, provider write or provisioning','runtime'=>['php'=>PHP_VERSION,'database'=>(string)query('SELECT VERSION()')->fetchColumn()]];
 }catch(Throwable $e){$report=['passed'=>false,'checks'=>$checks,'scope'=>'Native checkout fixture stopped; no acceptance beyond named outcomes','stage'=>$stage,'error'=>['class'=>get_class($e),'file'=>basename($e->getFile()),'line'=>$e->getLine(),'sqlstate'=>$e instanceof PDOException?($e->errorInfo[0]??null):null,'driver_code'=>$e instanceof PDOException?($e->errorInfo[1]??null):null]];}
 $bytes=json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";if($reportPathReady&&is_dir($qa)&&!is_link($qa))file_put_contents($qa.'/hosting-checkout-native-results.json',$bytes);echo $bytes;if(!$report['passed'])exit(1);

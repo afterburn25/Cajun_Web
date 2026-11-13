@@ -50,12 +50,49 @@ jobs:
         id: setup
         run: |
           mkdir -p qa
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
           # Use one package source for the versioned CLI, extensions and Apache module.
           # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
           # require the PHP maintainer's signed Ubuntu Noble package repository.
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
-            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+            cwp_apt_get -o Acquire::Retries=1 install -y software-properties-common
             sudo add-apt-repository --yes --no-update ppa:ondrej/php
             # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
             # fixed mirror. Preserve Launchpad's original scoped publisher key.
@@ -97,8 +134,8 @@ jobs:
           print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
           CWP_PHP_MIRROR
           fi
-          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+          cwp_apt_get -o Acquire::Retries=1 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
           test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
@@ -218,6 +255,7 @@ jobs:
       CWP_TEST_HOST: 127.0.0.1
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE: cwp_hpay_foreign
       CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -232,12 +270,49 @@ jobs:
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
           # Use one package source for the versioned CLI, extensions and Apache module.
           # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
           # require the PHP maintainer's signed Ubuntu Noble package repository.
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
-            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+            cwp_apt_get -o Acquire::Retries=1 install -y software-properties-common
             sudo add-apt-repository --yes --no-update ppa:ondrej/php
             # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
             # fixed mirror. Preserve Launchpad's original scoped publisher key.
@@ -279,8 +354,8 @@ jobs:
           print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
           CWP_PHP_MIRROR
           fi
-          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+          cwp_apt_get -o Acquire::Retries=1 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
           test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
@@ -290,6 +365,7 @@ jobs:
             docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
             docker exec -e MYSQL_PWD=isolated-checkout-root-only ${{ job.services.checkout_mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
           fi
+          docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e "CREATE DATABASE cwp_hpay_foreign; GRANT SELECT,CREATE,DROP,REFERENCES ON cwp_hpay_foreign.* TO 'cwp_test'@'%';"
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
           .ci-venv/bin/python -m playwright install --with-deps chromium
@@ -479,9 +555,15 @@ jobs:
           "$PHP_BINARY" tests/client_identity_native.php
           "$PHP_BINARY" tests/license_native.php
           "$PHP_BINARY" tests/software_commerce_native.php
+          CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log
+          test ! -s qa/hosting-checkout-native.stderr.log
+          CWP_TEST_HOSTING_PAYMENT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/hosting-payment-native.stdout.log 2> qa/hosting-payment-native.stderr.log
+          test ! -s qa/hosting-payment-native.stderr.log
       - name: Real HTTP and Chromium application workflows
         id: browser
-        run: .ci-venv/bin/python tests/browser_acceptance.py
+        run: |
+          .ci-venv/bin/python tests/browser_acceptance.py
+          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
@@ -534,12 +616,49 @@ jobs:
         id: setup
         run: |
           mkdir -p qa
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
           # Use one package source for the versioned CLI, extensions and Apache module.
           # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
           # require the PHP maintainer's signed Ubuntu Noble package repository.
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
-            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+            cwp_apt_get -o Acquire::Retries=1 install -y software-properties-common
             sudo add-apt-repository --yes --no-update ppa:ondrej/php
             # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
             # fixed mirror. Preserve Launchpad's original scoped publisher key.
@@ -581,8 +700,8 @@ jobs:
           print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
           CWP_PHP_MIRROR
           fi
-          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+          cwp_apt_get -o Acquire::Retries=1 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
           test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
@@ -670,12 +789,49 @@ jobs:
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
           # Use one package source for the versioned CLI, extensions and Apache module.
           # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
           # require the PHP maintainer's signed Ubuntu Noble package repository.
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
-            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+            cwp_apt_get -o Acquire::Retries=1 install -y software-properties-common
             sudo add-apt-repository --yes --no-update ppa:ondrej/php
             # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
             # fixed mirror. Preserve Launchpad's original scoped publisher key.
@@ -717,8 +873,8 @@ jobs:
           print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
           CWP_PHP_MIRROR
           fi
-          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"
+          cwp_apt_get -o Acquire::Retries=1 -o APT::Update::Error-Mode=any update -qq
+          cwp_apt_get -o Acquire::Retries=1 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"
           test -s "/usr/lib/apache2/modules/libphp${CWP_PHP_VERSION}.so"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
           test -x "$PHP_BINARY"

@@ -80,7 +80,7 @@ master_portal_dispatch();
 // Preserve checkout contact provenance before identity normalization can discard stale keys.
 if(!$supportRequested&&!support_current()&&(
     (($_SERVER['REQUEST_METHOD']??'GET')==='GET'&&($_GET['hosting']??null)==='checkout')
-    ||(($_SERVER['REQUEST_METHOD']??'GET')==='POST'&&in_array($_POST['action']??null,['hosting_catalog_checkout_preview','hosting_catalog_checkout_confirm'],true))
+    ||(($_SERVER['REQUEST_METHOD']??'GET')==='POST'&&in_array($_POST['action']??null,['hosting_catalog_checkout_preview','hosting_catalog_checkout_confirm','hosting_catalog_checkout_pay'],true))
 )){
     require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout.php';
     try{hosting_checkout_reject_contact();}catch(RuntimeException $e){fail_page($e->getMessage(),403);}

@@ -17,14 +17,22 @@ from catalog_storefront_checkout_cases import run_browser as storefront_browser,
 from hosting_catalog_plan_setup_cases import CAPTURES as PLAN_SETUP_CAPTURES
 from hosting_purchase_inbox_cases import run_browser as inbox_browser, CAPTURES as INBOX_CAPTURES
 from hosting_billing_options_cases import run_browser as billing_options_browser, CAPTURES as BILLING_OPTIONS_CAPTURES
+from hosting_payment_cases import run_browser as payment_browser, CAPTURES as PAYMENT_CAPTURES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'
 SESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'
 BASE = 'http://127.0.0.1:8091'
 CAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))
-ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES + INBOX_CAPTURES + BILLING_OPTIONS_CAPTURES
+ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES + INBOX_CAPTURES + BILLING_OPTIONS_CAPTURES + PAYMENT_CAPTURES
 SOURCE_PATHS = [
+    'tests/hosting_payment_cases.py', 'tests/hosting_payment_native.php',
+    'site/app/hosting/payments.php', 'site/app/billing/gateway_receipts.php',
+    'site/database/schema/hosting_payments_schema.php', 'site/database/schema/gateway_receipts_schema.php',
+    'site/database/migrations/hosting_payments_migrate.php', 'site/database/migrations/gateway_receipts_migrate.php',
+    'site/app/billing/authorize_net_client.php', 'site/app/billing/ledger_fulfillment.php',
+    'site/app/billing/software_subscription_settle.php', 'site/app/hosting/orders.php',
+    'site/app/settings/database_schemas.php',
     'tests/hosting_billing_options_cases.py', 'tests/hosting_billing_options_wiring.py',
     'site/app/providers/catalog_variants.php', 'site/app/providers/catalog_variants_storage.php',
     'site/admin/controllers/catalog_variants.php', 'site/admin/views/catalog_variants.php',
@@ -89,7 +97,7 @@ def native_labels(source):
             text = text.replace(line, '\n'.join(body.replace('$key', repr(key)) for key in ('contact_id', 'contact_auth')))
     text = re.sub(r"'\.'(contact_id|contact_auth)'", r"\1'", text)
     labels = re.findall(r"\bhcc_(?:ok|deny)\('([^']*)'", text)
-    require(len(labels) == 79 and len(labels) == len(set(labels)), 'Exact corrected native producer required')
+    require(len(labels) == 85 and len(labels) == len(set(labels)), 'Exact corrected native producer required')
     return labels
 
 
@@ -162,7 +170,7 @@ def main(full_suite=False):
         native_raw = (ROOT/'qa/hosting-checkout-native-results.json').read_bytes()
         native = validate_native(native_raw, (ROOT/'tests/hosting_checkout_native.php').read_text(encoding='utf-8'), env['CWP_PHP_VERSION'])
         source['native_report_sha256'] = sha(native_raw); env['CWP_CHECKOUT_NATIVE_REPORT_SHA256'] = sha(native_raw); runtime['native'] = native['runtime']
-        check('Checkout browser requires all 79 exact original native outcomes', True)
+        check('Checkout browser requires all 85 exact original native outcomes', True)
         archives = list((ROOT/'dist').glob('CajunWebPro-*-COMPLETE-UPLOAD.zip'))
         check('Checkout browser uses one exact current COMPLETE package', len(archives) == 1)
         archive = archives[0]; mp = archive.with_suffix('.manifest.json'); manifest = json.loads(mp.read_bytes()); members = extract_package(archive, manifest, SITE, head)
@@ -207,11 +215,21 @@ def main(full_suite=False):
                 result['billing_options'] = billing_options_browser({**browser_env, 'plan_setup': result['catalog_storefront']['plan_setup']}, browser)
                 check('Installed monthly and annual billing options preserve exact invoices and prior history',
                       billing_options_complete(result['billing_options'], qa))
+                result['hosting_payment'] = payment_browser({
+                    **browser_env,
+                    'payment_publication': result['billing_options']['monthly'],
+                }, browser)
+                check('Installed Shared payment and fulfillment journey uses exact closed evidence only',
+                      result['hosting_payment']['passed'] is True
+                      and tuple(c['name'] for c in result['hosting_payment']['captures']) == PAYMENT_CAPTURES
+                      and result['hosting_payment']['live_gateway_calls'] == 0
+                      and result['hosting_payment']['live_provider_calls'] == 0
+                      and all(not (qa/n).is_symlink() and (qa/n).is_file() and (qa/n).stat().st_size > 0 for n in PAYMENT_CAPTURES))
             finally: browser.close()
         check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))
         complete = True
     except Exception as error:
-        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py', 'hosting_purchase_inbox_cases.py', 'hosting_billing_options_cases.py'}
+        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py', 'hosting_purchase_inbox_cases.py', 'hosting_billing_options_cases.py', 'hosting_payment_cases.py'}
         locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]
         failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}
     finally:
@@ -224,7 +242,7 @@ def main(full_suite=False):
             checks.append({'name': 'Checkout HTTP server has no PHP diagnostics after shutdown', 'passed': clean}); complete = complete and clean
         owned = [p for name,p in outputs.items() if name != 'results.json'] + [qa/n for n in ALL_CAPTURES]
         files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in owned if p.is_file()}
-        report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication and primary-client first unpaid invoice now; separate native synthetic receipt predates this browser. Contact-key denial is not contact-login acceptance. No live payment, charge or provider activation.'}
+        report = {'passed': complete and all(c['passed'] is True for c in checks), 'source': source, 'package': package, 'runtime': runtime, 'checks': checks, 'result': result, 'failure': failure, 'files': files, 'full_acceptance': False, 'visual_approval': False, 'scope': 'Actual packaged owner publication, primary-client invoice, tokenized payment UI and Shared lifecycle. Exact closed gateway/provider outcomes execute through the local CLI bridge and installed HTTP replays the same attempt; no live charge, provisioning, customer message or deployment. Contact-key denial is not contact-login acceptance.'}
         write(outputs['results.json'], report); print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'full_acceptance': False}))
     return 0 if report['passed'] else 1
 

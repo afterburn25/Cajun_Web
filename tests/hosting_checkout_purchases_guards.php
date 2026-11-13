@@ -23,11 +23,20 @@ function hpg_load(string $file,string $name): void {
     $GLOBALS['fragments'][]=['file'=>$file,'function'=>$name,'sha256'=>hash('sha256',$raw),'executed_sha256'=>hash('sha256',$executed)];eval($executed);
 }
 foreach (['hosting_purchases_orders_ready','hosting_purchases_item','hosting_purchases_page','hosting_purchases_owner_page','hosting_purchases_client_page'] as $name) hpg_load('app/hosting/checkout_purchases.php',$name);
+foreach (['hosting_purchases_ui_links','hosting_purchases_ui_card'] as $name) hpg_load('app/hosting/checkout_purchases_views.php',$name);
 foreach (['hosting_checkout_reject_contact','hosting_checkout_primary_client'] as $name) hpg_load('app/hosting/catalog_checkout.php',$name);
 hpg_load('app/hosting/order_views.php','service_orders_context');
 set_error_handler(static function(int $level,string $message,string $file,int $line): never {throw new ErrorException($message,0,$level,$file,$line);});
 function hpg_ok(string $name,bool $value): void {$GLOBALS['checks'][]=['name'=>$name,'passed'=>$value];if (!$value) throw new RuntimeException($name);}
 function hpg_bad(string $name,callable $call,string $kind=RuntimeException::class): void {try {$call();}catch (Throwable $e) {if (!$e instanceof $kind) throw $e;hpg_ok($name,true);return;}hpg_ok($name,false);}
+function hpg_render(callable $render): string {ob_start();try {$render();return (string)ob_get_contents();}finally {ob_end_clean();}}
+function esc(string|int $value): string {return htmlspecialchars((string)$value,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');}
+function gmoney(int $cents): string {return number_format($cents/100,2,'.',',');}
+function admin_url(string $view,array $query=[]): string {return '/admin/?'.http_build_query(['view'=>$view]+$query);}
+function studio_url(array $query=[]): string {return '/portal/?'.http_build_query($query);}
+function admin_action(string $action): void {echo '<input type="hidden" name="action" value="'.esc($action).'">';}
+function admin_input(string $name,string $label,string $value='',string $type='text',string $attributes=''): void {echo '<label>'.esc($label).'<input name="'.esc($name).'" type="'.esc($type).'" value="'.esc($value).'" '.$attributes.'></label>';}
+function admin_check(string $name,string $label,bool $checked=false): void {echo '<label><input type="checkbox" name="'.esc($name).'" value="1"'.($checked?' checked':'').'>'.esc($label).'</label>';}
 final class HpgDocument {
     public function __construct(private array $data,private array $status=[]) {}
     public function data(): array {return $this->data;}
@@ -55,6 +64,9 @@ function service_plans_current_client(int $client): array {
     if ($client!==($GLOBALS['model']['current_client']??7)||($GLOBALS['model']['support']??false)||($GLOBALS['model']['revoked']??false)) throw new RuntimeException('Client denied.');return ['id'=>$client];
 }
 function hosting_checkout_ready(): bool {$GLOBALS['calls'][]='checkout-ready';if ($GLOBALS['model']['history_error']??false) throw new RuntimeException('History needs recovery.');return $GLOBALS['model']['ready']??true;}
+function hosting_payments_ready(): bool {$GLOBALS['calls'][]='payments-ready';return $GLOBALS['model']['payments_ready']??false;}
+function hosting_payment_source_locked(string $request,int $client,bool $primary): array {hosting_catalog_guard();$GLOBALS['calls'][]=['payment-source',$request,$client,$primary];if($primary&&($GLOBALS['model']['inactive']??false))throw new RuntimeException('Inactive client');return ['request_id'=>$request,'client_id'=>$client];}
+function hosting_payment_projection_locked(array $source,?bool $paymentsReady=null): array {hosting_catalog_guard();$paymentsReady??=hosting_payments_ready();$GLOBALS['calls'][]=['payment-projection',$source['request_id'],$paymentsReady];return $GLOBALS['model']['payment_projection']??['payment_stage'=>'paid_setup_pending','charge_state'=>'paid','receipt_id'=>9,'service_active'=>false];}
 function service_orders_storage(): array {return $GLOBALS['model']['storage']??['version'=>'1','existing'=>['service_orders','service_order_events'],'complete'=>true];}
 function service_orders_require(): void {if (!service_orders_storage()['complete']) throw new RuntimeException('Order history missing.');}
 function service_orders_schema(string $prefix): array {return ['service_orders'=>'orders-schema','service_order_events'=>'events-schema'];}
@@ -110,10 +122,27 @@ try {
     hpg_reset();$GLOBALS['cwp_settings']=['stale'=>true];$data=hosting_purchases_client_page(7);
     hpg_ok('Client query binds current client and returns only their purchase',count($data['items'])===1&&in_array(['all','SELECT * FROM `hosting_checkout_results` WHERE client_id=? ORDER BY created_epoch DESC,id DESC LIMIT 21 OFFSET 0',[7]],$calls,true));
     $item=$data['items'][0];
-    hpg_ok('Client projection has only the agreed public fields',array_keys($item)===['request_id','created_epoch','offer_title','invoice','project','agreement','order']&&!str_contains(json_encode($item),'PRIVATE'));
+    hpg_ok('Client projection has only the agreed public fields',array_keys($item)===['request_id','created_epoch','offer_title','invoice','project','agreement','order','payment']&&!str_contains(json_encode($item),'PRIVATE'));
+    hpg_ok('Unprepared payment storage fails closed without rewriting invoice history',$item['payment']===['payment_stage'=>'awaiting_payment','charge_state'=>null,'receipt_id'=>null,'service_active'=>false]);
+    hpg_ok('Unprepared payment storage is validated once for the selected page',count(array_filter($calls,static fn($call)=>$call==='payments-ready'))===1);
     hpg_ok('Original invoice and offer are retained',$item['invoice']['id']===4&&$item['offer_title']==='Original <Gold>'&&$item['invoice']['amount_cents']===2500);
     hpg_reset(['rows'=>[['client_id'=>7]]]);$GLOBALS['cwp_settings']=['stale'=>true];$data=hosting_purchases_owner_page();
     hpg_ok('Owner reader rechecks current financial authority after locking',array_slice($calls,0,3)===['lock',['owner',false],['permission','payments.manage',1]]&&$data['items'][0]['client']===['id'=>7,'name'=>'Client <Name>']);
+    hpg_reset(['rows'=>[['client_id'=>7]],'payments_ready'=>true]);$item=hosting_purchases_client_page(7)['items'][0];
+    hpg_ok('Prepared payment storage projects the exact bound checkout payment stage',$item['payment']['payment_stage']==='paid_setup_pending'&&in_array(['payment-source',str_repeat('1',32),7,false],$calls,true)&&in_array(['payment-projection',str_repeat('1',32),true],$calls,true));
+    hpg_reset(['rows'=>array_fill(0,5,['client_id'=>7]),'payments_ready'=>true]);hosting_purchases_owner_page();
+    hpg_ok('One purchase page validates prepared payment storage once before projecting every retained row',count(array_filter($calls,static fn($call)=>$call==='payments-ready'))===1&&count(array_filter($calls,static fn($call)=>is_array($call)&&$call[0]==='payment-projection'&&$call[2]===true))===5);
+    hpg_reset(['rows'=>[],'payments_ready'=>true]);hpg_ok('Empty purchase page performs no payment readiness validation',hosting_purchases_owner_page()['items']===[]&&!in_array('payments-ready',$calls,true));
+    hpg_reset(['payments_ready'=>true]);recurring_billing_locked(fn()=>hosting_payment_projection_locked(['request_id'=>str_repeat('4',32)]));
+    hpg_ok('Direct payment projection without a supplied page result validates readiness independently',count(array_filter($calls,static fn($call)=>$call==='payments-ready'))===1&&in_array(['payment-projection',str_repeat('4',32),true],$calls,true));
+    $paymentsSource=file_get_contents(CWP_CODE_ROOT.'/app/hosting/payments.php');
+    hpg_ok('Shipping direct projection retains its independent readiness fallback',substr_count($paymentsSource,'$request=$source[\'request_id\'];$paymentsReady??=hosting_payments_ready();')===1);
+    $review=['payment_stage'=>'payment_review','charge_state'=>'review','transaction_id'=>'8800020','receipt_id'=>null,'service_active'=>false];
+    hpg_reset(['rows'=>[['client_id'=>7]],'payments_ready'=>true,'payment_projection'=>$review]);$item=hosting_purchases_owner_page()['items'][0];$html=hpg_render(fn()=>hosting_purchases_ui_card($item,true));
+    hpg_ok('Issued unresolved capture offers owner exact reconciliation',str_contains($html,'data-hosting-payment-reconcile'));
+    hpg_reset(['rows'=>[['client_id'=>7]],'payments_ready'=>true,'payment_projection'=>$review,'invoice_status'=>'paid']);$item=hosting_purchases_owner_page()['items'][0];$html=hpg_render(fn()=>hosting_purchases_ui_card($item,true));
+    hpg_ok('Paid reversal review never offers initial capture reconciliation',!str_contains($html,'data-hosting-payment-reconcile'));
+    hpg_reset(['rows'=>[['client_id'=>7]],'payments_ready'=>true,'inactive'=>true]);hpg_ok('Owner history projects an inactive client through the non-primary source path',count(hosting_purchases_owner_page()['items'])===1&&in_array(['payment-source',str_repeat('1',32),7,false],$calls,true));
     foreach (['owner','financial'] as $key) {hpg_reset([$key=>false]);hpg_bad('Denied '.$key.' cannot read purchases',fn()=>hosting_purchases_owner_page());hpg_ok('Denied '.$key.' stops before history scan',!in_array('checkout-ready',$calls,true));}
     foreach (['contact_id','contact_auth'] as $key) {hpg_reset();$_SESSION[$key]=null;hpg_bad('Contact provenance rejected '.$key,fn()=>hosting_purchases_client_page(7));hpg_ok('Contact rejected before authority normalization '.$key,$calls===[]);}
     foreach (['support','revoked'] as $key) {hpg_reset([$key=>true]);hpg_bad('Current client refusal '.$key,fn()=>hosting_purchases_client_page(7));}

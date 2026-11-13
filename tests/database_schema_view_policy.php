@@ -21,12 +21,12 @@ $checks=[];$failure=null;
 function dv_ok(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 try{
     $html=dv_render();
-    dv_ok('All-current render identifies complete required registry without hiding optional distinction',str_contains($html,'80 current · 0 requiring update or recovery · 0 optional and not prepared · 0 unsupported')&&str_contains($html,'Every required registered schema is current'));
-    dv_ok('All registry families and exact installed targets render',substr_count($html,'data-schema-state="current"')===80&&str_contains($html,'20i Settings')&&str_contains($html,'installed 5 · target 5'));
+    dv_ok('All-current render identifies complete required registry without hiding optional distinction',str_contains($html,'82 current · 0 requiring update or recovery · 0 optional and not prepared · 0 unsupported')&&str_contains($html,'Every required registered schema is current'));
+    dv_ok('All registry families and exact installed targets render',substr_count($html,'data-schema-state="current"')===82&&str_contains($html,'20i Settings')&&str_contains($html,'installed 5 · target 5'));
     dv_ok('Overview separates application files from database checks',str_contains($html,'Application files and database updates are separate stages')&&str_contains($html,'Check database updates'));
     $GLOBALS['schema_settings']['contacts_schema_version']='';$GLOBALS['schema_settings']['license_schema_version']='2';$GLOBALS['schema_settings']['service_plans_checkout_schema_version']='preparing-1';$GLOBALS['schema_settings']['provider_settings_schema_version']='99';
     $html=dv_render();
-    dv_ok('Optional absence is not called a required update',str_contains($html,'76 current · 2 requiring update or recovery · 1 optional and not prepared · 1 unsupported')&&str_contains($html,'Contacts</strong> — Setup available'));
+    dv_ok('Optional absence is not called a required update',str_contains($html,'78 current · 2 requiring update or recovery · 1 optional and not prepared · 1 unsupported')&&str_contains($html,'Contacts</strong> — Setup available'));
     dv_ok('Known update and interrupted state are visible',str_contains($html,'License</strong>: A reviewed additive update is available.')&&str_contains($html,'Service Plans Checkout</strong>: A supported interrupted update can be resumed.'));
     dv_ok('Unsupported marker blocks false all-current claim',str_contains($html,'Unsupported database state detected.')&&!str_contains($html,'Every required registered schema is current'));
     dv_ok('Unsupported state blocks selection instead of claiming all schemas',str_contains($html,'Selection is unavailable until unsupported feature versions are restored')&&!str_contains($html,'value="studio_database_plan"'));

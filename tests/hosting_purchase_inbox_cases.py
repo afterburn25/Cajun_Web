@@ -14,6 +14,11 @@ from urllib.parse import parse_qs, urlencode, urlparse
 CAPTURES = tuple('Hosting-Purchase-Inbox-' + actor + '-' + size + '.png'
                  for actor in ('Owner', 'Client') for size in ('Desktop', 'Mobile'))
 PAID_REQUEST = format(30, '032x')
+PAID_INVOICE_REQUESTS = frozenset((PAID_REQUEST, format(40, '032x')))
+ACCEPTED_ORDER_DOMAINS = {
+    PAID_REQUEST: 'checkout.example',
+    format(40, '032x'): 'manual-only.example',
+}
 SETUP_KEYS = {'plans', 'plan_events', 'mappings', 'provider_refreshes', 'provider_checks'}
 COUNT_KEYS = {'reviews', 'results', 'jobs', 'invoices', 'receipts', 'attempts', 'publications'}
 
@@ -28,8 +33,8 @@ def snapshot(value):
         if not isinstance(value[key], dict) or set(value[key]) != names or any(type(n) is not int or n < 0 for n in value[key].values()):
             raise AssertionError('Exact nonnegative predecessor counters required')
     counts, rows = value['counts'], value['results']
-    if counts['results'] != 5 or counts['invoices'] != 5 or counts['receipts'] != 1 or counts['attempts'] != 0 or not isinstance(rows, dict) or len(rows) != 5:
-        raise AssertionError('Five original results and invoices with one original local receipt required')
+    if counts['results'] != 5 or counts['invoices'] != 5 or counts['receipts'] != 2 or counts['attempts'] != 0 or not isinstance(rows, dict) or len(rows) != 5:
+        raise AssertionError('Five original results and invoices with two original paid receipts required')
     for key, row in rows.items():
         if not isinstance(key, str) or re.fullmatch('[a-f0-9]{32}', key) is None or not isinstance(row, dict) or row.get('request_id') != key:
             raise AssertionError('Original result identity required')
@@ -39,11 +44,11 @@ def snapshot(value):
             raise AssertionError('Original agreement identity required')
         if row.get('automatic_charge') is not False or row.get('provider_activation') is not False:
             raise AssertionError('Checkout is not automatic payment or provider activation')
-        if row.get('invoice_status') != ('paid' if key == PAID_REQUEST else 'issued'):
-            raise AssertionError('Retain one original paid purchase and four unpaid purchases')
+        if row.get('invoice_status') != ('paid' if key in PAID_INVOICE_REQUESTS else 'issued'):
+            raise AssertionError('Retain two original paid invoices and three unpaid purchases')
         if type(row.get('amount_cents')) is not int or row['amount_cents'] != 2500 or row.get('currency') != 'USD' or not isinstance(row.get('invoice_reference'), str) or not row['invoice_reference']:
             raise AssertionError('Exact original invoice terms required')
-    if PAID_REQUEST not in rows or len({r['invoice_id'] for r in rows.values()}) != 5 or len({r['agreement_id'] for r in rows.values()}) != 5:
+    if not PAID_INVOICE_REQUESTS <= set(rows) or len({r['invoice_id'] for r in rows.values()}) != 5 or len({r['agreement_id'] for r in rows.values()}) != 5:
         raise AssertionError('Five distinct retained invoices and agreements required')
     return value
 
@@ -61,7 +66,8 @@ def run_browser(env, browser):
     site = env['BASE'] + '/hosting-checkout'
     admin, portal = site + '/admin/index.php', site + '/portal/index.php'
     fixture, qa = env['fixture'], env['QA']
-    contexts, checks, captures, errors, blocked = [], [], [], [], []
+    contexts, checks, captures, errors, blocked, tokenization_scripts = [], [], [], [], [], []
+    production_tokenization_script = 'https://js.authorize.net/v1/Accept.js'
     owner_password, client_password = 'Synthetic native checkout owner', 'Synthetic checkout client'
 
     def check(name, condition):
@@ -79,10 +85,20 @@ def run_browser(env, browser):
     def context():
         ctx = browser.new_context(viewport={'width': 1440, 'height': 1050}, reduced_motion='reduce')
         def route(request):
-            if request.request.url.startswith(env['BASE'] + '/') or request.request.url.startswith(('about:', 'data:')):
+            url = request.request.url
+            if url.startswith(env['BASE'] + '/') or url.startswith(('about:', 'data:')):
                 request.continue_()
+            elif (url == production_tokenization_script and request.request.method == 'GET'
+                  and request.request.resource_type == 'script'):
+                # The retained unpaid invoice result must expose the reviewed
+                # production dependency, while hosted acceptance never fetches it.
+                tokenization_scripts.append({'method': 'GET', 'url': url, 'resource_type': 'script'})
+                request.fulfill(status=200, content_type='application/javascript', body='window.Accept={};\n')
             else:
-                blocked.append(urlparse(request.request.url).scheme)
+                parsed = urlparse(url)
+                blocked.append({'method': request.request.method, 'scheme': parsed.scheme.lower(),
+                                'host': (parsed.hostname or '').lower(), 'path': parsed.path[:256],
+                                'query_present': bool(parsed.query), 'fragment_present': bool(parsed.fragment)})
                 request.abort()
         ctx.route('**/*', route)
         contexts.append(ctx)
@@ -135,11 +151,17 @@ def run_browser(env, browser):
         for request, row in initial['results'].items():
             current = card(page, request)
             text = current.inner_text()
-            status = 'Paid' if request == PAID_REQUEST else 'Awaiting payment'
-            setup = 'Hosting request accepted' if request == PAID_REQUEST else 'Awaiting studio setup review'
+            invoice_status = 'Paid' if request in PAID_INVOICE_REQUESTS else 'Awaiting payment'
+            purchase_status = ('Paid / setup pending' if request == PAID_REQUEST else
+                               'Payment review required' if request in PAID_INVOICE_REQUESTS else
+                               'Awaiting payment')
+            setup = 'Hosting request accepted' if request in ACCEPTED_ORDER_DOMAINS else 'Awaiting studio setup review'
+            expected_domain = ACCEPTED_ORDER_DOMAINS.get(request)
             check('Inbox ' + actor + ' retains original terms and distinct setup state ' + request,
-                  row['invoice_reference'] in text and '$25.00 USD' in text and status in text and setup in text and 'Active agreement' in text
-                  and ('checkout.example' in text) == (request == PAID_REQUEST)
+                  row['invoice_reference'] in text and '$25.00 USD' in text and invoice_status in text and purchase_status in text
+                  and setup in text and 'Active agreement' in text
+                  and all((domain in text) == (domain == expected_domain) for domain in ACCEPTED_ORDER_DOMAINS.values())
+                  and ('Website address' in text) == (expected_domain is not None)
                   and 'hosting service active' not in text.casefold())
         check('Inbox ' + actor + ' has no client mutation or private provider fields', wrapper.locator('form').count() == 0 and safe(page))
         return wrapper
@@ -190,13 +212,13 @@ def run_browser(env, browser):
 
     try:
         initial = snapshot(fixture('state'))
-        check('Inbox continuation retains five original invoices one local receipt and zero attempts', True)
+        check('Inbox continuation retains five original invoices two paid receipts and zero attempts', True)
         owner, op = context(); alice, ap = context(); bob, bp = context(); contact, cp = context()
         check('Inbox owner uses actual installed login', login(op))
         check('Inbox primary client uses actual installed login', login(ap, 1))
         check('Inbox alternate client uses actual installed login', login(bp, 2))
         check('Inbox contact-key negative begins with actual primary login', login(cp, 1))
-        unpaid = max((row for key, row in initial['results'].items() if key != PAID_REQUEST), key=lambda row: (row['accepted_at'], row['request_id']))
+        unpaid = max((row for key, row in initial['results'].items() if key not in PAID_INVOICE_REQUESTS), key=lambda row: (row['accepted_at'], row['request_id']))
         paid = initial['results'][PAID_REQUEST]
         check('Inbox owner enters through existing hosting navigation', goto(op, admin + '?view=hosting-offers') == 200)
         entry = op.locator('.button-row').get_by_role('link', name='Hosting purchases', exact=True)
@@ -219,10 +241,10 @@ def run_browser(env, browser):
                 request = row['request_id']
                 for kind, label, query in [('invoice', 'View invoice', {'view': 'invoice-payments', 'invoice_id': row['invoice_id']} if is_owner else {'invoice': row['invoice_id']}),
                                            ('project', 'View project', {'view': 'studio-job', 'id': row['project_id']} if is_owner else {'job': row['project_id']}),
-                                           ('agreement', None, {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
+                                           ('agreement', 'View agreement', {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
                     check('Inbox reloads ' + actor + ' before ' + phase + ' ' + kind, goto(page, list_url(is_owner)) == 200)
                     current = card(page, request)
-                    link = current.locator('[data-hosting-purchase-next]') if label is None else current.get_by_role('link', name=label, exact=True)
+                    link = current.get_by_role('link', name=label, exact=True)
                     title = current.locator('dt').filter(has_text='Project').evaluate('el=>el.nextElementSibling.textContent')
                     check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' binds exact route', link.count() == 1 and destination(link.get_attribute('href'), endpoint, query))
                     check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' opens actual destination', click(page, link) == 200 and destination(page.url, endpoint, query))
@@ -293,11 +315,17 @@ def run_browser(env, browser):
               and goto(op, list_url(True)) == 200 and op.locator('[data-hosting-purchase]').count() == 5)
         unchanged('Inbox role and support refusals preserve all five invoices results and provider counters')
         check('Inbox browser has no JavaScript errors', not errors)
-        check('Inbox browser requests only local resources', not blocked)
+        expected_script = {'method': 'GET', 'url': production_tokenization_script, 'resource_type': 'script'}
+        check('Inbox browser intercepts only the exact production tokenization dependency',
+              bool(tokenization_scripts) and all(row == expected_script for row in tokenization_scripts))
+        check('Inbox browser requests no unreviewed external resources', not blocked)
         check('Inbox produces exactly its four scoped captures', tuple(row['name'] for row in captures) == CAPTURES)
         return {'passed': all(row['passed'] is True for row in checks), 'checks': checks, 'captures': captures,
-                'scope': 'Actual installed read-only owner/client purchase navigation. Five original invoices and one inherited local receipt retained; no business write, provider request or new payment. Contact-key probe is not a real contact login. Pixel approval remains separate.',
-                'invoices': 5, 'business_sha256': initial['business_sha256'], 'provider_requests': 0}
+                'scope': 'Actual installed read-only owner/client purchase navigation. Five original invoices, one verified gateway receipt and one inherited local receipt retained; no business write, provider request or new payment. Contact-key probe is not a real contact login. Pixel approval remains separate.',
+                'invoices': 5, 'business_sha256': initial['business_sha256'], 'provider_requests': 0,
+                'tokenization_dependency': {'url': production_tokenization_script,
+                                            'intercepted_requests': len(tokenization_scripts),
+                                            'live_fetches': 0}}
     finally:
         for ctx in contexts:
             ctx.close()

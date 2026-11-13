@@ -24,10 +24,14 @@ function hosting_purchases_ui_links(array $row,bool $owner): array {
         'agreement'=>$owner?admin_url('service-agreement',['record'=>$row['agreement']['id']]):studio_url(['agreement'=>$row['agreement']['id']]),
         'invoice'=>$owner?admin_url('invoice-payments',['invoice_id'=>$row['invoice']['id']]):studio_url(['invoice'=>$row['invoice']['id']]),
         'project'=>$owner?admin_url('studio-job',['id'=>$row['project']['id']]):studio_url(['job'=>$row['project']['id']]),
+        'payment'=>$owner?admin_url('hosting-purchases'):studio_url(['hosting'=>'checkout','checkout_result'=>$row['request_id']]),
     ];
 }
 function hosting_purchases_ui_card(array $row,bool $owner): void {
     $links=hosting_purchases_ui_links($row,$owner);$order=$row['order'];$phase=$order['phase']??null;
+    $purchase=match($row['payment']['payment_stage']??'awaiting_payment'){
+        'paid_setup_pending'=>'Paid / setup pending','active'=>'Active','payment_review'=>'Payment review required',default=>'Awaiting payment'
+    };
     $agreement=match($row['agreement']['state']) {
         'pending-consent'=>'Awaiting agreement','active'=>'Active agreement','paused'=>'Paused agreement',
         'cancelled'=>'Ended agreement','abandoned'=>'Declined agreement',default=>'Agreement status unavailable',
@@ -39,19 +43,28 @@ function hosting_purchases_ui_card(array $row,bool $owner): void {
         null=>$row['agreement']['state']==='active'?'Awaiting studio setup review':'No hosting setup offered','offered'=>'Website address needed','accepted'=>'Hosting request accepted',
         'cancelled'=>'Hosting request cancelled','declined'=>'Hosting offer declined','withdrawn'=>'Hosting offer withdrawn',default=>'Setup status unavailable',
     };
-    $next=$owner?($order===null&&$row['agreement']['state']==='active'?'Review setup':'View setup details'):
-        ($phase==='offered'&&$row['agreement']['state']==='active'?'Add website address':($phase==='accepted'?'View hosting progress':'View agreement'));
+    $next=$owner?(($row['payment']['payment_stage']??'awaiting_payment')==='awaiting_payment'?'Payment pending':($order===null&&$row['agreement']['state']==='active'?'Review setup':'View setup details')):
+        (($row['payment']['payment_stage']??'awaiting_payment')==='awaiting_payment'?'Pay securely':($phase==='offered'&&$row['agreement']['state']==='active'?'Add website address':($phase==='accepted'?'View hosting progress':'View agreement')));
+    $nextUrl=($row['payment']['payment_stage']??'awaiting_payment')==='awaiting_payment'?($owner?$links['invoice']:$links['payment']):$links['agreement'];
     echo '<article class="workspace-card" data-hosting-purchase="'.esc($row['request_id']).'" style="overflow-wrap:anywhere"><h2>'.esc($row['offer_title']).'</h2>';
     echo '<p class="hint">Purchased '.esc(gmdate('Y-m-d H:i:s',$row['created_epoch'])).' UTC</p><dl>';
     if ($owner) echo '<dt>Client</dt><dd>'.esc($row['client']['name']).'</dd>';
     echo '<dt>Project</dt><dd>'.esc($row['project']['title']).'</dd><dt>Original invoice</dt><dd>'.esc($row['invoice']['reference']).' · $'.esc(gmoney($row['invoice']['amount_cents'])).' '.esc($row['invoice']['currency']).' · '.esc($invoice).'</dd>';
-    echo '<dt>Service agreement</dt><dd>'.esc($agreement).'</dd><dt>Hosting setup</dt><dd>'.esc($setup).'</dd>';
+    echo '<dt>Purchase status</dt><dd data-hosting-payment-stage>'.esc($purchase).'</dd><dt>Service agreement</dt><dd>'.esc($agreement).'</dd><dt>Hosting setup</dt><dd>'.esc($setup).'</dd>';
     if ($order!==null&&is_string($order['domain_name'])&&$order['domain_name']!=='') echo '<dt>Website address</dt><dd>'.esc($order['domain_name']).'</dd>';
     echo '</dl>';
+    if($owner&&($row['invoice']['status']??null)==='issued'&&($row['payment']['payment_stage']??null)==='payment_review'&&in_array($row['payment']['charge_state']??null,['processing','uncertain','review'],true)){
+        echo '<form method="post" data-hosting-payment-reconcile>';admin_action('hosting_payment_reconcile');
+        echo '<input type="hidden" name="request_id" value="'.esc($row['request_id']).'">';
+        admin_input('transaction_id','Verified Authorize.Net transaction ID',is_string($row['payment']['transaction_id']??null)?$row['payment']['transaction_id']:'','text','required pattern="[0-9]{5,30}" maxlength="30" autocomplete="off"');
+        admin_check('confirm','I reviewed this retained transaction and authorize an exact gateway readback reconciliation.',false);
+        echo '<button class="btn outline">Reconcile payment</button></form>';
+    }
     if ($phase==='accepted') echo '<p class="hint">Open hosting progress for payment, setup and service status.</p>';
     elseif ($phase==='offered'&&$row['agreement']['state']==='active') echo '<p>'.($owner?'The client can review this hosting offer and add their website address in the agreement.':'Review the hosting offer and confirm your website address in the agreement.').'</p>';
     elseif ($order===null) echo '<p>'.($row['agreement']['state']!=='active'?'Open the agreement for its current terms and status.':($owner?'Open the agreement to review the original invoice and offer hosting setup.':'The studio will review setup. You can view your invoice and agreement below.')).'</p>';
-    echo '<div class="button-row"><a class="btn gold" data-hosting-purchase-next href="'.esc($links['agreement']).'">'.esc($next).'</a><a class="btn outline" href="'.esc($links['invoice']).'">View invoice</a><a class="btn outline" href="'.esc($links['project']).'">View project</a></div></article>';
+    $agreementAction=$next==='View agreement'?'':'<a class="btn outline" data-hosting-purchase-agreement href="'.esc($links['agreement']).'">View agreement</a>';
+    echo '<div class="button-row"><a class="btn gold" data-hosting-purchase-next href="'.esc($nextUrl).'">'.esc($next).'</a>'.$agreementAction.'<a class="btn outline" href="'.esc($links['invoice']).'">View invoice</a><a class="btn outline" href="'.esc($links['project']).'">View project</a></div></article>';
 }
 /** A failed read never becomes an empty successful history. No data or action is inferred from POST. */
 function hosting_purchases_ui_render(?array $page,bool $owner): void {

@@ -12,6 +12,13 @@ def verify(root, contract, workflow, commands, check):
     item = full_contract['cloud_site_intake']
     additions = item['additions']
     full_native = full_contract['native_commands']
+    payment = full_contract.get('hosting_payment_acceptance_extension')
+    if payment:
+        payment_additions = payment['additions']
+        check('Static intake projects only the exact later hosting-payment commands',
+              len(payment_additions) == len(set(payment_additions)) == 4
+              and all(full_native.count(command) == 1 for command in payment_additions))
+        full_native = [command for command in full_native if command not in payment_additions]
     identity = full_contract.get('client_identity_native_command_extension')
     if identity:
         identity_additions = identity['additions']
@@ -37,6 +44,12 @@ def verify(root, contract, workflow, commands, check):
     reports = json.loads((root / 'tools/acceptance-reports.json').read_text())
     for key, expected_count in (('browser', 180), ('final', 226)):
         current = reports[key]
+        if payment:
+            payment_reports = payment['reports']
+            check('Static intake projects only the exact later hosting-payment reports in ' + key,
+                  len(payment_reports) == len(set(payment_reports)) == 3
+                  and all(current.count(name) == 1 for name in payment_reports))
+            current = [name for name in current if name not in payment_reports]
         if identity:
             identity_reports = identity['reports']
             check('Static intake projects only the exact later public-identity reports in ' + key,

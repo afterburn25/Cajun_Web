@@ -36,7 +36,8 @@ def run_browser(env, browser):
     site = env['BASE'] + '/hosting-checkout'
     portal, admin = site + '/portal/index.php', site + '/admin/index.php'
     owner_password, client_password = 'Synthetic native checkout owner', 'Synthetic checkout client'
-    contexts, errors, blocked, responses, captures, checks = [], [], [], [], [], []
+    contexts, errors, blocked, tokenization_scripts, responses, captures, checks = [], [], [], [], [], [], []
+    production_tokenization_script = 'https://js.authorize.net/v1/Accept.js'
 
     def check(name, passed):
         if type(passed) is not bool or any(row['name'] == name for row in checks):
@@ -52,10 +53,20 @@ def run_browser(env, browser):
     def context():
         ctx = browser.new_context(viewport={'width': 1440, 'height': 1050}, reduced_motion='reduce')
         def route(request):
-            if request.request.url.startswith(env['BASE'] + '/') or request.request.url.startswith(('data:', 'about:')):
+            url = request.request.url
+            if url.startswith(env['BASE'] + '/') or url.startswith(('data:', 'about:')):
                 request.continue_()
+            elif (url == production_tokenization_script and request.request.method == 'GET'
+                  and request.request.resource_type == 'script'):
+                # The installed production fixture must expose the reviewed
+                # tokenization dependency, but hosted acceptance never fetches it.
+                tokenization_scripts.append({'method': 'GET', 'url': url, 'resource_type': 'script'})
+                request.fulfill(status=200, content_type='application/javascript', body='window.Accept={};\n')
             else:
-                blocked.append(urlparse(request.request.url).scheme)
+                parsed = urlparse(url)
+                blocked.append({'method': request.request.method, 'scheme': parsed.scheme.lower(),
+                                'host': (parsed.hostname or '').lower(), 'path': parsed.path[:256],
+                                'query_present': bool(parsed.query), 'fragment_present': bool(parsed.fragment)})
                 request.abort()
         ctx.route('**/*', route)
         contexts.append(ctx)
@@ -341,13 +352,19 @@ def run_browser(env, browser):
               response.status == 303 and urljoin(portal, response.headers.get('location', '')) == result_url)
         unchanged('Storefront confirmation retry and invoice reads never duplicate the purchase', complete)
         check('Storefront packaged browser has no JavaScript page errors', not errors)
-        check('Storefront packaged browser uses only local resources', not blocked)
+        expected_script = {'method': 'GET', 'url': production_tokenization_script, 'resource_type': 'script'}
+        check('Storefront packaged browser intercepts only the exact production tokenization dependency',
+              bool(tokenization_scripts) and all(row == expected_script for row in tokenization_scripts))
+        check('Storefront packaged browser requests no unreviewed external resources', not blocked)
         check('Storefront produces exactly its four scoped captures', tuple(item['name'] for item in captures) == CAPTURES)
         return {'passed': all(row['passed'] is True for row in checks), 'checks': checks, 'captures': captures,
                 'scope': 'Actual installed public plan selection, invited-client login and one unpaid first invoice. One current plan; fixed local synthetic PNG. No signup, payment or provider operation. Pixel approval remains separate.',
                 'publication_id': publication['id'], 'publication_sha256': publication['document_sha256'],
                 'result': result, 'actual_comparison_plan_count': 1, 'local_synthetic_artwork': True,
-                'new_account_signup': False, 'payment_or_provider_operation': False}
+                'new_account_signup': False, 'payment_or_provider_operation': False,
+                'tokenization_dependency': {'url': production_tokenization_script,
+                                            'intercepted_requests': len(tokenization_scripts),
+                                            'live_fetches': 0}}
     finally:
         for ctx in contexts:
             ctx.close()

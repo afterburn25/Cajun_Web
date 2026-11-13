@@ -23,6 +23,69 @@ PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
 )
 PROTECTED_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/client_authority_native.php\n'
+PROTECTED_PAYMENT_ADDITIONS = (
+    '          CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log\n',
+    '          test ! -s qa/hosting-checkout-native.stderr.log\n',
+    '          CWP_TEST_HOSTING_PAYMENT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_payment_native.php > qa/hosting-payment-native.stdout.log 2> qa/hosting-payment-native.stderr.log\n',
+    '          test ! -s qa/hosting-payment-native.stderr.log\n',
+)
+PROTECTED_PAYMENT_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/software_commerce_native.php\n'
+PROTECTED_PAYMENT_ENV_ADDITION = '      CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE: cwp_hpay_foreign\n'
+PROTECTED_PAYMENT_ENV_AFTER = '      CWP_TEST_PASSWORD: local-ci-only\n'
+PROTECTED_PAYMENT_SETUP_ADDITION = ('          docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e '
+                                    '"CREATE DATABASE cwp_hpay_foreign; GRANT SELECT,CREATE,DROP,REFERENCES ON cwp_hpay_foreign.* TO \'cwp_test\'@\'%\';"\n')
+PROTECTED_PAYMENT_SETUP_AFTER = ('          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then\n'
+                                 "            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n"
+                                 "            docker exec -e MYSQL_PWD=isolated-checkout-root-only ${{ job.services.checkout_mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'\n"
+                                 '          fi\n')
+PROTECTED_BROWSER_PREDECESSOR = '        run: .ci-venv/bin/python tests/browser_acceptance.py\n'
+PROTECTED_BROWSER_SUCCESSOR = ('        run: |\n'
+                               '          .ci-venv/bin/python tests/browser_acceptance.py\n'
+                               '          .ci-venv/bin/python tests/hosting_checkout_http_browser.py --full-suite\n')
+PROTECTED_APT_MIRRORS = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+'''
+PROTECTED_APT_MIRRORS_COUNT = 4
+PROTECTED_APT_WRAPPER = '''          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
+'''
+PROTECTED_APT_WRAPPER_COUNT = 4
+PROTECTED_APT_CALL_SUCCESSOR = 'cwp_apt_get -o Acquire::Retries=1'
+PROTECTED_APT_CALL_PREDECESSOR = 'sudo apt-get -o Acquire::Retries=5'
+PROTECTED_APT_CALL_COUNT = 16
 IMMUTABLE = '${{ github.event.pull_request.head.sha || github.sha }}'
 PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
@@ -104,6 +167,36 @@ def validate(workflow, legacy, protected):
     protected_block = PROTECTED_ADDITIONS_AFTER + ''.join(PROTECTED_ADDITIONS)
     check('Reviewed UX-09 application commands are additive and ordered',
           protected.count(protected_block) == 1)
+    for addition in reversed(PROTECTED_PAYMENT_ADDITIONS):
+        check('Reviewed UX-08 application command is present exactly once',
+              protected_predecessor.count(addition) == 1)
+        protected_predecessor = protected_predecessor.replace(addition, '', 1)
+    payment_block = PROTECTED_PAYMENT_ADDITIONS_AFTER + ''.join(PROTECTED_PAYMENT_ADDITIONS)
+    check('Reviewed UX-08 native commands are additive and ordered', protected.count(payment_block) == 1)
+    for name, addition, after in (
+        ('environment declaration', PROTECTED_PAYMENT_ENV_ADDITION, PROTECTED_PAYMENT_ENV_AFTER),
+        ('least-privilege foreign fixture bootstrap', PROTECTED_PAYMENT_SETUP_ADDITION, PROTECTED_PAYMENT_SETUP_AFTER),
+    ):
+        check('Reviewed UX-08 payment '+name+' is present exactly once',
+              protected_predecessor.count(addition) == 1)
+        check('Reviewed UX-08 payment '+name+' is additive and ordered',
+              protected.count(after + addition) == 1)
+        protected_predecessor = protected_predecessor.replace(addition, '', 1)
+    check('Reviewed UX-08 browser continuation retains the original command first',
+          protected_predecessor.count(PROTECTED_BROWSER_SUCCESSOR) == 1)
+    protected_predecessor = protected_predecessor.replace(
+        PROTECTED_BROWSER_SUCCESSOR, PROTECTED_BROWSER_PREDECESSOR, 1)
+    check('Protected application workflow has every reviewed canonical mirror selection',
+          protected_predecessor.count(PROTECTED_APT_MIRRORS) == PROTECTED_APT_MIRRORS_COUNT)
+    protected_predecessor = protected_predecessor.replace(PROTECTED_APT_MIRRORS, '')
+    check('Protected application workflow has every reviewed bounded reconnect wrapper',
+          protected_predecessor.count(PROTECTED_APT_WRAPPER) == PROTECTED_APT_WRAPPER_COUNT)
+    protected_predecessor = protected_predecessor.replace(PROTECTED_APT_WRAPPER, '')
+    check('Protected application workflow routes every reviewed apt call through bounded reconnects',
+          protected_predecessor.count(PROTECTED_APT_CALL_SUCCESSOR) == PROTECTED_APT_CALL_COUNT
+          and protected_predecessor.count(PROTECTED_APT_CALL_PREDECESSOR) == 0)
+    protected_predecessor = protected_predecessor.replace(
+        PROTECTED_APT_CALL_SUCCESSOR, PROTECTED_APT_CALL_PREDECESSOR)
     check('Protected complete application workflow retains its byte-identical predecessor',
           digest(protected_predecessor) == PROTECTED_SHA256)
     check('Workflow has ordinary indentation and no alternate YAML documents',
@@ -225,6 +318,18 @@ def self_test(root=ROOT):
         ('lost UX-09 policy command', protected.replace(PROTECTED_ADDITIONS[0], '', 1)),
         ('changed UX-09 native command', protected.replace('tests/client_identity_native.php',
                                                             'tests/client_identity_policy.php', 1)),
+        ('lost UX-08 payment command', protected.replace(PROTECTED_PAYMENT_ADDITIONS[2], '', 1)),
+        ('lost UX-08 payment foreign-schema environment', protected.replace(PROTECTED_PAYMENT_ENV_ADDITION, '', 1)),
+        ('lost UX-08 payment foreign-schema bootstrap', protected.replace(PROTECTED_PAYMENT_SETUP_ADDITION, '', 1)),
+        ('broadened UX-08 payment foreign-schema grant', protected.replace('GRANT SELECT,CREATE,DROP,REFERENCES', 'GRANT ALL', 1)),
+        ('changed UX-08 browser continuation', protected.replace(
+            'tests/hosting_checkout_http_browser.py --full-suite',
+            'tests/hosting_checkout_http_browser.py', 1)),
+        ('lost canonical application mirror selection', protected.replace(PROTECTED_APT_MIRRORS, '', 1)),
+        ('lost bounded application reconnect wrapper', protected.replace(PROTECTED_APT_WRAPPER, '', 1)),
+        ('lost bounded application mirror retry', protected.replace(
+            PROTECTED_APT_CALL_SUCCESSOR, PROTECTED_APT_CALL_PREDECESSOR, 1)),
+        ('extra bounded application mirror retry', protected + PROTECTED_APT_CALL_SUCCESSOR + '\n'),
         ('extra protected workflow command', protected.replace(
             PROTECTED_ADDITIONS[1], PROTECTED_ADDITIONS[1] + '          true # unreviewed command\n', 1)),
     ):

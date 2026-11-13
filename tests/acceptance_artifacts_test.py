@@ -20,6 +20,46 @@ UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
 UX08_STOREFRONT_SOURCE_TREE = 'b10612dae5e1d8f85d3fee3529b4f3cf9c0d30b3'
+UX08_PAYMENT_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
+UX08_PAYMENT_BASE_TREE = '7ccd5cd2384b5adecbd66fd98b7719a92a38887e'
+UX08_PAYMENT_SOURCE = '7a8537afba765017dbb71d2c2a2f943b2572529a'
+UX08_PAYMENT_SOURCE_TREE = '1e5ec17d7d615654ee9537c8f2856f67deedb491'
+UX08_PAYMENT_CURRENT_PUBLICATION_BASE = '066f8f5b791acaddadc10a5e2274971c5a11a42f'
+UX08_PAYMENT_CURRENT_PUBLICATION_BASE_TREE = '2a49c5e3d0c1f11ce685c5d5b67bb582e03b4ee5'
+UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE = '7a9278ecaeb52f8bdedc3abb002ae3db4d02d77f'
+UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE_TREE = '8d8c1464167acf31267e413ddba1a43a86eab442'
+UX08_PAYMENT_CURRENT_PUBLICATION_PATH = 'tests/hosting_payment_cases.py'
+UX08_PAYMENT_FORM_DIAGNOSTIC_BASE = '664ae9caae50d8b3ad90380fb9f19d5359e45aba'
+UX08_PAYMENT_FORM_DIAGNOSTIC_BASE_TREE = '6aee69485150129560d5b20f2ad5a51c66409c27'
+UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE = '7924d274d1ac3e34592e2522b8f4679ddc7c5161'
+UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE_TREE = '84322e980292df81182998e1f0ad8a9c521b8434'
+UX08_PAYMENT_FORM_DIAGNOSTIC_PATH = 'tests/hosting_payment_cases.py'
+UX08_PAYMENT_FORM_LABEL_BASE = 'a561bd7537fc02d8d32968a16b81028b6a7f2571'
+UX08_PAYMENT_FORM_LABEL_BASE_TREE = '293611768e9b73902456099efb50c9fe6e266687'
+UX08_PAYMENT_FORM_LABEL_SOURCE = '78d37207082ca4d281b718feeca79246a18324a5'
+UX08_PAYMENT_FORM_LABEL_SOURCE_TREE = 'f850ffe4438d7cef185a7d1ef4898f9057a9a29a'
+UX08_PAYMENT_FORM_LABEL_PATH = 'tests/hosting_payment_cases.py'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE = '7cf5904d8b8c866921e45853716e2a3164627cf1'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE_TREE = '7bd3325868715bee98c111e92f58c11bcfb14c66'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE = 'b4f67b6da806e0a4a00934c5aa29235cda68197f'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE_TREE = '7575ca4f7b5802dc69b3cc50db9794432e00703c'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_PATH = 'tests/hosting_checkout_http_fixture.php'
+UX08_PAYMENT_FULFILLMENT_LOCK_BASE = 'deeb28699df09bd3d52c21e3f4c867735b431f54'
+UX08_PAYMENT_FULFILLMENT_LOCK_BASE_TREE = '21b2bbf55456c7248360668f68bccdcfca6deb60'
+UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE = 'b31974fa6ed2c2993885f6465bedad47898cbf62'
+UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE_TREE = '2e83d16b5e6081230bf4107e81a09d6ddd46ff08'
+UX08_PAYMENT_FULFILLMENT_LOCK_PATH = 'tests/hosting_checkout_http_fixture.php'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE = '3fe8b8375b82640b9f6d2e05260032cc6cbb9b72'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE_TREE = '0ce09dc7e16832180eeac4d427d2be6aee9a62c3'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE = '4a539bdea263e63af30df66f427528c0231022bb'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE_TREE = 'c069fcd7cf7bb9b4eecdfd94ff4e4abbe54cb98d'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_PATH = 'tests/hosting_checkout_http_fixture.php'
+UX08_PAYMENT_ARTIFACT_OVERLAYS = frozenset((
+    'site/app/settings/database_schemas.php',
+    'site/portal/controllers/router.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+))
 UX08_ARTIFACT_OVERLAYS = frozenset((
     'site/app/clients/public_identity.php',
     'site/app/settings/database_schemas.php',
@@ -39,6 +79,15 @@ def check(name, condition):
 
 def ux08_artifact_predecessor(path, current):
     """Project only exact storefront overlays before frozen artifact-source checks."""
+    if path in UX08_PAYMENT_ARTIFACT_OVERLAYS:
+        source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+        base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+        check('UX-08 payment artifact overlay retains exact commit trees and ancestry '+path,
+              subprocess.check_output(['git','rev-parse',UX08_PAYMENT_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_BASE_TREE
+              and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_SOURCE_TREE
+              and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_BASE,UX08_PAYMENT_SOURCE],cwd=ROOT).returncode==0)
+        check('UX-08 payment artifact overlay current bytes match exact payment source '+path,current==source)
+        current=base
     if path not in UX08_ARTIFACT_OVERLAYS:
         return current
     source=subprocess.check_output(['git','cat-file','blob',UX08_STOREFRONT_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
@@ -48,6 +97,90 @@ def ux08_artifact_predecessor(path, current):
           and subprocess.check_output(['git','rev-parse',UX08_STOREFRONT_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_STOREFRONT_SOURCE_TREE
           and subprocess.run(['git','merge-base','--is-ancestor',UX08_STOREFRONT_BASE,UX08_STOREFRONT_SOURCE],cwd=ROOT).returncode==0)
     check('UX-08 artifact overlay current bytes match exact storefront source '+path,current==source)
+    return base
+
+
+def ux08_payment_current_publication_predecessor(path, current):
+    """Project the reviewed payment-publication overlay before its frozen source check."""
+    if path != UX08_PAYMENT_CURRENT_PUBLICATION_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_CURRENT_PUBLICATION_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 current payment publication overlay retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_CURRENT_PUBLICATION_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_CURRENT_PUBLICATION_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_CURRENT_PUBLICATION_BASE,UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 current payment publication overlay matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_form_diagnostic_predecessor(path, current):
+    """Project precise payment-form diagnostics before older acceptance source checks."""
+    if path != UX08_PAYMENT_FORM_DIAGNOSTIC_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FORM_DIAGNOSTIC_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 payment form diagnostics retain exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_DIAGNOSTIC_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_DIAGNOSTIC_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FORM_DIAGNOSTIC_BASE,UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 payment form diagnostics match their exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_form_label_predecessor(path, current):
+    """Project the unique payment-journey labels before the diagnostic source check."""
+    if path != UX08_PAYMENT_FORM_LABEL_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FORM_LABEL_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FORM_LABEL_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 payment form label fix retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_LABEL_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_LABEL_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_LABEL_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_LABEL_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FORM_LABEL_BASE,UX08_PAYMENT_FORM_LABEL_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 payment form label fix matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_expected_diagnostic_predecessor(path, current):
+    """Project the exact expected uncertain diagnostic before older source checks."""
+    if path != UX08_PAYMENT_EXPECTED_DIAGNOSTIC_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 expected payment diagnostic retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE,UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 expected payment diagnostic matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_fulfillment_lock_predecessor(path, current):
+    """Project the exact synthetic-fulfillment lock correction before older source checks."""
+    if path != UX08_PAYMENT_FULFILLMENT_LOCK_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FULFILLMENT_LOCK_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 synthetic fulfillment lock fix retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_LOCK_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_LOCK_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FULFILLMENT_LOCK_BASE,UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 synthetic fulfillment lock fix matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_fulfillment_validation_lock_predecessor(path, current):
+    """Project the exact synthetic-fulfillment validation lock before older source checks."""
+    if path != UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 synthetic fulfillment validation lock fix retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE,UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 synthetic fulfillment validation lock fix matches its exact reviewed source',current==source)
     return base
 
 
@@ -197,6 +330,58 @@ def orchestration_evidence_checks(tmp, ctx):
     # Execute the workflow's actual reporting command against copied public source,
     # then exercise the real partition sealer. No application or provider runs.
     workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
+    checkout_workflow = (ROOT / '.github/workflows/consolidation-after-backups.yml').read_text()
+    apt_mirrors = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
+          from pathlib import Path
+
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          original = source.read_bytes()
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if original != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          selected = (
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          source.write_bytes(selected)
+          if source.read_bytes() != selected:
+              raise SystemExit('Ubuntu mirror selection was not retained')
+          print('Canonical Ubuntu archives selected before Azure fallback')
+          CWP_UBUNTU_MIRRORS
+'''
+    apt_wrapper = '''          cwp_apt_get() {
+            local cwp_apt_attempt
+            for cwp_apt_attempt in 1 2 3; do
+              if sudo apt-get "$@"; then
+                return 0
+              fi
+              if [ "$cwp_apt_attempt" -eq 3 ]; then
+                return 1
+              fi
+              echo "::warning::apt-get attempt ${cwp_apt_attempt}/3 failed; retrying on a fresh connection" >&2
+              sleep 5
+            done
+          }
+'''
+    check('Application apt calls preserve mirror failover and hard-fail bounded reconnects',
+          workflow.count(apt_mirrors) == 4
+          and workflow.count(apt_wrapper) == 4
+          and workflow.count('cwp_apt_get -o Acquire::Retries=1') == 16
+          and 'sudo apt-get -o Acquire::Retries' not in workflow
+          and 'Acquire::Retries=5' not in workflow)
+    check('Mandatory Application and checkout gates share one fail-closed Ubuntu mirror contract',
+          checkout_workflow.count(apt_mirrors) == 1
+          and checkout_workflow.count(apt_wrapper) == 1
+          and checkout_workflow.count('cwp_apt_get -o Acquire::Retries=1') == 4
+          and 'sudo apt-get -o Acquire::Retries' not in checkout_workflow
+          and 'Acquire::Retries=5' not in checkout_workflow)
     commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
     check('Exactly one build orchestration report command exists', len(commands) == 1)
     command = commands[0]
@@ -239,6 +424,7 @@ def software_authority_report_checks(tmp):
     database_reports=set(acceptance_contract.get('database_schema_native_command_extension',{}).get('reports',[]))
     cloud_intake_reports=set(acceptance_contract.get('cloud_site_intake',{}).get('reports',[]))
     identity_reports=set(acceptance_contract.get('client_identity_native_command_extension',{}).get('reports',[]))
+    hosting_payment_reports=set(acceptance_contract.get('hosting_payment_acceptance_extension',{}).get('reports',[]))
     for mode, count, digest in [
         ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
         ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
@@ -246,7 +432,7 @@ def software_authority_report_checks(tmp):
         current = registry[mode]
         check('Software authority named report is required exactly once in ' + mode,
               current.count(name) == 1 and len(current) == len(set(current)))
-        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports]
+        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports and item not in hosting_payment_reports]
         check('Software authority inventory retains every original ordered ' + mode + ' report',
               len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
     body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
@@ -554,6 +740,45 @@ def run(tmp):
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     cloud_intake_additions=contract['cloud_site_intake']['additions']
+    payment_ext=contract.get('hosting_payment_acceptance_extension')
+    if payment_ext:
+        additions=payment_ext['additions'];position=native_commands.index(payment_ext['additions_after'])+1
+        check('Hosting checkout and payment commands are one exact additive extension',
+              len(native_commands)==payment_ext['predecessor_native_count']+len(additions)
+              and native_commands==contract['native_commands']
+              and native_commands[position:position+len(additions)]==additions
+              and all(native_commands.count(command)==1 for command in additions))
+        retained=[command for command in native_commands if command not in additions]
+        check('Hosting payment additions retain the complete predecessor recipe',
+              len(retained)==payment_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==payment_ext['predecessor_native_sha256'])
+        browser=workflow.split('      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: |\n',1)[1].split('      - name: Verify shipping source after this job, including failure',1)[0]
+        browser_commands=[line.strip() for line in browser.splitlines()]
+        check('Packaged hosting browser proof is one exact additive application command',
+              browser_commands==[payment_ext['browser_addition_after'],payment_ext['browser_addition']])
+        for path,expected_hash in payment_ext['source_sha256'].items():
+            current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=ux08_payment_fulfillment_validation_lock_predecessor(path,current)
+            current=ux08_payment_fulfillment_lock_predecessor(path,current)
+            current=ux08_payment_expected_diagnostic_predecessor(path,current)
+            current=ux08_payment_form_label_predecessor(path,current)
+            current=ux08_payment_form_diagnostic_predecessor(path,current)
+            current=ux08_payment_current_publication_predecessor(path,current)
+            check('Hosting payment acceptance source identity '+path,
+                  hashlib.sha256(current).hexdigest()==expected_hash)
+        registry=a.load(ROOT/'tools/acceptance-reports.json')
+        for mode in ('browser','final'):
+            current=registry[mode]
+            check('Hosting payment reports are required once in '+mode,
+                  all(current.count(report)==1 for report in payment_ext['reports']) and len(current)==len(set(current)))
+            predecessor=[report for report in current if report not in payment_ext['reports']]
+            expected=payment_ext['predecessor_reports'][mode]
+            check('Hosting payment reports retain the exact '+mode+' predecessor inventory',
+                  len(predecessor)==expected['count']
+                  and hashlib.sha256(json.dumps(predecessor,separators=(',',':')).encode()).hexdigest()==expected['sha256'])
+        expected_captures=['Hosting-Payment-'+stage+'-'+size+'.png' for stage in ('Awaiting','Paid-Setup-Pending','Active','VPS-Unavailable') for size in ('Desktop','Mobile')]
+        check('Hosting payment extension binds all eight exact installed captures',payment_ext['screenshots']==expected_captures)
+        native_commands=retained;contract={**contract,'native_commands':native_commands}
     identity_ext=contract.get('client_identity_native_command_extension')
     if identity_ext:
         additions=identity_ext['additions'];position=native_commands.index(identity_ext['additions_after'])+1

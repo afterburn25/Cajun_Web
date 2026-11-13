@@ -38,6 +38,15 @@ function hosting_catalog_admin_action(string $action): void {
         service_plans_checkout_migrate($password);recurring_billing_checkout_migrate($password);hosting_checkout_prepare($password);
         flash('Invoice checkout is ready. Choose it explicitly when publishing a new hosting offer.');redirect(admin_url('hosting-offers'));
     }
+    if($action==='hosting_catalog_payment_setup'){
+        require_once CWP_CODE_ROOT.'/app/hosting/payments.php';
+        require_once CWP_CODE_ROOT.'/database/migrations/gateway_receipts_migrate.php';
+        require_once CWP_CODE_ROOT.'/database/migrations/hosting_payments_migrate.php';
+        gateway_receipts_prepare($password);hosting_payments_prepare($password);
+        hosting_payment_configure($intent['gateway_mode'],$intent['production_review'],$password);
+        flash($intent['gateway_mode']==='disabled'?'Hosting card checkout is disabled; invoices and history remain available.':'Hosting card checkout is configured for '.$intent['gateway_mode'].'.');
+        redirect(admin_url('hosting-offers'));
+    }
     if ($action==='hosting_catalog_publish') {
         hosting_catalog_publish($intent['publication_id'],$intent['product_id'],$intent['plan_id'],$intent['review_sha256'],$password,$intent['checkout_policy']??null);
         flash(isset($intent['checkout_policy'])?'Hosting offer published. Primary clients can review the terms and create their first invoice.':'Hosting offer published. Clients can request these terms.');redirect(admin_url('hosting-offers',['product_id'=>$intent['product_id']]));
@@ -76,7 +85,7 @@ function hosting_catalog_admin_confirmation(string $label): void {
 /** A damaged/unavailable read must not silently replace a failed write's submitted selection. */
 function hosting_catalog_admin_preserved_submission(): void {
     $values=hosting_catalog_admin_values($_POST);$action=$values['action'];
-    if (!in_array($action,hosting_catalog_admin_actions(),true)||in_array($action,['hosting_catalog_setup','hosting_catalog_checkout_setup'],true)) return;
+    if (!in_array($action,hosting_catalog_admin_actions(),true)||in_array($action,['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_payment_setup'],true)) return;
     if ($action==='hosting_catalog_finish_plan') {
         // Last-resort redisplay is strictly local: even a failed database read cannot erase the form.
         hosting_catalog_setup_form(['product'=>null,'preview'=>null,'values'=>hosting_catalog_setup_values($_POST),'retry'=>true,'available'=>false,

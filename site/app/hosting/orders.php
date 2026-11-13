@@ -139,10 +139,21 @@ function service_orders_assess(ServiceOrderDocument $doc,int $at):array {
     $invoice=service_orders_invoice($source['current'],$d['invoice']['id']);
     if($invoice!==$d['invoice'])throw new RuntimeException('The hosting order’s original invoice binding changed.');
     $payment=ledger_fulfillment_evidence($invoice['id'],$d['client_id']);
+    $checkoutReceipt=null;
+    if($checkout!==null){
+        $matches=array_values(array_filter($payment['gateway_receipts'],static fn(array $receipt):bool=>$receipt['source']==='hosting_checkout'
+            &&$receipt['source_id']===$checkout['request_id']&&$receipt['status']==='verified'
+            &&$receipt['amount_cents']===$payment['total_cents']&&$receipt['currency']===$payment['currency']));
+        if(count($matches)!==1||count($payment['gateway_receipts'])!==1||$payment['verified_cents']!==$payment['total_cents']){
+            $blockers[]='checkout-gateway-receipt-required';
+        }else $checkoutReceipt=$matches[0];
+    }
     if(!$payment['payment_evidence_ready']){
         foreach($payment['blockers'] as $reason)if($manual===null||in_array($reason,['client-inactive','invoice-void','payment-review-required'],true))$blockers[]=$reason;
     }
-    return ['eligible'=>$blockers===[],'blockers'=>$blockers,'basis'=>$payment['payment_evidence_ready']?'verified-payment':($manual!==null?'owner-manual-policy':null),'payment'=>$payment,'manual'=>$manual,'order_sha256'=>$doc->fingerprint()];
+    return ['eligible'=>$blockers===[],'blockers'=>array_values(array_unique($blockers)),
+        'basis'=>$payment['payment_evidence_ready']&&($checkout===null||$checkoutReceipt!==null)?'verified-payment':($manual!==null?'owner-manual-policy':null),
+        'payment'=>$payment,'checkout_gateway_receipt'=>$checkoutReceipt,'manual'=>$manual,'order_sha256'=>$doc->fingerprint()];
 }
 function service_orders_append(array $row,int $revision,string $event,string $command,string $actor,array $args):ServiceOrderDocument {
     if(!db()->inTransaction())throw new LogicException('Order action needs its owning transaction.');

@@ -11,6 +11,7 @@ require_once CWP_CODE_ROOT.'/app/billing/software_subscriptions.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_subscription.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_charge.php';
 require_once CWP_CODE_ROOT.'/app/billing/finance_payment_review.php';
+require_once CWP_CODE_ROOT.'/app/hosting/payments.php';
 
 /** Compatibility wrapper retaining strict amount rejection in recurring settlement. */
 function software_anet_cents(mixed $amount): int {
@@ -202,8 +203,25 @@ function software_sandbox_capture_verify(array $details,string $transactionId):s
     return 'sandbox_payment_verified';
 }
 
+function authorize_net_webhook_gateway():array{
+    $available=[];
+    try{$available[]=software_anet_settings();}catch(RuntimeException){}
+    try{if(hosting_payments_ready())$available[]=hosting_anet_settings();}catch(RuntimeException){}
+    if(!$available)throw new RuntimeException('No enabled Authorize.Net product gateway matches this endpoint.');
+    $first=$available[0];$account=gateway_receipt_account_hash($first['login']);
+    foreach($available as $gateway)if($gateway['mode']!==$first['mode']||!hash_equals($account,gateway_receipt_account_hash($gateway['login'])))throw new RuntimeException('Enabled product gateways use different Authorize.Net accounts or environments. Use a single webhook identity.');
+    return $first;
+}
+/** Preserve the product revision while the shared endpoint retains one signing identity. */
+function authorize_net_webhook_hosting_gateway(array $transport):?array{
+    try{$hosting=hosting_payments_ready()?hosting_anet_settings():null;}catch(RuntimeException){return null;}
+    if($hosting===null||$hosting['mode']!==$transport['mode']||!hash_equals(gateway_receipt_account_hash($hosting['login']),gateway_receipt_account_hash($transport['login'])))return null;
+    return $hosting;
+}
 function software_webhook_process(string $raw,string $signature):string{
-    $gateway=software_anet_settings();
+    $gateway=authorize_net_webhook_gateway();
+    $hostingGateway=authorize_net_webhook_hosting_gateway($gateway);
+    $execute=fn(string $method,array $request):array=>authorize_net_execute_configured('Webhook',$method,$request,$gateway);
     require_once CWP_CODE_ROOT.'/app/billing/payments.php';
     $secret=one('SELECT credentials FROM '.table('payment_gateways').' WHERE environment=?',[$gateway['mode']]);
     if(!$secret)throw new RuntimeException('Gateway credentials missing.');
@@ -220,7 +238,9 @@ function software_webhook_process(string $raw,string $signature):string{
             if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
             $txId=$event['resource_id'];
             if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
-            $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            $details=$execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            $hosting=$hostingGateway===null?'hosting_reversal_unmatched':hosting_payment_webhook_reversal_review($details,$txId,$event['type'],$event['event_id'],$hostingGateway);
+            if($hosting!=='hosting_reversal_unmatched')return $hosting;
             $finance=license_finance_payment_reversal_review($details,$txId,$event['type']);
             if($finance!=='finance_reversal_unmatched')return $finance;
             software_anet_reversal_details($details,$txId,$event['type']);
@@ -241,13 +261,15 @@ function software_webhook_process(string $raw,string $signature):string{
             if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
             $txId=$event['resource_id'];
             if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
-            $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+            $details=$execute('getTransactionDetailsRequest',['transId'=>$txId]);
             if(isset($details['transaction']['subscription']['id'])){
                 $sid=(string)$details['transaction']['subscription']['id'];
                 if(license_finance_subscription_known_gateway_id($sid)){
                     return license_finance_subscription_settle($details,$txId);
                 }
             }else{
+                $hosting=$hostingGateway===null?'hosting_payment_unmatched':hosting_payment_webhook_capture_review($details,$txId,$hostingGateway);
+                if($hosting!=='hosting_payment_unmatched')return $hosting;
                 $finance=license_finance_charge_webhook_review($details,$txId);
                 if($finance!=='finance_payment_unmatched')return $finance;
             }
@@ -263,7 +285,9 @@ function software_webhook_process(string $raw,string $signature):string{
         if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
         $txId=$event['resource_id'];
         if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
-        $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+        $details=$execute('getTransactionDetailsRequest',['transId'=>$txId]);
+        $hosting=$hostingGateway===null?'hosting_reversal_unmatched':hosting_payment_webhook_reversal_review($details,$txId,$event['type'],$event['event_id'],$hostingGateway);
+        if($hosting!=='hosting_reversal_unmatched')return $hosting;
         $finance=license_finance_payment_reversal_review($details,$txId,$event['type']);
         if($finance!=='finance_reversal_unmatched')return $finance;
         return software_payment_reversal_review($details,$txId,$event['type']);
@@ -285,7 +309,7 @@ function software_webhook_process(string $raw,string $signature):string{
     if(($event['entity']??'')!=='transaction')throw new InvalidArgumentException('Invalid payment event entity.');
     $txId=$event['resource_id'];
     if(!preg_match('/^[0-9]{5,30}$/D',$txId))throw new InvalidArgumentException('Invalid gateway transaction ID.');
-    $details=software_anet_execute('getTransactionDetailsRequest',['transId'=>$txId]);
+    $details=$execute('getTransactionDetailsRequest',['transId'=>$txId]);
     if(isset($details['transaction']['subscription']['id'])){
         $sid=(string)$details['transaction']['subscription']['id'];
         if(license_finance_subscription_known_gateway_id($sid)){
@@ -293,6 +317,8 @@ function software_webhook_process(string $raw,string $signature):string{
         }
         return software_subscription_settle($details,$txId);
     }
+    $hosting=$hostingGateway===null?'hosting_payment_unmatched':hosting_payment_webhook_capture_review($details,$txId,$hostingGateway);
+    if($hosting!=='hosting_payment_unmatched')return $hosting;
     $finance=license_finance_charge_webhook_review($details,$txId);
     if($finance!=='finance_payment_unmatched')return $finance;
     return software_charge_capture_webhook_review($details,$txId);

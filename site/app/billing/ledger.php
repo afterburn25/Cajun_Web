@@ -25,7 +25,17 @@ function ledger_balance(array $i): array {
 function ledger_review_hash(array $i): string {return hash('sha256',ledger_invoice_hash($i).'|'.json_encode(ledger_balance($i),JSON_THROW_ON_ERROR).'|'.$i['status']);}
 function ledger_methods(): array {return ['bank'=>'Bank transfer','check'=>'Check','cash'=>'Cash','external'=>'Other verified external payment'];}
 require_once CWP_CODE_ROOT.'/database/migrations/ledger_migrate.php';
-function ledger_insert(array $i,int $actor,string $kind,int $amount,string $method,string $note,string $date,?string $key=null,?string $hash=null,?string $external=null,?int $reversal=null): int {
+/** Serialize every ledger writer with an unresolved hosting capture for this invoice. */
+function ledger_hosting_attempt_assert_clear(int $invoice,?string $allowedAttempt=null):void {
+    $table=config()['db']['prefix'].'hosting_payment_charges';
+    if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$table]))return;
+    $charge=one('SELECT state,current_attempt_key FROM '.table('hosting_payment_charges').' WHERE invoice_id=? FOR UPDATE',[$invoice]);
+    if(!$charge||!in_array($charge['state'],['processing','uncertain','review'],true))return;
+    if($allowedAttempt!==null&&preg_match('/^[a-f0-9]{64}$/D',$allowedAttempt)&&hash_equals((string)$charge['current_attempt_key'],$allowedAttempt))return;
+    throw new RuntimeException('An unresolved hosting card payment blocks other invoice payment changes. Reconcile it first.');
+}
+function ledger_insert(array $i,int $actor,string $kind,int $amount,string $method,string $note,string $date,?string $key=null,?string $hash=null,?string $external=null,?int $reversal=null,?string $hostingAttempt=null): int {
+    ledger_hosting_attempt_assert_clear((int)$i['id'],$hostingAttempt);
     query('INSERT INTO '.table('invoice_payments').' (invoice_id,job_id,client_id,actor_id,kind,amount_cents,currency,method,external_hash,private_note,received_on,invoice_hash,invoice_reference,invoice_title,invoice_total_cents,client_name,request_key,request_hash,reversal_of,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[$i['id'],$i['job_id'],$i['client_id'],$actor,$kind,$amount,$i['currency'],$method,$external,$note,$date,ledger_invoice_hash($i),$i['reference'],$i['title'],$i['amount_cents'],$i['client_name'],$key,$hash,$reversal,gmdate('Y-m-d H:i:s')]);
     $id=(int)db()->lastInsertId();payments_audit($actor,'ledger.'.$kind,'Entry '.$id.' invoice '.$i['id'].' amount '.$amount.' '.$i['currency'].($reversal?' reverses '.$reversal:''));return $id;
 }
@@ -41,7 +51,7 @@ function ledger_receive(int $invoice,int $amount,string $method,string $referenc
         if($i['status']!=='issued'||(int)$i['active']!==1||$i['currency']!=='USD'||(int)$i['amount_cents']>99999999)throw new RuntimeException('Choose an issued USD invoice for an active client.');
         if(!hash_equals(ledger_review_hash($i),$review))throw new RuntimeException('The invoice balance changed. Reload and review before recording payment.');
         if($amount>$balance['due_cents'])throw new RuntimeException('The receipt exceeds the remaining invoice balance. No payment was recorded.');
-        attempts_assert_clear($invoice);
+        attempts_assert_clear($invoice);ledger_hosting_attempt_assert_clear($invoice);
         $external=hash('sha256',$method.'|'.strtolower(preg_replace('/\s+/',' ',$reference)));
         if(one('SELECT p.id FROM '.table('invoice_payments').' p LEFT JOIN '.table('invoice_payments')." r ON r.reversal_of=p.id WHERE p.invoice_id=? AND p.kind='manual' AND p.external_hash=? AND r.id IS NULL",[$invoice,$external]))throw new RuntimeException('This external payment reference is already recorded for this invoice.');
         $id=ledger_insert($i,(int)$actor['id'],'manual',$amount,$method,$reference,$date,$key,$hash,$external);
@@ -71,7 +81,7 @@ function ledger_reverse(int $entry,string $reason,string $key,string $review,#[\
         require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch.php';domain_renewal_dispatch_invoice_guard((int)$p['invoice_id']);$i=ledger_invoice((int)$p['invoice_id']);$balance=ledger_balance($i);
         if(!hash_equals(ledger_review_hash($i),$review))throw new RuntimeException('The invoice balance changed. Reload before correcting it.');
         if($i['status']==='void'||$balance['paid_cents']<(int)$p['amount_cents'])throw new RuntimeException('This entry cannot be reversed against the current balance.');
-        attempts_assert_clear((int)$i['id']);
+        attempts_assert_clear((int)$i['id']);ledger_hosting_attempt_assert_clear((int)$i['id']);
         $id=ledger_insert($i,(int)$actor['id'],'reversal',(int)$p['amount_cents'],$p['method'],$reason,gmdate('Y-m-d'),$key,$hash,null,$entry);
         query('UPDATE '.table('studio_invoices')." SET status='issued',paid_note='',paid_at=NULL WHERE id=?",[$i['id']]);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$i['id']]);return $id;
