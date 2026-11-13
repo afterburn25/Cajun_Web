@@ -72,6 +72,31 @@ function hch_payment_gateway(string$outcome,string$transaction,int$invoice,strin
         return['messages'=>['resultCode'=>'Ok'],'transaction'=>['transId'=>$transaction,'transactionType'=>'authCaptureTransaction','transactionStatus'=>'settledSuccessfully','authAmount'=>$amount,'order'=>['invoiceNumber'=>substr('CWP-'.$invoice,0,20)],'customer'=>['id'=>hosting_anet_customer_id($request),'email'=>'checkout-client1@example.invalid']]];
     };
 }
+/** Capture only the exact deliberate uncertain-readback diagnostic. */
+function hch_expected_payment_report(callable$work,string$origin,int$line):array{
+    if(PHP_SAPI!=='cli'||getenv('CWP_TEST_HOSTING_CHECKOUT_HTTP')!=='1'||config()['db']['prefix']!=='hcc_'
+        ||$origin!=='hosting_checkout_http_fixture.php'||$line!==71)throw new LogicException('Expected checkout payment diagnostic scope differs');
+    $path=tempnam(sys_get_temp_dir(),'cwp-checkout-payment-fault-');if($path===false)throw new RuntimeException('Could not capture expected checkout payment diagnostic');
+    $old=ini_get('error_log');$value=null;$escaped=null;$restoreFailed=false;$readFailed=false;$log='';
+    try{
+        if(ini_set('error_log',$path)===false)throw new RuntimeException('Could not isolate expected checkout payment diagnostic');
+        $value=$work();
+    }catch(Throwable$error){
+        $escaped=$error;
+    }finally{
+        $restoreFailed=ini_set('error_log',$old===false?'':$old)===false;
+        $captured=@file_get_contents($path);$readFailed=$captured===false;$log=$readFailed?'':$captured;
+    }
+    $expected=$escaped===null&&!$restoreFailed&&!$readFailed
+        &&preg_match('/\A(?:\[[^\r\n]+\] )?CWP \[[A-F0-9]{8}\] RuntimeException code=0 in '.preg_quote($origin,'/').':'.$line.'\r?\n\z/D',$log)===1;
+    $preserve=static function(string$bytes):void{$offset=0;$length=strlen($bytes);while($offset<$length){$written=fwrite(STDERR,substr($bytes,$offset));if($written===false||$written===0)throw new RuntimeException('Could not preserve unexpected checkout payment diagnostic');$offset+=$written;}};
+    if(!$expected)$preserve($log);
+    if(!@unlink($path)){if($expected)$preserve($log);throw new RuntimeException('Could not remove expected checkout payment diagnostic storage');}
+    if($escaped!==null)throw $escaped;
+    if($restoreFailed)throw new RuntimeException('Could not restore checkout payment diagnostic destination');
+    if($readFailed)throw new RuntimeException('Could not read expected checkout payment diagnostic');
+    return['value'=>$value,'expected'=>$expected];
+}
 final class HchPaymentProviderTransport implements HttpTransport{
     public static int$calls=0;
     public function __construct(private Closure$authorize){}
@@ -152,7 +177,9 @@ if(in_array($operation,['payment-state','payment-outcome','payment-fulfill','pay
     if($operation==='payment-outcome'){
         $outcome=$input['outcome']??null;$attempt=$input['attempt_key']??null;$expected=array_search($request,$journeys,true);
         if(!is_string($outcome)||$outcome!==$expected||!is_string($attempt)||!preg_match('/\A[a-f0-9]{64}\z/',$attempt))throw new RuntimeException('Exact form attempt and outcome required');
-        hch_payment_client();$result=hosting_checkout_result($request,1);$transaction=match($outcome){'approved'=>'9900510','uncertain'=>'9900512',default=>'9900511'};$status=hosting_payment_run($request,1,$attempt,'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-local-opaque-token',hch_payment_gateway($outcome,$transaction,$result['invoice_id'],$request,$payment['amount_cents']));
+        hch_payment_client();$result=hosting_checkout_result($request,1);$transaction=match($outcome){'approved'=>'9900510','uncertain'=>'9900512',default=>'9900511'};
+        $run=static fn()=>hosting_payment_run($request,1,$attempt,'COMMON.ACCEPT.INAPP.PAYMENT','synthetic-local-opaque-token',hch_payment_gateway($outcome,$transaction,$result['invoice_id'],$request,$payment['amount_cents']));
+        if($outcome==='uncertain'){$report=hch_expected_payment_report($run,'hosting_checkout_http_fixture.php',71);if($report['expected']!==true)throw new RuntimeException('Exact uncertain checkout payment diagnostic required');$status=$report['value'];}else{$status=$run();}
         if($status!==match($outcome){'approved'=>'paid','declined'=>'declined',default=>'review'})throw new RuntimeException('Closed payment outcome differs');
         echo json_encode(['configured'=>true,'request_id'=>$request,'outcome'=>$outcome,'live_gateway_calls'=>0],JSON_THROW_ON_ERROR);exit;
     }
