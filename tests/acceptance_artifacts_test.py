@@ -330,6 +330,7 @@ def orchestration_evidence_checks(tmp, ctx):
     # Execute the workflow's actual reporting command against copied public source,
     # then exercise the real partition sealer. No application or provider runs.
     workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
+    checkout_workflow = (ROOT / '.github/workflows/consolidation-after-backups.yml').read_text()
     apt_mirrors = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
           from pathlib import Path
 
@@ -375,6 +376,12 @@ def orchestration_evidence_checks(tmp, ctx):
           and workflow.count('cwp_apt_get -o Acquire::Retries=1') == 16
           and 'sudo apt-get -o Acquire::Retries' not in workflow
           and 'Acquire::Retries=5' not in workflow)
+    check('Mandatory Application and checkout gates share one fail-closed Ubuntu mirror contract',
+          checkout_workflow.count(apt_mirrors) == 1
+          and checkout_workflow.count(apt_wrapper) == 1
+          and checkout_workflow.count('cwp_apt_get -o Acquire::Retries=1') == 4
+          and 'sudo apt-get -o Acquire::Retries' not in checkout_workflow
+          and 'Acquire::Retries=5' not in checkout_workflow)
     commands = re.findall(r'^          (python3 -B tests/browser_suite_orchestration_contract\.py[^\n]*)$', workflow, re.M)
     check('Exactly one build orchestration report command exists', len(commands) == 1)
     command = commands[0]
