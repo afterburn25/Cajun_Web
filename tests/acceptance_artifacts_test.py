@@ -39,6 +39,11 @@ UX08_PAYMENT_FORM_LABEL_BASE_TREE = '293611768e9b73902456099efb50c9fe6e266687'
 UX08_PAYMENT_FORM_LABEL_SOURCE = '78d37207082ca4d281b718feeca79246a18324a5'
 UX08_PAYMENT_FORM_LABEL_SOURCE_TREE = 'f850ffe4438d7cef185a7d1ef4898f9057a9a29a'
 UX08_PAYMENT_FORM_LABEL_PATH = 'tests/hosting_payment_cases.py'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE = '7cf5904d8b8c866921e45853716e2a3164627cf1'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE_TREE = '7bd3325868715bee98c111e92f58c11bcfb14c66'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE = 'b4f67b6da806e0a4a00934c5aa29235cda68197f'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE_TREE = '7575ca4f7b5802dc69b3cc50db9794432e00703c'
+UX08_PAYMENT_EXPECTED_DIAGNOSTIC_PATH = 'tests/hosting_checkout_http_fixture.php'
 UX08_PAYMENT_ARTIFACT_OVERLAYS = frozenset((
     'site/app/settings/database_schemas.php',
     'site/portal/controllers/router.php',
@@ -124,6 +129,20 @@ def ux08_payment_form_label_predecessor(path, current):
           and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_LABEL_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_LABEL_SOURCE_TREE
           and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FORM_LABEL_BASE,UX08_PAYMENT_FORM_LABEL_SOURCE],cwd=ROOT).returncode==0)
     check('UX-08 payment form label fix matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_expected_diagnostic_predecessor(path, current):
+    """Project the exact expected uncertain diagnostic before older source checks."""
+    if path != UX08_PAYMENT_EXPECTED_DIAGNOSTIC_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 expected payment diagnostic retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_EXPECTED_DIAGNOSTIC_BASE,UX08_PAYMENT_EXPECTED_DIAGNOSTIC_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 expected payment diagnostic matches its exact reviewed source',current==source)
     return base
 
 
@@ -694,6 +713,7 @@ def run(tmp):
               browser_commands==[payment_ext['browser_addition_after'],payment_ext['browser_addition']])
         for path,expected_hash in payment_ext['source_sha256'].items():
             current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=ux08_payment_expected_diagnostic_predecessor(path,current)
             current=ux08_payment_form_label_predecessor(path,current)
             current=ux08_payment_form_diagnostic_predecessor(path,current)
             current=ux08_payment_current_publication_predecessor(path,current)
