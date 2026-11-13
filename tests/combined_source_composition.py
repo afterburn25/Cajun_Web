@@ -346,6 +346,13 @@ UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_MODIFIED = frozenset((
     'tests/acceptance_artifacts_test.py',
     'tests/hosting_checkout_http_fixture.php',
 ))
+UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE = '23ecdb4cbbcccdc14507727829fc52a0f782e7a4'
+UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE_TREE = 'df00a9ebf4d44e56febae02ec2a66753eaf4ad05'
+UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE = '3dc35fc9503ee3048da214bebfd9a1ad37ef6d17'
+UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE_TREE = '83188bd9846a1f4cf4e788bee7615110957228d5'
+UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED = frozenset((
+    '.github/workflows/consolidation-after-backups.yml',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2019,7 +2026,8 @@ def validate_ux08_inbox_record_fix_source(root):
     base_entries = entries(root, UX08_INBOX_RECORD_FIX_BASE)
     source_entries = entries(root, UX08_INBOX_RECORD_FIX_SOURCE)
     for path in sorted(UX08_INBOX_RECORD_FIX_MODIFIED):
-        current = project_ux08_agreement_link_fix(root, path, ordinary(root, path))
+        current = project_ux08_payment_outcome_proof_fix(root, path, ordinary(root, path))
+        current = project_ux08_agreement_link_fix(root, path, current)
         source = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_INBOX_RECORD_FIX_BASE + ':' + path)
         require(current == source
@@ -2031,6 +2039,7 @@ def validate_ux08_inbox_record_fix_source(root):
 
 def project_ux08_inbox_record_fix(root, path, current):
     """Restore the first inbox-read correction before older source projections."""
+    current = project_ux08_payment_outcome_proof_fix(root, path, current)
     current = project_ux08_agreement_link_fix(root, path, current)
     if path not in UX08_INBOX_RECORD_FIX_MODIFIED:
         return current
@@ -2225,6 +2234,49 @@ def project_ux08_billing_network_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 billing network fix changed before predecessor projection')
+    return base
+
+
+def validate_ux08_payment_outcome_proof_fix_source(root):
+    """Bind the complete ordered payment-outcome proof to the executable fixture body."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE_TREE,
+            'UX-08 payment outcome proof source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE,
+        UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE,
+                  UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED)],
+            'UX-08 payment outcome proof changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE)
+    source_entries = entries(root, UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE)
+    for path in sorted(UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_payment_outcome_proof_fix(root, path, current) == base
+                and project_ux08_payment_outcome_proof_fix(root, path, base) == base,
+                'UX-08 payment outcome proof identity or projection changed: ' + path)
+
+
+def project_ux08_payment_outcome_proof_fix(root, path, current):
+    """Restore the accepted fulfillment-lock proof head for older receipts."""
+    if path not in UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 payment outcome proof changed before predecessor projection: ' + path)
     return base
 
 
@@ -3455,6 +3507,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_payment_outcome_proof_fix_source(root)
     validate_ux08_payment_fulfillment_validation_lock_fix_source(root)
     validate_ux08_payment_fulfillment_lock_fix_source(root)
     validate_ux08_payment_expected_diagnostic_fix_source(root)
