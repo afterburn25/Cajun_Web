@@ -29,6 +29,11 @@ UX08_PAYMENT_CURRENT_PUBLICATION_BASE_TREE = '2a49c5e3d0c1f11ce685c5d5b67bb582e0
 UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE = '7a9278ecaeb52f8bdedc3abb002ae3db4d02d77f'
 UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE_TREE = '8d8c1464167acf31267e413ddba1a43a86eab442'
 UX08_PAYMENT_CURRENT_PUBLICATION_PATH = 'tests/hosting_payment_cases.py'
+UX08_PAYMENT_FORM_DIAGNOSTIC_BASE = '664ae9caae50d8b3ad90380fb9f19d5359e45aba'
+UX08_PAYMENT_FORM_DIAGNOSTIC_BASE_TREE = '6aee69485150129560d5b20f2ad5a51c66409c27'
+UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE = '7924d274d1ac3e34592e2522b8f4679ddc7c5161'
+UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE_TREE = '84322e980292df81182998e1f0ad8a9c521b8434'
+UX08_PAYMENT_FORM_DIAGNOSTIC_PATH = 'tests/hosting_payment_cases.py'
 UX08_PAYMENT_ARTIFACT_OVERLAYS = frozenset((
     'site/app/settings/database_schemas.php',
     'site/portal/controllers/router.php',
@@ -86,6 +91,20 @@ def ux08_payment_current_publication_predecessor(path, current):
           and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE_TREE
           and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_CURRENT_PUBLICATION_BASE,UX08_PAYMENT_CURRENT_PUBLICATION_SOURCE],cwd=ROOT).returncode==0)
     check('UX-08 current payment publication overlay matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_form_diagnostic_predecessor(path, current):
+    """Project precise payment-form diagnostics before older acceptance source checks."""
+    if path != UX08_PAYMENT_FORM_DIAGNOSTIC_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FORM_DIAGNOSTIC_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 payment form diagnostics retain exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_DIAGNOSTIC_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_DIAGNOSTIC_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FORM_DIAGNOSTIC_BASE,UX08_PAYMENT_FORM_DIAGNOSTIC_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 payment form diagnostics match their exact reviewed source',current==source)
     return base
 
 
@@ -656,6 +675,7 @@ def run(tmp):
               browser_commands==[payment_ext['browser_addition_after'],payment_ext['browser_addition']])
         for path,expected_hash in payment_ext['source_sha256'].items():
             current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=ux08_payment_form_diagnostic_predecessor(path,current)
             current=ux08_payment_current_publication_predecessor(path,current)
             check('Hosting payment acceptance source identity '+path,
                   hashlib.sha256(current).hexdigest()==expected_hash)
