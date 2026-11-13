@@ -49,6 +49,11 @@ UX08_PAYMENT_FULFILLMENT_LOCK_BASE_TREE = '21b2bbf55456c7248360668f68bccdcfca6de
 UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE = 'b31974fa6ed2c2993885f6465bedad47898cbf62'
 UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE_TREE = '2e83d16b5e6081230bf4107e81a09d6ddd46ff08'
 UX08_PAYMENT_FULFILLMENT_LOCK_PATH = 'tests/hosting_checkout_http_fixture.php'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE = '3fe8b8375b82640b9f6d2e05260032cc6cbb9b72'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE_TREE = '0ce09dc7e16832180eeac4d427d2be6aee9a62c3'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE = '4a539bdea263e63af30df66f427528c0231022bb'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE_TREE = 'c069fcd7cf7bb9b4eecdfd94ff4e4abbe54cb98d'
+UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_PATH = 'tests/hosting_checkout_http_fixture.php'
 UX08_PAYMENT_ARTIFACT_OVERLAYS = frozenset((
     'site/app/settings/database_schemas.php',
     'site/portal/controllers/router.php',
@@ -162,6 +167,20 @@ def ux08_payment_fulfillment_lock_predecessor(path, current):
           and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE_TREE
           and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FULFILLMENT_LOCK_BASE,UX08_PAYMENT_FULFILLMENT_LOCK_SOURCE],cwd=ROOT).returncode==0)
     check('UX-08 synthetic fulfillment lock fix matches its exact reviewed source',current==source)
+    return base
+
+
+def ux08_payment_fulfillment_validation_lock_predecessor(path, current):
+    """Project the exact synthetic-fulfillment validation lock before older source checks."""
+    if path != UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_PATH:
+        return current
+    source=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(['git','cat-file','blob',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('UX-08 synthetic fulfillment validation lock fix retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()==UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_BASE,UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_SOURCE],cwd=ROOT).returncode==0)
+    check('UX-08 synthetic fulfillment validation lock fix matches its exact reviewed source',current==source)
     return base
 
 
@@ -732,6 +751,7 @@ def run(tmp):
               browser_commands==[payment_ext['browser_addition_after'],payment_ext['browser_addition']])
         for path,expected_hash in payment_ext['source_sha256'].items():
             current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=ux08_payment_fulfillment_validation_lock_predecessor(path,current)
             current=ux08_payment_fulfillment_lock_predecessor(path,current)
             current=ux08_payment_expected_diagnostic_predecessor(path,current)
             current=ux08_payment_form_label_predecessor(path,current)
