@@ -440,7 +440,10 @@ jobs:
           native = driver.validate_native(native_raw, (root/'tests/hosting_checkout_native.php').read_text(), os.environ['CWP_PHP_VERSION'])
           payment_raw = (qa/'hosting-payment-native-results.json').read_bytes()
           payment = json.loads(payment_raw)
-          payment_labels = re.findall(r"\bhp_(?:ok|deny)\('([^']*)'", (root/'tests/hosting_payment_native.php').read_text())
+          payment_source = (root/'tests/hosting_payment_native.php').read_text().split('\ntry {\n', 1)[1]
+          payment_tokens = re.findall(r"\bhp_(?:(?:ok|deny)\('([^']*)'|cross_schema_fk_refused\('([^']*)')", payment_source)
+          payment_labels = [literal or f'Cross-database {child} relationship is refused before schema adoption'
+                            for literal, child in payment_tokens]
           browser = json.loads((qa/'hosting-checkout-http-results.json').read_bytes())
           environment = json.loads((qa/'native-environment-results.json').read_bytes())
           require(environment['passed'] is True and all(row['passed'] is True for row in environment['checks']), 'Actual selected environment failed')
