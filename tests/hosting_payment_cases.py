@@ -140,8 +140,30 @@ window.Accept={dispatchData:function(data,done){
             client_password, 'SYNTHETIC_CHECKOUT_PROVIDER_KEY', 'synthetic-local-opaque-token',
             'transaction_key', 'api_login_id', 'credential_sha256', 'mapping_json', 'plan_json'))
 
-    def fill_card(page, action='hosting_catalog_checkout_pay'):
+    def fill_card(page, outcome, action='hosting_catalog_checkout_pay'):
         target = form(page, action)
+        body = page.inner_text('body')
+        check('Hosting payment page retains the exact selected request before tokenization',
+              parse_qs(urlparse(page.url).query).get('checkout_result') == [outcome['request_id']])
+        check('Hosting payment page retains the exact selected invoice before tokenization',
+              outcome['invoice_reference'] in body)
+        check('Hosting payment page exposes one authoritative payment stage',
+              page.locator('[data-hosting-payment-stage]').count() == 1)
+        check('Hosting payment page remains awaiting payment before tokenization',
+              page.get_by_text('Awaiting payment', exact=True).count() >= 1)
+        check('Configured hosting payment never silently downgrades to unavailable',
+              'Online card checkout is currently unavailable' not in body)
+        check('Hosting payment page exposes one exact payment form', target.count() == 1)
+        check('Hosting payment form exposes one unnamed card-number field',
+              target.locator('[data-card-number]').count() == 1)
+        check('Hosting payment form exposes one token descriptor field',
+              target.locator('[name="descriptor"]').count() == 1)
+        check('Hosting payment form exposes one opaque payment-token field',
+              target.locator('[name="payment_token"]').count() == 1)
+        check('Hosting payment form exposes one exact attempt identity',
+              target.locator('[name="attempt_key"]').count() == 1)
+        check('Hosting payment form never submits raw card or security-code fields',
+              not target.locator('[name="card_number"],[name="cvv"],[name="card_code"]').count())
         check('Hosting payment form is the actual tokenized-card form',
               target.count() == 1 and target.locator('[data-card-number]').count() == 1
               and target.locator('[name="descriptor"]').count() == 1
@@ -160,7 +182,7 @@ window.Accept={dispatchData:function(data,done){
         return target
 
     def submit_card(page, outcome):
-        target = fill_card(page)
+        target = fill_card(page, outcome)
         submitted = dict(target.locator('input[name]').evaluate_all(
             'nodes=>nodes.map(node=>[node.name,node.value])'))
         configured = fixture('payment-outcome', {'request_id': outcome['request_id'],
