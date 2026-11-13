@@ -2316,7 +2316,7 @@ def validate_ux08_hosted_mirror_contract_fix_source(root):
 
 
 def project_ux08_hosted_mirror_contract_fix(root, path, current):
-    """Restore the accepted dynamic-outcome proof head for older receipts."""
+    """Project the hosted-mirror contract implementation to its accepted base."""
     if path not in UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
