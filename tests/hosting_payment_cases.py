@@ -143,28 +143,29 @@ window.Accept={dispatchData:function(data,done){
     def fill_card(page, outcome, action='hosting_catalog_checkout_pay'):
         target = form(page, action)
         body = page.inner_text('body')
-        check('Hosting payment page retains the exact selected request before tokenization',
+        label = outcome['outcome'] + ' journey: '
+        check(label + 'hosting payment page retains the exact selected request before tokenization',
               parse_qs(urlparse(page.url).query).get('checkout_result') == [outcome['request_id']])
-        check('Hosting payment page retains the exact selected invoice before tokenization',
+        check(label + 'hosting payment page retains the exact selected invoice before tokenization',
               outcome['invoice_reference'] in body)
-        check('Hosting payment page exposes one authoritative payment stage',
+        check(label + 'hosting payment page exposes one authoritative payment stage',
               page.locator('[data-hosting-payment-stage]').count() == 1)
-        check('Hosting payment page remains awaiting payment before tokenization',
+        check(label + 'hosting payment page remains awaiting payment before tokenization',
               page.get_by_text('Awaiting payment', exact=True).count() >= 1)
-        check('Configured hosting payment never silently downgrades to unavailable',
+        check(label + 'configured hosting payment never silently downgrades to unavailable',
               'Online card checkout is currently unavailable' not in body)
-        check('Hosting payment page exposes one exact payment form', target.count() == 1)
-        check('Hosting payment form exposes one unnamed card-number field',
+        check(label + 'hosting payment page exposes one exact payment form', target.count() == 1)
+        check(label + 'hosting payment form exposes one unnamed card-number field',
               target.locator('[data-card-number]').count() == 1)
-        check('Hosting payment form exposes one token descriptor field',
+        check(label + 'hosting payment form exposes one token descriptor field',
               target.locator('[name="descriptor"]').count() == 1)
-        check('Hosting payment form exposes one opaque payment-token field',
+        check(label + 'hosting payment form exposes one opaque payment-token field',
               target.locator('[name="payment_token"]').count() == 1)
-        check('Hosting payment form exposes one exact attempt identity',
+        check(label + 'hosting payment form exposes one exact attempt identity',
               target.locator('[name="attempt_key"]').count() == 1)
-        check('Hosting payment form never submits raw card or security-code fields',
+        check(label + 'hosting payment form never submits raw card or security-code fields',
               not target.locator('[name="card_number"],[name="cvv"],[name="card_code"]').count())
-        check('Hosting payment form is the actual tokenized-card form',
+        check(label + 'hosting payment form is the actual tokenized-card form',
               target.count() == 1 and target.locator('[data-card-number]').count() == 1
               and target.locator('[name="descriptor"]').count() == 1
               and target.locator('[name="payment_token"]').count() == 1

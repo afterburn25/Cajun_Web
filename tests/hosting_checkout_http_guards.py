@@ -2,6 +2,7 @@
 import copy
 import json
 from pathlib import Path
+import re
 import tempfile
 
 import hosting_checkout_http_browser as runner
@@ -119,23 +120,18 @@ def main():
     payment_fixture = source['tests/hosting_checkout_http_fixture.php']
     payment_runner = source['tests/hosting_checkout_http_browser.py']
     payment_cases = source['tests/hosting_payment_cases.py']
-    payment_diagnostics = (
-        'Hosting payment page retains the exact selected request before tokenization',
-        'Hosting payment page retains the exact selected invoice before tokenization',
-        'Hosting payment page exposes one authoritative payment stage',
-        'Hosting payment page remains awaiting payment before tokenization',
-        'Configured hosting payment never silently downgrades to unavailable',
-        'Hosting payment page exposes one exact payment form',
-        'Hosting payment form exposes one unnamed card-number field',
-        'Hosting payment form exposes one token descriptor field',
-        'Hosting payment form exposes one opaque payment-token field',
-        'Hosting payment form exposes one exact attempt identity',
-        'Hosting payment form never submits raw card or security-code fields',
-    )
+    payment_diagnostics = re.findall(r"check\(label \+ '([^']+)'", payment_cases)
     check('Payment form failure records precise bounded page and tokenization diagnostics',
-          all(payment_cases.count("check('" + label) == 1 for label in payment_diagnostics)
-          and payment_cases.count("check('Hosting payment form is the actual tokenized-card form'") == 1
+          len(payment_diagnostics) == len(set(payment_diagnostics)) == 12
+          and payment_diagnostics[-1] == 'hosting payment form is the actual tokenized-card form'
+          and "label = outcome['outcome'] + ' journey: '" in payment_cases
           and "target = fill_card(page, outcome)" in payment_cases)
+    expanded_diagnostics = [outcome + ' journey: ' + label
+                            for outcome in ('declined', 'uncertain', 'approved')
+                            for label in payment_diagnostics]
+    check('All three hosting payment journeys emit unique form diagnostics',
+          len(expanded_diagnostics) == len(set(expanded_diagnostics)) == 36
+          and "check('Hosting payment form is the actual tokenized-card form'" not in payment_cases)
     check('Payment continuation binds the exact current billing publication under the checkout lock',
           "'payment_publication': result['billing_options']['monthly']" in payment_runner
           and "fixture('payment-state', {" in payment_cases
