@@ -353,6 +353,13 @@ UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE_TREE = '83188bd9846a1f4cf4e788bee761511095
 UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED = frozenset((
     '.github/workflows/consolidation-after-backups.yml',
 ))
+UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE = 'a2c4e8067fe279a31aa51c8793cce8693c857aca'
+UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE_TREE = 'afd3e701dfa2f4334931ad33194d0c9dac865d29'
+UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE = '73fb770254a5dc4a1da46f0e0489251d3b30c3ab'
+UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE_TREE = 'e7f0c2bbe7c9ceb9e7e119b34f8fe197c2210572'
+UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED = frozenset((
+    'tests/acceptance_artifacts_test.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2280,6 +2287,49 @@ def project_ux08_payment_outcome_proof_fix(root, path, current):
     return base
 
 
+def validate_ux08_hosted_mirror_contract_fix_source(root):
+    """Bind the mandatory Application and checkout gates to one hosted mirror contract."""
+    require(git(root, 'rev-parse', UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE_TREE,
+            'UX-08 hosted mirror contract source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE,
+        UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE,
+                  UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED)],
+            'UX-08 hosted mirror contract changed a different path or status set')
+    base_entries = entries(root, UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE)
+    source_entries = entries(root, UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE)
+    for path in sorted(UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_hosted_mirror_contract_fix(root, path, current) == base
+                and project_ux08_hosted_mirror_contract_fix(root, path, base) == base,
+                'UX-08 hosted mirror contract identity or projection changed: ' + path)
+
+
+def project_ux08_hosted_mirror_contract_fix(root, path, current):
+    """Restore the accepted dynamic-outcome proof head for older receipts."""
+    if path not in UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 hosted mirror contract changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
     """Bind the fixture-only transaction for retained order validation."""
     require(git(root, 'rev-parse', UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_BASE + '^{tree}').decode().strip()
@@ -2298,7 +2348,7 @@ def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_SOURCE)
     for path in sorted(UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_hosted_mirror_contract_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_BASE + ':' + path)
         require(current == source
@@ -2310,6 +2360,7 @@ def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
 
 def project_ux08_payment_fulfillment_validation_lock_fix(root, path, current):
     """Restore the accepted fulfillment-lock proof head for older receipts."""
+    current = project_ux08_hosted_mirror_contract_fix(root, path, current)
     if path not in UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_SOURCE + ':' + path)
@@ -3507,6 +3558,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_hosted_mirror_contract_fix_source(root)
     validate_ux08_payment_outcome_proof_fix_source(root)
     validate_ux08_payment_fulfillment_validation_lock_fix_source(root)
     validate_ux08_payment_fulfillment_lock_fix_source(root)
