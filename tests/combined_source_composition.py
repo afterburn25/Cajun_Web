@@ -330,6 +330,14 @@ UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_MODIFIED = frozenset((
     'tests/acceptance_artifacts_test.py',
     'tests/hosting_checkout_http_fixture.php',
 ))
+UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE = 'deeb28699df09bd3d52c21e3f4c867735b431f54'
+UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE_TREE = '21b2bbf55456c7248360668f68bccdcfca6deb60'
+UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE = '90ebe4f4fc6950bc0adcbc0155fb07e1c77c3d42'
+UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE_TREE = 'f3119926a910e22167f9e93a5130114b82c407ab'
+UX08_PAYMENT_FULFILLMENT_LOCK_FIX_MODIFIED = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tests/hosting_checkout_http_fixture.php',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2212,6 +2220,49 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_ux08_payment_fulfillment_lock_fix_source(root):
+    """Bind the fixture-only staff-lock scope for closed synthetic fulfillment."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE_TREE,
+            'UX-08 synthetic fulfillment lock source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE,
+        UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE,
+                  UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_PAYMENT_FULFILLMENT_LOCK_FIX_MODIFIED)],
+            'UX-08 synthetic fulfillment lock changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE)
+    source_entries = entries(root, UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE)
+    for path in sorted(UX08_PAYMENT_FULFILLMENT_LOCK_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_payment_fulfillment_lock_fix(root, path, current) == base
+                and project_ux08_payment_fulfillment_lock_fix(root, path, base) == base,
+                'UX-08 synthetic fulfillment lock identity or projection changed: ' + path)
+
+
+def project_ux08_payment_fulfillment_lock_fix(root, path, current):
+    """Restore the accepted expected-diagnostic proof head for older receipts."""
+    if path not in UX08_PAYMENT_FULFILLMENT_LOCK_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FULFILLMENT_LOCK_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 synthetic fulfillment lock changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_expected_diagnostic_fix_source(root):
     """Bind exact capture of the deliberate uncertain gateway diagnostic."""
     require(git(root, 'rev-parse', UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_BASE + '^{tree}').decode().strip()
@@ -2230,7 +2281,7 @@ def validate_ux08_payment_expected_diagnostic_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_SOURCE)
     for path in sorted(UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_payment_fulfillment_lock_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_BASE + ':' + path)
         require(current == source
@@ -2242,6 +2293,7 @@ def validate_ux08_payment_expected_diagnostic_fix_source(root):
 
 def project_ux08_payment_expected_diagnostic_fix(root, path, current):
     """Restore the accepted unique-label successor before older source receipts."""
+    current = project_ux08_payment_fulfillment_lock_fix(root, path, current)
     if path not in UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_EXPECTED_DIAGNOSTIC_FIX_SOURCE + ':' + path)
@@ -3351,6 +3403,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_payment_fulfillment_lock_fix_source(root)
     validate_ux08_payment_expected_diagnostic_fix_source(root)
     validate_ux08_payment_form_label_fix_source(root)
     validate_ux08_payment_form_diagnostic_fix_source(root)
