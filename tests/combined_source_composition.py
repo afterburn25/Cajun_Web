@@ -304,6 +304,15 @@ UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_BASE_TREE = '54f80ab712add0a8d764f6c8275423
 UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE = '9a726b4431b077096bd3a4d1e2755d208b793d16'
 UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE_TREE = '55c0424d14009e39fa93c7afb1be59b731abc3ae'
 UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_PATH = 'tests/acceptance_artifacts_test.py'
+UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE = '664ae9caae50d8b3ad90380fb9f19d5359e45aba'
+UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE_TREE = '6aee69485150129560d5b20f2ad5a51c66409c27'
+UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE = '62a3f1d97bb46b8ba3d92542ed3d03ff705a2012'
+UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE_TREE = '222c744e4518f22c1c42485926218a6cda8a1db6'
+UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_MODIFIED = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tests/hosting_checkout_http_guards.py',
+    'tests/hosting_payment_cases.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2186,6 +2195,49 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_ux08_payment_form_diagnostic_fix_source(root):
+    """Bind the precise safe payment-form diagnostic successor and its proof."""
+    require(git(root, 'rev-parse', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE_TREE
+            and git(root, 'rev-parse', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE + '^{tree}').decode().strip()
+            == UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE_TREE,
+            'UX-08 payment form diagnostic source tree changed')
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE,
+        UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE,
+                  UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_MODIFIED)],
+            'UX-08 payment form diagnostic changed a different path or status set')
+    base_entries = entries(root, UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE)
+    source_entries = entries(root, UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE)
+    for path in sorted(UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_ux08_payment_form_diagnostic_fix(root, path, current) == base
+                and project_ux08_payment_form_diagnostic_fix(root, path, base) == base,
+                'UX-08 payment form diagnostic identity or projection changed: ' + path)
+
+
+def project_ux08_payment_form_diagnostic_fix(root, path, current):
+    """Restore the exact accepted #388 predecessor before older source receipts."""
+    if path not in UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', UX08_PAYMENT_FORM_DIAGNOSTIC_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current UX-08 payment form diagnostic changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_artifact_projection_fix_source(root):
     """Bind the exact artifact-source predecessor projection for the payment overlay."""
     require(git(root, 'rev-parse', UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_BASE + '^{tree}').decode().strip()
@@ -2204,7 +2256,7 @@ def validate_ux08_payment_artifact_projection_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE)
     path = UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_PATH
-    current = ordinary(root, path)
+    current = project_ux08_payment_form_diagnostic_fix(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_BASE + ':' + path)
     require(current == source
@@ -2216,6 +2268,7 @@ def validate_ux08_payment_artifact_projection_fix_source(root):
 
 def project_ux08_payment_artifact_projection_fix(root, path, current):
     """Restore the reviewed current-publication proof head for older receipts."""
+    current = project_ux08_payment_form_diagnostic_fix(root, path, current)
     if path != UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
@@ -2290,7 +2343,7 @@ def validate_ux08_payment_current_publication_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE)
     for path in sorted(UX08_PAYMENT_CURRENT_PUBLICATION_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_ux08_payment_form_diagnostic_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_PAYMENT_CURRENT_PUBLICATION_FIX_BASE + ':' + path)
         require(current == source
@@ -2302,6 +2355,7 @@ def validate_ux08_payment_current_publication_fix_source(root):
 
 def project_ux08_payment_current_publication_fix(root, path, current):
     """Restore the accepted publication-pin proof head for older receipts."""
+    current = project_ux08_payment_form_diagnostic_fix(root, path, current)
     current = project_ux08_payment_artifact_projection_fix(root, path, current)
     if path not in UX08_PAYMENT_CURRENT_PUBLICATION_FIX_MODIFIED:
         return current
@@ -3192,6 +3246,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     validate_ux08_checkout_pin_fix_source(root)
+    validate_ux08_payment_form_diagnostic_fix_source(root)
     validate_ux08_inbox_payment_readiness_fix_source(root)
     validate_ux08_payment_artifact_projection_fix_source(root)
     validate_ux08_payment_current_publication_fix_source(root)
