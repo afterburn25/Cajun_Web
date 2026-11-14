@@ -8,6 +8,7 @@ use InvalidArgumentException;
 /** Immutable source/creation binding; native code must separately establish current authority. */
 final readonly class DraftOrigin
 {
+    public const MAX_CONTENT_JSON_BYTES=65536;
     public string $json;
     public string $fingerprint;
     private function __construct(public array $data) {
@@ -21,6 +22,7 @@ final readonly class DraftOrigin
         return json_encode(self::contentPayload($content),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
     }
     public static function contentFromJson(string $json):DraftContent {
+        if(strlen($json)>self::MAX_CONTENT_JSON_BYTES)throw new InvalidArgumentException('Copied draft content exceeds its limit.');
         $v=json_decode($json,true,8,JSON_THROW_ON_ERROR);
         if(!is_array($v)||array_keys($v)!==['to','cc','bcc','subject','body']||!is_string($v['subject'])||!is_string($v['body']))throw new InvalidArgumentException('Invalid copied draft content.');
         foreach(['to','cc','bcc'] as $k)if(!is_array($v[$k]))throw new InvalidArgumentException('Invalid copied draft recipients.');

@@ -14,6 +14,9 @@ function origin_check(string $name, callable $test): void {
 function origin_denied(callable $test): bool {
     try {$test();return false;} catch (InvalidArgumentException|JsonException) {return true;}
 }
+function origin_failure(callable $test): ?Throwable {
+    try {$test();return null;} catch (InvalidArgumentException|JsonException $error) {return $error;}
+}
 function prepared_origin(string $mode='reply'): ReplyDraft {
     return ReplyDraft::prepare($mode,
         "From: Source <source@example.invalid>\r\n".
@@ -63,6 +66,18 @@ foreach([
 ] as $label=>$mutate) origin_check('origin refuses '.$label,fn()=>origin_denied(fn()=>DraftOrigin::fromJson($mutate(synthetic_origin()->json))));
 origin_check('content rejects unknown fields',fn()=>origin_denied(fn()=>DraftOrigin::contentFromJson('{"to":[],"cc":[],"bcc":[],"subject":"s","body":"b","extra":true}')));
 origin_check('content rejects noncanonical address normalization',fn()=>origin_denied(fn()=>DraftOrigin::contentFromJson('{"to":["A@EXAMPLE.invalid"],"cc":[],"bcc":[],"subject":"s","body":"b"}')));
+origin_check('largest escape-heavy valid draft content remains below the stored JSON bound',function(){
+    $content=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],str_repeat('\\',200),str_repeat('\\',20000));
+    $json=DraftOrigin::contentJson($content);
+    return strlen($json)<=DraftOrigin::MAX_CONTENT_JSON_BYTES&&DraftOrigin::contentFromJson($json)==$content;
+});
+origin_check('content at the exact JSON byte bound reaches the parser',function(){
+    return origin_failure(fn()=>DraftOrigin::contentFromJson(str_repeat('x',DraftOrigin::MAX_CONTENT_JSON_BYTES))) instanceof JsonException;
+});
+origin_check('oversized content JSON is refused before parsing',function(){
+    $error=origin_failure(fn()=>DraftOrigin::contentFromJson(str_repeat('x',DraftOrigin::MAX_CONTENT_JSON_BYTES+1)));
+    return $error instanceof InvalidArgumentException&&$error->getMessage()==='Copied draft content exceeds its limit.';
+});
 origin_check('oversized origin is refused before parsing',fn()=>origin_denied(fn()=>DraftOrigin::fromJson(str_repeat('x',16385))));
 
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);
