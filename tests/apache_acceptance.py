@@ -110,6 +110,7 @@ PHPIniDir /etc/php/{PHP_VERSION}/apache2
                     check(label+suffix+' direct private/internal/listing denial '+n,session.get(url+'/'+n).status_code==403)
                 for n in ['app/mail/replies.php','database/schema/mail_replies_schema.php','database/migrations/mail_replies_migrate.php','includes/foundation/mail-compose/CopiedDraftSource.php','includes/foundation/mail-compose/DraftOrigin.php','includes/foundation/mail-compose/MessageThread.php','includes/foundation/mail-compose/ReplyDraft.php','includes/foundation/mail-compose/ReplyMetadata.php']:
                     check(label+suffix+' direct reply/private denial '+n,session.get(url+'/'+n).status_code==403)
+                check(label+suffix+' direct private/internal/listing denial includes/foundation/mail-receiving/AttachmentIndex.php',session.get(url+'/includes/foundation/mail-receiving/AttachmentIndex.php').status_code==403)
                 for area in ['storage','upload']:
                     for filename,body in [('probe.php','<?php echo "EXECUTABLE-UPLOAD-MUST-NOT-RUN";'),('private.txt','PRIVATE-MUST-NOT-LEAK')]:
                         source=work/('fixture-'+filename);source.write_text(body)

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,EndpointResolver,ProbeFailure};
-use CajunWebPro\Foundation\MailReceiving\{MessageReader,BodyDecoder,ReceivingFailure};
+use CajunWebPro\Foundation\MailReceiving\{MessageReader,BodyDecoder,AttachmentIndex,ReceivingFailure};
 require_once CWP_CODE_ROOT.'/app/mail/inbox.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_messages_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_messages_migrate.php';
@@ -39,7 +39,8 @@ function mail_message_content(#[\SensitiveParameter] array $response,string $val
     if(strlen($response['raw'])>262144)throw new ReceivingFailure('limit');
     if((string)strlen($response['raw'])!==$response['bytes'])throw new ReceivingFailure('protocol');
     require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/bootstrap.php';
-    return ['folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$response['seen'],'bytes'=>$response['bytes']]+BodyDecoder::decode($response['raw']);
+    require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/AttachmentIndex.php';
+    return ['folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$response['seen'],'bytes'=>$response['bytes']]+BodyDecoder::decode($response['raw'])+['attachments'=>AttachmentIndex::list($response['raw'])];
 }
 function mail_message_record(array $started,string $code,int $elapsed,#[\SensitiveParameter] ?array $content=null): void {
     if(!array_key_exists($code,mail_message_outcomes())||($code==='ok')!==($content!==null))throw new LogicException('Invalid local message result.');
@@ -51,11 +52,12 @@ function mail_message_record(array $started,string $code,int $elapsed,#[\Sensiti
 }
 /**
  * Internal finite request engine. Raw MIME never returns. A copied-message
- * request consumes it immediately into one non-serializable CopiedDraftSource.
+ * or attachment request consumes it immediately into a bounded derived value.
  * Test resolver/transport seams are never exposed through owner/HTTP state.
  */
-function mail_message_request_internal(string $id,int $revision,string $validity,string $uid,?string $copyMode,?callable $resolver,?callable $transport,?string $noticeHandle):array {
+function mail_message_request_internal(string $id,int $revision,string $validity,string $uid,?string $copyMode,?int $attachmentIndex,?callable $resolver,?callable $transport,?string $noticeHandle):array {
     if($copyMode!==null&&!in_array($copyMode,['reply','forward'],true))throw new LogicException('Invalid copied-message request mode.');
+    if($copyMode!==null&&$attachmentIndex!==null)throw new LogicException('Message source may have only one bounded consumer.');
     mail_message_identity($validity,$uid);
     if($noticeHandle!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_handle($noticeHandle);}
     if(db()->inTransaction())throw new LogicException('Message reads cannot run inside a transaction.');
@@ -79,7 +81,7 @@ function mail_message_request_internal(string $id,int $revision,string $validity
     catch(InvalidArgumentException) {$code='destination';}
     catch(ProbeFailure $e) {$code=$e->getMessage();}
     catch(Throwable) {$code='connection';}
-    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle,$copyMode):array {
+    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle,$copyMode,$attachmentIndex):array {
         $authorize=static function()use($started,$noticeHandle):array {
             try {[$actor,$row]=mail_message_authority($started['account_id'],$started['account_revision']);
                 if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');
@@ -87,7 +89,7 @@ function mail_message_request_internal(string $id,int $revision,string $validity
                 return $row;
             }catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;throw new ReceivingFailure('access_changed');}
         };
-        $content=null;$source=null;$copyUnsupported=false;
+        $content=null;$source=null;$attachmentSource=null;$copyUnsupported=false;
         try {$current=$authorize();}catch(ReceivingFailure) {$code='access_changed';}
         if($code==='ok') {
             try {$secrets=mail_accounts_unseal($current['id'],$current['credentials']);mail_accounts_passwords($secrets);}
@@ -102,26 +104,39 @@ function mail_message_request_internal(string $id,int $revision,string $validity
                         try{$source=\CajunWebPro\Foundation\MailCompose\CopiedDraftSource::fromRead((int)$started['actor_id'],$started['account_id'],(int)$started['account_revision'],$started['uidvalidity'],$started['uid'],$started['id'],$copyMode,$response['raw']);}
                         catch(InvalidArgumentException){$copyUnsupported=true;$source=null;}
                     }
+                    if($attachmentIndex!==null)$attachmentSource=$response['raw'];
                     $authorize();
-                }catch(ReceivingFailure $e) {$code=$e->getMessage();$content=null;$source=null;$copyUnsupported=false;}
-                catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$content=null;$source=null;$copyUnsupported=false;}
+                }catch(ReceivingFailure $e) {$code=$e->getMessage();$content=null;$source=null;$attachmentSource=null;$copyUnsupported=false;}
+                catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$content=null;$source=null;$attachmentSource=null;$copyUnsupported=false;}
                 finally {unset($secrets,$response);}
             }
         }
         mail_message_record($started,$code,(int)((hrtime(true)-$begin)/1e6),$content);
         if($copyUnsupported)throw new InvalidArgumentException('This message cannot be copied into a supported draft. The successful read was recorded without saving message content.');
+        $attachment=null;
+        try {if($attachmentIndex!==null&&$code==='ok'){
+            if(!is_string($attachmentSource))throw new LogicException('Attachment source is unavailable.');
+            $attachment=AttachmentIndex::extract($attachmentSource,$attachmentIndex);
+        }} finally {unset($attachmentSource);}
         $result=['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
-        return ['result'=>$result,'source'=>$source];
+        return $attachmentIndex===null?['result'=>$result,'source'=>$source]:['result'=>$result,'attachment'=>$attachment];
     });
 }
 /** Existing exact-message display behavior and signature remain unchanged. */
 function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null):array {
-    return mail_message_request_internal($id,$revision,$validity,$uid,null,$resolver,$transport,$noticeHandle)['result'];
+    return mail_message_request_internal($id,$revision,$validity,$uid,null,null,$resolver,$transport,$noticeHandle)['result'];
 }
 /** Dedicated raw-to-derived copy read; no raw bytes or generic retain flag escape. */
 function mail_message_copy_source(string $id,int $revision,string $validity,string $uid,string $mode,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null):array {
     if(!in_array($mode,['reply','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
-    return mail_message_request_internal($id,$revision,$validity,$uid,$mode,$resolver,$transport,$noticeHandle);
+    return mail_message_request_internal($id,$revision,$validity,$uid,$mode,null,$resolver,$transport,$noticeHandle);
+}
+/** A protected attachment download is another recorded exact-message read. */
+function mail_message_attachment(string $id,int $revision,string $validity,string $uid,int $index,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {
+    if($index<0||$index>31)throw new InvalidArgumentException('This attachment is unavailable.');
+    $request=mail_message_request_internal($id,$revision,$validity,$uid,null,$index,$resolver,$transport,$noticeHandle);
+    $read=$request['result'];unset($read['content']);
+    return $read+['attachment'=>$request['attachment']];
 }
 function mail_message_history(string $id,int $page=1): array {
     [$actor]=mail_message_authority($id,null,false);if(!mail_messages_ready())return [];

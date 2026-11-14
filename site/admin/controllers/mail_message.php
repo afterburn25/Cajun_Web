@@ -17,10 +17,18 @@ function mail_message_admin_action(string $action): array {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
     $copyModes=['mail_message_reply'=>'reply','mail_message_forward'=>'forward'];
-    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read',...array_keys($copyModes)],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
+    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_attachment',...array_keys($copyModes)],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
     foreach($route as $key=>$value)if(posted($key,32)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
     if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
+    if($action==='mail_message_attachment') {
+        $index=posted('attachment',4);if(!is_string($index)||!preg_match('/\A(?:0|[1-9][0-9]?)\z/D',$index))throw new InvalidArgumentException('This attachment is unavailable.');
+        try {$read=mail_message_attachment($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],(int)$index,null,null,$route['notice']??null);}
+        catch(InvalidArgumentException) {flash('This attachment is unavailable.');redirect(admin_url('mail-message',$route));}
+        if($read['code']!=='ok'||$read['attachment']===null){flash(mail_message_outcome($read['code']));redirect(admin_url('mail-message',$route));}
+        $part=$read['attachment'];header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.$part['name'].'"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('Content-Length: '.strlen($part['bytes']));
+        if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo $part['bytes'];exit;
+    }
     $draftId=posted('draft_id',32);mail_drafts_id($draftId);[$sender,$senderRevision]=mail_drafts_reference(posted('sender',43));
     $created=mail_copied_draft_create($draftId,$route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],$copyModes[$action],$sender,$senderRevision,$route['notice']??null);
     if($created['state']==='read_failed')return $created['result'];
