@@ -395,6 +395,14 @@ RUNNER_MIRROR_PHASE_MODIFIED = frozenset((
 RUNNER_MIRROR_PHASE_ADDITIONS = frozenset((
     '.github/scripts/prepare_ubuntu_apt.py',
 ))
+RUNNER_KEYRING_ISOLATION_BASE = '9bc274f6fb71d1ef3bf20d110e2be986c2b5d833'
+RUNNER_KEYRING_ISOLATION_BASE_TREE = '47c9e065857f494c02de1a0f688e3c65af88c925'
+RUNNER_KEYRING_ISOLATION_SOURCE = '32bd7e9f6cb3da54921a291318a72a1ba99b8542'
+RUNNER_KEYRING_ISOLATION_SOURCE_TREE = '2bc03ae11a775a64519c3fee42576010219e66a0'
+RUNNER_KEYRING_ISOLATION_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2279,6 +2287,49 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_keyring_isolation_source(root):
+    """Bind the exact protected-keyring correction to its failed hosted source."""
+    require(git(root, 'rev-parse', RUNNER_KEYRING_ISOLATION_BASE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_ISOLATION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_KEYRING_ISOLATION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_ISOLATION_SOURCE_TREE,
+            'Runner keyring isolation source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_KEYRING_ISOLATION_SOURCE).decode().strip().split()
+            == [RUNNER_KEYRING_ISOLATION_BASE],
+            'Runner keyring isolation source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_KEYRING_ISOLATION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_KEYRING_ISOLATION_BASE, RUNNER_KEYRING_ISOLATION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_KEYRING_ISOLATION_MODIFIED)],
+            'Runner keyring isolation changed a different path or status set')
+    base_entries = entries(root, RUNNER_KEYRING_ISOLATION_BASE)
+    source_entries = entries(root, RUNNER_KEYRING_ISOLATION_SOURCE)
+    for path in sorted(RUNNER_KEYRING_ISOLATION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_keyring_isolation(root, path, current) == base
+                and project_runner_keyring_isolation(root, path, base) == base,
+                'Runner keyring isolation identity or projection changed: ' + path)
+
+
+def project_runner_keyring_isolation(root, path, current):
+    """Restore the failed hosted head only for the exact keyring successor paths."""
+    if path not in RUNNER_KEYRING_ISOLATION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner keyring isolation changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_mirror_phase_source(root):
     """Bind the exact extraction successor for GitHub scalar and fixture failures."""
     require(git(root, 'rev-parse', RUNNER_MIRROR_PHASE_BASE + '^{tree}').decode().strip()
@@ -2301,7 +2352,7 @@ def validate_runner_mirror_phase_source(root):
             and RUNNER_MIRROR_PHASE_ADDITIONS <= set(source_entries),
             'Runner mirror phase addition did not originate in its exact source')
     for path in sorted(RUNNER_MIRROR_PHASE_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_keyring_isolation(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_BASE + ':' + path)
         require(current == source
@@ -2310,7 +2361,7 @@ def validate_runner_mirror_phase_source(root):
                 and project_runner_mirror_phase(root, path, base) == base,
                 'Runner mirror phase identity or projection changed: ' + path)
     for path in sorted(RUNNER_MIRROR_PHASE_ADDITIONS):
-        require(ordinary(root, path)
+        require(project_runner_keyring_isolation(root, path, ordinary(root, path))
                 == git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
                 and mode(root, path) == source_entries[path][0] == '100644',
                 'Runner mirror phase addition identity changed: ' + path)
@@ -2318,6 +2369,7 @@ def validate_runner_mirror_phase_source(root):
 
 def project_runner_mirror_phase(root, path, current):
     """Project only modified extraction-successor paths to the failed proof head."""
+    current = project_runner_keyring_isolation(root, path, current)
     if path not in RUNNER_MIRROR_PHASE_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
@@ -3736,6 +3788,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_keyring_isolation_source(root)
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
