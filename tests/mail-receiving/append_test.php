@@ -95,6 +95,8 @@ check('Wire uses the fixed bounded APPEND sequence', $stream->commands() === [
 check('Literal transmits exact MIME once', $stream->literals() === [MIME]);
 check('Authority is checked at all four boundaries', $calls === 4);
 check('Accepted session closes', !$stream->opened());
+[$out,$stream] = exercise(prefix()."+ Ready for literal data\r\nCWA003 OK appended\r\n");
+check('Bounded APPEND continuation text is interoperable', $out instanceof AppendReceipt && $stream->literals()===[MIME]);
 
 foreach (['NO','BAD'] as $status) {
     [$out] = exercise(prefix()."+ \r\nCWA003 ".$status." private folder text\r\n");

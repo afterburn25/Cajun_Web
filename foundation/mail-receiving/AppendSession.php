@@ -186,7 +186,7 @@ final class AppendSession
             $go = $this->next();
             if ($go instanceof TaggedResponse && ($go->tokens()[0]->value ?? null) === $tag
                 && in_array(self::word($go->tokens()[1] ?? null), ['NO','BAD'], true)) throw new ReceivingFailure('folder');
-            if (!$go instanceof ContinuationResponse || count($go->tokens()) !== 1) throw new ReceivingFailure('protocol');
+            if (!$go instanceof ContinuationResponse) throw new ReceivingFailure('protocol');
             $this->requireAuthority();
 
             if (!method_exists($this->stream, 'fwriteLiteral')) throw new ReceivingFailure('protocol');
