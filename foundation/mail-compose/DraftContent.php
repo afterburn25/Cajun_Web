@@ -28,9 +28,14 @@ final readonly class DraftContent
     public array $bcc;
     public string $subject;
     public string $body;
+    /** Sanitized formatted-fragment bound; ComposeHtml::MAX_BYTES must match. */
+    public const MAX_HTML_BYTES = 61440;
+
+    /** Optional exact canonical formatted alternative. */
+    public ?string $html;
 
     /** Empty fields are allowed for an unfinished draft, never proof of send readiness. */
-    public function __construct(array $to, array $cc, array $bcc, string $subject, string $body)
+    public function __construct(array $to, array $cc, array $bcc, string $subject, string $body, ?string $html = null)
     {
         if (count($to)+count($cc)+count($bcc)>self::MAX_RECIPIENTS) {
             throw new InvalidArgumentException('A draft supports at most 20 recipients in total.');
@@ -41,6 +46,20 @@ final readonly class DraftContent
         $this->bcc=self::recipients($bcc,$seen);
         $this->subject=self::text($subject,self::MAX_SUBJECT_BYTES,false);
         $this->body=self::text($body,self::MAX_BODY_BYTES,true);
+        if ($html===null || $html==='') {
+            $this->html=null;
+            return;
+        }
+        try {
+            require_once __DIR__.'/ComposeHtml.php';
+            $canonical=ComposeHtml::sanitize($html);
+        } catch (\Throwable) {
+            throw new InvalidArgumentException('The formatted message text must be canonical sanitized markup.');
+        }
+        if ($canonical==='' || strlen($canonical)>self::MAX_HTML_BYTES || !hash_equals($canonical,$html)) {
+            throw new InvalidArgumentException('The formatted message text must be canonical sanitized markup.');
+        }
+        $this->html=$html;
     }
 
     /** @param list<string> $input @param array<string,true> $seen */
