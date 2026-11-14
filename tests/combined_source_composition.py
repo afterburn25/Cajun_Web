@@ -360,6 +360,15 @@ UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE_TREE = 'e7f0c2bbe7c9ceb9e7e119b34f8fe197c
 UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED = frozenset((
     'tests/acceptance_artifacts_test.py',
 ))
+PR388_ACCEPTED_HEAD = 'b7109264486127f8fbbdd4a3f37f695d03caa058'
+PR388_ACCEPTED_TREE = '0dc0eb0a8c0595423b5ceaf50cb8f1a10a3296bf'
+PR388_ACCEPTED_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
+PR388_RESULTING_MAIN = 'cbffec34eaea73942514c799f0622959f0f9a4c0'
+PR388_RESULTING_MAIN_TREE = '0dc0eb0a8c0595423b5ceaf50cb8f1a10a3296bf'
+PR391_RECOVERY_SOURCE = '511a5d91627374878780a8dbb800d51b24d8a087'
+PR391_RECOVERY_SOURCE_TREE = '31be156cbd38bac2e49ba7aedcb0c0d61b78cce1'
+PR391_RECOVERY_HEAD = '331572f0de664a50c0a3b1df7cd671bb38e9df73'
+PR391_RECOVERY_HEAD_TREE = '713c63e742c524be1ebd9c8ea3a0ee71bf3392ff'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2330,6 +2339,49 @@ def project_ux08_hosted_mirror_contract_fix(root, path, current):
     return base
 
 
+def validate_pr388_resulting_main_source(root):
+    """Bind the accepted PR head to its normal, tree-identical main merge."""
+    accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
+    resulting_tree = git(root, 'rev-parse', PR388_RESULTING_MAIN + '^{tree}').decode().strip()
+    parents = git(root, 'show', '-s', '--format=%P', PR388_RESULTING_MAIN).decode().strip().split()
+    require(accepted_tree == PR388_ACCEPTED_TREE
+            and resulting_tree == PR388_RESULTING_MAIN_TREE
+            and resulting_tree == accepted_tree,
+            'PR #388 accepted or resulting-main tree changed')
+    require(parents == [PR388_ACCEPTED_BASE, PR388_ACCEPTED_HEAD],
+            'PR #388 resulting-main merge parent order changed')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PR388_ACCEPTED_HEAD, PR388_RESULTING_MAIN).decode() == '',
+            'PR #388 resulting-main merge changed accepted source bytes')
+    git(root, 'merge-base', '--is-ancestor', PR388_RESULTING_MAIN, 'HEAD')
+
+
+def validate_pr391_recovery_successor(root):
+    """Retain the failed first-attempt proof head and admit only a new proof successor."""
+    require(git(root, 'rev-parse', PR391_RECOVERY_SOURCE + '^{tree}').decode().strip()
+            == PR391_RECOVERY_SOURCE_TREE
+            and git(root, 'rev-parse', PR391_RECOVERY_HEAD + '^{tree}').decode().strip()
+            == PR391_RECOVERY_HEAD_TREE,
+            'PR #391 recovery source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', PR391_RECOVERY_SOURCE).decode().strip().split()
+            == [PR388_RESULTING_MAIN]
+            and git(root, 'show', '-s', '--format=%P', PR391_RECOVERY_HEAD).decode().strip().split()
+            == [PR391_RECOVERY_SOURCE],
+            'PR #391 recovery proof ancestry changed')
+    require(git(root, 'diff', '--name-only', '--no-renames',
+                PR388_RESULTING_MAIN, PR391_RECOVERY_SOURCE).decode().splitlines()
+            == [VERIFIER]
+            and git(root, 'diff', '--name-only', '--no-renames',
+                    PR391_RECOVERY_SOURCE, PR391_RECOVERY_HEAD).decode().splitlines()
+            == [RECEIPT],
+            'PR #391 recovery proof changed application source')
+    git(root, 'merge-base', '--is-ancestor', PR391_RECOVERY_HEAD, 'HEAD')
+    require(set(git(root, 'diff', '--name-only', '--no-renames',
+                    PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
+            == {VERIFIER, RECEIPT},
+            'Current recovery successor is not proof-only')
+
+
 def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
     """Bind the fixture-only transaction for retained order validation."""
     require(git(root, 'rev-parse', UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_BASE + '^{tree}').decode().strip()
@@ -3557,6 +3609,8 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_pr388_resulting_main_source(root)
+    validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
     validate_ux08_payment_outcome_proof_fix_source(root)
@@ -3881,6 +3935,7 @@ def verify_current(root):
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
+        {'name': 'Exact PR #391 recovery predecessor is retained and the current successor changes only its proof verifier and receipt', 'passed': True},
         {'name': 'Exact billing-network-proof-to-payment-fixture-lock-fix range binds two reversible test paths', 'passed': True},
         {'name': 'Exact storefront-proof-head-to-inbox-state-fix range binds one reversible read-only browser fixture path', 'passed': True},
         {'name': 'Exact browser-proof-head-to-storefront-network-fix range binds one reversible test path and performs no live tokenization fetch', 'passed': True},
