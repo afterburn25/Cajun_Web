@@ -360,6 +360,11 @@ UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE_TREE = 'e7f0c2bbe7c9ceb9e7e119b34f8fe197c
 UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED = frozenset((
     'tests/acceptance_artifacts_test.py',
 ))
+PR388_ACCEPTED_HEAD = 'b7109264486127f8fbbdd4a3f37f695d03caa058'
+PR388_ACCEPTED_TREE = '0dc0eb0a8c0595423b5ceaf50cb8f1a10a3296bf'
+PR388_ACCEPTED_BASE = 'ebcb7a1e52982c742996e10e2042c69764890fed'
+PR388_RESULTING_MAIN = 'cbffec34eaea73942514c799f0622959f0f9a4c0'
+PR388_RESULTING_MAIN_TREE = '0dc0eb0a8c0595423b5ceaf50cb8f1a10a3296bf'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2330,6 +2335,23 @@ def project_ux08_hosted_mirror_contract_fix(root, path, current):
     return base
 
 
+def validate_pr388_resulting_main_source(root):
+    """Bind the accepted PR head to its normal, tree-identical main merge."""
+    accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
+    resulting_tree = git(root, 'rev-parse', PR388_RESULTING_MAIN + '^{tree}').decode().strip()
+    parents = git(root, 'show', '-s', '--format=%P', PR388_RESULTING_MAIN).decode().strip().split()
+    require(accepted_tree == PR388_ACCEPTED_TREE
+            and resulting_tree == PR388_RESULTING_MAIN_TREE
+            and resulting_tree == accepted_tree,
+            'PR #388 accepted or resulting-main tree changed')
+    require(parents == [PR388_ACCEPTED_BASE, PR388_ACCEPTED_HEAD],
+            'PR #388 resulting-main merge parent order changed')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PR388_ACCEPTED_HEAD, PR388_RESULTING_MAIN).decode() == '',
+            'PR #388 resulting-main merge changed accepted source bytes')
+    git(root, 'merge-base', '--is-ancestor', PR388_RESULTING_MAIN, 'HEAD')
+
+
 def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
     """Bind the fixture-only transaction for retained order validation."""
     require(git(root, 'rev-parse', UX08_PAYMENT_FULFILLMENT_VALIDATION_LOCK_FIX_BASE + '^{tree}').decode().strip()
@@ -3557,6 +3579,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_pr388_resulting_main_source(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
     validate_ux08_payment_outcome_proof_fix_source(root)
