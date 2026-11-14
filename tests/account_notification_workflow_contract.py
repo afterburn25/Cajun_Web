@@ -257,7 +257,8 @@ def executable_ubuntu_source_guard_fixtures():
                 "Path('/etc/apt/cwp-source-isolation.conf.pending')": 'Path(' + repr(str(apt / 'cwp-source-isolation.conf.pending')) + ')',
                 "Path('/etc/apt/apt.conf.d/zz-cwp-source-isolation')": 'Path(' + repr(str(apt_conf / 'zz-cwp-source-isolation')) + ')',
                 '80a36b0a6de2f69f49d2df75ef473ccde121e9e190b9ea01d20a4f63778d5c31': fixture_key_hash,
-                'len(key_data) != 3607': 'len(key_data) != ' + str(len(fixture_key)),
+                "keyring, 4096, 'Ubuntu Noble archive keyring', 3607,":
+                    "keyring, 4096, 'Ubuntu Noble archive keyring', " + str(len(fixture_key)) + ',',
             }
             for before, after in replacements.items():
                 require(before in script, 'Executable guard fixture replacement disappeared: ' + before)
