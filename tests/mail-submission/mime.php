@@ -1,13 +1,23 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/../../foundation/mail-submission/PreparedMime.php';
-use CajunWebPro\Foundation\MailCompose\DraftContent;
-use CajunWebPro\Foundation\MailCompose\MessageThread;
+use CajunWebPro\Foundation\MailCompose\{DraftAttachment,DraftContent,MessageThread};
 use CajunWebPro\Foundation\MailSubmission\{SubmissionSnapshot,PreparedMime,PreparationFailure,OfflineMailer};
 $checks=[];$messages=[];$complete=false;
 function check(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
 function snapshot(DraftContent $content):SubmissionSnapshot{return new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,"Studio+o'neil@example.invalid",$content,1791964800);}
 try {
+    $goldenSnapshot=new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Plain','Body'),1791964800);
+    $goldenMime=PreparedMime::fromSnapshot($goldenSnapshot);
+    check('Plain MIME bytes remain byte-identical to the predecessor',$goldenSnapshot->fingerprint==='a74941a4478f3da07f0b2e4f875a1e373d42233e40018d620ed9d57cee34fc9a'&&$goldenMime->sha256==='81006e946fa0f2d02c4a0ac8ab0eaff98fb4180dbf5c20d183d50d0b1b903d61'&&strlen($goldenMime->bytes)===300);
+    $extended=[
+        'formatted'=>new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Plain','Body','<p>Formatted</p>'),1791964800),
+        'attached'=>new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Plain','Body'),1791964800,null,null,[new DraftAttachment('private.txt','text/plain','PRIVATE-SENTINEL')]),
+    ];
+    foreach($extended as $name=>$shape){
+        $blocked=null;try{PreparedMime::fromSnapshot($shape);}catch(PreparationFailure $e){$blocked=$e;}
+        check('Extended '.$name.' snapshot fails closed before incomplete MIME',$blocked instanceof PreparationFailure&&$blocked->reason==='encoding_failed'&&$blocked->getPrevious()===null&&!str_contains($blocked->getMessage(),'PRIVATE-SENTINEL'));
+    }
     $subjects=['Simple subject',' Leading and trailing spaces ','=?UTF-8?B?Tm90IGV2YWx1YXRlZA==?=','Résumé — project','',str_repeat('é',100),str_repeat('x',200),'Question? Equals= underscore_',str_repeat('🚀',50),str_repeat("e\u{0301}",66)];
     foreach($subjects as $i=>$subject){
         $draft=new DraftContent(['Client+work@example.invalid'],['copy@example.invalid'],['private-envelope@example.invalid'],$subject,".first\n..second\n\nRésumé\tliteral </textarea><script>no()</script>\n");$snap=snapshot($draft);$a=PreparedMime::fromSnapshot($snap);$b=PreparedMime::fromSnapshot($snap);
