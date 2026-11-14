@@ -2,10 +2,10 @@ name: Mail copied-draft current-source native acceptance
 on:
   push:
     branches: [main]
-    paths: ['site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'foundation/mail-compose/**', 'tests/mail_copied_draft_*.php', 'tests/mail_copied_draft_native_workflow_contract.py', 'tests/current_owner_authority.php', 'tests/mail_message_native.php', '.github/workflows/mail-copied-draft-native.yml']
+    paths: ['site/admin/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'foundation/mail-compose/**', 'tests/mail-compose/**', 'tests/mail-receiving/attachment_*.php', 'tests/database_schema_registry_policy.php', 'tests/mail_copied_draft_*.php', 'tests/mail_copied_draft_native_workflow_contract.py', 'tests/mail_message_cases.py', 'tests/current_owner_authority.php', 'tests/mail_message_native.php', '.github/workflows/mail-copied-draft-native.yml']
   pull_request:
     branches: [main]
-    paths: ['site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'foundation/mail-compose/**', 'tests/mail_copied_draft_*.php', 'tests/mail_copied_draft_native_workflow_contract.py', 'tests/current_owner_authority.php', 'tests/mail_message_native.php', '.github/workflows/mail-copied-draft-native.yml']
+    paths: ['site/admin/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'foundation/mail-compose/**', 'tests/mail-compose/**', 'tests/mail-receiving/attachment_*.php', 'tests/database_schema_registry_policy.php', 'tests/mail_copied_draft_*.php', 'tests/mail_copied_draft_native_workflow_contract.py', 'tests/mail_message_cases.py', 'tests/current_owner_authority.php', 'tests/mail_message_native.php', '.github/workflows/mail-copied-draft-native.yml']
 permissions:
   contents: read
 concurrency:
@@ -31,9 +31,28 @@ jobs:
       - name: Verify the bounded workflow and exact source
         run: |
           mkdir -p qa/mail-copied-draft-native/source
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > qa/mail-copied-draft-native/source/runner-image.log
+          from pathlib import Path
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if source.read_bytes() != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          print('Supported Ubuntu runner mirror list verified')
+          CWP_UBUNTU_MIRRORS
           test "$CWP_RUN_ATTEMPT" = "1"
           python3 tests/mail_copied_draft_native_workflow_contract.py > qa/mail-copied-draft-native/source/workflow-contract.json
+          python3 tests/mail_message_cases.py
+          printf 'passed\n' > qa/mail-copied-draft-native/source/mail-message-source-cases.log
           php -l site/app/mail/copied_drafts.php > qa/mail-copied-draft-native/source/lint.log
+          php -l site/app/mail/messages.php >> qa/mail-copied-draft-native/source/lint.log
+          php -l site/app/mail/replies.php >> qa/mail-copied-draft-native/source/lint.log
+          php -l site/admin/controllers/mail_message.php >> qa/mail-copied-draft-native/source/lint.log
           php -l tests/mail_copied_draft_create_native.php >> qa/mail-copied-draft-native/source/lint.log
           git diff --exit-code
       - name: Admit only the immutable checked-out commit
@@ -101,6 +120,20 @@ jobs:
         run: |
           cell=qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}
           mkdir -p "$cell"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > "$cell/runner-image.log"
+          from pathlib import Path
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if source.read_bytes() != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          print('Supported Ubuntu runner mirror list verified')
+          CWP_UBUNTU_MIRRORS
           status=0
           docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-copied-draft-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
           ARG PHP_VERSION
@@ -135,6 +168,22 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA \
             cwp-copied-draft-native sh -ec '
+              cell=qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}
+              for mode in normal noini; do
+                php_flags=""
+                if [ "$mode" = noini ]; then php_flags="-n -d extension=mbstring"; fi
+                php $php_flags tests/mail-compose/origin.php > "$cell/portable-$mode-origin.json"
+                php $php_flags tests/mail-compose/reply.php > "$cell/portable-$mode-reply.json"
+                php $php_flags tests/mail-compose/reply_all.php > "$cell/portable-$mode-reply-all.json"
+                php $php_flags tests/mail-compose/thread.php > "$cell/portable-$mode-thread.json"
+                php $php_flags tests/mail-compose/copied_source.php > "$cell/portable-$mode-copied-source.json"
+                php $php_flags tests/mail_copied_draft_storage.php > "$cell/portable-$mode-storage.json"
+                php $php_flags tests/mail_copied_draft_admin_policy.php > "$cell/portable-$mode-admin-policy.json"
+                php $php_flags tests/mail_copied_draft_create_adapter.php > "$cell/portable-$mode-adapter.json"
+                php $php_flags tests/database_schema_registry_policy.php > "$cell/portable-$mode-schema-registry.json"
+                php $php_flags tests/mail-receiving/attachment_test.php > "$cell/portable-$mode-attachment.json"
+                php $php_flags tests/mail-receiving/attachment_security_test.php > "$cell/portable-$mode-attachment-security.json"
+              done
               php -l site/app/mail/copied_drafts.php
               php -l tests/mail_copied_draft_create_native.php
               php tests/mail_copied_draft_create_native.php
@@ -148,7 +197,21 @@ jobs:
           python3 - <<'PY'
           import json
           from pathlib import Path
-          path = Path('qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}/results.json')
+          cell = Path('qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}')
+          expected = {
+              'origin': 17, 'reply': 60, 'reply-all': 37, 'thread': 45,
+              'copied-source': 21, 'storage': 20, 'admin-policy': 23,
+              'adapter': 20, 'schema-registry': 381, 'attachment': 14,
+              'attachment-security': 27,
+          }
+          for mode in ('normal', 'noini'):
+              for name, count in expected.items():
+                  portable = cell / f'portable-{mode}-{name}.json'
+                  report = json.loads(portable.read_text())
+                  assert report['passed'] is True
+                  assert len(report['checks']) == count
+                  assert all(check['passed'] is True for check in report['checks'])
+          path = cell / 'results.json'
           report = json.loads(path.read_text())
           assert report['passed'] is True
           assert len(report['checks']) >= 21
