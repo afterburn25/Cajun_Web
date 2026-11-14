@@ -279,7 +279,7 @@ def evidence_allowed(name, lane):
     if len(parts) != 2 or parts[0] != 'qa': return False
     filename = parts[1]
     if filename in {lane + '-' + item for item in PACKAGE_SOURCE_QA}: return True
-    if 'ubuntu-apt-' in filename: return False
+    if 'ubuntu-apt-' in filename.casefold(): return False
     environment_owner={'native-environment-results.json':'native-browser','recovery-environment-results.json':'recovery','apache-environment-results.json':'apache'}
     if filename in environment_owner:return lane==environment_owner[filename]
     if lane == 'build': return filename in BUILD_QA
@@ -288,31 +288,44 @@ def evidence_allowed(name, lane):
     return filename not in {'structure-results.json'} and not filename.startswith(('apache-', 'organized-'))
 
 
-def namespace_package_source_evidence(root, lane):
+def package_source_evidence_names(lane):
+    return {'qa/' + lane + '-' + filename for filename in PACKAGE_SOURCE_QA}
+
+
+def namespace_package_source_evidence(root, lane, require_complete):
     """Retain each runner's exact public APT receipts without path collisions."""
     qa = root / 'qa'
-    sources = [qa / filename for filename in PACKAGE_SOURCE_QA]
-    if not any(source.exists() or source.is_symlink() for source in sources):
+    if not (qa.exists() or qa.is_symlink()):
+        require(not require_complete, 'Successful setup is missing package-source evidence')
         return
     require(root.is_dir() and not root.is_symlink() and qa.is_dir() and not qa.is_symlink(),
             'Nonordinary package-source evidence directory')
-    for filename, source in zip(PACKAGE_SOURCE_QA, sources):
-        if not (source.exists() or source.is_symlink()):
+    sources = [qa / filename for filename in PACKAGE_SOURCE_QA]
+    targets = [qa / (lane + '-' + filename) for filename in PACKAGE_SOURCE_QA]
+    require(not any(target.exists() or target.is_symlink() for target in targets),
+            'Pre-namespaced package-source evidence refused')
+    present = [source.exists() or source.is_symlink() for source in sources]
+    require(not require_complete or all(present),
+            'Successful setup is missing package-source evidence')
+    for source, target, exists in zip(sources, targets, present):
+        if not exists:
             continue
-        target = qa / (lane + '-' + filename)
-        require(not (target.exists() or target.is_symlink()),
-                'Duplicate namespaced package-source evidence')
+        require(source.is_file() and not source.is_symlink(),
+                'Nonordinary package-source evidence refused')
         source.rename(target)
 
 
 def seal(root, context, out, lane, steps, input_sha):
     require(lane in LANES, 'Unknown evidence lane')
     require(isinstance(steps, dict) and set(steps) == STEP_KEYS[lane] and all(type(v) is str and v in {'success', 'failure', 'skipped', 'cancelled'} for v in steps.values()), 'Invalid step outcomes')
-    namespace_package_source_evidence(root, lane)
+    namespace_package_source_evidence(root, lane, steps['setup'] == 'success')
     paths = [root / 'qa'] if (root / 'qa').exists() else []
     if lane == 'build' and (root / 'dist').exists(): paths.append(root / 'dist')
     files = collect(root, paths)
     require(all(evidence_allowed(n, lane) for n in files), 'Evidence crosses partition/private boundary')
+    if steps['setup'] == 'success':
+        require(package_source_evidence_names(lane) <= files.keys(),
+                'Successful setup package-source evidence is incomplete')
     facts = pack(root, files, out / 'partition.zip')
     inspect_archive(out / 'partition.zip', files)
     write(out / 'partition.json', {'kind': 'partition', 'identity': context, 'archive': facts, 'files': files,
@@ -366,6 +379,9 @@ def aggregate(root, context, incoming, bindings, expected, checkpoint_only=False
                 if not re.fullmatch('[1-9][0-9]*', b.get('checkpoint_id', '')) or not re.fullmatch('[0-9a-f]{64}', b.get('checkpoint_digest', '')):
                     errors.append('native-browser: checkpoint upload identity is missing')
             require(isinstance(obj['steps'], dict) and set(obj['steps']) == STEP_KEYS[lane], 'Missing/extra step outcome')
+            if obj['steps']['setup'] == 'success':
+                require(package_source_evidence_names(lane) <= obj['files'].keys(),
+                        'Successful setup package-source evidence is incomplete')
             if not all(v == 'success' for v in obj['steps'].values()): errors.append(lane + ': non-successful steps')
             fresh = {}
             for name, facts in obj['files'].items():
