@@ -369,6 +369,17 @@ PR391_RECOVERY_SOURCE = '511a5d91627374878780a8dbb800d51b24d8a087'
 PR391_RECOVERY_SOURCE_TREE = '31be156cbd38bac2e49ba7aedcb0c0d61b78cce1'
 PR391_RECOVERY_HEAD = '331572f0de664a50c0a3b1df7cd671bb38e9df73'
 PR391_RECOVERY_HEAD_TREE = '713c63e742c524be1ebd9c8ea3a0ee71bf3392ff'
+RUNNER_MIRROR_COMPAT_BASE = '161cc51dd5610f8166c002fe1121c178f996ec84'
+RUNNER_MIRROR_COMPAT_BASE_TREE = '35e38293bc31a8e3307884db72b931565630b0b7'
+RUNNER_MIRROR_COMPAT_SOURCE = '0f9bceed32a9f4836671bd226f3582c844a6b32f'
+RUNNER_MIRROR_COMPAT_SOURCE_TREE = '4e93055be01df7c3f3ef7435646551496927956c'
+RUNNER_MIRROR_COMPAT_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/consolidation-after-backups.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tests/hosting_checkout_http_guards.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2253,6 +2264,51 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_mirror_compat_source(root):
+    """Bind the reviewed dual-profile runner correction to exact main source."""
+    require(git(root, 'rev-parse', RUNNER_MIRROR_COMPAT_BASE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_COMPAT_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_MIRROR_COMPAT_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_COMPAT_SOURCE_TREE,
+            'Runner mirror compatibility source tree changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_MIRROR_COMPAT_BASE,
+        RUNNER_MIRROR_COMPAT_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', RUNNER_MIRROR_COMPAT_SOURCE, 'HEAD')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_MIRROR_COMPAT_SOURCE).decode().strip().split()
+            == [RUNNER_MIRROR_COMPAT_BASE],
+            'Runner mirror compatibility source parent changed')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_MIRROR_COMPAT_BASE, RUNNER_MIRROR_COMPAT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(RUNNER_MIRROR_COMPAT_MODIFIED)],
+            'Runner mirror compatibility changed a different path or status set')
+    base_entries = entries(root, RUNNER_MIRROR_COMPAT_BASE)
+    source_entries = entries(root, RUNNER_MIRROR_COMPAT_SOURCE)
+    for path in sorted(RUNNER_MIRROR_COMPAT_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_mirror_compat(root, path, current) == base
+                and project_runner_mirror_compat(root, path, base) == base,
+                'Runner mirror compatibility identity or projection changed: ' + path)
+
+
+def project_runner_mirror_compat(root, path, current):
+    """Project the reviewed runner correction to exact resulting-main bytes."""
+    if path not in RUNNER_MIRROR_COMPAT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner mirror compatibility changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_outcome_proof_fix_source(root):
     """Bind the complete ordered payment-outcome proof to the executable fixture body."""
     require(git(root, 'rev-parse', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + '^{tree}').decode().strip()
@@ -2271,7 +2327,7 @@ def validate_ux08_payment_outcome_proof_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE)
     for path in sorted(UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_mirror_compat(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + ':' + path)
         require(current == source
@@ -2283,6 +2339,7 @@ def validate_ux08_payment_outcome_proof_fix_source(root):
 
 def project_ux08_payment_outcome_proof_fix(root, path, current):
     """Restore the accepted fulfillment-lock proof head for older receipts."""
+    current = project_runner_mirror_compat(root, path, current)
     if path not in UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + ':' + path)
@@ -2314,7 +2371,7 @@ def validate_ux08_hosted_mirror_contract_fix_source(root):
     base_entries = entries(root, UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE)
     source_entries = entries(root, UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE)
     for path in sorted(UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_mirror_compat(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE + ':' + path)
         require(current == source
@@ -2326,6 +2383,7 @@ def validate_ux08_hosted_mirror_contract_fix_source(root):
 
 def project_ux08_hosted_mirror_contract_fix(root, path, current):
     """Project the hosted-mirror contract implementation to its accepted base."""
+    current = project_runner_mirror_compat(root, path, current)
     if path not in UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
@@ -2378,8 +2436,8 @@ def validate_pr391_recovery_successor(root):
     git(root, 'merge-base', '--is-ancestor', PR391_RECOVERY_HEAD, 'HEAD')
     require(set(git(root, 'diff', '--name-only', '--no-renames',
                     PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
-            == {VERIFIER, RECEIPT},
-            'Current recovery successor is not proof-only')
+            == {VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED,
+            'Current recovery successor contains an unbound path')
 
 
 def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
@@ -3609,6 +3667,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
@@ -3855,7 +3914,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux08_agreement_link_fix(root, path, ordinary(root, path))
+        value = project_runner_mirror_compat(root, path, ordinary(root, path))
+        value = project_ux08_agreement_link_fix(root, path, value)
         value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
