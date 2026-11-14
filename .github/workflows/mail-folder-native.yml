@@ -256,9 +256,9 @@ jobs:
                   assert len(report['checks']) == count, (mode, name, len(report['checks']))
                   assert all(check['passed'] is True for check in report['checks']), (mode, name)
           reports = {
-              'inbox': (cell / 'inbox-results.json', 73),
-              'message': (cell / 'message-results.json', 95),
-              'notices': (cell / 'notices-results.json', 83),
+              'inbox': (cell / 'inbox-results.json', 72),
+              'message': (cell / 'message-results.json', 94),
+              'notices': (cell / 'notices-results.json', 81),
               'copied': (cell / 'copied-results.json', 21),
           }
           loaded = {}

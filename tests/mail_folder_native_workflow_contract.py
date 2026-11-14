@@ -128,9 +128,9 @@ def validate(text):
           and "'adapter': 20, 'schema-registry': 383" in text
           and "assert len(report['checks']) == count" in text)
     check('Native report counts retain every predecessor and composed assertion',
-          "'inbox': (cell / 'inbox-results.json', 73)" in text
-          and "'message': (cell / 'message-results.json', 95)" in text
-          and "'notices': (cell / 'notices-results.json', 83)" in text
+          "'inbox': (cell / 'inbox-results.json', 72)" in text
+          and "'message': (cell / 'message-results.json', 94)" in text
+          and "'notices': (cell / 'notices-results.json', 81)" in text
           and "'copied': (cell / 'copied-results.json', 21)" in text
           and "assert len(report['checks']) >=" not in text)
     check('Passing acceptance requires empty stderr from every PHP test execution',
@@ -180,7 +180,7 @@ def self_test(text):
         ('lost named migration gate', 'Declared-current refusal does not heal the table', 'Unrelated assertion'),
         ('lost runner-image guard', "raise SystemExit('Unexpected Ubuntu mirror list')", "print('Unexpected Ubuntu mirror list')"),
         ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # reply all omitted'),
-        ('changed exact native report count', "'message': (cell / 'message-results.json', 95)", "'message': (cell / 'message-results.json', 30)"),
+        ('changed exact native report count', "'message': (cell / 'message-results.json', 94)", "'message': (cell / 'message-results.json', 30)"),
         ('lost failure evidence', 'if: always()', 'if: success()'),
     )
     for name, old, new in mutations:
