@@ -35,7 +35,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 75
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}

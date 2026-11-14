@@ -25,6 +25,12 @@ APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
 APT_PREPARATION_SHA256 = '1ff0e3c1a85d41dff9929c2fd8d0f41fb361faa3980dcf51781e0e7afb82b5d4'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
+                                       '    runs-on: ubuntu-24.04\n'
+                                       '    timeout-minutes: 45\n')
+PROTECTED_BUILD_TIMEOUT_SUCCESSOR = ('  build:\n'
+                                     '    runs-on: ubuntu-24.04\n'
+                                     '    timeout-minutes: 75\n')
 PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
@@ -432,6 +438,11 @@ def validate(workflow, legacy, protected, apt_script):
     check('Reviewed APT preparation script remains byte-identical',
           digest(apt_script) == APT_PREPARATION_SHA256)
     protected_predecessor = protected
+    check('Protected application build has one bounded timeout successor',
+          protected_predecessor.count(PROTECTED_BUILD_TIMEOUT_SUCCESSOR) == 1
+          and PROTECTED_BUILD_TIMEOUT_PREDECESSOR not in protected_predecessor)
+    protected_predecessor = protected_predecessor.replace(
+        PROTECTED_BUILD_TIMEOUT_SUCCESSOR, PROTECTED_BUILD_TIMEOUT_PREDECESSOR, 1)
     for addition in reversed(PROTECTED_ADDITIONS):
         check('Reviewed UX-09 application command is present exactly once',
               protected_predecessor.count(addition) == 1)
@@ -619,6 +630,8 @@ def self_test(root=ROOT):
         ('changed UX-08 browser continuation', protected.replace(
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),
+        ('lost bounded application build timeout', protected.replace(
+            PROTECTED_BUILD_TIMEOUT_SUCCESSOR, PROTECTED_BUILD_TIMEOUT_PREDECESSOR, 1)),
         ('lost canonical application mirror selection', protected.replace(PROTECTED_APT_MIRRORS, '', 1)),
         ('lost APT preparation trigger', protected.replace(PROTECTED_APT_TRIGGER_ADDITION, '', 1)),
         ('lost bounded application reconnect wrapper', protected.replace(PROTECTED_APT_WRAPPER, '', 1)),

@@ -23,6 +23,8 @@ STEP_KEYS = {'build': {'setup', 'helpers', 'build', 'fixtures', 'inputs', 'mutat
              'native-browser': {'setup', 'input', 'native', 'browser', 'mutation'},
              'recovery': {'setup', 'input', 'test', 'mutation'}, 'apache': {'setup', 'input', 'test', 'mutation'}}
 BUILD_QA = {'build-results.txt', 'build-guards-results.json', 'parallel-helper-tests.json', 'legacy-preparation.txt', 'build-environment-results.json'}
+PACKAGE_SOURCE_QA = {'ubuntu-apt-source.json', 'ubuntu-apt-source-preflight.json',
+                     'ubuntu-apt-release-metadata.json'}
 VERSIONS = ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '1.11.0', '1.11.1', '1.11.2', '1.12.0', '1.13.0', '1.14.0', '1.15.0', '1.16.0', '1.17.0', '1.18.0', '1.19.0', '1.20.0', '1.21.0', '1.22.0', '1.23.0', '1.24.0', '1.25.0')
 FIXTURES = {'legacy', *('released-' + v for v in VERSIONS)}
 FIXTURE_JSON = {'legacy-schema.json', 'organized-shims.json'}
@@ -276,6 +278,8 @@ def evidence_allowed(name, lane):
     if lane == 'build' and len(parts) == 2 and parts[0] == 'dist': return True
     if len(parts) != 2 or parts[0] != 'qa': return False
     filename = parts[1]
+    if filename in {lane + '-' + item for item in PACKAGE_SOURCE_QA}: return True
+    if 'ubuntu-apt-' in filename: return False
     environment_owner={'native-environment-results.json':'native-browser','recovery-environment-results.json':'recovery','apache-environment-results.json':'apache'}
     if filename in environment_owner:return lane==environment_owner[filename]
     if lane == 'build': return filename in BUILD_QA
@@ -284,9 +288,27 @@ def evidence_allowed(name, lane):
     return filename not in {'structure-results.json'} and not filename.startswith(('apache-', 'organized-'))
 
 
+def namespace_package_source_evidence(root, lane):
+    """Retain each runner's exact public APT receipts without path collisions."""
+    qa = root / 'qa'
+    sources = [qa / filename for filename in PACKAGE_SOURCE_QA]
+    if not any(source.exists() or source.is_symlink() for source in sources):
+        return
+    require(root.is_dir() and not root.is_symlink() and qa.is_dir() and not qa.is_symlink(),
+            'Nonordinary package-source evidence directory')
+    for filename, source in zip(PACKAGE_SOURCE_QA, sources):
+        if not (source.exists() or source.is_symlink()):
+            continue
+        target = qa / (lane + '-' + filename)
+        require(not (target.exists() or target.is_symlink()),
+                'Duplicate namespaced package-source evidence')
+        source.rename(target)
+
+
 def seal(root, context, out, lane, steps, input_sha):
     require(lane in LANES, 'Unknown evidence lane')
     require(isinstance(steps, dict) and set(steps) == STEP_KEYS[lane] and all(type(v) is str and v in {'success', 'failure', 'skipped', 'cancelled'} for v in steps.values()), 'Invalid step outcomes')
+    namespace_package_source_evidence(root, lane)
     paths = [root / 'qa'] if (root / 'qa').exists() else []
     if lane == 'build' and (root / 'dist').exists(): paths.append(root / 'dist')
     files = collect(root, paths)

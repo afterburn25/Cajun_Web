@@ -566,6 +566,9 @@ def run(tmp):
         elif lane == 'native-browser': shutil.copytree(source / 'qa', root / 'qa'); named(root / 'qa/http-results.json'); blob(root / 'qa/actual-view.png', b'exact image bytes')
         elif lane == 'recovery': named(root / 'qa/structure-results.json')
         else: named(root / 'qa/apache-results.json')
+        for receipt in a.PACKAGE_SOURCE_QA:
+            a.write(root / 'qa' / receipt, {'passed': True, 'lane_fixture': lane,
+                                            'receipt': receipt})
         d = a.seal(root,ctx,incoming/lane,lane,outcomes(lane),input_sha)
         bindings[lane] = {'result':'success','artifact_id':str(i+1),'sha256':d,**({'input_sha256':input_sha} if lane=='build' else {}),**({'checkpoint_id':'9','checkpoint_digest':'6'*64} if lane=='native-browser' else {})}
     expected = {'browser':['build-guards-results.json','parallel-helper-tests.json','http-results.json','build-environment-results.json'],
@@ -579,6 +582,9 @@ def run(tmp):
     result, target = combined()
     check('Complete exact four-partition run assembles all named reports', result['complete'] and result['full_partition_checks_passed'] and set(result['reports']) == set(expected['final']))
     check('Final carries exact browser screenshot bytes', (target/'qa/actual-view.png').read_bytes()==b'exact image bytes')
+    check('Final retains distinct package-source receipts from every acceptance lane',
+          all(a.load(target/'qa'/(lane+'-'+receipt))['lane_fixture']==lane
+              for lane in a.LANES for receipt in a.PACKAGE_SOURCE_QA))
     check('Checkpoint is the same immutable QA snapshot used by final', all(p.read_bytes()==(target/'qa'/p.name).read_bytes() for p in (lane_roots['native-browser']/'.acceptance/checkpoint/qa').iterdir()))
     check('Final packages remain exact original build', all(a.digest(p)==a.digest(target/'dist'/p.name) for p in (source/'dist').iterdir()))
     check('Final records every immutable partition ID and digest', all(result['partitions'][n]['artifact_id']==bindings[n]['artifact_id'] and result['partitions'][n]['manifest_sha256']==bindings[n]['sha256'] for n in a.LANES))
@@ -648,6 +654,17 @@ def run(tmp):
     check('Integer aggregate with failure detail remains failed',not a.reports(root)['counts.json']['passed'])
     for lane,name in [('apache','qa/http-results.json'),('recovery','qa/apache-results.json'),('native-browser','qa/structure-results.json'),('build','test-runtime/private/key.txt')]:
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
+    for lane in a.LANES:
+        check('Evidence ownership admits only exact lane-namespaced package-source receipts '+lane,
+              all(a.evidence_allowed('qa/'+lane+'-'+name,lane) for name in a.PACKAGE_SOURCE_QA)
+              and not a.evidence_allowed('qa/ubuntu-apt-source.json',lane)
+              and not a.evidence_allowed('qa/'+lane+'-ubuntu-apt-source.json.bak',lane)
+              and not a.evidence_allowed('qa/other-ubuntu-apt-source.json',lane))
+    duplicate_receipt=tmp/'duplicate-package-source';(duplicate_receipt/'qa').mkdir(parents=True)
+    a.write(duplicate_receipt/'qa/ubuntu-apt-source.json',{'passed':True})
+    a.write(duplicate_receipt/'qa/build-ubuntu-apt-source.json',{'passed':True})
+    deny('Package-source sealing refuses a competing pre-namespaced receipt',
+         lambda:a.seal(duplicate_receipt,ctx,tmp/'duplicate-package-source-output','build',outcomes('build'),''))
     snapshot_root=tmp/'access-snapshot-report';snapshot_name='stackcp-access-read-snapshot-native-results.json';seed_name='stackcp-access-read-snapshot-seed.json'
     named(snapshot_root/'qa'/snapshot_name);a.write(snapshot_root/'qa'/seed_name,{'passed':True,'scope':'Synthetic metadata, not acceptance','prefix':'sapr_','linked_packages':21,'local_assignments':20})
     check('Finite access snapshot seed stays diagnostic metadata beside its required report',set(a.reports(snapshot_root))=={snapshot_name} and a.evidence_allowed('qa/'+seed_name,'native-browser') and not a.input_allowed('qa/'+seed_name))
