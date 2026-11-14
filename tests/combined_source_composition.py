@@ -403,6 +403,13 @@ RUNNER_KEYRING_ISOLATION_MODIFIED = frozenset((
     '.github/scripts/prepare_ubuntu_apt.py',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_KEYRING_FIXTURE_BASE = '3044c7636e20553f027ebfc8d5e8a0d9f8e07125'
+RUNNER_KEYRING_FIXTURE_BASE_TREE = 'c1cf56dd9704e50d8003fff1686a6664390f7808'
+RUNNER_KEYRING_FIXTURE_SOURCE = '52c609694cc90f37de3cc69c7002513eeb56bb0e'
+RUNNER_KEYRING_FIXTURE_SOURCE_TREE = 'cfc9d688b87b627249b550457877b4d5db8ac7c4'
+RUNNER_KEYRING_FIXTURE_MODIFIED = frozenset((
+    'tests/account_notification_workflow_contract.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2287,6 +2294,49 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_keyring_fixture_source(root):
+    """Bind the exact Linux fixture correction found by independent review."""
+    require(git(root, 'rev-parse', RUNNER_KEYRING_FIXTURE_BASE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_FIXTURE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_KEYRING_FIXTURE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_FIXTURE_SOURCE_TREE,
+            'Runner keyring fixture source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_KEYRING_FIXTURE_SOURCE).decode().strip().split()
+            == [RUNNER_KEYRING_FIXTURE_BASE],
+            'Runner keyring fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_KEYRING_FIXTURE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_KEYRING_FIXTURE_BASE, RUNNER_KEYRING_FIXTURE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_KEYRING_FIXTURE_MODIFIED)],
+            'Runner keyring fixture changed a different path or status set')
+    base_entries = entries(root, RUNNER_KEYRING_FIXTURE_BASE)
+    source_entries = entries(root, RUNNER_KEYRING_FIXTURE_SOURCE)
+    for path in sorted(RUNNER_KEYRING_FIXTURE_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_keyring_fixture(root, path, current) == base
+                and project_runner_keyring_fixture(root, path, base) == base,
+                'Runner keyring fixture identity or projection changed: ' + path)
+
+
+def project_runner_keyring_fixture(root, path, current):
+    """Restore the reviewed keyring source before the fixture-only successor."""
+    if path not in RUNNER_KEYRING_FIXTURE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner keyring fixture changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_keyring_isolation_source(root):
     """Bind the exact protected-keyring correction to its failed hosted source."""
     require(git(root, 'rev-parse', RUNNER_KEYRING_ISOLATION_BASE + '^{tree}').decode().strip()
@@ -2305,7 +2355,7 @@ def validate_runner_keyring_isolation_source(root):
     base_entries = entries(root, RUNNER_KEYRING_ISOLATION_BASE)
     source_entries = entries(root, RUNNER_KEYRING_ISOLATION_SOURCE)
     for path in sorted(RUNNER_KEYRING_ISOLATION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_keyring_fixture(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_BASE + ':' + path)
         require(current == source
@@ -2317,6 +2367,7 @@ def validate_runner_keyring_isolation_source(root):
 
 def project_runner_keyring_isolation(root, path, current):
     """Restore the failed hosted head only for the exact keyring successor paths."""
+    current = project_runner_keyring_fixture(root, path, current)
     if path not in RUNNER_KEYRING_ISOLATION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_SOURCE + ':' + path)
@@ -3788,6 +3839,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_keyring_fixture_source(root)
     validate_runner_keyring_isolation_source(root)
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
