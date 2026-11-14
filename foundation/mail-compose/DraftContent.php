@@ -11,8 +11,9 @@ use InvalidArgumentException;
 require_once __DIR__.'/../email-templates/EmailTemplate.php';
 
 /**
- * Bounded plain-text content only. This grants no access, sends nothing and
- * performs no persistence, MIME generation or remote mailbox synchronization.
+ * Bounded plain-text content with an optional exact canonical formatted
+ * alternative. This grants no access, sends nothing and performs no
+ * persistence, MIME generation or remote mailbox synchronization.
  */
 final readonly class DraftContent
 {

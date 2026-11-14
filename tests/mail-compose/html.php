@@ -40,7 +40,7 @@ try {
         check('Tables survive for formatted layouts',str_contains(ComposeHtml::sanitize('<table><tr><th>H</th></tr><tr><td>C</td></tr></table>'),'<td>C</td>'));
         denied('Input over the byte bound is refused',fn()=>ComposeHtml::sanitize('<p>'.str_repeat('x',61440).'</p>'),'limit');
         denied('Input over the tag-count bound is refused',fn()=>ComposeHtml::sanitize(str_repeat('<b></b>',2100)),'limit');
-        denied('Parsed node count is bounded',fn()=>ComposeHtml::sanitize(str_repeat('<p>x</p>',1100)),'limit');
+        denied('Parsed node count is bounded',fn()=>ComposeHtml::sanitize('<p>'.str_repeat('x<br>',1024).'</p>'),'limit');
         denied('Parsed nesting depth is bounded',fn()=>ComposeHtml::sanitize(str_repeat('<div>',34).'x'.str_repeat('</div>',34)),'limit');
         denied('Invalid UTF-8 is refused',fn()=>ComposeHtml::sanitize("<p>\xC3\x28</p>"),'protocol');
         denied('NUL bytes are refused',fn()=>ComposeHtml::sanitize("<p>x\0y</p>"),'protocol');
@@ -48,7 +48,7 @@ try {
         check('Accepted canonical output is an exact fixed point',ComposeHtml::sanitize($canonical)===$canonical);
         check('DraftContent accepts only that exact canonical value',(new DraftContent([],[],[],'','Plain',$canonical))->html===$canonical);
     } else {
-        $checks[]=['name'=>'DOM extension unavailable; sanitizer execution is intentionally fail closed','passed'=>true];
+        denied('DOM extension unavailable; sanitizer execution fails with protocol refusal',fn()=>ComposeHtml::sanitize('<p>Formatted</p>'),'protocol');
         draft_denied('Formatted input fails closed without DOM','<p>Formatted</p>');
     }
 
