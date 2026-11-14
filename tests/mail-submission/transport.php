@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/../../foundation/mail-submission/SubmissionTransport.php';
-use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailCompose\{DraftAttachment,DraftContent,MessageThread};
 use CajunWebPro\Foundation\MailSubmission\{SubmissionSnapshot,PreparedMime,SubmissionTransport,SmtpSession};
 use CajunWebPro\Foundation\MailTransport\{ProbeChannel,ProbeFailure};
 $checks=[];$complete=false;
@@ -61,6 +61,17 @@ function message(?DraftContent $content=null):PreparedMime
 {
     return PreparedMime::fromSnapshot(new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',
         $content??new DraftContent(['first@example.invalid'],['second@example.invalid'],['private@example.invalid'],'Résumé','Literal body'),1791964800));
+}
+function maximumMessage():PreparedMime
+{
+    $domain=str_repeat('d',63).'.'.str_repeat('e',63).'.'.str_repeat('f',61);
+    $to=[];for($i=0;$i<20;$i++)$to[]=str_repeat('l',62).sprintf('%02d',$i).'@'.$domain;
+    $references=[];for($i=0;$i<7;$i++)$references[]='<'.str_repeat(chr(97+$i),494).'@example.invalid>';
+    $references[]='<'.str_repeat('z',487).'@example.invalid>';
+    $thread=MessageThread::fromStored(['in_reply_to'=>'<'.str_repeat('i',494).'@example.invalid>','references'=>$references]);
+    $attachments=[];for($i=0;$i<4;$i++)$attachments[]=new DraftAttachment(str_repeat(chr(110+$i),180),'application/'.str_repeat(chr(97+$i),88),str_repeat(chr(65+$i),131072));
+    return PreparedMime::fromSnapshot(new SubmissionSnapshot(str_repeat('9',32),7,str_repeat('a',32),3,str_repeat('e',32),4,
+        str_repeat('s',64).'@'.$domain,new DraftContent($to,[],[],str_repeat('é',100),str_repeat("\n",20000),'<pre>'.str_repeat("\n",61429).'</pre>'),1791964800,$thread,str_repeat('c',64),$attachments));
 }
 function submit(Transcript $c,?PreparedMime $m=null,?Closure $authorize=null,string $mode='ssl',string $user='fixture-user',string $password='fixture-password')
 {return (new SubmissionTransport)->submit($m??message(),str_repeat('b',32),$c,$mode,$user,$password,$authorize??static function(){});}
@@ -158,6 +169,11 @@ try {
     $to=[];for($i=0;$i<20;$i++)$to[]='recipient'.$i.'@example.invalid';
     $large=message(new DraftContent($to,[],[],'Maximum',str_repeat('x',20000)));$c=new Transcript();$o=submit($c,$large);
     check('Twenty recipients and maximum plaintext body fit bounded DATA without mutation',$o->status==='accepted'&&$c->recipients===20&&$c->body===$large->bytes&&$c->terminators===1);
+    $maximum=maximumMessage();
+    foreach(['ssl','starttls'] as $mode){
+        $c=new Transcript([],$mode==='ssl');$o=submit($c,$maximum,null,$mode,str_repeat('u',190),str_repeat('p',1024));
+        check('Exact maximum multipart MIME and credentials fit bounded '.$mode.' line-streamed DATA',strlen($maximum->bytes)===954606&&$o->status==='accepted'&&$c->recipients===20&&$c->body===$maximum->bytes&&$c->terminators===1&&count($c->written)<=32768);
+    }
     $c=new Transcript();$session=new SmtpSession($c,static function(){});$session->begin();$session->hello();$session->authenticate('u','p');$session->mail('sender@example.invalid');$session->recipient('first@example.invalid');$session->data("Subject: dots\r\n\r\n.first\r\n..second");
     check('Maintained DATA primitive performs dot stuffing and fixture recovers literal lines',has($c,'..first')&&has($c,'...second')&&$c->body==="Subject: dots\r\n\r\n.first\r\n..second\r\n");$session->close();
     $c=new Transcript(['final'=>['550 secret-password recipient@example.invalid']]);ob_start();$o=submit($c);$output=ob_get_clean();
@@ -178,8 +194,8 @@ try {
                     public function close():void{}
                 };
                 $s=new SmtpSession($sink,static function(){});
-                if($limit==='total_bytes')for($i=0;$i<40;$i++)$s->client_send(str_repeat('x',2046)."\r\n");
-                elseif($limit==='write_count')for($i=0;$i<1101;$i++)$s->client_send("x\r\n");
+                if($limit==='total_bytes')for($i=0;$i<520;$i++)$s->client_send(str_repeat('x',2046)."\r\n");
+                elseif($limit==='write_count')for($i=0;$i<32769;$i++)$s->client_send("x\r\n");
                 else for($i=0;$i<161;$i++)$s->begin();
             }
         }catch(ProbeFailure $e){$failed=$e->getMessage()==='limit';}finally{$s->close();}
