@@ -10,7 +10,7 @@ from owner_browser_forms import refuse_owner_action, assert_no_owner_reprompt
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','submit','inbox_server']})
     db('DELETE FROM ci_rate_limits');root=BASE+'/existing/admin/index.php';library=root+'?view=mail-accounts'
-    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_message_reads'))
+    check('Fresh setup creates exact-message and flag storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'2'}] and db("SELECT value FROM fresh_settings WHERE name='mail_flags_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_message_reads') and not db('SELECT * FROM fresh_mail_flag_requests') and not db('SELECT * FROM fresh_mail_flag_results'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     aid=db("SELECT id FROM ci_mail_accounts WHERE label='Staff inbox fixture'")[0]['id'];inbox=root+'?view=mail-inbox&account_id='+aid;detail=root+'?view=mail-account&account_id='+aid
     route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82','folder':'INBOX'};message=root+'?view=mail-message&'+urlencode(route)
@@ -23,8 +23,8 @@ def run_browser(env,browser):
         fields={'action':'mail_message_read','csrf':token(session.get(message)),**route};fields.update(overrides)
         return session.post(message,data=fields,timeout=30)
     def age():
-        db('UPDATE ci_mail_message_reads SET started_epoch=?',[int(time.time())-7200])
-        if db("SHOW TABLES LIKE 'ci_mail_flag_requests'"):db('UPDATE ci_mail_flag_requests SET started_epoch=?',[int(time.time())-7200])
+        db('UPDATE ci_mail_message_reads SET started_epoch=GREATEST(1,started_epoch-7200)')
+        if db("SHOW TABLES LIKE 'ci_mail_flag_requests'"):db('UPDATE ci_mail_flag_requests SET started_epoch=GREATEST(1,started_epoch-7200)')
     def grant(user,enabled='1',read='1'):
         revision=db('SELECT revision FROM ci_mail_account_grants WHERE account_id=? AND user_id=?',[aid,user])[0]['revision']
         return owner.post(detail,data={'csrf':token(owner.get(detail)),'action':'mail_accounts_grant','account_id':aid,'revision':revision,'user_id':user,'can_read':read,'can_send':'1','enabled':enabled,'days':'0','current_password':OWNER})
@@ -78,12 +78,13 @@ def run_browser(env,browser):
     inbox_server.mode='flag';r=mark(owner)
     check('Explicit mark-read issues exactly one bounded flag write','flag was updated' in r.text.lower() and 'CWF005 UID STORE 82 +FLAGS.SILENT ('+chr(92)+r'Seen)' in inbox_server.commands)
     check('Flag history binds the complete exact identity',db("SELECT q.folder,q.uidvalidity,q.uid,q.mark_seen,r.outcome,r.result_code,r.applied FROM ci_mail_flag_requests q JOIN ci_mail_flag_results r ON r.id=q.id")==[{'folder':'INBOX','uidvalidity':'1234','uid':'82','mark_seen':1,'outcome':'success','result_code':'ok','applied':1}])
-    check('Mark control appears after a loaded message with prepared flags','Mark unread on server' in r.text and 'Your recent flag requests' in r.text)
+    age();inbox_server.mode='message';r=load(owner)
+    check('Mark control appears only on a loaded message with prepared flags','Mark read on server' in r.text and 'Your recent flag requests' in r.text)
     age();inbox_server.mode='flag-unseen';r=mark(owner,mark='unread')
     check('Explicit mark-unread issues the remove-flag write','flag was updated' in r.text.lower() and 'CWF005 UID STORE 82 -FLAGS.SILENT ('+chr(92)+r'Seen)' in inbox_server.commands)
     age();inbox_server.mode='flag';r=mark(owner,mark='unread')
-    check('Matching server state records unchanged without a write','already reported this read state' in r.text and db("SELECT result_code FROM ci_mail_flag_results ORDER BY finished_at DESC LIMIT 1")[0]['result_code']=='unchanged')
-    age();inbox_server.mode='flag-refused';r=mark(owner);check('Server flag refusal is a bounded failure','refused the flag change' in r.text and db("SELECT result_code FROM ci_mail_flag_results ORDER BY finished_at DESC LIMIT 1")[0]['result_code']=='flags')
+    check('Matching server state records unchanged without a write','already reported this read state' in r.text and db("SELECT o.result_code FROM ci_mail_flag_results o JOIN ci_mail_flag_requests q ON q.id=o.id ORDER BY q.started_epoch DESC LIMIT 1")[0]['result_code']=='unchanged')
+    age();inbox_server.mode='flag-refused';r=mark(owner);check('Server flag refusal is a bounded failure','refused the flag change' in r.text and db("SELECT o.result_code FROM ci_mail_flag_results o JOIN ci_mail_flag_requests q ON q.id=o.id ORDER BY q.started_epoch DESC LIMIT 1")[0]['result_code']=='flags')
     age();inbox_server.mode='flag-readonly';r=mark(owner);check('Read-only folder selection refuses the write','refused the flag change' in r.text)
     age();inbox_server.mode='flag-gone';r=mark(owner);check('A missing message refuses instead of marking','no longer available' in r.text)
     age();inbox_server.mode='flag';before=inbox_server.connections;r=mark(member);check('Staff without read grant cannot mark flags',r.status_code==403 and inbox_server.connections==before)

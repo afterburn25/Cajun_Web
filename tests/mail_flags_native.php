@@ -29,7 +29,12 @@ function mf_transport(array $row,#[SensitiveParameter] array $secrets,string $ad
     return $response;
 }
 function mf_mark(string $id,bool $seen=true,int $revision=1,string $folder='INBOX'):array {return mail_message_mark($id,$revision,$folder,'4294967295','4294967295',$seen,'mf_resolve','mf_transport');}
-function mf_age():void {query('UPDATE '.table('mail_flag_requests').' SET started_epoch=?',[time()-7200]);}
+/** Preserve deterministic newest-first history while moving every request beyond the cooldown. */
+function mf_age():void {
+    global $mfSeq;$mfSeq=$mfSeq??0;
+    foreach(all('SELECT id FROM '.table('mail_flag_requests').' WHERE started_epoch>? ORDER BY started_epoch,started_at,id',[time()-600]) as $row)
+        query('UPDATE '.table('mail_flag_requests').' SET started_epoch=? WHERE id=?',[time()-7200+(++$mfSeq),$row['id']]);
+}
 function mf_audit_failure(callable $fn,string $action):bool {
     db()->exec('CREATE TRIGGER mfci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='mail_accounts.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic flag audit failure'; END IF; END");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER mfci_fail');}return $failed;
@@ -42,9 +47,14 @@ try {
     foreach([2=>['mail.read'],3=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,'administrator',json_encode($permissions)]);
     save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','2');save_setting('mail_messages_schema_version','2');
     mf_actor();$id=mf_create();mf_grant($id);
+    $freshSchema=schema_statements('fresh_');mf_ok('Fresh install schema includes both exact message flag tables',isset($freshSchema['mail_flag_requests'],$freshSchema['mail_flag_results']));
     mf_deny('Flag storage setup requires current owner password',fn()=>mail_flags_migrate('wrong'));
     mf_actor(2);mf_deny('Reader cannot enable flag storage',fn()=>mail_flags_migrate($password));mf_actor();
     mf_deny('Flag marks require explicit storage setup',fn()=>mf_mark($id));
+    db()->exec('CREATE TABLE '.table('mail_flag_results').' (id CHAR(32) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+    mf_deny('Incompatible later sibling is preflighted before any flag table creation',fn()=>mail_flags_migrate($password));
+    mf_ok('Failed sibling preflight creates no earlier request table',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[table('mail_flag_requests')]));
+    db()->exec('DROP TABLE '.table('mail_flag_results'));
     mf_ok('Setup audit failure preserves unready state',mf_audit_failure(fn()=>mail_flags_migrate($password),'flag_setup')&&!mail_flags_ready());
     query('INSERT INTO '.table('mail_flag_requests').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,mark_seen,started_at,started_epoch) VALUES (?,?,1,1,\'INBOX\',\'4294967295\',\'4294967295\',1,?,?)',[str_repeat('a',32),$id,gmdate('Y-m-d H:i:s'),time()]);mf_deny('Unknown existing flag requests cannot be silently adopted',fn()=>mail_flags_migrate($password));query('DELETE FROM '.table('mail_flag_requests'));
     $cipher=mail_accounts_load($id)['credentials'];mail_flags_migrate($password);mail_flags_migrate($password);mf_ok('Flag storage setup is additive and idempotent',mail_flags_ready()&&mail_accounts_load($id)['credentials']===$cipher&&!mail_flags_history($id));

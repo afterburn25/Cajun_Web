@@ -3,7 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $page=max(1,min((int)($_GET['p']??1),100000));
 ?>
-<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Open individual messages after message reading is prepared. Send saved plaintext drafts after submission storage is prepared. Attachments remain unavailable.</p>
+<p class="notice">Manage email settings, check saved connections, and load recent folder headers. Open individual messages after message reading is prepared. Send saved plaintext drafts after submission storage is prepared. Bounded message attachments download only through an explicit authorized request.</p>
 <?php if ($view==='mailboxes'):
     $rows=mail_accounts_assigned($page);
 ?>
