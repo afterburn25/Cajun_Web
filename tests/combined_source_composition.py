@@ -410,6 +410,16 @@ RUNNER_KEYRING_FIXTURE_SOURCE_TREE = 'cfc9d688b87b627249b550457877b4d5db8ac7c4'
 RUNNER_KEYRING_FIXTURE_MODIFIED = frozenset((
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_APPLICATION_COMPLETION_BASE = '1b731513bdf7f78d7d636b280e615705089a2eed'
+RUNNER_APPLICATION_COMPLETION_BASE_TREE = '30d6d989f8bbd94a92b1bf0530ecb5c1e81f9682'
+RUNNER_APPLICATION_COMPLETION_SOURCE = '280c8f1517a9a57e9618cf350f99575450cdcef9'
+RUNNER_APPLICATION_COMPLETION_SOURCE_TREE = '8e806ed965e598f2ca0b4ca6535db4ff0b7a03ca'
+RUNNER_APPLICATION_COMPLETION_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tools/acceptance_artifacts.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2294,6 +2304,50 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_application_completion_source(root):
+    """Bind the bounded timeout and collision-free APT evidence successor."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_COMPLETION_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_COMPLETION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPLETION_SOURCE_TREE,
+            'Runner Application completion source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_COMPLETION_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_COMPLETION_BASE],
+            'Runner Application completion source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_COMPLETION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_COMPLETION_BASE,
+                  RUNNER_APPLICATION_COMPLETION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_COMPLETION_MODIFIED)],
+            'Runner Application completion changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_COMPLETION_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_COMPLETION_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_COMPLETION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_completion(root, path, current) == base
+                and project_runner_application_completion(root, path, base) == base,
+                'Runner Application completion identity or projection changed: ' + path)
+
+
+def project_runner_application_completion(root, path, current):
+    """Restore the first hosted compatibility proof head for older receipts."""
+    if path not in RUNNER_APPLICATION_COMPLETION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application completion changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_keyring_fixture_source(root):
     """Bind the exact Linux fixture correction found by independent review."""
     require(git(root, 'rev-parse', RUNNER_KEYRING_FIXTURE_BASE + '^{tree}').decode().strip()
@@ -2312,7 +2366,7 @@ def validate_runner_keyring_fixture_source(root):
     base_entries = entries(root, RUNNER_KEYRING_FIXTURE_BASE)
     source_entries = entries(root, RUNNER_KEYRING_FIXTURE_SOURCE)
     for path in sorted(RUNNER_KEYRING_FIXTURE_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_application_completion(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_BASE + ':' + path)
         require(current == source
@@ -2324,6 +2378,7 @@ def validate_runner_keyring_fixture_source(root):
 
 def project_runner_keyring_fixture(root, path, current):
     """Restore the reviewed keyring source before the fixture-only successor."""
+    current = project_runner_application_completion(root, path, current)
     if path not in RUNNER_KEYRING_FIXTURE_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_SOURCE + ':' + path)
@@ -2608,7 +2663,8 @@ def validate_pr391_recovery_successor(root):
     require(set(git(root, 'diff', '--name-only', '--no-renames',
                     PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
             == ({VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED
-                | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS),
+                | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS
+                | RUNNER_APPLICATION_COMPLETION_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -3839,6 +3895,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_application_completion_source(root)
     validate_runner_keyring_fixture_source(root)
     validate_runner_keyring_isolation_source(root)
     validate_runner_mirror_phase_source(root)
