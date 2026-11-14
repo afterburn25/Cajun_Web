@@ -420,6 +420,15 @@ RUNNER_APPLICATION_COMPLETION_MODIFIED = frozenset((
     'tests/account_notification_workflow_contract.py',
     'tools/acceptance_artifacts.py',
 ))
+RUNNER_EVIDENCE_PROVENANCE_BASE = '826a0e28b874e97d74c74395b3a86187d57564d1'
+RUNNER_EVIDENCE_PROVENANCE_BASE_TREE = 'dda977bdbaf83a1f7169e346f382b97ac8fd5cc5'
+RUNNER_EVIDENCE_PROVENANCE_SOURCE = 'd166f2bc135fd818ac9683ab604a100a3e1f0786'
+RUNNER_EVIDENCE_PROVENANCE_SOURCE_TREE = '5ff7375a9bea1cff8ccf97f0c6a0a1c995660d6c'
+RUNNER_EVIDENCE_PROVENANCE_MODIFIED = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tests/delivery_evidence_cases.py',
+    'tools/acceptance_artifacts.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2304,6 +2313,50 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_evidence_provenance_source(root):
+    """Bind the independent-review repair for mandatory APT receipts."""
+    require(git(root, 'rev-parse', RUNNER_EVIDENCE_PROVENANCE_BASE + '^{tree}').decode().strip()
+            == RUNNER_EVIDENCE_PROVENANCE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_EVIDENCE_PROVENANCE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_EVIDENCE_PROVENANCE_SOURCE_TREE,
+            'Runner evidence provenance source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_EVIDENCE_PROVENANCE_SOURCE).decode().strip().split()
+            == [RUNNER_EVIDENCE_PROVENANCE_BASE],
+            'Runner evidence provenance source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_EVIDENCE_PROVENANCE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_EVIDENCE_PROVENANCE_BASE,
+                  RUNNER_EVIDENCE_PROVENANCE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_EVIDENCE_PROVENANCE_MODIFIED)],
+            'Runner evidence provenance changed a different path or status set')
+    base_entries = entries(root, RUNNER_EVIDENCE_PROVENANCE_BASE)
+    source_entries = entries(root, RUNNER_EVIDENCE_PROVENANCE_SOURCE)
+    for path in sorted(RUNNER_EVIDENCE_PROVENANCE_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_evidence_provenance(root, path, current) == base
+                and project_runner_evidence_provenance(root, path, base) == base,
+                'Runner evidence provenance identity or projection changed: ' + path)
+
+
+def project_runner_evidence_provenance(root, path, current):
+    """Restore the first Application-completion proof for older receipts."""
+    if path not in RUNNER_EVIDENCE_PROVENANCE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner evidence provenance changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_completion_source(root):
     """Bind the bounded timeout and collision-free APT evidence successor."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_COMPLETION_BASE + '^{tree}').decode().strip()
@@ -2323,7 +2376,7 @@ def validate_runner_application_completion_source(root):
     base_entries = entries(root, RUNNER_APPLICATION_COMPLETION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_COMPLETION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_COMPLETION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_evidence_provenance(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_BASE + ':' + path)
         require(current == source
@@ -2335,6 +2388,7 @@ def validate_runner_application_completion_source(root):
 
 def project_runner_application_completion(root, path, current):
     """Restore the first hosted compatibility proof head for older receipts."""
+    current = project_runner_evidence_provenance(root, path, current)
     if path not in RUNNER_APPLICATION_COMPLETION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_SOURCE + ':' + path)
@@ -2664,7 +2718,8 @@ def validate_pr391_recovery_successor(root):
                     PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
             == ({VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED
                 | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS
-                | RUNNER_APPLICATION_COMPLETION_MODIFIED),
+                | RUNNER_APPLICATION_COMPLETION_MODIFIED
+                | RUNNER_EVIDENCE_PROVENANCE_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -3895,6 +3950,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_evidence_provenance_source(root)
     validate_runner_application_completion_source(root)
     validate_runner_keyring_fixture_source(root)
     validate_runner_keyring_isolation_source(root)
