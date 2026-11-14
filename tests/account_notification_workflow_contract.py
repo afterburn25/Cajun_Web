@@ -22,7 +22,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = '1738e021b714aaf20a6d79bee6bb8453547a24aacb64e506760ffeddef641165'
+APT_PREPARATION_SHA256 = '1ff0e3c1a85d41dff9929c2fd8d0f41fb361faa3980dcf51781e0e7afb82b5d4'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 PROTECTED_ADDITIONS = (
@@ -192,10 +192,10 @@ def executable_ubuntu_source_guard_fixtures():
         'Types: deb\nURIs: mirror+file:/etc/apt/apt-mirrors.txt\n'
         'Suites: noble noble-updates noble-backports\n'
         'Components: main universe restricted multiverse\n'
-        'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n\n'
+        'Signed-By: /etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg\n\n'
         'Types: deb\nURIs: mirror+file:/etc/apt/apt-mirrors.txt\n'
         'Suites: noble-security\nComponents: main universe restricted multiverse\n'
-        'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n'
+        'Signed-By: /etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg\n'
     )
 
     def source(archive):
@@ -215,7 +215,8 @@ def executable_ubuntu_source_guard_fixtures():
     fixture_key_hash = hashlib.sha256(fixture_key).hexdigest()
 
     def run_case(name, ubuntu_source, mirror_text, expected_profile=None, extra_source=None,
-                 hardlink=False, apt_extra=''):
+                 hardlink=False, apt_extra='', keyring_directory_mode=0o777,
+                 keyring_mode=0o777):
         with tempfile.TemporaryDirectory(prefix='cwp-ubuntu-apt-guard-') as folder:
             root = Path(folder)
             apt = root / 'etc' / 'apt'
@@ -223,6 +224,7 @@ def executable_ubuntu_source_guard_fixtures():
             apt_conf = apt / 'apt.conf.d'
             apt_state = root / 'var' / 'lib' / 'apt'
             keyrings = root / 'usr' / 'share' / 'keyrings'
+            isolated_keyrings = apt / 'cwp-keyrings'
             qa = root / 'qa'
             sources.mkdir(parents=True)
             apt_conf.mkdir()
@@ -250,6 +252,7 @@ def executable_ubuntu_source_guard_fixtures():
                 "Path('/etc/apt/sources.list')": 'Path(' + repr(str(apt / 'sources.list')) + ')',
                 "Path('/etc/apt/sources.list.d')": 'Path(' + repr(str(sources)) + ')',
                 "Path('/etc/apt/cwp-sources.list.d')": 'Path(' + repr(str(apt / 'cwp-sources.list.d')) + ')',
+                "Path('/etc/apt/cwp-keyrings')": 'Path(' + repr(str(isolated_keyrings)) + ')',
                 "Path('/var/lib/apt/cwp-lists')": 'Path(' + repr(str(apt_state / 'cwp-lists')) + ')',
                 "Path('/etc/apt/cwp-source-isolation.conf.pending')": 'Path(' + repr(str(apt / 'cwp-source-isolation.conf.pending')) + ')',
                 "Path('/etc/apt/apt.conf.d/zz-cwp-source-isolation')": 'Path(' + repr(str(apt_conf / 'zz-cwp-source-isolation')) + ')',
@@ -290,9 +293,12 @@ def executable_ubuntu_source_guard_fixtures():
             try:
                 subprocess.run(['sudo', '-n', 'chown', '-R', '0:0', str(root)], check=True)
                 subprocess.run(['sudo', '-n', 'chmod', '755', str(root), str(apt), str(sources), str(apt_conf),
-                                str(root / 'var'), str(root / 'var' / 'lib'), str(apt_state), str(keyrings), str(qa)], check=True)
-                for path in (mirror, ubuntu, keyring, release, runner):
+                                str(root / 'var'), str(root / 'var' / 'lib'), str(apt_state), str(qa)], check=True)
+                subprocess.run(['sudo', '-n', 'chmod', format(keyring_directory_mode, 'o'), str(keyrings)],
+                               check=True)
+                for path in (mirror, ubuntu, release, runner):
                     subprocess.run(['sudo', '-n', 'chmod', '644', str(path)], check=True)
+                subprocess.run(['sudo', '-n', 'chmod', format(keyring_mode, 'o'), str(keyring)], check=True)
                 result = subprocess.run(['sudo', '-n', 'python3', str(runner)], cwd=root,
                                         capture_output=True, text=True)
                 if expected_profile is None:
@@ -305,12 +311,19 @@ def executable_ubuntu_source_guard_fixtures():
                     receipt = json.loads((qa / 'ubuntu-apt-source.json').read_text())
                     require(receipt['passed'] is True and receipt['profile'] == expected_profile,
                             name + ' retained the wrong profile')
+                    require(receipt['keyring_input_metadata']['directory_mode']
+                            == format(keyring_directory_mode, '04o')
+                            and receipt['keyring_input_metadata']['file_mode']
+                            == format(keyring_mode, '04o'),
+                            name + ' retained the wrong keyring input metadata')
                     require(mirror.read_text(encoding='ascii') == selected_mirror,
                             name + ' did not retain the selected mirror list')
                     require(ubuntu.read_text(encoding='ascii') == canonical_source,
                             name + ' did not retain the canonical source')
                     require((apt / 'cwp-sources.list.d' / 'ubuntu.sources').read_text(encoding='ascii') == canonical_source,
                             name + ' did not retain the isolated Ubuntu source')
+                    require((isolated_keyrings / 'ubuntu-archive-keyring.gpg').read_bytes() == fixture_key,
+                            name + ' did not retain the verified isolated Ubuntu keyring')
                     require((apt / 'cwp-source-isolation.conf.pending').is_file(),
                             name + ' did not retain the pending isolation config')
             finally:
@@ -320,6 +333,9 @@ def executable_ubuntu_source_guard_fixtures():
 
     run_case('Executable guard accepts exact .370 mirror profile', source('mirror+file:/etc/apt/apt-mirrors.txt'),
              expected_mirror, 'github-mirror-list')
+    run_case('Executable guard accepts protected conventional keyring metadata',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror, 'github-mirror-list',
+             keyring_directory_mode=0o755, keyring_mode=0o644)
     for region in ('us-east-1', 'us-west-2'):
         run_case('Executable guard accepts bounded AWS direct profile ' + region,
                  source('http://' + region + '.ec2.archive.ubuntu.com/ubuntu/'),
@@ -336,6 +352,12 @@ def executable_ubuntu_source_guard_fixtures():
     run_case('Executable guard rejects an insecure effective APT option',
              source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
              apt_extra='APT::Get::AllowUnauthenticated "yes";\n')
+    run_case('Executable guard rejects unreviewed keyring directory metadata',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
+             keyring_directory_mode=0o775)
+    run_case('Executable guard rejects unreviewed keyring file metadata',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
+             keyring_mode=0o666)
     return checks
 
 

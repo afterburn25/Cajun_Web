@@ -58,6 +58,52 @@ def prepare_ubuntu():
                 fail(label + ' changed while reading')
         return data, before, parent
 
+    def checked_runner_keyring(path, limit, label, expected_size, expected_sha256):
+        """Read the exact hosted-image key, then isolate it from /usr/share.
+
+        The GitHub Ubuntu image build deliberately applies mode 0777 recursively
+        below /usr/share.  Trusting that path later would be unsafe, but refusing
+        it prevents every hosted job from reaching package verification.  Open
+        the root-owned entry relative to the observed directory, require one of
+        the two exact supported image modes, verify stable metadata and exact
+        bytes, and return those bytes for a protected /etc/apt copy.
+        """
+        parent = path.parent.lstat()
+        parent_mode = stat.S_IMODE(parent.st_mode)
+        if (not stat.S_ISDIR(parent.st_mode) or parent.st_uid != 0 or parent.st_gid != 0
+                or parent_mode not in (0o755, 0o777)):
+            fail('unsupported ' + label + ' directory metadata')
+        directory_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            if directory_identity(os.fstat(directory_fd)) != directory_identity(parent):
+                fail(label + ' directory changed while opening')
+            before = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+            if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                    or before.st_uid != 0 or before.st_gid != 0
+                    or stat.S_IMODE(before.st_mode) not in (0o644, 0o777)
+                    or before.st_size != expected_size or before.st_size > limit):
+                fail('unsupported ' + label + ' metadata')
+            descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory_fd)
+            with os.fdopen(descriptor, 'rb') as stream:
+                opened = os.fstat(stream.fileno())
+                if fingerprint(opened) != fingerprint(before):
+                    fail(label + ' changed while opening')
+                data = stream.read(limit + 1)
+                final = os.fstat(stream.fileno())
+            if (len(data) != before.st_size or fingerprint(final) != fingerprint(before)
+                    or directory_identity(os.fstat(directory_fd)) != directory_identity(parent)):
+                fail(label + ' changed while reading')
+        finally:
+            os.close(directory_fd)
+        if hashlib.sha256(data).hexdigest() != expected_sha256:
+            fail('unexpected ' + label)
+        return data, {
+            'directory_mode': format(parent_mode, '04o'),
+            'file_mode': format(stat.S_IMODE(before.st_mode), '04o'),
+            'uid': before.st_uid,
+            'gid': before.st_gid,
+        }
+
     def replace_checked(path, original, before, parent, changed, label):
         temporary = '.' + path.name + '-' + secrets.token_hex(16)
         try:
@@ -153,7 +199,9 @@ def prepare_ubuntu():
     keyring = Path('/usr/share/keyrings/ubuntu-archive-keyring.gpg')
     mirror_data, mirror_metadata, mirror_parent = checked_read(mirror, 4096, 'Ubuntu mirror list')
     source_data, source_metadata, source_parent = checked_read(ubuntu, 16384, 'Ubuntu source')
-    key_data, _, _ = checked_read(keyring, 4096, 'Ubuntu archive keyring')
+    key_data, key_input_metadata = checked_runner_keyring(
+        keyring, 4096, 'Ubuntu Noble archive keyring', 3607,
+        '80a36b0a6de2f69f49d2df75ef473ccde121e9e190b9ea01d20a4f63778d5c31')
     diagnostic.update({
         'source_bytes': len(source_data),
         'source_sha256': hashlib.sha256(source_data).hexdigest(),
@@ -161,10 +209,8 @@ def prepare_ubuntu():
         'mirror_sha256': hashlib.sha256(mirror_data).hexdigest(),
         'keyring_bytes': len(key_data),
         'keyring_sha256': hashlib.sha256(key_data).hexdigest(),
+        'keyring_input_metadata': key_input_metadata,
     })
-    if (len(key_data) != 3607
-            or hashlib.sha256(key_data).hexdigest() != '80a36b0a6de2f69f49d2df75ef473ccde121e9e190b9ea01d20a4f63778d5c31'):
-        fail('unexpected Ubuntu Noble archive keyring')
     if any(byte > 126 or byte < 32 and byte not in (9, 10) for byte in source_data):
         fail('Ubuntu source is not flat ASCII')
     try:
@@ -305,31 +351,42 @@ def prepare_ubuntu():
         b'Types: deb\nURIs: mirror+file:/etc/apt/apt-mirrors.txt\n'
         b'Suites: noble noble-updates noble-backports\n'
         b'Components: main universe restricted multiverse\n'
-        b'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n\n'
+        b'Signed-By: /etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg\n\n'
         b'Types: deb\nURIs: mirror+file:/etc/apt/apt-mirrors.txt\n'
         b'Suites: noble-security\nComponents: main universe restricted multiverse\n'
-        b'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n'
+        b'Signed-By: /etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg\n'
     )
-    replace_checked(mirror, mirror_data, mirror_metadata, mirror_parent, selected, 'Ubuntu mirror list')
-    replace_checked(ubuntu, source_data, source_metadata, source_parent, canonical, 'Ubuntu source')
     isolated = Path('/etc/apt/cwp-sources.list.d')
+    isolated_keyrings = Path('/etc/apt/cwp-keyrings')
+    isolated_keyring = isolated_keyrings / 'ubuntu-archive-keyring.gpg'
     lists = Path('/var/lib/apt/cwp-lists')
     pending_config = Path('/etc/apt/cwp-source-isolation.conf.pending')
     active_config = Path('/etc/apt/apt.conf.d/zz-cwp-source-isolation')
-    if any(os.path.lexists(path) for path in (isolated, lists, pending_config, active_config)):
+    if any(os.path.lexists(path) for path in (
+            isolated, isolated_keyrings, lists, pending_config, active_config)):
         fail('APT source isolation path already exists')
     config_parent = active_config.parent.lstat()
     if (not stat.S_ISDIR(config_parent.st_mode) or config_parent.st_uid != 0 or config_parent.st_gid != 0
             or config_parent.st_mode & 0o022):
         fail('unsafe APT configuration directory')
     apt_parent = isolated.parent.lstat()
+    if (not stat.S_ISDIR(apt_parent.st_mode) or apt_parent.st_uid != 0
+            or apt_parent.st_gid != 0 or apt_parent.st_mode & 0o022):
+        fail('unsafe APT directory')
     apt_fd = os.open(isolated.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
         if directory_identity(os.fstat(apt_fd)) != directory_identity(apt_parent):
             fail('APT directory changed before isolation setup')
-        os.mkdir(isolated, 0o755)
-        os.chown(isolated, 0, 0)
-        os.chmod(isolated, 0o755)
+        for directory in (isolated, isolated_keyrings):
+            os.mkdir(directory.name, 0o755, dir_fd=apt_fd)
+            directory_fd = os.open(directory.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                   dir_fd=apt_fd)
+            try:
+                os.fchown(directory_fd, 0, 0)
+                os.fchmod(directory_fd, 0o755)
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
         os.fsync(apt_fd)
     finally:
         os.close(apt_fd)
@@ -338,6 +395,18 @@ def prepare_ubuntu():
             or (isolated_metadata.st_uid, isolated_metadata.st_gid, stat.S_IMODE(isolated_metadata.st_mode))
             != (0, 0, 0o755)):
         fail('APT source isolation directory was not retained')
+    isolated_keyring_metadata = isolated_keyrings.lstat()
+    if (not stat.S_ISDIR(isolated_keyring_metadata.st_mode) or isolated_keyring_metadata.st_nlink < 2
+            or (isolated_keyring_metadata.st_uid, isolated_keyring_metadata.st_gid,
+                stat.S_IMODE(isolated_keyring_metadata.st_mode)) != (0, 0, 0o755)):
+        fail('APT keyring isolation directory was not retained')
+    write_new(isolated_keyring, key_data, 'isolated Ubuntu archive keyring')
+    isolated_key_data, _, _ = checked_read(
+        isolated_keyring, 4096, 'isolated Ubuntu archive keyring')
+    if isolated_key_data != key_data:
+        fail('isolated Ubuntu archive keyring differs from verified input')
+    replace_checked(mirror, mirror_data, mirror_metadata, mirror_parent, selected, 'Ubuntu mirror list')
+    replace_checked(ubuntu, source_data, source_metadata, source_parent, canonical, 'Ubuntu source')
     write_new(isolated / 'ubuntu.sources', canonical, 'isolated Ubuntu source')
     lists_parent = lists.parent.lstat()
     lists_parent_fd = os.open(lists.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
@@ -382,6 +451,9 @@ def prepare_ubuntu():
         'mirror_sha256': hashlib.sha256(mirror_data).hexdigest(),
         'mirror_lines': mirror_lines,
         'keyring_sha256': hashlib.sha256(key_data).hexdigest(),
+        'keyring_input_metadata': key_input_metadata,
+        'isolated_keyring': '/etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg',
+        'isolated_keyring_sha256': hashlib.sha256(isolated_key_data).hexdigest(),
         'canonical_source_sha256': hashlib.sha256(canonical).hexdigest(),
         'selected_mirror_sha256': hashlib.sha256(selected).hexdigest(),
         'isolated_source_sha256': hashlib.sha256(canonical).hexdigest(),
