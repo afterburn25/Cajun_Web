@@ -33,19 +33,21 @@ try:
         context.set_servername_callback(lambda sock,name,ctx:names.append(name))
         stem='expired' if case=='expired' else 'server';context.load_cert_chain(str(temp/(stem+'.pem')),str(temp/(stem+'.key')))
         def serve():
-            s=None
+            s=None;buffer=b''
             try:
-                s,_=listener.accept();s.settimeout(4)
+                s,_=listener.accept();s.settimeout(20 if case=='maximum' else 4)
                 if encryption=='ssl':s=context.wrap_socket(s,server_side=True)
                 def send(line):s.sendall((line+'\r\n').encode())
                 def read():
-                    buf=b''
-                    while not buf.endswith(b'\r\n'):
-                        chunk=s.recv(1)
+                    nonlocal buffer
+                    while b'\r\n' not in buffer:
+                        chunk=s.recv(32768 if case=='maximum' else 1)
                         if not chunk:raise EOFError()
-                        buf+=chunk
-                        if len(buf)>2048:raise AssertionError('fixture line overflow')
-                    return buf[:-2].decode('ascii')
+                        buffer+=chunk
+                        if len(buffer)>34816 and b'\r\n' not in buffer:raise AssertionError('fixture line overflow')
+                    line,buffer=buffer.split(b'\r\n',1)
+                    if len(line)>2048:raise AssertionError('fixture line overflow')
+                    return line.decode('ascii')
                 def command(expected,label=None):
                     value=read();commands.append(label or value)
                     if value!=expected:raise AssertionError('unexpected fixture command')
@@ -70,10 +72,13 @@ try:
                     command(base64.b64encode(b'\0synthetic@example.net\0synthetic fixture password').decode(),'CREDENTIAL')
                 send('535 rejected' if case=='wrong_auth' else '235 authenticated')
                 if case=='wrong_auth':return
-                command('MAIL FROM:<sender@example.invalid>');send('550 denied' if case=='sender_rejected' else '250 sender')
+                domain=('d'*63)+'.'+('e'*63)+'.'+('f'*61)
+                sender=('s'*64)+'@'+domain if case=='maximum' else 'sender@example.invalid'
+                command('MAIL FROM:<'+sender+'>');send('550 denied' if case=='sender_rejected' else '250 sender')
                 if case=='sender_rejected':return
-                for i,address in enumerate(['first','second','private'],1):
-                    command(f'RCPT TO:<{address}@example.invalid>');send('550 denied' if case=='recipient'+str(i) else '250 recipient')
+                recipients=[('l'*62)+f'{i:02d}@'+domain for i in range(20)] if case=='maximum' else [name+'@example.invalid' for name in ['first','second','private']]
+                for i,address in enumerate(recipients,1):
+                    command(f'RCPT TO:<{address}>');send('550 denied' if case=='recipient'+str(i) else '250 recipient')
                     if case=='recipient'+str(i):
                         # Observe the peer close: rejected recipients must prevent DATA.
                         try:commands.append(read())
@@ -82,11 +87,12 @@ try:
                 command('DATA');send('554 refused' if case=='data_rejected' else '354 continue')
                 if case=='data_rejected':return
                 if case=='disconnect_body':return
+                data_bytes=0;data_limit=1048576 if case=='maximum' else 65536
                 while True:
                     line=read()
                     if line=='.':received_terminator.append(True);break
-                    data.append((line[1:] if line.startswith('..') else line)+'\r\n')
-                    if sum(map(len,data))>65536:raise AssertionError('fixture DATA cap')
+                    value=(line[1:] if line.startswith('..') else line)+'\r\n';data.append(value);data_bytes+=len(value)
+                    if data_bytes>data_limit:raise AssertionError('fixture DATA cap')
                 if case=='disconnect_final':return
                 if case=='slow_final':time.sleep(.8);return
                 if case=='malformed_final':send('not a reply');return
@@ -100,16 +106,17 @@ try:
                 if s:s.close()
                 listener.close()
         thread=threading.Thread(target=serve,daemon=True);thread.start();start=time.monotonic()
-        request={'encryption':encryption,'port':port,'host':'wrong.example.net' if case=='hostname' else 'smtp.example.net','ca':str(temp/('other.pem' if case=='untrusted' else 'ca.pem')),'budget':.25 if case.startswith('slow_') else 4.0,'large':case=='large','revoke_at':2 if case=='revoked' else 0}
-        p=subprocess.run([os.environ.get('PHP_BINARY','php'),*(['-n'] if NO_INI else []),str(HERE/'tls_driver.php')],input=json.dumps(request),capture_output=True,text=True,timeout=7)
+        request={'encryption':encryption,'port':port,'host':'wrong.example.net' if case=='hostname' else 'smtp.example.net','ca':str(temp/('other.pem' if case=='untrusted' else 'ca.pem')),'budget':.25 if case.startswith('slow_') else (20.0 if case=='maximum' else 4.0),'large':case=='large','maximum':case=='maximum','revoke_at':2 if case=='revoked' else 0}
+        p=subprocess.run([os.environ.get('PHP_BINARY','php'),*(['-n'] if NO_INI else []),str(HERE/'tls_driver.php')],input=json.dumps(request),capture_output=True,text=True,timeout=30 if case=='maximum' else 7)
         elapsed=time.monotonic()-start;thread.join(timeout=6);label=encryption+'/'+case
         check(label+' finite sanitized completion',p.returncode==0 and not p.stderr and not errors and not thread.is_alive())
         result=json.loads(p.stdout);check(label+' production pinned destination and TLS options',result['pinned'])
         o=result.get('outcome',{});status=o.get('status')
         if case in ['hostname','untrusted','expired']:
             check(label+' certificate refusal before credentials',result.get('open_failure')=='tls' if encryption=='ssl' else o.get('reason')=='tls')
-        elif case in ['ok','login','large']:
+        elif case in ['ok','login','large','maximum']:
             check(label+' verified acceptance',status=='accepted' and o['smtpCode']==250)
+            if case=='maximum':check(label+' exact maximum MIME crossed the real channel',result['mime_bytes']==954606 and len(''.join(data).encode())==954606)
         elif case in ['final450','final550']:check(label+' explicit final refusal',status=='rejected')
         elif case in ['disconnect_final','slow_final','malformed_final','truncated_final','mixed_final','oversized_final','unexpected_final']:
             check(label+' uncertain final reply',status=='unknown' and o['phase']=='confirmation')
@@ -125,7 +132,7 @@ try:
         if case.startswith('slow_'):check(label+' overall deadline enforced',elapsed<1.5)
         if case not in ['slow_greeting','eof_greeting','oversized_greeting','missing_upgrade','upgrade_injection']:
             check(label+' original hostname used for TLS SNI',names==[request['host']])
-    cases=['ok','large','login','hostname','untrusted','expired','slow_greeting','eof_greeting','oversized_greeting','mixed_codes','reply_flood','no_auth','revoked','wrong_auth','sender_rejected','recipient1','recipient2','recipient3','data_rejected','disconnect_body','disconnect_final','slow_final','malformed_final','truncated_final','mixed_final','oversized_final','unexpected_final','final450','final550']
+    cases=['ok','large','maximum','login','hostname','untrusted','expired','slow_greeting','eof_greeting','oversized_greeting','mixed_codes','reply_flood','no_auth','revoked','wrong_auth','sender_rejected','recipient1','recipient2','recipient3','data_rejected','disconnect_body','disconnect_final','slow_final','malformed_final','truncated_final','mixed_final','oversized_final','unexpected_final','final450','final550']
     for encryption in ['ssl','starttls']:
         for case in cases+(['missing_upgrade','upgrade_injection'] if encryption=='starttls' else []):trial(encryption,case)
     complete=True
