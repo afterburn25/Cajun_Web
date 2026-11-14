@@ -50,7 +50,7 @@ for fixture in data['messages']:
         check(name+' formatted body has alternative topology',any(part.get_content_type()=='multipart/alternative' for part in message.walk()))
     else:
         check(name+' no unsolicited HTML body',html==[])
-    check(name+' wire is canonical CRLF with bounded lines',b'\r\n\r\n' in raw and raw.replace(b'\r\n',b'').find(b'\n')==-1 and raw.replace(b'\r\n',b'').find(b'\r')==-1 and max(map(len,raw.split(b'\r\n')))<=998 and len(raw)<=1048576)
+    check(name+' wire is canonical final CRLF with bounded lines',raw.endswith(b'\r\n') and b'\r\n\r\n' in raw and raw.replace(b'\r\n',b'').find(b'\n')==-1 and raw.replace(b'\r\n',b'').find(b'\r')==-1 and max(map(len,raw.split(b'\r\n')))<=998 and len(raw)<=1048576)
     check(name+' header fields have no parser defects',all(not getattr(value,'defects',()) for _,value in message.items()))
 assert len(data['messages'])==27
 result={'passed':True,'scope':'Independent standard-library MIME parse of all synthetic plain, HTML, thread, attachment, and maximum-shape maintained-library output','checks':checks}

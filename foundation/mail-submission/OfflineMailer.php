@@ -15,7 +15,7 @@ final class OfflineMailer extends PHPMailer
 {
     /** @var array<string,list<string>> Validated structured fields keyed by exact header name. */
     private array $identifierHeaders=[];
-    private ?string $fixedId=null;
+    private ?string $boundarySeed=null;
     private bool $forceAlternative=false;
 
     public function __construct()
@@ -31,10 +31,10 @@ final class OfflineMailer extends PHPMailer
         $this->WordWrap=0;
     }
 
-    public function useSnapshotFingerprint(string $fingerprint):void
+    public function useBoundarySeed(string $seed):void
     {
-        if(!preg_match('/\A[a-f0-9]{64}\z/D',$fingerprint) || $this->fixedId!==null)throw new PreparationFailure('encoding_failed');
-        $this->fixedId=substr($fingerprint,0,43);
+        if(!preg_match('/\A[a-f0-9]{64}\z/D',$seed) || $this->boundarySeed!==null)throw new PreparationFailure('encoding_failed');
+        $this->boundarySeed=substr($seed,0,43);
     }
 
     /** Empty and literal-0 plaintext are both real fallbacks for formatted mail. */
@@ -145,6 +145,6 @@ final class OfflineMailer extends PHPMailer
         throw new \LogicException('Offline MIME preparation does not deliver messages.');
     }
 
-    /** Multipart boundaries derive only from the immutable snapshot fingerprint. */
-    protected function generateId() {return $this->fixedId??parent::generateId();}
+    /** Multipart boundaries derive only from public message identity. */
+    protected function generateId() {return $this->boundarySeed??parent::generateId();}
 }

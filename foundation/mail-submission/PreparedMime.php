@@ -20,7 +20,7 @@ final readonly class PreparedMime
         if(OfflineMailer::VERSION!=='7.1.1')throw new PreparationFailure('unsupported_runtime');
         try {
             $mail=new OfflineMailer();
-            $mail->useSnapshotFingerprint($snapshot->fingerprint);
+            $mail->useBoundarySeed(hash('sha256',"cwp-mime-boundary\0".$snapshot->messageId));
             $mail->setFrom($snapshot->from,'',false);
             $mail->Sender=$snapshot->from;
             $mail->MessageID=$snapshot->messageId;
@@ -58,7 +58,7 @@ final readonly class PreparedMime
             }
             if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');
             $bytes=$mail->getSentMIMEMessage();
-            if(strlen($bytes)>self::MAX_BYTES || !str_contains($bytes,"\r\n\r\n")
+            if(strlen($bytes)>self::MAX_BYTES || !str_contains($bytes,"\r\n\r\n") || !str_ends_with($bytes,"\r\n")
                 || preg_match('/(?<!\r)\n|\r(?!\n)|[^\x09\x0A\x0D\x20-\x7E]/',$bytes))throw new PreparationFailure('message_bounds');
             foreach(explode("\r\n",$bytes) as $line)if(strlen($line)>998)throw new PreparationFailure('message_bounds');
             $headers=explode("\r\n\r\n",$bytes,2)[0];
