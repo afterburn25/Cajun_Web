@@ -1,0 +1,215 @@
+name: Mail flags current-source native acceptance
+on:
+  push:
+    branches: [main]
+    paths: ['foundation/mail-receiving/**', 'site/app/mail/flags.php', 'site/app/settings/database_schemas.php', 'site/app/staff/accounts.php', 'site/admin/controllers/mail_accounts.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_accounts.php', 'site/admin/views/mail_message.php', 'site/database/schema/base.php', 'site/database/schema/mail_flags_schema.php', 'site/database/migrations/mail_flags_migrate.php', 'site/includes/foundation/mail-receiving/**', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/database_schema_registry_policy.php', 'tests/mail-receiving/flag_test.php', 'tests/mail_flags_native.php', 'tests/mail_flags_native_workflow_contract.py', 'tests/mail_inbox_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_message_cases.py', '.github/workflows/mail-flags-native.yml']
+  pull_request:
+    branches: [main]
+    paths: ['foundation/mail-receiving/**', 'site/app/mail/flags.php', 'site/app/settings/database_schemas.php', 'site/app/staff/accounts.php', 'site/admin/controllers/mail_accounts.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_accounts.php', 'site/admin/views/mail_message.php', 'site/database/schema/base.php', 'site/database/schema/mail_flags_schema.php', 'site/database/migrations/mail_flags_migrate.php', 'site/includes/foundation/mail-receiving/**', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/database_schema_registry_policy.php', 'tests/mail-receiving/flag_test.php', 'tests/mail_flags_native.php', 'tests/mail_flags_native_workflow_contract.py', 'tests/mail_inbox_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_message_cases.py', '.github/workflows/mail-flags-native.yml']
+permissions:
+  contents: read
+concurrency:
+  group: mail-flags-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      sha: ${{ steps.record.outputs.sha }}
+    env:
+      CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify bounded source and portable contracts
+        run: |
+          mkdir -p qa/mail-flags-native/source
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > qa/mail-flags-native/source/runner-image.log
+          from pathlib import Path
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if source.read_bytes() != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          print('Supported Ubuntu runner mirror list verified')
+          CWP_UBUNTU_MIRRORS
+          test "$CWP_RUN_ATTEMPT" = "1"
+          python3 tests/mail_flags_native_workflow_contract.py > qa/mail-flags-native/source/workflow-contract.json
+          python3 -m py_compile tests/mail_inbox_cases.py tests/mail_inbox_http_server.py tests/mail_message_cases.py
+          for file in foundation/mail-receiving/FlagSession.php foundation/mail-receiving/FlagWriter.php foundation/mail-receiving/ReadProfile.php foundation/mail-receiving/ReceivingFailure.php foundation/mail-receiving/bootstrap.php site/app/mail/flags.php site/app/settings/database_schemas.php site/app/staff/accounts.php site/admin/controllers/mail_accounts.php site/admin/controllers/mail_message.php site/admin/views/mail_accounts.php site/admin/views/mail_message.php site/database/schema/base.php site/database/schema/mail_flags_schema.php site/database/migrations/mail_flags_migrate.php site/install/actions/deploy.php tests/mail-receiving/flag_test.php tests/mail_flags_native.php; do php -l "$file"; done > qa/mail-flags-native/source/lint.log
+          for mode in normal noini; do
+            flags=""; if [ "$mode" = noini ]; then flags="-n"; fi
+            php $flags tests/mail-receiving/flag_test.php > "qa/mail-flags-native/source/portable-$mode-flags.json"
+            php $flags tests/database_schema_registry_policy.php > "qa/mail-flags-native/source/portable-$mode-schema-registry.json"
+          done
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('qa/mail-flags-native/source')
+          for mode in ('normal','noini'):
+              for name,count in (('flags',48),('schema-registry',387)):
+                  report=json.loads((root/f'portable-{mode}-{name}.json').read_text())
+                  assert report['passed'] is True and len(report['checks'])==count
+                  assert all(row['passed'] is True for row in report['checks'])
+          PY
+          for file in FlagSession.php FlagWriter.php ReadProfile.php ReceivingFailure.php; do cmp -s "foundation/mail-receiving/$file" "site/includes/foundation/mail-receiving/$file"; done
+          git diff --exit-code
+      - name: Admit only the immutable checked-out commit
+        id: record
+        run: |
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$CWP_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          printf 'sha=%s\n' "$actual" >> "$GITHUB_OUTPUT"
+      - name: Retain exact source and failure evidence
+        if: always()
+        run: |
+          mkdir -p qa/mail-flags-native/source
+          git archive --format=tar.gz HEAD > qa/mail-flags-native/source/source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > qa/mail-flags-native/source/identity.txt
+          printf 'run_id=%s\nrun_attempt=%s\n' "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" >> qa/mail-flags-native/source/identity.txt
+          git status --porcelain > qa/mail-flags-native/source/uncommitted-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: mail-flags-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: qa/mail-flags-native/source/
+          if-no-files-found: error
+          retention-days: 14
+  native:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_ROOT_HOST: '%'
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare disposable official PHP
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: |
+          cell=qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}
+          mkdir -p "$cell"
+          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > "$cell/runner-image.log"
+          from pathlib import Path
+          source = Path('/etc/apt/apt-mirrors.txt')
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
+              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
+          expected = (
+              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+          )
+          if source.read_bytes() != expected:
+              raise SystemExit('Unexpected Ubuntu mirror list')
+          print('Supported Ubuntu runner mirror list verified')
+          CWP_UBUNTU_MIRRORS
+          actual=$(git rev-parse HEAD); tree=$(git rev-parse HEAD^{tree})
+          test "$actual" = "$CWP_SOURCE_SHA"; test "$CWP_RUN_ATTEMPT" = "1"
+          printf 'source=%s\ntree=%s\nrun_id=%s\nrun_attempt=%s\nphp=%s\ndatabase=%s\n' "$actual" "$tree" "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" '${{ matrix.php }}' '${{ matrix.database }}' > "$cell/identity.txt"
+          status=0
+          docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-mail-flags-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
+          ARG PHP_VERSION
+          FROM php:${PHP_VERSION}-cli
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev && docker-php-ext-install pdo_mysql mbstring && rm -rf /var/lib/apt/lists/*
+          DOCKER
+          test "$status" -eq 0
+      - name: Prove disposable database readiness
+        run: |
+          cell=qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}
+          if [ '${{ matrix.database }}' = 'mysql' ]; then
+            docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1' > "$cell/mysql-global.stdout.log" 2> "$cell/mysql-global.stderr.log"
+          fi
+          status=0
+          docker run --rm --network host -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD cwp-mail-flags-native php -r '$last=null;for($i=0;$i<60;$i++){try{$pdo=new PDO("mysql:host=".getenv("CWP_TEST_HOST").";port=".getenv("CWP_TEST_PORT").";dbname=".getenv("CWP_TEST_DATABASE"),getenv("CWP_TEST_USER"),getenv("CWP_TEST_PASSWORD"),[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);fwrite(STDOUT,"ready\n");exit(0);}catch(Throwable $e){$last=$e;usleep(500000);}}fwrite(STDERR,get_class($last).": ".$last->getMessage()."\n");exit(1);' > "$cell/readiness.stdout.log" 2> "$cell/readiness.stderr.log" || status=$?
+          test "$status" -eq 0
+      - name: Run isolated message-flag SQL acceptance
+        run: |
+          cell=qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}
+          status=0
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_SOURCE_SHA cwp-mail-flags-native sh -ec '
+            mkdir -p test-runtime/mail-flags-private qa
+            chmod 700 test-runtime/mail-flags-private
+            php -r '\''$storage=realpath("test-runtime/mail-flags-private");if($storage===false)throw new RuntimeException("Missing synthetic private storage");$cfg=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>$storage,"key"=>str_repeat("synthetic-flags-key-",4),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"mfci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($cfg,true).";");'\''
+            php tests/mail_flags_native.php
+          ' > "$cell/stdout.log" 2> "$cell/stderr.log" || status=$?
+          if [ -f qa/mail-flags-native-results.json ]; then cp qa/mail-flags-native-results.json "$cell/results.json"; fi
+          printf 'status=%s\n' "$status" > "$cell/status.txt"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          cell=Path('qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}')
+          report=json.loads((cell/'results.json').read_text())
+          assert report['passed'] is True and len(report['checks'])==50
+          assert all(row['passed'] is True for row in report['checks'])
+          names={row['name'] for row in report['checks']}
+          required={
+              'Incompatible later sibling is preflighted before any flag table creation',
+              'Failed sibling preflight creates no earlier request table',
+              'Successful mark binds the complete exact identity',
+              'Transport unconfirmed returns a finite failure',
+              'A flag request can receive only one immutable terminal result',
+              'Flag request and audit storage contain no passwords or remote exception text',
+          }
+          assert required <= names
+          assert (cell/'stderr.log').stat().st_size==0
+          PY
+          test "$status" -eq 0
+          git diff --exit-code
+      - name: Preserve named exact-matrix evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mail-flags-${{ matrix.php }}-${{ matrix.database }}-${{ needs.source.outputs.sha }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}/
+          if-no-files-found: error
+          retention-days: 14
+  checkpoint:
+    needs: [source, native]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Confirm exact-source matrix completion
+        env:
+          CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
+        run: test -n "$CWP_SOURCE_SHA"

@@ -84,12 +84,15 @@ def validate(text):
     portable = (
         ('tests/mail-compose/origin.php', 'origin', '17'),
         ('tests/mail-compose/reply.php', 'reply', '60'),
+        ('tests/mail-compose/reply_all.php', 'reply-all', '37'),
         ('tests/mail-compose/thread.php', 'thread', '45'),
-        ('tests/mail-compose/copied_source.php', 'copied-source', '18'),
+        ('tests/mail-compose/copied_source.php', 'copied-source', '19'),
         ('tests/mail_copied_draft_storage.php', 'storage', '20'),
         ('tests/mail_copied_draft_admin_policy.php', 'admin-policy', '23'),
-        ('tests/mail_copied_draft_create_adapter.php', 'adapter', '18'),
-        ('tests/database_schema_registry_policy.php', 'schema-registry', '385'),
+        ('tests/mail_copied_draft_create_adapter.php', 'adapter', '19'),
+        ('tests/database_schema_registry_policy.php', 'schema-registry', '391'),
+        ('tests/mail-receiving/attachment_test.php', 'attachment', '14'),
+        ('tests/mail-receiving/attachment_security_test.php', 'attachment-security', '27'),
         ('tests/mail-submission/run.php', 'submission-snapshot', '54'),
         ('tests/mail-submission/mime.php', 'submission-mime', '34'),
     )
