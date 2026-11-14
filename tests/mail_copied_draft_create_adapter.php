@@ -50,14 +50,17 @@ copy_adapter_check('copy read has a finite mode/self API and no retain-source fl
     return str_contains($source,'function mail_message_copy_source(')&&!str_contains($source,'retainSource')&&!str_contains($source,"content['source']")&&!str_contains($source,'usleep(')&&!str_contains($source,'sleep(');
 });
 copy_adapter_check('derived source construction precedes terminal journal and raw transport cleanup precedes return',function(){
-    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$derive=strpos($source,'CopiedDraftSource::fromRead');$cleanup=strpos($source,'finally {unset($secrets,$response);}',(int)$derive);$record=strpos($source,'mail_message_record($started',(int)$cleanup);$return=strpos($source,"return ['result'=>\$result,'source'=>\$source]",(int)$record);
+    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$derive=strpos($source,'CopiedDraftSource::fromRead');$cleanup=strpos($source,'finally {unset($secrets,$response);}',(int)$derive);$record=strpos($source,'mail_message_record($started',(int)$cleanup);$return=strpos($source,"return ['result'=>\$result,'source'=>\$source,'attachment'=>\$attachment]",(int)$record);
     return $derive!==false&&$cleanup!==false&&$record!==false&&$return!==false&&$derive<$cleanup&&$cleanup<$record&&$record<$return;
 });
 copy_adapter_check('unsupported copy metadata is raised only after successful read recording',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$derive=strpos($source,'CopiedDraftSource::fromRead');$record=strpos($source,'mail_message_record($started',(int)$derive);$failure=strpos($source,'if($copyUnsupported)throw new InvalidArgumentException',(int)$record);return $record!==false&&$failure!==false&&$record<$failure;
 });
 copy_adapter_check('all failure catches clear any transient derived source',function(){
-    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');return substr_count($source,'$source=null;$copyUnsupported=false;')===3;
+    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');return substr_count($source,'$source=null;$attachment=null;')===3&&substr_count($source,'$attachmentFailure=null;')===3;
+});
+copy_adapter_check('attachment decode refusal is raised only after the truthful successful read record',function(){
+    $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/messages.php');$deferred=strpos($source,'catch(ReceivingFailure $e){$attachmentFailure=$e;$attachment=null;}');$record=strpos($source,'mail_message_record($started',(int)$deferred);$failure=strpos($source,'if($attachmentFailure instanceof ReceivingFailure)throw $attachmentFailure;',(int)$record);return $deferred!==false&&$record!==false&&$failure!==false&&$deferred<$record&&$record<$failure;
 });
 copy_adapter_check('sender query filters current Send grants before its page boundary',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/drafts.php');$send=strpos($source,'g.can_send=1');$limit=strpos($source,'LIMIT 21 OFFSET',$send);return $send!==false&&$limit!==false&&$send<$limit;
