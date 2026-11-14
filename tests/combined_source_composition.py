@@ -380,6 +380,21 @@ RUNNER_MIRROR_COMPAT_MODIFIED = frozenset((
     'tests/account_notification_workflow_contract.py',
     'tests/hosting_checkout_http_guards.py',
 ))
+RUNNER_MIRROR_PHASE_BASE = '677a980897fdbed500bc96ecfaf8268456aba75f'
+RUNNER_MIRROR_PHASE_BASE_TREE = '98b8127f63e69a3f841a942211776c88c9de0409'
+RUNNER_MIRROR_PHASE_SOURCE = '40fe97f113c0996171a20b6107ca5f8922f15967'
+RUNNER_MIRROR_PHASE_SOURCE_TREE = '0c8acab822200ac9e7eb01b3c0a5c0235f5aa970'
+RUNNER_MIRROR_PHASE_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/consolidation-after-backups.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tests/hosting_checkout_http_guards.py',
+))
+RUNNER_MIRROR_PHASE_ADDITIONS = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2264,6 +2279,58 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_mirror_phase_source(root):
+    """Bind the exact extraction successor for GitHub scalar and fixture failures."""
+    require(git(root, 'rev-parse', RUNNER_MIRROR_PHASE_BASE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_PHASE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_MIRROR_PHASE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_PHASE_SOURCE_TREE,
+            'Runner mirror phase source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_MIRROR_PHASE_SOURCE).decode().strip().split()
+            == [RUNNER_MIRROR_PHASE_BASE],
+            'Runner mirror phase source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_MIRROR_PHASE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_MIRROR_PHASE_BASE, RUNNER_MIRROR_PHASE_SOURCE).decode().splitlines()
+    expected = [('A' if path in RUNNER_MIRROR_PHASE_ADDITIONS else 'M') + '\t' + path
+                for path in sorted(RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS)]
+    require(changed == expected, 'Runner mirror phase successor changed a different path or status set')
+    base_entries = entries(root, RUNNER_MIRROR_PHASE_BASE)
+    source_entries = entries(root, RUNNER_MIRROR_PHASE_SOURCE)
+    require(not RUNNER_MIRROR_PHASE_ADDITIONS & set(base_entries)
+            and RUNNER_MIRROR_PHASE_ADDITIONS <= set(source_entries),
+            'Runner mirror phase addition did not originate in its exact source')
+    for path in sorted(RUNNER_MIRROR_PHASE_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_mirror_phase(root, path, current) == base
+                and project_runner_mirror_phase(root, path, base) == base,
+                'Runner mirror phase identity or projection changed: ' + path)
+    for path in sorted(RUNNER_MIRROR_PHASE_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Runner mirror phase addition identity changed: ' + path)
+
+
+def project_runner_mirror_phase(root, path, current):
+    """Project only modified extraction-successor paths to the failed proof head."""
+    if path not in RUNNER_MIRROR_PHASE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner mirror phase source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_mirror_compat_source(root):
     """Bind the reviewed dual-profile runner correction to exact main source."""
     require(git(root, 'rev-parse', RUNNER_MIRROR_COMPAT_BASE + '^{tree}').decode().strip()
@@ -2284,7 +2351,7 @@ def validate_runner_mirror_compat_source(root):
     base_entries = entries(root, RUNNER_MIRROR_COMPAT_BASE)
     source_entries = entries(root, RUNNER_MIRROR_COMPAT_SOURCE)
     for path in sorted(RUNNER_MIRROR_COMPAT_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_mirror_phase(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_BASE + ':' + path)
         require(current == source
@@ -2296,6 +2363,7 @@ def validate_runner_mirror_compat_source(root):
 
 def project_runner_mirror_compat(root, path, current):
     """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_runner_mirror_phase(root, path, current)
     if path not in RUNNER_MIRROR_COMPAT_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_SOURCE + ':' + path)
@@ -2436,7 +2504,8 @@ def validate_pr391_recovery_successor(root):
     git(root, 'merge-base', '--is-ancestor', PR391_RECOVERY_HEAD, 'HEAD')
     require(set(git(root, 'diff', '--name-only', '--no-renames',
                     PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
-            == {VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED,
+            == ({VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED
+                | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS),
             'Current recovery successor contains an unbound path')
 
 
@@ -3667,6 +3736,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
     validate_pr391_recovery_successor(root)
@@ -3908,6 +3978,7 @@ def verify_current(root):
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
+               | RUNNER_MIRROR_PHASE_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
