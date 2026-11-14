@@ -35,6 +35,9 @@ def validate(text):
           and text.count("'tests/current_owner_authority.php'") == 2
           and text.count("'tests/database_schema_registry_policy.php'") == 2
           and text.count("'tests/communication_session_installed.py'") == 2
+          and text.count("'foundation/mail-compose/**'") == 2
+          and text.count("'tests/mail-compose/**'") == 2
+          and text.count("'tests/mail_copied_draft_*'") == 2
           and text.count("'tests/mail-receiving/**'") == 2
           and text.count('branches: [main]') == 2)
     check('Manual redispatch cannot replace a natural first attempt', 'workflow_dispatch:' not in text)
@@ -59,6 +62,12 @@ def validate(text):
           and 'php tests/database_schema_registry_policy.php' in text
           and 'for file in HeaderSession.php InboxReader.php MessageReader.php ReadSession.php ReceivingFailure.php' in text
           and 'cmp -s "foundation/mail-receiving/$file" "site/includes/foundation/mail-receiving/$file"' in text)
+    check('Every hosted lane refuses a withdrawn Ubuntu runner image before networking',
+          text.count("source = Path('/etc/apt/apt-mirrors.txt')") == 2
+          and text.count("raise SystemExit('Unexpected Ubuntu mirror list')") == 2
+          and text.count("b'http://azure.archive.ubuntu.com/ubuntu/\\tpriority:1\\n'") == 2
+          and text.count('runner-image.log') == 2
+          and text.index("source = Path('/etc/apt/apt-mirrors.txt')") < text.index('docker build --build-arg PHP_VERSION='))
     check('Acceptance retains PHP and database support matrix',
           "php: ['8.2', '8.4']" in text and 'database: [mariadb, mysql]' in text
           and "image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}" in text)
@@ -73,12 +82,16 @@ def validate(text):
     check('Assigned synthetic user has bounded retained readiness proof',
           'for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text
           and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
-    check('Only synthetic local receiving and native suites run',
-          text.count('header=0; php tests/mail-receiving/session_test.php') == 1
-          and text.count('message_session=0; php tests/mail-receiving/message_session_test.php') == 1
+    check('Only synthetic local receiving copy and native suites run',
+          text.count('php $php_flags tests/mail-receiving/session_test.php') == 1
+          and text.count('php $php_flags tests/mail-receiving/message_session_test.php') == 1
+          and text.count('php $php_flags tests/mail-receiving/attachment_test.php') == 1
+          and text.count('php $php_flags tests/mail-compose/reply_all.php') == 1
+          and text.count('php $php_flags tests/mail_copied_draft_create_adapter.php') == 1
           and text.count('inbox=0; php tests/mail_inbox_native.php') == 1
           and text.count('message=0; php tests/mail_message_native.php') == 1
           and text.count('notices=0; php tests/mail_notices_native.php') == 1
+          and text.count('copied=0; php tests/mail_copied_draft_create_native.php') == 1
           and 'example.invalid' not in text
           and 'example.net' not in text)
     check('Synthetic private storage retains the production permission boundary',
@@ -89,6 +102,7 @@ def validate(text):
           'inbox.stdout.log' in text and 'inbox.stderr.log' in text
           and 'message.stdout.log' in text and 'message.stderr.log' in text
           and 'notices.stdout.log' in text and 'notices.stderr.log' in text
+          and 'copied.stdout.log' in text and 'copied.stderr.log' in text
           and 'status.txt' in text
           and text.index('status.txt') < text.index('test "$inbox" -eq 0'))
     check('Reports require complete passing named folder and migration assertions',
@@ -100,15 +114,28 @@ def validate(text):
           and 'Legacy message migration preserves request and result while widening folder identity' in text
           and 'Declared-current refusal does not widen the table' in text
           and 'Folder-scoped message read binds and records the exact folder' in text
+          and 'Folder-scoped attachment binds bytes and history to the exact folder' in text
+          and 'Non-inbox copied-draft source refuses before DNS or transport' in text
+          and 'Refused non-inbox copied draft leaves no request or network trace' in text
           and 'Non-inbox folder success leaves the inbox notice window and latest outcome unchanged' in text
-          and 'Non-inbox message open records its folder without creating notice state' in text)
-    check('Native report floors retain every predecessor and added check',
-          "'inbox': (cell / 'inbox-results.json', 72)" in text
-          and "'message': (cell / 'message-results.json', 83)" in text
-          and "'notices': (cell / 'notices-results.json', 81)" in text)
+          and 'Non-inbox message open records its folder without creating notice state' in text
+          and 'One exact read creates one protected derived draft' in text)
+    check('Portable normal and no-INI reports are exact and complete',
+          "for mode in ('normal', 'noini')" in text
+          and "'receiving': 17, 'header-session': 56, 'message-session': 46" in text
+          and "'body': 34, 'attachment': 14, 'attachment-security': 27" in text
+          and "'origin': 17, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
+          and "'adapter': 20, 'schema-registry': 383" in text
+          and "assert len(report['checks']) == count" in text)
+    check('Native report counts retain every predecessor and composed assertion',
+          "'inbox': (cell / 'inbox-results.json', 73)" in text
+          and "'message': (cell / 'message-results.json', 95)" in text
+          and "'notices': (cell / 'notices-results.json', 83)" in text
+          and "'copied': (cell / 'copied-results.json', 21)" in text
+          and "assert len(report['checks']) >=" not in text)
     check('Passing acceptance requires empty stderr from every PHP test execution',
-          "for name in ('header-session.stderr.log', 'message-session.stderr.log'," in text
-          and "'inbox.stderr.log', 'message.stderr.log', 'notices.stderr.log')" in text
+          "for name in ('inbox.stderr.log', 'message.stderr.log'," in text
+          and "'notices.stderr.log', 'copied.stderr.log')" in text
           and 'path = cell / name' in text
           and 'assert path.stat().st_size == 0, path' in text)
     check('Source and every matrix cell retain unconditional evidence',
@@ -151,7 +178,9 @@ def self_test(text):
         ('lost DOM', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install pdo_mysql mbstring'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost named migration gate', 'Declared-current refusal does not heal the table', 'Unrelated assertion'),
-        ('reduced native report floor', "'inbox': (cell / 'inbox-results.json', 72)", "'inbox': (cell / 'inbox-results.json', 30)"),
+        ('lost runner-image guard', "raise SystemExit('Unexpected Ubuntu mirror list')", "print('Unexpected Ubuntu mirror list')"),
+        ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # reply all omitted'),
+        ('changed exact native report count', "'message': (cell / 'message-results.json', 95)", "'message': (cell / 'message-results.json', 30)"),
         ('lost failure evidence', 'if: always()', 'if: success()'),
     )
     for name, old, new in mutations:
