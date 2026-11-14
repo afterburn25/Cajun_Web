@@ -63,6 +63,7 @@ function mail_message_request_internal(string $id,int $revision,string $validity
     if($attachmentIndex!==null&&($copyMode!==null||$attachmentIndex<0||$attachmentIndex>31))throw new LogicException('Invalid attachment request context.');
     mail_message_identity($validity,$uid);
     $folder=mail_inbox_folder($folder);
+    if($copyMode!==null&&$folder!=='INBOX')throw new InvalidArgumentException('Copied-message drafts are available only from INBOX.');
     if($noticeHandle!==null&&$folder!=='INBOX')throw new InvalidArgumentException('Email notices can open only the INBOX message they observed.');
     if($noticeHandle!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_handle($noticeHandle);}
     if(db()->inTransaction())throw new LogicException('Message reads cannot run inside a transaction.');

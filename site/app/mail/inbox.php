@@ -11,7 +11,7 @@ require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/ReceivingFailure
 
 function mail_inbox_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_inbox_schema_version'])['value']??'')==='2';}
 function mail_inbox_messages(): array {
-    return ['ok'=>'Recent inbox headers loaded. Message contents and attachments were not opened.',
+    return ['ok'=>'Recent folder headers loaded. Message contents and attachments were not opened.',
         'connection'=>'The inbox server could not be reached. Check the saved settings or try again later.',
         'tls'=>'The inbox server’s encrypted connection or certificate could not be verified.',
         'protocol'=>'The inbox server returned an unsupported or incomplete response. No headers are displayed.',
