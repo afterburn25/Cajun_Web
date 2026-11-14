@@ -10,14 +10,51 @@ try {
     $goldenSnapshot=new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Plain','Body'),1791964800);
     $goldenMime=PreparedMime::fromSnapshot($goldenSnapshot);
     check('Plain MIME bytes remain byte-identical to the predecessor',$goldenSnapshot->fingerprint==='a74941a4478f3da07f0b2e4f875a1e373d42233e40018d620ed9d57cee34fc9a'&&$goldenMime->sha256==='81006e946fa0f2d02c4a0ac8ab0eaff98fb4180dbf5c20d183d50d0b1b903d61'&&strlen($goldenMime->bytes)===300);
-    $extended=[
-        'formatted'=>new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Plain','Body','<p>Formatted</p>'),1791964800),
-        'attached'=>new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Plain','Body'),1791964800,null,null,[new DraftAttachment('private.txt','text/plain','PRIVATE-SENTINEL')]),
-    ];
-    foreach($extended as $name=>$shape){
-        $blocked=null;try{PreparedMime::fromSnapshot($shape);}catch(PreparationFailure $e){$blocked=$e;}
-        check('Extended '.$name.' snapshot fails closed before incomplete MIME',$blocked instanceof PreparationFailure&&$blocked->reason==='encoding_failed'&&$blocked->getPrevious()===null&&!str_contains($blocked->getMessage(),'PRIVATE-SENTINEL'));
+    $thread=MessageThread::reply('<parent@example.invalid>',['<root@example.invalid>']);
+    $attachments=[new DraftAttachment('one.txt','text/plain','PRIVATE-SENTINEL'),new DraftAttachment('two.bin','application/octet-stream',"\x00\xffbinary")];
+    $formatMimes=[];
+    for($bits=0;$bits<8;$bits++){
+        $rich=($bits&4)!==0;$withThread=($bits&1)!==0;$withAttachments=($bits&2)!==0;
+        $shape=new SubmissionSnapshot(str_repeat('3',32),9,str_repeat('4',32),5,str_repeat('b',32),6,'sender@example.invalid',
+            new DraftContent(['client@example.invalid'],[],['private@example.invalid'],'Shape '.$bits,'Plain fallback',$rich?'<p>Formatted <strong>body</strong></p>':null),1791964800,
+            $withThread?$thread:null,$withThread?str_repeat('e',64):null,$withAttachments?$attachments:[]);
+        $a=PreparedMime::fromSnapshot($shape);$b=PreparedMime::fromSnapshot($shape);
+        check('Format '.(1+$bits).' MIME is deterministic and bounded',$a->bytes===$b->bytes&&$a->sha256===hash('sha256',$a->bytes)&&strlen($a->bytes)<=PreparedMime::MAX_BYTES);
+        $formatMimes[$bits]=$a->bytes;
+        $messages[]=['name'=>'format-'.(1+$bits),'snapshot'=>$shape->privatePayload(),'mime_base64'=>base64_encode($a->bytes)];
     }
+    check('Formatted snapshot produces a plain plus HTML alternative',str_contains($formatMimes[4],'multipart/alternative')&&str_contains($formatMimes[4],'Content-Type: text/plain')&&str_contains($formatMimes[4],'Content-Type: text/html'));
+    check('Attachment snapshot produces deterministic mixed MIME',str_contains($formatMimes[2],'multipart/mixed')&&substr_count($formatMimes[2],'Content-Disposition: attachment')===2);
+    $threadHeaders=explode("\r\nMIME-Version:",$formatMimes[1],2)[0];
+    check('Thread identifiers stay literal and unencoded',str_contains($threadHeaders,"In-Reply-To: <parent@example.invalid>\r\n")&&str_contains($threadHeaders,'References: <root@example.invalid> <parent@example.invalid>')&&!preg_match('/(?:In-Reply-To|References):[^\r\n]*=\?/',$threadHeaders));
+    check('Formatted alternative composes inside mixed attachments',str_contains($formatMimes[6],'multipart/mixed')&&str_contains($formatMimes[6],'multipart/alternative'));
+    preg_match('/boundary="([^"]+)"/',$formatMimes[6],$boundaryA);
+    $changed=new SubmissionSnapshot(str_repeat('3',32),9,str_repeat('4',32),5,str_repeat('b',32),6,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],['private@example.invalid'],'Changed','Plain fallback','<p>Formatted <strong>body</strong></p>'),1791964800,$thread,str_repeat('e',64),$attachments);
+    $changedMime=PreparedMime::fromSnapshot($changed)->bytes;preg_match('/boundary="([^"]+)"/',$changedMime,$boundaryB);
+    check('Different snapshot fingerprint changes multipart boundary',($boundaryA[1]??'')!==''&&($boundaryB[1]??'')!==''&&$boundaryA[1]!==$boundaryB[1]);
+
+    foreach(['empty'=>'','zero'=>'0'] as $name=>$fallback){
+        $shape=new SubmissionSnapshot(str_repeat('5',32),7,str_repeat('6',32),3,str_repeat('c',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Fallback '.$name,$fallback,'<p>Formatted</p>'),1791964800);
+        $wire=PreparedMime::fromSnapshot($shape)->bytes;
+        check(ucfirst($name).' plaintext fallback remains a real alternative',str_contains($wire,'multipart/alternative')&&str_contains($wire,'Content-Type: text/plain')&&str_contains($wire,'Content-Type: text/html'));
+        $messages[]=['name'=>'fallback-'.$name,'snapshot'=>$shape->privatePayload(),'mime_base64'=>base64_encode($wire)];
+    }
+
+    $longId='<'.str_repeat('a',500).'@x>';$maxThread=MessageThread::reply($longId,array_fill(0,7,$longId));
+    $threadShape=new SubmissionSnapshot(str_repeat('7',32),7,str_repeat('8',32),3,str_repeat('d',32),4,'sender@example.invalid',new DraftContent(['client@example.invalid'],[],[],'Maximum thread','Body'),1791964800,$maxThread,str_repeat('d',64));
+    $threadWire=PreparedMime::fromSnapshot($threadShape)->bytes;
+    $maximumThreadHeaders=explode("\r\nMIME-Version:",$threadWire,2)[0];
+    check('Maximum thread identifiers remain raw and folded only between ids',!preg_match('/(?:In-Reply-To|References):[^\r\n]*=\?/',$maximumThreadHeaders)&&str_contains($maximumThreadHeaders,'In-Reply-To: '.$longId)&&max(array_map('strlen',explode("\r\n",$threadWire)))<=998);
+    $messages[]=['name'=>'maximum-thread','snapshot'=>$threadShape->privatePayload(),'mime_base64'=>base64_encode($threadWire)];
+
+    $maxRecipients=[];for($i=0;$i<20;$i++)$maxRecipients[]=str_repeat('l',61).sprintf('%02d',$i).'@'.str_repeat('d',60).'.'.str_repeat('e',60).'.'.str_repeat('f',50).'.invalid';
+    $maxAttachments=[];for($i=0;$i<4;$i++)$maxAttachments[]=new DraftAttachment(str_repeat(chr(110+$i),175).'.bin','application/'.str_repeat(chr(97+$i),88),str_repeat(chr(65+$i),131072));
+    $maxHtml='<p>'.str_repeat('h',61433).'</p>';
+    $maxShape=new SubmissionSnapshot(str_repeat('9',32),7,str_repeat('a',32),3,str_repeat('e',32),4,'sender@example.invalid',new DraftContent($maxRecipients,[],[],str_repeat('s',200),str_repeat("\n",20000),$maxHtml),1791964800,$maxThread,str_repeat('c',64),$maxAttachments);
+    $maxMime=PreparedMime::fromSnapshot($maxShape);
+    check('Maximum accepted snapshot exceeds stale bound but fits exact one-MiB boundary',strlen($maxMime->bytes)>786432&&strlen($maxMime->bytes)<=PreparedMime::MAX_BYTES&&PreparedMime::MAX_BYTES===1048576);
+    check('Maximum MIME is APPEND-compatible ASCII CRLF with bounded lines',str_contains($maxMime->bytes,"\r\n\r\n")&&!preg_match('/(?<!\r)\n|\r(?!\n)|[^\x09\x0A\x0D\x20-\x7E]/',$maxMime->bytes)&&max(array_map('strlen',explode("\r\n",$maxMime->bytes)))<=998);
+    $messages[]=['name'=>'maximum-shape','snapshot'=>$maxShape->privatePayload(),'mime_base64'=>base64_encode($maxMime->bytes)];
     $subjects=['Simple subject',' Leading and trailing spaces ','=?UTF-8?B?Tm90IGV2YWx1YXRlZA==?=','Résumé — project','',str_repeat('é',100),str_repeat('x',200),'Question? Equals= underscore_',str_repeat('🚀',50),str_repeat("e\u{0301}",66)];
     foreach($subjects as $i=>$subject){
         $draft=new DraftContent(['Client+work@example.invalid'],['copy@example.invalid'],['private-envelope@example.invalid'],$subject,".first\n..second\n\nRésumé\tliteral </textarea><script>no()</script>\n");$snap=snapshot($draft);$a=PreparedMime::fromSnapshot($snap);$b=PreparedMime::fromSnapshot($snap);
