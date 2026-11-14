@@ -70,9 +70,12 @@ final class AttachmentIndex
             $encoded=self::encodedBody($part);
             if(preg_match('/(?<!\r)\n|\r(?!\n)/',$encoded))throw new ReceivingFailure('protocol');
             $lines=explode("\r\n",$encoded);if(end($lines)==='')array_pop($lines);
-            foreach($lines as $line){
+            foreach($lines as $lineIndex=>$line){
                 if(strlen($line)>76||preg_match('/[ \t]\z/D',$line))throw new ReceivingFailure('protocol');
-                if(str_ends_with($line,'='))$line=substr($line,0,-1);
+                if(str_ends_with($line,'=')){
+                    if($lineIndex===count($lines)-1)throw new ReceivingFailure('protocol');
+                    $line=substr($line,0,-1);
+                }
                 for($i=0,$length=strlen($line);$i<$length;$i++){
                     $byte=ord($line[$i]);
                     if($line[$i]==='='){

@@ -68,6 +68,10 @@ $validQuoted=security_mixed(["Content-Type: text/plain\r\nContent-Disposition: a
 security_check('canonical quoted-printable remains downloadable',fn()=>AttachmentIndex::extract($validQuoted,0)['bytes']==="line one\nline two");
 $invalidQuoted=security_mixed(["Content-Type: text/plain\r\nContent-Disposition: attachment; filename=\"bad-quoted.txt\"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\ninvalid=QZ"]);
 security_check('malformed quoted-printable is refused',fn()=>security_refused(fn()=>AttachmentIndex::extract($invalidQuoted,0)));
+$danglingSoftBreak=security_mixed(["Content-Type: text/plain\r\nContent-Disposition: attachment; filename=\"dangling-soft-break.txt\"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nabc="]);
+security_check('quoted-printable refuses a final soft break without a following encoded line',fn()=>security_refused(fn()=>AttachmentIndex::extract($danglingSoftBreak,0)));
+$continuedSoftBreak=security_mixed(["Content-Type: text/plain\r\nContent-Disposition: attachment; filename=\"continued-soft-break.txt\"\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nabc=\r\nnext"]);
+security_check('quoted-printable accepts a soft break with a following encoded line',fn()=>AttachmentIndex::extract($continuedSoftBreak,0)['bytes']==='abcnext');
 
 $latin1=security_mixed(["Content-Type: text/plain; charset=ISO-8859-1\r\nContent-Disposition: attachment; filename=\"latin1.txt\"\r\nContent-Transfer-Encoding: 8bit\r\n\r\ncaf\xE9"]);
 security_check('binary extraction preserves exact transfer-decoded attachment bytes and size',function()use($latin1){$list=AttachmentIndex::list($latin1);$item=AttachmentIndex::extract($latin1,0);return $item['bytes']==="caf\xE9"&&strlen($item['bytes'])===4&&$list[0]['size']===4;});
