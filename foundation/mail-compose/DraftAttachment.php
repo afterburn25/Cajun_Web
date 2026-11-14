@@ -45,6 +45,12 @@ final readonly class DraftAttachment
     /** Explicit private-content boundary for a later MIME/storage adapter. */
     public function bytes(): string { return $this->bytes; }
 
+    /** Native object serialization is not a supported content boundary. */
+    public function __serialize(): array { throw new \LogicException('Attachment object serialization is unavailable.'); }
+
+    /** Constructor invariants cannot be bypassed through native unserialize. */
+    public function __unserialize(array $data): void { throw new \LogicException('Attachment object serialization is unavailable.'); }
+
     /** Ordered metadata for immutable fingerprint binding; contains no content. */
     public function descriptor(): array
     {

@@ -18,6 +18,12 @@ check('Checksum binds exact content',$file->sha256===hash('sha256',$file->bytes(
 check('Descriptor is closed ordered metadata',array_keys($file->descriptor())===['name','mime','sha256','bytes']&&$file->descriptor()['bytes']===strlen($file->bytes()));
 $encoded=(string)json_encode($file,JSON_THROW_ON_ERROR);
 check('Object JSON cannot serialize private content',!str_contains($encoded,'PDF-1.4')&&!str_contains($encoded,'changed'));
+$private=new DraftAttachment('private.bin','application/octet-stream','PRIVATE-CONTENT');
+$serializeError=null;try{serialize($private);}catch(LogicException $e){$serializeError=$e;}
+check('Native serialization fails closed without private content',$serializeError instanceof LogicException&&!str_contains($serializeError->getMessage(),'PRIVATE-CONTENT'));
+$class=DraftAttachment::class;$crafted='O:'.strlen($class).':"'.$class.'":0:{}';$unserializeError=null;
+try{unserialize($crafted,['allowed_classes'=>[$class]]);}catch(LogicException $e){$unserializeError=$e;}
+check('Crafted native unserialize cannot bypass constructor invariants',$unserializeError instanceof LogicException&&!str_contains($unserializeError->getMessage(),'PRIVATE-CONTENT'));
 
 foreach(['../evil.txt','..\\evil.txt',' evil.txt','evil.txt ','a/b.txt','a:b.txt','a"b.txt','a?b.txt','a*b.txt','a<b.txt','a>b.txt','a|b.txt','.', '..','',"bad\r\nname.txt","caf\xC3\xA9.txt",str_repeat('n',181)] as $i=>$bad){
     check('Noncanonical name is refused '.$i,refused(fn()=>new DraftAttachment($bad,'text/plain','x')));
