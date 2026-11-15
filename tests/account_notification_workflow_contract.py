@@ -22,7 +22,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = 'ae5b73bbc094f0a41f3509bf94c600a1074244a61a862ebb1d8b31498f340670'
+APT_PREPARATION_SHA256 = 'cfec890a493d931f24c20621bc002736a536889ee2d5f213b90fb879aca2dc49'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
@@ -355,6 +355,18 @@ def executable_ubuntu_source_guard_fixtures():
              'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
              'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
              'https://security.ubuntu.com/ubuntu/\tpriority:3\n', 'aws-direct')
+    run_case('Executable guard accepts exact .127 AWS mirror-list profile',
+             source('mirror+file:/etc/apt/apt-mirrors.txt',
+                    'http://security.ubuntu.com/ubuntu'),
+             'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+             'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+             'https://security.ubuntu.com/ubuntu/\tpriority:3\n', 'aws-mirror-list')
+    run_case('Executable guard rejects an unknown AWS mirror-list archive host',
+             source('mirror+file:/etc/apt/apt-mirrors.txt',
+                    'http://security.ubuntu.com/ubuntu'),
+             'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+             'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+             'https://security.ubuntu.com/ubuntu/\tpriority:3\n')
     run_case('Executable guard rejects an unknown AWS archive host',
              source('http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/'),
              'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/\n')

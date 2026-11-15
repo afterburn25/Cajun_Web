@@ -323,6 +323,10 @@ def prepare_ubuntu():
         (archive_record, 'mirror+file:/etc/apt/apt-mirrors.txt'),
         (security_record, 'mirror+file:/etc/apt/apt-mirrors.txt'),
     }
+    aws_mirror_records = {
+        (archive_record, 'mirror+file:/etc/apt/apt-mirrors.txt'),
+        (security_record, 'http://security.ubuntu.com/ubuntu/'),
+    }
     aws_profiles = [{
         (archive_record, uri),
         (security_record, 'http://security.ubuntu.com/ubuntu/'),
@@ -334,6 +338,10 @@ def prepare_ubuntu():
         profile = 'github-mirror-list'
         if references != [ubuntu]:
             fail('unexpected active APT mirror-list reference')
+    elif record_set == aws_mirror_records:
+        profile = 'aws-mirror-list'
+        if references != [ubuntu]:
+            fail('unexpected active AWS APT mirror-list reference')
     elif any(record_set == candidate for candidate in aws_profiles):
         profile = 'aws-direct'
         if references:
@@ -348,6 +356,14 @@ def prepare_ubuntu():
     )
     if profile == 'github-mirror-list' and mirror_data != expected:
         fail('unknown or untrusted active Ubuntu mirror list')
+    if profile == 'aws-mirror-list':
+        expected_aws_mirror = (
+            b'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+            b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+            b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+        )
+        if mirror_data != expected_aws_mirror:
+            fail('unknown or untrusted AWS Ubuntu mirror list')
     if profile == 'aws-direct':
         archive_uri = next(uri for suites, uri in records if suites == archive_record)
         expected_aws = (
