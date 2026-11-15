@@ -515,6 +515,16 @@ RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcae
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE_TREE = 'c914d21d844f1b5d9c5238f3016f9654fec0a5bd'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH = 'tests/hosting_purchase_inbox_cases.py'
+RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE = '440d269f3dd2a81df71877859582b0977bc3feee'
+RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE_TREE = 'ff8543cabdaee2cb1cc2b0e65ce991e415831df2'
+RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE = 'a13eff58a9d0e934ecfc403c8bc26d3c8622a111'
+RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE_TREE = '7f71774d072a8340e9d1c9d958753e9970f99f85'
+RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED = frozenset((
+    'tests/hosting_purchase_inbox_cases.py',
+))
+RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS = frozenset((
+    'docs/agent-handoffs/2026-11-15-codex-pr394-inbox-navigation.md',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -1118,6 +1128,7 @@ NARRATIVES = frozenset((
     'docs/agent-handoffs/2026-11-08-codex-release-stack-integration.md',
     'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-feature.md',
     'docs/agent-handoffs/2026-11-09-codex-issue343-cloud-intake-integration.md',
+    'docs/agent-handoffs/2026-11-15-codex-pr394-inbox-navigation.md',
     'docs/AGENT_COORDINATION.md', 'docs/DECISIONS.md', 'docs/DEVIN_INTEGRATION_QUEUE.md',
     'docs/RELEASES.md', 'docs/ROADMAP.md', 'docs/SESSION_LOG.md',
 ))
@@ -2311,6 +2322,59 @@ def project_ux08_agreement_duplicate_fix(root, path, current):
     return base
 
 
+def validate_resulting_main_inbox_click_budget_source(root):
+    """Bind the complete one-attempt navigation and continuity correction."""
+    require(git(root, 'rev-parse', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE_TREE,
+            'Resulting-main inbox click-budget source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE).decode().strip().split()
+            == [RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE],
+            'Resulting-main inbox click-budget source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE,
+                  RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE).decode().splitlines()
+    require(changes == [
+        'A\t' + next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS)),
+        'M\t' + next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED)),
+    ], 'Resulting-main inbox click-budget source changed a different path or status set')
+    base_entries = entries(root, RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE)
+    source_entries = entries(root, RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE)
+    modified = next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED))
+    addition = next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS))
+    current = ordinary(root, modified)
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + modified)
+    base = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + ':' + modified)
+    require(current == source
+            and mode(root, modified) == base_entries[modified][0] == source_entries[modified][0] == '100644'
+            and project_resulting_main_inbox_click_budget(root, modified, current) == base
+            and project_resulting_main_inbox_click_budget(root, modified, base) == base,
+            'Resulting-main inbox click-budget identity or projection changed')
+    require(addition not in base_entries and addition in source_entries
+            and ordinary(root, addition)
+            == git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + addition)
+            and mode(root, addition) == source_entries[addition][0] == '100644',
+            'Resulting-main inbox task handoff identity changed')
+
+
+def project_resulting_main_inbox_click_budget(root, path, current):
+    """Restore the reviewed outer-navigation proof head for older receipts."""
+    if path not in RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current resulting-main inbox click budget changed before predecessor projection')
+    return base
+
+
 def validate_resulting_main_inbox_navigation_budget_source(root):
     """Bind the one-attempt hosted owner-inbox navigation budget correction."""
     require(git(root, 'rev-parse', RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE + '^{tree}').decode().strip()
@@ -2331,7 +2395,7 @@ def validate_resulting_main_inbox_navigation_budget_source(root):
     base_entries = entries(root, RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE)
     source_entries = entries(root, RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE)
     path = RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH
-    current = ordinary(root, path)
+    current = project_resulting_main_inbox_click_budget(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE + ':' + path)
     require(current == source
@@ -2343,6 +2407,7 @@ def validate_resulting_main_inbox_navigation_budget_source(root):
 
 def project_resulting_main_inbox_navigation_budget(root, path, current):
     """Restore exact merged-main inbox fixture bytes for older source proofs."""
+    current = project_resulting_main_inbox_click_budget(root, path, current)
     if path != RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH:
         return current
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE + ':' + path)
@@ -3358,7 +3423,9 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_FINITE_TOOL_REFUSAL_MODIFIED
                 | RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED
                 | RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED
-                | {RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH}),
+                | {RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH}
+                | RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED
+                | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS),
             'Current recovery successor contains an unbound path')
 
 
@@ -4627,6 +4694,7 @@ def verify_current(root):
     validate_ux08_payment_publication_pin_fix_source(root)
     validate_ux08_payment_fixture_lock_fix_source(root)
     validate_ux08_billing_network_fix_source(root)
+    validate_resulting_main_inbox_click_budget_source(root)
     validate_resulting_main_inbox_navigation_budget_source(root)
     validate_ux08_inbox_network_fix_source(root)
     validate_ux08_agreement_duplicate_fix_source(root)
