@@ -445,6 +445,13 @@ RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED = frozenset((
     'tests/cloud_site_requests_wiring.py',
     'tools/acceptance-contract.json',
 ))
+RUNNER_APPLICATION_HISTORICAL_BINDING_BASE = 'd3cb6b8d1bfee92eccba3f539189274b93a44031'
+RUNNER_APPLICATION_HISTORICAL_BINDING_BASE_TREE = '5b94b2fba94a1ef60e19bb2eb616e7d91056c335'
+RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE = '088c2c1f47bd190d4c93d1a2f55695cade8f6205'
+RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE_TREE = 'be713473b8e56773d1d650c9b45c06e005ac7fc5'
+RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED = frozenset((
+    'tests/cloud_site_requests_wiring.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2330,6 +2337,50 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_application_historical_binding(root):
+    """Bind independent historical and current Application source hashes."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_HISTORICAL_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE_TREE,
+            'Runner Application historical-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_HISTORICAL_BINDING_BASE],
+            'Runner Application historical-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_HISTORICAL_BINDING_BASE,
+                  RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED)],
+            'Runner Application historical binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_HISTORICAL_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_historical_binding(root, path, current) == base
+                and project_runner_application_historical_binding(root, path, base) == base,
+                'Runner Application historical-binding identity or projection changed: ' + path)
+
+
+def project_runner_application_historical_binding(root, path, current):
+    """Restore the first current-source binding proof for older receipts."""
+    if path not in RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application historical binding changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_source_binding(root):
     """Bind the exact current-source override exposed by hosted Application."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_SOURCE_BINDING_BASE + '^{tree}').decode().strip()
@@ -2349,7 +2400,7 @@ def validate_runner_application_source_binding(root):
     base_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_SOURCE)
     for path in sorted(RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_application_historical_binding(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_BASE + ':' + path)
         require(current == source
@@ -2361,6 +2412,7 @@ def validate_runner_application_source_binding(root):
 
 def project_runner_application_source_binding(root, path, current):
     """Restore the reviewed AWS proof head for older source receipts."""
+    current = project_runner_application_historical_binding(root, path, current)
     if path not in RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
@@ -2826,7 +2878,8 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS
                 | RUNNER_APPLICATION_COMPLETION_MODIFIED
                 | RUNNER_EVIDENCE_PROVENANCE_MODIFIED | RUNNER_AWS_PROFILE_MODIFIED
-                | RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED),
+                | RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED
+                | RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -4059,6 +4112,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_application_historical_binding(root)
     validate_runner_application_source_binding(root)
     validate_runner_aws_profile_source(root)
     validate_runner_evidence_provenance_source(root)
@@ -4490,7 +4544,8 @@ def account_call(root, module, method, *, path=None, value=None, side=None):
     arguments = {}
     if path is not None:
         require(path.startswith('tests/') or (module == 'provider_browser_fixture_provenance'
-                and method == 'source' and path == 'tools/acceptance-reports.json'),
+                and method == 'source'
+                and path in {'tools/acceptance-reports.json', 'tools/acceptance_artifacts.py'}),
                 'Historical projections never supply shipping/runtime file bytes')
         ordinary(root, path)
         arguments['path'] = path
