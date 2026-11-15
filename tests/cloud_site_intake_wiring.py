@@ -1,6 +1,7 @@
 """Additive local-intake acceptance wiring on the exact current recipe."""
 import hashlib
 import json
+from provider_browser_fixture_provenance import source as fixture_predecessor_source
 
 
 def digest(value):
@@ -71,7 +72,7 @@ def verify(root, contract, workflow, commands, check):
         check('Static intake acceptance source bound ' + path,
               hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest()
               == expected)
-    helper = (root / 'tests/cloud_site_requests_wiring.py').read_bytes().replace(b'\r\n', b'\n')
+    helper = fixture_predecessor_source(root, 'tests/cloud_site_requests_wiring.py').replace(b'\r\n', b'\n')
     check('Previous cloud request wiring remains byte-identical',
           hashlib.sha256(helper).hexdigest()
           == item['predecessor_source_sha256']['tests/cloud_site_requests_wiring.py'])
