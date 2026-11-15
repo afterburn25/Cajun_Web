@@ -452,6 +452,21 @@ RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE_TREE = 'be713473b8e56773d1d650c9b45
 RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED = frozenset((
     'tests/cloud_site_requests_wiring.py',
 ))
+RUNNER_AWS_MIRROR_PROFILE_BASE = 'cc10c6c515ede8145a6ceb43449f855f6300bcc6'
+RUNNER_AWS_MIRROR_PROFILE_BASE_TREE = '91061082b27f44d1906e5ee7603b0fc72110c45b'
+RUNNER_AWS_MIRROR_PROFILE_SOURCE = '33c8e484ee0592ebd39c49aefd21230b52c28ca3'
+RUNNER_AWS_MIRROR_PROFILE_SOURCE_TREE = '8d4dd430dc181a5227fdc183671924cdcb2a55af'
+RUNNER_AWS_MIRROR_PROFILE_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
+RUNNER_APPLICATION_INTAKE_BINDING_BASE = '33c8e484ee0592ebd39c49aefd21230b52c28ca3'
+RUNNER_APPLICATION_INTAKE_BINDING_BASE_TREE = '8d4dd430dc181a5227fdc183671924cdcb2a55af'
+RUNNER_APPLICATION_INTAKE_BINDING_SOURCE = '89d0b44b72b67efd05d9a80a2e4c739de6637c25'
+RUNNER_APPLICATION_INTAKE_BINDING_SOURCE_TREE = '0389530dcf6d01fdc519490542833ebc0ce35981'
+RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED = frozenset((
+    'tests/cloud_site_intake_wiring.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -1930,6 +1945,7 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_runner_application_intake_binding(root, path, current)
     current = project_runner_application_source_binding(root, path, current)
     current = project_ux08_browser_navigation(root, path, current)
     current = project_ux09_commercial_snapshot(root, path, current)
@@ -2337,6 +2353,93 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_application_intake_binding(root):
+    """Bind the exact historical cloud-request projection exposed by Application."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_INTAKE_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_INTAKE_BINDING_SOURCE_TREE,
+            'Runner Application intake-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_INTAKE_BINDING_BASE],
+            'Runner Application intake-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_INTAKE_BINDING_BASE,
+                  RUNNER_APPLICATION_INTAKE_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED)],
+            'Runner Application intake binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_INTAKE_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_INTAKE_BINDING_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_intake_binding(root, path, current) == base
+                and project_runner_application_intake_binding(root, path, base) == base,
+                'Runner Application intake-binding identity or projection changed: ' + path)
+
+
+def project_runner_application_intake_binding(root, path, current):
+    """Restore the accepted AWS mirror-profile implementation head."""
+    if path not in RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application intake binding changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_aws_mirror_profile_source(root):
+    """Bind only the exact observed .127 AWS mirror-list source profile."""
+    require(git(root, 'rev-parse', RUNNER_AWS_MIRROR_PROFILE_BASE + '^{tree}').decode().strip()
+            == RUNNER_AWS_MIRROR_PROFILE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_AWS_MIRROR_PROFILE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_AWS_MIRROR_PROFILE_SOURCE_TREE,
+            'Runner AWS mirror profile source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_AWS_MIRROR_PROFILE_SOURCE).decode().strip().split()
+            == [RUNNER_AWS_MIRROR_PROFILE_BASE],
+            'Runner AWS mirror profile source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_AWS_MIRROR_PROFILE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_AWS_MIRROR_PROFILE_BASE, RUNNER_AWS_MIRROR_PROFILE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_AWS_MIRROR_PROFILE_MODIFIED)],
+            'Runner AWS mirror profile changed a different path or status set')
+    base_entries = entries(root, RUNNER_AWS_MIRROR_PROFILE_BASE)
+    source_entries = entries(root, RUNNER_AWS_MIRROR_PROFILE_SOURCE)
+    for path in sorted(RUNNER_AWS_MIRROR_PROFILE_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_aws_mirror_profile(root, path, current) == base
+                and project_runner_aws_mirror_profile(root, path, base) == base,
+                'Runner AWS mirror profile identity or projection changed: ' + path)
+
+
+def project_runner_aws_mirror_profile(root, path, current):
+    """Restore the accepted Application historical-binding proof head."""
+    if path not in RUNNER_AWS_MIRROR_PROFILE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner AWS mirror profile changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_historical_binding(root):
     """Bind independent historical and current Application source hashes."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + '^{tree}').decode().strip()
@@ -2444,7 +2547,7 @@ def validate_runner_aws_profile_source(root):
     base_entries = entries(root, RUNNER_AWS_PROFILE_BASE)
     source_entries = entries(root, RUNNER_AWS_PROFILE_SOURCE)
     for path in sorted(RUNNER_AWS_PROFILE_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_aws_mirror_profile(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_BASE + ':' + path)
         require(current == source
@@ -2456,6 +2559,7 @@ def validate_runner_aws_profile_source(root):
 
 def project_runner_aws_profile(root, path, current):
     """Restore the reviewed evidence-provenance head for older receipts."""
+    current = project_runner_aws_mirror_profile(root, path, current)
     if path not in RUNNER_AWS_PROFILE_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_SOURCE + ':' + path)
@@ -2879,7 +2983,9 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_APPLICATION_COMPLETION_MODIFIED
                 | RUNNER_EVIDENCE_PROVENANCE_MODIFIED | RUNNER_AWS_PROFILE_MODIFIED
                 | RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED
-                | RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED),
+                | RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED
+                | RUNNER_AWS_MIRROR_PROFILE_MODIFIED
+                | RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -3514,6 +3620,7 @@ def validate_ux08_payment_native_fix_source(root):
 
 def project_ux08_payment_native_fix(root, path, current):
     """Restore the first recovery-attempt bytes for older source receipts."""
+    current = project_runner_application_intake_binding(root, path, current)
     current = project_ux08_inbox_payment_readiness_fix(root, path, current)
     current = project_ux08_agreement_link_fix(root, path, current)
     current = project_ux08_inbox_record_fix(root, path, current)
@@ -4112,6 +4219,8 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_application_intake_binding(root)
+    validate_runner_aws_mirror_profile_source(root)
     validate_runner_application_historical_binding(root)
     validate_runner_application_source_binding(root)
     validate_runner_aws_profile_source(root)
