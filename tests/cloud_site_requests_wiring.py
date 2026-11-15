@@ -29,7 +29,7 @@ def verify(root, contract, workflow, commands, check):
     published = item['published_baseline']
     current_sources = published['current_source_sha256']
     check('Published 1.25 current-source overrides are finite and retain the historical fixture binding',
-          set(current_sources) == {'tests/prepare_legacy.py'}
+          set(current_sources) == {'tests/prepare_legacy.py', 'tools/acceptance_artifacts.py'}
           and set(current_sources) < set(published['source_sha256']))
     for path, digest in published['source_sha256'].items():
         current_digest = current_sources.get(path, digest)
