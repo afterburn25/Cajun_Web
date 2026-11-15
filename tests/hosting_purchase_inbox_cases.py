@@ -114,7 +114,7 @@ def run_browser(env, browser):
 
     def click(page, link, timeout=30000):
         with page.expect_navigation(wait_until='load', timeout=timeout) as event:
-            link.click()
+            link.click(timeout=timeout)
         response = event.value
         if response is None:
             raise AssertionError('Inbox link has no navigation response')
