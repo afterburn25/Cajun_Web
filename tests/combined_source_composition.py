@@ -481,6 +481,13 @@ RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE_TREE = '05c877c125388e072cc73e05846a
 RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED = frozenset((
     'tests/cloud_site_intake_wiring.py',
 ))
+RUNNER_INTAKE_CURRENT_BINDING_BASE = '8c6807a04b7ed96dc86ed9045a1b73c4f53083e3'
+RUNNER_INTAKE_CURRENT_BINDING_BASE_TREE = 'befaf8822ab12b4ecf2aba2513bdfc8d4b4a3076'
+RUNNER_INTAKE_CURRENT_BINDING_SOURCE = '980ed0693f74e1ea9b13b1286f7fe03cedfae80f'
+RUNNER_INTAKE_CURRENT_BINDING_SOURCE_TREE = 'cdb2a13b1c322d39f268ce0756f372723f245ca3'
+RUNNER_INTAKE_CURRENT_BINDING_MODIFIED = frozenset((
+    'tools/acceptance-contract.json',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2367,6 +2374,50 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_intake_current_binding_source(root):
+    """Bind the current cloud-intake verifier source hash."""
+    require(git(root, 'rev-parse', RUNNER_INTAKE_CURRENT_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_INTAKE_CURRENT_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_INTAKE_CURRENT_BINDING_SOURCE_TREE,
+            'Runner intake current-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_INTAKE_CURRENT_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_INTAKE_CURRENT_BINDING_BASE],
+            'Runner intake current-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_INTAKE_CURRENT_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_INTAKE_CURRENT_BINDING_BASE,
+                  RUNNER_INTAKE_CURRENT_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_INTAKE_CURRENT_BINDING_MODIFIED)],
+            'Runner intake current binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_INTAKE_CURRENT_BINDING_BASE)
+    source_entries = entries(root, RUNNER_INTAKE_CURRENT_BINDING_SOURCE)
+    for path in sorted(RUNNER_INTAKE_CURRENT_BINDING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_intake_current_binding(root, path, current) == base
+                and project_runner_intake_current_binding(root, path, base) == base,
+                'Runner intake current-binding identity or projection changed: ' + path)
+
+
+def project_runner_intake_current_binding(root, path, current):
+    """Restore the accepted AWS mirror successor proof head."""
+    if path not in RUNNER_INTAKE_CURRENT_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner intake binding changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_intake_projection_source(root):
     """Bind the immediate cloud-request predecessor projection."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_PROJECTION_BASE + '^{tree}').decode().strip()
@@ -2606,7 +2657,8 @@ def validate_runner_application_source_binding(root):
     base_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_SOURCE)
     for path in sorted(RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED):
-        current = project_runner_application_historical_binding(root, path, ordinary(root, path))
+        current = project_runner_intake_current_binding(root, path, ordinary(root, path))
+        current = project_runner_application_historical_binding(root, path, current)
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_BASE + ':' + path)
         require(current == source
@@ -2618,6 +2670,7 @@ def validate_runner_application_source_binding(root):
 
 def project_runner_application_source_binding(root, path, current):
     """Restore the reviewed AWS proof head for older source receipts."""
+    current = project_runner_intake_current_binding(root, path, current)
     current = project_runner_application_historical_binding(root, path, current)
     if path not in RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED:
         return current
@@ -3090,7 +3143,8 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_AWS_MIRROR_PROFILE_MODIFIED
                 | RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED
                 | RUNNER_AWS_MIRROR_FIXTURE_MODIFIED
-                | RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED),
+                | RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED
+                | RUNNER_INTAKE_CURRENT_BINDING_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -4324,6 +4378,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_intake_current_binding_source(root)
     validate_runner_application_intake_projection_source(root)
     validate_runner_aws_mirror_fixture_source(root)
     validate_runner_application_intake_binding(root)
