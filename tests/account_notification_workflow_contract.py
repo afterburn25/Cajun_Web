@@ -204,14 +204,16 @@ def executable_ubuntu_source_guard_fixtures():
         'Signed-By: /etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg\n'
     )
 
-    def source(archive, security='http://security.ubuntu.com/ubuntu/'):
+    def source(archive, security=None):
+        security_uri = (('mirror+file:/etc/apt/apt-mirrors.txt' if archive.startswith('mirror+')
+                         else 'http://security.ubuntu.com/ubuntu/')
+                        if security is None else security)
         return (
             'Types: deb\nURIs: ' + archive + '\n'
             'Suites: noble noble-updates noble-backports\n'
             'Components: main universe restricted multiverse\n'
             'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n\n'
-            'Types: deb\nURIs: ' + ('mirror+file:/etc/apt/apt-mirrors.txt' if archive.startswith('mirror+')
-                                     else security) + '\n'
+            'Types: deb\nURIs: ' + security_uri + '\n'
             'Suites: noble-security\nComponents: main universe restricted multiverse\n'
             'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n'
         )
