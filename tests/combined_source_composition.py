@@ -437,6 +437,14 @@ RUNNER_AWS_PROFILE_MODIFIED = frozenset((
     '.github/scripts/prepare_ubuntu_apt.py',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_APPLICATION_SOURCE_BINDING_BASE = 'd40c02039877585bb889c679479d92ec08fc197b'
+RUNNER_APPLICATION_SOURCE_BINDING_BASE_TREE = '838fc3920b2c772aa111aac2240563d59fdbb0f6'
+RUNNER_APPLICATION_SOURCE_BINDING_SOURCE = '6d32b53dc9719bd0f6937411ee8fc395be2dfe2e'
+RUNNER_APPLICATION_SOURCE_BINDING_SOURCE_TREE = 'cfdd44101260e6d47a11281f7e0a43499d32df95'
+RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED = frozenset((
+    'tests/cloud_site_requests_wiring.py',
+    'tools/acceptance-contract.json',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -1915,6 +1923,7 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_runner_application_source_binding(root, path, current)
     current = project_ux08_browser_navigation(root, path, current)
     current = project_ux09_commercial_snapshot(root, path, current)
     if path not in UX09_FIXTURE_RECEIPT_MODIFIED:
@@ -2321,6 +2330,50 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_application_source_binding(root):
+    """Bind the exact current-source override exposed by hosted Application."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_SOURCE_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_SOURCE_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_SOURCE_BINDING_SOURCE_TREE,
+            'Runner Application source-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_SOURCE_BINDING_BASE],
+            'Runner Application source-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_SOURCE_BINDING_BASE,
+                  RUNNER_APPLICATION_SOURCE_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED)],
+            'Runner Application source binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_source_binding(root, path, current) == base
+                and project_runner_application_source_binding(root, path, base) == base,
+                'Runner Application source-binding identity or projection changed: ' + path)
+
+
+def project_runner_application_source_binding(root, path, current):
+    """Restore the reviewed AWS proof head for older source receipts."""
+    if path not in RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application source binding changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_aws_profile_source(root):
     """Bind only the exact observed .127 AWS Noble source profile."""
     require(git(root, 'rev-parse', RUNNER_AWS_PROFILE_BASE + '^{tree}').decode().strip()
@@ -2627,6 +2680,7 @@ def validate_runner_mirror_compat_source(root):
 
 def project_runner_mirror_compat(root, path, current):
     """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_runner_application_source_binding(root, path, current)
     current = project_runner_mirror_phase(root, path, current)
     if path not in RUNNER_MIRROR_COMPAT_MODIFIED:
         return current
@@ -2771,7 +2825,8 @@ def validate_pr391_recovery_successor(root):
             == ({VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED
                 | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS
                 | RUNNER_APPLICATION_COMPLETION_MODIFIED
-                | RUNNER_EVIDENCE_PROVENANCE_MODIFIED),
+                | RUNNER_EVIDENCE_PROVENANCE_MODIFIED | RUNNER_AWS_PROFILE_MODIFIED
+                | RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -3310,7 +3365,8 @@ def validate_ux08_checkout_pin_fix_source(root):
             'UX-08 checkout source-pin fix changed a different path or status')
     base_entries = entries(root, UX08_CHECKOUT_PIN_FIX_BASE)
     source_entries = entries(root, UX08_CHECKOUT_PIN_FIX_SOURCE)
-    current = ordinary(root, UX08_CHECKOUT_PIN_FIX_PATH)
+    current = project_runner_application_source_binding(
+        root, UX08_CHECKOUT_PIN_FIX_PATH, ordinary(root, UX08_CHECKOUT_PIN_FIX_PATH))
     require(current == git(root, 'cat-file', 'blob', UX08_CHECKOUT_PIN_FIX_SOURCE + ':'
                            + UX08_CHECKOUT_PIN_FIX_PATH)
             and mode(root, UX08_CHECKOUT_PIN_FIX_PATH)
@@ -3324,6 +3380,7 @@ def validate_ux08_checkout_pin_fix_source(root):
 
 def project_ux08_checkout_pin_fix(root, path, current):
     """Restore the accepted inbox successor before older source projections."""
+    current = project_runner_application_source_binding(root, path, current)
     if path != UX08_CHECKOUT_PIN_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_CHECKOUT_PIN_FIX_SOURCE + ':' + path)
@@ -4002,6 +4059,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_application_source_binding(root)
     validate_runner_aws_profile_source(root)
     validate_runner_evidence_provenance_source(root)
     validate_runner_application_completion_source(root)
