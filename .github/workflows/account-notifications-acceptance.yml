@@ -15,7 +15,7 @@ concurrency:
 jobs:
   source:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     outputs:
       sha: ${{ steps.record.outputs.sha }}
     env:
