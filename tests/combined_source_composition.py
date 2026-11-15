@@ -502,6 +502,14 @@ RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE_TREE = '5e3cff7e64d297920bac4414e0794a48d8be
 RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
 ))
+RUNNER_APPLICATION_BUILD_BUDGET_BASE = '0382da0e1b8d55ae1edc921b985cb569ea53823d'
+RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE = 'acb09bb392c96cd83c40561c966f46f4dedc81df'
+RUNNER_APPLICATION_BUILD_BUDGET_SOURCE = '7e108b483e0ebeb39a42f670c42f20d9f54a04f8'
+RUNNER_APPLICATION_BUILD_BUDGET_SOURCE_TREE = '118600d3e9c9ee071c14428f6d17f7a8ed01341f'
+RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2476,6 +2484,50 @@ def project_runner_finite_tool_refusal(root, path, current):
     return base
 
 
+def validate_runner_application_build_budget(root):
+    """Bind the exact Application build-proof timeout correction to its failed head."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_BUILD_BUDGET_SOURCE_TREE,
+            'Runner Application build budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_BUILD_BUDGET_BASE],
+            'Runner Application build budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_BUILD_BUDGET_BASE,
+                  RUNNER_APPLICATION_BUILD_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED)],
+            'Runner Application build budget changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_build_budget(root, path, current) == base
+                and project_runner_application_build_budget(root, path, base) == base,
+                'Runner Application build budget identity or projection changed: ' + path)
+
+
+def project_runner_application_build_budget(root, path, current):
+    """Restore the failed hosted head only for the exact Application budget paths."""
+    if path not in RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application build budget changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_account_source_budget(root):
     """Bind the exact account source-proof timeout correction to its failed head."""
     require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_BUDGET_BASE + '^{tree}').decode().strip()
@@ -2507,6 +2559,7 @@ def validate_runner_account_source_budget(root):
 
 def project_runner_account_source_budget(root, path, current):
     """Restore the failed hosted head only for the exact account timeout path."""
+    current = project_runner_application_build_budget(root, path, current)
     if path not in RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE + ':' + path)
@@ -2582,7 +2635,7 @@ def validate_runner_aws_mirror_fixture_source(root):
     base_entries = entries(root, RUNNER_AWS_MIRROR_FIXTURE_BASE)
     source_entries = entries(root, RUNNER_AWS_MIRROR_FIXTURE_SOURCE)
     for path in sorted(RUNNER_AWS_MIRROR_FIXTURE_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_application_build_budget(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_BASE + ':' + path)
         require(current == source
@@ -2594,6 +2647,7 @@ def validate_runner_aws_mirror_fixture_source(root):
 
 def project_runner_aws_mirror_fixture(root, path, current):
     """Restore the first AWS mirror-profile proof head."""
+    current = project_runner_application_build_budget(root, path, current)
     if path not in RUNNER_AWS_MIRROR_FIXTURE_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_SOURCE + ':' + path)
@@ -3250,7 +3304,8 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED
                 | RUNNER_INTAKE_CURRENT_BINDING_MODIFIED
                 | RUNNER_FINITE_TOOL_REFUSAL_MODIFIED
-                | RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED),
+                | RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED
+                | RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -4486,6 +4541,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_application_build_budget(root)
     validate_runner_account_source_budget(root)
     validate_runner_finite_tool_refusal_source(root)
     validate_runner_intake_current_binding_source(root)
