@@ -429,6 +429,14 @@ RUNNER_EVIDENCE_PROVENANCE_MODIFIED = frozenset((
     'tests/delivery_evidence_cases.py',
     'tools/acceptance_artifacts.py',
 ))
+RUNNER_AWS_PROFILE_BASE = 'b5ee60bc321e5f604465e546d7a5c780db201e4b'
+RUNNER_AWS_PROFILE_BASE_TREE = 'b9c3bc0ad6c6f2f437a5cd23a913fc7de3653a11'
+RUNNER_AWS_PROFILE_SOURCE = 'ceab9f20960b915d5b1082d3af3d11f3e177763e'
+RUNNER_AWS_PROFILE_SOURCE_TREE = '6014aaa19e49f43f12cddeb4628f61bcc45d02bb'
+RUNNER_AWS_PROFILE_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2313,6 +2321,49 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_aws_profile_source(root):
+    """Bind only the exact observed .127 AWS Noble source profile."""
+    require(git(root, 'rev-parse', RUNNER_AWS_PROFILE_BASE + '^{tree}').decode().strip()
+            == RUNNER_AWS_PROFILE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_AWS_PROFILE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_AWS_PROFILE_SOURCE_TREE,
+            'Runner AWS profile source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_AWS_PROFILE_SOURCE).decode().strip().split()
+            == [RUNNER_AWS_PROFILE_BASE],
+            'Runner AWS profile source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_AWS_PROFILE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_AWS_PROFILE_BASE, RUNNER_AWS_PROFILE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_AWS_PROFILE_MODIFIED)],
+            'Runner AWS profile changed a different path or status set')
+    base_entries = entries(root, RUNNER_AWS_PROFILE_BASE)
+    source_entries = entries(root, RUNNER_AWS_PROFILE_SOURCE)
+    for path in sorted(RUNNER_AWS_PROFILE_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_aws_profile(root, path, current) == base
+                and project_runner_aws_profile(root, path, base) == base,
+                'Runner AWS profile identity or projection changed: ' + path)
+
+
+def project_runner_aws_profile(root, path, current):
+    """Restore the reviewed evidence-provenance head for older receipts."""
+    if path not in RUNNER_AWS_PROFILE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner AWS profile changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_evidence_provenance_source(root):
     """Bind the independent-review repair for mandatory APT receipts."""
     require(git(root, 'rev-parse', RUNNER_EVIDENCE_PROVENANCE_BASE + '^{tree}').decode().strip()
@@ -2332,7 +2383,7 @@ def validate_runner_evidence_provenance_source(root):
     base_entries = entries(root, RUNNER_EVIDENCE_PROVENANCE_BASE)
     source_entries = entries(root, RUNNER_EVIDENCE_PROVENANCE_SOURCE)
     for path in sorted(RUNNER_EVIDENCE_PROVENANCE_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_aws_profile(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_BASE + ':' + path)
         require(current == source
@@ -2344,6 +2395,7 @@ def validate_runner_evidence_provenance_source(root):
 
 def project_runner_evidence_provenance(root, path, current):
     """Restore the first Application-completion proof for older receipts."""
+    current = project_runner_aws_profile(root, path, current)
     if path not in RUNNER_EVIDENCE_PROVENANCE_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_SOURCE + ':' + path)
@@ -3950,6 +4002,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_aws_profile_source(root)
     validate_runner_evidence_provenance_source(root)
     validate_runner_application_completion_source(root)
     validate_runner_keyring_fixture_source(root)
