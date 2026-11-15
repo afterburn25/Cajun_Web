@@ -22,7 +22,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = '1ff0e3c1a85d41dff9929c2fd8d0f41fb361faa3980dcf51781e0e7afb82b5d4'
+APT_PREPARATION_SHA256 = 'ae5b73bbc094f0a41f3509bf94c600a1074244a61a862ebb1d8b31498f340670'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
@@ -204,14 +204,14 @@ def executable_ubuntu_source_guard_fixtures():
         'Signed-By: /etc/apt/cwp-keyrings/ubuntu-archive-keyring.gpg\n'
     )
 
-    def source(archive):
+    def source(archive, security='http://security.ubuntu.com/ubuntu/'):
         return (
             'Types: deb\nURIs: ' + archive + '\n'
             'Suites: noble noble-updates noble-backports\n'
             'Components: main universe restricted multiverse\n'
             'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n\n'
             'Types: deb\nURIs: ' + ('mirror+file:/etc/apt/apt-mirrors.txt' if archive.startswith('mirror+')
-                                     else 'http://security.ubuntu.com/ubuntu/') + '\n'
+                                     else security) + '\n'
             'Suites: noble-security\nComponents: main universe restricted multiverse\n'
             'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n'
         )
@@ -346,7 +346,15 @@ def executable_ubuntu_source_guard_fixtures():
     for region in ('us-east-1', 'us-west-2'):
         run_case('Executable guard accepts bounded AWS direct profile ' + region,
                  source('http://' + region + '.ec2.archive.ubuntu.com/ubuntu/'),
-                 'http://' + region + '.ec2.archive.ubuntu.com/ubuntu/\n', 'aws-direct')
+                 'http://' + region + '.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+                 'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+                 'https://security.ubuntu.com/ubuntu/\tpriority:3\n', 'aws-direct')
+    run_case('Executable guard accepts exact .127 AWS profile without terminal source slashes',
+             source('http://us-east-2.ec2.archive.ubuntu.com/ubuntu',
+                    'http://security.ubuntu.com/ubuntu'),
+             'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+             'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+             'https://security.ubuntu.com/ubuntu/\tpriority:3\n', 'aws-direct')
     run_case('Executable guard rejects an unknown AWS archive host',
              source('http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/'),
              'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/\n')

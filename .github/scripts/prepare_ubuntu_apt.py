@@ -273,10 +273,12 @@ def prepare_ubuntu():
     security_suites = {'noble-security'}
     aws_archives = {
         'http://us-east-1.ec2.archive.ubuntu.com/ubuntu/',
+        'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/',
         'http://us-west-2.ec2.archive.ubuntu.com/ubuntu/',
     }
     seen_suites = set()
     records = []
+    raw_records = []
     for section in re.split(r'\n[ \t]*\n', source_data.decode('ascii').strip('\n')):
         fields = {}
         for line in section.splitlines():
@@ -302,13 +304,18 @@ def prepare_ubuntu():
         if seen_suites & set(suites):
             fail('Ubuntu suite repeated across source stanzas')
         seen_suites.update(suites)
-        uri = fields['uris']
-        if not (uri == 'mirror+file:/etc/apt/apt-mirrors.txt'
-                or re.fullmatch(r'https?://[A-Za-z0-9.-]+/ubuntu/', uri)):
+        raw_uri = fields['uris']
+        if raw_uri == 'mirror+file:/etc/apt/apt-mirrors.txt':
+            uri = raw_uri
+        elif re.fullmatch(r'https?://[A-Za-z0-9.-]+/ubuntu/?', raw_uri):
+            uri = raw_uri.rstrip('/') + '/'
+        else:
             fail('unsafe Ubuntu source URI syntax')
         records.append((tuple(suites), uri))
+        raw_records.append((tuple(suites), raw_uri))
     diagnostic['source_records'] = [
-        {'suites': list(suites), 'uri': uri} for suites, uri in records
+        {'suites': list(suites), 'uri': raw_uri, 'normalized_uri': uri}
+        for (suites, uri), (_, raw_uri) in zip(records, raw_records)
     ]
     archive_record = ('noble', 'noble-updates', 'noble-backports')
     security_record = ('noble-security',)
@@ -341,6 +348,15 @@ def prepare_ubuntu():
     )
     if profile == 'github-mirror-list' and mirror_data != expected:
         fail('unknown or untrusted active Ubuntu mirror list')
+    if profile == 'aws-direct':
+        archive_uri = next(uri for suites, uri in records if suites == archive_record)
+        expected_aws = (
+            archive_uri.encode('ascii') + b'\tpriority:1\n'
+            b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+            b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+        )
+        if mirror_data != expected_aws:
+            fail('unknown or untrusted AWS Ubuntu mirror list')
     diagnostic['profile'] = profile
     selected = (
         b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
