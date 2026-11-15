@@ -3,8 +3,41 @@ import hashlib
 import json
 
 
+CLOUD_REQUEST_CURRENT_SHA256 = '897fc33ddcb4bd5d9fd7827c2f0d52cf3171967d2bdb6578fd69e26f494a10ac'
+CLOUD_REQUEST_PREDECESSOR_SHA256 = 'a6cde5e837c572a9c2bf3fa5ea6572fc4f506146ac35be291b8189c6ee23a36e'
+CLOUD_REQUEST_CURRENT_BINDING = """    check('Published 1.25 current-source overrides are finite and retain the historical fixture binding',
+          set(current_sources) == {'tests/prepare_legacy.py', 'tools/acceptance_artifacts.py'}
+          and set(current_sources) == set(published['source_sha256']))
+    for path, digest in published['source_sha256'].items():
+        check('Published 1.25 historical acceptance input source bound ' + path,
+              hashlib.sha256(fixture_predecessor_source(root, path).replace(b'\\r\\n', b'\\n')).hexdigest() == digest)
+    for path, digest in current_sources.items():
+        check('Published 1.25 current acceptance input source bound ' + path,
+              hashlib.sha256((root / path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == digest)
+"""
+CLOUD_REQUEST_PREDECESSOR_BINDING = """    check('Published 1.25 current-source overrides are finite and retain the historical fixture binding',
+          set(current_sources) == {'tests/prepare_legacy.py'}
+          and set(current_sources) < set(published['source_sha256']))
+    for path, digest in published['source_sha256'].items():
+        current_digest = current_sources.get(path, digest)
+        check('Published 1.25 acceptance input source bound ' + path,
+              hashlib.sha256((root / path).read_bytes().replace(b'\\r\\n', b'\\n')).hexdigest() == current_digest)
+"""
+
+
 def digest(value):
     return hashlib.sha256(json.dumps(value, separators=(',', ':')).encode()).hexdigest()
+
+
+def cloud_request_predecessor(root, check):
+    current = (root / 'tests/cloud_site_requests_wiring.py').read_text().replace('\r\n', '\n')
+    check('Current cloud request wiring matches the reviewed source-binding successor',
+          hashlib.sha256(current.encode()).hexdigest() == CLOUD_REQUEST_CURRENT_SHA256
+          and current.count(CLOUD_REQUEST_CURRENT_BINDING) == 1)
+    predecessor = current.replace(CLOUD_REQUEST_CURRENT_BINDING, CLOUD_REQUEST_PREDECESSOR_BINDING, 1)
+    check('Cloud request wiring projects only to the exact immediate predecessor',
+          hashlib.sha256(predecessor.encode()).hexdigest() == CLOUD_REQUEST_PREDECESSOR_SHA256)
+    return predecessor.encode()
 
 
 def verify(root, contract, workflow, commands, check):
@@ -71,7 +104,7 @@ def verify(root, contract, workflow, commands, check):
         check('Static intake acceptance source bound ' + path,
               hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest()
               == expected)
-    helper = (root / 'tests/cloud_site_requests_wiring.py').read_bytes().replace(b'\r\n', b'\n')
+    helper = cloud_request_predecessor(root, check)
     check('Previous cloud request wiring remains byte-identical',
           hashlib.sha256(helper).hexdigest()
           == item['predecessor_source_sha256']['tests/cloud_site_requests_wiring.py'])

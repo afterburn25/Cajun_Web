@@ -8,7 +8,7 @@ import zipfile
 from unittest.mock import patch
 
 
-def run(a, root, tmp, check, deny, context, fixtures, outcomes):
+def run(a, root, tmp, check, deny, context, fixtures, outcomes, package_source_receipts):
     # Execute only the existing pure archive generator, never its HTTP/browser module.
     module = ast.parse((root/'tests/delivery_cases.py').read_text(encoding='utf-8'))
     functions = [n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == 'archive']
@@ -60,6 +60,7 @@ def run(a, root, tmp, check, deny, context, fixtures, outcomes):
         if lane == 'native-browser':
             for name, data in content.items():
                 path = target/name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(data)
+        package_source_receipts(target, lane)
         digest = a.seal(target, ctx, incoming/lane, lane, outcomes(lane), input_sha)
         bindings[lane] = {'result': 'success', 'artifact_id': str(i+1), 'sha256': digest,
                           **({'input_sha256': input_sha} if lane == 'build' else {}),
@@ -84,10 +85,12 @@ def run(a, root, tmp, check, deny, context, fixtures, outcomes):
         target = tmp/('wrong-lane-'+lane)
         for name, data in content.items():
             path = target/name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(data)
+        package_source_receipts(target, lane)
         deny('Actual seal rejects public delivery extraction in '+lane,
              lambda t=target, l=lane: a.seal(t, ctx, tmp/('wrong-out-'+l), l, outcomes(l), input_sha))
     extra = tmp/'extra-native'; shutil.copytree(roots['native-browser']/'qa', extra/'qa')
     (extra/'qa/client-website-extracted/extra.html').write_bytes(b'extra synthetic public file')
+    package_source_receipts(extra, 'native-browser')
     deny('Actual native seal refuses a fourth file beside the allowlisted members',
          lambda: a.seal(extra, ctx, tmp/'extra-output', 'native-browser', outcomes('native-browser'), input_sha))
 

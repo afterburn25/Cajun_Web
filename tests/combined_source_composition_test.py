@@ -654,7 +654,7 @@ def run(root=ROOT):
         refuses('Historical projection never returns shipping application bytes', lambda: proof.account_call(
             fixture, 'provider_browser_fixture_provenance', 'source', path='site/app/billing/software_client.php'))
         refuses('The finite report-inventory comparison does not admit other tools', lambda: proof.account_call(
-            fixture, 'provider_browser_fixture_provenance', 'source', path='tools/acceptance_artifacts.py'))
+            fixture, 'provider_browser_fixture_provenance', 'source', path='tools/build.py'))
         refuses('The finite report-inventory comparison cannot supply runtime input', lambda: proof.account_call(
             fixture, 'provider_browser_fixture_provenance', 'predecessor', path='tools/acceptance-reports.json',
             value=proof.ordinary(fixture, 'tools/acceptance-reports.json')))

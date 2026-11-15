@@ -369,6 +369,147 @@ PR391_RECOVERY_SOURCE = '511a5d91627374878780a8dbb800d51b24d8a087'
 PR391_RECOVERY_SOURCE_TREE = '31be156cbd38bac2e49ba7aedcb0c0d61b78cce1'
 PR391_RECOVERY_HEAD = '331572f0de664a50c0a3b1df7cd671bb38e9df73'
 PR391_RECOVERY_HEAD_TREE = '713c63e742c524be1ebd9c8ea3a0ee71bf3392ff'
+RUNNER_MIRROR_COMPAT_BASE = '161cc51dd5610f8166c002fe1121c178f996ec84'
+RUNNER_MIRROR_COMPAT_BASE_TREE = '35e38293bc31a8e3307884db72b931565630b0b7'
+RUNNER_MIRROR_COMPAT_SOURCE = '0f9bceed32a9f4836671bd226f3582c844a6b32f'
+RUNNER_MIRROR_COMPAT_SOURCE_TREE = '4e93055be01df7c3f3ef7435646551496927956c'
+RUNNER_MIRROR_COMPAT_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/consolidation-after-backups.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tests/hosting_checkout_http_guards.py',
+))
+RUNNER_MIRROR_PHASE_BASE = '677a980897fdbed500bc96ecfaf8268456aba75f'
+RUNNER_MIRROR_PHASE_BASE_TREE = '98b8127f63e69a3f841a942211776c88c9de0409'
+RUNNER_MIRROR_PHASE_SOURCE = '40fe97f113c0996171a20b6107ca5f8922f15967'
+RUNNER_MIRROR_PHASE_SOURCE_TREE = '0c8acab822200ac9e7eb01b3c0a5c0235f5aa970'
+RUNNER_MIRROR_PHASE_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+    '.github/workflows/application-tests.yml',
+    '.github/workflows/consolidation-after-backups.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tests/hosting_checkout_http_guards.py',
+))
+RUNNER_MIRROR_PHASE_ADDITIONS = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+))
+RUNNER_KEYRING_ISOLATION_BASE = '9bc274f6fb71d1ef3bf20d110e2be986c2b5d833'
+RUNNER_KEYRING_ISOLATION_BASE_TREE = '47c9e065857f494c02de1a0f688e3c65af88c925'
+RUNNER_KEYRING_ISOLATION_SOURCE = '32bd7e9f6cb3da54921a291318a72a1ba99b8542'
+RUNNER_KEYRING_ISOLATION_SOURCE_TREE = '2bc03ae11a775a64519c3fee42576010219e66a0'
+RUNNER_KEYRING_ISOLATION_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
+RUNNER_KEYRING_FIXTURE_BASE = '3044c7636e20553f027ebfc8d5e8a0d9f8e07125'
+RUNNER_KEYRING_FIXTURE_BASE_TREE = 'c1cf56dd9704e50d8003fff1686a6664390f7808'
+RUNNER_KEYRING_FIXTURE_SOURCE = '52c609694cc90f37de3cc69c7002513eeb56bb0e'
+RUNNER_KEYRING_FIXTURE_SOURCE_TREE = 'cfc9d688b87b627249b550457877b4d5db8ac7c4'
+RUNNER_KEYRING_FIXTURE_MODIFIED = frozenset((
+    'tests/account_notification_workflow_contract.py',
+))
+RUNNER_APPLICATION_COMPLETION_BASE = '1b731513bdf7f78d7d636b280e615705089a2eed'
+RUNNER_APPLICATION_COMPLETION_BASE_TREE = '30d6d989f8bbd94a92b1bf0530ecb5c1e81f9682'
+RUNNER_APPLICATION_COMPLETION_SOURCE = '280c8f1517a9a57e9618cf350f99575450cdcef9'
+RUNNER_APPLICATION_COMPLETION_SOURCE_TREE = '8e806ed965e598f2ca0b4ca6535db4ff0b7a03ca'
+RUNNER_APPLICATION_COMPLETION_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tools/acceptance_artifacts.py',
+))
+RUNNER_EVIDENCE_PROVENANCE_BASE = '826a0e28b874e97d74c74395b3a86187d57564d1'
+RUNNER_EVIDENCE_PROVENANCE_BASE_TREE = 'dda977bdbaf83a1f7169e346f382b97ac8fd5cc5'
+RUNNER_EVIDENCE_PROVENANCE_SOURCE = 'd166f2bc135fd818ac9683ab604a100a3e1f0786'
+RUNNER_EVIDENCE_PROVENANCE_SOURCE_TREE = '5ff7375a9bea1cff8ccf97f0c6a0a1c995660d6c'
+RUNNER_EVIDENCE_PROVENANCE_MODIFIED = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tests/delivery_evidence_cases.py',
+    'tools/acceptance_artifacts.py',
+))
+RUNNER_AWS_PROFILE_BASE = 'b5ee60bc321e5f604465e546d7a5c780db201e4b'
+RUNNER_AWS_PROFILE_BASE_TREE = 'b9c3bc0ad6c6f2f437a5cd23a913fc7de3653a11'
+RUNNER_AWS_PROFILE_SOURCE = 'ceab9f20960b915d5b1082d3af3d11f3e177763e'
+RUNNER_AWS_PROFILE_SOURCE_TREE = '6014aaa19e49f43f12cddeb4628f61bcc45d02bb'
+RUNNER_AWS_PROFILE_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
+RUNNER_APPLICATION_SOURCE_BINDING_BASE = 'd40c02039877585bb889c679479d92ec08fc197b'
+RUNNER_APPLICATION_SOURCE_BINDING_BASE_TREE = '838fc3920b2c772aa111aac2240563d59fdbb0f6'
+RUNNER_APPLICATION_SOURCE_BINDING_SOURCE = '6d32b53dc9719bd0f6937411ee8fc395be2dfe2e'
+RUNNER_APPLICATION_SOURCE_BINDING_SOURCE_TREE = 'cfdd44101260e6d47a11281f7e0a43499d32df95'
+RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED = frozenset((
+    'tests/cloud_site_requests_wiring.py',
+    'tools/acceptance-contract.json',
+))
+RUNNER_APPLICATION_HISTORICAL_BINDING_BASE = 'd3cb6b8d1bfee92eccba3f539189274b93a44031'
+RUNNER_APPLICATION_HISTORICAL_BINDING_BASE_TREE = '5b94b2fba94a1ef60e19bb2eb616e7d91056c335'
+RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE = '088c2c1f47bd190d4c93d1a2f55695cade8f6205'
+RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE_TREE = 'be713473b8e56773d1d650c9b45c06e005ac7fc5'
+RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED = frozenset((
+    'tests/cloud_site_requests_wiring.py',
+))
+RUNNER_AWS_MIRROR_PROFILE_BASE = 'cc10c6c515ede8145a6ceb43449f855f6300bcc6'
+RUNNER_AWS_MIRROR_PROFILE_BASE_TREE = '91061082b27f44d1906e5ee7603b0fc72110c45b'
+RUNNER_AWS_MIRROR_PROFILE_SOURCE = '33c8e484ee0592ebd39c49aefd21230b52c28ca3'
+RUNNER_AWS_MIRROR_PROFILE_SOURCE_TREE = '8d4dd430dc181a5227fdc183671924cdcb2a55af'
+RUNNER_AWS_MIRROR_PROFILE_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
+RUNNER_APPLICATION_INTAKE_BINDING_BASE = '33c8e484ee0592ebd39c49aefd21230b52c28ca3'
+RUNNER_APPLICATION_INTAKE_BINDING_BASE_TREE = '8d4dd430dc181a5227fdc183671924cdcb2a55af'
+RUNNER_APPLICATION_INTAKE_BINDING_SOURCE = '89d0b44b72b67efd05d9a80a2e4c739de6637c25'
+RUNNER_APPLICATION_INTAKE_BINDING_SOURCE_TREE = '0389530dcf6d01fdc519490542833ebc0ce35981'
+RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED = frozenset((
+    'tests/cloud_site_intake_wiring.py',
+))
+RUNNER_AWS_MIRROR_FIXTURE_BASE = 'efbe26f8c60428267483ef811882bf6bf5ed4036'
+RUNNER_AWS_MIRROR_FIXTURE_BASE_TREE = '0c66e4ae972a187674f4d91d883674fe883de066'
+RUNNER_AWS_MIRROR_FIXTURE_SOURCE = '53cce48017b91bcf4a33c76488ae3e258f27a04f'
+RUNNER_AWS_MIRROR_FIXTURE_SOURCE_TREE = '7e64105de0fc15be15e58910f3f0c4eb1806a4a7'
+RUNNER_AWS_MIRROR_FIXTURE_MODIFIED = frozenset((
+    'tests/account_notification_workflow_contract.py',
+))
+RUNNER_APPLICATION_INTAKE_PROJECTION_BASE = '53cce48017b91bcf4a33c76488ae3e258f27a04f'
+RUNNER_APPLICATION_INTAKE_PROJECTION_BASE_TREE = '7e64105de0fc15be15e58910f3f0c4eb1806a4a7'
+RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE = 'fe50a214966847aefa846ce026aa6eaa22f80a87'
+RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE_TREE = '05c877c125388e072cc73e05846a65717d561848'
+RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED = frozenset((
+    'tests/cloud_site_intake_wiring.py',
+))
+RUNNER_INTAKE_CURRENT_BINDING_BASE = '8c6807a04b7ed96dc86ed9045a1b73c4f53083e3'
+RUNNER_INTAKE_CURRENT_BINDING_BASE_TREE = 'befaf8822ab12b4ecf2aba2513bdfc8d4b4a3076'
+RUNNER_INTAKE_CURRENT_BINDING_SOURCE = '980ed0693f74e1ea9b13b1286f7fe03cedfae80f'
+RUNNER_INTAKE_CURRENT_BINDING_SOURCE_TREE = 'cdb2a13b1c322d39f268ce0756f372723f245ca3'
+RUNNER_INTAKE_CURRENT_BINDING_MODIFIED = frozenset((
+    'tools/acceptance-contract.json',
+))
+RUNNER_FINITE_TOOL_REFUSAL_BASE = 'e136fd53e0e742acdb99c39ab343f398b63cb20d'
+RUNNER_FINITE_TOOL_REFUSAL_BASE_TREE = '65561b984c34add8d3407ad87880f9696f37e796'
+RUNNER_FINITE_TOOL_REFUSAL_SOURCE = '815db336cb013e3c745af8d6741e6bbbef616175'
+RUNNER_FINITE_TOOL_REFUSAL_SOURCE_TREE = '869dbcc8964168fb426b97d896962ae0c1e590ea'
+RUNNER_FINITE_TOOL_REFUSAL_MODIFIED = frozenset((
+    'tests/combined_source_composition_test.py',
+))
+RUNNER_ACCOUNT_SOURCE_BUDGET_BASE = '6a24302bbc9d108964d2c051affb84ff79a297e9'
+RUNNER_ACCOUNT_SOURCE_BUDGET_BASE_TREE = 'c1fee0fde234546dfbba5f6a04805888d9094eb3'
+RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE = '1599cc73a238462028dd962fad8818ec07095e68'
+RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE_TREE = '5e3cff7e64d297920bac4414e0794a48d8beb0c9'
+RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+))
+RUNNER_APPLICATION_BUILD_BUDGET_BASE = '0382da0e1b8d55ae1edc921b985cb569ea53823d'
+RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE = 'acb09bb392c96cd83c40561c966f46f4dedc81df'
+RUNNER_APPLICATION_BUILD_BUDGET_SOURCE = '7e108b483e0ebeb39a42f670c42f20d9f54a04f8'
+RUNNER_APPLICATION_BUILD_BUDGET_SOURCE_TREE = '118600d3e9c9ee071c14428f6d17f7a8ed01341f'
+RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -983,7 +1124,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '837abfd23efbedc65ac9d72091ef3ee6d584e88cc6c53855078e3ac4be977b34'
+REGRESSION_SHA256 = 'e0a1c424dc6e5cd2508dde922c1c3a6ff5600ea3cc773c3be9c22990037ffb66'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -1847,6 +1988,8 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_runner_application_intake_binding(root, path, current)
+    current = project_runner_application_source_binding(root, path, current)
     current = project_ux08_browser_navigation(root, path, current)
     current = project_ux09_commercial_snapshot(root, path, current)
     if path not in UX09_FIXTURE_RECEIPT_MODIFIED:
@@ -2253,6 +2396,775 @@ def project_ux08_billing_network_fix(root, path, current):
     return base
 
 
+def validate_runner_intake_current_binding_source(root):
+    """Bind the current cloud-intake verifier source hash."""
+    require(git(root, 'rev-parse', RUNNER_INTAKE_CURRENT_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_INTAKE_CURRENT_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_INTAKE_CURRENT_BINDING_SOURCE_TREE,
+            'Runner intake current-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_INTAKE_CURRENT_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_INTAKE_CURRENT_BINDING_BASE],
+            'Runner intake current-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_INTAKE_CURRENT_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_INTAKE_CURRENT_BINDING_BASE,
+                  RUNNER_INTAKE_CURRENT_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_INTAKE_CURRENT_BINDING_MODIFIED)],
+            'Runner intake current binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_INTAKE_CURRENT_BINDING_BASE)
+    source_entries = entries(root, RUNNER_INTAKE_CURRENT_BINDING_SOURCE)
+    for path in sorted(RUNNER_INTAKE_CURRENT_BINDING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_intake_current_binding(root, path, current) == base
+                and project_runner_intake_current_binding(root, path, base) == base,
+                'Runner intake current-binding identity or projection changed: ' + path)
+
+
+def project_runner_intake_current_binding(root, path, current):
+    """Restore the accepted AWS mirror successor proof head."""
+    if path not in RUNNER_INTAKE_CURRENT_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner intake binding changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_finite_tool_refusal_source(root):
+    """Bind the corrected negative fixture to an unrelated tool."""
+    require(git(root, 'rev-parse', RUNNER_FINITE_TOOL_REFUSAL_BASE + '^{tree}').decode().strip()
+            == RUNNER_FINITE_TOOL_REFUSAL_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_FINITE_TOOL_REFUSAL_SOURCE_TREE,
+            'Runner finite-tool refusal tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_FINITE_TOOL_REFUSAL_SOURCE).decode().strip().split()
+            == [RUNNER_FINITE_TOOL_REFUSAL_BASE],
+            'Runner finite-tool refusal parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_FINITE_TOOL_REFUSAL_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_FINITE_TOOL_REFUSAL_BASE,
+                  RUNNER_FINITE_TOOL_REFUSAL_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_FINITE_TOOL_REFUSAL_MODIFIED)],
+            'Runner finite-tool refusal changed a different path or status set')
+    base_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_BASE)
+    source_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_SOURCE)
+    for path in sorted(RUNNER_FINITE_TOOL_REFUSAL_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_finite_tool_refusal(root, path, current) == base
+                and project_runner_finite_tool_refusal(root, path, base) == base,
+                'Runner finite-tool refusal identity or projection changed: ' + path)
+
+
+def project_runner_finite_tool_refusal(root, path, current):
+    """Restore the accepted current-source proof head for older receipts."""
+    if path not in RUNNER_FINITE_TOOL_REFUSAL_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner finite-tool refusal changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_build_budget(root):
+    """Bind the exact Application build-proof timeout correction to its failed head."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_BUILD_BUDGET_SOURCE_TREE,
+            'Runner Application build budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_BUILD_BUDGET_BASE],
+            'Runner Application build budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_BUILD_BUDGET_BASE,
+                  RUNNER_APPLICATION_BUILD_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED)],
+            'Runner Application build budget changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_build_budget(root, path, current) == base
+                and project_runner_application_build_budget(root, path, base) == base,
+                'Runner Application build budget identity or projection changed: ' + path)
+
+
+def project_runner_application_build_budget(root, path, current):
+    """Restore the failed hosted head only for the exact Application budget paths."""
+    if path not in RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application build budget changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_account_source_budget(root):
+    """Bind the exact account source-proof timeout correction to its failed head."""
+    require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE_TREE,
+            'Runner account source budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_ACCOUNT_SOURCE_BUDGET_BASE],
+            'Runner account source budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_ACCOUNT_SOURCE_BUDGET_BASE,
+                  RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED)],
+            'Runner account source budget changed a different path or status set')
+    base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE)
+    for path in sorted(RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_account_source_budget(root, path, current) == base
+                and project_runner_account_source_budget(root, path, base) == base,
+                'Runner account source budget identity or projection changed: ' + path)
+
+
+def project_runner_account_source_budget(root, path, current):
+    """Restore the failed hosted head only for the exact account timeout path."""
+    current = project_runner_application_build_budget(root, path, current)
+    if path not in RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner account source budget changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_intake_projection_source(root):
+    """Bind the immediate cloud-request predecessor projection."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_PROJECTION_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_INTAKE_PROJECTION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE_TREE,
+            'Runner Application intake-projection tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_INTAKE_PROJECTION_BASE],
+            'Runner Application intake-projection parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_INTAKE_PROJECTION_BASE,
+                  RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED)],
+            'Runner Application intake projection changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_INTAKE_PROJECTION_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_intake_projection(root, path, current) == base
+                and project_runner_application_intake_projection(root, path, base) == base,
+                'Runner Application intake-projection identity or projection changed: ' + path)
+
+
+def project_runner_application_intake_projection(root, path, current):
+    """Restore the reviewed hybrid-fixture correction head."""
+    if path not in RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application intake projection changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_aws_mirror_fixture_source(root):
+    """Bind the explicit hybrid-security executable fixture correction."""
+    require(git(root, 'rev-parse', RUNNER_AWS_MIRROR_FIXTURE_BASE + '^{tree}').decode().strip()
+            == RUNNER_AWS_MIRROR_FIXTURE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_AWS_MIRROR_FIXTURE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_AWS_MIRROR_FIXTURE_SOURCE_TREE,
+            'Runner AWS mirror fixture source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_AWS_MIRROR_FIXTURE_SOURCE).decode().strip().split()
+            == [RUNNER_AWS_MIRROR_FIXTURE_BASE],
+            'Runner AWS mirror fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_AWS_MIRROR_FIXTURE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_AWS_MIRROR_FIXTURE_BASE, RUNNER_AWS_MIRROR_FIXTURE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_AWS_MIRROR_FIXTURE_MODIFIED)],
+            'Runner AWS mirror fixture changed a different path or status set')
+    base_entries = entries(root, RUNNER_AWS_MIRROR_FIXTURE_BASE)
+    source_entries = entries(root, RUNNER_AWS_MIRROR_FIXTURE_SOURCE)
+    for path in sorted(RUNNER_AWS_MIRROR_FIXTURE_MODIFIED):
+        current = project_runner_application_build_budget(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_aws_mirror_fixture(root, path, current) == base
+                and project_runner_aws_mirror_fixture(root, path, base) == base,
+                'Runner AWS mirror fixture identity or projection changed: ' + path)
+
+
+def project_runner_aws_mirror_fixture(root, path, current):
+    """Restore the first AWS mirror-profile proof head."""
+    current = project_runner_application_build_budget(root, path, current)
+    if path not in RUNNER_AWS_MIRROR_FIXTURE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner AWS mirror fixture changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_intake_binding(root):
+    """Bind the exact historical cloud-request projection exposed by Application."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_INTAKE_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_INTAKE_BINDING_SOURCE_TREE,
+            'Runner Application intake-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_INTAKE_BINDING_BASE],
+            'Runner Application intake-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_INTAKE_BINDING_BASE,
+                  RUNNER_APPLICATION_INTAKE_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED)],
+            'Runner Application intake binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_INTAKE_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_INTAKE_BINDING_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED):
+        current = project_runner_application_intake_projection(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_intake_binding(root, path, current) == base
+                and project_runner_application_intake_binding(root, path, base) == base,
+                'Runner Application intake-binding identity or projection changed: ' + path)
+
+
+def project_runner_application_intake_binding(root, path, current):
+    """Restore the accepted AWS mirror-profile implementation head."""
+    current = project_runner_application_intake_projection(root, path, current)
+    if path not in RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application intake binding changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_aws_mirror_profile_source(root):
+    """Bind only the exact observed .127 AWS mirror-list source profile."""
+    require(git(root, 'rev-parse', RUNNER_AWS_MIRROR_PROFILE_BASE + '^{tree}').decode().strip()
+            == RUNNER_AWS_MIRROR_PROFILE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_AWS_MIRROR_PROFILE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_AWS_MIRROR_PROFILE_SOURCE_TREE,
+            'Runner AWS mirror profile source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_AWS_MIRROR_PROFILE_SOURCE).decode().strip().split()
+            == [RUNNER_AWS_MIRROR_PROFILE_BASE],
+            'Runner AWS mirror profile source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_AWS_MIRROR_PROFILE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_AWS_MIRROR_PROFILE_BASE, RUNNER_AWS_MIRROR_PROFILE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_AWS_MIRROR_PROFILE_MODIFIED)],
+            'Runner AWS mirror profile changed a different path or status set')
+    base_entries = entries(root, RUNNER_AWS_MIRROR_PROFILE_BASE)
+    source_entries = entries(root, RUNNER_AWS_MIRROR_PROFILE_SOURCE)
+    for path in sorted(RUNNER_AWS_MIRROR_PROFILE_MODIFIED):
+        current = project_runner_aws_mirror_fixture(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_aws_mirror_profile(root, path, current) == base
+                and project_runner_aws_mirror_profile(root, path, base) == base,
+                'Runner AWS mirror profile identity or projection changed: ' + path)
+
+
+def project_runner_aws_mirror_profile(root, path, current):
+    """Restore the accepted Application historical-binding proof head."""
+    current = project_runner_aws_mirror_fixture(root, path, current)
+    if path not in RUNNER_AWS_MIRROR_PROFILE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_AWS_MIRROR_PROFILE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner AWS mirror profile changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_historical_binding(root):
+    """Bind independent historical and current Application source hashes."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_HISTORICAL_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE_TREE,
+            'Runner Application historical-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_HISTORICAL_BINDING_BASE],
+            'Runner Application historical-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_HISTORICAL_BINDING_BASE,
+                  RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED)],
+            'Runner Application historical binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_HISTORICAL_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_historical_binding(root, path, current) == base
+                and project_runner_application_historical_binding(root, path, base) == base,
+                'Runner Application historical-binding identity or projection changed: ' + path)
+
+
+def project_runner_application_historical_binding(root, path, current):
+    """Restore the first current-source binding proof for older receipts."""
+    if path not in RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_HISTORICAL_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application historical binding changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_source_binding(root):
+    """Bind the exact current-source override exposed by hosted Application."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_SOURCE_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_SOURCE_BINDING_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_SOURCE_BINDING_SOURCE_TREE,
+            'Runner Application source-binding tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_SOURCE_BINDING_BASE],
+            'Runner Application source-binding parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_SOURCE_BINDING_BASE,
+                  RUNNER_APPLICATION_SOURCE_BINDING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED)],
+            'Runner Application source binding changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_SOURCE_BINDING_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED):
+        current = project_runner_intake_current_binding(root, path, ordinary(root, path))
+        current = project_runner_application_historical_binding(root, path, current)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_source_binding(root, path, current) == base
+                and project_runner_application_source_binding(root, path, base) == base,
+                'Runner Application source-binding identity or projection changed: ' + path)
+
+
+def project_runner_application_source_binding(root, path, current):
+    """Restore the reviewed AWS proof head for older source receipts."""
+    current = project_runner_intake_current_binding(root, path, current)
+    current = project_runner_application_historical_binding(root, path, current)
+    if path not in RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SOURCE_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application source binding changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_aws_profile_source(root):
+    """Bind only the exact observed .127 AWS Noble source profile."""
+    require(git(root, 'rev-parse', RUNNER_AWS_PROFILE_BASE + '^{tree}').decode().strip()
+            == RUNNER_AWS_PROFILE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_AWS_PROFILE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_AWS_PROFILE_SOURCE_TREE,
+            'Runner AWS profile source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_AWS_PROFILE_SOURCE).decode().strip().split()
+            == [RUNNER_AWS_PROFILE_BASE],
+            'Runner AWS profile source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_AWS_PROFILE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_AWS_PROFILE_BASE, RUNNER_AWS_PROFILE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_AWS_PROFILE_MODIFIED)],
+            'Runner AWS profile changed a different path or status set')
+    base_entries = entries(root, RUNNER_AWS_PROFILE_BASE)
+    source_entries = entries(root, RUNNER_AWS_PROFILE_SOURCE)
+    for path in sorted(RUNNER_AWS_PROFILE_MODIFIED):
+        current = project_runner_aws_mirror_profile(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_aws_profile(root, path, current) == base
+                and project_runner_aws_profile(root, path, base) == base,
+                'Runner AWS profile identity or projection changed: ' + path)
+
+
+def project_runner_aws_profile(root, path, current):
+    """Restore the reviewed evidence-provenance head for older receipts."""
+    current = project_runner_aws_mirror_profile(root, path, current)
+    if path not in RUNNER_AWS_PROFILE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_AWS_PROFILE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner AWS profile changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_evidence_provenance_source(root):
+    """Bind the independent-review repair for mandatory APT receipts."""
+    require(git(root, 'rev-parse', RUNNER_EVIDENCE_PROVENANCE_BASE + '^{tree}').decode().strip()
+            == RUNNER_EVIDENCE_PROVENANCE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_EVIDENCE_PROVENANCE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_EVIDENCE_PROVENANCE_SOURCE_TREE,
+            'Runner evidence provenance source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_EVIDENCE_PROVENANCE_SOURCE).decode().strip().split()
+            == [RUNNER_EVIDENCE_PROVENANCE_BASE],
+            'Runner evidence provenance source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_EVIDENCE_PROVENANCE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_EVIDENCE_PROVENANCE_BASE,
+                  RUNNER_EVIDENCE_PROVENANCE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_EVIDENCE_PROVENANCE_MODIFIED)],
+            'Runner evidence provenance changed a different path or status set')
+    base_entries = entries(root, RUNNER_EVIDENCE_PROVENANCE_BASE)
+    source_entries = entries(root, RUNNER_EVIDENCE_PROVENANCE_SOURCE)
+    for path in sorted(RUNNER_EVIDENCE_PROVENANCE_MODIFIED):
+        current = project_runner_aws_profile(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_evidence_provenance(root, path, current) == base
+                and project_runner_evidence_provenance(root, path, base) == base,
+                'Runner evidence provenance identity or projection changed: ' + path)
+
+
+def project_runner_evidence_provenance(root, path, current):
+    """Restore the first Application-completion proof for older receipts."""
+    current = project_runner_aws_profile(root, path, current)
+    if path not in RUNNER_EVIDENCE_PROVENANCE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_EVIDENCE_PROVENANCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner evidence provenance changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_completion_source(root):
+    """Bind the bounded timeout and collision-free APT evidence successor."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_COMPLETION_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_COMPLETION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPLETION_SOURCE_TREE,
+            'Runner Application completion source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_COMPLETION_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_COMPLETION_BASE],
+            'Runner Application completion source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_COMPLETION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_COMPLETION_BASE,
+                  RUNNER_APPLICATION_COMPLETION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_COMPLETION_MODIFIED)],
+            'Runner Application completion changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_COMPLETION_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_COMPLETION_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_COMPLETION_MODIFIED):
+        current = project_runner_evidence_provenance(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_completion(root, path, current) == base
+                and project_runner_application_completion(root, path, base) == base,
+                'Runner Application completion identity or projection changed: ' + path)
+
+
+def project_runner_application_completion(root, path, current):
+    """Restore the first hosted compatibility proof head for older receipts."""
+    current = project_runner_evidence_provenance(root, path, current)
+    if path not in RUNNER_APPLICATION_COMPLETION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application completion changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_keyring_fixture_source(root):
+    """Bind the exact Linux fixture correction found by independent review."""
+    require(git(root, 'rev-parse', RUNNER_KEYRING_FIXTURE_BASE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_FIXTURE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_KEYRING_FIXTURE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_FIXTURE_SOURCE_TREE,
+            'Runner keyring fixture source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_KEYRING_FIXTURE_SOURCE).decode().strip().split()
+            == [RUNNER_KEYRING_FIXTURE_BASE],
+            'Runner keyring fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_KEYRING_FIXTURE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_KEYRING_FIXTURE_BASE, RUNNER_KEYRING_FIXTURE_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_KEYRING_FIXTURE_MODIFIED)],
+            'Runner keyring fixture changed a different path or status set')
+    base_entries = entries(root, RUNNER_KEYRING_FIXTURE_BASE)
+    source_entries = entries(root, RUNNER_KEYRING_FIXTURE_SOURCE)
+    for path in sorted(RUNNER_KEYRING_FIXTURE_MODIFIED):
+        current = project_runner_application_completion(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_keyring_fixture(root, path, current) == base
+                and project_runner_keyring_fixture(root, path, base) == base,
+                'Runner keyring fixture identity or projection changed: ' + path)
+
+
+def project_runner_keyring_fixture(root, path, current):
+    """Restore the reviewed keyring source before the fixture-only successor."""
+    current = project_runner_application_completion(root, path, current)
+    if path not in RUNNER_KEYRING_FIXTURE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner keyring fixture changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_keyring_isolation_source(root):
+    """Bind the exact protected-keyring correction to its failed hosted source."""
+    require(git(root, 'rev-parse', RUNNER_KEYRING_ISOLATION_BASE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_ISOLATION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_KEYRING_ISOLATION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_KEYRING_ISOLATION_SOURCE_TREE,
+            'Runner keyring isolation source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_KEYRING_ISOLATION_SOURCE).decode().strip().split()
+            == [RUNNER_KEYRING_ISOLATION_BASE],
+            'Runner keyring isolation source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_KEYRING_ISOLATION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_KEYRING_ISOLATION_BASE, RUNNER_KEYRING_ISOLATION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_KEYRING_ISOLATION_MODIFIED)],
+            'Runner keyring isolation changed a different path or status set')
+    base_entries = entries(root, RUNNER_KEYRING_ISOLATION_BASE)
+    source_entries = entries(root, RUNNER_KEYRING_ISOLATION_SOURCE)
+    for path in sorted(RUNNER_KEYRING_ISOLATION_MODIFIED):
+        current = project_runner_keyring_fixture(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_keyring_isolation(root, path, current) == base
+                and project_runner_keyring_isolation(root, path, base) == base,
+                'Runner keyring isolation identity or projection changed: ' + path)
+
+
+def project_runner_keyring_isolation(root, path, current):
+    """Restore the failed hosted head only for the exact keyring successor paths."""
+    current = project_runner_keyring_fixture(root, path, current)
+    if path not in RUNNER_KEYRING_ISOLATION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_KEYRING_ISOLATION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner keyring isolation changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_mirror_phase_source(root):
+    """Bind the exact extraction successor for GitHub scalar and fixture failures."""
+    require(git(root, 'rev-parse', RUNNER_MIRROR_PHASE_BASE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_PHASE_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_MIRROR_PHASE_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_PHASE_SOURCE_TREE,
+            'Runner mirror phase source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_MIRROR_PHASE_SOURCE).decode().strip().split()
+            == [RUNNER_MIRROR_PHASE_BASE],
+            'Runner mirror phase source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_MIRROR_PHASE_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_MIRROR_PHASE_BASE, RUNNER_MIRROR_PHASE_SOURCE).decode().splitlines()
+    expected = [('A' if path in RUNNER_MIRROR_PHASE_ADDITIONS else 'M') + '\t' + path
+                for path in sorted(RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS)]
+    require(changed == expected, 'Runner mirror phase successor changed a different path or status set')
+    base_entries = entries(root, RUNNER_MIRROR_PHASE_BASE)
+    source_entries = entries(root, RUNNER_MIRROR_PHASE_SOURCE)
+    require(not RUNNER_MIRROR_PHASE_ADDITIONS & set(base_entries)
+            and RUNNER_MIRROR_PHASE_ADDITIONS <= set(source_entries),
+            'Runner mirror phase addition did not originate in its exact source')
+    for path in sorted(RUNNER_MIRROR_PHASE_MODIFIED):
+        current = project_runner_account_source_budget(root, path, ordinary(root, path))
+        current = project_runner_keyring_isolation(root, path, current)
+        source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_mirror_phase(root, path, current) == base
+                and project_runner_mirror_phase(root, path, base) == base,
+                'Runner mirror phase identity or projection changed: ' + path)
+    for path in sorted(RUNNER_MIRROR_PHASE_ADDITIONS):
+        require(project_runner_keyring_isolation(root, path, ordinary(root, path))
+                == git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Runner mirror phase addition identity changed: ' + path)
+
+
+def project_runner_mirror_phase(root, path, current):
+    """Project only modified extraction-successor paths to the failed proof head."""
+    current = project_runner_account_source_budget(root, path, current)
+    current = project_runner_keyring_isolation(root, path, current)
+    if path not in RUNNER_MIRROR_PHASE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_PHASE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner mirror phase source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_mirror_compat_source(root):
+    """Bind the reviewed dual-profile runner correction to exact main source."""
+    require(git(root, 'rev-parse', RUNNER_MIRROR_COMPAT_BASE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_COMPAT_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_MIRROR_COMPAT_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_MIRROR_COMPAT_SOURCE_TREE,
+            'Runner mirror compatibility source tree changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_MIRROR_COMPAT_BASE,
+        RUNNER_MIRROR_COMPAT_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', RUNNER_MIRROR_COMPAT_SOURCE, 'HEAD')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_MIRROR_COMPAT_SOURCE).decode().strip().split()
+            == [RUNNER_MIRROR_COMPAT_BASE],
+            'Runner mirror compatibility source parent changed')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_MIRROR_COMPAT_BASE, RUNNER_MIRROR_COMPAT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(RUNNER_MIRROR_COMPAT_MODIFIED)],
+            'Runner mirror compatibility changed a different path or status set')
+    base_entries = entries(root, RUNNER_MIRROR_COMPAT_BASE)
+    source_entries = entries(root, RUNNER_MIRROR_COMPAT_SOURCE)
+    for path in sorted(RUNNER_MIRROR_COMPAT_MODIFIED):
+        current = project_runner_mirror_phase(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_mirror_compat(root, path, current) == base
+                and project_runner_mirror_compat(root, path, base) == base,
+                'Runner mirror compatibility identity or projection changed: ' + path)
+
+
+def project_runner_mirror_compat(root, path, current):
+    """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_runner_application_source_binding(root, path, current)
+    current = project_runner_mirror_phase(root, path, current)
+    if path not in RUNNER_MIRROR_COMPAT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_MIRROR_COMPAT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner mirror compatibility changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_ux08_payment_outcome_proof_fix_source(root):
     """Bind the complete ordered payment-outcome proof to the executable fixture body."""
     require(git(root, 'rev-parse', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + '^{tree}').decode().strip()
@@ -2271,7 +3183,7 @@ def validate_ux08_payment_outcome_proof_fix_source(root):
     base_entries = entries(root, UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE)
     source_entries = entries(root, UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE)
     for path in sorted(UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_mirror_compat(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_BASE + ':' + path)
         require(current == source
@@ -2283,6 +3195,7 @@ def validate_ux08_payment_outcome_proof_fix_source(root):
 
 def project_ux08_payment_outcome_proof_fix(root, path, current):
     """Restore the accepted fulfillment-lock proof head for older receipts."""
+    current = project_runner_mirror_compat(root, path, current)
     if path not in UX08_PAYMENT_OUTCOME_PROOF_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_PAYMENT_OUTCOME_PROOF_FIX_SOURCE + ':' + path)
@@ -2314,7 +3227,7 @@ def validate_ux08_hosted_mirror_contract_fix_source(root):
     base_entries = entries(root, UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE)
     source_entries = entries(root, UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE)
     for path in sorted(UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_mirror_compat(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_BASE + ':' + path)
         require(current == source
@@ -2326,6 +3239,7 @@ def validate_ux08_hosted_mirror_contract_fix_source(root):
 
 def project_ux08_hosted_mirror_contract_fix(root, path, current):
     """Project the hosted-mirror contract implementation to its accepted base."""
+    current = project_runner_mirror_compat(root, path, current)
     if path not in UX08_HOSTED_MIRROR_CONTRACT_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_HOSTED_MIRROR_CONTRACT_FIX_SOURCE + ':' + path)
@@ -2378,8 +3292,21 @@ def validate_pr391_recovery_successor(root):
     git(root, 'merge-base', '--is-ancestor', PR391_RECOVERY_HEAD, 'HEAD')
     require(set(git(root, 'diff', '--name-only', '--no-renames',
                     PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
-            == {VERIFIER, RECEIPT},
-            'Current recovery successor is not proof-only')
+            == ({VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED
+                | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS
+                | RUNNER_APPLICATION_COMPLETION_MODIFIED
+                | RUNNER_EVIDENCE_PROVENANCE_MODIFIED | RUNNER_AWS_PROFILE_MODIFIED
+                | RUNNER_APPLICATION_SOURCE_BINDING_MODIFIED
+                | RUNNER_APPLICATION_HISTORICAL_BINDING_MODIFIED
+                | RUNNER_AWS_MIRROR_PROFILE_MODIFIED
+                | RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED
+                | RUNNER_AWS_MIRROR_FIXTURE_MODIFIED
+                | RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED
+                | RUNNER_INTAKE_CURRENT_BINDING_MODIFIED
+                | RUNNER_FINITE_TOOL_REFUSAL_MODIFIED
+                | RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED
+                | RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED),
+            'Current recovery successor contains an unbound path')
 
 
 def validate_ux08_payment_fulfillment_validation_lock_fix_source(root):
@@ -2917,7 +3844,8 @@ def validate_ux08_checkout_pin_fix_source(root):
             'UX-08 checkout source-pin fix changed a different path or status')
     base_entries = entries(root, UX08_CHECKOUT_PIN_FIX_BASE)
     source_entries = entries(root, UX08_CHECKOUT_PIN_FIX_SOURCE)
-    current = ordinary(root, UX08_CHECKOUT_PIN_FIX_PATH)
+    current = project_runner_application_source_binding(
+        root, UX08_CHECKOUT_PIN_FIX_PATH, ordinary(root, UX08_CHECKOUT_PIN_FIX_PATH))
     require(current == git(root, 'cat-file', 'blob', UX08_CHECKOUT_PIN_FIX_SOURCE + ':'
                            + UX08_CHECKOUT_PIN_FIX_PATH)
             and mode(root, UX08_CHECKOUT_PIN_FIX_PATH)
@@ -2931,6 +3859,7 @@ def validate_ux08_checkout_pin_fix_source(root):
 
 def project_ux08_checkout_pin_fix(root, path, current):
     """Restore the accepted inbox successor before older source projections."""
+    current = project_runner_application_source_binding(root, path, current)
     if path != UX08_CHECKOUT_PIN_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', UX08_CHECKOUT_PIN_FIX_SOURCE + ':' + path)
@@ -3011,6 +3940,7 @@ def validate_ux08_payment_native_fix_source(root):
 
 def project_ux08_payment_native_fix(root, path, current):
     """Restore the first recovery-attempt bytes for older source receipts."""
+    current = project_runner_application_intake_binding(root, path, current)
     current = project_ux08_inbox_payment_readiness_fix(root, path, current)
     current = project_ux08_agreement_link_fix(root, path, current)
     current = project_ux08_inbox_record_fix(root, path, current)
@@ -3051,7 +3981,8 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        current = project_ux08_payment_fixture_lock_fix(root, path, ordinary(root, path))
+        current = project_runner_finite_tool_refusal(root, path, ordinary(root, path))
+        current = project_ux08_payment_fixture_lock_fix(root, path, current)
         current = project_ux08_billing_network_fix(root, path, current)
         current = project_ux08_payment_native_fix(root, path, current)
         require(current
@@ -3070,6 +4001,7 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_runner_finite_tool_refusal(root, path, current)
     current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_payment_native_fix(root, path, current)
@@ -3609,6 +4541,23 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_application_build_budget(root)
+    validate_runner_account_source_budget(root)
+    validate_runner_finite_tool_refusal_source(root)
+    validate_runner_intake_current_binding_source(root)
+    validate_runner_application_intake_projection_source(root)
+    validate_runner_aws_mirror_fixture_source(root)
+    validate_runner_application_intake_binding(root)
+    validate_runner_aws_mirror_profile_source(root)
+    validate_runner_application_historical_binding(root)
+    validate_runner_application_source_binding(root)
+    validate_runner_aws_profile_source(root)
+    validate_runner_evidence_provenance_source(root)
+    validate_runner_application_completion_source(root)
+    validate_runner_keyring_fixture_source(root)
+    validate_runner_keyring_isolation_source(root)
+    validate_runner_mirror_phase_source(root)
+    validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
@@ -3849,13 +4798,15 @@ def verify_current(root):
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
+               | RUNNER_MIRROR_PHASE_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_ux08_agreement_link_fix(root, path, ordinary(root, path))
+        value = project_runner_mirror_compat(root, path, ordinary(root, path))
+        value = project_ux08_agreement_link_fix(root, path, value)
         value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
@@ -4030,7 +4981,8 @@ def account_call(root, module, method, *, path=None, value=None, side=None):
     arguments = {}
     if path is not None:
         require(path.startswith('tests/') or (module == 'provider_browser_fixture_provenance'
-                and method == 'source' and path == 'tools/acceptance-reports.json'),
+                and method == 'source'
+                and path in {'tools/acceptance-reports.json', 'tools/acceptance_artifacts.py'}),
                 'Historical projections never supply shipping/runtime file bytes')
         ordinary(root, path)
         arguments['path'] = path

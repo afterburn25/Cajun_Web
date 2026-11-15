@@ -313,6 +313,14 @@ def fixtures(root, ctx):
 def outcomes(lane): return {k: 'success' for k in a.STEP_KEYS[lane]}
 
 
+def package_source_receipts(root, lane):
+    for receipt in a.PACKAGE_SOURCE_QA:
+        namespaced = root / 'qa' / (lane + '-' + receipt)
+        if namespaced.exists() or namespaced.is_symlink(): namespaced.unlink()
+        a.write(root / 'qa' / receipt, {'passed': True, 'lane_fixture': lane,
+                                        'receipt': receipt})
+
+
 def valid_port_context(workflow):
     for job in ('native-and-browser', 'apache'):
         match=re.search(r'^  '+job+r':\n(.*?)(?=^  [a-z][a-z-]*:|\Z)',workflow,re.M|re.S)
@@ -331,35 +339,11 @@ def orchestration_evidence_checks(tmp, ctx):
     # then exercise the real partition sealer. No application or provider runs.
     workflow = (ROOT / '.github/workflows/application-tests.yml').read_text()
     checkout_workflow = (ROOT / '.github/workflows/consolidation-after-backups.yml').read_text()
-    apt_mirrors = r'''          sudo python3 - <<'CWP_UBUNTU_MIRRORS'
-          from pathlib import Path
-
-          source = Path('/etc/apt/apt-mirrors.txt')
-          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
-              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
-          original = source.read_bytes()
-          expected = (
-              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-          )
-          if original != expected:
-              raise SystemExit('Unexpected Ubuntu mirror list')
-          selected = (
-              b'https://archive.ubuntu.com/ubuntu/\tpriority:1\n'
-              b'https://security.ubuntu.com/ubuntu/\tpriority:2\n'
-              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n'
-          )
-          source.write_bytes(selected)
-          if source.read_bytes() != selected:
-              raise SystemExit('Ubuntu mirror selection was not retained')
-          print('Canonical Ubuntu archives selected before Azure fallback')
-          CWP_UBUNTU_MIRRORS
-'''
+    apt_mirrors = '          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu\n'
     apt_wrapper = '''          cwp_apt_get() {
             local cwp_apt_attempt
             for cwp_apt_attempt in 1 2 3; do
-              if sudo apt-get "$@"; then
+              if sudo apt-get -o Dir::Etc::sourcelist=/dev/null -o Dir::Etc::sourceparts=/etc/apt/cwp-sources.list.d -o Dir::State::lists=/var/lib/apt/cwp-lists "$@"; then
                 return 0
               fi
               if [ "$cwp_apt_attempt" -eq 3 ]; then
@@ -401,17 +385,21 @@ def orchestration_evidence_checks(tmp, ctx):
         check('Workflow preserves orchestration exit status ' + str(failing), (result.returncode != 0) == failing)
         steps = outcomes('build'); steps['build'] = 'failure' if failing else 'success'
         out = tmp / ('orchestration-sealed-failure' if failing else 'orchestration-sealed-success')
+        package_source_receipts(root, 'build')
         digest = a.seal(root, ctx, out, 'build', steps, '')
         envelope = a.verify_bundle(out, 'partition', ctx, digest)
         with zipfile.ZipFile(out / 'partition.zip') as archive:
             transcript = archive.read('qa/build-results.txt')
         check('Sealed build retains original transcript and exact guard output ' + str(failing),
-              transcript == before + result.stdout and set(envelope['files']) == {'qa/build-results.txt'})
+              transcript == before + result.stdout
+              and set(envelope['files']) == ({'qa/build-results.txt'}
+                                                | a.package_source_evidence_names('build')))
         report = json.loads(transcript[len(before):])
         check('Sealed build truthfully records guard result and step outcome ' + str(failing),
               report['passed'] is (not failing) and report['count'] == 6 and envelope['steps'] == steps)
     forbidden = tmp / 'orchestration-forbidden'
     blob(forbidden / 'qa/browser-suite-orchestration-contract.json', result.stdout)
+    package_source_receipts(forbidden, 'build')
     deny('Standalone orchestration report still cannot cross the build boundary',
          lambda: a.seal(forbidden, ctx, tmp / 'orchestration-forbidden-seal', 'build', outcomes('build'), ''))
 
@@ -465,6 +453,7 @@ def software_authority_report_checks(tmp):
                 if scenario == 'extra': named(root / 'qa/software-commerce-native-unreviewed.json')
             elif lane == 'recovery': named(root / 'qa/structure-results.json')
             else: named(root / 'qa/apache-results.json')
+            package_source_receipts(root, lane)
             sealed = a.seal(root, ctx, incoming / lane, lane, outcomes(lane), input_sha)
             bindings[lane] = {'result': 'success', 'artifact_id': str(index + 1), 'sha256': sealed,
                              **({'input_sha256': input_sha} if lane == 'build' else {}),
@@ -512,6 +501,7 @@ def run(tmp):
         with patch.object(sys,'argv',['acceptance_artifacts.py','pack-inputs']):a.main()
         expected='sha256='+a.digest(cli_root/'.acceptance/inputs/inputs.json')+'\n'
         check('Actual pack-inputs entry point writes its sha256 manifest digest to GitHub output',job_output.read_text()==expected)
+        package_source_receipts(cli_root, 'build')
         with patch.object(sys,'argv',['acceptance_artifacts.py','seal','--lane','build']):a.main()
         expected+='sha256='+a.digest(cli_root/'.acceptance/partition/partition.json')+'\n'
         check('Actual seal entry point appends its sha256 manifest digest to GitHub output',job_output.read_text()==expected)
@@ -590,6 +580,7 @@ def run(tmp):
         elif lane == 'native-browser': shutil.copytree(source / 'qa', root / 'qa'); named(root / 'qa/http-results.json'); blob(root / 'qa/actual-view.png', b'exact image bytes')
         elif lane == 'recovery': named(root / 'qa/structure-results.json')
         else: named(root / 'qa/apache-results.json')
+        package_source_receipts(root, lane)
         d = a.seal(root,ctx,incoming/lane,lane,outcomes(lane),input_sha)
         bindings[lane] = {'result':'success','artifact_id':str(i+1),'sha256':d,**({'input_sha256':input_sha} if lane=='build' else {}),**({'checkpoint_id':'9','checkpoint_digest':'6'*64} if lane=='native-browser' else {})}
     expected = {'browser':['build-guards-results.json','parallel-helper-tests.json','http-results.json','build-environment-results.json'],
@@ -603,6 +594,9 @@ def run(tmp):
     result, target = combined()
     check('Complete exact four-partition run assembles all named reports', result['complete'] and result['full_partition_checks_passed'] and set(result['reports']) == set(expected['final']))
     check('Final carries exact browser screenshot bytes', (target/'qa/actual-view.png').read_bytes()==b'exact image bytes')
+    check('Final retains distinct package-source receipts from every acceptance lane',
+          all(a.load(target/'qa'/(lane+'-'+receipt))['lane_fixture']==lane
+              for lane in a.LANES for receipt in a.PACKAGE_SOURCE_QA))
     check('Checkpoint is the same immutable QA snapshot used by final', all(p.read_bytes()==(target/'qa'/p.name).read_bytes() for p in (lane_roots['native-browser']/'.acceptance/checkpoint/qa').iterdir()))
     check('Final packages remain exact original build', all(a.digest(p)==a.digest(target/'dist'/p.name) for p in (source/'dist').iterdir()))
     check('Final records every immutable partition ID and digest', all(result['partitions'][n]['artifact_id']==bindings[n]['artifact_id'] and result['partitions'][n]['manifest_sha256']==bindings[n]['sha256'] for n in a.LANES))
@@ -638,6 +632,7 @@ def run(tmp):
     old=failed_root/'.acceptance/checkpoint'
     if old.exists():
         assert old.resolve().is_relative_to(tmp.resolve());shutil.rmtree(old)
+    package_source_receipts(failed_root, 'native-browser')
     b=copy.deepcopy(bindings);b['native-browser']['sha256']=a.seal(failed_root,ctx,inc/'native-browser','native-browser',outcomes('native-browser'),input_sha)
     result,root=combined(b,inc)
     check('Named failure beats successful job labels and remains available', not result['complete'] and result['reports']['http-results.json']['failed_names']==['Synthetic exact check'] and a.load(root/'qa/http-results.json')['passed'] is False)
@@ -647,6 +642,7 @@ def run(tmp):
     check('Unexpected named report forces expectation review', not result['complete'])
     # Shared build facts may repeat only byte-identically in native/browser.
     root=tmp/'collision-native';shutil.copytree(lane_roots['native-browser'],root);blob(root/'qa/build-results.txt',b'changed build')
+    package_source_receipts(root, 'native-browser')
     inc=tmp/'collision-parts';shutil.copytree(incoming,inc);remove_partition(inc/'native-browser')
     old=root/'.acceptance/checkpoint'
     if old.exists():
@@ -657,6 +653,7 @@ def run(tmp):
     inc=tmp/'case-alias-parts';shutil.copytree(incoming,inc);b=copy.deepcopy(bindings)
     for lane,name in [('native-browser','Apache-error.log'),('apache','apache-error.log')]:
         root=tmp/('case-alias-'+lane);shutil.copytree(lane_roots[lane]/'qa',root/'qa');blob(root/'qa'/name,b'case collision')
+        package_source_receipts(root, lane)
         target=inc/lane;assert target.resolve().is_relative_to(tmp.resolve());shutil.rmtree(target)
         b[lane]['sha256']=a.seal(root,ctx,target,lane,outcomes(lane),input_sha)
     result,_=combined(b,inc)
@@ -672,13 +669,54 @@ def run(tmp):
     check('Integer aggregate with failure detail remains failed',not a.reports(root)['counts.json']['passed'])
     for lane,name in [('apache','qa/http-results.json'),('recovery','qa/apache-results.json'),('native-browser','qa/structure-results.json'),('build','test-runtime/private/key.txt')]:
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
+    for lane in a.LANES:
+        check('Evidence ownership admits only exact lane-namespaced package-source receipts '+lane,
+              all(a.evidence_allowed('qa/'+lane+'-'+name,lane) for name in a.PACKAGE_SOURCE_QA)
+              and not a.evidence_allowed('qa/ubuntu-apt-source.json',lane)
+              and not a.evidence_allowed('qa/'+lane+'-ubuntu-apt-source.json.bak',lane)
+              and not a.evidence_allowed('qa/other-ubuntu-apt-source.json',lane)
+              and not a.evidence_allowed('qa/Ubuntu-apt-source.json',lane))
+    duplicate_receipt=tmp/'duplicate-package-source';(duplicate_receipt/'qa').mkdir(parents=True)
+    a.write(duplicate_receipt/'qa/ubuntu-apt-source.json',{'passed':True})
+    a.write(duplicate_receipt/'qa/build-ubuntu-apt-source.json',{'passed':True})
+    deny('Package-source sealing refuses any pre-namespaced receipt',
+         lambda:a.seal(duplicate_receipt,ctx,tmp/'duplicate-package-source-output','build',outcomes('build'),''))
+    missing_receipt=tmp/'missing-package-source';(missing_receipt/'qa').mkdir(parents=True)
+    for receipt in sorted(a.PACKAGE_SOURCE_QA)[:-1]:
+        a.write(missing_receipt/'qa'/receipt,{'passed':True})
+    deny('Successful setup refuses a missing package-source receipt',
+         lambda:a.seal(missing_receipt,ctx,tmp/'missing-package-source-output','native-browser',outcomes('native-browser'),input_sha))
+    directory_receipt=tmp/'directory-package-source';(directory_receipt/'qa').mkdir(parents=True)
+    for receipt in a.PACKAGE_SOURCE_QA:
+        a.write(directory_receipt/'qa'/receipt,{'passed':True})
+    directory_target=directory_receipt/'qa'/sorted(a.PACKAGE_SOURCE_QA)[0];directory_target.unlink();directory_target.mkdir()
+    deny('Package-source sealing refuses a receipt directory',
+         lambda:a.seal(directory_receipt,ctx,tmp/'directory-package-source-output','native-browser',outcomes('native-browser'),input_sha))
+    symlink_receipt=tmp/'symlink-package-source';(symlink_receipt/'qa').mkdir(parents=True)
+    for receipt in a.PACKAGE_SOURCE_QA:
+        a.write(symlink_receipt/'qa'/receipt,{'passed':True})
+    receipt_names=sorted(a.PACKAGE_SOURCE_QA);symlink_target=symlink_receipt/'qa'/receipt_names[0];symlink_target.unlink()
+    try:symlink_target.symlink_to(symlink_receipt/'qa'/receipt_names[1])
+    except OSError:pass
+    else:
+        deny('Package-source sealing refuses a receipt symlink',
+             lambda:a.seal(symlink_receipt,ctx,tmp/'symlink-package-source-output','native-browser',outcomes('native-browser'),input_sha))
+    partial_receipt=tmp/'partial-package-source';(partial_receipt/'qa').mkdir(parents=True)
+    a.write(partial_receipt/'qa/ubuntu-apt-source-preflight.json',{'passed':False,'failure':'synthetic'})
+    failed_steps=outcomes('native-browser');failed_steps['setup']='failure'
+    partial_digest=a.seal(partial_receipt,ctx,tmp/'partial-package-source-output','native-browser',failed_steps,input_sha)
+    partial_manifest=a.verify_bundle(tmp/'partial-package-source-output','partition',ctx,partial_digest)
+    check('Failed setup preserves its available receipt without inventing missing evidence',
+          set(partial_manifest['files'])=={'qa/native-browser-ubuntu-apt-source-preflight.json'}
+          and partial_manifest['steps']['setup']=='failure')
     snapshot_root=tmp/'access-snapshot-report';snapshot_name='stackcp-access-read-snapshot-native-results.json';seed_name='stackcp-access-read-snapshot-seed.json'
     named(snapshot_root/'qa'/snapshot_name);a.write(snapshot_root/'qa'/seed_name,{'passed':True,'scope':'Synthetic metadata, not acceptance','prefix':'sapr_','linked_packages':21,'local_assignments':20})
     check('Finite access snapshot seed stays diagnostic metadata beside its required report',set(a.reports(snapshot_root))=={snapshot_name} and a.evidence_allowed('qa/'+seed_name,'native-browser') and not a.input_allowed('qa/'+seed_name))
     named(snapshot_root/'qa'/snapshot_name,False)
     check('Successful seed cannot mask a failed access snapshot native report',not a.reports(snapshot_root)[snapshot_name]['passed'])
     from delivery_evidence_cases import run as delivery_evidence_cases
-    delivery_evidence_cases(a, ROOT, tmp/'delivery-evidence', check, deny, context, fixtures, outcomes)
+    delivery_evidence_cases(a, ROOT, tmp/'delivery-evidence', check, deny, context, fixtures, outcomes,
+                            package_source_receipts)
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.

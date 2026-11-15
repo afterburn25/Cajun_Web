@@ -2,10 +2,10 @@ name: Customer account and notification current-source acceptance
 on:
   push:
     branches: [main, chatgpt/account-notifications-acceptance-20261101]
-    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', 'VERSION', 'START-HERE.txt', '.github/workflows/account-notifications-acceptance.yml', '.github/workflows/account-notifications-combined.yml', '.github/workflows/application-tests.yml']
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', 'VERSION', 'START-HERE.txt', '.github/scripts/**', '.github/workflows/account-notifications-acceptance.yml', '.github/workflows/account-notifications-combined.yml', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
-    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', 'VERSION', 'START-HERE.txt', '.github/workflows/account-notifications-acceptance.yml', '.github/workflows/account-notifications-combined.yml', '.github/workflows/application-tests.yml']
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', 'VERSION', 'START-HERE.txt', '.github/scripts/**', '.github/workflows/account-notifications-acceptance.yml', '.github/workflows/account-notifications-combined.yml', '.github/workflows/application-tests.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   source:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 35
     outputs:
       sha: ${{ steps.record.outputs.sha }}
     env:
