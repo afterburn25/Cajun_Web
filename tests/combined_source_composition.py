@@ -488,6 +488,13 @@ RUNNER_INTAKE_CURRENT_BINDING_SOURCE_TREE = 'cdb2a13b1c322d39f268ce0756f372723f2
 RUNNER_INTAKE_CURRENT_BINDING_MODIFIED = frozenset((
     'tools/acceptance-contract.json',
 ))
+RUNNER_FINITE_TOOL_REFUSAL_BASE = 'e136fd53e0e742acdb99c39ab343f398b63cb20d'
+RUNNER_FINITE_TOOL_REFUSAL_BASE_TREE = '65561b984c34add8d3407ad87880f9696f37e796'
+RUNNER_FINITE_TOOL_REFUSAL_SOURCE = '815db336cb013e3c745af8d6741e6bbbef616175'
+RUNNER_FINITE_TOOL_REFUSAL_SOURCE_TREE = '869dbcc8964168fb426b97d896962ae0c1e590ea'
+RUNNER_FINITE_TOOL_REFUSAL_MODIFIED = frozenset((
+    'tests/combined_source_composition_test.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -1102,7 +1109,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '837abfd23efbedc65ac9d72091ef3ee6d584e88cc6c53855078e3ac4be977b34'
+REGRESSION_SHA256 = 'e0a1c424dc6e5cd2508dde922c1c3a6ff5600ea3cc773c3be9c22990037ffb66'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2418,6 +2425,50 @@ def project_runner_intake_current_binding(root, path, current):
     return base
 
 
+def validate_runner_finite_tool_refusal_source(root):
+    """Bind the corrected negative fixture to an unrelated tool."""
+    require(git(root, 'rev-parse', RUNNER_FINITE_TOOL_REFUSAL_BASE + '^{tree}').decode().strip()
+            == RUNNER_FINITE_TOOL_REFUSAL_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_FINITE_TOOL_REFUSAL_SOURCE_TREE,
+            'Runner finite-tool refusal tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_FINITE_TOOL_REFUSAL_SOURCE).decode().strip().split()
+            == [RUNNER_FINITE_TOOL_REFUSAL_BASE],
+            'Runner finite-tool refusal parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_FINITE_TOOL_REFUSAL_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_FINITE_TOOL_REFUSAL_BASE,
+                  RUNNER_FINITE_TOOL_REFUSAL_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_FINITE_TOOL_REFUSAL_MODIFIED)],
+            'Runner finite-tool refusal changed a different path or status set')
+    base_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_BASE)
+    source_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_SOURCE)
+    for path in sorted(RUNNER_FINITE_TOOL_REFUSAL_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_finite_tool_refusal(root, path, current) == base
+                and project_runner_finite_tool_refusal(root, path, base) == base,
+                'Runner finite-tool refusal identity or projection changed: ' + path)
+
+
+def project_runner_finite_tool_refusal(root, path, current):
+    """Restore the accepted current-source proof head for older receipts."""
+    if path not in RUNNER_FINITE_TOOL_REFUSAL_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner finite-tool refusal changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_intake_projection_source(root):
     """Bind the immediate cloud-request predecessor projection."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_INTAKE_PROJECTION_BASE + '^{tree}').decode().strip()
@@ -3144,7 +3195,8 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_APPLICATION_INTAKE_BINDING_MODIFIED
                 | RUNNER_AWS_MIRROR_FIXTURE_MODIFIED
                 | RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED
-                | RUNNER_INTAKE_CURRENT_BINDING_MODIFIED),
+                | RUNNER_INTAKE_CURRENT_BINDING_MODIFIED
+                | RUNNER_FINITE_TOOL_REFUSAL_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -3820,7 +3872,8 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        current = project_ux08_payment_fixture_lock_fix(root, path, ordinary(root, path))
+        current = project_runner_finite_tool_refusal(root, path, ordinary(root, path))
+        current = project_ux08_payment_fixture_lock_fix(root, path, current)
         current = project_ux08_billing_network_fix(root, path, current)
         current = project_ux08_payment_native_fix(root, path, current)
         require(current
@@ -3839,6 +3892,7 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_runner_finite_tool_refusal(root, path, current)
     current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
     current = project_ux08_payment_native_fix(root, path, current)
@@ -4378,6 +4432,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    validate_runner_finite_tool_refusal_source(root)
     validate_runner_intake_current_binding_source(root)
     validate_runner_application_intake_projection_source(root)
     validate_runner_aws_mirror_fixture_source(root)
