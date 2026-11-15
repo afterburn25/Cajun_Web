@@ -30,7 +30,7 @@ PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
                                        '    timeout-minutes: 45\n')
 PROTECTED_BUILD_TIMEOUT_SUCCESSOR = ('  build:\n'
                                      '    runs-on: ubuntu-24.04\n'
-                                     '    timeout-minutes: 75\n')
+                                     '    timeout-minutes: 105\n')
 PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
