@@ -544,6 +544,11 @@ NOTIFICATION_HEALTH_ADDITIONS = frozenset((
     'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
     'tests/notification_health_view_contract.php',
 ))
+DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
+DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
+DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
+DOMAIN_EXPIRY_PORT_SOURCE_TREE = '93939967b33abc038afd40f24c742620091acabe'
+DOMAIN_EXPIRY_PORT_PATH = '.github/workflows/domain-expiry.yml'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -3286,6 +3291,7 @@ def validate_runner_mirror_compat_source(root):
 
 def project_runner_mirror_compat(root, path, current):
     """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_domain_expiry_port_source(root, path, current)
     current = project_notification_health_source(root, path, current)
     current = project_runner_application_source_binding(root, path, current)
     current = project_runner_mirror_phase(root, path, current)
@@ -3461,6 +3467,53 @@ def project_notification_health_source(root, path, current):
     return base
 
 
+def validate_domain_expiry_port_source(root):
+    """Bind the finite dynamic service-port correction after its preserved failure."""
+    require(git(root, 'rev-parse', DOMAIN_EXPIRY_PORT_BASE + '^{tree}').decode().strip()
+            == DOMAIN_EXPIRY_PORT_BASE_TREE
+            and git(root, 'rev-parse', DOMAIN_EXPIRY_PORT_SOURCE + '^{tree}').decode().strip()
+            == DOMAIN_EXPIRY_PORT_SOURCE_TREE,
+            'Domain expiry service-port source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DOMAIN_EXPIRY_PORT_SOURCE).decode().strip().split()
+            == [DOMAIN_EXPIRY_PORT_BASE],
+            'Domain expiry service-port source parent changed')
+    git(root, 'merge-base', '--is-ancestor', DOMAIN_EXPIRY_PORT_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                DOMAIN_EXPIRY_PORT_BASE, DOMAIN_EXPIRY_PORT_SOURCE).decode().splitlines()
+            == ['M\t' + DOMAIN_EXPIRY_PORT_PATH],
+            'Domain expiry service-port source changed a different path or status')
+    base_entries = entries(root, DOMAIN_EXPIRY_PORT_BASE)
+    source_entries = entries(root, DOMAIN_EXPIRY_PORT_SOURCE)
+    current = ordinary(root, DOMAIN_EXPIRY_PORT_PATH)
+    source = git(root, 'cat-file', 'blob',
+                 DOMAIN_EXPIRY_PORT_SOURCE + ':' + DOMAIN_EXPIRY_PORT_PATH)
+    base = git(root, 'cat-file', 'blob',
+               DOMAIN_EXPIRY_PORT_BASE + ':' + DOMAIN_EXPIRY_PORT_PATH)
+    require(current == source
+            and mode(root, DOMAIN_EXPIRY_PORT_PATH)
+            == base_entries[DOMAIN_EXPIRY_PORT_PATH][0]
+            == source_entries[DOMAIN_EXPIRY_PORT_PATH][0] == '100644'
+            and project_domain_expiry_port_source(root, DOMAIN_EXPIRY_PORT_PATH, current) == base
+            and project_domain_expiry_port_source(root, DOMAIN_EXPIRY_PORT_PATH, base) == base,
+            'Domain expiry service-port source identity or projection changed')
+
+
+def project_domain_expiry_port_source(root, path, current):
+    """Restore the reviewed exact-head notification proof for older receipts."""
+    if path != DOMAIN_EXPIRY_PORT_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', DOMAIN_EXPIRY_PORT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', DOMAIN_EXPIRY_PORT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current domain expiry service-port source changed before predecessor projection')
+    return base
+
+
 def validate_pr388_resulting_main_source(root):
     """Bind the accepted PR head to its normal, tree-identical main merge."""
     accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
@@ -3518,7 +3571,8 @@ def validate_pr391_recovery_successor(root):
                 | RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED
                 | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS
                 | NOTIFICATION_HEALTH_MODIFIED
-                | NOTIFICATION_HEALTH_ADDITIONS),
+                | NOTIFICATION_HEALTH_ADDITIONS
+                | {DOMAIN_EXPIRY_PORT_PATH}),
             'Current recovery successor contains an unbound path')
 
 
@@ -4776,6 +4830,7 @@ def verify_current(root):
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
     validate_notification_health_source(root)
+    validate_domain_expiry_port_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
