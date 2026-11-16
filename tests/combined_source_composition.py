@@ -525,6 +525,25 @@ RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED = frozenset((
 RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS = frozenset((
     'docs/agent-handoffs/2026-11-15-codex-pr394-inbox-navigation.md',
 ))
+NOTIFICATION_HEALTH_BASE = 'ab35aea5f9e746405dd99075482060b15c3debf9'
+NOTIFICATION_HEALTH_BASE_TREE = '46692f1243c586d795f0713e7b5d0a69c861f398'
+NOTIFICATION_HEALTH_COMPONENT = '5a9dff61acf4abe01fa8fedd2647226e98f5dbc1'
+NOTIFICATION_HEALTH_COMPONENT_TREE = 'd5d2016406a7782f44c43b16ae138fc23c2f5418'
+NOTIFICATION_HEALTH_ROUTER = 'bef7951338b084322764897174648fa3517d18b8'
+NOTIFICATION_HEALTH_ROUTER_TREE = '81e3c9c648e91b391e17817c335f52a666f130ee'
+NOTIFICATION_HEALTH_SOURCE = 'b7c79aa96dc7d9ed81c7982c989eeba5cb76e388'
+NOTIFICATION_HEALTH_SOURCE_TREE = 'b942f63474b73e51f9800798d3a5c54e73190ef1'
+NOTIFICATION_HEALTH_MODIFIED = frozenset((
+    'site/admin/controllers/router.php',
+    'site/admin/views/health.php',
+    'site/install/inventory.generated.php',
+    'tests/notification_center_browser.py',
+    'tests/notification_center_native.php',
+))
+NOTIFICATION_HEALTH_ADDITIONS = frozenset((
+    'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
+    'tests/notification_health_view_contract.php',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -3267,6 +3286,7 @@ def validate_runner_mirror_compat_source(root):
 
 def project_runner_mirror_compat(root, path, current):
     """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_notification_health_source(root, path, current)
     current = project_runner_application_source_binding(root, path, current)
     current = project_runner_mirror_phase(root, path, current)
     if path not in RUNNER_MIRROR_COMPAT_MODIFIED:
@@ -3370,6 +3390,77 @@ def project_ux08_hosted_mirror_contract_fix(root, path, current):
     return base
 
 
+def validate_notification_health_source(root):
+    """Bind the read-only notification health component and lead-owned route."""
+    identities = (
+        (NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_BASE_TREE),
+        (NOTIFICATION_HEALTH_COMPONENT, NOTIFICATION_HEALTH_COMPONENT_TREE),
+        (NOTIFICATION_HEALTH_ROUTER, NOTIFICATION_HEALTH_ROUTER_TREE),
+        (NOTIFICATION_HEALTH_SOURCE, NOTIFICATION_HEALTH_SOURCE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Notification health source tree changed: ' + commit)
+    require(git(root, 'show', '-s', '--format=%P',
+                NOTIFICATION_HEALTH_COMPONENT).decode().strip().split()
+            == [NOTIFICATION_HEALTH_BASE]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_HEALTH_ROUTER).decode().strip().split()
+            == [NOTIFICATION_HEALTH_COMPONENT]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_HEALTH_SOURCE).decode().strip().split()
+            == [NOTIFICATION_HEALTH_ROUTER],
+            'Notification health source ancestry changed')
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_HEALTH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_SOURCE).decode().splitlines()
+    require(changes == [
+        'A\t' + 'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
+        'M\t' + 'site/admin/controllers/router.php',
+        'M\t' + 'site/admin/views/health.php',
+        'M\t' + 'site/install/inventory.generated.php',
+        'M\t' + 'tests/notification_center_browser.py',
+        'M\t' + 'tests/notification_center_native.php',
+        'A\t' + 'tests/notification_health_view_contract.php',
+    ], 'Notification health source changed a different path or status set')
+    base_entries = entries(root, NOTIFICATION_HEALTH_BASE)
+    source_entries = entries(root, NOTIFICATION_HEALTH_SOURCE)
+    for path in sorted(NOTIFICATION_HEALTH_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_notification_health_source(root, path, current) == base
+                and project_notification_health_source(root, path, base) == base,
+                'Notification health source identity or projection changed: ' + path)
+    require(not NOTIFICATION_HEALTH_ADDITIONS & set(base_entries)
+            and NOTIFICATION_HEALTH_ADDITIONS <= set(source_entries),
+            'Notification health additions did not originate in the source range')
+    for path in sorted(NOTIFICATION_HEALTH_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Notification health addition identity changed: ' + path)
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Notification health installer inventory is not canonical')
+
+
+def project_notification_health_source(root, path, current):
+    """Restore verified resulting-main bytes for predecessor source proofs."""
+    if path not in NOTIFICATION_HEALTH_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current notification health source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_pr388_resulting_main_source(root):
     """Bind the accepted PR head to its normal, tree-identical main merge."""
     accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
@@ -3425,7 +3516,9 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED
                 | {RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH}
                 | RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED
-                | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS),
+                | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS
+                | NOTIFICATION_HEALTH_MODIFIED
+                | NOTIFICATION_HEALTH_ADDITIONS),
             'Current recovery successor contains an unbound path')
 
 
@@ -3711,7 +3804,7 @@ def validate_ux08_inbox_payment_readiness_fix_source(root):
     base_entries = entries(root, UX08_INBOX_PAYMENT_READINESS_FIX_BASE)
     source_entries = entries(root, UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE)
     for path in sorted(UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_notification_health_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_BASE + ':' + path)
         require(current == source
@@ -3723,6 +3816,7 @@ def validate_ux08_inbox_payment_readiness_fix_source(root):
 
 def project_ux08_inbox_payment_readiness_fix(root, path, current):
     """Restore the exact pre-readiness-fix head for older source receipts."""
+    current = project_notification_health_source(root, path, current)
     if path not in UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + ':' + path)
@@ -4101,7 +4195,8 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        current = project_runner_finite_tool_refusal(root, path, ordinary(root, path))
+        current = project_notification_health_source(root, path, ordinary(root, path))
+        current = project_runner_finite_tool_refusal(root, path, current)
         current = project_ux08_payment_fixture_lock_fix(root, path, current)
         current = project_ux08_billing_network_fix(root, path, current)
         current = project_ux08_payment_native_fix(root, path, current)
@@ -4121,6 +4216,7 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_notification_health_source(root, path, current)
     current = project_runner_finite_tool_refusal(root, path, current)
     current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
@@ -4679,6 +4775,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_notification_health_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
@@ -4920,7 +5017,7 @@ def verify_current(root):
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
-               | RUNNER_MIRROR_PHASE_ADDITIONS
+               | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
