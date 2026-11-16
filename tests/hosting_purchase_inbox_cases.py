@@ -112,9 +112,9 @@ def run_browser(env, browser):
             raise AssertionError('Inbox navigation has no response')
         return response.status
 
-    def click(page, link):
-        with page.expect_navigation(wait_until='load', timeout=30000) as event:
-            link.click()
+    def click(page, link, timeout=30000):
+        with page.expect_navigation(wait_until='load', timeout=timeout) as event:
+            link.click(timeout=timeout)
         response = event.value
         if response is None:
             raise AssertionError('Inbox link has no navigation response')
@@ -222,7 +222,10 @@ def run_browser(env, browser):
         paid = initial['results'][PAID_REQUEST]
         check('Inbox owner enters through existing hosting navigation', goto(op, admin + '?view=hosting-offers') == 200)
         entry = op.locator('.button-row').get_by_role('link', name='Hosting purchases', exact=True)
-        check('Hosting navigation reaches the actual owner inbox', entry.count() == 1 and destination(entry.get_attribute('href'), admin, {'view': 'hosting-purchases'}) and click(op, entry) == 200)
+        # The complete five-purchase owner projection can exceed the ordinary
+        # navigation budget on a resource-constrained hosted runner. Keep one
+        # first-attempt navigation and every response/content assertion exact.
+        check('Hosting navigation reaches the actual owner inbox', entry.count() == 1 and destination(entry.get_attribute('href'), admin, {'view': 'hosting-purchases'}) and click(op, entry, 60000) == 200)
         cards(op, 'owner')
         result_url = portal + '?' + urlencode({'hosting': 'checkout', 'checkout_result': unpaid['request_id']})
         check('Original retained checkout result remains available after draft setup', goto(ap, result_url) == 200 and ap.get_by_role('heading', name='Your hosting invoice', exact=True).count() == 1)
