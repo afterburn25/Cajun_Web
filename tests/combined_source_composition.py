@@ -1259,6 +1259,8 @@ REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '2c348e84a881
 _PROJECTIONS = {}
 _HISTORICAL_RESULTS = {}
 _TREE_ENTRIES = {}
+_IMMUTABLE_GIT_RESULTS = {}
+_PINNED_HEADS = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -1276,11 +1278,61 @@ def present(root):
     return path.exists() or path.is_symlink()
 
 
+def immutable_git_query(args):
+    """Cache only queries whose answers are fixed by complete object IDs.
+
+    The composition regression deliberately changes real worktree files between
+    hundreds of negative checks.  Those files must always be read again.  Git
+    commit, tree and blob objects named by complete IDs are content-addressed,
+    however, so starting a new Git process for the same immutable answer cannot
+    add coverage and makes hosted acceptance depend on runner process speed.
+    """
+    oid = r'[0-9a-f]{40}'
+    if len(args) == 3 and args[:2] == ('cat-file', 'blob'):
+        return re.fullmatch(oid + r':[^\x00]+', args[2]) is not None
+    if len(args) == 2 and args[0] == 'rev-parse':
+        return re.fullmatch(oid + r'(?:\^|\^\{tree\})?', args[1]) is not None
+    if (len(args) == 4 and args[:3] == ('show', '-s', '--format=%P')
+            and re.fullmatch(oid, args[3])):
+        return True
+    if (len(args) == 4 and args[:2] == ('merge-base', '--is-ancestor')
+            and all(re.fullmatch(oid, value) for value in args[2:])):
+        return True
+    if args and args[0] in {'diff', 'diff-tree'}:
+        boundary = args.index('--') if '--' in args else len(args)
+        revisions = [value for value in args[1:boundary] if not value.startswith('-')]
+        return len(revisions) == 2 and all(re.fullmatch(oid, value) for value in revisions)
+    return False
+
+
 def git(root, *args):
+    root_key = str(Path(root).resolve())
+    pinned = _PINNED_HEADS.get(root_key)
+    cache_args = tuple(
+        pinned + value[4:] if pinned and value in {'HEAD', 'HEAD^{tree}'} else value
+        for value in args
+    )
+    cache_key = (root_key, cache_args)
+    if immutable_git_query(cache_args) and cache_key in _IMMUTABLE_GIT_RESULTS:
+        return _IMMUTABLE_GIT_RESULTS[cache_key]
     result = subprocess.run(['git', *args], cwd=root, capture_output=True)
     require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
             + result.stderr.decode(errors='replace')[-1500:])
+    if immutable_git_query(cache_args):
+        _IMMUTABLE_GIT_RESULTS[cache_key] = result.stdout
     return result.stdout
+
+
+def pin_head(root):
+    """Bind HEAD once per verification root and refuse any later movement."""
+    root_key = str(Path(root).resolve())
+    result = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=root, capture_output=True)
+    require(result.returncode == 0, 'Composition cannot resolve current HEAD')
+    head = result.stdout.decode().strip()
+    require(re.fullmatch(r'[0-9a-f]{40}', head) is not None, 'Invalid current HEAD identity')
+    require(root_key not in _PINNED_HEADS or _PINNED_HEADS[root_key] == head,
+            'Composition HEAD changed during verification')
+    _PINNED_HEADS[root_key] = head
 
 
 def ordinary(root, path):
@@ -4811,6 +4863,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    pin_head(root)
     validate_runner_application_build_budget(root)
     validate_runner_account_source_budget(root)
     validate_runner_finite_tool_refusal_source(root)
