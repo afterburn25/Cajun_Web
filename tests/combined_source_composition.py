@@ -575,6 +575,15 @@ PROOF_CACHE_HARDENING_MODIFIED = frozenset((
 PROOF_CACHE_HARDENING_PROJECTED = frozenset((
     'tests/combined_source_composition_test.py',
 ))
+NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
+NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
+NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
+NOTIFICATION_METRIC_LABEL_SOURCE_TREE = '4304f5f975a17617f10c8611dff33ae96e0a68e1'
+NOTIFICATION_METRIC_LABEL_MODIFIED = frozenset((
+    'site/app/notifications/metrics.php',
+    'site/install/inventory.generated.php',
+    'tests/notification_health_view_contract.php',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -3524,7 +3533,7 @@ def validate_notification_health_source(root):
     base_entries = entries(root, NOTIFICATION_HEALTH_BASE)
     source_entries = entries(root, NOTIFICATION_HEALTH_SOURCE)
     for path in sorted(NOTIFICATION_HEALTH_MODIFIED):
-        current = ordinary(root, path)
+        current = project_notification_metric_label_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
         require(current == source
@@ -3536,7 +3545,7 @@ def validate_notification_health_source(root):
             and NOTIFICATION_HEALTH_ADDITIONS <= set(source_entries),
             'Notification health additions did not originate in the source range')
     for path in sorted(NOTIFICATION_HEALTH_ADDITIONS):
-        require(ordinary(root, path)
+        require(project_notification_metric_label_source(root, path, ordinary(root, path))
                 == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
                 and mode(root, path) == source_entries[path][0] == '100644',
                 'Notification health addition identity changed: ' + path)
@@ -3546,6 +3555,7 @@ def validate_notification_health_source(root):
 
 def project_notification_health_source(root, path, current):
     """Restore verified resulting-main bytes for predecessor source proofs."""
+    current = project_notification_metric_label_source(root, path, current)
     if path not in NOTIFICATION_HEALTH_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
@@ -3716,6 +3726,62 @@ def project_proof_cache_hardening_source(root, path, current):
     return base
 
 
+def validate_notification_metric_label_source(root):
+    """Bind the review correction that labels retained delivery rows truthfully."""
+    require(git(root, 'rev-parse', NOTIFICATION_METRIC_LABEL_BASE + '^{tree}').decode().strip()
+            == NOTIFICATION_METRIC_LABEL_BASE_TREE
+            and git(root, 'rev-parse',
+                    NOTIFICATION_METRIC_LABEL_SOURCE + '^{tree}').decode().strip()
+            == NOTIFICATION_METRIC_LABEL_SOURCE_TREE,
+            'Notification metric label source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                NOTIFICATION_METRIC_LABEL_SOURCE).decode().strip().split()
+            == [NOTIFICATION_METRIC_LABEL_BASE],
+            'Notification metric label source parent changed')
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_METRIC_LABEL_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  NOTIFICATION_METRIC_LABEL_BASE,
+                  NOTIFICATION_METRIC_LABEL_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(NOTIFICATION_METRIC_LABEL_MODIFIED)],
+            'Notification metric label source changed a different path or status set')
+    base_entries = entries(root, NOTIFICATION_METRIC_LABEL_BASE)
+    source_entries = entries(root, NOTIFICATION_METRIC_LABEL_SOURCE)
+    for path in sorted(NOTIFICATION_METRIC_LABEL_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_notification_metric_label_source(root, path, current) == base
+                and project_notification_metric_label_source(root, path, base) == base,
+                'Notification metric label source identity or projection changed: ' + path)
+    source_metrics = git(root, 'cat-file', 'blob',
+                         NOTIFICATION_METRIC_LABEL_SOURCE + ':site/app/notifications/metrics.php')
+    source_contract = git(root, 'cat-file', 'blob',
+                          NOTIFICATION_METRIC_LABEL_SOURCE + ':tests/notification_health_view_contract.php')
+    require(b"$delivery['n'].' delivery records'" in source_metrics
+            and b'recorded attempts' not in source_metrics
+            and b'truthfully labeled as records, never dispatch attempts' in source_contract,
+            'Notification metric label correction or regression assertion changed')
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Notification metric label installer inventory is not canonical')
+
+
+def project_notification_metric_label_source(root, path, current):
+    """Restore the exact reviewed proof-cache head for older source receipts."""
+    if path not in NOTIFICATION_METRIC_LABEL_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current notification metric label changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_pr388_resulting_main_source(root):
     """Bind the accepted PR head to its normal, tree-identical main merge."""
     accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
@@ -3776,7 +3842,8 @@ def validate_pr391_recovery_successor(root):
                 | NOTIFICATION_HEALTH_ADDITIONS
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
-                | PROOF_CACHE_HARDENING_MODIFIED),
+                | PROOF_CACHE_HARDENING_MODIFIED
+                | NOTIFICATION_METRIC_LABEL_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -5038,6 +5105,7 @@ def verify_current(root):
     validate_domain_expiry_port_source(root)
     validate_proof_runtime_source(root)
     validate_proof_cache_hardening_source(root)
+    validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
@@ -5378,6 +5446,7 @@ def verify_current(root):
         {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
+        {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},
