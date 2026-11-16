@@ -1178,7 +1178,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'e0a1c424dc6e5cd2508dde922c1c3a6ff5600ea3cc773c3be9c22990037ffb66'
+REGRESSION_SHA256 = '2f7dd598adde3e04054b46b4b62c6bb90e79014a332d103ca6c0ecabb496b3d6'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -1322,17 +1322,23 @@ def immutable_git_query(args):
 def git(root, *args):
     root_key = str(Path(root).resolve())
     pinned = _PINNED_HEADS.get(root_key)
+    pin_revisions = bool(args and args[0] in {'merge-base', 'diff', 'diff-tree'})
     cache_args = tuple(
-        pinned + value[4:] if pinned and value in {'HEAD', 'HEAD^{tree}'} else value
+        pinned + value[4:] if pin_revisions and pinned and value in {'HEAD', 'HEAD^{tree}'} else value
         for value in args
     )
     cache_key = (root_key, cache_args)
-    if immutable_git_query(cache_args) and cache_key in _IMMUTABLE_GIT_RESULTS:
+    immutable = immutable_git_query(cache_args)
+    if immutable and cache_key in _IMMUTABLE_GIT_RESULTS:
         return _IMMUTABLE_GIT_RESULTS[cache_key]
-    result = subprocess.run(['git', *args], cwd=root, capture_output=True)
+    # Execute the same full-object-ID command used as the cache key. A mutable
+    # HEAD spelling must never be evaluated and stored under its earlier pin.
+    result = subprocess.run(
+        ['git', '--no-replace-objects', *(cache_args if immutable else args)],
+        cwd=root, capture_output=True)
     require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
             + result.stderr.decode(errors='replace')[-1500:])
-    if immutable_git_query(cache_args):
+    if immutable:
         _IMMUTABLE_GIT_RESULTS[cache_key] = result.stdout
     return result.stdout
 
@@ -1340,7 +1346,13 @@ def git(root, *args):
 def pin_head(root):
     """Bind HEAD once per verification root and refuse any later movement."""
     root_key = str(Path(root).resolve())
-    result = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=root, capture_output=True)
+    replacements = subprocess.run(
+        ['git', '--no-replace-objects', 'for-each-ref', '--format=%(refname)', 'refs/replace'],
+        cwd=root, capture_output=True)
+    require(replacements.returncode == 0 and not replacements.stdout.strip(),
+            'Git replacement refs are forbidden during composition verification')
+    result = subprocess.run(
+        ['git', '--no-replace-objects', 'rev-parse', 'HEAD'], cwd=root, capture_output=True)
     require(result.returncode == 0, 'Composition cannot resolve current HEAD')
     head = result.stdout.decode().strip()
     require(re.fullmatch(r'[0-9a-f]{40}', head) is not None, 'Invalid current HEAD identity')
@@ -5275,6 +5287,7 @@ def verify_current(root):
                 'Original adapter assertions are not the exact component bytes: ' + path)
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
+    pin_head(root)
     return [
         {'name': 'Exact common ancestor and all four component commit/tree/ancestry identities', 'passed': True},
         {'name': 'Current or exactly reconstructed bytes and executable modes match the component union for ' + str(len(expected)) + ' retained files', 'passed': True},

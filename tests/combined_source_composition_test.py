@@ -52,6 +52,40 @@ def run(root=ROOT):
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
 
+        fixture_head = proof.git(fixture, 'rev-parse', 'HEAD').decode().strip()
+        fixture_parent = proof.git(fixture, 'rev-parse', fixture_head + '^').decode().strip()
+        root_key = str(fixture.resolve())
+        cache_key = (root_key, ('merge-base', '--is-ancestor', fixture_head, fixture_head))
+        proof._IMMUTABLE_GIT_RESULTS.pop(cache_key, None)
+        subprocess.run(['git', 'checkout', '--quiet', '--detach', fixture_parent],
+                       cwd=fixture, check=True)
+        try:
+            proof.git(fixture, 'merge-base', '--is-ancestor', fixture_head, 'HEAD')
+            passed('Pinned HEAD query executes the pinned object ID after the live ref moves')
+        finally:
+            subprocess.run(['git', 'checkout', '--quiet', '--detach', fixture_head],
+                           cwd=fixture, check=True)
+        proof.pin_head(fixture)
+
+        version_spec = fixture_head + ':VERSION'
+        version_blob = proof.git(fixture, 'rev-parse', version_spec).decode().strip()
+        version_bytes = proof.git(fixture, 'cat-file', 'blob', version_spec)
+        replacement = subprocess.run(
+            ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+            input=b'9.99.99\n', capture_output=True, check=True).stdout.decode().strip()
+        subprocess.run(['git', 'replace', version_blob, replacement], cwd=fixture, check=True)
+        try:
+            proof._IMMUTABLE_GIT_RESULTS.pop(
+                (root_key, ('cat-file', 'blob', version_spec)), None)
+            assert proof.git(fixture, 'cat-file', 'blob', version_spec) == version_bytes
+            passed('Immutable object queries ignore Git replacement refs')
+            refuses('Refuses Git replacement refs during composition verification',
+                    lambda: proof.pin_head(fixture))
+        finally:
+            subprocess.run(['git', 'replace', '-d', version_blob], cwd=fixture,
+                           check=True, capture_output=True)
+        proof.pin_head(fixture)
+
         def modified(path, operation):
             target = fixture / path
             original = target.read_bytes()
