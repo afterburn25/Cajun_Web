@@ -549,6 +549,20 @@ DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
 DOMAIN_EXPIRY_PORT_SOURCE_TREE = '93939967b33abc038afd40f24c742620091acabe'
 DOMAIN_EXPIRY_PORT_PATH = '.github/workflows/domain-expiry.yml'
+PROOF_RUNTIME_BASE = '0e02bace532d78e0134bf3a2f48ccd9b41c0e4bd'
+PROOF_RUNTIME_BASE_TREE = 'a6eba1f09ed5ae0c7cfda0a0fc2b7bfe5307b8ab'
+PROOF_RUNTIME_SOURCE = '6742496041db3cd51091cdcf3cad5864219d38f7'
+PROOF_RUNTIME_SOURCE_TREE = '6ba87b125afc22c65402a71e929ac6d21331005e'
+PROOF_RUNTIME_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/account_notification_workflow_contract.py',
+    'tests/combined_source_composition.py',
+))
+PROOF_RUNTIME_PROJECTED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2696,7 +2710,7 @@ def validate_runner_application_build_budget(root):
     base_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_SOURCE)
     for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_proof_runtime_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
         require(current == source
@@ -2708,6 +2722,7 @@ def validate_runner_application_build_budget(root):
 
 def project_runner_application_build_budget(root, path, current):
     """Restore the failed hosted head only for the exact Application budget paths."""
+    current = project_proof_runtime_source(root, path, current)
     if path not in RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
@@ -3566,6 +3581,63 @@ def project_domain_expiry_port_source(root, path, current):
     return base
 
 
+def validate_proof_runtime_source(root):
+    """Bind the finite proof-runtime correction to its preserved timeout."""
+    require(git(root, 'rev-parse', PROOF_RUNTIME_BASE + '^{tree}').decode().strip()
+            == PROOF_RUNTIME_BASE_TREE
+            and git(root, 'rev-parse', PROOF_RUNTIME_SOURCE + '^{tree}').decode().strip()
+            == PROOF_RUNTIME_SOURCE_TREE,
+            'Proof-runtime source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROOF_RUNTIME_SOURCE).decode().strip().split() == [PROOF_RUNTIME_BASE],
+            'Proof-runtime source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROOF_RUNTIME_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROOF_RUNTIME_BASE, PROOF_RUNTIME_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(PROOF_RUNTIME_MODIFIED)],
+            'Proof-runtime source changed a different path or status set')
+    base_entries = entries(root, PROOF_RUNTIME_BASE)
+    source_entries = entries(root, PROOF_RUNTIME_SOURCE)
+    for path in sorted(PROOF_RUNTIME_PROJECTED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROOF_RUNTIME_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_proof_runtime_source(root, path, current) == base
+                and project_proof_runtime_source(root, path, base) == base,
+                'Proof-runtime source identity or projection changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + VERIFIER)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    PROOF_RUNTIME_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and b'_IMMUTABLE_GIT_RESULTS = {}' in source_verifier
+            and b'_PINNED_HEADS = {}' in source_verifier
+            and b'def immutable_git_query(args):' in source_verifier
+            and b'def pin_head(root):' in source_verifier,
+            'Proof-runtime implementation or source receipt changed')
+    source_workflow = git(root, 'cat-file', 'blob',
+                          PROOF_RUNTIME_SOURCE + ':.github/workflows/application-tests.yml')
+    require(source_workflow.count(b'    timeout-minutes: 180\n') == 1
+            and source_workflow.count(b'    timeout-minutes: 105\n') == 1,
+            'Proof-runtime source changed unrelated Application timeout budgets')
+
+
+def project_proof_runtime_source(root, path, current):
+    """Restore the exact pre-timeout notification successor for older proofs."""
+    if path not in PROOF_RUNTIME_PROJECTED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROOF_RUNTIME_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current proof-runtime source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_pr388_resulting_main_source(root):
     """Bind the accepted PR head to its normal, tree-identical main merge."""
     accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
@@ -3624,7 +3696,8 @@ def validate_pr391_recovery_successor(root):
                 | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS
                 | NOTIFICATION_HEALTH_MODIFIED
                 | NOTIFICATION_HEALTH_ADDITIONS
-                | {DOMAIN_EXPIRY_PORT_PATH}),
+                | {DOMAIN_EXPIRY_PORT_PATH}
+                | PROOF_RUNTIME_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -4884,6 +4957,7 @@ def verify_current(root):
     validate_pr388_resulting_main_source(root)
     validate_notification_health_source(root)
     validate_domain_expiry_port_source(root)
+    validate_proof_runtime_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
