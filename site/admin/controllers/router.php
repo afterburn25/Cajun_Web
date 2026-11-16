@@ -37,6 +37,10 @@ if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts
 if(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&(str_starts_with($_POST['action'],'hosting_catalog_')||str_starts_with($_POST['action'],'hosting_payment_')))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['proposals','proposal'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'proposal_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
+if($view==='health'){
+    $healthActor=admin_user();
+    if(!$healthActor||!admin_session_matches($healthActor))fail_page('Access unavailable.',403);
+}
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);
 require CWP_CODE_ROOT.'/admin/views/auth.php';
