@@ -33,6 +33,7 @@ $checks = [
     'Health view escapes labels and metric identifiers' => str_contains($view, "esc(\$m['label'])") && str_contains($view, "esc(\$m['sample']->kind)"),
     'Health view renders recorded timestamps explicitly as UTC' => str_contains($view, "gmdate('Y-m-d H:i',\$m['sample']->checkedAt).' UTC'"),
     'Metrics use stored row times rather than render time' => str_contains($metrics, 'metric_epoch($audit[\'last\']??null)') && !str_contains($metrics, 'new MetricSample(\'audit.activity\',$audit&&$audit[\'n\']?$audit[\'n\'].\' recorded actions\':null,time())'),
+    'Notification delivery count is truthfully labeled as records, never dispatch attempts' => str_contains($metrics, "\$delivery['n'].' delivery records'") && !str_contains($metrics, 'recorded attempts'),
     'Unprepared delivery and notification features remain honestly absent' => substr_count($metrics, "new MetricSample('delivery.published',null,null)") === 1 && substr_count($metrics, "new MetricSample('notification.deliveries',null,null)") === 1,
     'The view remains read-only and performs no delivery or provider action' => !preg_match('/notification_(?:emit|outbox|mark|migrate)|provider_[a-z_]+\s*\(/', $view),
 ];

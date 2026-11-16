@@ -276,7 +276,7 @@ function setup_expected_files(): array { return [
     'app/media/images.php'=>'9262a28d87a1d758bd2c40da67fb05e9501df6f5dc9848e476cf571684263f69',
     'app/notifications/events.php'=>'8a55bb62ebe6b8d2a8ad03e60a93610d3b48af2bbab8a64eee8895ed0decbce4',
     'app/notifications/feed.php'=>'1013c10b3452d903a49e772dd326e6ffdf0d0b9306ec5302bfd4813f27b5725c',
-    'app/notifications/metrics.php'=>'a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15',
+    'app/notifications/metrics.php'=>'2864037e2cf0b9a1f13d817479faf0e1e2c8c680f5aa21222b9331e339fd7f9a',
     'app/notifications/outbox.php'=>'403b08766b896206c81bb120e23365e17b50417805756595946002a2db94fd2f',
     'app/plans/documents.php'=>'8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c',
     'app/plans/forms.php'=>'3fb646a0bfe944299b4111d977ca1deb46b630e77ff99423233ece4a08ddcd42',
