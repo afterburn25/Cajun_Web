@@ -563,6 +563,18 @@ PROOF_RUNTIME_PROJECTED = frozenset((
     '.github/workflows/application-tests.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+PROOF_CACHE_HARDENING_BASE = '50c5c814c2f0fbd33f9aeb04d40dc8ceef5b1a16'
+PROOF_CACHE_HARDENING_BASE_TREE = 'e2543ebacbf0d009f74624f813eb2fa7141f22f7'
+PROOF_CACHE_HARDENING_SOURCE = 'eebaa708b09914e3812f33a3e21b6620b6482683'
+PROOF_CACHE_HARDENING_SOURCE_TREE = '345c6065436fb7a39bf167ce8f3103c8c06a0645'
+PROOF_CACHE_HARDENING_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/combined_source_composition.py',
+    'tests/combined_source_composition_test.py',
+))
+PROOF_CACHE_HARDENING_PROJECTED = frozenset((
+    'tests/combined_source_composition_test.py',
+))
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2678,7 +2690,7 @@ def validate_runner_finite_tool_refusal_source(root):
     base_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_BASE)
     source_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_SOURCE)
     for path in sorted(RUNNER_FINITE_TOOL_REFUSAL_MODIFIED):
-        current = ordinary(root, path)
+        current = project_proof_cache_hardening_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_BASE + ':' + path)
         require(current == source
@@ -2690,6 +2702,7 @@ def validate_runner_finite_tool_refusal_source(root):
 
 def project_runner_finite_tool_refusal(root, path, current):
     """Restore the accepted current-source proof head for older receipts."""
+    current = project_proof_cache_hardening_source(root, path, current)
     if path not in RUNNER_FINITE_TOOL_REFUSAL_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
@@ -3650,6 +3663,59 @@ def project_proof_runtime_source(root, path, current):
     return base
 
 
+def validate_proof_cache_hardening_source(root):
+    """Bind the reviewed moving-ref and replacement-ref cache hardening."""
+    require(git(root, 'rev-parse', PROOF_CACHE_HARDENING_BASE + '^{tree}').decode().strip()
+            == PROOF_CACHE_HARDENING_BASE_TREE
+            and git(root, 'rev-parse',
+                    PROOF_CACHE_HARDENING_SOURCE + '^{tree}').decode().strip()
+            == PROOF_CACHE_HARDENING_SOURCE_TREE,
+            'Proof-cache hardening source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROOF_CACHE_HARDENING_SOURCE).decode().strip().split()
+            == [PROOF_CACHE_HARDENING_BASE],
+            'Proof-cache hardening source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROOF_CACHE_HARDENING_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROOF_CACHE_HARDENING_BASE,
+                  PROOF_CACHE_HARDENING_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(PROOF_CACHE_HARDENING_MODIFIED)],
+            'Proof-cache hardening changed a different path or status set')
+    source_entries = entries(root, PROOF_CACHE_HARDENING_SOURCE)
+    require(all(source_entries[path][0] == '100644'
+                for path in PROOF_CACHE_HARDENING_MODIFIED),
+            'Proof-cache hardening changed a protected source mode')
+    source_verifier = git(root, 'cat-file', 'blob',
+                          PROOF_CACHE_HARDENING_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            PROOF_CACHE_HARDENING_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    PROOF_CACHE_HARDENING_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"['git', '--no-replace-objects'" in source_verifier
+            and b'cache_args if immutable else args' in source_verifier
+            and source_verifier.count(b'    pin_head(root)\n') >= 2
+            and b'Pinned HEAD query executes the pinned object ID' in source_regression
+            and b'Refuses Git replacement refs' in source_regression,
+            'Proof-cache hardening implementation or receipt changed')
+
+
+def project_proof_cache_hardening_source(root, path, current):
+    """Restore the pre-hardening regression bytes for its older proof source."""
+    if path not in PROOF_CACHE_HARDENING_PROJECTED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current proof-cache regression changed before predecessor projection')
+    return base
+
+
 def validate_pr388_resulting_main_source(root):
     """Bind the accepted PR head to its normal, tree-identical main merge."""
     accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
@@ -3709,7 +3775,8 @@ def validate_pr391_recovery_successor(root):
                 | NOTIFICATION_HEALTH_MODIFIED
                 | NOTIFICATION_HEALTH_ADDITIONS
                 | {DOMAIN_EXPIRY_PORT_PATH}
-                | PROOF_RUNTIME_MODIFIED),
+                | PROOF_RUNTIME_MODIFIED
+                | PROOF_CACHE_HARDENING_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -4970,6 +5037,7 @@ def verify_current(root):
     validate_notification_health_source(root)
     validate_domain_expiry_port_source(root)
     validate_proof_runtime_source(root)
+    validate_proof_cache_hardening_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
