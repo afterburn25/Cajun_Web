@@ -584,6 +584,11 @@ NOTIFICATION_METRIC_LABEL_MODIFIED = frozenset((
     'site/install/inventory.generated.php',
     'tests/notification_health_view_contract.php',
 ))
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE = '8cc167ca4d7dbd8dc9c69e975493d58f7b8f506e'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE_TREE = '2d42ad37eadf7ad82c241e271537681e487691f5'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE = 'e4cf335f0b52b779afa29bb448ba767ef67f1036'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE_TREE = 'd138bee289528fca65e00a718c2f20755835ffb3'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH = 'tests/hosting_purchase_inbox_cases.py'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -2445,6 +2450,58 @@ def project_ux08_agreement_duplicate_fix(root, path, current):
     return base
 
 
+def validate_resulting_main_client_inbox_budget_source(root):
+    """Bind the one-attempt hosted client-inbox navigation budget correction."""
+    require(git(root, 'rev-parse', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE_TREE
+            and git(root, 'rev-parse',
+                    RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE_TREE,
+            'Resulting-main client inbox budget source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE).decode().strip().split()
+            == [RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE],
+            'Resulting-main client inbox budget source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE,
+                  RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH],
+            'Resulting-main client inbox budget changed a different path or status set')
+    base_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE)
+    source_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE)
+    path = RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_resulting_main_client_inbox_budget(root, path, current) == base
+            and project_resulting_main_client_inbox_budget(root, path, base) == base,
+            'Resulting-main client inbox budget identity or projection changed')
+    require(source.count(b'click(ap, entry, 60000) == 200') == 1
+            and source.count(b'click(op, entry, 60000) == 200') == 1
+            and b'click(ap, entry) == 200' not in source
+            and b"destination(entry.get_attribute('href'), portal, {'hosting_purchases': 1})" in source
+            and b"cards(ap, 'client')" in source,
+            'Resulting-main client inbox correction weakened destination, response or content assertions')
+
+
+def project_resulting_main_client_inbox_budget(root, path, current):
+    """Restore the exact reviewed notification successor for older proofs."""
+    if path != RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current resulting-main client inbox budget changed before predecessor projection')
+    return base
+
+
 def validate_resulting_main_inbox_click_budget_source(root):
     """Bind the complete one-attempt navigation and continuity correction."""
     require(git(root, 'rev-parse', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + '^{tree}').decode().strip()
@@ -2468,7 +2525,7 @@ def validate_resulting_main_inbox_click_budget_source(root):
     source_entries = entries(root, RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE)
     modified = next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED))
     addition = next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS))
-    current = ordinary(root, modified)
+    current = project_resulting_main_client_inbox_budget(root, modified, ordinary(root, modified))
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + modified)
     base = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + ':' + modified)
     require(current == source
@@ -2485,6 +2542,7 @@ def validate_resulting_main_inbox_click_budget_source(root):
 
 def project_resulting_main_inbox_click_budget(root, path, current):
     """Restore the reviewed outer-navigation proof head for older receipts."""
+    current = project_resulting_main_client_inbox_budget(root, path, current)
     if path not in RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + path)
@@ -5121,6 +5179,7 @@ def verify_current(root):
     validate_ux08_payment_publication_pin_fix_source(root)
     validate_ux08_payment_fixture_lock_fix_source(root)
     validate_ux08_billing_network_fix_source(root)
+    validate_resulting_main_client_inbox_budget_source(root)
     validate_resulting_main_inbox_click_budget_source(root)
     validate_resulting_main_inbox_navigation_budget_source(root)
     validate_ux08_inbox_network_fix_source(root)
