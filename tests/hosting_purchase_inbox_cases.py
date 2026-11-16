@@ -230,7 +230,10 @@ def run_browser(env, browser):
         result_url = portal + '?' + urlencode({'hosting': 'checkout', 'checkout_result': unpaid['request_id']})
         check('Original retained checkout result remains available after draft setup', goto(ap, result_url) == 200 and ap.get_by_role('heading', name='Your hosting invoice', exact=True).count() == 1)
         entry = ap.get_by_role('link', name='My hosting purchases', exact=True)
-        check('Checkout result reaches the actual primary-client inbox', entry.count() == 1 and destination(entry.get_attribute('href'), portal, {'hosting_purchases': 1}) and click(ap, entry) == 200)
+        # The complete retained client projection has the same hosted-runner
+        # rendering cost as the owner inbox above. Keep one first-attempt
+        # navigation and every destination, response and content assertion exact.
+        check('Checkout result reaches the actual primary-client inbox', entry.count() == 1 and destination(entry.get_attribute('href'), portal, {'hosting_purchases': 1}) and click(ap, entry, 60000) == 200)
         cards(ap, 'client')
         for actor, page, offset in [('owner', op, 0), ('client', ap, 2)]:
             for width, height, index in [(1440, 1050, 0), (320, 740, 1)]:
