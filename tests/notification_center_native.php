@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOST')!=='127.0.0.1')exit(2);
 define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/includes/layout/notifications.php';
+require_once __DIR__.'/../site/app/notifications/metrics.php';
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='notifyci_';
 $private=__DIR__.'/../test-runtime/notification-native-private';if(!is_dir($private))mkdir($private,0700,true);$GLOBALS['cwp_config']['storage']=realpath($private);
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
@@ -72,6 +73,15 @@ try{
     save_setting('notification_feed_version','');nc_denied('Missing schema marker cannot adopt unknown notification history',fn()=>notification_feed_migrate(),'Unrecognized notification');save_setting('notification_feed_version','1');
     db()->exec('RENAME TABLE notifyci_notification_deliveries TO notifyci_saved_deliveries');$error=null;try{notification_feed_migrate();}catch(RuntimeException $e){$error=$e;}finally{db()->exec('RENAME TABLE notifyci_saved_deliveries TO notifyci_notification_deliveries');}nc_ok('Missing known history is not recreated as empty',$error!==null&&str_contains($error->getMessage(),'Restore the original'));
     nc_ok('Existing project metadata remains unchanged',one('SELECT title,summary,milestones FROM '.table('studio_jobs').' WHERE id=1')===['title'=>'Synthetic existing project','summary'=>'Retain this summary','milestones'=>'Retain milestones']);
+    $metricState=nc_state();$metricRows=[];foreach(metric_samples() as $m)$metricRows[$m['sample']->kind]=$m;$metricNow=time();
+    $latestDelivery=one('SELECT MAX(updated_at) AS last FROM '.table('notification_deliveries'));
+    nc_ok('Operational metrics expose every retained first-party signal',array_keys($metricRows)===['audit.activity','inquiry.latest','delivery.published','notification.deliveries']);
+    nc_ok('Delivery freshness uses the newest persisted row timestamp',$metricRows['notification.deliveries']['sample']->checkedAt===metric_epoch($latestDelivery['last']??null));
+    nc_ok('Recent persisted notification activity reports fresh with its real value',$metricRows['notification.deliveries']['sample']->status($metricNow,$metricRows['notification.deliveries']['max_age'])==='fresh'&&$metricRows['notification.deliveries']['sample']->currentValue($metricNow,$metricRows['notification.deliveries']['max_age'])!==null);
+    $outsideWindow=$metricRows['notification.deliveries']['sample']->checkedAt+$metricRows['notification.deliveries']['max_age']+1;
+    nc_ok('Expired notification activity is stale and withholds its old value',$metricRows['notification.deliveries']['sample']->status($outsideWindow,$metricRows['notification.deliveries']['max_age'])==='stale'&&$metricRows['notification.deliveries']['sample']->currentValue($outsideWindow,$metricRows['notification.deliveries']['max_age'])===null);
+    nc_ok('Unprepared delivery feature reports absent without an invented value',$metricRows['delivery.published']['sample']->status($metricNow,$metricRows['delivery.published']['max_age'])==='absent'&&$metricRows['delivery.published']['sample']->currentValue($metricNow,$metricRows['delivery.published']['max_age'])===null);
+    nc_ok('Reading operational metrics never mutates notification or account records',nc_state()===$metricState&&!db()->inTransaction());
     nc_settings_freshness_cases();
     $complete=true;
 }catch(Throwable $e){$checks[]=['name'=>get_class($e).': '.$e->getMessage().' at '.basename($e->getFile()).':'.$e->getLine(),'passed'=>false];}
