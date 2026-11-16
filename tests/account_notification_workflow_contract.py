@@ -30,7 +30,10 @@ PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
                                        '    timeout-minutes: 45\n')
 PROTECTED_BUILD_TIMEOUT_SUCCESSOR = ('  build:\n'
                                      '    runs-on: ubuntu-24.04\n'
-                                     '    timeout-minutes: 105\n')
+                                     '    # Exact-source composition completed in 51m on image 20261111.127.1 but\n'
+                                     '    # exceeded 83m on 20261111.370.1 after the package and all build guards\n'
+                                     '    # had passed. Keep every assertion and allow bounded hosted-runner margin.\n'
+                                     '    timeout-minutes: 180\n')
 PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
     '          "$PHP_BINARY" tests/client_identity_native.php\n',

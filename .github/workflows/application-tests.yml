@@ -35,7 +35,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 105
+    # Exact-source composition completed in 51m on image 20261111.127.1 but
+    # exceeded 83m on 20261111.370.1 after the package and all build guards
+    # had passed. Keep every assertion and allow bounded hosted-runner margin.
+    timeout-minutes: 180
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}

@@ -525,6 +525,70 @@ RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED = frozenset((
 RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS = frozenset((
     'docs/agent-handoffs/2026-11-15-codex-pr394-inbox-navigation.md',
 ))
+NOTIFICATION_HEALTH_BASE = 'ab35aea5f9e746405dd99075482060b15c3debf9'
+NOTIFICATION_HEALTH_BASE_TREE = '46692f1243c586d795f0713e7b5d0a69c861f398'
+NOTIFICATION_HEALTH_COMPONENT = '5a9dff61acf4abe01fa8fedd2647226e98f5dbc1'
+NOTIFICATION_HEALTH_COMPONENT_TREE = 'd5d2016406a7782f44c43b16ae138fc23c2f5418'
+NOTIFICATION_HEALTH_ROUTER = 'bef7951338b084322764897174648fa3517d18b8'
+NOTIFICATION_HEALTH_ROUTER_TREE = '81e3c9c648e91b391e17817c335f52a666f130ee'
+NOTIFICATION_HEALTH_SOURCE = 'b7c79aa96dc7d9ed81c7982c989eeba5cb76e388'
+NOTIFICATION_HEALTH_SOURCE_TREE = 'b942f63474b73e51f9800798d3a5c54e73190ef1'
+NOTIFICATION_HEALTH_MODIFIED = frozenset((
+    'site/admin/controllers/router.php',
+    'site/admin/views/health.php',
+    'site/install/inventory.generated.php',
+    'tests/notification_center_browser.py',
+    'tests/notification_center_native.php',
+))
+NOTIFICATION_HEALTH_ADDITIONS = frozenset((
+    'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
+    'tests/notification_health_view_contract.php',
+))
+DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
+DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
+DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
+DOMAIN_EXPIRY_PORT_SOURCE_TREE = '93939967b33abc038afd40f24c742620091acabe'
+DOMAIN_EXPIRY_PORT_PATH = '.github/workflows/domain-expiry.yml'
+PROOF_RUNTIME_BASE = '0e02bace532d78e0134bf3a2f48ccd9b41c0e4bd'
+PROOF_RUNTIME_BASE_TREE = 'a6eba1f09ed5ae0c7cfda0a0fc2b7bfe5307b8ab'
+PROOF_RUNTIME_SOURCE = '6742496041db3cd51091cdcf3cad5864219d38f7'
+PROOF_RUNTIME_SOURCE_TREE = '6ba87b125afc22c65402a71e929ac6d21331005e'
+PROOF_RUNTIME_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/account_notification_workflow_contract.py',
+    'tests/combined_source_composition.py',
+))
+PROOF_RUNTIME_PROJECTED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
+PROOF_CACHE_HARDENING_BASE = '50c5c814c2f0fbd33f9aeb04d40dc8ceef5b1a16'
+PROOF_CACHE_HARDENING_BASE_TREE = 'e2543ebacbf0d009f74624f813eb2fa7141f22f7'
+PROOF_CACHE_HARDENING_SOURCE = 'eebaa708b09914e3812f33a3e21b6620b6482683'
+PROOF_CACHE_HARDENING_SOURCE_TREE = '345c6065436fb7a39bf167ce8f3103c8c06a0645'
+PROOF_CACHE_HARDENING_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/combined_source_composition.py',
+    'tests/combined_source_composition_test.py',
+))
+PROOF_CACHE_HARDENING_PROJECTED = frozenset((
+    'tests/combined_source_composition_test.py',
+))
+NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
+NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
+NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
+NOTIFICATION_METRIC_LABEL_SOURCE_TREE = '4304f5f975a17617f10c8611dff33ae96e0a68e1'
+NOTIFICATION_METRIC_LABEL_MODIFIED = frozenset((
+    'site/app/notifications/metrics.php',
+    'site/install/inventory.generated.php',
+    'tests/notification_health_view_contract.php',
+))
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE = '8cc167ca4d7dbd8dc9c69e975493d58f7b8f506e'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE_TREE = '2d42ad37eadf7ad82c241e271537681e487691f5'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE = 'e4cf335f0b52b779afa29bb448ba767ef67f1036'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE_TREE = 'd138bee289528fca65e00a718c2f20755835ffb3'
+RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH = 'tests/hosting_purchase_inbox_cases.py'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE = '6aefdbb2d1dc5ce372814886e850aa7b9b8519c0'
 UX08_INBOX_PAYMENT_READINESS_FIX_BASE_TREE = '10633b60ac909015a3ca0df3d2d7bde77af62337'
 UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE = 'f6e8f9fce4369c51b80410be9bc69c6b0b82df8f'
@@ -1140,7 +1204,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'e0a1c424dc6e5cd2508dde922c1c3a6ff5600ea3cc773c3be9c22990037ffb66'
+REGRESSION_SHA256 = '2f7dd598adde3e04054b46b4b62c6bb90e79014a332d103ca6c0ecabb496b3d6'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -1235,6 +1299,8 @@ REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '2c348e84a881
 _PROJECTIONS = {}
 _HISTORICAL_RESULTS = {}
 _TREE_ENTRIES = {}
+_IMMUTABLE_GIT_RESULTS = {}
+_PINNED_HEADS = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -1252,11 +1318,73 @@ def present(root):
     return path.exists() or path.is_symlink()
 
 
+def immutable_git_query(args):
+    """Cache only queries whose answers are fixed by complete object IDs.
+
+    The composition regression deliberately changes real worktree files between
+    hundreds of negative checks.  Those files must always be read again.  Git
+    commit, tree and blob objects named by complete IDs are content-addressed,
+    however, so starting a new Git process for the same immutable answer cannot
+    add coverage and makes hosted acceptance depend on runner process speed.
+    """
+    oid = r'[0-9a-f]{40}'
+    if len(args) == 3 and args[:2] == ('cat-file', 'blob'):
+        return re.fullmatch(oid + r':[^\x00]+', args[2]) is not None
+    if len(args) == 2 and args[0] == 'rev-parse':
+        return re.fullmatch(oid + r'(?:\^|\^\{tree\})?', args[1]) is not None
+    if (len(args) == 4 and args[:3] == ('show', '-s', '--format=%P')
+            and re.fullmatch(oid, args[3])):
+        return True
+    if (len(args) == 4 and args[:2] == ('merge-base', '--is-ancestor')
+            and all(re.fullmatch(oid, value) for value in args[2:])):
+        return True
+    if args and args[0] in {'diff', 'diff-tree'}:
+        boundary = args.index('--') if '--' in args else len(args)
+        revisions = [value for value in args[1:boundary] if not value.startswith('-')]
+        return len(revisions) == 2 and all(re.fullmatch(oid, value) for value in revisions)
+    return False
+
+
 def git(root, *args):
-    result = subprocess.run(['git', *args], cwd=root, capture_output=True)
+    root_key = str(Path(root).resolve())
+    pinned = _PINNED_HEADS.get(root_key)
+    pin_revisions = bool(args and args[0] in {'merge-base', 'diff', 'diff-tree'})
+    cache_args = tuple(
+        pinned + value[4:] if pin_revisions and pinned and value in {'HEAD', 'HEAD^{tree}'} else value
+        for value in args
+    )
+    cache_key = (root_key, cache_args)
+    immutable = immutable_git_query(cache_args)
+    if immutable and cache_key in _IMMUTABLE_GIT_RESULTS:
+        return _IMMUTABLE_GIT_RESULTS[cache_key]
+    # Execute the same full-object-ID command used as the cache key. A mutable
+    # HEAD spelling must never be evaluated and stored under its earlier pin.
+    result = subprocess.run(
+        ['git', '--no-replace-objects', *(cache_args if immutable else args)],
+        cwd=root, capture_output=True)
     require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
             + result.stderr.decode(errors='replace')[-1500:])
+    if immutable:
+        _IMMUTABLE_GIT_RESULTS[cache_key] = result.stdout
     return result.stdout
+
+
+def pin_head(root):
+    """Bind HEAD once per verification root and refuse any later movement."""
+    root_key = str(Path(root).resolve())
+    replacements = subprocess.run(
+        ['git', '--no-replace-objects', 'for-each-ref', '--format=%(refname)', 'refs/replace'],
+        cwd=root, capture_output=True)
+    require(replacements.returncode == 0 and not replacements.stdout.strip(),
+            'Git replacement refs are forbidden during composition verification')
+    result = subprocess.run(
+        ['git', '--no-replace-objects', 'rev-parse', 'HEAD'], cwd=root, capture_output=True)
+    require(result.returncode == 0, 'Composition cannot resolve current HEAD')
+    head = result.stdout.decode().strip()
+    require(re.fullmatch(r'[0-9a-f]{40}', head) is not None, 'Invalid current HEAD identity')
+    require(root_key not in _PINNED_HEADS or _PINNED_HEADS[root_key] == head,
+            'Composition HEAD changed during verification')
+    _PINNED_HEADS[root_key] = head
 
 
 def ordinary(root, path):
@@ -2322,6 +2450,58 @@ def project_ux08_agreement_duplicate_fix(root, path, current):
     return base
 
 
+def validate_resulting_main_client_inbox_budget_source(root):
+    """Bind the one-attempt hosted client-inbox navigation budget correction."""
+    require(git(root, 'rev-parse', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE_TREE
+            and git(root, 'rev-parse',
+                    RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE_TREE,
+            'Resulting-main client inbox budget source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE).decode().strip().split()
+            == [RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE],
+            'Resulting-main client inbox budget source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE,
+                  RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH],
+            'Resulting-main client inbox budget changed a different path or status set')
+    base_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE)
+    source_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE)
+    path = RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_resulting_main_client_inbox_budget(root, path, current) == base
+            and project_resulting_main_client_inbox_budget(root, path, base) == base,
+            'Resulting-main client inbox budget identity or projection changed')
+    require(source.count(b'click(ap, entry, 60000) == 200') == 1
+            and source.count(b'click(op, entry, 60000) == 200') == 1
+            and b'click(ap, entry) == 200' not in source
+            and b"destination(entry.get_attribute('href'), portal, {'hosting_purchases': 1})" in source
+            and b"cards(ap, 'client')" in source,
+            'Resulting-main client inbox correction weakened destination, response or content assertions')
+
+
+def project_resulting_main_client_inbox_budget(root, path, current):
+    """Restore the exact reviewed notification successor for older proofs."""
+    if path != RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current resulting-main client inbox budget changed before predecessor projection')
+    return base
+
+
 def validate_resulting_main_inbox_click_budget_source(root):
     """Bind the complete one-attempt navigation and continuity correction."""
     require(git(root, 'rev-parse', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + '^{tree}').decode().strip()
@@ -2345,7 +2525,7 @@ def validate_resulting_main_inbox_click_budget_source(root):
     source_entries = entries(root, RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE)
     modified = next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED))
     addition = next(iter(RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS))
-    current = ordinary(root, modified)
+    current = project_resulting_main_client_inbox_budget(root, modified, ordinary(root, modified))
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + modified)
     base = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_BASE + ':' + modified)
     require(current == source
@@ -2362,6 +2542,7 @@ def validate_resulting_main_inbox_click_budget_source(root):
 
 def project_resulting_main_inbox_click_budget(root, path, current):
     """Restore the reviewed outer-navigation proof head for older receipts."""
+    current = project_resulting_main_client_inbox_budget(root, path, current)
     if path not in RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_INBOX_CLICK_BUDGET_SOURCE + ':' + path)
@@ -2576,7 +2757,7 @@ def validate_runner_finite_tool_refusal_source(root):
     base_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_BASE)
     source_entries = entries(root, RUNNER_FINITE_TOOL_REFUSAL_SOURCE)
     for path in sorted(RUNNER_FINITE_TOOL_REFUSAL_MODIFIED):
-        current = ordinary(root, path)
+        current = project_proof_cache_hardening_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_BASE + ':' + path)
         require(current == source
@@ -2588,6 +2769,7 @@ def validate_runner_finite_tool_refusal_source(root):
 
 def project_runner_finite_tool_refusal(root, path, current):
     """Restore the accepted current-source proof head for older receipts."""
+    current = project_proof_cache_hardening_source(root, path, current)
     if path not in RUNNER_FINITE_TOOL_REFUSAL_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_FINITE_TOOL_REFUSAL_SOURCE + ':' + path)
@@ -2620,7 +2802,7 @@ def validate_runner_application_build_budget(root):
     base_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_SOURCE)
     for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_proof_runtime_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
         require(current == source
@@ -2632,6 +2814,7 @@ def validate_runner_application_build_budget(root):
 
 def project_runner_application_build_budget(root, path, current):
     """Restore the failed hosted head only for the exact Application budget paths."""
+    current = project_proof_runtime_source(root, path, current)
     if path not in RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
@@ -3267,6 +3450,8 @@ def validate_runner_mirror_compat_source(root):
 
 def project_runner_mirror_compat(root, path, current):
     """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_domain_expiry_port_source(root, path, current)
+    current = project_notification_health_source(root, path, current)
     current = project_runner_application_source_binding(root, path, current)
     current = project_runner_mirror_phase(root, path, current)
     if path not in RUNNER_MIRROR_COMPAT_MODIFIED:
@@ -3370,6 +3555,291 @@ def project_ux08_hosted_mirror_contract_fix(root, path, current):
     return base
 
 
+def validate_notification_health_source(root):
+    """Bind the read-only notification health component and lead-owned route."""
+    identities = (
+        (NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_BASE_TREE),
+        (NOTIFICATION_HEALTH_COMPONENT, NOTIFICATION_HEALTH_COMPONENT_TREE),
+        (NOTIFICATION_HEALTH_ROUTER, NOTIFICATION_HEALTH_ROUTER_TREE),
+        (NOTIFICATION_HEALTH_SOURCE, NOTIFICATION_HEALTH_SOURCE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Notification health source tree changed: ' + commit)
+    require(git(root, 'show', '-s', '--format=%P',
+                NOTIFICATION_HEALTH_COMPONENT).decode().strip().split()
+            == [NOTIFICATION_HEALTH_BASE]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_HEALTH_ROUTER).decode().strip().split()
+            == [NOTIFICATION_HEALTH_COMPONENT]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_HEALTH_SOURCE).decode().strip().split()
+            == [NOTIFICATION_HEALTH_ROUTER],
+            'Notification health source ancestry changed')
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_HEALTH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  NOTIFICATION_HEALTH_BASE, NOTIFICATION_HEALTH_SOURCE).decode().splitlines()
+    require(changes == [
+        'A\t' + 'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
+        'M\t' + 'site/admin/controllers/router.php',
+        'M\t' + 'site/admin/views/health.php',
+        'M\t' + 'site/install/inventory.generated.php',
+        'M\t' + 'tests/notification_center_browser.py',
+        'M\t' + 'tests/notification_center_native.php',
+        'A\t' + 'tests/notification_health_view_contract.php',
+    ], 'Notification health source changed a different path or status set')
+    base_entries = entries(root, NOTIFICATION_HEALTH_BASE)
+    source_entries = entries(root, NOTIFICATION_HEALTH_SOURCE)
+    for path in sorted(NOTIFICATION_HEALTH_MODIFIED):
+        current = project_notification_metric_label_source(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_notification_health_source(root, path, current) == base
+                and project_notification_health_source(root, path, base) == base,
+                'Notification health source identity or projection changed: ' + path)
+    require(not NOTIFICATION_HEALTH_ADDITIONS & set(base_entries)
+            and NOTIFICATION_HEALTH_ADDITIONS <= set(source_entries),
+            'Notification health additions did not originate in the source range')
+    for path in sorted(NOTIFICATION_HEALTH_ADDITIONS):
+        require(project_notification_metric_label_source(root, path, ordinary(root, path))
+                == git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Notification health addition identity changed: ' + path)
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Notification health installer inventory is not canonical')
+
+
+def project_notification_health_source(root, path, current):
+    """Restore verified resulting-main bytes for predecessor source proofs."""
+    current = project_notification_metric_label_source(root, path, current)
+    if path not in NOTIFICATION_HEALTH_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current notification health source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_domain_expiry_port_source(root):
+    """Bind the finite dynamic service-port correction after its preserved failure."""
+    require(git(root, 'rev-parse', DOMAIN_EXPIRY_PORT_BASE + '^{tree}').decode().strip()
+            == DOMAIN_EXPIRY_PORT_BASE_TREE
+            and git(root, 'rev-parse', DOMAIN_EXPIRY_PORT_SOURCE + '^{tree}').decode().strip()
+            == DOMAIN_EXPIRY_PORT_SOURCE_TREE,
+            'Domain expiry service-port source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DOMAIN_EXPIRY_PORT_SOURCE).decode().strip().split()
+            == [DOMAIN_EXPIRY_PORT_BASE],
+            'Domain expiry service-port source parent changed')
+    git(root, 'merge-base', '--is-ancestor', DOMAIN_EXPIRY_PORT_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                DOMAIN_EXPIRY_PORT_BASE, DOMAIN_EXPIRY_PORT_SOURCE).decode().splitlines()
+            == ['M\t' + DOMAIN_EXPIRY_PORT_PATH],
+            'Domain expiry service-port source changed a different path or status')
+    base_entries = entries(root, DOMAIN_EXPIRY_PORT_BASE)
+    source_entries = entries(root, DOMAIN_EXPIRY_PORT_SOURCE)
+    current = ordinary(root, DOMAIN_EXPIRY_PORT_PATH)
+    source = git(root, 'cat-file', 'blob',
+                 DOMAIN_EXPIRY_PORT_SOURCE + ':' + DOMAIN_EXPIRY_PORT_PATH)
+    base = git(root, 'cat-file', 'blob',
+               DOMAIN_EXPIRY_PORT_BASE + ':' + DOMAIN_EXPIRY_PORT_PATH)
+    require(current == source
+            and mode(root, DOMAIN_EXPIRY_PORT_PATH)
+            == base_entries[DOMAIN_EXPIRY_PORT_PATH][0]
+            == source_entries[DOMAIN_EXPIRY_PORT_PATH][0] == '100644'
+            and project_domain_expiry_port_source(root, DOMAIN_EXPIRY_PORT_PATH, current) == base
+            and project_domain_expiry_port_source(root, DOMAIN_EXPIRY_PORT_PATH, base) == base,
+            'Domain expiry service-port source identity or projection changed')
+
+
+def project_domain_expiry_port_source(root, path, current):
+    """Restore the reviewed exact-head notification proof for older receipts."""
+    if path != DOMAIN_EXPIRY_PORT_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', DOMAIN_EXPIRY_PORT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', DOMAIN_EXPIRY_PORT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current domain expiry service-port source changed before predecessor projection')
+    return base
+
+
+def validate_proof_runtime_source(root):
+    """Bind the finite proof-runtime correction to its preserved timeout."""
+    require(git(root, 'rev-parse', PROOF_RUNTIME_BASE + '^{tree}').decode().strip()
+            == PROOF_RUNTIME_BASE_TREE
+            and git(root, 'rev-parse', PROOF_RUNTIME_SOURCE + '^{tree}').decode().strip()
+            == PROOF_RUNTIME_SOURCE_TREE,
+            'Proof-runtime source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROOF_RUNTIME_SOURCE).decode().strip().split() == [PROOF_RUNTIME_BASE],
+            'Proof-runtime source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROOF_RUNTIME_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROOF_RUNTIME_BASE, PROOF_RUNTIME_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(PROOF_RUNTIME_MODIFIED)],
+            'Proof-runtime source changed a different path or status set')
+    base_entries = entries(root, PROOF_RUNTIME_BASE)
+    source_entries = entries(root, PROOF_RUNTIME_SOURCE)
+    for path in sorted(PROOF_RUNTIME_PROJECTED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROOF_RUNTIME_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_proof_runtime_source(root, path, current) == base
+                and project_proof_runtime_source(root, path, base) == base,
+                'Proof-runtime source identity or projection changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + VERIFIER)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    PROOF_RUNTIME_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and b'_IMMUTABLE_GIT_RESULTS = {}' in source_verifier
+            and b'_PINNED_HEADS = {}' in source_verifier
+            and b'def immutable_git_query(args):' in source_verifier
+            and b'def pin_head(root):' in source_verifier,
+            'Proof-runtime implementation or source receipt changed')
+    source_workflow = git(root, 'cat-file', 'blob',
+                          PROOF_RUNTIME_SOURCE + ':.github/workflows/application-tests.yml')
+    require(source_workflow.count(b'    timeout-minutes: 180\n') == 1
+            and source_workflow.count(b'    timeout-minutes: 105\n') == 1,
+            'Proof-runtime source changed unrelated Application timeout budgets')
+
+
+def project_proof_runtime_source(root, path, current):
+    """Restore the exact pre-timeout notification successor for older proofs."""
+    if path not in PROOF_RUNTIME_PROJECTED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROOF_RUNTIME_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current proof-runtime source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_proof_cache_hardening_source(root):
+    """Bind the reviewed moving-ref and replacement-ref cache hardening."""
+    require(git(root, 'rev-parse', PROOF_CACHE_HARDENING_BASE + '^{tree}').decode().strip()
+            == PROOF_CACHE_HARDENING_BASE_TREE
+            and git(root, 'rev-parse',
+                    PROOF_CACHE_HARDENING_SOURCE + '^{tree}').decode().strip()
+            == PROOF_CACHE_HARDENING_SOURCE_TREE,
+            'Proof-cache hardening source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROOF_CACHE_HARDENING_SOURCE).decode().strip().split()
+            == [PROOF_CACHE_HARDENING_BASE],
+            'Proof-cache hardening source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROOF_CACHE_HARDENING_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROOF_CACHE_HARDENING_BASE,
+                  PROOF_CACHE_HARDENING_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(PROOF_CACHE_HARDENING_MODIFIED)],
+            'Proof-cache hardening changed a different path or status set')
+    source_entries = entries(root, PROOF_CACHE_HARDENING_SOURCE)
+    require(all(source_entries[path][0] == '100644'
+                for path in PROOF_CACHE_HARDENING_MODIFIED),
+            'Proof-cache hardening changed a protected source mode')
+    source_verifier = git(root, 'cat-file', 'blob',
+                          PROOF_CACHE_HARDENING_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            PROOF_CACHE_HARDENING_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    PROOF_CACHE_HARDENING_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"['git', '--no-replace-objects'" in source_verifier
+            and b'cache_args if immutable else args' in source_verifier
+            and source_verifier.count(b'    pin_head(root)\n') >= 2
+            and b'Pinned HEAD query executes the pinned object ID' in source_regression
+            and b'Refuses Git replacement refs' in source_regression,
+            'Proof-cache hardening implementation or receipt changed')
+
+
+def project_proof_cache_hardening_source(root, path, current):
+    """Restore the pre-hardening regression bytes for its older proof source."""
+    if path not in PROOF_CACHE_HARDENING_PROJECTED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current proof-cache regression changed before predecessor projection')
+    return base
+
+
+def validate_notification_metric_label_source(root):
+    """Bind the review correction that labels retained delivery rows truthfully."""
+    require(git(root, 'rev-parse', NOTIFICATION_METRIC_LABEL_BASE + '^{tree}').decode().strip()
+            == NOTIFICATION_METRIC_LABEL_BASE_TREE
+            and git(root, 'rev-parse',
+                    NOTIFICATION_METRIC_LABEL_SOURCE + '^{tree}').decode().strip()
+            == NOTIFICATION_METRIC_LABEL_SOURCE_TREE,
+            'Notification metric label source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                NOTIFICATION_METRIC_LABEL_SOURCE).decode().strip().split()
+            == [NOTIFICATION_METRIC_LABEL_BASE],
+            'Notification metric label source parent changed')
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_METRIC_LABEL_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  NOTIFICATION_METRIC_LABEL_BASE,
+                  NOTIFICATION_METRIC_LABEL_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(NOTIFICATION_METRIC_LABEL_MODIFIED)],
+            'Notification metric label source changed a different path or status set')
+    base_entries = entries(root, NOTIFICATION_METRIC_LABEL_BASE)
+    source_entries = entries(root, NOTIFICATION_METRIC_LABEL_SOURCE)
+    for path in sorted(NOTIFICATION_METRIC_LABEL_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_notification_metric_label_source(root, path, current) == base
+                and project_notification_metric_label_source(root, path, base) == base,
+                'Notification metric label source identity or projection changed: ' + path)
+    source_metrics = git(root, 'cat-file', 'blob',
+                         NOTIFICATION_METRIC_LABEL_SOURCE + ':site/app/notifications/metrics.php')
+    source_contract = git(root, 'cat-file', 'blob',
+                          NOTIFICATION_METRIC_LABEL_SOURCE + ':tests/notification_health_view_contract.php')
+    require(b"$delivery['n'].' delivery records'" in source_metrics
+            and b'recorded attempts' not in source_metrics
+            and b'truthfully labeled as records, never dispatch attempts' in source_contract,
+            'Notification metric label correction or regression assertion changed')
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Notification metric label installer inventory is not canonical')
+
+
+def project_notification_metric_label_source(root, path, current):
+    """Restore the exact reviewed proof-cache head for older source receipts."""
+    if path not in NOTIFICATION_METRIC_LABEL_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current notification metric label changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_pr388_resulting_main_source(root):
     """Bind the accepted PR head to its normal, tree-identical main merge."""
     accepted_tree = git(root, 'rev-parse', PR388_ACCEPTED_HEAD + '^{tree}').decode().strip()
@@ -3425,7 +3895,13 @@ def validate_pr391_recovery_successor(root):
                 | RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED
                 | {RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_PATH}
                 | RESULTING_MAIN_INBOX_CLICK_BUDGET_MODIFIED
-                | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS),
+                | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS
+                | NOTIFICATION_HEALTH_MODIFIED
+                | NOTIFICATION_HEALTH_ADDITIONS
+                | {DOMAIN_EXPIRY_PORT_PATH}
+                | PROOF_RUNTIME_MODIFIED
+                | PROOF_CACHE_HARDENING_MODIFIED
+                | NOTIFICATION_METRIC_LABEL_MODIFIED),
             'Current recovery successor contains an unbound path')
 
 
@@ -3711,7 +4187,7 @@ def validate_ux08_inbox_payment_readiness_fix_source(root):
     base_entries = entries(root, UX08_INBOX_PAYMENT_READINESS_FIX_BASE)
     source_entries = entries(root, UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE)
     for path in sorted(UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED):
-        current = ordinary(root, path)
+        current = project_notification_health_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_BASE + ':' + path)
         require(current == source
@@ -3723,6 +4199,7 @@ def validate_ux08_inbox_payment_readiness_fix_source(root):
 
 def project_ux08_inbox_payment_readiness_fix(root, path, current):
     """Restore the exact pre-readiness-fix head for older source receipts."""
+    current = project_notification_health_source(root, path, current)
     if path not in UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', UX08_INBOX_PAYMENT_READINESS_FIX_SOURCE + ':' + path)
@@ -4101,7 +4578,8 @@ def validate_ux08_payment_source(root):
             and UX08_PAYMENT_ADDITIONS <= set(source_entries),
             'UX-08 payment additions did not originate in the exact source range')
     for path in sorted(UX08_PAYMENT_MODIFIED):
-        current = project_runner_finite_tool_refusal(root, path, ordinary(root, path))
+        current = project_notification_health_source(root, path, ordinary(root, path))
+        current = project_runner_finite_tool_refusal(root, path, current)
         current = project_ux08_payment_fixture_lock_fix(root, path, current)
         current = project_ux08_billing_network_fix(root, path, current)
         current = project_ux08_payment_native_fix(root, path, current)
@@ -4121,6 +4599,7 @@ def validate_ux08_payment_source(root):
 
 def project_ux08_payment(root, path, current):
     """Restore resulting-main bytes only while evaluating older source receipts."""
+    current = project_notification_health_source(root, path, current)
     current = project_runner_finite_tool_refusal(root, path, current)
     current = project_ux08_payment_fixture_lock_fix(root, path, current)
     current = project_ux08_billing_network_fix(root, path, current)
@@ -4661,6 +5140,7 @@ def verify_current(root):
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
+    pin_head(root)
     validate_runner_application_build_budget(root)
     validate_runner_account_source_budget(root)
     validate_runner_finite_tool_refusal_source(root)
@@ -4679,6 +5159,11 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_notification_health_source(root)
+    validate_domain_expiry_port_source(root)
+    validate_proof_runtime_source(root)
+    validate_proof_cache_hardening_source(root)
+    validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
     validate_ux08_hosted_mirror_contract_fix_source(root)
@@ -4694,6 +5179,7 @@ def verify_current(root):
     validate_ux08_payment_publication_pin_fix_source(root)
     validate_ux08_payment_fixture_lock_fix_source(root)
     validate_ux08_billing_network_fix_source(root)
+    validate_resulting_main_client_inbox_budget_source(root)
     validate_resulting_main_inbox_click_budget_source(root)
     validate_resulting_main_inbox_navigation_budget_source(root)
     validate_ux08_inbox_network_fix_source(root)
@@ -4920,7 +5406,7 @@ def verify_current(root):
     allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
-               | RUNNER_MIRROR_PHASE_ADDITIONS
+               | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
@@ -4996,6 +5482,7 @@ def verify_current(root):
                 'Original adapter assertions are not the exact component bytes: ' + path)
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
+    pin_head(root)
     return [
         {'name': 'Exact common ancestor and all four component commit/tree/ancestry identities', 'passed': True},
         {'name': 'Current or exactly reconstructed bytes and executable modes match the component union for ' + str(len(expected)) + ' retained files', 'passed': True},
@@ -5018,6 +5505,7 @@ def verify_current(root):
         {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
+        {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
         {'name': 'Current canonical installer inventory binds the complete combined shipping tree', 'passed': True},

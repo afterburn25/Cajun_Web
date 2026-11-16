@@ -2,7 +2,7 @@
 No message is sent to an external server: application email stays disabled.
 """
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import parse_qs, urljoin, urlsplit
 import ast, json, os, shutil, subprocess, time
 import requests
 from bs4 import BeautifulSoup
@@ -29,7 +29,7 @@ server='cwp-notification-center-http';log=(QA/'server.log').open('w')
 args=['docker','run','--rm','--init','--name',server,'--network','host','--user',str(os.getuid())+':'+str(os.getgid()),'-v',str(ROOT)+':'+str(ROOT),'-w',str(ROOT)]
 for key in ['CWP_TEST_DATABASE','CWP_TEST_HOST','CWP_TEST_PORT','CWP_TEST_USER','CWP_TEST_PASSWORD','CWP_SOURCE_SHA']:args+=['-e',key]
 proc=subprocess.Popen(args+['cwp-notification-center','php','-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
-owner=requests.Session();alice=requests.Session();bob=requests.Session();admin=BASE+'/existing/admin/index.php';portal=BASE+'/existing/portal/index.php';url=admin+'?view=notifications'
+owner=requests.Session();alice=requests.Session();bob=requests.Session();restricted=requests.Session();admin=BASE+'/existing/admin/index.php';portal=BASE+'/existing/portal/index.php';url=admin+'?view=notifications'
 def all_notifications():return [db('SELECT * FROM ci_'+t+' ORDER BY id') for t in ['notification_feed','notification_prefs','notification_deliveries']]
 try:
     for _ in range(60):
@@ -38,6 +38,11 @@ try:
     else:raise AssertionError('Installed server unavailable')
     r=submit(owner,admin+'?view=login','login',{'email':'owner@example.invalid','password':'Synthetic owner passphrase 2026'})
     check('Owner establishes actual administrator session',r.status_code==200 and 'view=login' not in r.url)
+    db("INSERT INTO ci_users (name,email,password_hash,auth_version,created_at) SELECT 'Synthetic restricted administrator','restricted-health@example.invalid',password_hash,?,created_at FROM ci_users WHERE email='owner@example.invalid'",['b'*32])
+    restricted_id=db("SELECT id FROM ci_users WHERE email='restricted-health@example.invalid'")[0]['id']
+    db("INSERT INTO ci_staff_profiles (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[restricted_id,json.dumps(['website.manage'])])
+    r=submit(restricted,admin+'?view=login','login',{'email':'restricted-health@example.invalid','password':'Synthetic owner passphrase 2026'})
+    check('Restricted staff establishes an actual current administrator session',r.status_code==200 and 'view=login' not in r.url)
     legacy=owner.get(admin+'?view=payment-notifications');check('Existing payment-notification page remains separately routed',legacy.status_code==200 and 'Sandbox notifications' in legacy.text and 'Controlled email delivery' not in legacy.text)
     original_clients=db('SELECT * FROM ci_studio_clients ORDER BY id');original_jobs=db('SELECT * FROM ci_studio_jobs ORDER BY id')
     r=owner.get(url);form=form_for(r,'notifications_setup')
@@ -88,19 +93,33 @@ try:
         before=all_notifications();anonymous=requests.get(portal+'?notifications=1');support=owner.get(url+'&support=invalid')
         check('Anonymous customer feed is private and denied',anonymous.status_code==403 and 'no-store' in anonymous.headers.get('Cache-Control','') and client_notice['id'] not in anonymous.text)
         check('Support selector cannot enter the personal notification center',support.status_code==403 and all_notifications()==before)
+        health=admin+'?view=health';before=all_notifications();recorded=db('SELECT MAX(updated_at) AS last FROM ci_notification_deliveries')[0]['last'];r=owner.get(health)
+        check('Owner health view renders persisted notification freshness',r.status_code==200 and 'Operational freshness' in r.text and 'notification.deliveries' in r.text and recorded[:16]+' UTC' in r.text and 'absent' in r.text.lower())
+        check('Rendering health metrics never mutates the local notification records',all_notifications()==before)
+        check('Customer session cannot open administration health metrics',alice.get(health).status_code==403 and all_notifications()==before)
+        check('Anonymous session cannot open administration health metrics',requests.get(health).status_code==403 and all_notifications()==before)
+        check('Delegated staff without staff management permission cannot open administration health metrics',restricted.get(health).status_code==403 and all_notifications()==before)
+        check('Support selector cannot enter administration health metrics',owner.get(health+'&support=invalid').status_code==403 and all_notifications()==before)
         for width,height,label in [(1440,1000,'Desktop'),(390,844,'Mobile')]:
             page.set_viewport_size({'width':width,'height':height});page.goto(url)
             expect(page.locator('[data-notification-outbox]')).to_be_visible();check('Authenticated notification workspace '+label+' contains no repeated password',page.locator('input[type=password]').count()==0)
             check('Notification workspace '+label+' fits the viewport',page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
             page.screenshot(path=str(QA/('Notification-Center-'+label+'.png')),full_page=True,animations='disabled')
+            page.goto(health);expect(page.get_by_role('heading',name='Operational freshness')).to_be_visible()
+            check('Operational freshness '+label+' fits the viewport',page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
+            page.screenshot(path=str(QA/('Notification-Health-'+label+'.png')),full_page=True,animations='disabled')
         context.close();browser.close()
+    support_page=submit(owner,admin+'?view=support','support_start',{'client_id':'1'});support_id=parse_qs(urlsplit(support_page.url).query).get('support',[''])[0]
+    check('Fixture establishes a real active owner support session',len(support_id)==32 and db('SELECT ended_at FROM ci_support_sessions WHERE id=?',[support_id])==[{'ended_at':None}])
+    check('Active support session cannot enter administration health metrics',owner.get(health+'&support='+support_id).status_code==403 and all_notifications()==before)
+    submit(owner,support_page.url,'support_end')
     check('Preexisting customer records are retained',db('SELECT * FROM ci_studio_clients ORDER BY id')==original_clients)
     check('Preexisting project metadata is retained',db('SELECT * FROM ci_studio_jobs ORDER BY id')==original_jobs)
     check('No external mailbox or delivery mode was enabled',db("SELECT value FROM ci_settings WHERE name='email_mode'")==[{'value':'disabled'}])
     check('No browser JavaScript errors',not errors);check('No external browser requests',not external)
 except Exception as e:checks.append({'name':type(e).__name__+': '+str(e),'passed':False})
 finally:
-    owner.close();alice.close();bob.close();subprocess.run(['docker','stop','-t','3',server],capture_output=True)
+    owner.close();alice.close();bob.close();restricted.close();subprocess.run(['docker','stop','-t','3',server],capture_output=True)
     try:proc.wait(timeout=10)
     except subprocess.TimeoutExpired:proc.kill();proc.wait()
     log.close();text=(QA/'server.log').read_text();checks.append({'name':'No unexpected PHP/application diagnostics','passed':not any(x in text for x in ['PHP Fatal error','PHP Warning','PHP Notice','PHP Deprecated','CWP ['])})

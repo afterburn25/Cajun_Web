@@ -31,7 +31,7 @@ function metric_samples(): array {
     }else $samples[]=['sample'=>new MetricSample('delivery.published',null,null),'label'=>'Latest website delivery','max_age'=>30*86400];
     if(function_exists('notifications_feed_ready')&&notifications_feed_ready()){
         $delivery=one('SELECT MAX(updated_at) AS last,COUNT(*) AS n FROM '.table('notification_deliveries'));
-        $samples[]=['sample'=>new MetricSample('notification.deliveries',$delivery&&$delivery['n']?$delivery['n'].' recorded attempts':null,metric_epoch($delivery['last']??null)),'label'=>'Notification deliveries','max_age'=>7*86400];
+        $samples[]=['sample'=>new MetricSample('notification.deliveries',$delivery&&$delivery['n']?$delivery['n'].' delivery records':null,metric_epoch($delivery['last']??null)),'label'=>'Notification deliveries','max_age'=>7*86400];
     }else $samples[]=['sample'=>new MetricSample('notification.deliveries',null,null),'label'=>'Notification deliveries','max_age'=>7*86400];
     return $samples;
 }
