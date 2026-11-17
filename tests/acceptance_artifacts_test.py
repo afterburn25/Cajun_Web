@@ -113,9 +113,7 @@ def project_private_notes_artifact_predecessor(path, current):
 
 
 def project_mail_reply_forward_artifact_predecessor(path, current):
-    """Project the exact mail browser extension before the older identity receipt."""
-    if path != 'tests/browser_acceptance.py':
-        return current
+    """Project exact mail overlays before older acceptance source receipts."""
     return composition.project_mail_reply_forward_source(ROOT, path, current)
 
 
@@ -951,6 +949,7 @@ def run(tmp):
               and hashlib.sha256(json.dumps(database_predecessor,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
         for path,expected_hash in database_ext['source_sha256'].items():
             retained=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            retained=project_mail_reply_forward_artifact_predecessor(path,retained)
             retained=project_private_notes_artifact_predecessor(path,retained)
             retained=ux08_artifact_predecessor(path,retained)
             check('Reviewed database source identity '+path,
