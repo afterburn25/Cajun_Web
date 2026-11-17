@@ -278,6 +278,25 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n// unreviewed native fixture\n')))
 
+        def altered_mail_mysql_trigger_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_mysql_trigger_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail MySQL trigger-fixture source tree',
+                lambda: altered_mail_mysql_trigger_identity(
+                    'MAIL_MYSQL_TRIGGER_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail MySQL trigger-fixture direct parent',
+                lambda: altered_mail_mysql_trigger_identity(
+                    'MAIL_MYSQL_TRIGGER_FIX_BASE'))
+        refuses('Refuses altered mail MySQL trigger-fixture workflow source',
+                lambda: modified('.github/workflows/mail-copied-draft-native.yml',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed trigger permission\n')))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:

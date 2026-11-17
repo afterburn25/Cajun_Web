@@ -598,6 +598,14 @@ MAIL_REPLY_SESSION_FIX_BASE_TREE = 'c4bd5f3e552b51a46e13d1fa1975f835707896c1'
 MAIL_REPLY_SESSION_FIX_SOURCE = '48d13fa964f57e95a2ee53e596c38a535b703d0d'
 MAIL_REPLY_SESSION_FIX_SOURCE_TREE = 'f876dd293e2d8d2f4e350769e809bb5fb878a81b'
 MAIL_REPLY_SESSION_FIX_PATH = 'tests/mail_reply_cases.py'
+MAIL_MYSQL_TRIGGER_FIX_BASE = 'e9d252d12e6d900f891e760e2505bd843c958e32'
+MAIL_MYSQL_TRIGGER_FIX_BASE_TREE = 'd9c0e64d3b5346f96bb1feabddd9bd6bb5d41995'
+MAIL_MYSQL_TRIGGER_FIX_SOURCE = '40f06f6cd71ccb48558e495585f774f5e4d88164'
+MAIL_MYSQL_TRIGGER_FIX_SOURCE_TREE = '83e97e489914bb53144ef8266b3caf771cf80256'
+MAIL_MYSQL_TRIGGER_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -1438,7 +1446,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '1b7d5154543b73919a3daff46b99d2dfcfb25edf76fa2112e26208d0eece53be'
+REGRESSION_SHA256 = '1bd7831038e7621e74b862799ceb088c502e77d0faab22d7d488c4d38e0631b7'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3895,7 +3903,7 @@ def validate_mail_thread_alias_fix(root):
     base_entries = entries(root, MAIL_THREAD_ALIAS_FIX_BASE)
     source_entries = entries(root, MAIL_THREAD_ALIAS_FIX_SOURCE)
     for path in sorted(MAIL_THREAD_ALIAS_FIX_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_mysql_trigger_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_BASE + ':' + path)
         require(current == source
@@ -3934,6 +3942,7 @@ def validate_mail_thread_alias_fix(root):
 
 def project_mail_thread_alias_fix(root, path, current):
     """Restore the security-review-blocked head for older mail proofs."""
+    current = project_mail_mysql_trigger_fix(root, path, current)
     if path not in MAIL_THREAD_ALIAS_FIX_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE + ':' + path)
@@ -4048,6 +4057,66 @@ def project_mail_reply_session_fix(root, path, current):
         return current
     require(current == source,
             'Current mail reply session fixture changed before predecessor projection')
+    return base
+
+
+def validate_mail_mysql_trigger_fix(root):
+    """Bind the isolated MySQL fixture permission discovered by hosted acceptance."""
+    require(git(root, 'rev-parse', MAIL_MYSQL_TRIGGER_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_MYSQL_TRIGGER_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_MYSQL_TRIGGER_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_MYSQL_TRIGGER_FIX_SOURCE_TREE,
+            'Mail MySQL trigger-fixture source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_MYSQL_TRIGGER_FIX_SOURCE).decode().split()
+            == [MAIL_MYSQL_TRIGGER_FIX_SOURCE, MAIL_MYSQL_TRIGGER_FIX_BASE],
+            'Mail MySQL trigger-fixture fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_MYSQL_TRIGGER_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_MYSQL_TRIGGER_FIX_BASE,
+                MAIL_MYSQL_TRIGGER_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_MYSQL_TRIGGER_FIX_PATHS)],
+            'Mail MySQL trigger-fixture fix changed another path or status')
+    base_entries = entries(root, MAIL_MYSQL_TRIGGER_FIX_BASE)
+    source_entries = entries(root, MAIL_MYSQL_TRIGGER_FIX_SOURCE)
+    for path in sorted(MAIL_MYSQL_TRIGGER_FIX_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_mysql_trigger_fix(root, path, current) == base
+                and project_mail_mysql_trigger_fix(root, path, base) == base,
+                'Mail MySQL trigger-fixture source identity or projection changed: ' + path)
+    workflow = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    step = b'- name: Allow isolated MySQL audit-failure fixture triggers'
+    condition = b"if: matrix.database == 'mysql'"
+    command = (b'docker exec -e MYSQL_PWD=synthetic-root-only '
+               b'${{ job.services.database.id }} mysql -uroot -e '
+               b"'SET GLOBAL log_bin_trust_function_creators=1'")
+    require(workflow.count(step) == workflow.count(condition) == workflow.count(command) == 1
+            and workflow.index(b'- name: Prove the synthetic database is ready')
+            < workflow.index(step) < workflow.index(b'- name: Run isolated copied-draft SQL acceptance')
+            and contract.count(b'Only isolated MySQL cells grant their synthetic fixture triggers') == 1
+            and contract.count(b"('lost isolated MySQL trigger admission',") == 1,
+            'Mail MySQL trigger-fixture permission is missing, broadened or unguarded')
+
+
+def project_mail_mysql_trigger_fix(root, path, current):
+    """Restore the accepted predecessor before the isolated MySQL fixture permission."""
+    if path not in MAIL_MYSQL_TRIGGER_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail MySQL trigger-fixture fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -6583,6 +6652,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_mysql_trigger_fix(root)
     validate_mail_thread_alias_fix(root)
     validate_mail_native_fixture_policy_fix(root)
     validate_mail_reply_session_fix(root)
