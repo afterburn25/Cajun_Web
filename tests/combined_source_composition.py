@@ -606,6 +606,11 @@ MAIL_MYSQL_TRIGGER_FIX_PATHS = frozenset((
     '.github/workflows/mail-copied-draft-native.yml',
     'tests/mail_copied_draft_native_workflow_contract.py',
 ))
+MAIL_REPLY_FORM_HELPER_FIX_BASE = '6357fa812eb4ffbc401a92f73e16c12d06d8508d'
+MAIL_REPLY_FORM_HELPER_FIX_BASE_TREE = 'e6cc51600697309966b969f5124943718435be19'
+MAIL_REPLY_FORM_HELPER_FIX_SOURCE = '21572347519cf78cf17f47c041682645278e1b35'
+MAIL_REPLY_FORM_HELPER_FIX_SOURCE_TREE = 'aa3794bda8c43811d3685a1ccd4b96a8b6a91066'
+MAIL_REPLY_FORM_HELPER_FIX_PATH = 'tests/mail_reply_cases.py'
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -1446,7 +1451,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '1bd7831038e7621e74b862799ceb088c502e77d0faab22d7d488c4d38e0631b7'
+REGRESSION_SHA256 = '50f5bba49fcb8822d11a2b811859de6d33456e028bec53cccc49fdd83e741ffa'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -4026,7 +4031,7 @@ def validate_mail_reply_session_fix(root):
             == ['M\t' + MAIL_REPLY_SESSION_FIX_PATH],
             'Mail reply session-policy fix changed another path or status')
     path = MAIL_REPLY_SESSION_FIX_PATH
-    current = ordinary(root, path)
+    current = project_mail_reply_form_helper_fix(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_BASE + ':' + path)
     base_entries = entries(root, MAIL_REPLY_SESSION_FIX_BASE)
@@ -4047,6 +4052,7 @@ def validate_mail_reply_session_fix(root):
 
 def project_mail_reply_session_fix(root, path, current):
     """Restore the pre-browser-failure fixture for older mail source proofs."""
+    current = project_mail_reply_form_helper_fix(root, path, current)
     if path != MAIL_REPLY_SESSION_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_SOURCE + ':' + path)
@@ -4117,6 +4123,55 @@ def project_mail_mysql_trigger_fix(root, path, current):
         return current
     require(current == source,
             'Current mail MySQL trigger-fixture fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_reply_form_helper_fix(root):
+    """Bind the missing packaged-browser form helper discovered by hosted acceptance."""
+    require(git(root, 'rev-parse', MAIL_REPLY_FORM_HELPER_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORM_HELPER_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORM_HELPER_FIX_SOURCE_TREE,
+            'Mail reply form-helper source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_REPLY_FORM_HELPER_FIX_SOURCE).decode().split()
+            == [MAIL_REPLY_FORM_HELPER_FIX_SOURCE, MAIL_REPLY_FORM_HELPER_FIX_BASE],
+            'Mail reply form-helper fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_FORM_HELPER_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_FORM_HELPER_FIX_BASE,
+                MAIL_REPLY_FORM_HELPER_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_REPLY_FORM_HELPER_FIX_PATH],
+            'Mail reply form-helper fix changed another path or status')
+    path = MAIL_REPLY_FORM_HELPER_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_BASE + ':' + path)
+    base_entries = entries(root, MAIL_REPLY_FORM_HELPER_FIX_BASE)
+    source_entries = entries(root, MAIL_REPLY_FORM_HELPER_FIX_SOURCE)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_reply_form_helper_fix(root, path, current) == base
+            and project_mail_reply_form_helper_fix(root, path, base) == base,
+            'Mail reply form-helper source identity or projection changed')
+    require(source.count(b"'form_data', 'form_for', 'submit'") == 1
+            and base.count(b"'form_data', 'form_for', 'submit'") == 0
+            and source.count(b"form = form_for(setup, 'mail_drafts_replies_setup')") == 1,
+            'Mail reply packaged fixture does not import the exact helper it invokes')
+
+
+def project_mail_reply_form_helper_fix(root, path, current):
+    """Restore the accepted predecessor before the packaged-browser helper binding."""
+    if path != MAIL_REPLY_FORM_HELPER_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail reply form-helper fix changed before predecessor projection')
     return base
 
 
@@ -6652,6 +6707,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_reply_form_helper_fix(root)
     validate_mail_mysql_trigger_fix(root)
     validate_mail_thread_alias_fix(root)
     validate_mail_native_fixture_policy_fix(root)

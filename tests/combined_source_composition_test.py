@@ -297,6 +297,25 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n# unreviewed trigger permission\n')))
 
+        def altered_mail_reply_form_helper_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_form_helper_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail reply form-helper source tree',
+                lambda: altered_mail_reply_form_helper_identity(
+                    'MAIL_REPLY_FORM_HELPER_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail reply form-helper direct parent',
+                lambda: altered_mail_reply_form_helper_identity(
+                    'MAIL_REPLY_FORM_HELPER_FIX_BASE'))
+        refuses('Refuses altered mail reply form-helper fixture source',
+                lambda: modified('tests/mail_reply_cases.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed helper binding\n')))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:
