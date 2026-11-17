@@ -258,6 +258,21 @@ def run(root=ROOT):
         refuses('Refuses a substituted mail artifact-projection parent',
                 lambda: altered_mail_artifact_projection_identity(
                     'MAIL_ARTIFACT_PROJECTION_FIX_BASE'))
+
+        def altered_mail_artifact_overlap_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_artifact_overlap_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail artifact-overlap source tree',
+                lambda: altered_mail_artifact_overlap_identity(
+                    'MAIL_ARTIFACT_OVERLAP_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail artifact-overlap parent',
+                lambda: altered_mail_artifact_overlap_identity(
+                    'MAIL_ARTIFACT_OVERLAP_FIX_BASE'))
         for path in (
             'site/app/settings/database_schemas.php',
             'site/app/staff/accounts.php',

@@ -568,6 +568,11 @@ MAIL_ARTIFACT_PROJECTION_FIX_BASE_TREE = 'b31e0ea58db081c16b7af55332ccc521cd6341
 MAIL_ARTIFACT_PROJECTION_FIX_SOURCE = '91f9b969698ddadca5e85d0fc5856a6ad6118493'
 MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE = '3e0415069618670c0123a4b91a1cf3cafdf47263'
 MAIL_ARTIFACT_PROJECTION_FIX_PATH = 'tests/acceptance_artifacts_test.py'
+MAIL_ARTIFACT_OVERLAP_FIX_BASE = '46b4e58db17a9b33d95ec72fdd70f9cb9b99e736'
+MAIL_ARTIFACT_OVERLAP_FIX_BASE_TREE = '7ed574a318f2011a2cd75f284c58c0b567330c62'
+MAIL_ARTIFACT_OVERLAP_FIX_SOURCE = '77f2045f990e014a8f5280b7966fb0abf84dbe14'
+MAIL_ARTIFACT_OVERLAP_FIX_SOURCE_TREE = '2c88257a650f70d2e3884a0bfea62e9fe3103a6b'
+MAIL_ARTIFACT_OVERLAP_FIX_PATH = 'tests/acceptance_artifacts_test.py'
 MAIL_REPLY_FORWARD_MODIFIED = frozenset((
     'foundation/mail-receiving/HeaderDecoder.php',
     'foundation/mail-submission/PreparedMime.php',
@@ -1396,7 +1401,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '1c9776c094e1be7ce372ff3973afcbfefedda47ec2bf24aa9bb0bb3916d8dbc6'
+REGRESSION_SHA256 = 'eac98dffab0980d0422b1fe7b7f7f8851bf53dfb1f96585b0ecbd12ee788a92f'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3958,7 +3963,7 @@ def validate_mail_artifact_projection_fix(root):
     base_entries = entries(root, MAIL_ARTIFACT_PROJECTION_FIX_BASE)
     source_entries = entries(root, MAIL_ARTIFACT_PROJECTION_FIX_SOURCE)
     path = MAIL_ARTIFACT_PROJECTION_FIX_PATH
-    current = ordinary(root, path)
+    current = project_mail_artifact_overlap_fix(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_BASE + ':' + path)
     require(current == source
@@ -3976,6 +3981,7 @@ def validate_mail_artifact_projection_fix(root):
 
 def project_mail_artifact_projection_fix(root, path, current):
     """Restore the exact failed Application-head artifact proof for older receipts."""
+    current = project_mail_artifact_overlap_fix(root, path, current)
     if path != MAIL_ARTIFACT_PROJECTION_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
@@ -3986,6 +3992,66 @@ def project_mail_artifact_projection_fix(root, path, current):
         return current
     require(current == source,
             'Current mail artifact-projection fix changed before predecessor projection')
+    return base
+
+
+def validate_mail_artifact_overlap_fix(root):
+    """Bind complete mail-overlay projection after its preserved Application failure."""
+    require(git(root, 'rev-parse', MAIL_ARTIFACT_OVERLAP_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_OVERLAP_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_OVERLAP_FIX_SOURCE_TREE,
+            'Mail artifact-overlap source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ARTIFACT_OVERLAP_FIX_SOURCE).decode().split()
+            == [MAIL_ARTIFACT_OVERLAP_FIX_SOURCE, MAIL_ARTIFACT_OVERLAP_FIX_BASE],
+            'Mail artifact-overlap fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ARTIFACT_OVERLAP_FIX_BASE,
+                MAIL_ARTIFACT_OVERLAP_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_ARTIFACT_OVERLAP_FIX_PATH],
+            'Mail artifact-overlap fix changed another path or status')
+    base_entries = entries(root, MAIL_ARTIFACT_OVERLAP_FIX_BASE)
+    source_entries = entries(root, MAIL_ARTIFACT_OVERLAP_FIX_SOURCE)
+    path = MAIL_ARTIFACT_OVERLAP_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_artifact_overlap_fix(root, path, current) == base
+            and project_mail_artifact_overlap_fix(root, path, base) == base,
+            'Mail artifact-overlap source identity or projection changed')
+    contract = json.loads(git(root, 'cat-file', 'blob',
+                              MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':tools/acceptance-contract.json'))
+    overlap = set()
+    for section in ('client_identity_native_command_extension',
+                    'database_schema_native_command_extension'):
+        overlap.update(set(contract[section]['source_sha256']) & MAIL_REPLY_FORWARD_MODIFIED)
+    require(overlap == {
+        'tests/browser_acceptance.py',
+        'site/app/settings/database_schemas.php',
+        'tests/database_schema_registry_policy.php',
+        'tests/database_schema_view_policy.php',
+    } and source.count(b'current=project_mail_reply_forward_artifact_predecessor(path,current)') == 1
+      and source.count(b'retained=project_mail_reply_forward_artifact_predecessor(path,retained)') == 1
+      and source.count(b'return composition.project_mail_reply_forward_source(ROOT, path, current)') == 1,
+            'Mail artifact proof does not project the complete bounded receipt overlap')
+
+
+def project_mail_artifact_overlap_fix(root, path, current):
+    """Restore the exact failed Application-head artifact proof for predecessor checks."""
+    if path != MAIL_ARTIFACT_OVERLAP_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail artifact-overlap fix changed before predecessor projection')
     return base
 
 
@@ -6213,6 +6279,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_artifact_overlap_fix(root)
     validate_mail_artifact_projection_fix(root)
     validate_mail_backup_projection_fix(root)
     validate_mail_reply_forward_workflow_fix(root)
@@ -6590,6 +6657,7 @@ def verify_current(root):
         {'name': 'Exact Reply/Forward workflow successor binds dependency-free browser-module compilation after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact mail backup-projection successor restores Reply/Forward browser bytes before historical UX-09 and backup proofs', 'passed': True},
         {'name': 'Exact mail artifact-projection successor restores Reply/Forward browser bytes before the public-identity receipt', 'passed': True},
+        {'name': 'Exact mail artifact-overlap successor projects all four bounded mail paths before identity and schema receipts', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
         {'name': 'Exact PR #391 recovery predecessor is retained and the current range is limited to its proof files and explicitly bound successors', 'passed': True},
