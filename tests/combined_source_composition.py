@@ -596,6 +596,14 @@ PROJECT_PRIVATE_NOTES_AUTHORITY_BASE_TREE = 'a487b02fb7a08d934c8b90b0e5eb07ad709
 PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE = '95526a159a2da46db6fa74f6c99cc740fce0650a'
 PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE_TREE = '2125d4e4b6c02741724ca4be77588778a0fe72ff'
 PROJECT_PRIVATE_NOTES_AUTHORITY_PATH = 'tests/acceptance_artifacts_test.py'
+PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE = '1e8dc88d5a93c4364b6bb82c7f9c4ece19ec2bd9'
+PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE_TREE = 'b29c644416800838fd2cdfacc321b3384d933e57'
+PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE = 'bf5e01aba2bef7cbda555469644082e143d0ccc7'
+PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE_TREE = '96d23521112534e7d7b2904c252ec5dd847420c8'
+PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+))
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -3859,7 +3867,7 @@ def validate_project_private_notes_authority_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_AUTHORITY_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE)
     path = PROJECT_PRIVATE_NOTES_AUTHORITY_PATH
-    current = ordinary(root, path)
+    current = project_project_private_notes_proof_compat_source(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_BASE + ':' + path)
     require(current == source
@@ -3876,6 +3884,7 @@ def validate_project_private_notes_authority_source(root):
 
 def project_project_private_notes_authority_source(root, path, current):
     """Restore the reviewed evidence proof head for predecessor receipts."""
+    current = project_project_private_notes_proof_compat_source(root, path, current)
     if path != PROJECT_PRIVATE_NOTES_AUTHORITY_PATH:
         return current
     source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE + ':' + path)
@@ -3886,6 +3895,65 @@ def project_project_private_notes_authority_source(root, path, current):
         return current
     require(current == source,
             'Current project private notes authority correction changed before predecessor projection')
+    return base
+
+
+def validate_project_private_notes_proof_compat_source(root):
+    """Bind the exact proof-only correction after preserved hosted failures."""
+    require(git(root, 'rev-parse', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE + '^{tree}').decode().strip()
+            == PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE_TREE
+            and git(root, 'rev-parse',
+                    PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + '^{tree}').decode().strip()
+            == PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE_TREE,
+            'Project private notes proof compatibility source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE],
+            'Project private notes proof compatibility source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE,
+                PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS)],
+            'Project private notes proof compatibility correction changed another path or status')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE)
+    for path in sorted(PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_project_private_notes_proof_compat_source(root, path, current) == base
+                and project_project_private_notes_proof_compat_source(root, path, base) == base,
+                'Project private notes proof compatibility identity or projection changed: ' + path)
+    artifact_source = git(root, 'cat-file', 'blob',
+                          PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':tests/acceptance_artifacts_test.py')
+    workflow_source = git(root, 'cat-file', 'blob',
+                          PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':tests/account_notification_workflow_contract.py')
+    require(artifact_source.count(b'def project_private_notes_artifact_predecessor(path, current):') == 1
+            and artifact_source.count(b'current=project_private_notes_artifact_predecessor(path,current)') == 1
+            and artifact_source.count(b'retained=project_private_notes_artifact_predecessor(path,retained)') == 1
+            and b'PROJECT_PRIVATE_NOTES_SOURCE_TREE = \'7d064c6d6410a3c6de8eb92aa42fc369333c12b3\'' in artifact_source,
+            'Project private notes artifact proof correction is not exact and fail-closed')
+    require(workflow_source.count(b'PROTECTED_PROJECT_NOTE_ADDITIONS = (') == 1
+            and workflow_source.count(b"protected_predecessor.count(addition) == 1") >= 3
+            and workflow_source.count(b"protected.count(after + ''.join(additions)) == 1") == 1,
+            'Project private notes Application predecessor proof correction is not exact and ordered')
+
+
+def project_project_private_notes_proof_compat_source(root, path, current):
+    """Restore the failed hosted head for older proof receipts."""
+    if path not in PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes proof compatibility source changed before predecessor projection: ' + path)
     return base
 
 
@@ -3980,6 +4048,7 @@ def validate_proof_runtime_source(root):
 
 def project_proof_runtime_source(root, path, current):
     """Restore the exact pre-timeout notification successor for older proofs."""
+    current = project_project_private_notes_proof_compat_source(root, path, current)
     current = project_project_private_notes_source(root, path, current)
     if path not in PROOF_RUNTIME_PROJECTED:
         return current
@@ -4166,6 +4235,7 @@ def validate_pr391_recovery_successor(root):
                 | PROJECT_PRIVATE_NOTES_ADDITIONS
                 | PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED
                 | {PROJECT_PRIVATE_NOTES_AUTHORITY_PATH}
+                | PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
                 | PROOF_CACHE_HARDENING_MODIFIED
@@ -5427,6 +5497,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_proof_compat_source(root)
     validate_project_private_notes_authority_source(root)
     validate_project_private_notes_evidence_source(root)
     validate_project_private_notes_source(root)
