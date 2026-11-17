@@ -47,7 +47,11 @@ function mail_message_admin_render(string $error,#[\SensitiveParameter] ?array $
             if($result['account_id']!==$accountId||$result['actor_id']!==(int)$current['id']||$result['account_revision']!==(int)$route['revision']||$result['uidvalidity']!==$route['uidvalidity']||$result['uid']!==$route['uid']||($result['notice_handle']??null)!==($route['notice']??null))throw new RuntimeException('Reload the current inbox before viewing this message.');
         }
         $senderPage=max(1,min((int)($_GET['sender_page']??1),100000));$replySenders=[];$moreReplySenders=false;
-        $mailCopyReady=mail_replies_ready()&&mail_drafts_ready();$mailCopyAllowed=$mailCopyReady&&staff_can('mail.send',$actor);
+        $mailCopyReady=mail_replies_ready()&&mail_drafts_ready();$mailCopyAllowed=false;
+        if($mailCopyReady&&mail_drafts_admin_access($actor)){
+            try{$draftActor=mail_drafts_actor();$mailCopyAllowed=(int)$draftActor['id']===(int)$actor['id']&&hash_equals($draftActor['auth_version'],$actor['auth_version']);}
+            catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}
+        }
         if($mailCopyAllowed){
             $assigned=mail_drafts_senders($senderPage);$moreReplySenders=count($assigned)>20;
             foreach(array_slice($assigned,0,20) as $senderAccount)$replySenders[$senderAccount['id']]=$senderAccount;
