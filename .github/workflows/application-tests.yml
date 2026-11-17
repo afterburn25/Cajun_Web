@@ -291,6 +291,9 @@ jobs:
           "$PHP_BINARY" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json
           "$PHP_BINARY" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json
           "$PHP_BINARY" tests/estimator_adapter.php
+          "$PHP_BINARY" tests/project-notes/records.php --deployment > qa/project-private-note-records.json
+          "$PHP_BINARY" tests/project_private_notes_policy.php > qa/project-private-notes-policy.json
+          "$PHP_BINARY" tests/project_private_notes_view.php > qa/project-private-notes-view.json
           "$PHP_BINARY" tests/native.php
           "$PHP_BINARY" tests/staff_native.php
           "$PHP_BINARY" tests/database_schema_registry_policy.php > qa/database-schema-registry-policy-results.json
@@ -311,6 +314,7 @@ jobs:
           "$PHP_BINARY" tests/delivery_native.php
           "$PHP_BINARY" tests/backups_native.php
           "$PHP_BINARY" tests/activity_native.php
+          "$PHP_BINARY" tests/project_private_notes_native.php
           "$PHP_BINARY" tests/mail_templates_native.php
           "$PHP_BINARY" tests/mail_accounts_native.php
           "$PHP_BINARY" tests/reviews_native.php
