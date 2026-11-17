@@ -8,7 +8,7 @@ require_once CWP_CODE_ROOT.'/includes/foundation/mail-compose/DraftOrigin.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-compose/CopiedDraftSource.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_replies_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_replies_migrate.php';
-use CajunWebPro\Foundation\MailCompose\{CopiedDraftSource,DraftContent,DraftOrigin};
+use CajunWebPro\Foundation\MailCompose\{CopiedDraftSource,DraftContent,DraftOrigin,MessageThread};
 
 function mail_replies_ready():bool{return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_replies_schema_version'])['value']??'')==='1';}
 function mail_reply_drafts_actor():array{
@@ -140,6 +140,12 @@ function mail_drafts_combined_list(string $account,string $status='draft',int $p
         }
         return $result;
     });
+}
+/** Locked, integrity-verified view for submission preparation and reauthorization. */
+function mail_reply_drafts_for_submission(string $id,array $actor,bool $lock=false):array{
+    $loaded=mail_reply_drafts_load($id,$actor,$lock);
+    return ['base'=>$loaded['base'],'row'=>$loaded['row'],'content'=>$loaded['content'],'sender'=>$loaded['sender'],
+        'thread'=>MessageThread::fromStored($loaded['origin']->data['thread']),'origin_fingerprint'=>$loaded['origin']->fingerprint];
 }
 function mail_reply_drafts_history(string $id,int $page=1):array{
     return staff_locked(function()use($id,$page):array{

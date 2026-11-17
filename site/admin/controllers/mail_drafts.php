@@ -51,9 +51,9 @@ function mail_drafts_admin_copied(?array $row,bool $protected):bool {
     if($source!==$protected)throw new RuntimeException('Draft storage is inconsistent. Existing data was preserved.');
     return $source;
 }
-/** Submission integration is deliberately absent from this held slice. */
+/** Only current saved drafts may enter the separate explicit review/send flow. */
 function mail_drafts_admin_can_review_send(?array $row):bool {
-    return $row!==null&&($row['status']??null)==='draft'&&empty($row['copied']);
+    return $row!==null&&($row['status']??null)==='draft';
 }
 function mail_drafts_admin_origin_action(string $mode):string {
     return match($mode){'reply'=>'replying to','forward'=>'forwarding',default=>throw new RuntimeException('Protected draft origin is inconsistent. Existing data was preserved.')};

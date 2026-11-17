@@ -118,7 +118,7 @@ function storage_raw(string $subject='PRIVATE_COPIED_SUBJECT',string $body='PRIV
 }
 function storage_source(int $actor=7,string $mode='reply',string $raw=''):CopiedDraftSource {
     global $sourceAccount,$readId;$raw=$raw===''?storage_raw():$raw;
-    return CopiedDraftSource::fromRead($actor,$sourceAccount,1,'7','44',$readId,$mode,$raw,$mode==='reply-all'?'sender@example.invalid':null);
+    return CopiedDraftSource::fromRead($actor,$sourceAccount,1,'7','44',$readId,$mode,$raw);
 }
 
 $sourceAccount=str_repeat('a',32);$senderAccount=str_repeat('b',32);$otherSender=str_repeat('c',32);$readId=str_repeat('d',32);$draftId=str_repeat('e',32);
@@ -186,9 +186,9 @@ storage_check('discard retains protected content and immutable origin but refuse
     return $discarded['status']==='discarded'&&$discarded['revision']===3&&$discarded['body']==='Edited body'&&$discarded['origin']===$origin
         &&storage_denied(fn()=>mail_reply_drafts_save($draftId,3,$otherSender,1,new DraftContent([],[],[],'Revive','Body')))&&storage_snapshot()===$before;
 });
-storage_check('slice defines no submission MIME SMTP or send path',function(){
+storage_check('submission projection exposes only reauthorized bounded content and no MIME SMTP path',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/app/mail/replies.php');
-    return !function_exists('mail_reply_drafts_for_submission')&&!preg_match('/mail_submissions|PreparedMime|smtp|send_message/i',$source);
+    return function_exists('mail_reply_drafts_for_submission')&&!preg_match('/PreparedMime|smtp|send_message/i',$source);
 });
 storage_check('query parameters never contain raw MIME or its hidden marker',function(){
     $queries=json_encode($GLOBALS['copiedState']['queries'],JSON_THROW_ON_ERROR);
@@ -197,7 +197,7 @@ storage_check('query parameters never contain raw MIME or its hidden marker',fun
 
 $storagePassed=!array_filter($storageChecks,fn($row)=>!$row['passed']);
 echo json_encode([
-    'scope'=>'In-memory exact-service contract for protected copied-draft storage, current authorization, replay, tamper, privacy and optimistic writes; no native SQL, mailbox, HTTP, UI, submission, SMTP or sending acceptance',
+    'scope'=>'In-memory exact-service contract for protected copied-draft storage, current authorization, replay, tamper, privacy, optimistic writes and bounded submission projection; no native SQL, mailbox, HTTP, UI, MIME, SMTP or sending acceptance',
     'passed'=>$storagePassed,'checks'=>$storageChecks,
 ],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";
 exit($storagePassed?0:1);

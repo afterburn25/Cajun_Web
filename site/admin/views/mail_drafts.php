@@ -36,7 +36,7 @@ $accounts=$data['accounts'];
 <section class="workspace-card" data-mail-draft-origin><h2>Message origin</h2>
 <p>This draft was created by <?=esc(mail_drafts_admin_origin_action($origin['mode']))?> a message you loaded from an assigned inbox (UID <?=esc($origin['uid'])?>). The original raw message is not stored in this draft.</p>
 <?php if($origin['omissions']): ?><p class="notice warning">Not everything could be copied: <?=esc(implode('; ',array_map('mail_drafts_admin_omission',$origin['omissions'])))?>.</p><?php endif; ?>
-<p class="hint">Current access to the original inbox and sending account is rechecked whenever this draft opens or changes. This held slice cannot submit or send a copied draft.</p></section>
+<p class="hint">Current access to the original inbox and sending account is rechecked whenever this draft opens, changes, is reviewed, or is explicitly submitted. Creating or saving this draft does not send email.</p></section>
 <?php endif; ?>
 <?php if($row&&(int)$row['revision']!==$data['revision']): ?><p class="notice warning">Your entered text is preserved with its earlier version. Open the saved draft in a separate tab to compare before making a new edit.</p><p><a class="btn outline" target="_blank" rel="noopener" href="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>">Open current saved version</a></p><?php endif; ?>
 <?php if($data['unsaved']!==null): ?>

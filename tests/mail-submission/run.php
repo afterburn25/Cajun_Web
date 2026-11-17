@@ -20,6 +20,9 @@ try {
     check('Message identity uses opaque submission and selected sender domain',$s->messageId==='<cwp.'.str_repeat('1',32).'@example.invalid>');
     check('Identical saved preparation has a stable fingerprint',$s->fingerprint===snapshot()->fingerprint);
     check('Equivalent sender domain case has a stable fingerprint',$s->fingerprint===snapshot(['from'=>'Studio+work@example.invalid'])->fingerprint);
+    $formatOneJson=json_encode($s->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+    check('Ordinary preparation retains the exact format-1 private payload bytes',$formatOneJson==='{"format":1,"id":"11111111111111111111111111111111","author_id":7,"draft_id":"22222222222222222222222222222222","draft_revision":3,"account_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","account_revision":4,"from":"Studio+work@example.invalid","message_id":"<cwp.11111111111111111111111111111111@example.invalid>","prepared_epoch":1791964800,"to":["Client@example.invalid"],"cc":["copy@example.invalid"],"bcc":["private@example.invalid"],"subject":"Project update","body":"Saved literal body"}');
+    check('Ordinary preparation retains the exact format-1 fingerprint',$s->fingerprint==='ca52583c770423f97cb04d4fa84f0954da466e66e5f28d8db6a6cb1b92a55721');
     check('All three recipient classes appear once in the envelope',$s->envelopeRecipients()===['Client@example.invalid','copy@example.invalid','private@example.invalid']);
     check('Recipient visibility classes remain separate in the private snapshot',$s->privatePayload()['to']===['Client@example.invalid']&&$s->privatePayload()['cc']===['copy@example.invalid']&&$s->privatePayload()['bcc']===['private@example.invalid']);
     foreach (['id'=>str_repeat('3',32),'authorId'=>8,'draftId'=>str_repeat('3',32),'draftRevision'=>4,'accountId'=>str_repeat('b',32),'accountRevision'=>5,'from'=>'other@example.invalid','preparedEpoch'=>1791964801] as $key=>$value) {

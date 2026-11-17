@@ -22,7 +22,7 @@ final readonly class ReplyDraft
         $subject=$message['subject']; $omissions=[];
         if(!preg_match($mode==='reply'?'/\ARe:\s*/i':'/\AFw(?:d)?:\s*/i',$subject))$subject=$prefix.$subject;
         if(strlen($subject)>DraftContent::MAX_SUBJECT_BYTES || $message['headers_truncated'])$omissions[]='subject_or_header_shortened';
-        $subject=mb_strcut($subject,0,DraftContent::MAX_SUBJECT_BYTES,'UTF-8');
+        $subject=self::utf8Bytes($subject,DraftContent::MAX_SUBJECT_BYTES);
         $quote="From: ".$message['from']."\nDate: ".$message['date']."\nSubject: ".$message['subject']."\n\n";
         if($message['text']===null) {
             $omissions[]='plain_text_unavailable';
@@ -37,8 +37,17 @@ final readonly class ReplyDraft
         if(strlen($body)>$maximum) {
             $omissions[]='quoted_text_shortened';
             $marker="\n[Quoted text shortened to fit this draft. Open the original message for the rest.]";
-            $body=mb_strcut($body,0,$maximum-strlen($marker),'UTF-8').$marker;
+            $body=self::utf8Bytes($body,$maximum-strlen($marker)).$marker;
         }
         return new self($mode,new DraftContent($metadata?->recipients??[],[],[],$subject,$body.$footer),$metadata?->thread??MessageThread::none(),$omissions);
+    }
+
+    /** Cut an already validated UTF-8 value at a byte boundary without mbstring. */
+    private static function utf8Bytes(string $value,int $maximum):string
+    {
+        if(strlen($value)<=$maximum)return $value;
+        $cut=substr($value,0,$maximum);
+        while($cut!==''&&preg_match('//u',$cut)!==1)$cut=substr($cut,0,-1);
+        return $cut;
     }
 }

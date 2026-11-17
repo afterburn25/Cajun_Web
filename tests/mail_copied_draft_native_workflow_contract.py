@@ -1,4 +1,4 @@
-"""Guard the held copied-draft exact-source Linux SQL acceptance workflow."""
+"""Guard copied Reply/Forward exact-source Linux SQL acceptance."""
 from pathlib import Path
 import json
 
@@ -28,7 +28,12 @@ def validate(text):
           and text.count("'tests/mail_copied_draft_native_workflow_contract.py'") == 2
           and text.count("'site/admin/**'") == 2
           and text.count("'tests/mail-compose/**'") == 2
-          and text.count("'tests/mail-receiving/attachment_*.php'") == 2
+          and text.count("'tests/mail-submission/**'") == 2
+          and text.count("'foundation/mail-receiving/HeaderDecoder.php'") == 2
+          and text.count("'foundation/mail-submission/**'") == 2
+          and text.count("'.github/scripts/**'") == 2
+          and text.count("'tests/mail_replies_native.php'") == 2
+          and text.count("'tests/mail_reply_cases.py'") == 2
           and text.count("'tests/database_schema_registry_policy.php'") == 2
           and text.count("'tests/mail_message_cases.py'") == 2
           and text.count("'.github/workflows/mail-copied-draft-native.yml'") == 2
@@ -50,10 +55,12 @@ def validate(text):
           and text.count('CWP_RUN_ATTEMPT: ${{ github.run_attempt }}') == 2
           and 'test "$CWP_RUN_ATTEMPT" = "1"' in text
           and text.count('${{ github.run_id }}-attempt-${{ github.run_attempt }}') == 2)
-    check('Every hosted lane refuses the withdrawn Ubuntu mirror image before package networking',
-          text.count("raise SystemExit('Unexpected Ubuntu mirror list')") == 2
-          and text.count("b'http://azure.archive.ubuntu.com/ubuntu/\\tpriority:1\\n'") == 2
-          and text.count("print('Supported Ubuntu runner mirror list verified')") == 2)
+    check('Focused lanes have no GitHub-hosted APT mirror dependency',
+          'sudo apt' not in text and 'add-apt-repository' not in text
+          and '/etc/apt/' not in text)
+    check('Disposable PHP keeps official signed package verification',
+          'FROM php:${PHP_VERSION}-cli' in text
+          and '--allow-unauthenticated' not in text and 'trusted=yes' not in text)
     check('Source admission runs the reviewed Python message contract and retains its result',
           text.count('python3 tests/mail_message_cases.py') == 1
           and text.count("printf 'passed\\n' > qa/mail-copied-draft-native/source/mail-message-source-cases.log") == 1)
@@ -66,34 +73,40 @@ def validate(text):
     check('The assigned synthetic user has a bounded retained PDO readiness proof',
           'for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text
           and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
-    check('Only the exact native copied-draft suite runs in the SQL matrix',
-          text.count('php tests/mail_copied_draft_create_native.php\n') == 1)
+    check('Only the exact copied-draft and complete Reply/Forward suites run in the SQL matrix',
+          text.count('php tests/mail_copied_draft_create_native.php\n') == 1
+          and text.count('php tests/mail_replies_native.php\n') == 1)
     portable = (
         ('tests/mail-compose/origin.php', 'origin', '17'),
         ('tests/mail-compose/reply.php', 'reply', '60'),
-        ('tests/mail-compose/reply_all.php', 'reply-all', '37'),
         ('tests/mail-compose/thread.php', 'thread', '45'),
-        ('tests/mail-compose/copied_source.php', 'copied-source', '21'),
+        ('tests/mail-compose/copied_source.php', 'copied-source', '18'),
         ('tests/mail_copied_draft_storage.php', 'storage', '20'),
         ('tests/mail_copied_draft_admin_policy.php', 'admin-policy', '23'),
-        ('tests/mail_copied_draft_create_adapter.php', 'adapter', '20'),
-        ('tests/database_schema_registry_policy.php', 'schema-registry', '381'),
-        ('tests/mail-receiving/attachment_test.php', 'attachment', '14'),
-        ('tests/mail-receiving/attachment_security_test.php', 'attachment-security', '27'),
+        ('tests/mail_copied_draft_create_adapter.php', 'adapter', '18'),
+        ('tests/database_schema_registry_policy.php', 'schema-registry', '385'),
+        ('tests/mail-submission/run.php', 'submission-snapshot', '54'),
+        ('tests/mail-submission/mime.php', 'submission-mime', '31'),
     )
     check('Every native cell runs the reviewed portable surface in normal and no-INI modes',
           'for mode in normal noini; do' in text
-          and 'php_flags="-n -d extension=mbstring"' in text
-          and all(text.count('php $php_flags ' + path + ' > "$cell/portable-$mode-' + report + '.json"') == 1
-                  for path, report, _ in portable))
+          and 'php_flags="-n"' in text
+          and all(text.count(
+              'php $php_flags ' + path + (
+                  ' "$cell/portable-$mode-' + report + '.json" > "$cell/portable-$mode-' + report + '.stdout.log"'
+                  if path.startswith('tests/mail-submission/')
+                  else ' > "$cell/portable-$mode-' + report + '.json"'
+              )
+          ) == 1 for path, report, _ in portable))
     check('Portable evidence is complete, named and exact-count validated before acceptance',
           "for mode in ('normal', 'noini'):" in text
           and "assert len(report['checks']) == count" in text
           and all(("'" + report + "': " + count) in text for _, report, count in portable))
     check('The workflow requires successful complete named reports',
-          text.count("assert report['passed'] is True") == 2
+          text.count("assert report['passed'] is True") == 3
           and "assert len(report['checks']) >= 21" in text
-          and text.count("assert all(check['passed'] is True for check in report['checks'])") == 2)
+          and "assert len(report['checks']) >= 70" in text
+          and text.count("assert all(check['passed'] is True for check in report['checks'])") == 3)
     native_run = text.split('      - name: Run isolated copied-draft SQL acceptance\n', 1)[1]
     check('A failed suite retains its JSON before the original status is enforced',
           '|| status=$?' in native_run
@@ -127,8 +140,8 @@ def self_test(text):
         ('rerun admission', 'test "$CWP_RUN_ATTEMPT" = "1"', 'test -n "$CWP_RUN_ATTEMPT"'),
         ('lost mbstring', 'docker-php-ext-install pdo_mysql mbstring', 'docker-php-ext-install pdo_mysql'),
         ('lost admin path admission', "'site/admin/**'", "'site/app/mail/**'"),
-        ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # portable reply-all removed'),
-        ('lost runner-image guard', "raise SystemExit('Unexpected Ubuntu mirror list')", "print('ignored Ubuntu mirror list')"),
+        ('lost genuine no-INI run', 'php_flags="-n"', 'php_flags=""'),
+        ('added hosted APT dependency', 'mkdir -p "$cell"', 'sudo apt-get update\n          mkdir -p "$cell"'),
         ('lost source message contract', 'python3 tests/mail_message_cases.py', ': # source message contract removed'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost report gate', "assert report['passed'] is True", 'assert True'),

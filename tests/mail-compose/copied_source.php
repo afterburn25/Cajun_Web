@@ -23,9 +23,9 @@ function copied_raw(string $extra='',string $body='Synthetic copied body.'):stri
         "Message-ID: <copied@example.invalid>\r\n".$extra.
         "Content-Type: text/plain; charset=UTF-8\r\n\r\n".$body;
 }
-function copied_source(string $mode='reply',?string $self=null,string $raw=''):CopiedDraftSource {
+function copied_source(string $mode='reply',string $raw=''):CopiedDraftSource {
     $raw=$raw===''?copied_raw():$raw;
-    return CopiedDraftSource::fromRead(7,str_repeat('a',32),3,'9','44',str_repeat('b',32),$mode,$raw,$self);
+    return CopiedDraftSource::fromRead(7,str_repeat('a',32),3,'9','44',str_repeat('b',32),$mode,$raw);
 }
 
 copied_check('one transient factory binds exact actor account revision UID and read identity',function(){
@@ -39,11 +39,6 @@ copied_check('reply derives bounded ordinary content and threading without expos
     return $source->draft->mode==='reply'&&$source->draft->content->to===['author@example.invalid']
         &&$source->draft->content->bcc===[]&&$source->draft->thread->inReplyTo==='<copied@example.invalid>'
         &&!str_contains(json_encode($source->draft,JSON_THROW_ON_ERROR),'NEVER_PERSIST_RAW_MARKER');
-});
-copied_check('reply all requires and applies one exact chosen self address',function(){
-    $source=copied_source('reply-all','me@example.invalid');
-    return $source->draft->content->to===['author@example.invalid','other@example.invalid']
-        &&$source->draft->content->cc===[]&&$source->draft->content->bcc===[];
 });
 copied_check('forward is recipientless and carries no inherited reply thread',function(){
     $source=copied_source('forward');
@@ -68,18 +63,16 @@ copied_check('copied source and derived draft are immutable',function(){
 });
 
 foreach([
-    'zero actor'=>[0,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',copied_raw(),null],
-    'overflow actor'=>[2147483648,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',copied_raw(),null],
-    'zero account revision'=>[7,str_repeat('a',32),0,'9','44',str_repeat('b',32),'reply',copied_raw(),null],
-    'invalid account id'=>[7,str_repeat('A',32),3,'9','44',str_repeat('b',32),'reply',copied_raw(),null],
-    'invalid read id'=>[7,str_repeat('a',32),3,'9','44',str_repeat('g',32),'reply',copied_raw(),null],
-    'zero UIDVALIDITY'=>[7,str_repeat('a',32),3,'0','44',str_repeat('b',32),'reply',copied_raw(),null],
-    'overflow UID'=>[7,str_repeat('a',32),3,'9','4294967296',str_repeat('b',32),'reply',copied_raw(),null],
-    'empty raw source'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply','',null],
-    'oversized raw source'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',str_repeat('x',262145),null],
-    'reply all without self'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply-all',copied_raw(),null],
-    'ordinary reply with self'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',copied_raw(),'me@example.invalid'],
-    'forward with self'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'forward',copied_raw(),'me@example.invalid'],
+    'zero actor'=>[0,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',copied_raw()],
+    'overflow actor'=>[2147483648,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',copied_raw()],
+    'zero account revision'=>[7,str_repeat('a',32),0,'9','44',str_repeat('b',32),'reply',copied_raw()],
+    'invalid account id'=>[7,str_repeat('A',32),3,'9','44',str_repeat('b',32),'reply',copied_raw()],
+    'invalid read id'=>[7,str_repeat('a',32),3,'9','44',str_repeat('g',32),'reply',copied_raw()],
+    'zero UIDVALIDITY'=>[7,str_repeat('a',32),3,'0','44',str_repeat('b',32),'reply',copied_raw()],
+    'overflow UID'=>[7,str_repeat('a',32),3,'9','4294967296',str_repeat('b',32),'reply',copied_raw()],
+    'empty raw source'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',''],
+    'oversized raw source'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',str_repeat('x',262145)],
+    'reply all'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply-all',copied_raw()],
 ] as $label=>$arguments)copied_check('factory refuses '.$label,fn()=>copied_denied(fn()=>CopiedDraftSource::fromRead(...$arguments)));
 
 copied_check('all canonical compose models have byte-exact deployed mirrors',function(){

@@ -27,11 +27,11 @@ copied_admin_check('source status with missing protected row fails closed before
 copied_admin_check('protected row without a base draft fails closed',fn()=>copied_admin_denied(fn()=>mail_drafts_admin_copied(null,true)));
 
 copied_admin_check('ordinary saved draft retains its existing submission-review link policy',fn()=>mail_drafts_admin_can_review_send(['status'=>'draft']));
-copied_admin_check('copied saved draft cannot enter submission review in this held slice',fn()=>!mail_drafts_admin_can_review_send(['status'=>'draft','copied'=>true]));
+copied_admin_check('copied saved draft can enter the same explicit submission review',fn()=>mail_drafts_admin_can_review_send(['status'=>'draft','copied'=>true]));
 copied_admin_check('discarded and missing drafts cannot enter submission review',fn()=>!mail_drafts_admin_can_review_send(['status'=>'discarded'])&&!mail_drafts_admin_can_review_send(null));
 
 copied_admin_check('reply origin label is finite and generic',fn()=>mail_drafts_admin_origin_action('reply')==='replying to');
-copied_admin_check('reply-all origin label is finite and generic',fn()=>mail_drafts_admin_origin_action('reply-all')==='replying to everyone on');
+copied_admin_check('reply-all origin mode remains outside Reply and Forward scope',fn()=>copied_admin_denied(fn()=>mail_drafts_admin_origin_action('reply-all')));
 copied_admin_check('forward origin label is finite and generic',fn()=>mail_drafts_admin_origin_action('forward')==='forwarding');
 copied_admin_check('unknown origin mode fails closed',fn()=>copied_admin_denied(fn()=>mail_drafts_admin_origin_action('reply-later')));
 
@@ -58,7 +58,10 @@ copied_admin_check('copied origin presentation exposes no account read or finger
     foreach(['source_account_id','source_revision','read_id','initial_account_id','initial_account_revision','origin_json','fingerprint'] as $private)if(str_contains($source,$private))return false;
     return str_contains($source,"esc(mail_drafts_admin_origin_action(")&&str_contains($source,"esc(\$origin['uid'])")&&str_contains($source,"array_map('mail_drafts_admin_omission'");
 });
-copied_admin_check('copied view explicitly discloses that submission and sending are unavailable',fn()=>str_contains(file_get_contents(CWP_CODE_ROOT.'/admin/views/mail_drafts.php'),'This held slice cannot submit or send a copied draft.'));
+copied_admin_check('copied view discloses reauthorization and that saving never sends',function(){
+    $source=file_get_contents(CWP_CODE_ROOT.'/admin/views/mail_drafts.php');
+    return str_contains($source,'is reviewed, or is explicitly submitted')&&str_contains($source,'does not send email');
+});
 copied_admin_check('admin slice imports no message-read raw MIME SMTP or submission service',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php').file_get_contents(CWP_CODE_ROOT.'/admin/views/mail_drafts.php');
     return !preg_match('/mail_message_read|CopiedDraftSource|PreparedMime|mail_submissions|smtp/i',$source);
