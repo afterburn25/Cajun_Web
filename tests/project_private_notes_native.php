@@ -3,7 +3,8 @@
 declare(strict_types=1);
 require_once __DIR__.'/current_owner_authority.php';
 
-if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'
+    ||getenv('CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE')!=='cwp_hpay_foreign')exit(2);
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
@@ -48,11 +49,11 @@ try{
     db()->exec('ALTER TABLE '.table('project_private_notes').' DROP INDEX project_notes');
     pn_deny('Setup rejects a private-note table missing its exact project index',fn()=>project_private_notes_migrate($password));
     db()->exec('ALTER TABLE '.table('project_private_notes').' ADD INDEX project_notes(project_id,id)');
-    $foreignDatabase='cwp_test_projectnotes_foreign';
+    $foreignDatabase=(string)getenv('CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE');
+    $foreignTables=all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=? AND table_name LIKE ?',[$foreignDatabase,config()['db']['prefix'].'%']);
+    if($foreignDatabase!=='cwp_hpay_foreign'||$foreignTables)throw new RuntimeException('Exact isolated foreign fixture schema unavailable.');
     db()->exec('DROP TABLE '.table('project_private_notes'));
-    db()->exec('DROP DATABASE IF EXISTS `'.$foreignDatabase.'`');
     try{
-        db()->exec('CREATE DATABASE `'.$foreignDatabase.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
         db()->exec('CREATE TABLE `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'studio_jobs` (id INT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=InnoDB');
         db()->exec('CREATE TABLE `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'users` (id INT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=InnoDB');
         db()->exec('CREATE TABLE '.table('project_private_notes').' (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,project_id INT UNSIGNED NOT NULL,staff_id INT UNSIGNED NOT NULL,created_epoch BIGINT UNSIGNED NOT NULL,body TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,INDEX project_notes(project_id,id),INDEX staff_id(staff_id),FOREIGN KEY (project_id) REFERENCES `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'studio_jobs` (id) ON DELETE RESTRICT ON UPDATE RESTRICT,FOREIGN KEY (staff_id) REFERENCES `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'users` (id) ON DELETE RESTRICT ON UPDATE RESTRICT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
@@ -60,7 +61,8 @@ try{
         pn_ok('Cross-database refusal leaves the readiness marker unchanged',!project_private_notes_ready());
     }finally{
         db()->exec('DROP TABLE IF EXISTS '.table('project_private_notes'));
-        db()->exec('DROP DATABASE IF EXISTS `'.$foreignDatabase.'`');
+        db()->exec('DROP TABLE IF EXISTS `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'studio_jobs`');
+        db()->exec('DROP TABLE IF EXISTS `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'users`');
     }
     db()->exec(project_private_notes_schema(config()['db']['prefix'])['project_private_notes']);
     query('INSERT INTO '.table('project_private_notes').' (project_id,staff_id,created_epoch,body) VALUES (1,1,1,?)',['Unrecognized retained note']);
