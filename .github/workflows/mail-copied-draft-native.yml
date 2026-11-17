@@ -33,7 +33,11 @@ jobs:
           mkdir -p qa/mail-copied-draft-native/source
           test "$CWP_RUN_ATTEMPT" = "1"
           python3 tests/mail_copied_draft_native_workflow_contract.py > qa/mail-copied-draft-native/source/workflow-contract.json
-          python3 tests/mail_message_cases.py
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in ('tests/mail_message_cases.py', 'tests/mail_reply_cases.py'):
+              compile(Path(path).read_bytes(), path, 'exec')
+          PY
           printf 'passed\n' > qa/mail-copied-draft-native/source/mail-message-source-cases.log
           php -l site/app/mail/copied_drafts.php > qa/mail-copied-draft-native/source/lint.log
           php -l site/app/mail/messages.php >> qa/mail-copied-draft-native/source/lint.log

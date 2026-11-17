@@ -33,9 +33,9 @@ def validate(text):
           and text.count("'foundation/mail-submission/**'") == 2
           and text.count("'.github/scripts/**'") == 2
           and text.count("'tests/mail_replies_native.php'") == 2
-          and text.count("'tests/mail_reply_cases.py'") == 2
+          and text.count("'tests/mail_reply_cases.py'") == 3
           and text.count("'tests/database_schema_registry_policy.php'") == 2
-          and text.count("'tests/mail_message_cases.py'") == 2
+          and text.count("'tests/mail_message_cases.py'") == 3
           and text.count("'.github/workflows/mail-copied-draft-native.yml'") == 2
           and text.count('branches: [main]') == 2)
     check('Manual redispatch cannot masquerade as a new first source run',
@@ -61,8 +61,9 @@ def validate(text):
     check('Disposable PHP keeps official signed package verification',
           'FROM php:${PHP_VERSION}-cli' in text
           and '--allow-unauthenticated' not in text and 'trusted=yes' not in text)
-    check('Source admission runs the reviewed Python message contract and retains its result',
-          text.count('python3 tests/mail_message_cases.py') == 1
+    check('Source admission compiles the reviewed browser modules without importing browser dependencies',
+          text.count("for path in ('tests/mail_message_cases.py', 'tests/mail_reply_cases.py'):") == 1
+          and text.count("compile(Path(path).read_bytes(), path, 'exec')") == 1
           and text.count("printf 'passed\\n' > qa/mail-copied-draft-native/source/mail-message-source-cases.log") == 1)
     check('Acceptance retains the complete PHP and database matrix',
           "php: ['8.2', '8.4']" in text and 'database: [mariadb, mysql]' in text
@@ -142,7 +143,7 @@ def self_test(text):
         ('lost admin path admission', "'site/admin/**'", "'site/app/mail/**'"),
         ('lost genuine no-INI run', 'php_flags="-n"', 'php_flags=""'),
         ('added hosted APT dependency', 'mkdir -p "$cell"', 'sudo apt-get update\n          mkdir -p "$cell"'),
-        ('lost source message contract', 'python3 tests/mail_message_cases.py', ': # source message contract removed'),
+        ('lost source message compilation', "compile(Path(path).read_bytes(), path, 'exec')", ': # source message compilation removed'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost report gate', "assert report['passed'] is True", 'assert True'),
         ('lost failure evidence', 'if: always()', 'if: success()'),
