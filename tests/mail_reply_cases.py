@@ -10,7 +10,7 @@ from staff_cases import OWNER, STAFF
 
 
 def run_browser(env, browser):
-    globals().update({k: env[k] for k in ['ROOT', 'WEB', 'BASE', 'QA', 'check', 'soup', 'token', 'form_data', 'submit', 'inbox_server', 'submission_server']})
+    globals().update({k: env[k] for k in ['ROOT', 'WEB', 'BASE', 'QA', 'check', 'soup', 'token', 'form_data', 'form_for', 'submit', 'inbox_server', 'submission_server']})
     db('DELETE FROM ci_rate_limits')
     root = BASE + '/existing/admin/index.php'
     drafts_url = root + '?view=mail-drafts'
