@@ -316,6 +316,29 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n# unreviewed helper binding\n')))
 
+        def altered_mail_copy_controls_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_copy_controls_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail copy-controls source tree',
+                lambda: altered_mail_copy_controls_identity(
+                    'MAIL_COPY_CONTROLS_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail copy-controls direct parent',
+                lambda: altered_mail_copy_controls_identity(
+                    'MAIL_COPY_CONTROLS_FIX_BASE'))
+        refuses('Refuses altered mail copy-controls controller source',
+                lambda: modified('site/admin/controllers/mail_message.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed copy authority\n')))
+        refuses('Refuses altered mail copy-controls contract source',
+                lambda: modified('tests/mail_copied_draft_create_adapter.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed copy contract\n')))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:
