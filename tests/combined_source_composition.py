@@ -604,6 +604,16 @@ PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS = frozenset((
     'tests/acceptance_artifacts_test.py',
     'tests/account_notification_workflow_contract.py',
 ))
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE = 'a2fa4a7d98ac7d28852ffc7246c4c32850ff3975'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE_TREE = 'bacc5f363d3310332c7af5c3857634928295c65b'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_IMPLEMENTATION = '171d3174a1a8f4b1369a0829cfcdc8a9c3a508ca'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_IMPLEMENTATION_TREE = '0b8f7b33b7579e5841625dab69579e9e5dec7c07'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE = 'b638d071584adc4967013b0425511ac5dafca745'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE = 'bcaeaf3f024ae14c4aa938abf493fed8ef58ef78'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tests/cloud_site_intake_wiring.py',
+))
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -2953,7 +2963,7 @@ def validate_runner_application_intake_projection_source(root):
     base_entries = entries(root, RUNNER_APPLICATION_INTAKE_PROJECTION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_project_private_notes_static_intake_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_BASE + ':' + path)
         require(current == source
@@ -2965,6 +2975,7 @@ def validate_runner_application_intake_projection_source(root):
 
 def project_runner_application_intake_projection(root, path, current):
     """Restore the reviewed hybrid-fixture correction head."""
+    current = project_project_private_notes_static_intake_source(root, path, current)
     if path not in RUNNER_APPLICATION_INTAKE_PROJECTION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_INTAKE_PROJECTION_SOURCE + ':' + path)
@@ -3919,7 +3930,7 @@ def validate_project_private_notes_proof_compat_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS):
-        current = ordinary(root, path)
+        current = project_project_private_notes_static_intake_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE + ':' + path)
         require(current == source
@@ -3944,6 +3955,7 @@ def validate_project_private_notes_proof_compat_source(root):
 
 def project_project_private_notes_proof_compat_source(root, path, current):
     """Restore the failed hosted head for older proof receipts."""
+    current = project_project_private_notes_static_intake_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':' + path)
@@ -3954,6 +3966,72 @@ def project_project_private_notes_proof_compat_source(root, path, current):
         return current
     require(current == source,
             'Current project private notes proof compatibility source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_project_private_notes_static_intake_source(root):
+    """Bind the exact static-intake proof correction after its preserved hosted failure."""
+    identities = (
+        (PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE_TREE),
+        (PROJECT_PRIVATE_NOTES_STATIC_INTAKE_IMPLEMENTATION,
+         PROJECT_PRIVATE_NOTES_STATIC_INTAKE_IMPLEMENTATION_TREE),
+        (PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Project private notes static-intake source tree changed: ' + commit)
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_STATIC_INTAKE_IMPLEMENTATION).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE]
+            and git(root, 'show', '-s', '--format=%P',
+                    PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_STATIC_INTAKE_IMPLEMENTATION],
+            'Project private notes static-intake source ancestry changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE,
+                PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS)],
+            'Project private notes static-intake correction changed another path or status')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE)
+    for path in sorted(PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_project_private_notes_static_intake_source(root, path, current) == base
+                and project_project_private_notes_static_intake_source(root, path, base) == base,
+                'Project private notes static-intake identity or projection changed: ' + path)
+    wiring = git(root, 'cat-file', 'blob',
+                 PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE + ':tests/cloud_site_intake_wiring.py')
+    artifact = git(root, 'cat-file', 'blob',
+                   PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE + ':tests/acceptance_artifacts_test.py')
+    require(wiring.count(b"len(project_note_additions) == len(set(project_note_additions)) == 4") == 1
+            and wiring.count(b"len(project_note_reports) == len(set(project_note_reports)) == 4") == 1
+            and wiring.count(b"all(full_native.count(command) == 1 for command in project_note_additions)") == 1
+            and wiring.count(b"all(current.count(name) == 1 for name in project_note_reports)") == 1
+            and wiring.count(b"callable(source_projector)") == 1,
+            'Project private notes static-intake command/report projection is not exact and fail-closed')
+    require(artifact.count(b'def project_private_notes_static_intake_predecessor(path, current):') == 1
+            and artifact.count(b'project_private_notes_static_intake_predecessor)') == 1
+            and b"PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE = '0b8f7b33b7579e5841625dab69579e9e5dec7c07'" in artifact,
+            'Project private notes static-intake source projection is not exact and required')
+
+
+def project_project_private_notes_static_intake_source(root, path, current):
+    """Restore the preserved failed head for older source receipts."""
+    if path not in PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes static-intake source changed before predecessor projection: ' + path)
     return base
 
 
@@ -4236,6 +4314,7 @@ def validate_pr391_recovery_successor(root):
                 | PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED
                 | {PROJECT_PRIVATE_NOTES_AUTHORITY_PATH}
                 | PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS
+                | PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
                 | PROOF_CACHE_HARDENING_MODIFIED
@@ -5497,6 +5576,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_static_intake_source(root)
     validate_project_private_notes_proof_compat_source(root)
     validate_project_private_notes_authority_source(root)
     validate_project_private_notes_evidence_source(root)
