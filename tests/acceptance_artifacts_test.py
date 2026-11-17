@@ -26,6 +26,11 @@ PROJECT_PRIVATE_NOTES_ARTIFACT_OVERLAYS = frozenset((
     'tests/database_schema_registry_policy.php',
     'tests/database_schema_view_policy.php',
 ))
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE = 'a2fa4a7d98ac7d28852ffc7246c4c32850ff3975'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE_TREE = 'bacc5f363d3310332c7af5c3857634928295c65b'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE = '171d3174a1a8f4b1369a0829cfcdc8a9c3a508ca'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE = '0b8f7b33b7579e5841625dab69579e9e5dec7c07'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATH = 'tests/cloud_site_intake_wiring.py'
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -103,6 +108,25 @@ def project_private_notes_artifact_predecessor(path, current):
           and subprocess.run(['git','merge-base','--is-ancestor',PROJECT_PRIVATE_NOTES_BASE,
                               PROJECT_PRIVATE_NOTES_SOURCE],cwd=ROOT).returncode==0)
     check('Private project note artifact overlay matches its exact reviewed source '+path,current==source)
+    return base
+
+
+def project_private_notes_static_intake_predecessor(path, current):
+    """Project only the exact reviewed static-intake proof successor."""
+    if path != PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATH:
+        return current
+    source=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('Private project note static-intake overlay retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE,
+                              PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE],cwd=ROOT).returncode==0)
+    check('Private project note static-intake overlay matches its exact reviewed source',current==source)
     return base
 
 
@@ -955,7 +979,8 @@ def run(tmp):
     native_commands=retained_native
     contract={**contract,'native_commands':native_commands}
     from cloud_site_intake_wiring import verify as cloud_intake_wiring
-    native_commands=cloud_intake_wiring(ROOT,contract,workflow,native_commands,check)
+    native_commands=cloud_intake_wiring(
+        ROOT,contract,workflow,native_commands,check,project_private_notes_static_intake_predecessor)
     contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)
