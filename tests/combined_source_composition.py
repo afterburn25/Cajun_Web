@@ -624,6 +624,16 @@ PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_PATHS = frozenset((
     'tests/project_private_notes_native.php',
     'tools/acceptance-contract.json',
 ))
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE = '556b38fa575c20424ebd80be11dd1f1f7469d592'
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE_TREE = 'f2d7f74aa15da84305cdbfbe8b06f1764ab1f668'
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_IMPLEMENTATION = 'acfce3e24f7815fe44ecbde0a605e3e5e568067d'
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_IMPLEMENTATION_TREE = '856c90144032eebef582d1ff5260e51f709d7345'
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE = '6cde30d315308d85a4d068365c5644ef439a0ccc'
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE_TREE = 'db9d3da93b4f27725757f6a5381ce156ba78c17d'
+PROJECT_PRIVATE_NOTES_FK_FIXTURE_PATHS = frozenset((
+    'tests/project_private_notes_native.php',
+    'tools/acceptance-contract.json',
+))
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -4074,7 +4084,7 @@ def validate_project_private_notes_native_fixture_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_PATHS):
-        current = ordinary(root, path)
+        current = project_project_private_notes_fk_fixture_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_BASE + ':' + path)
         require(current == source
@@ -4096,6 +4106,7 @@ def validate_project_private_notes_native_fixture_source(root):
 
 def project_project_private_notes_native_fixture_source(root, path, current):
     """Restore the preserved static-intake proof head for older source receipts."""
+    current = project_project_private_notes_fk_fixture_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_NATIVE_FIXTURE_SOURCE + ':' + path)
@@ -4106,6 +4117,68 @@ def project_project_private_notes_native_fixture_source(root, path, current):
         return current
     require(current == source,
             'Current project private notes native fixture changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_project_private_notes_fk_fixture_source(root):
+    """Bind the exact foreign-key-safe missing-index fixture correction."""
+    identities = (
+        (PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE, PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE_TREE),
+        (PROJECT_PRIVATE_NOTES_FK_FIXTURE_IMPLEMENTATION,
+         PROJECT_PRIVATE_NOTES_FK_FIXTURE_IMPLEMENTATION_TREE),
+        (PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE, PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Project private notes FK fixture source tree changed: ' + commit)
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_FK_FIXTURE_IMPLEMENTATION).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE]
+            and git(root, 'show', '-s', '--format=%P',
+                    PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_FK_FIXTURE_IMPLEMENTATION],
+            'Project private notes FK fixture ancestry changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE,
+                PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(PROJECT_PRIVATE_NOTES_FK_FIXTURE_PATHS)],
+            'Project private notes FK fixture correction changed another path or status')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE)
+    for path in sorted(PROJECT_PRIVATE_NOTES_FK_FIXTURE_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_project_private_notes_fk_fixture_source(root, path, current) == base
+                and project_project_private_notes_fk_fixture_source(root, path, base) == base,
+                'Project private notes FK fixture identity or projection changed: ' + path)
+    fixture = git(root, 'cat-file', 'blob',
+                  PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE + ':tests/project_private_notes_native.php')
+    contract = json.loads(git(root, 'cat-file', 'blob',
+                              PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE + ':tools/acceptance-contract.json'))
+    require(fixture.count(b'ADD INDEX fixture_project_fk(project_id), DROP INDEX project_notes') == 1
+            and fixture.count(b'ADD INDEX project_notes(project_id,id), DROP INDEX fixture_project_fk') == 1,
+            'Project private notes FK fixture does not preserve the relation while testing exact indexes')
+    require(contract['project_private_notes_native_command_extension']['source_sha256']
+            ['tests/project_private_notes_native.php'] == digest(fixture),
+            'Project private notes FK fixture acceptance identity changed')
+
+
+def project_project_private_notes_fk_fixture_source(root, path, current):
+    """Restore the accepted duplicate-include proof head for older source receipts."""
+    if path not in PROJECT_PRIVATE_NOTES_FK_FIXTURE_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_FK_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_FK_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes FK fixture changed before predecessor projection: ' + path)
     return base
 
 
@@ -5651,6 +5724,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_fk_fixture_source(root)
     validate_project_private_notes_native_fixture_source(root)
     validate_project_private_notes_static_intake_source(root)
     validate_project_private_notes_proof_compat_source(root)
