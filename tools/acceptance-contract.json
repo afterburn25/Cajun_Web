@@ -876,7 +876,7 @@
       "tests/project-notes/records.php": "1550e8d20f7f43f2ebce95c686013f7d452dc10bba2087afd5ca1faa0dae9e52",
       "tests/project_private_notes_policy.php": "747a0a354cb1fa5ddca465f607f2521cefaca665153edee564648e0c77ccb0da",
       "tests/project_private_notes_view.php": "6e4dccaaef50be2bc5f64251e2ac381a36f5bcc517e67dac935f142f8ce1d6b6",
-      "tests/project_private_notes_native.php": "89a28183e013a7f9965d80e556399fda816ce0b98157036029b59f0c55f37513"
+      "tests/project_private_notes_native.php": "208a1a74936939e38b346f7897cc5ebff35ac9433207d8a1619c0bb90080b08d"
     },
     "scope": "Synthetic immutable staff-only project-note model, policy, escaped view and isolated MySQL/MariaDB storage. No customer message, notification, mail, provider, payment, production access or deployment."
   },
