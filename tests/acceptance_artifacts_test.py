@@ -778,6 +778,39 @@ def run(tmp):
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     cloud_intake_additions=contract['cloud_site_intake']['additions']
+    project_notes_ext=contract.get('project_private_notes_native_command_extension')
+    project_notes_reports=[]
+    if project_notes_ext:
+        additions=project_notes_ext['additions'];after=project_notes_ext['after']
+        check('Private project note commands are one exact additive extension',
+              len(native_commands)==project_notes_ext['predecessor_native_count']+len(additions)
+              and native_commands==contract['native_commands']
+              and all(native_commands.count(command)==1
+                      and native_commands.index(after[command])+1==native_commands.index(command)
+                      for command in additions))
+        retained=[command for command in native_commands if command not in additions]
+        check('Private project note additions retain the complete predecessor recipe',
+              len(retained)==project_notes_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()
+              ==project_notes_ext['predecessor_native_sha256'])
+        for path,expected_hash in project_notes_ext['source_sha256'].items():
+            current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            check('Private project note acceptance source identity '+path,
+                  hashlib.sha256(current).hexdigest()==expected_hash)
+        registry=a.load(ROOT/'tools/acceptance-reports.json')
+        project_notes_reports=project_notes_ext['reports']
+        for mode in ('browser','final'):
+            current=registry[mode]
+            check('Private project note reports are exact and additive in '+mode,
+                  all(current.count(report)==1 for report in project_notes_reports)
+                  and len(current)==len(set(current)))
+            predecessor=[report for report in current if report not in project_notes_reports]
+            expected=project_notes_ext['predecessor_reports'][mode]
+            check('Private project note reports retain the exact predecessor inventory in '+mode,
+                  len(predecessor)==expected['count']
+                  and hashlib.sha256(json.dumps(predecessor,separators=(',',':')).encode()).hexdigest()
+                  ==expected['sha256'])
+        native_commands=retained;contract={**contract,'native_commands':native_commands}
     payment_ext=contract.get('hosting_payment_acceptance_extension')
     if payment_ext:
         additions=payment_ext['additions'];position=native_commands.index(payment_ext['additions_after'])+1
@@ -806,7 +839,7 @@ def run(tmp):
                   hashlib.sha256(current).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
         for mode in ('browser','final'):
-            current=registry[mode]
+            current=[report for report in registry[mode] if report not in project_notes_reports]
             check('Hosting payment reports are required once in '+mode,
                   all(current.count(report)==1 for report in payment_ext['reports']) and len(current)==len(set(current)))
             predecessor=[report for report in current if report not in payment_ext['reports']]
