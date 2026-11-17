@@ -171,6 +171,54 @@ def run(root=ROOT):
         refuses('Refuses omitting an exact UX-09 addition admission',
                 lambda: altered_ux09_receipt(lambda data: data['added'].pop('site/app/clients/public_identity.php')))
 
+        for name, path in (
+            ('Reply/Forward submission runtime', 'site/app/mail/submissions.php'),
+            ('Reply/Forward canonical class', 'foundation/mail-compose/ReplyDraft.php'),
+            ('Reply/Forward shipping mirror', 'site/includes/foundation/mail-compose/ReplyDraft.php'),
+            ('Reply/Forward shared schema registry', 'site/app/settings/database_schemas.php'),
+            ('Reply/Forward shared staff authority', 'site/app/staff/accounts.php'),
+            ('Reply/Forward canonical installer inventory', proof.INVENTORY),
+        ):
+            refuses('Refuses altered exact ' + name,
+                    lambda path=path: modified(
+                        path, lambda target: target.write_bytes(
+                            target.read_bytes() + b'\n# unreviewed Reply/Forward source\n')))
+        refuses('Refuses a missing Reply/Forward addition',
+                lambda: modified('site/app/mail/replies.php', lambda target: target.unlink()))
+        refuses('Refuses an executable mode on a Reply/Forward addition',
+                lambda: modified('foundation/mail-compose/ReplyDraft.php',
+                                 lambda target: target.chmod(0o755)))
+        refuses('Refuses an alternate Reply/Forward workflow trigger',
+                lambda: modified('.github/workflows/mail-copied-draft-native.yml',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\nworkflow_dispatch:\n')))
+
+        def altered_mail_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_forward_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Reply/Forward source tree',
+                lambda: altered_mail_identity('MAIL_REPLY_FORWARD_SOURCE_TREE'))
+        refuses('Refuses a substituted Reply/Forward prepared parent',
+                lambda: altered_mail_identity('MAIL_REPLY_FORWARD_PREPARED'))
+        for path in (
+            'site/app/settings/database_schemas.php',
+            'site/app/staff/accounts.php',
+            proof.INVENTORY,
+            'tests/browser_acceptance.py',
+            'tests/database_schema_registry_policy.php',
+            'tests/database_schema_view_policy.php',
+        ):
+            projected = proof.project_mail_reply_forward_source(
+                fixture, path, proof.ordinary(fixture, path))
+            assert projected == proof.git(
+                fixture, 'cat-file', 'blob', proof.MAIL_REPLY_FORWARD_BASE + ':' + path)
+            passed('Reply/Forward shared projection restores exact resulting-main bytes: ' + path)
+
         def altered_receipt(change):
             def rewrite(target):
                 data = json.loads(target.read_bytes())
