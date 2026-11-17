@@ -24,10 +24,18 @@ def run_browser(env, browser):
     message = root + '?view=mail-message&' + urlencode(route)
 
     check('Fresh install leaves protected reply storage owner-prepared only', not db("SELECT value FROM fresh_settings WHERE name='mail_replies_schema_version'"))
-    for bad in [{'csrf': 'invalid', 'current_password': OWNER}, {'current_password': 'wrong'}]:
-        r = submit(owner, drafts_url, 'mail_drafts_replies_setup', bad)
-        check('Reply storage setup rejects ' + str(list(bad)), not db("SELECT value FROM ci_settings WHERE name='mail_replies_schema_version'") and ('session expired' in r.text.lower() or 'current password' in r.text))
-    r = submit(owner, drafts_url, 'mail_drafts_replies_setup', {'current_password': OWNER})
+    r = submit(owner, drafts_url, 'mail_drafts_replies_setup', {'csrf': 'invalid'})
+    check('Reply storage setup rejects invalid CSRF', not db("SELECT value FROM ci_settings WHERE name='mail_replies_schema_version'") and 'session expired' in r.text.lower())
+    setup = owner.get(drafts_url)
+    form = form_for(setup, 'mail_drafts_replies_setup')
+    data = form_data(form)
+    db('UPDATE ci_users SET auth_version=? WHERE id=?', [uuid.uuid4().hex, oid])
+    r = owner.post(urljoin(drafts_url, form.get('action') or drafts_url), data=data)
+    denied = soup(r).select_one('input[name="action"][value="login"]') is not None
+    check('Reply storage setup refuses a revoked current owner session', not db("SELECT value FROM ci_settings WHERE name='mail_replies_schema_version'") and denied)
+    owner = requests.Session()
+    submit(owner, root + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    r = submit(owner, drafts_url, 'mail_drafts_replies_setup')
     check('Owner prepares additive protected reply storage', 'Reply and Forward drafts are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_replies_schema_version'") == [{'value': '1'}])
     check('Message route exposes direct copy controls without a prior duplicate read', 'data-mail-copy-controls' in owner.get(message).text)
 
