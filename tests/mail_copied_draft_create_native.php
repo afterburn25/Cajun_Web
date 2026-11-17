@@ -23,7 +23,7 @@ function cdc_deny(string $name,callable $operation,string $contains=''):void {
     try{$operation();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;cdc_ok($name,$contains===''||str_contains($e->getMessage(),$contains));return;}cdc_ok($name,false);
 }
 function cdc_actor(int $id=1):void {$user=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$user['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
-function cdc_input(string $label,string $address):array {return ['label'=>$label,'address'=>$address,'imap_host'=>'imap.example.invalid','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'synthetic-'.$label,'smtp_host'=>'smtp.example.invalid','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'synthetic-'.$label];}
+function cdc_input(string $label,string $address):array {return ['label'=>$label,'address'=>$address,'imap_host'=>'imap.example.com','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'synthetic-'.$label,'smtp_host'=>'smtp.example.com','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'synthetic-'.$label];}
 function cdc_account(string $label,string $address):string {global $password;return mail_accounts_save('',0,cdc_input($label,$address),true,['imap_password'=>'SYNTHETIC_PRIVATE_INCOMING','smtp_password'=>'SYNTHETIC_PRIVATE_OUTGOING'],$password);}
 function cdc_grant(string $account,int $user,bool $read,bool $send,bool $enabled=true):void {
     global $password;$grant=one('SELECT revision FROM '.table('mail_account_grants').' WHERE account_id=? AND user_id=?',[$account,$user]);
@@ -34,7 +34,7 @@ function cdc_raw(string $kind='normal'):string {
     return "Subject: Synthetic copied message\r\n".$from."To: sender@example.invalid, visible@example.invalid\r\nBcc: RAW_HIDDEN_MARKER@example.invalid\r\nX-Private: RAW_HIDDEN_MARKER\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=outer\r\n\r\n--outer\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nVisible copied body.\r\n--outer\r\nContent-Type: application/octet-stream; name=RAW_ATTACHMENT_MARKER.bin\r\nContent-Disposition: attachment; filename=RAW_ATTACHMENT_MARKER.bin\r\nContent-Transfer-Encoding: base64\r\n\r\nUkFXX0FUVEFDSE1FTlRfQllURVM=\r\n--outer--\r\n";
 }
 function cdc_resolver(string $host):array {
-    global $resolveCalls,$transportMode,$sourceAccount,$senderAccount;$resolveCalls++;if(db()->inTransaction()||$host!=='imap.example.invalid')throw new LogicException('Resolver boundary changed.');
+    global $resolveCalls,$transportMode,$sourceAccount,$senderAccount;$resolveCalls++;if(db()->inTransaction()||$host!=='imap.example.com')throw new LogicException('Resolver boundary changed.');
     // DNS runs after the committed intent and outside the staff mutex. Use the
     // real owner mutation API here so revocation follows the production lock.
     if(in_array($transportMode,['revoke_source','revoke_sender'],true)){
