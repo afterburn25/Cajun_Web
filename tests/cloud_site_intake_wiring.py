@@ -40,7 +40,7 @@ def cloud_request_predecessor(root, check):
     return predecessor.encode()
 
 
-def verify(root, contract, workflow, commands, check):
+def verify(root, contract, workflow, commands, check, source_projector):
     full_contract = json.loads((root / 'tools/acceptance-contract.json').read_text())
     item = full_contract['cloud_site_intake']
     additions = item['additions']
@@ -59,6 +59,13 @@ def verify(root, contract, workflow, commands, check):
               len(identity_additions) == len(set(identity_additions)) == 2
               and all(full_native.count(command) == 1 for command in identity_additions))
         full_native = [command for command in full_native if command not in identity_additions]
+    project_notes = full_contract.get('project_private_notes_native_command_extension')
+    if project_notes:
+        project_note_additions = project_notes['additions']
+        check('Static intake projects only the exact later private-project-note commands',
+              len(project_note_additions) == len(set(project_note_additions)) == 4
+              and all(full_native.count(command) == 1 for command in project_note_additions))
+        full_native = [command for command in full_native if command not in project_note_additions]
     check('Static intake retains the complete169-command native recipe',
           len(full_native) == item['full_native_count'] == 169)
     check('Static intake receives the exact162-command projected recipe',
@@ -89,6 +96,12 @@ def verify(root, contract, workflow, commands, check):
                   len(identity_reports) == len(set(identity_reports)) == 2
                   and all(current.count(name) == 1 for name in identity_reports))
             current = [name for name in current if name not in identity_reports]
+        if project_notes:
+            project_note_reports = project_notes['reports']
+            check('Static intake projects only the exact later private-project-note reports in ' + key,
+                  len(project_note_reports) == len(set(project_note_reports)) == 4
+                  and all(current.count(name) == 1 for name in project_note_reports))
+            current = [name for name in current if name not in project_note_reports]
         check('Static intake requires both portable reports exactly once in ' + key,
               len(current) == item['current_reports'][key]['count'] == expected_count
               and digest(current) == item['current_reports'][key]['sha256']
@@ -100,10 +113,12 @@ def verify(root, contract, workflow, commands, check):
               len(retained) == baseline['count']
               and digest(retained) == baseline['sha256'])
 
+    check('Static intake receives one required fail-closed source projector', callable(source_projector))
     for path, expected in item['source_sha256'].items():
+        current_source = (root / path).read_bytes().replace(b'\r\n', b'\n')
+        current_source = source_projector(path, current_source)
         check('Static intake acceptance source bound ' + path,
-              hashlib.sha256((root / path).read_bytes().replace(b'\r\n', b'\n')).hexdigest()
-              == expected)
+              hashlib.sha256(current_source).hexdigest() == expected)
     helper = cloud_request_predecessor(root, check)
     check('Previous cloud request wiring remains byte-identical',
           hashlib.sha256(helper).hexdigest()

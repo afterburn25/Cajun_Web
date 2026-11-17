@@ -39,6 +39,16 @@ PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
 )
 PROTECTED_ADDITIONS_AFTER = '          "$PHP_BINARY" tests/client_authority_native.php\n'
+PROTECTED_PROJECT_NOTE_ADDITIONS = (
+    '          "$PHP_BINARY" tests/project-notes/records.php --deployment > qa/project-private-note-records.json\n',
+    '          "$PHP_BINARY" tests/project_private_notes_policy.php > qa/project-private-notes-policy.json\n',
+    '          "$PHP_BINARY" tests/project_private_notes_view.php > qa/project-private-notes-view.json\n',
+    '          "$PHP_BINARY" tests/project_private_notes_native.php\n',
+)
+PROTECTED_PROJECT_NOTE_BLOCKS = (
+    ('          "$PHP_BINARY" tests/estimator_adapter.php\n', PROTECTED_PROJECT_NOTE_ADDITIONS[:3]),
+    ('          "$PHP_BINARY" tests/activity_native.php\n', PROTECTED_PROJECT_NOTE_ADDITIONS[3:]),
+)
 PROTECTED_PAYMENT_ADDITIONS = (
     '          CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" -d display_errors=0 -d zend.exception_ignore_args=1 -d allow_url_fopen=0 -d disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,mail,exec,shell_exec,system,passthru,popen,proc_open tests/hosting_checkout_native.php > qa/hosting-checkout-native.stdout.log 2> qa/hosting-checkout-native.stderr.log\n',
     '          test ! -s qa/hosting-checkout-native.stderr.log\n',
@@ -468,6 +478,13 @@ def validate(workflow, legacy, protected, apt_script):
           and PROTECTED_BUILD_TIMEOUT_PREDECESSOR not in protected_predecessor)
     protected_predecessor = protected_predecessor.replace(
         PROTECTED_BUILD_TIMEOUT_SUCCESSOR, PROTECTED_BUILD_TIMEOUT_PREDECESSOR, 1)
+    for addition in reversed(PROTECTED_PROJECT_NOTE_ADDITIONS):
+        check('Reviewed private project note application command is present exactly once',
+              protected_predecessor.count(addition) == 1)
+        protected_predecessor = protected_predecessor.replace(addition, '', 1)
+    for after, additions in PROTECTED_PROJECT_NOTE_BLOCKS:
+        check('Reviewed private project note application commands are additive and ordered',
+              protected.count(after + ''.join(additions)) == 1)
     for addition in reversed(PROTECTED_ADDITIONS):
         check('Reviewed UX-09 application command is present exactly once',
               protected_predecessor.count(addition) == 1)
@@ -645,6 +662,9 @@ def self_test(root=ROOT):
     else:
         raise AssertionError('Regression accepted: APT preparation script drift')
     for name, changed in (
+        ('lost private project note command', protected.replace(PROTECTED_PROJECT_NOTE_ADDITIONS[0], '', 1)),
+        ('changed private project note native command', protected.replace(
+            'tests/project_private_notes_native.php', 'tests/project_private_notes_policy.php', 1)),
         ('lost UX-09 policy command', protected.replace(PROTECTED_ADDITIONS[0], '', 1)),
         ('changed UX-09 native command', protected.replace('tests/client_identity_native.php',
                                                             'tests/client_identity_policy.php', 1)),

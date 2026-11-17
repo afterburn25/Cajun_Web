@@ -16,6 +16,21 @@ from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT_PRIVATE_NOTES_BASE = '803705fc76bfce3e0e2dba1125e73267165847a9'
+PROJECT_PRIVATE_NOTES_BASE_TREE = '0cf9421972425bd3f54329abba6eece9ecdca917'
+PROJECT_PRIVATE_NOTES_SOURCE = '6c6ad4bc0367a048989469b7ae705a4f5fe2e8e6'
+PROJECT_PRIVATE_NOTES_SOURCE_TREE = '7d064c6d6410a3c6de8eb92aa42fc369333c12b3'
+PROJECT_PRIVATE_NOTES_ARTIFACT_OVERLAYS = frozenset((
+    'site/app/settings/database_schemas.php',
+    'site/database/schema/base.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+))
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE = 'a2fa4a7d98ac7d28852ffc7246c4c32850ff3975'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE_TREE = 'bacc5f363d3310332c7af5c3857634928295c65b'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE = '171d3174a1a8f4b1369a0829cfcdc8a9c3a508ca'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE = '0b8f7b33b7579e5841625dab69579e9e5dec7c07'
+PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATH = 'tests/cloud_site_intake_wiring.py'
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -75,6 +90,44 @@ checks = []
 def check(name, condition):
     checks.append({'name': name, 'passed': bool(condition)})
     if not condition: raise AssertionError(name)
+
+
+def project_private_notes_artifact_predecessor(path, current):
+    """Project only the exact reviewed private-note overlays before older source checks."""
+    if path not in PROJECT_PRIVATE_NOTES_ARTIFACT_OVERLAYS:
+        return current
+    source=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('Private project note artifact overlay retains exact commit trees and ancestry '+path,
+          subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_BASE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',PROJECT_PRIVATE_NOTES_BASE,
+                              PROJECT_PRIVATE_NOTES_SOURCE],cwd=ROOT).returncode==0)
+    check('Private project note artifact overlay matches its exact reviewed source '+path,current==source)
+    return base
+
+
+def project_private_notes_static_intake_predecessor(path, current):
+    """Project only the exact reviewed static-intake proof successor."""
+    if path != PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATH:
+        return current
+    source=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('Private project note static-intake overlay retains exact commit trees and ancestry',
+          subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE,
+                              PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE],cwd=ROOT).returncode==0)
+    check('Private project note static-intake overlay matches its exact reviewed source',current==source)
+    return base
 
 
 def ux08_artifact_predecessor(path, current):
@@ -413,6 +466,7 @@ def software_authority_report_checks(tmp):
     cloud_intake_reports=set(acceptance_contract.get('cloud_site_intake',{}).get('reports',[]))
     identity_reports=set(acceptance_contract.get('client_identity_native_command_extension',{}).get('reports',[]))
     hosting_payment_reports=set(acceptance_contract.get('hosting_payment_acceptance_extension',{}).get('reports',[]))
+    project_notes_reports=set(acceptance_contract.get('project_private_notes_native_command_extension',{}).get('reports',[]))
     for mode, count, digest in [
         ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
         ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
@@ -420,7 +474,7 @@ def software_authority_report_checks(tmp):
         current = registry[mode]
         check('Software authority named report is required exactly once in ' + mode,
               current.count(name) == 1 and len(current) == len(set(current)))
-        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports and item not in hosting_payment_reports]
+        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports and item not in hosting_payment_reports and item not in project_notes_reports]
         check('Software authority inventory retains every original ordered ' + mode + ' report',
               len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
     body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
@@ -778,6 +832,39 @@ def run(tmp):
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     cloud_intake_additions=contract['cloud_site_intake']['additions']
+    project_notes_ext=contract.get('project_private_notes_native_command_extension')
+    project_notes_reports=[]
+    if project_notes_ext:
+        additions=project_notes_ext['additions'];after=project_notes_ext['after']
+        check('Private project note commands are one exact additive extension',
+              len(native_commands)==project_notes_ext['predecessor_native_count']+len(additions)
+              and native_commands==contract['native_commands']
+              and all(native_commands.count(command)==1
+                      and native_commands.index(after[command])+1==native_commands.index(command)
+                      for command in additions))
+        retained=[command for command in native_commands if command not in additions]
+        check('Private project note additions retain the complete predecessor recipe',
+              len(retained)==project_notes_ext['predecessor_native_count']
+              and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()
+              ==project_notes_ext['predecessor_native_sha256'])
+        for path,expected_hash in project_notes_ext['source_sha256'].items():
+            current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            check('Private project note acceptance source identity '+path,
+                  hashlib.sha256(current).hexdigest()==expected_hash)
+        registry=a.load(ROOT/'tools/acceptance-reports.json')
+        project_notes_reports=project_notes_ext['reports']
+        for mode in ('browser','final'):
+            current=registry[mode]
+            check('Private project note reports are exact and additive in '+mode,
+                  all(current.count(report)==1 for report in project_notes_reports)
+                  and len(current)==len(set(current)))
+            predecessor=[report for report in current if report not in project_notes_reports]
+            expected=project_notes_ext['predecessor_reports'][mode]
+            check('Private project note reports retain the exact predecessor inventory in '+mode,
+                  len(predecessor)==expected['count']
+                  and hashlib.sha256(json.dumps(predecessor,separators=(',',':')).encode()).hexdigest()
+                  ==expected['sha256'])
+        native_commands=retained;contract={**contract,'native_commands':native_commands}
     payment_ext=contract.get('hosting_payment_acceptance_extension')
     if payment_ext:
         additions=payment_ext['additions'];position=native_commands.index(payment_ext['additions_after'])+1
@@ -806,7 +893,7 @@ def run(tmp):
                   hashlib.sha256(current).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
         for mode in ('browser','final'):
-            current=registry[mode]
+            current=[report for report in registry[mode] if report not in project_notes_reports]
             check('Hosting payment reports are required once in '+mode,
                   all(current.count(report)==1 for report in payment_ext['reports']) and len(current)==len(set(current)))
             predecessor=[report for report in current if report not in payment_ext['reports']]
@@ -831,6 +918,7 @@ def run(tmp):
               and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==identity_ext['predecessor_native_sha256'])
         for path,expected_hash in identity_ext['source_sha256'].items():
             current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=project_private_notes_artifact_predecessor(path,current)
             current=ux08_artifact_predecessor(path,current)
             check('Public client identity source identity '+path,
                   hashlib.sha256(current).hexdigest()==expected_hash)
@@ -853,7 +941,9 @@ def run(tmp):
               len(database_predecessor)==database_ext['predecessor_native_count']
               and hashlib.sha256(json.dumps(database_predecessor,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
         for path,expected_hash in database_ext['source_sha256'].items():
-            retained=ux08_artifact_predecessor(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))
+            retained=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            retained=project_private_notes_artifact_predecessor(path,retained)
+            retained=ux08_artifact_predecessor(path,retained)
             check('Reviewed database source identity '+path,
                   hashlib.sha256(retained).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
@@ -889,7 +979,8 @@ def run(tmp):
     native_commands=retained_native
     contract={**contract,'native_commands':native_commands}
     from cloud_site_intake_wiring import verify as cloud_intake_wiring
-    native_commands=cloud_intake_wiring(ROOT,contract,workflow,native_commands,check)
+    native_commands=cloud_intake_wiring(
+        ROOT,contract,workflow,native_commands,check,project_private_notes_static_intake_predecessor)
     contract={**contract,'native_commands':native_commands}
     from cloud_site_requests_wiring import verify as cloud_request_wiring
     native_commands=cloud_request_wiring(ROOT,contract,workflow,native_commands,check)

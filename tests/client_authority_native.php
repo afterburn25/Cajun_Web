@@ -200,6 +200,8 @@ try {
     notification_project_message($events[10001]['job'],$reply,'contact');$notices=all('SELECT * FROM '.table('notification_feed').' ORDER BY recipient_id');$recipients=array_map(static fn($row)=>(int)$row['recipient_id'],$notices);
     ca_ok('Contact project reply notifies every currently permitted staff recipient and retains contact authorship',$recipients===$staffIds&&count($notices)>0&&!array_filter($notices,static fn($row)=>$row['audience']!=='staff'||$row['kind']!=='support-reply')&&one('SELECT * FROM '.table('studio_messages').' WHERE id=?',[$reply])===$message);
     $before=$readState();notification_project_message($events[10001]['job'],$reply,'contact');ca_ok('Contact reply notification replay creates no duplicate feed delivery or business change',$readState()===$before);
+    $before=$readState();notification_project_message($events[10002]['job'],$reply,'contact');notification_project_message($events[10001]['job'],$reply,'staff');notification_project_message($events[10001]['job'],999999,'contact');
+    ca_ok('Project notification refuses mismatched project author transition and missing source rows',$readState()===$before);
     notification_project_message($events[10001]['job'],(int)substr($events[10001]['message'],8),'staff');
     $parentNotice=one('SELECT * FROM '.table('notification_feed')." WHERE audience='client' AND recipient_id=10001");
     ca_ok('Original staff project message still reaches the primary client only',$parentNotice!==null&&$parentNotice['kind']==='project-update'&&count(all('SELECT * FROM '.table('notification_feed')." WHERE audience='client'"))===1);

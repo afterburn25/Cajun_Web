@@ -36,6 +36,7 @@ if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))
 if($view==='registration-drafts'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'registration_drafts_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['hosting-offers','hosting-purchases'],true)||(is_string($_POST['action']??null)&&(str_starts_with($_POST['action'],'hosting_catalog_')||str_starts_with($_POST['action'],'hosting_payment_')))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(in_array($view,['proposals','proposal'],true)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'proposal_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if($view==='studio-job'||(is_string($_POST['action']??null)&&$_POST['action']==='studio_private_note')){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 if($view==='health'){
     $healthActor=admin_user();
@@ -50,7 +51,7 @@ if($permission!==null&&!staff_can($permission,$user)){
     if($view==='dashboard')redirect(admin_url(staff_home($user)));
     http_response_code(403);admin_head('Access unavailable','security',$user);echo '<div class="notice error">Your account does not have access to this section.</div>';admin_foot();exit;
 }
-if(in_array($view,['studio-clients','studio-licenses','proposals','proposal'],true) && (support_current() || array_key_exists('support',$_GET))){
+if(in_array($view,['studio-clients','studio-job','studio-licenses','proposals','proposal'],true) && (support_current() || array_key_exists('support',$_GET))){
     http_response_code(403);admin_head('Client administration unavailable','studio-clients',$user);echo '<div class="notice error">Leave client support before using client administration.</div>';admin_foot();exit;
 }
 if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accounts_admin_render($view,$error);
