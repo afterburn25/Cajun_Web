@@ -87,7 +87,7 @@ def validate(text):
         ('tests/mail_copied_draft_create_adapter.php', 'adapter', '18'),
         ('tests/database_schema_registry_policy.php', 'schema-registry', '385'),
         ('tests/mail-submission/run.php', 'submission-snapshot', '54'),
-        ('tests/mail-submission/mime.php', 'submission-mime', '32'),
+        ('tests/mail-submission/mime.php', 'submission-mime', '34'),
     )
     check('Every native cell runs the reviewed portable surface in normal and no-INI modes',
           'for mode in normal noini; do' in text

@@ -2836,7 +2836,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/mail-receiving/vendor/zbateson/stream-decorators/src/SeekingLimitStream.php'=>'2cef953d0d61bf1fed7ae794a2bc806001ded4cc00d35bc94c8e420a18f73629',
     'includes/foundation/mail-receiving/vendor/zbateson/stream-decorators/src/TellZeroStream.php'=>'2b9f08b7a8abd770c2429d784987620e62b0cd0d1da50e2de898cf29b047153f',
     'includes/foundation/mail-receiving/vendor/zbateson/stream-decorators/src/UUStream.php'=>'e0b08a624eca832c36db1d19b3c74c7e6013a4316bd1d0d4acbcd5aa85a460e5',
-    'includes/foundation/mail-submission/OfflineMailer.php'=>'1d4cad8ea7aac489b8dc4dc7c881674aa8a43ef7c99ab7336e4373b1b39287a2',
+    'includes/foundation/mail-submission/OfflineMailer.php'=>'ff60a1457d2c252a1d3ad8c3bbe7479b20859a3ef86945b6d053ac57dc8b312a',
     'includes/foundation/mail-submission/PreparationFailure.php'=>'3af39403ff58a7d3c97e65dcd435d3c79b4610a916f615cf4c0aca104ea9860e',
     'includes/foundation/mail-submission/PreparedMime.php'=>'3532681b726b4d1df4b9382ececde16385a6a6eb51f7d452449ce300ea2cda0d',
     'includes/foundation/mail-submission/SmtpSession.php'=>'c4fe2e244b33cc74e422c3917fd08517b47bcbdf77786b87ec67f46fe40437bc',

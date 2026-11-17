@@ -59,16 +59,11 @@ final class OfflineMailer extends PHPMailer
             || ($name==='In-Reply-To' && count($identifiers)!==1)
             || ($name==='References' && $identifiers===[])
             || !in_array($name,['In-Reply-To','References'],true))return false;
-        try {
-            $name==='In-Reply-To'
-                ? MessageThread::fromStored(['in_reply_to'=>$identifiers[0]??null,'references'=>[]])
-                : MessageThread::fromStored(['in_reply_to'=>null,'references'=>$identifiers]);
-        } catch(\InvalidArgumentException) {
-            return false;
-        }
-        $value=implode(' ',$identifiers);
+        $canonical=$this->validatedIdentifierHeader($name,$identifiers);
+        if($canonical===null)return false;
+        $value=implode(' ',$canonical);
         if(!parent::addCustomHeader($name,$value))return false;
-        $this->identifierHeaders[$name]=array_values($identifiers);
+        $this->identifierHeaders[$name]=$canonical;
         return true;
     }
 
@@ -96,6 +91,10 @@ final class OfflineMailer extends PHPMailer
     /** @param list<string> $identifiers */
     private function identifierHeaderLine(string $name,array $identifiers):string
     {
+        // Revalidate at the final render boundary as well as admission. This is
+        // deliberately fail-closed even though admission stores detached data.
+        $identifiers=$this->validatedIdentifierHeader($name,$identifiers);
+        if($identifiers===null)throw new PreparationFailure('encoding_failed');
         $lines=[];$line=$name.':';
         foreach($identifiers as $identifier) {
             $candidate=$line.' '.$identifier;
@@ -110,6 +109,21 @@ final class OfflineMailer extends PHPMailer
         }
         $lines[]=$line;
         return implode("\r\n",$lines)."\r\n";
+    }
+
+    /** @param list<string> $identifiers @return ?list<string> */
+    private function validatedIdentifierHeader(string $name,array $identifiers):?array
+    {
+        try {
+            $thread=$name==='In-Reply-To'
+                ? MessageThread::fromStored(['in_reply_to'=>$identifiers[0]??null,'references'=>[]])
+                : MessageThread::fromStored(['in_reply_to'=>null,'references'=>$identifiers]);
+        } catch(\InvalidArgumentException) {
+            return null;
+        }
+        // MessageThread copies every string value; caller-owned PHP references
+        // can no longer change the validated values retained for later render.
+        return $name==='In-Reply-To'?[$thread->inReplyTo]:$thread->references;
     }
 
     /** An accidental send() call cannot reach PHP mail(), a shell or SMTP. */
