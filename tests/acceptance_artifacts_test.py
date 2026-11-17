@@ -16,6 +16,16 @@ from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT_PRIVATE_NOTES_BASE = '803705fc76bfce3e0e2dba1125e73267165847a9'
+PROJECT_PRIVATE_NOTES_BASE_TREE = '0cf9421972425bd3f54329abba6eece9ecdca917'
+PROJECT_PRIVATE_NOTES_SOURCE = '6c6ad4bc0367a048989469b7ae705a4f5fe2e8e6'
+PROJECT_PRIVATE_NOTES_SOURCE_TREE = '7d064c6d6410a3c6de8eb92aa42fc369333c12b3'
+PROJECT_PRIVATE_NOTES_ARTIFACT_OVERLAYS = frozenset((
+    'site/app/settings/database_schemas.php',
+    'site/database/schema/base.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+))
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -75,6 +85,25 @@ checks = []
 def check(name, condition):
     checks.append({'name': name, 'passed': bool(condition)})
     if not condition: raise AssertionError(name)
+
+
+def project_private_notes_artifact_predecessor(path, current):
+    """Project only the exact reviewed private-note overlays before older source checks."""
+    if path not in PROJECT_PRIVATE_NOTES_ARTIFACT_OVERLAYS:
+        return current
+    source=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_SOURCE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    base=subprocess.check_output(
+        ['git','cat-file','blob',PROJECT_PRIVATE_NOTES_BASE+':'+path],cwd=ROOT).replace(b'\r\n',b'\n')
+    check('Private project note artifact overlay retains exact commit trees and ancestry '+path,
+          subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_BASE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_BASE_TREE
+          and subprocess.check_output(['git','rev-parse',PROJECT_PRIVATE_NOTES_SOURCE+'^{tree}'],cwd=ROOT).decode().strip()
+          ==PROJECT_PRIVATE_NOTES_SOURCE_TREE
+          and subprocess.run(['git','merge-base','--is-ancestor',PROJECT_PRIVATE_NOTES_BASE,
+                              PROJECT_PRIVATE_NOTES_SOURCE],cwd=ROOT).returncode==0)
+    check('Private project note artifact overlay matches its exact reviewed source '+path,current==source)
+    return base
 
 
 def ux08_artifact_predecessor(path, current):
@@ -865,6 +894,7 @@ def run(tmp):
               and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==identity_ext['predecessor_native_sha256'])
         for path,expected_hash in identity_ext['source_sha256'].items():
             current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=project_private_notes_artifact_predecessor(path,current)
             current=ux08_artifact_predecessor(path,current)
             check('Public client identity source identity '+path,
                   hashlib.sha256(current).hexdigest()==expected_hash)
@@ -887,7 +917,9 @@ def run(tmp):
               len(database_predecessor)==database_ext['predecessor_native_count']
               and hashlib.sha256(json.dumps(database_predecessor,separators=(',',':')).encode()).hexdigest()==database_ext['predecessor_native_sha256'])
         for path,expected_hash in database_ext['source_sha256'].items():
-            retained=ux08_artifact_predecessor(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))
+            retained=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            retained=project_private_notes_artifact_predecessor(path,retained)
+            retained=ux08_artifact_predecessor(path,retained)
             check('Reviewed database source identity '+path,
                   hashlib.sha256(retained).hexdigest()==expected_hash)
         registry=a.load(ROOT/'tools/acceptance-reports.json')
