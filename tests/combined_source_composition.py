@@ -550,6 +550,14 @@ MAIL_REPLY_FORWARD_PREPARED = 'f592ce999b1e9d99a6a94e0865e18f12393ffec9'
 MAIL_REPLY_FORWARD_PREPARED_TREE = 'ff548ad35bdf31da07ae6b17197c2b0d04997a0e'
 MAIL_REPLY_FORWARD_SOURCE = '0b5838aff1664a52cfcd86d7272649fe067c6070'
 MAIL_REPLY_FORWARD_SOURCE_TREE = '896ecf9f53c3f6076a6844d81cde9bd595f55b7c'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE = '167073ead347ae606a827104308d8b2817e7731f'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE_TREE = '4a44211f5141336b8ed4d301a23aba5d10fb1474'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE = 'd395eb5294647b80f723ad29617d92b21b6afc2e'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE_TREE = '61cac762b98f3dca1a19938c0799fbb84762bd47'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
 MAIL_REPLY_FORWARD_MODIFIED = frozenset((
     'foundation/mail-receiving/HeaderDecoder.php',
     'foundation/mail-submission/PreparedMime.php',
@@ -1378,7 +1386,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '5a5172df3c5989b2c3ca615cdaf92160aaf88fb7611282f23c736c9a3b94df62'
+REGRESSION_SHA256 = '78528a5dc6d343648ccdd8b12c86f0a6801b0aa79b4c0ef51c64f1f218095623'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3771,7 +3779,8 @@ def validate_mail_reply_forward_source(root):
                 and project_mail_reply_forward_source(root, path, base) == base,
                 'Mail Reply/Forward modified source identity or projection changed: ' + path)
     for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
-        require(ordinary(root, path)
+        current = project_mail_reply_forward_workflow_fix(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
                 and mode(root, path) == source_entries[path][0] == '100644',
                 'Mail Reply/Forward addition identity changed: ' + path)
@@ -3799,6 +3808,7 @@ def validate_mail_reply_forward_source(root):
 
 def project_mail_reply_forward_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_mail_reply_forward_workflow_fix(root, path, current)
     if path not in MAIL_REPLY_FORWARD_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
@@ -3809,6 +3819,61 @@ def project_mail_reply_forward_source(root, path, current):
         return current
     require(current == source,
             'Current Mail Reply/Forward source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_reply_forward_workflow_fix(root):
+    """Bind the dependency-free source admission after its preserved hosted failure."""
+    require(git(root, 'rev-parse', MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE_TREE,
+            'Mail Reply/Forward workflow-fix tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE).decode().split()
+            == [MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE, MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE],
+            'Mail Reply/Forward workflow fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE,
+                MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS)],
+            'Mail Reply/Forward workflow fix changed another path or status')
+    base_entries = entries(root, MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE)
+    source_entries = entries(root, MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE)
+    for path in sorted(MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_reply_forward_workflow_fix(root, path, current) == base
+                and project_mail_reply_forward_workflow_fix(root, path, base) == base,
+                'Mail Reply/Forward workflow-fix source identity or projection changed: ' + path)
+    workflow = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    require(b'python3 tests/mail_message_cases.py' not in workflow
+            and workflow.count(b"for path in ('tests/mail_message_cases.py', 'tests/mail_reply_cases.py'):") == 1
+            and workflow.count(b"compile(Path(path).read_bytes(), path, 'exec')") == 1
+            and b'Source admission compiles the reviewed browser modules without importing browser dependencies' in contract
+            and b"('lost source message compilation', \"compile(Path(path).read_bytes(), path, 'exec')\"" in contract,
+            'Mail Reply/Forward workflow fix does not preserve dependency-free syntax admission')
+
+
+def project_mail_reply_forward_workflow_fix(root, path, current):
+    """Restore the preserved failed exact-head workflow bytes for older proofs."""
+    if path not in MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Mail Reply/Forward workflow fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -6030,6 +6095,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
     validate_runner_application_build_budget(root)
     validate_runner_account_source_budget(root)
@@ -6355,7 +6421,8 @@ def verify_current(root):
                 and mode(root, path) == '100644',
                 'UX-08 payment addition no longer matches its exact source: ' + path)
     for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
-        require(ordinary(root, path)
+        current = project_mail_reply_forward_workflow_fix(root, path, ordinary(root, path))
+        require(current
                 == git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'Mail Reply/Forward addition no longer matches its exact source: ' + path)
@@ -6400,6 +6467,7 @@ def verify_current(root):
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
         {'name': 'Exact resulting-main-to-Reply/Forward range binds ' + str(len(MAIL_REPLY_FORWARD_MODIFIED)) + ' modified paths and ' + str(len(MAIL_REPLY_FORWARD_ADDITIONS)) + ' disjoint additions', 'passed': True},
+        {'name': 'Exact Reply/Forward workflow successor binds dependency-free browser-module compilation after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
         {'name': 'Exact PR #391 recovery predecessor is retained and the current range is limited to its proof files and explicitly bound successors', 'passed': True},

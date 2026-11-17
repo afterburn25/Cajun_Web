@@ -205,6 +205,21 @@ def run(root=ROOT):
                 lambda: altered_mail_identity('MAIL_REPLY_FORWARD_SOURCE_TREE'))
         refuses('Refuses a substituted Reply/Forward prepared parent',
                 lambda: altered_mail_identity('MAIL_REPLY_FORWARD_PREPARED'))
+
+        def altered_mail_workflow_fix_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_forward_workflow_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Reply/Forward workflow-fix source tree',
+                lambda: altered_mail_workflow_fix_identity(
+                    'MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted Reply/Forward workflow-fix parent',
+                lambda: altered_mail_workflow_fix_identity(
+                    'MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE'))
         for path in (
             'site/app/settings/database_schemas.php',
             'site/app/staff/accounts.php',
