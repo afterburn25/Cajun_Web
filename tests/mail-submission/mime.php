@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__.'/../../foundation/mail-submission/PreparedMime.php';
 use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailCompose\MessageThread;
 use CajunWebPro\Foundation\MailSubmission\{SubmissionSnapshot,PreparedMime,PreparationFailure,OfflineMailer};
 $checks=[];$messages=[];$complete=false;
 function check(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
@@ -24,6 +25,16 @@ try {
         $snap=snapshot($draft);$a=PreparedMime::fromSnapshot($snap);check('Bounded immutable MIME for '.$name,strlen($a->bytes)<=PreparedMime::MAX_BYTES&&$a->snapshot===$snap);
         $messages[]=['name'=>$name,'snapshot'=>$snap->privatePayload(),'mime_base64'=>base64_encode($a->bytes)];
     }
+    $references=[];for($i=0;$i<19;$i++)$references[]='<'.str_repeat('r',58).sprintf('%02d',$i).'@x>';
+    $parent='<'.str_repeat('p',60).'@x>';
+    $thread=MessageThread::reply($parent,$references);
+    $threaded=new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,"Studio+o'neil@example.invalid",new DraftContent(['client@example.invalid'],[],[],'Long thread','Body'),1791964800,$thread,str_repeat('b',64));
+    $threadedMime=PreparedMime::fromSnapshot($threaded);
+    $threadHeaders=explode("\r\n\r\n",$threadedMime->bytes,2)[0];$inReply=[];$referenceHeader=[];
+    preg_match('/^In-Reply-To:[^\r\n]*(?:\r\n[ \t][^\r\n]*)*/m',$threadHeaders,$inReply);
+    preg_match('/^References:[^\r\n]*(?:\r\n[ \t][^\r\n]*)*/m',$threadHeaders,$referenceHeader);
+    check('Long structured thread is not transformed into encoded words',strlen(implode(' ',$thread->references))>982&&count($inReply)===1&&count($referenceHeader)===1&&!str_contains($inReply[0].$referenceHeader[0],'=?'));
+    $messages[]=['name'=>'long-thread','snapshot'=>$threaded->privatePayload(),'mime_base64'=>base64_encode($threadedMime->bytes)];
     $denied=false;try{PreparedMime::fromSnapshot(snapshot(new DraftContent(['Client@example.invalid','client@example.invalid'],[],[],'','')));}catch(PreparationFailure $e){$denied=$e->reason==='recipient_mismatch'&&!str_contains($e->getMessage(),'example.invalid')&&$e->getPrevious()===null;}
     check('Maintained library case conflation refuses instead of silently dropping a recipient',$denied);
     $one=PreparedMime::fromSnapshot(snapshot(new DraftContent(['client@example.invalid'],[],['first-private@example.invalid'],'Same visible message','Body')));$two=PreparedMime::fromSnapshot(snapshot(new DraftContent(['client@example.invalid'],[],['second-private@example.invalid'],'Same visible message','Body')));

@@ -40,8 +40,8 @@ final readonly class PreparedMime
             // RFC 5322 reply threading from the saved, exact snapshot context.
             if($snapshot->thread!==null) {
                 $expected=0;
-                if($snapshot->thread->inReplyTo!==null){$expected++;if(!$mail->addCustomHeader('In-Reply-To',$snapshot->thread->inReplyTo))throw new PreparationFailure('encoding_failed');}
-                if($snapshot->thread->references!==[]){$expected++;if(!$mail->addCustomHeader('References',implode(' ',$snapshot->thread->references)))throw new PreparationFailure('encoding_failed');}
+                if($snapshot->thread->inReplyTo!==null){$expected++;if(!$mail->addIdentifierHeader('In-Reply-To',[$snapshot->thread->inReplyTo]))throw new PreparationFailure('encoding_failed');}
+                if($snapshot->thread->references!==[]){$expected++;if(!$mail->addIdentifierHeader('References',$snapshot->thread->references))throw new PreparationFailure('encoding_failed');}
                 if(count($mail->getCustomHeaders())!==$expected)throw new PreparationFailure('encoding_failed');
             }
             if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');

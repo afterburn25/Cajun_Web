@@ -183,7 +183,7 @@ jobs:
               'origin': 17, 'reply': 60, 'thread': 45,
               'copied-source': 18, 'storage': 20, 'admin-policy': 23,
               'adapter': 18, 'schema-registry': 385,
-              'submission-snapshot': 54, 'submission-mime': 31,
+              'submission-snapshot': 54, 'submission-mime': 32,
           }
           for mode in ('normal', 'noini'):
               for name, count in expected.items():
