@@ -239,6 +239,25 @@ def run(root=ROOT):
         refuses('Refuses a substituted mail backup-projection parent',
                 lambda: altered_mail_backup_projection_identity(
                     'MAIL_BACKUP_PROJECTION_FIX_BASE'))
+        refuses('Refuses an altered mail public-identity artifact projection',
+                lambda: modified('tests/acceptance_artifacts_test.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed identity projection\n')))
+
+        def altered_mail_artifact_projection_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_artifact_projection_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail artifact-projection source tree',
+                lambda: altered_mail_artifact_projection_identity(
+                    'MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail artifact-projection parent',
+                lambda: altered_mail_artifact_projection_identity(
+                    'MAIL_ARTIFACT_PROJECTION_FIX_BASE'))
         for path in (
             'site/app/settings/database_schemas.php',
             'site/app/staff/accounts.php',

@@ -563,6 +563,11 @@ MAIL_BACKUP_PROJECTION_FIX_BASE_TREE = '58163a6ebd87eca7b078c8bb636c5dcd46f98fef
 MAIL_BACKUP_PROJECTION_FIX_SOURCE = '61733d7e9ac3166d3f614a8e29fd67d9b87d746e'
 MAIL_BACKUP_PROJECTION_FIX_SOURCE_TREE = 'dc578eb8f781f9d46c2b2ab19758e2d71e0050fd'
 MAIL_BACKUP_PROJECTION_FIX_PATH = 'tests/backups_acceptance_wiring.py'
+MAIL_ARTIFACT_PROJECTION_FIX_BASE = 'fab39f449f7aa37014345a82fcb5bae2b69c9ce7'
+MAIL_ARTIFACT_PROJECTION_FIX_BASE_TREE = 'b31e0ea58db081c16b7af55332ccc521cd6341f9'
+MAIL_ARTIFACT_PROJECTION_FIX_SOURCE = '91f9b969698ddadca5e85d0fc5856a6ad6118493'
+MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE = '3e0415069618670c0123a4b91a1cf3cafdf47263'
+MAIL_ARTIFACT_PROJECTION_FIX_PATH = 'tests/acceptance_artifacts_test.py'
 MAIL_REPLY_FORWARD_MODIFIED = frozenset((
     'foundation/mail-receiving/HeaderDecoder.php',
     'foundation/mail-submission/PreparedMime.php',
@@ -1391,7 +1396,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'f79025ec1a4ecded308b692451037bf5314182c49035014d57948a773ac5537d'
+REGRESSION_SHA256 = '1c9776c094e1be7ce372ff3973afcbfefedda47ec2bf24aa9bb0bb3916d8dbc6'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3933,6 +3938,57 @@ def project_mail_backup_projection_fix(root, path, current):
     return base
 
 
+def validate_mail_artifact_projection_fix(root):
+    """Bind the public-identity artifact projection after its preserved Application failure."""
+    require(git(root, 'rev-parse', MAIL_ARTIFACT_PROJECTION_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_PROJECTION_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE,
+            'Mail artifact-projection source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ARTIFACT_PROJECTION_FIX_SOURCE).decode().split()
+            == [MAIL_ARTIFACT_PROJECTION_FIX_SOURCE, MAIL_ARTIFACT_PROJECTION_FIX_BASE],
+            'Mail artifact-projection fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ARTIFACT_PROJECTION_FIX_BASE,
+                MAIL_ARTIFACT_PROJECTION_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_ARTIFACT_PROJECTION_FIX_PATH],
+            'Mail artifact-projection fix changed another path or status')
+    base_entries = entries(root, MAIL_ARTIFACT_PROJECTION_FIX_BASE)
+    source_entries = entries(root, MAIL_ARTIFACT_PROJECTION_FIX_SOURCE)
+    path = MAIL_ARTIFACT_PROJECTION_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_artifact_projection_fix(root, path, current) == base
+            and project_mail_artifact_projection_fix(root, path, base) == base,
+            'Mail artifact-projection source identity or projection changed')
+    require(source.count(b'def project_mail_reply_forward_artifact_predecessor(path, current):') == 1
+            and source.count(b'composition.project_mail_reply_forward_source(ROOT, path, current)') == 1
+            and source.count(b'current=project_mail_reply_forward_artifact_predecessor(path,current)') == 1
+            and source.index(b'current=project_mail_reply_forward_artifact_predecessor(path,current)')
+            < source.index(b'current=project_private_notes_artifact_predecessor(path,current)'),
+            'Mail public-identity artifact projection is not exact and ordered')
+
+
+def project_mail_artifact_projection_fix(root, path, current):
+    """Restore the exact failed Application-head artifact proof for older receipts."""
+    if path != MAIL_ARTIFACT_PROJECTION_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail artifact-projection fix changed before predecessor projection')
+    return base
+
+
 def validate_notification_health_source(root):
     """Bind the read-only notification health component and lead-owned route."""
     identities = (
@@ -4304,7 +4360,7 @@ def validate_project_private_notes_static_intake_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_artifact_projection_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE + ':' + path)
         require(current == source
@@ -4330,6 +4386,7 @@ def validate_project_private_notes_static_intake_source(root):
 
 def project_project_private_notes_static_intake_source(root, path, current):
     """Restore the preserved failed head for older source receipts."""
+    current = project_mail_artifact_projection_fix(root, path, current)
     current = project_project_private_notes_native_fixture_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS:
         return current
@@ -5963,6 +6020,8 @@ def project_ux08_storefront_repair_input(root, path, current):
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_mail_artifact_projection_fix(
+        Path(__file__).resolve().parents[1], path, current)
     current = project_mail_backup_projection_fix(
         Path(__file__).resolve().parents[1], path, current)
     current = project_ux08_payment(Path(__file__).resolve().parents[1], path, current)
@@ -6154,6 +6213,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_artifact_projection_fix(root)
     validate_mail_backup_projection_fix(root)
     validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
@@ -6529,6 +6589,7 @@ def verify_current(root):
         {'name': 'Exact resulting-main-to-Reply/Forward range binds ' + str(len(MAIL_REPLY_FORWARD_MODIFIED)) + ' modified paths and ' + str(len(MAIL_REPLY_FORWARD_ADDITIONS)) + ' disjoint additions', 'passed': True},
         {'name': 'Exact Reply/Forward workflow successor binds dependency-free browser-module compilation after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact mail backup-projection successor restores Reply/Forward browser bytes before historical UX-09 and backup proofs', 'passed': True},
+        {'name': 'Exact mail artifact-projection successor restores Reply/Forward browser bytes before the public-identity receipt', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
         {'name': 'Exact PR #391 recovery predecessor is retained and the current range is limited to its proof files and explicitly bound successors', 'passed': True},
