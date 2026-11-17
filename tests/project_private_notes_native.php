@@ -8,6 +8,7 @@ if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
+require_once __DIR__.'/../site/database/schema/notification_feed_schema.php';
 require_once __DIR__.'/../site/app/clients/workspace.php';
 require __DIR__.'/../site/app/projects/private_notes.php';
 
@@ -35,7 +36,9 @@ try{
     foreach(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE ?',[config()['db']['prefix'].'%']) as $row)db()->exec('DROP TABLE `'.str_replace('`','``',(string)$row['TABLE_NAME']).'`');
     db()->exec('SET FOREIGN_KEY_CHECKS=1');
     foreach(schema_statements(config()['db']['prefix']) as $name=>$sql)if($name!=='project_private_notes')db()->exec($sql);
+    foreach(notification_feed_schema(config()['db']['prefix']) as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
+    save_setting('notification_feed_version','1');
     save_setting('project_private_notes_schema_version','');
     $now=gmdate('Y-m-d H:i:s');
     foreach([1=>'Owner',2=>'Project staff',3=>'Website staff'] as $id=>$name)query('INSERT INTO '.table('users').' (id,name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?,?)',[$id,$name,'private-note-'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);
