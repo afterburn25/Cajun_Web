@@ -14,6 +14,7 @@ import sys
 import tempfile
 from unittest.mock import patch
 import zipfile
+import combined_source_composition as composition
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT_PRIVATE_NOTES_BASE = '803705fc76bfce3e0e2dba1125e73267165847a9'
@@ -109,6 +110,13 @@ def project_private_notes_artifact_predecessor(path, current):
                               PROJECT_PRIVATE_NOTES_SOURCE],cwd=ROOT).returncode==0)
     check('Private project note artifact overlay matches its exact reviewed source '+path,current==source)
     return base
+
+
+def project_mail_reply_forward_artifact_predecessor(path, current):
+    """Project the exact mail browser extension before the older identity receipt."""
+    if path != 'tests/browser_acceptance.py':
+        return current
+    return composition.project_mail_reply_forward_source(ROOT, path, current)
 
 
 def project_private_notes_static_intake_predecessor(path, current):
@@ -918,6 +926,7 @@ def run(tmp):
               and hashlib.sha256(json.dumps(retained,separators=(',',':')).encode()).hexdigest()==identity_ext['predecessor_native_sha256'])
         for path,expected_hash in identity_ext['source_sha256'].items():
             current=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+            current=project_mail_reply_forward_artifact_predecessor(path,current)
             current=project_private_notes_artifact_predecessor(path,current)
             current=ux08_artifact_predecessor(path,current)
             check('Public client identity source identity '+path,
