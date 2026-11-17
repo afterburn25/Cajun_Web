@@ -220,6 +220,44 @@ def run(root=ROOT):
         refuses('Refuses a substituted Reply/Forward workflow-fix parent',
                 lambda: altered_mail_workflow_fix_identity(
                     'MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE'))
+
+        def altered_mail_thread_header_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_thread_header_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted structured-thread source tree',
+                lambda: altered_mail_thread_header_identity(
+                    'MAIL_THREAD_HEADER_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted structured-thread direct parent',
+                lambda: altered_mail_thread_header_identity(
+                    'MAIL_THREAD_HEADER_FIX_BASE'))
+        refuses('Refuses altered structured-thread rendering source',
+                lambda: modified('foundation/mail-submission/OfflineMailer.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed header rendering\n')))
+
+        def altered_mail_native_fixture_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_native_fixture_policy_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted native fixture-policy source tree',
+                lambda: altered_mail_native_fixture_identity(
+                    'MAIL_NATIVE_FIXTURE_POLICY_SOURCE_TREE'))
+        refuses('Refuses a substituted native fixture-policy direct parent',
+                lambda: altered_mail_native_fixture_identity(
+                    'MAIL_NATIVE_FIXTURE_POLICY_BASE'))
+        refuses('Refuses altered native copied-draft fixture policy',
+                lambda: modified('tests/mail_copied_draft_create_native.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed native fixture\n')))
         refuses('Refuses an altered mail backup predecessor projection',
                 lambda: modified('tests/backups_acceptance_wiring.py',
                                  lambda target: target.write_bytes(
