@@ -74,6 +74,10 @@ def validate(text):
     check('The assigned synthetic user has a bounded retained PDO readiness proof',
           'for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text
           and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
+    check('Only isolated MySQL cells grant their synthetic fixture triggers',
+          text.count("- name: Allow isolated MySQL audit-failure fixture triggers") == 1
+          and text.count("if: matrix.database == 'mysql'") == 1
+          and text.count("docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'") == 1)
     check('Only the exact copied-draft and complete Reply/Forward suites run in the SQL matrix',
           text.count('php tests/mail_copied_draft_create_native.php\n') == 1
           and text.count('php tests/mail_replies_native.php\n') == 1)
@@ -142,6 +146,7 @@ def self_test(text):
         ('lost mbstring', 'docker-php-ext-install pdo_mysql mbstring', 'docker-php-ext-install pdo_mysql'),
         ('lost admin path admission', "'site/admin/**'", "'site/app/mail/**'"),
         ('lost genuine no-INI run', 'php_flags="-n"', 'php_flags=""'),
+        ('lost isolated MySQL trigger admission', "SET GLOBAL log_bin_trust_function_creators=1", 'SELECT 1'),
         ('added hosted APT dependency', 'mkdir -p "$cell"', 'sudo apt-get update\n          mkdir -p "$cell"'),
         ('lost source message compilation', "compile(Path(path).read_bytes(), path, 'exec')", ': # source message compilation removed'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),

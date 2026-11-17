@@ -135,6 +135,9 @@ jobs:
               fwrite(STDERR,get_class($last).": ".$last->getMessage()."\n");exit(1);
             ' > "$cell/readiness.stdout.log" 2> "$cell/readiness.stderr.log" || status=$?
           test "$status" -eq 0
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database == 'mysql'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
       - name: Run isolated copied-draft SQL acceptance
         run: |
           cell=qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}
