@@ -544,6 +544,44 @@ NOTIFICATION_HEALTH_ADDITIONS = frozenset((
     'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
     'tests/notification_health_view_contract.php',
 ))
+PROJECT_PRIVATE_NOTES_BASE = '803705fc76bfce3e0e2dba1125e73267165847a9'
+PROJECT_PRIVATE_NOTES_BASE_TREE = '0cf9421972425bd3f54329abba6eece9ecdca917'
+PROJECT_PRIVATE_NOTES_MODEL = 'ef02fe058feb2cb655cbd602f06bd5f1a1d6f740'
+PROJECT_PRIVATE_NOTES_MODEL_TREE = '259dae8b24928d8f9fa19893342798002acc08e5'
+PROJECT_PRIVATE_NOTES_IMPLEMENTATION = '6c6ad4bc0367a048989469b7ae705a4f5fe2e8e6'
+PROJECT_PRIVATE_NOTES_IMPLEMENTATION_TREE = '7d064c6d6410a3c6de8eb92aa42fc369333c12b3'
+PROJECT_PRIVATE_NOTES_HARDENING = '9a2deace926680a95817f1e687a8eeecdd157aaf'
+PROJECT_PRIVATE_NOTES_HARDENING_TREE = 'd49e2e05357c2591a1d0323d6c82935bf007423b'
+PROJECT_PRIVATE_NOTES_SOURCE = 'ed35d1c0f515a43e3b2be23f2b1158b985a8a92e'
+PROJECT_PRIVATE_NOTES_SOURCE_TREE = 'f2930651134669872dfa6c18425c680f16927f63'
+PROJECT_PRIVATE_NOTES_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'site/admin/controllers/router.php',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio/job.php',
+    'site/app/notifications/events.php',
+    'site/app/settings/database_schemas.php',
+    'site/app/staff/accounts.php',
+    'site/database/schema/base.php',
+    'site/install/inventory.generated.php',
+    'tests/client_authority_native.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tools/build.py',
+))
+PROJECT_PRIVATE_NOTES_ADDITIONS = frozenset((
+    'foundation/projects/ProjectPrivateNote.php',
+    'site/admin/views/studio/private_notes.php',
+    'site/app/projects/private_notes.php',
+    'site/database/migrations/project_private_notes_migrate.php',
+    'site/database/schema/project_private_notes_schema.php',
+    'site/database/schema/project_private_notes_validate_schema.php',
+    'site/includes/foundation/projects/ProjectPrivateNote.php',
+    'tests/project-notes/records.php',
+    'tests/project_private_notes_native.php',
+    'tests/project_private_notes_policy.php',
+    'tests/project_private_notes_view.php',
+))
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -3591,7 +3629,8 @@ def validate_notification_health_source(root):
     base_entries = entries(root, NOTIFICATION_HEALTH_BASE)
     source_entries = entries(root, NOTIFICATION_HEALTH_SOURCE)
     for path in sorted(NOTIFICATION_HEALTH_MODIFIED):
-        current = project_notification_metric_label_source(root, path, ordinary(root, path))
+        current = project_project_private_notes_source(root, path, ordinary(root, path))
+        current = project_notification_metric_label_source(root, path, current)
         source = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', NOTIFICATION_HEALTH_BASE + ':' + path)
         require(current == source
@@ -3613,6 +3652,7 @@ def validate_notification_health_source(root):
 
 def project_notification_health_source(root, path, current):
     """Restore verified resulting-main bytes for predecessor source proofs."""
+    current = project_project_private_notes_source(root, path, current)
     current = project_notification_metric_label_source(root, path, current)
     if path not in NOTIFICATION_HEALTH_MODIFIED:
         return current
@@ -3624,6 +3664,98 @@ def project_notification_health_source(root, path, current):
         return current
     require(current == source,
             'Current notification health source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_project_private_notes_source(root):
+    """Bind isolated immutable project notes to exact resulting-main source."""
+    identities = (
+        (PROJECT_PRIVATE_NOTES_BASE, PROJECT_PRIVATE_NOTES_BASE_TREE),
+        (PROJECT_PRIVATE_NOTES_MODEL, PROJECT_PRIVATE_NOTES_MODEL_TREE),
+        (PROJECT_PRIVATE_NOTES_IMPLEMENTATION, PROJECT_PRIVATE_NOTES_IMPLEMENTATION_TREE),
+        (PROJECT_PRIVATE_NOTES_HARDENING, PROJECT_PRIVATE_NOTES_HARDENING_TREE),
+        (PROJECT_PRIVATE_NOTES_SOURCE, PROJECT_PRIVATE_NOTES_SOURCE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Project private notes source tree changed: ' + commit)
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_MODEL).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_BASE]
+            and git(root, 'show', '-s', '--format=%P',
+                    PROJECT_PRIVATE_NOTES_IMPLEMENTATION).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_MODEL]
+            and git(root, 'show', '-s', '--format=%P',
+                    PROJECT_PRIVATE_NOTES_HARDENING).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_IMPLEMENTATION]
+            and git(root, 'show', '-s', '--format=%P',
+                    PROJECT_PRIVATE_NOTES_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_HARDENING],
+            'Project private notes source ancestry changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROJECT_PRIVATE_NOTES_BASE, PROJECT_PRIVATE_NOTES_SOURCE).decode().splitlines()
+    require(changes == [
+        'M\t.github/workflows/application-tests.yml',
+        'A\tfoundation/projects/ProjectPrivateNote.php',
+        'M\tsite/admin/controllers/router.php',
+        'M\tsite/admin/controllers/studio.php',
+        'M\tsite/admin/views/studio/job.php',
+        'A\tsite/admin/views/studio/private_notes.php',
+        'M\tsite/app/notifications/events.php',
+        'A\tsite/app/projects/private_notes.php',
+        'M\tsite/app/settings/database_schemas.php',
+        'M\tsite/app/staff/accounts.php',
+        'A\tsite/database/migrations/project_private_notes_migrate.php',
+        'M\tsite/database/schema/base.php',
+        'A\tsite/database/schema/project_private_notes_schema.php',
+        'A\tsite/database/schema/project_private_notes_validate_schema.php',
+        'A\tsite/includes/foundation/projects/ProjectPrivateNote.php',
+        'M\tsite/install/inventory.generated.php',
+        'M\ttests/client_authority_native.php',
+        'M\ttests/database_schema_registry_policy.php',
+        'M\ttests/database_schema_view_policy.php',
+        'A\ttests/project-notes/records.php',
+        'A\ttests/project_private_notes_native.php',
+        'A\ttests/project_private_notes_policy.php',
+        'A\ttests/project_private_notes_view.php',
+        'M\ttools/build.py',
+    ], 'Project private notes source changed a different path or status set')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_SOURCE)
+    for path in sorted(PROJECT_PRIVATE_NOTES_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_project_private_notes_source(root, path, current) == base
+                and project_project_private_notes_source(root, path, base) == base,
+                'Project private notes source identity or projection changed: ' + path)
+    require(not PROJECT_PRIVATE_NOTES_ADDITIONS & set(base_entries)
+            and PROJECT_PRIVATE_NOTES_ADDITIONS <= set(source_entries),
+            'Project private notes additions did not originate in the source range')
+    for path in sorted(PROJECT_PRIVATE_NOTES_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Project private notes addition identity changed: ' + path)
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Project private notes installer inventory is not canonical')
+
+
+def project_project_private_notes_source(root, path, current):
+    """Restore exact resulting-main bytes for predecessor source proofs."""
+    if path not in PROJECT_PRIVATE_NOTES_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes source changed before predecessor projection: ' + path)
     return base
 
 
@@ -3692,7 +3824,7 @@ def validate_proof_runtime_source(root):
     base_entries = entries(root, PROOF_RUNTIME_BASE)
     source_entries = entries(root, PROOF_RUNTIME_SOURCE)
     for path in sorted(PROOF_RUNTIME_PROJECTED):
-        current = ordinary(root, path)
+        current = project_project_private_notes_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROOF_RUNTIME_BASE + ':' + path)
         require(current == source
@@ -3718,6 +3850,7 @@ def validate_proof_runtime_source(root):
 
 def project_proof_runtime_source(root, path, current):
     """Restore the exact pre-timeout notification successor for older proofs."""
+    current = project_project_private_notes_source(root, path, current)
     if path not in PROOF_RUNTIME_PROJECTED:
         return current
     source = git(root, 'cat-file', 'blob', PROOF_RUNTIME_SOURCE + ':' + path)
@@ -3805,7 +3938,7 @@ def validate_notification_metric_label_source(root):
     base_entries = entries(root, NOTIFICATION_METRIC_LABEL_BASE)
     source_entries = entries(root, NOTIFICATION_METRIC_LABEL_SOURCE)
     for path in sorted(NOTIFICATION_METRIC_LABEL_MODIFIED):
-        current = ordinary(root, path)
+        current = project_project_private_notes_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_BASE + ':' + path)
         require(current == source
@@ -3827,6 +3960,7 @@ def validate_notification_metric_label_source(root):
 
 def project_notification_metric_label_source(root, path, current):
     """Restore the exact reviewed proof-cache head for older source receipts."""
+    current = project_project_private_notes_source(root, path, current)
     if path not in NOTIFICATION_METRIC_LABEL_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', NOTIFICATION_METRIC_LABEL_SOURCE + ':' + path)
@@ -3898,6 +4032,8 @@ def validate_pr391_recovery_successor(root):
                 | RESULTING_MAIN_INBOX_CLICK_BUDGET_ADDITIONS
                 | NOTIFICATION_HEALTH_MODIFIED
                 | NOTIFICATION_HEALTH_ADDITIONS
+                | PROJECT_PRIVATE_NOTES_MODIFIED
+                | PROJECT_PRIVATE_NOTES_ADDITIONS
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
                 | PROOF_CACHE_HARDENING_MODIFIED
@@ -5159,6 +5295,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_source(root)
     validate_notification_health_source(root)
     validate_domain_expiry_port_source(root)
     validate_proof_runtime_source(root)
@@ -5407,6 +5544,7 @@ def verify_current(root):
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
                | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
+               | PROJECT_PRIVATE_NOTES_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)
