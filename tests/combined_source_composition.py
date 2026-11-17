@@ -582,6 +582,15 @@ PROJECT_PRIVATE_NOTES_ADDITIONS = frozenset((
     'tests/project_private_notes_policy.php',
     'tests/project_private_notes_view.php',
 ))
+PROJECT_PRIVATE_NOTES_EVIDENCE_BASE = '18d4778cd4d942deda6c804928e199bba288b2eb'
+PROJECT_PRIVATE_NOTES_EVIDENCE_BASE_TREE = '4e961cdff8db8a8b371c424d8eb7abd42a48f712'
+PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE = '28e257e1efb3fc2486e63a3087266a764a59de5b'
+PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE_TREE = 'a1b2593525fb08ea4663f5f3aa1c48e8136c7078'
+PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED = frozenset((
+    'tests/acceptance_artifacts_test.py',
+    'tools/acceptance-contract.json',
+    'tools/acceptance-reports.json',
+))
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -2751,7 +2760,7 @@ def validate_runner_intake_current_binding_source(root):
     base_entries = entries(root, RUNNER_INTAKE_CURRENT_BINDING_BASE)
     source_entries = entries(root, RUNNER_INTAKE_CURRENT_BINDING_SOURCE)
     for path in sorted(RUNNER_INTAKE_CURRENT_BINDING_MODIFIED):
-        current = ordinary(root, path)
+        current = project_project_private_notes_evidence_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_BASE + ':' + path)
         require(current == source
@@ -2763,6 +2772,7 @@ def validate_runner_intake_current_binding_source(root):
 
 def project_runner_intake_current_binding(root, path, current):
     """Restore the accepted AWS mirror successor proof head."""
+    current = project_project_private_notes_evidence_source(root, path, current)
     if path not in RUNNER_INTAKE_CURRENT_BINDING_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_INTAKE_CURRENT_BINDING_SOURCE + ':' + path)
@@ -3746,6 +3756,7 @@ def validate_project_private_notes_source(root):
 
 def project_project_private_notes_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_project_private_notes_evidence_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_SOURCE + ':' + path)
@@ -3756,6 +3767,68 @@ def project_project_private_notes_source(root, path, current):
         return current
     require(current == source,
             'Current project private notes source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_project_private_notes_evidence_source(root):
+    """Bind the first-attempt acceptance inventory correction to its failed head."""
+    require(git(root, 'rev-parse', PROJECT_PRIVATE_NOTES_EVIDENCE_BASE + '^{tree}').decode().strip()
+            == PROJECT_PRIVATE_NOTES_EVIDENCE_BASE_TREE
+            and git(root, 'rev-parse',
+                    PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE + '^{tree}').decode().strip()
+            == PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE_TREE,
+            'Project private notes evidence source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_EVIDENCE_BASE],
+            'Project private notes evidence source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROJECT_PRIVATE_NOTES_EVIDENCE_BASE,
+                  PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED)],
+            'Project private notes evidence source changed a different path or status set')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_EVIDENCE_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE)
+    for path in sorted(PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_project_private_notes_evidence_source(root, path, current) == base
+                and project_project_private_notes_evidence_source(root, path, base) == base,
+                'Project private notes evidence identity or projection changed: ' + path)
+    source_contract = json.loads(git(root, 'cat-file', 'blob',
+                                     PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE
+                                     + ':tools/acceptance-contract.json'))
+    extension = source_contract.get('project_private_notes_native_command_extension', {})
+    require(extension.get('predecessor_native_count') == 175
+            and len(extension.get('additions', [])) == 4
+            and len(extension.get('reports', [])) == 4
+            and extension.get('predecessor_reports', {}).get('browser', {}).get('count') == 185
+            and extension.get('predecessor_reports', {}).get('final', {}).get('count') == 231,
+            'Project private notes acceptance predecessor or evidence inventory changed')
+    source_test = git(root, 'cat-file', 'blob',
+                      PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE + ':tests/acceptance_artifacts_test.py')
+    require(b'Private project note commands are one exact additive extension' in source_test
+            and b'Private project note reports retain the exact predecessor inventory' in source_test
+            and b"current=[report for report in registry[mode] if report not in project_notes_reports]" in source_test,
+            'Project private notes additive acceptance assertions changed')
+
+
+def project_project_private_notes_evidence_source(root, path, current):
+    """Restore the failed first-attempt proof head for predecessor receipts."""
+    if path not in PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes evidence changed before predecessor projection: ' + path)
     return base
 
 
@@ -4034,6 +4107,7 @@ def validate_pr391_recovery_successor(root):
                 | NOTIFICATION_HEALTH_ADDITIONS
                 | PROJECT_PRIVATE_NOTES_MODIFIED
                 | PROJECT_PRIVATE_NOTES_ADDITIONS
+                | PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
                 | PROOF_CACHE_HARDENING_MODIFIED
@@ -5295,6 +5369,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_evidence_source(root)
     validate_project_private_notes_source(root)
     validate_notification_health_source(root)
     validate_domain_expiry_port_source(root)
