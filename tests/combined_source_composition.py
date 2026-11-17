@@ -644,6 +644,16 @@ PROJECT_PRIVATE_NOTES_NOTIFICATION_FIXTURE_PATHS = frozenset((
     'tests/project_private_notes_native.php',
     'tools/acceptance-contract.json',
 ))
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE = '00035e10090b13c3956ab4628c0f59d8709b2403'
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE_TREE = 'c3fac5b85789844d00f5d72250b29cbe0c1398c1'
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_IMPLEMENTATION = 'a0994d1d041367a2cee17b0a4636b981b05be41b'
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_IMPLEMENTATION_TREE = 'd525e42f2d1498c929aab064ef6b7dca17bd9955'
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE = 'ee908dd1ff5723b109fd08d49fec96d2ea744dd7'
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE_TREE = 'd240079feed5477a56d5bf4a48b1c5f61d60e290'
+PROJECT_PRIVATE_NOTES_STALE_FIXTURE_PATHS = frozenset((
+    'tests/project_private_notes_native.php',
+    'tools/acceptance-contract.json',
+))
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -4222,7 +4232,7 @@ def validate_project_private_notes_notification_fixture_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_NOTIFICATION_FIXTURE_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_NOTIFICATION_FIXTURE_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_NOTIFICATION_FIXTURE_PATHS):
-        current = ordinary(root, path)
+        current = project_project_private_notes_stale_fixture_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob',
                      PROJECT_PRIVATE_NOTES_NOTIFICATION_FIXTURE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob',
@@ -4251,6 +4261,7 @@ def validate_project_private_notes_notification_fixture_source(root):
 
 def project_project_private_notes_notification_fixture_source(root, path, current):
     """Restore the accepted FK-safe fixture proof head for older source receipts."""
+    current = project_project_private_notes_stale_fixture_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_NOTIFICATION_FIXTURE_PATHS:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -4263,6 +4274,84 @@ def project_project_private_notes_notification_fixture_source(root, path, curren
         return current
     require(current == source,
             'Current project private notes notification fixture changed before predecessor projection: '
+            + path)
+    return base
+
+
+def validate_project_private_notes_stale_fixture_source(root):
+    """Bind the exact subprocess stale-session evidence correction."""
+    identities = (
+        (PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE,
+         PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE_TREE),
+        (PROJECT_PRIVATE_NOTES_STALE_FIXTURE_IMPLEMENTATION,
+         PROJECT_PRIVATE_NOTES_STALE_FIXTURE_IMPLEMENTATION_TREE),
+        (PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE,
+         PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Project private notes stale fixture source tree changed: ' + commit)
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_STALE_FIXTURE_IMPLEMENTATION).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE]
+            and git(root, 'show', '-s', '--format=%P',
+                    PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_STALE_FIXTURE_IMPLEMENTATION],
+            'Project private notes stale fixture ancestry changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE,
+                PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(PROJECT_PRIVATE_NOTES_STALE_FIXTURE_PATHS)],
+            'Project private notes stale fixture changed another path or status')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE)
+    for path in sorted(PROJECT_PRIVATE_NOTES_STALE_FIXTURE_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob',
+                     PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob',
+                   PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_project_private_notes_stale_fixture_source(root, path, current) == base
+                and project_project_private_notes_stale_fixture_source(root, path, base) == base,
+                'Project private notes stale fixture identity or projection changed: ' + path)
+    fixture = git(root, 'cat-file', 'blob',
+                  PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE
+                  + ':tests/project_private_notes_native.php')
+    contract = json.loads(git(root, 'cat-file', 'blob',
+                              PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE
+                              + ':tools/acceptance-contract.json'))
+    require(fixture.count(
+                b"if(getenv('CWP_PROJECT_PRIVATE_NOTES_STALE_WORKER')==='1'){") == 1
+            and fixture.count(b'$process=proc_open([PHP_BINARY,__FILE__]') == 1
+            and fixture.count(
+                b"query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$replacementVersion]);") == 1
+            and fixture.count(
+                b"query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$staleVersion]);") == 1
+            and fixture.count(b"LOCK_EX)!==strlen($report)") == 1
+            and b"$_SESSION['auth_version']=str_repeat('0',32)" not in fixture,
+            'Project private notes stale fixture is not exact and fail closed')
+    require(contract['project_private_notes_native_command_extension']['source_sha256']
+            ['tests/project_private_notes_native.php'] == digest(fixture),
+            'Project private notes stale fixture acceptance identity changed')
+
+
+def project_project_private_notes_stale_fixture_source(root, path, current):
+    """Restore the accepted notification fixture proof head for older source receipts."""
+    if path not in PROJECT_PRIVATE_NOTES_STALE_FIXTURE_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes stale fixture changed before predecessor projection: '
             + path)
     return base
 
@@ -5809,6 +5898,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_stale_fixture_source(root)
     validate_project_private_notes_notification_fixture_source(root)
     validate_project_private_notes_fk_fixture_source(root)
     validate_project_private_notes_native_fixture_source(root)
