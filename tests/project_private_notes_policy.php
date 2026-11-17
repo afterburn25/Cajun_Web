@@ -7,6 +7,7 @@ $read=static fn(string $path):string=>file_get_contents($root.'/'.$path)?:throw 
 $adapter=$read('site/app/projects/private_notes.php');
 $migration=$read('site/database/migrations/project_private_notes_migrate.php');
 $schema=$read('site/database/schema/project_private_notes_schema.php');
+$schemaValidator=$read('site/database/schema/project_private_notes_validate_schema.php');
 $view=$read('site/admin/views/studio/private_notes.php');
 $router=$read('site/admin/controllers/router.php');
 $staff=$read('site/app/staff/accounts.php');
@@ -24,7 +25,7 @@ try{
     pnp_ok('Adapter exposes no update or delete path for immutable note records',preg_match("/(?:UPDATE|DELETE FROM) '.table\('project_private_notes'\)/",$adapter)!==1);
     pnp_ok('Adapter has no public message notification activity mail payment or provider projection',!preg_match('/studio_messages|notification_(?:emit|project)|activity_|send_message|mail_|payment|provider_/',$adapter));
     pnp_ok('Every list row is model-validated and page order is verified',str_contains($adapter,'project_private_notes_record($row)')&&str_contains($adapter,'ProjectPrivateNote::verifyStaffPage')&&str_contains($adapter,"ORDER BY n.id DESC LIMIT '.ProjectPrivateNote::MAX_PAGE"));
-    pnp_ok('Schema is isolated binary text with retaining project and staff relationships',str_contains($schema,'body TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL')&&substr_count($schema,'ON DELETE RESTRICT ON UPDATE RESTRICT')===2);
+    pnp_ok('Schema is isolated binary text with same-database retaining project and staff relationships',str_contains($schema,'body TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL')&&substr_count($schema,'ON DELETE RESTRICT ON UPDATE RESTRICT')===2&&str_contains($schemaValidator,'k.REFERENCED_TABLE_SCHEMA')&&str_contains($schemaValidator,"(string)\$relation['REFERENCED_TABLE_SCHEMA']!==\$database"));
     pnp_ok('Migration rejects unknown adoption and audits readiness atomically',str_contains($migration,'Unrecognized private project notes exist. No data was adopted.')&&str_contains($migration,'staff_transaction(function()')&&str_contains($migration,"project.private_notes.setup"));
     pnp_ok('Fresh install and registry use a separate optional marker',str_contains($base,"'project_private_notes_schema_version'=>'1'")&&str_contains($registry,"'project_private_notes_schema_version'=>'1'")&&str_contains($registry,"database/migrations/project_private_notes_migrate.php"));
     pnp_ok('Admin action is explicitly mapped to clients-manage permission',str_contains($staff,"'studio_private_note'")&&str_contains($staff,"return 'clients.manage'"));

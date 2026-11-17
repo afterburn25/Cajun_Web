@@ -37,12 +37,14 @@ function project_private_notes_validate_schema(): void
     ksort($indexes);ksort($expectedIndexes);
     if($indexes!==$expectedIndexes)throw new RuntimeException('Incompatible private project note indexes. Existing data was preserved.');
 
-    $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
+    $database=(string)query('SELECT DATABASE()')->fetchColumn();
+    $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_SCHEMA,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
     $expectedRelations=['project_id'=>['studio_jobs','id'],'staff_id'=>['users','id']];$seen=[];
     if(count($relations)!==count($expectedRelations))throw new RuntimeException('Incompatible private project note relationships. Existing data was preserved.');
     foreach($relations as $relation){
         $field=(string)$relation['COLUMN_NAME'];$expectedRelation=$expectedRelations[$field]??null;
-        if(!$expectedRelation||isset($seen[$field])||(string)$relation['REFERENCED_TABLE_NAME']!==config()['db']['prefix'].$expectedRelation[0]
+        if(!$expectedRelation||isset($seen[$field])||(string)$relation['REFERENCED_TABLE_SCHEMA']!==$database
+            ||(string)$relation['REFERENCED_TABLE_NAME']!==config()['db']['prefix'].$expectedRelation[0]
             ||(string)$relation['REFERENCED_COLUMN_NAME']!==$expectedRelation[1]||!in_array((string)$relation['DELETE_RULE'],['RESTRICT','NO ACTION'],true)
             ||!in_array((string)$relation['UPDATE_RULE'],['RESTRICT','NO ACTION'],true))throw new RuntimeException('Incompatible private project note relationships. Existing data was preserved.');
         $seen[$field]=true;

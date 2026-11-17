@@ -532,7 +532,7 @@ function setup_expected_files(): array { return [
     'database/schema/notifications_schema.php'=>'012d0023e16636fd49bdcf0b13686b519d4af930ec2885e018e965221bdaa16a',
     'database/schema/payments_schema.php'=>'4d06ce6118eb0a4ddf61a38e7925d4ece597ef5f12852ec4b586172f4d36806d',
     'database/schema/project_private_notes_schema.php'=>'d13c581ef67287378b5731db8af056b34ebfeee2dffa3e52548056fa387626a4',
-    'database/schema/project_private_notes_validate_schema.php'=>'44855aa22eb46165e69ef4e933b2b619ab2114c246a2a466f4cfd820162644e8',
+    'database/schema/project_private_notes_validate_schema.php'=>'7657eb8cb1c7d5d79b217ec02a4884187440cd9a7f8676398bc611e7a331bba0',
     'database/schema/proposals_schema.php'=>'8e1a444823e56a6ed52da08364feea5ae6141286b5241f7d1194a1b810f2d26d',
     'database/schema/proposals_validate_schema.php'=>'d6f76819dae41351877992e83defed7b64009278873fa19a3335eda1b5678e8c',
     'database/schema/provider_catalog_import_schema.php'=>'dc047d538a5579676b1ef01969a0d8af30700729aa59d5045d8e70e3f1e1fb8a',

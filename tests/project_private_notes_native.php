@@ -48,6 +48,21 @@ try{
     db()->exec('ALTER TABLE '.table('project_private_notes').' DROP INDEX project_notes');
     pn_deny('Setup rejects a private-note table missing its exact project index',fn()=>project_private_notes_migrate($password));
     db()->exec('ALTER TABLE '.table('project_private_notes').' ADD INDEX project_notes(project_id,id)');
+    $foreignDatabase='cwp_test_projectnotes_foreign';
+    db()->exec('DROP TABLE '.table('project_private_notes'));
+    db()->exec('DROP DATABASE IF EXISTS `'.$foreignDatabase.'`');
+    try{
+        db()->exec('CREATE DATABASE `'.$foreignDatabase.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+        db()->exec('CREATE TABLE `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'studio_jobs` (id INT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=InnoDB');
+        db()->exec('CREATE TABLE `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'users` (id INT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=InnoDB');
+        db()->exec('CREATE TABLE '.table('project_private_notes').' (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,project_id INT UNSIGNED NOT NULL,staff_id INT UNSIGNED NOT NULL,created_epoch BIGINT UNSIGNED NOT NULL,body TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,INDEX project_notes(project_id,id),INDEX staff_id(staff_id),FOREIGN KEY (project_id) REFERENCES `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'studio_jobs` (id) ON DELETE RESTRICT ON UPDATE RESTRICT,FOREIGN KEY (staff_id) REFERENCES `'.$foreignDatabase.'`.`'.config()['db']['prefix'].'users` (id) ON DELETE RESTRICT ON UPDATE RESTRICT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+        pn_deny('Setup rejects exact-looking foreign keys into another database',fn()=>project_private_notes_migrate($password));
+        pn_ok('Cross-database refusal leaves the readiness marker unchanged',!project_private_notes_ready());
+    }finally{
+        db()->exec('DROP TABLE IF EXISTS '.table('project_private_notes'));
+        db()->exec('DROP DATABASE IF EXISTS `'.$foreignDatabase.'`');
+    }
+    db()->exec(project_private_notes_schema(config()['db']['prefix'])['project_private_notes']);
     query('INSERT INTO '.table('project_private_notes').' (project_id,staff_id,created_epoch,body) VALUES (1,1,1,?)',['Unrecognized retained note']);
     pn_deny('Setup refuses to adopt unmarked private note data',fn()=>project_private_notes_migrate($password));
     query('DELETE FROM '.table('project_private_notes'));
