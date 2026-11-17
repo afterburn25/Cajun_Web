@@ -593,6 +593,11 @@ MAIL_NATIVE_FIXTURE_POLICY_BASE_TREE = '42e8dfcec333a2869e7c6e6159d8edb74ca24e9e
 MAIL_NATIVE_FIXTURE_POLICY_SOURCE = '158159ea5b9f1de6a2ab32fcb5fa77bfedda9fc2'
 MAIL_NATIVE_FIXTURE_POLICY_SOURCE_TREE = '5dae136f62772a4ec06bce0aaec8c42e2ec569cd'
 MAIL_NATIVE_FIXTURE_POLICY_PATH = 'tests/mail_copied_draft_create_native.php'
+MAIL_REPLY_SESSION_FIX_BASE = '681bcd2de5f211f31a709d647804c6717516b440'
+MAIL_REPLY_SESSION_FIX_BASE_TREE = 'c4bd5f3e552b51a46e13d1fa1975f835707896c1'
+MAIL_REPLY_SESSION_FIX_SOURCE = '48d13fa964f57e95a2ee53e596c38a535b703d0d'
+MAIL_REPLY_SESSION_FIX_SOURCE_TREE = 'f876dd293e2d8d2f4e350769e809bb5fb878a81b'
+MAIL_REPLY_SESSION_FIX_PATH = 'tests/mail_reply_cases.py'
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -1433,7 +1438,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '5372fe0d9d2af7ab2c34b7c65391ca6bdbb26662a43e6843080c356a9fe05baa'
+REGRESSION_SHA256 = '1b7d5154543b73919a3daff46b99d2dfcfb25edf76fa2112e26208d0eece53be'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3994,6 +3999,58 @@ def project_mail_native_fixture_policy_fix(root, path, current):
     return base
 
 
+def validate_mail_reply_session_fix(root):
+    """Bind the hosted browser correction to the accepted no-reentry policy."""
+    require(git(root, 'rev-parse', MAIL_REPLY_SESSION_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_SESSION_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_SESSION_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_SESSION_FIX_SOURCE_TREE,
+            'Mail reply session-policy source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_REPLY_SESSION_FIX_SOURCE).decode().split()
+            == [MAIL_REPLY_SESSION_FIX_SOURCE, MAIL_REPLY_SESSION_FIX_BASE],
+            'Mail reply session-policy fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_SESSION_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_SESSION_FIX_BASE,
+                MAIL_REPLY_SESSION_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_REPLY_SESSION_FIX_PATH],
+            'Mail reply session-policy fix changed another path or status')
+    path = MAIL_REPLY_SESSION_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_BASE + ':' + path)
+    base_entries = entries(root, MAIL_REPLY_SESSION_FIX_BASE)
+    source_entries = entries(root, MAIL_REPLY_SESSION_FIX_SOURCE)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_reply_session_fix(root, path, current) == base
+            and project_mail_reply_session_fix(root, path, base) == base,
+            'Mail reply session-policy source identity or projection changed')
+    require(source.count(b"check('Reply storage setup rejects invalid CSRF'") == 1
+            and source.count(b"check('Reply storage setup refuses a revoked current owner session'") == 1
+            and source.count(b"db('UPDATE ci_users SET auth_version=? WHERE id=?', [uuid.uuid4().hex, oid])") == 1
+            and source.count(b"submit(owner, root + '?view=login', 'login'") == 2
+            and source.count(b"submit(owner, drafts_url, 'mail_drafts_replies_setup')") == 1
+            and b"'current_password': 'wrong'" not in source,
+            'Mail reply browser fixture no longer exercises CSRF and revoked-session authority')
+
+
+def project_mail_reply_session_fix(root, path, current):
+    """Restore the pre-browser-failure fixture for older mail source proofs."""
+    if path != MAIL_REPLY_SESSION_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail reply session fixture changed before predecessor projection')
+    return base
+
+
 def validate_mail_reply_forward_source(root):
     """Bind the complete bounded Reply/Forward successor to resulting main."""
     require(git(root, 'rev-parse', MAIL_REPLY_FORWARD_BASE + '^{tree}').decode().strip()
@@ -4032,7 +4089,8 @@ def validate_mail_reply_forward_source(root):
                 and project_mail_reply_forward_source(root, path, base) == base,
                 'Mail Reply/Forward modified source identity or projection changed: ' + path)
     for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
-        current = project_mail_native_fixture_policy_fix(root, path, ordinary(root, path))
+        current = project_mail_reply_session_fix(root, path, ordinary(root, path))
+        current = project_mail_native_fixture_policy_fix(root, path, current)
         current = project_mail_thread_header_fix(root, path, current)
         current = project_mail_reply_forward_workflow_fix(root, path, current)
         require(current
@@ -4063,6 +4121,7 @@ def validate_mail_reply_forward_source(root):
 
 def project_mail_reply_forward_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_mail_reply_session_fix(root, path, current)
     current = project_mail_thread_header_fix(root, path, current)
     current = project_mail_reply_forward_workflow_fix(root, path, current)
     if path not in MAIL_REPLY_FORWARD_MODIFIED:
@@ -5280,7 +5339,7 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_REPLY_FORWARD_PATHS
                 | MAIL_THREAD_HEADER_FIX_PATHS
                 | MAIL_THREAD_ALIAS_FIX_PATHS
-                | {MAIL_NATIVE_FIXTURE_POLICY_PATH}),
+                | {MAIL_NATIVE_FIXTURE_POLICY_PATH, MAIL_REPLY_SESSION_FIX_PATH}),
             'Current recovery successor contains an unbound path')
 
 
@@ -6526,6 +6585,7 @@ def verify_current(root):
     pin_head(root)
     validate_mail_thread_alias_fix(root)
     validate_mail_native_fixture_policy_fix(root)
+    validate_mail_reply_session_fix(root)
     validate_mail_thread_header_fix(root)
     validate_mail_artifact_overlap_fix(root)
     validate_mail_artifact_projection_fix(root)
@@ -6856,7 +6916,8 @@ def verify_current(root):
                 and mode(root, path) == '100644',
                 'UX-08 payment addition no longer matches its exact source: ' + path)
     for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
-        current = project_mail_native_fixture_policy_fix(root, path, ordinary(root, path))
+        current = project_mail_reply_session_fix(root, path, ordinary(root, path))
+        current = project_mail_native_fixture_policy_fix(root, path, current)
         current = project_mail_reply_forward_workflow_fix(root, path, current)
         require(current
                 == git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)

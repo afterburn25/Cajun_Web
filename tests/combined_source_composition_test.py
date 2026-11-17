@@ -277,6 +277,25 @@ def run(root=ROOT):
                 lambda: modified('tests/mail_copied_draft_create_native.php',
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n// unreviewed native fixture\n')))
+
+        def altered_mail_reply_session_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_session_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail reply session-policy source tree',
+                lambda: altered_mail_reply_session_identity(
+                    'MAIL_REPLY_SESSION_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail reply session-policy direct parent',
+                lambda: altered_mail_reply_session_identity(
+                    'MAIL_REPLY_SESSION_FIX_BASE'))
+        refuses('Refuses altered mail reply session-policy fixture source',
+                lambda: modified('tests/mail_reply_cases.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed session fixture\n')))
         refuses('Refuses an altered mail backup predecessor projection',
                 lambda: modified('tests/backups_acceptance_wiring.py',
                                  lambda target: target.write_bytes(
