@@ -591,6 +591,11 @@ PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED = frozenset((
     'tools/acceptance-contract.json',
     'tools/acceptance-reports.json',
 ))
+PROJECT_PRIVATE_NOTES_AUTHORITY_BASE = '5667858710a21a1f66dfb5669b744f2e13ae181b'
+PROJECT_PRIVATE_NOTES_AUTHORITY_BASE_TREE = 'a487b02fb7a08d934c8b90b0e5eb07ad7099be65'
+PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE = '95526a159a2da46db6fa74f6c99cc740fce0650a'
+PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE_TREE = '2125d4e4b6c02741724ca4be77588778a0fe72ff'
+PROJECT_PRIVATE_NOTES_AUTHORITY_PATH = 'tests/acceptance_artifacts_test.py'
 DOMAIN_EXPIRY_PORT_BASE = '5165718b248a1dcbfe0794fa7de304d502c8178b'
 DOMAIN_EXPIRY_PORT_BASE_TREE = 'c6cc250cecc7b64040f9ea7f64ef9a983d6baee5'
 DOMAIN_EXPIRY_PORT_SOURCE = 'f0f729f4b841294721bd0832a0fcaf5e7a2e9051'
@@ -3791,7 +3796,7 @@ def validate_project_private_notes_evidence_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_EVIDENCE_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED):
-        current = ordinary(root, path)
+        current = project_project_private_notes_authority_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_BASE + ':' + path)
         require(current == source
@@ -3819,6 +3824,7 @@ def validate_project_private_notes_evidence_source(root):
 
 def project_project_private_notes_evidence_source(root, path, current):
     """Restore the failed first-attempt proof head for predecessor receipts."""
+    current = project_project_private_notes_authority_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_EVIDENCE_SOURCE + ':' + path)
@@ -3829,6 +3835,57 @@ def project_project_private_notes_evidence_source(root, path, current):
         return current
     require(current == source,
             'Current project private notes evidence changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_project_private_notes_authority_source(root):
+    """Bind the frozen software-authority inventory correction."""
+    require(git(root, 'rev-parse', PROJECT_PRIVATE_NOTES_AUTHORITY_BASE + '^{tree}').decode().strip()
+            == PROJECT_PRIVATE_NOTES_AUTHORITY_BASE_TREE
+            and git(root, 'rev-parse',
+                    PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE + '^{tree}').decode().strip()
+            == PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE_TREE,
+            'Project private notes authority source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE).decode().strip().split()
+            == [PROJECT_PRIVATE_NOTES_AUTHORITY_BASE],
+            'Project private notes authority source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                PROJECT_PRIVATE_NOTES_AUTHORITY_BASE,
+                PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE).decode().splitlines()
+            == ['M\t' + PROJECT_PRIVATE_NOTES_AUTHORITY_PATH],
+            'Project private notes authority correction changed another path or status')
+    base_entries = entries(root, PROJECT_PRIVATE_NOTES_AUTHORITY_BASE)
+    source_entries = entries(root, PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE)
+    path = PROJECT_PRIVATE_NOTES_AUTHORITY_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_project_private_notes_authority_source(root, path, current) == base
+            and project_project_private_notes_authority_source(root, path, base) == base,
+            'Project private notes authority identity or projection changed')
+    require(source.count(b"project_notes_reports=set(acceptance_contract.get('project_private_notes_native_command_extension',{}).get('reports',[]))") == 1
+            and b'item not in project_notes_reports' in source
+            and b"('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e')" in source
+            and b"('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7')" in source,
+            'Project private notes authority correction weakened frozen inventory identities')
+
+
+def project_project_private_notes_authority_source(root, path, current):
+    """Restore the reviewed evidence proof head for predecessor receipts."""
+    if path != PROJECT_PRIVATE_NOTES_AUTHORITY_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_AUTHORITY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project private notes authority correction changed before predecessor projection')
     return base
 
 
@@ -4108,6 +4165,7 @@ def validate_pr391_recovery_successor(root):
                 | PROJECT_PRIVATE_NOTES_MODIFIED
                 | PROJECT_PRIVATE_NOTES_ADDITIONS
                 | PROJECT_PRIVATE_NOTES_EVIDENCE_MODIFIED
+                | {PROJECT_PRIVATE_NOTES_AUTHORITY_PATH}
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
                 | PROOF_CACHE_HARDENING_MODIFIED
@@ -5369,6 +5427,7 @@ def verify_current(root):
     validate_runner_mirror_phase_source(root)
     validate_runner_mirror_compat_source(root)
     validate_pr388_resulting_main_source(root)
+    validate_project_private_notes_authority_source(root)
     validate_project_private_notes_evidence_source(root)
     validate_project_private_notes_source(root)
     validate_notification_health_source(root)
