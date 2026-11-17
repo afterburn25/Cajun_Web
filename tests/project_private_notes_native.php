@@ -20,6 +20,14 @@ $GLOBALS['cwp_config']['storage']=realpath($private);
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
 start_session();
 
+if(getenv('CWP_PROJECT_PRIVATE_NOTES_STALE_WORKER')==='1'){
+    $stale=(string)getenv('CWP_PROJECT_PRIVATE_NOTES_STALE_AUTH_VERSION');
+    if(!preg_match('/\A[0-9a-f]{32}\z/D',$stale))exit(3);
+    $_SESSION=['uid'=>1,'auth_version'=>$stale,'login_at'=>time(),'last_activity'=>time()];
+    project_private_notes_create(1,'Forbidden stale note');
+    fwrite(STDERR,"Stale project-note worker unexpectedly returned.\n");exit(3);
+}
+
 $checks=[];$password='Synthetic private note owner passphrase';
 function pn_ok(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
 function pn_deny(string $name,callable $work):void{try{$work();}catch(InvalidArgumentException|RuntimeException|LogicException $error){if($error instanceof PDOException)throw $error;pn_ok($name,true);return;}pn_ok($name,false);}
@@ -29,6 +37,20 @@ function pn_audit_failure(callable $work):bool{
     db()->exec('CREATE TRIGGER projectnotesci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic audit failure'");
     try{$work();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER projectnotesci_fail');}
     return $failed;
+}
+function pn_stale_process(string $authVersion):array{
+    putenv('CWP_PROJECT_PRIVATE_NOTES_STALE_WORKER=1');
+    putenv('CWP_PROJECT_PRIVATE_NOTES_STALE_AUTH_VERSION='.$authVersion);
+    try{
+        $pipes=[];$process=proc_open([PHP_BINARY,__FILE__],[1=>['pipe','w'],2=>['pipe','w']],$pipes,__DIR__.'/..',null,['bypass_shell'=>true]);
+        if(!is_resource($process))throw new RuntimeException('Could not start isolated stale-session worker.');
+        $stdout=stream_get_contents($pipes[1]);$stderr=stream_get_contents($pipes[2]);
+        fclose($pipes[1]);fclose($pipes[2]);$exit=proc_close($process);
+        return ['exit'=>$exit,'stdout'=>$stdout,'stderr'=>$stderr];
+    }finally{
+        putenv('CWP_PROJECT_PRIVATE_NOTES_STALE_WORKER');
+        putenv('CWP_PROJECT_PRIVATE_NOTES_STALE_AUTH_VERSION');
+    }
 }
 
 try{
@@ -98,8 +120,14 @@ try{
     pn_deny('Explicit support marker cannot list private staff notes',fn()=>project_private_notes_list(1));
     unset($_GET['support']);
 
-    pn_session(1);$_SESSION['auth_version']=str_repeat('0',32);
-    pn_deny('Stale administrator authorization cannot create',fn()=>project_private_notes_create(1,'Forbidden stale note'));
+    pn_session(1);$staleVersion=(string)$_SESSION['auth_version'];$replacementVersion=bin2hex(random_bytes(16));
+    $staleNotes=pn_count('project_private_notes');$staleAudits=pn_count('audit');
+    query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$replacementVersion]);
+    try{$stale=pn_stale_process($staleVersion);}
+    finally{query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$staleVersion]);pn_session(1);}
+    pn_ok('Stale administrator authorization exits through login without creating',
+        $stale['exit']===0&&$stale['stdout']===''&&$stale['stderr']===''
+        &&pn_count('project_private_notes')===$staleNotes&&pn_count('audit')===$staleAudits);
     pn_session(1);pn_deny('Unknown project cannot create a private note',fn()=>project_private_notes_create(999,'Unknown project note'));
     $before=pn_count('project_private_notes');
     pn_ok('Audit failure rolls back the private note atomically',pn_audit_failure(fn()=>project_private_notes_create(1,'Must roll back'))&&pn_count('project_private_notes')===$before);
@@ -121,7 +149,8 @@ try{
 }catch(Throwable $error){$failure=get_class($error).': '.$error->getMessage();}
 
 if(!is_dir(__DIR__.'/../qa'))mkdir(__DIR__.'/../qa',0700,true);
-file_put_contents(__DIR__.'/../qa/project-private-notes-native-results.json',json_encode(['scope'=>'Isolated MariaDB schema, migration, authorization, immutable note, audit and privacy tests; synthetic records only; no customer message, email, provider, payment or live operation.','checks'=>$checks,'passed'=>!isset($failure),'failure'=>$failure??null],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+$report=json_encode(['scope'=>'Isolated MariaDB schema, migration, authorization, immutable note, audit and privacy tests; synthetic records only; no customer message, email, provider, payment or live operation.','checks'=>$checks,'passed'=>!isset($failure),'failure'=>$failure??null],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+if(file_put_contents(__DIR__.'/../qa/project-private-notes-native-results.json',$report,LOCK_EX)!==strlen($report)){fwrite(STDERR,"Could not preserve private project note report.\n");exit(1);}
 foreach($checks as $check)echo ($check['passed']?'PASS ':'FAIL ').$check['name'].PHP_EOL;
 if(isset($failure)){fwrite(STDERR,$failure.PHP_EOL);exit(1);}
 echo 'Native private project note checks: '.count($checks).' passed'.PHP_EOL;
