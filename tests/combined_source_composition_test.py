@@ -240,6 +240,25 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n// unreviewed header rendering\n')))
 
+        def altered_mail_thread_alias_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_thread_alias_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted thread-alias security source tree',
+                lambda: altered_mail_thread_alias_identity(
+                    'MAIL_THREAD_ALIAS_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted thread-alias security direct parent',
+                lambda: altered_mail_thread_alias_identity(
+                    'MAIL_THREAD_ALIAS_FIX_BASE'))
+        refuses('Refuses altered thread-alias security source',
+                lambda: modified('site/includes/foundation/mail-submission/OfflineMailer.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed alias handling\n')))
+
         def altered_mail_native_fixture_identity(attribute):
             original = getattr(proof, attribute)
             try:

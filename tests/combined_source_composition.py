@@ -593,6 +593,18 @@ MAIL_NATIVE_FIXTURE_POLICY_BASE_TREE = '42e8dfcec333a2869e7c6e6159d8edb74ca24e9e
 MAIL_NATIVE_FIXTURE_POLICY_SOURCE = '158159ea5b9f1de6a2ab32fcb5fa77bfedda9fc2'
 MAIL_NATIVE_FIXTURE_POLICY_SOURCE_TREE = '5dae136f62772a4ec06bce0aaec8c42e2ec569cd'
 MAIL_NATIVE_FIXTURE_POLICY_PATH = 'tests/mail_copied_draft_create_native.php'
+MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
+MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
+MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
+MAIL_THREAD_ALIAS_FIX_SOURCE_TREE = 'a361151f82a48d79eae73e251fd41826bbddd5aa'
+MAIL_THREAD_ALIAS_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'foundation/mail-submission/OfflineMailer.php',
+    'site/includes/foundation/mail-submission/OfflineMailer.php',
+    'site/install/inventory.generated.php',
+    'tests/mail-submission/mime.php',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
 MAIL_REPLY_FORWARD_MODIFIED = frozenset((
     'foundation/mail-receiving/HeaderDecoder.php',
     'foundation/mail-submission/PreparedMime.php',
@@ -1421,7 +1433,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'bd12da0ff26e0d0881c9b9ab7941f3af10b815edac3222e2d247e216bd8d51ca'
+REGRESSION_SHA256 = '5372fe0d9d2af7ab2c34b7c65391ca6bdbb26662a43e6843080c356a9fe05baa'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3796,7 +3808,7 @@ def validate_mail_thread_header_fix(root):
     base_entries = entries(root, MAIL_THREAD_HEADER_FIX_BASE)
     source_entries = entries(root, MAIL_THREAD_HEADER_FIX_SOURCE)
     for path in sorted(MAIL_THREAD_HEADER_FIX_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_thread_alias_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_BASE + ':' + path)
         require(current == source
@@ -3844,6 +3856,7 @@ def validate_mail_thread_header_fix(root):
 
 def project_mail_thread_header_fix(root, path, current):
     """Restore the exact pre-review-thread PR head for older mail proofs."""
+    current = project_mail_thread_alias_fix(root, path, current)
     if path not in MAIL_THREAD_HEADER_FIX_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE + ':' + path)
@@ -3854,6 +3867,78 @@ def project_mail_thread_header_fix(root, path, current):
         return current
     require(current == source,
             'Current mail structured-thread fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_thread_alias_fix(root):
+    """Bind the security-review correction to detached, revalidated values."""
+    require(git(root, 'rev-parse', MAIL_THREAD_ALIAS_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_THREAD_ALIAS_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_THREAD_ALIAS_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_THREAD_ALIAS_FIX_SOURCE_TREE,
+            'Mail thread-alias security source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_THREAD_ALIAS_FIX_SOURCE).decode().split()
+            == [MAIL_THREAD_ALIAS_FIX_SOURCE, MAIL_THREAD_ALIAS_FIX_BASE],
+            'Mail thread-alias security fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_THREAD_ALIAS_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_THREAD_ALIAS_FIX_BASE,
+                MAIL_THREAD_ALIAS_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_THREAD_ALIAS_FIX_PATHS)],
+            'Mail thread-alias security fix changed another path or status')
+    base_entries = entries(root, MAIL_THREAD_ALIAS_FIX_BASE)
+    source_entries = entries(root, MAIL_THREAD_ALIAS_FIX_SOURCE)
+    for path in sorted(MAIL_THREAD_ALIAS_FIX_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_thread_alias_fix(root, path, current) == base
+                and project_mail_thread_alias_fix(root, path, base) == base,
+                'Mail thread-alias security source identity or projection changed: ' + path)
+    canonical = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                    + ':foundation/mail-submission/OfflineMailer.php')
+    shipping = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                   + ':site/includes/foundation/mail-submission/OfflineMailer.php')
+    regression = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                     + ':tests/mail-submission/mime.php')
+    workflow = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    require(canonical == shipping
+            and canonical.count(b'private function validatedIdentifierHeader(') == 1
+            and canonical.count(b'$canonical=$this->validatedIdentifierHeader($name,$identifiers);') == 1
+            and canonical.count(b'$identifiers=$this->validatedIdentifierHeader($name,$identifiers);') == 1
+            and canonical.count(b'$this->identifierHeaders[$name]=$canonical;') == 1
+            and b'array_values($identifiers)' not in canonical
+            and canonical.count(b"return $name==='In-Reply-To'?[$thread->inReplyTo]:$thread->references;") == 1,
+            'Mail thread-alias fix no longer detaches and revalidates exact structured values')
+    require(regression.count(b"foreach(['In-Reply-To','References'] as $header)") == 1
+            and b'$aliases=[&$identifier]' in regression
+            and b'Bcc: injected@example.invalid' in regression
+            and b'detaches caller aliases before render' in regression
+            and workflow.count(b"'submission-snapshot': 54, 'submission-mime': 34") == 1
+            and contract.count(b"('tests/mail-submission/mime.php', 'submission-mime', '34')") == 1,
+            'Mail thread-alias adversarial regression or exact matrix count changed')
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Mail thread-alias installer inventory is not canonical')
+
+
+def project_mail_thread_alias_fix(root, path, current):
+    """Restore the security-review-blocked head for older mail proofs."""
+    if path not in MAIL_THREAD_ALIAS_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail thread-alias security fix changed before predecessor projection: ' + path)
     return base
 
 
@@ -5194,6 +5279,7 @@ def validate_pr391_recovery_successor(root):
                 | {MAIL_BACKUP_PROJECTION_FIX_PATH}
                 | MAIL_REPLY_FORWARD_PATHS
                 | MAIL_THREAD_HEADER_FIX_PATHS
+                | MAIL_THREAD_ALIAS_FIX_PATHS
                 | {MAIL_NATIVE_FIXTURE_POLICY_PATH}),
             'Current recovery successor contains an unbound path')
 
@@ -6438,6 +6524,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_thread_alias_fix(root)
     validate_mail_native_fixture_policy_fix(root)
     validate_mail_thread_header_fix(root)
     validate_mail_artifact_overlap_fix(root)
@@ -6818,6 +6905,7 @@ def verify_current(root):
         {'name': 'Exact resulting-main-to-Reply/Forward range binds ' + str(len(MAIL_REPLY_FORWARD_MODIFIED)) + ' modified paths and ' + str(len(MAIL_REPLY_FORWARD_ADDITIONS)) + ' disjoint additions', 'passed': True},
         {'name': 'Exact Reply/Forward workflow successor binds dependency-free browser-module compilation after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact structured-thread successor preserves long message identifiers without RFC 2047 transformation', 'passed': True},
+        {'name': 'Exact security successor detaches caller aliases and revalidates structured identifiers at render', 'passed': True},
         {'name': 'Exact native-fixture successor admits a policy-valid host while retaining injected resolver and transport boundaries', 'passed': True},
         {'name': 'Exact mail backup-projection successor restores Reply/Forward browser bytes before historical UX-09 and backup proofs', 'passed': True},
         {'name': 'Exact mail artifact-projection successor restores Reply/Forward browser bytes before the public-identity receipt', 'passed': True},
