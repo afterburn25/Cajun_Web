@@ -46,9 +46,9 @@ try{
     pn_session(1);
 
     db()->exec(project_private_notes_schema(config()['db']['prefix'])['project_private_notes']);
-    db()->exec('ALTER TABLE '.table('project_private_notes').' DROP INDEX project_notes');
+    db()->exec('ALTER TABLE '.table('project_private_notes').' ADD INDEX fixture_project_fk(project_id), DROP INDEX project_notes');
     pn_deny('Setup rejects a private-note table missing its exact project index',fn()=>project_private_notes_migrate($password));
-    db()->exec('ALTER TABLE '.table('project_private_notes').' ADD INDEX project_notes(project_id,id)');
+    db()->exec('ALTER TABLE '.table('project_private_notes').' ADD INDEX project_notes(project_id,id), DROP INDEX fixture_project_fk');
     $foreignDatabase=(string)getenv('CWP_TEST_HOSTING_PAYMENT_FOREIGN_DATABASE');
     $foreignTables=all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=? AND table_name LIKE ?',[$foreignDatabase,config()['db']['prefix'].'%']);
     if($foreignDatabase!=='cwp_hpay_foreign'||$foreignTables)throw new RuntimeException('Exact isolated foreign fixture schema unavailable.');
