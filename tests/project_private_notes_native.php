@@ -8,7 +8,7 @@ if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
-require __DIR__.'/../site/app/clients/workspace.php';
+require_once __DIR__.'/../site/app/clients/workspace.php';
 require __DIR__.'/../site/app/projects/private_notes.php';
 
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';
