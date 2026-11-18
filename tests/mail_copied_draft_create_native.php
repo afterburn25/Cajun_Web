@@ -103,6 +103,8 @@ try {
 
     cdc_age();$replyAll=bin2hex(random_bytes(16));$replyAllCreated=mail_copied_draft_create($replyAll,$sourceAccount,1,'9','45','reply-all',$senderAccount,1,null,'cdc_resolver','cdc_transport');$replyAllRow=mail_reply_drafts_get($replyAll);
     cdc_ok('Reply all binds the exact chosen sender and excludes it plus hidden recipients',$replyAllCreated['state']==='created'&&$replyAllRow['origin']['mode']==='reply-all'&&$replyAllRow['to']===['source@example.invalid','visible@example.invalid']&&$replyAllRow['cc']===[]&&$replyAllRow['bcc']===[]&&!str_contains(json_encode($replyAllRow,JSON_THROW_ON_ERROR),'sender@example.invalid')&&!str_contains(json_encode($replyAllRow,JSON_THROW_ON_ERROR),'RAW_HIDDEN_MARKER'));
+    $replyAllBefore=cdc_tables();$replyAllCalls=[$resolveCalls,$transportCalls];$replyAllReplay=mail_copied_draft_create($replyAll,$sourceAccount,1,'9','45','reply-all',$senderAccount,1,null,'cdc_resolver','cdc_transport');
+    cdc_ok('Exact reply all replay returns the existing draft before network or mutation',$replyAllReplay===['state'=>'existing','draft_id'=>$replyAll,'result'=>null]&&[$resolveCalls,$transportCalls]===$replyAllCalls&&cdc_tables()===$replyAllBefore);
 
     $before=cdc_tables();$beforeCalls=[$resolveCalls,$transportCalls];$replay=mail_copied_draft_create($draft,$sourceAccount,1,'9','44','reply',$senderAccount,1,null,'cdc_resolver','cdc_transport');
     cdc_ok('Exact replay returns before network journal or mutation',$replay['state']==='existing'&&[$resolveCalls,$transportCalls]===$beforeCalls&&cdc_tables()===$before);

@@ -103,6 +103,16 @@ def run_browser(env, browser):
           all_origin['mode'] == 'reply-all' and all_content['to'] == ['synthetic@example.net', 'visible@example.invalid']
           and all_content['cc'] == ['cc@example.invalid'] and all_content['bcc'] == []
           and 'reply-sender@example.invalid' not in json.dumps(all_content) and 'hidden@example.invalid' not in json.dumps(all_content))
+    reply_all_state = [db('SELECT * FROM ci_mail_message_reads ORDER BY id'), db('SELECT * FROM ci_mail_message_results ORDER BY id'),
+                       db('SELECT * FROM ci_mail_drafts ORDER BY id'), db('SELECT * FROM ci_mail_reply_drafts ORDER BY id'),
+                       db('SELECT * FROM ci_mail_draft_revisions ORDER BY draft_id,revision'), db('SELECT * FROM ci_audit ORDER BY id')]
+    r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_reply_all', **route, 'draft_id': reply_all, 'sender': sender_ref}, timeout=30)
+    check('Exact reply all replay reopens the existing draft without another fetch or write',
+          inbox_server.connections == before + 2 and 'draft_id=' + reply_all in r.url
+          and 'existing copied-message draft' in r.text.lower()
+          and reply_all_state == [db('SELECT * FROM ci_mail_message_reads ORDER BY id'), db('SELECT * FROM ci_mail_message_results ORDER BY id'),
+                                  db('SELECT * FROM ci_mail_drafts ORDER BY id'), db('SELECT * FROM ci_mail_reply_drafts ORDER BY id'),
+                                  db('SELECT * FROM ci_mail_draft_revisions ORDER BY draft_id,revision'), db('SELECT * FROM ci_audit ORDER BY id')])
     copied_file = uuid.uuid4().hex
     copied_file_bytes = b'PRIVATE_COPIED_ATTACHMENT_BYTES'
     db('INSERT INTO ci_mail_draft_files (id,slot,name,mime,bytes,sha256,data,created_at,draft_id) VALUES (?,1,?,?,?,?,UNHEX(?),UTC_TIMESTAMP(),?)', [copied_file, 'copied.txt', 'text/plain', len(copied_file_bytes), hashlib.sha256(copied_file_bytes).hexdigest(), copied_file_bytes.hex(), reply_all])
