@@ -620,6 +620,13 @@ MAIL_COPY_CONTROLS_FIX_PATHS = frozenset((
     'site/install/inventory.generated.php',
     'tests/mail_copied_draft_create_adapter.php',
 ))
+MAIL_CONSOLIDATED_BASE = '1e79ef57d576cda6291cc540ee3c76ac109f071e'
+MAIL_CONSOLIDATED_BASE_TREE = 'd866df1cd0f7790af06c82ba58944d22f5fcaec0'
+MAIL_CONSOLIDATED_SOURCE = 'cc4e0cbbb9beab53c9f2a7f8dfb6ef74740aa385'
+MAIL_CONSOLIDATED_SOURCE_TREE = '6d9648b44b76e54ae249e1b9a1c6b4c558d544ac'
+MAIL_CONSOLIDATED_DIFF_SHA256 = '888cfb1ba74e68be66911f023f9fd410c8ee82dbd7a0ec90086a5b860422fe0d'
+MAIL_CONSOLIDATED_CHANGE_COUNT = 131
+_MAIL_CONSOLIDATED_CHANGES = {}
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -1460,7 +1467,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'de63df192e891a90ef0f13bfaa538e9ed3fd3ece80f4b9fdc7e09a77325791df'
+REGRESSION_SHA256 = '8f88dc6b34f5b09f43412f9705142c6543b3272a7f2e18d5ea45c0554305d2da'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3988,7 +3995,7 @@ def validate_mail_native_fixture_policy_fix(root):
             == ['M\t' + MAIL_NATIVE_FIXTURE_POLICY_PATH],
             'Mail native fixture-policy fix changed another path or status')
     path = MAIL_NATIVE_FIXTURE_POLICY_PATH
-    current = ordinary(root, path)
+    current = project_mail_consolidated_source(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_BASE + ':' + path)
     base_entries = entries(root, MAIL_NATIVE_FIXTURE_POLICY_BASE)
@@ -4009,6 +4016,7 @@ def validate_mail_native_fixture_policy_fix(root):
 
 def project_mail_native_fixture_policy_fix(root, path, current):
     """Restore the pre-hosted-assertion fixture for older mail proofs."""
+    current = project_mail_consolidated_source(root, path, current)
     if path != MAIL_NATIVE_FIXTURE_POLICY_PATH:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_SOURCE + ':' + path)
@@ -4095,7 +4103,7 @@ def validate_mail_mysql_trigger_fix(root):
     base_entries = entries(root, MAIL_MYSQL_TRIGGER_FIX_BASE)
     source_entries = entries(root, MAIL_MYSQL_TRIGGER_FIX_SOURCE)
     for path in sorted(MAIL_MYSQL_TRIGGER_FIX_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_copy_controls_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_BASE + ':' + path)
         require(current == source
@@ -4154,7 +4162,7 @@ def validate_mail_reply_form_helper_fix(root):
             == ['M\t' + MAIL_REPLY_FORM_HELPER_FIX_PATH],
             'Mail reply form-helper fix changed another path or status')
     path = MAIL_REPLY_FORM_HELPER_FIX_PATH
-    current = ordinary(root, path)
+    current = project_mail_consolidated_source(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_BASE + ':' + path)
     base_entries = entries(root, MAIL_REPLY_FORM_HELPER_FIX_BASE)
@@ -4172,6 +4180,7 @@ def validate_mail_reply_form_helper_fix(root):
 
 def project_mail_reply_form_helper_fix(root, path, current):
     """Restore the accepted predecessor before the packaged-browser helper binding."""
+    current = project_mail_consolidated_source(root, path, current)
     if path != MAIL_REPLY_FORM_HELPER_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + ':' + path)
@@ -4182,6 +4191,86 @@ def project_mail_reply_form_helper_fix(root, path, current):
         return current
     require(current == source,
             'Current mail reply form-helper fix changed before predecessor projection')
+    return base
+
+
+def mail_consolidated_changes(root):
+    """Return the exact status/path map for the pinned consolidated mail source."""
+    key=str(Path(root).resolve())
+    if key in _MAIL_CONSOLIDATED_CHANGES:
+        return _MAIL_CONSOLIDATED_CHANGES[key]
+    raw=git(root, 'diff', '--name-status', '--no-renames',
+            MAIL_CONSOLIDATED_BASE, MAIL_CONSOLIDATED_SOURCE)
+    require(hashlib.sha256(raw).hexdigest() == MAIL_CONSOLIDATED_DIFF_SHA256,
+            'Consolidated mail source path/status digest changed')
+    rows=raw.decode().splitlines()
+    require(len(rows) == MAIL_CONSOLIDATED_CHANGE_COUNT,
+            'Consolidated mail source path count changed')
+    changes={}
+    for row in rows:
+        status,path=row.split('\t',1)
+        require(status in {'A','M'} and path not in changes,
+                'Consolidated mail source has an unsupported or duplicate path')
+        changes[path]=status
+    _MAIL_CONSOLIDATED_CHANGES[key]=changes
+    return changes
+
+
+def validate_mail_consolidated_source(root):
+    """Bind the locally reviewed folder, flag, attachment, HTML and MIME source range."""
+    require(git(root, 'rev-parse', MAIL_CONSOLIDATED_BASE + '^{tree}').decode().strip()
+            == MAIL_CONSOLIDATED_BASE_TREE
+            and git(root, 'rev-parse', MAIL_CONSOLIDATED_SOURCE + '^{tree}').decode().strip()
+            == MAIL_CONSOLIDATED_SOURCE_TREE,
+            'Consolidated mail source tree changed')
+    git(root, 'merge-base', '--is-ancestor', MAIL_CONSOLIDATED_BASE,
+        MAIL_CONSOLIDATED_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', MAIL_CONSOLIDATED_SOURCE, 'HEAD')
+    changes=mail_consolidated_changes(root)
+    base_entries=entries(root, MAIL_CONSOLIDATED_BASE)
+    source_entries=entries(root, MAIL_CONSOLIDATED_SOURCE)
+    for path,status in changes.items():
+        source=git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_SOURCE + ':' + path)
+        current=ordinary(root, path)
+        require(current == source and mode(root, path) == source_entries[path][0] == '100644',
+                'Consolidated mail source bytes or mode changed: ' + path)
+        if status == 'A':
+            require(path not in base_entries,
+                    'Consolidated mail addition existed in the accepted base: ' + path)
+        else:
+            base=git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_BASE + ':' + path)
+            require(path in base_entries and base_entries[path][0] == '100644'
+                    and project_mail_consolidated_source(root, path, current) == base
+                    and project_mail_consolidated_source(root, path, base) == base,
+                    'Consolidated mail predecessor projection changed: ' + path)
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Consolidated mail installer inventory is not canonical')
+    document=ordinary(root, 'site/app/mail/document.php')
+    drafts=ordinary(root, 'site/app/mail/drafts.php')
+    migration=ordinary(root, 'site/database/migrations/mail_drafts_migrate.php')
+    require(document.count(b"default-src 'none'; script-src 'none'") == 1
+            and document.count(b"img-src 'none'") == 1
+            and document.count(b"form-action 'none'") == 1
+            and document.count(b'#[\\SensitiveParameter] string $sanitized') == 1
+            and drafts.count(b'function mail_drafts_html(') == 1
+            and drafts.count(b'ComposeHtml::sanitize($raw)') == 1
+            and migration.index(b"if($version==='')")
+            < migration.index(b"ADD COLUMN body_html MEDIUMTEXT NULL"),
+            'Consolidated formatted-mail privacy or data-preservation boundary changed')
+
+
+def project_mail_consolidated_source(root, path, current):
+    """Restore resulting main before the exact consolidated mail source range."""
+    if mail_consolidated_changes(root).get(path) != 'M':
+        return current
+    source=git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_SOURCE + ':' + path)
+    base=git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current consolidated mail source changed before predecessor projection: ' + path)
     return base
 
 
@@ -4205,7 +4294,7 @@ def validate_mail_copy_controls_fix(root):
     base_entries = entries(root, MAIL_COPY_CONTROLS_FIX_BASE)
     source_entries = entries(root, MAIL_COPY_CONTROLS_FIX_SOURCE)
     for path in sorted(MAIL_COPY_CONTROLS_FIX_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_consolidated_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_BASE + ':' + path)
         require(current == source
@@ -4236,6 +4325,7 @@ def validate_mail_copy_controls_fix(root):
 
 def project_mail_copy_controls_fix(root, path, current):
     """Restore the preserved failed exact head before the product correction."""
+    current = project_mail_consolidated_source(root, path, current)
     if path not in MAIL_COPY_CONTROLS_FIX_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE + ':' + path)
@@ -5540,7 +5630,8 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_REPLY_FORWARD_PATHS
                 | MAIL_THREAD_HEADER_FIX_PATHS
                 | MAIL_THREAD_ALIAS_FIX_PATHS
-                | {MAIL_NATIVE_FIXTURE_POLICY_PATH, MAIL_REPLY_SESSION_FIX_PATH}),
+                | {MAIL_NATIVE_FIXTURE_POLICY_PATH, MAIL_REPLY_SESSION_FIX_PATH}
+                | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
 
@@ -6784,6 +6875,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_consolidated_source(root)
     validate_mail_copy_controls_fix(root)
     validate_mail_reply_form_helper_fix(root)
     validate_mail_mysql_trigger_fix(root)
@@ -7073,6 +7165,7 @@ def verify_current(root):
                | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
                | MAIL_REPLY_FORWARD_ADDITIONS
                | PROJECT_PRIVATE_NOTES_ADDITIONS
+               | {path for path,status in mail_consolidated_changes(root).items() if status == 'A'}
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
     actual = actual_paths(root, allowed)

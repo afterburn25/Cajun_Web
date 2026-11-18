@@ -339,6 +339,34 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n// unreviewed copy contract\n')))
 
+        def altered_mail_consolidated_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof._MAIL_CONSOLIDATED_CHANGES.clear()
+                proof.validate_mail_consolidated_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+                proof._MAIL_CONSOLIDATED_CHANGES.clear()
+
+        refuses('Refuses a substituted consolidated mail source tree',
+                lambda: altered_mail_consolidated_identity(
+                    'MAIL_CONSOLIDATED_SOURCE_TREE'))
+        refuses('Refuses a substituted consolidated mail base tree',
+                lambda: altered_mail_consolidated_identity(
+                    'MAIL_CONSOLIDATED_BASE_TREE'))
+        refuses('Refuses a substituted consolidated mail path/status digest',
+                lambda: altered_mail_consolidated_identity(
+                    'MAIL_CONSOLIDATED_DIFF_SHA256'))
+        refuses('Refuses altered consolidated formatted-document source',
+                lambda: modified('site/app/mail/document.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed formatted document\n')))
+        refuses('Refuses altered consolidated draft migration source',
+                lambda: modified('site/database/migrations/mail_drafts_migrate.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed migration\n')))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:
