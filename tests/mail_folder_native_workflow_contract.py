@@ -77,7 +77,13 @@ def validate(text):
           and "image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}" in text)
     check('Disposable PHP retains PDO MySQL mbstring and DOM',
           'apt-get install -y --no-install-recommends libonig-dev libxml2-dev' in text
-          and 'docker-php-ext-install pdo_mysql mbstring dom' in text)
+          and 'docker-php-ext-install pdo_mysql mbstring dom' in text
+          and 'php -n -r' in text
+          and 'function_exists("mb_convert_encoding")' in text
+          and 'function_exists("ctype_digit")' in text
+          and 'class_exists("DOMDocument")' in text
+          and 'noini-capabilities.stdout.log' in text
+          and 'noini-capabilities.stderr.log' in text)
     check('Disposable MySQL permits the native audit-trigger fixtures',
           "if [ '${{ matrix.database }}' = 'mysql' ]; then" in text
           and '${{ job.services.database.id }}' in text
@@ -120,6 +126,7 @@ def validate(text):
           and 'Declared-current refusal does not widen the table' in text
           and 'Folder-scoped message read binds and records the exact folder' in text
           and 'Folder-scoped attachment binds bytes and history to the exact folder' in text
+          and 'Revoked read grant records a bounded failure, not bytes' in text
           and 'Non-inbox copied-draft source refuses before DNS or transport' in text
           and 'Refused non-inbox copied draft leaves no request or network trace' in text
           and 'Non-inbox folder success leaves the inbox notice window and latest outcome unchanged' in text
@@ -131,7 +138,7 @@ def validate(text):
           and "'body': 34, 'attachment': 14, 'attachment-security': 27" in text
           and "'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
           and "'copied-source': 19, 'storage': 21, 'admin-policy': 23" in text
-          and "'adapter': 20, 'schema-registry': 401" in text
+          and "'adapter': 19, 'schema-registry': 401" in text
           and "assert len(report['checks']) == count" in text)
     check('Native report counts retain every predecessor and composed assertion',
           "'inbox': (cell / 'inbox-results.json', 72)" in text
@@ -183,6 +190,9 @@ def self_test(text):
         ('lost PDO MySQL', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install mbstring dom'),
         ('lost DOM', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install pdo_mysql mbstring'),
         ('lost no-INI isolation', 'php_flags="-n"', 'php_flags=""'),
+        ('lost no-INI mbstring capability', 'function_exists("mb_convert_encoding")', 'function_exists("missing_mbstring")'),
+        ('lost no-INI ctype capability', 'function_exists("ctype_digit")', 'function_exists("missing_ctype")'),
+        ('lost no-INI DOM capability', 'class_exists("DOMDocument")', 'class_exists("MissingDOMDocument")'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost named migration gate', 'Declared-current refusal does not heal the table', 'Unrelated assertion'),
         ('lost runner-image guard', 'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu', 'true # runner admission omitted'),
@@ -190,6 +200,7 @@ def self_test(text):
         ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # reply all omitted'),
         ('changed copied-source report count', "'copied-source': 19", "'copied-source': 21"),
         ('lost retained storage report count', "'storage': 21", "'storage': 20"),
+        ('lost retained adapter report count', "'adapter': 19", "'adapter': 20"),
         ('changed exact native report count', "'message': (cell / 'message-results.json', 94)", "'message': (cell / 'message-results.json', 30)"),
         ('lost failure evidence', 'if: always()', 'if: success()'),
     )

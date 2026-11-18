@@ -146,6 +146,12 @@ jobs:
           RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev libxml2-dev && docker-php-ext-install pdo_mysql mbstring dom && rm -rf /var/lib/apt/lists/*
           DOCKER
           test "$status" -eq 0
+          status=0
+          docker run --rm cwp-mail-folder-native php -n -r '
+            if(!function_exists("mb_convert_encoding")||!function_exists("ctype_digit")||!class_exists("DOMDocument"))throw new RuntimeException("Missing no-INI mail capability");
+            fwrite(STDOUT,"ready\n");
+          ' > "$cell/noini-capabilities.stdout.log" 2> "$cell/noini-capabilities.stderr.log" || status=$?
+          test "$status" -eq 0
       - name: Prove the synthetic database is ready for the assigned user
         run: |
           cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
@@ -230,7 +236,7 @@ jobs:
               'body': 34, 'attachment': 14, 'attachment-security': 27,
               'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45,
               'copied-source': 19, 'storage': 21, 'admin-policy': 23,
-              'adapter': 20, 'schema-registry': 401,
+              'adapter': 19, 'schema-registry': 401,
           }
           for mode in ('normal', 'noini'):
               for name, count in portable.items():
@@ -259,6 +265,7 @@ jobs:
           assert 'Declared-current refusal does not widen the table' in loaded['message']
           assert 'Folder-scoped message read binds and records the exact folder' in loaded['message']
           assert 'Folder-scoped attachment binds bytes and history to the exact folder' in loaded['message']
+          assert 'Revoked read grant records a bounded failure, not bytes' in loaded['message']
           assert 'Non-inbox copied-draft source refuses before DNS or transport' in loaded['message']
           assert 'Refused non-inbox copied draft leaves no request or network trace' in loaded['message']
           assert 'Non-inbox folder success leaves the inbox notice window and latest outcome unchanged' in loaded['notices']

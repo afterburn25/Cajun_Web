@@ -26,14 +26,14 @@ function mm_transport(array $row,#[SensitiveParameter] array $secrets,string $ad
     if($mode==='expire')query('UPDATE '.table('mail_account_grants').' SET expires_at=? WHERE account_id=? AND user_id=1',[time()-1,$row['id']]);
     $authorize();if($mode==='tls')throw new ReceivingFailure('tls');if($mode==='throw')throw new RuntimeException('private provider secret');
     $batch=mm_batch();$batch['folder']=$folder;
-    if($mode==='after')query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$row['id']]);
+    if(in_array($mode,['after','attachment_after'],true))query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$row['id']]);
     if($mode==='partial')$batch['bytes']='1';
     if($mode==='uid')$batch['uid']='1';
     if($mode==='epoch')$batch['uidvalidity']='1';
     if($mode==='folder')$batch['folder']=$folder==='INBOX'?'Sent':'INBOX';
     if($mode==='oversize'){$batch['raw']=str_repeat('x',262145);$batch['bytes']='262145';}
     if($mode==='badmime'){$batch['raw']='No MIME headers';$batch['bytes']=(string)strlen($batch['raw']);}
-    if($mode==='attachment'){$batch['raw']="Subject: With attachment\r\nFrom: Synthetic <synthetic@example.net>\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=att\r\n\r\n--att\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSee attached.\r\n--att\r\nContent-Type: application/pdf\r\nContent-Disposition: attachment; filename=\"quote.pdf\"\r\nContent-Transfer-Encoding: base64\r\n\r\n".base64_encode('SYNTHETIC_ATTACHMENT_BYTES')."\r\n--att--\r\n";$batch['bytes']=(string)strlen($batch['raw']);}
+    if(in_array($mode,['attachment','attachment_after'],true)){$batch['raw']="Subject: With attachment\r\nFrom: Synthetic <synthetic@example.net>\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=att\r\n\r\n--att\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSee attached.\r\n--att\r\nContent-Type: application/pdf\r\nContent-Disposition: attachment; filename=\"quote.pdf\"\r\nContent-Transfer-Encoding: base64\r\n\r\n".base64_encode('SYNTHETIC_ATTACHMENT_BYTES')."\r\n--att--\r\n";$batch['bytes']=(string)strlen($batch['raw']);}
     if($mode==='extra'){$batch['secret']='provider body';$batch['html']='<script>provider body</script>';$batch['subject']='provider body';}
     return $batch;
 }
@@ -121,7 +121,7 @@ try {
     mm_age();mm_deny('Out-of-range attachment index refuses after a truthful recorded read',fn()=>mail_message_attachment($id,1,'4294967295','4294967295',9,'mm_resolve','mm_transport'));
     $beforeAttach=$transportCalls;mm_deny('Negative attachment index refuses before any request',fn()=>mail_message_attachment($id,1,'4294967295','4294967295',-1,'mm_resolve','mm_transport'));mm_ok('Refused negative index never reaches DNS or transport',$transportCalls===$beforeAttach);
     mm_age();$beforeAttach=$transportCalls;mm_deny('Out-of-range service index refuses before any request',fn()=>mail_message_attachment($id,1,'4294967295','4294967295',99,'mm_resolve','mm_transport'));mm_ok('Range-refused index never reaches DNS or transport',$transportCalls===$beforeAttach);
-    mm_age();$mode='expire';$r=mail_message_attachment($id,1,'4294967295','4294967295',0,'mm_resolve','mm_transport');$mode='ok';mm_ok('Mid-request revoked read grant records a bounded failure, not bytes',$r['code']==='access_changed'&&$r['attachment']===null&&!array_key_exists('content',$r));mm_grant($id);
+    mm_age();$beforeAttach=$transportCalls;$mode='attachment_after';$r=mail_message_attachment($id,1,'4294967295','4294967295',0,'mm_resolve','mm_transport');$mode='ok';$lateResult=one('SELECT r.result_code FROM '.table('mail_message_results').' r JOIN '.table('mail_message_reads').' q ON q.id=r.id WHERE q.account_id=? AND q.actor_id=1 ORDER BY q.started_epoch DESC,q.id DESC LIMIT 1',[$id]);mm_ok('Revoked read grant records a bounded failure, not bytes',$transportCalls===$beforeAttach+1&&$r['code']==='access_changed'&&$r['attachment']===null&&!array_key_exists('content',$r)&&!str_contains(json_encode($r),'SYNTHETIC_ATTACHMENT_BYTES')&&$lateResult['result_code']==='access_changed');mm_grant($id);
     mm_age();
     $paged=mm_create();mm_grant($paged);for($i=0;$i<24;$i++)query('INSERT INTO '.table('mail_message_reads').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,started_at,started_epoch) VALUES (?,?,1,1,\'INBOX\',\'4294967295\',\'4294967295\',?,?)',[bin2hex(random_bytes(16)),$paged,gmdate('Y-m-d H:i:s'),time()-7200-$i]);$a=mail_message_history($paged);$b=mail_message_history($paged,2);mm_ok('Personal message history pages are distinct and bounded',count($a)===21&&count($b)===4&&!array_intersect(array_column(array_slice($a,0,20),'id'),array_column($b,'id')));
     mm_age();$r=mail_message_read($id,1,'4294967295','4294967295','mm_resolve','mm_transport',null,'Sent');mm_ok('Folder-scoped message read binds and records the exact folder',$r['code']==='ok'&&$r['folder']==='Sent'&&$r['content']['folder']==='Sent'&&one('SELECT folder FROM '.table('mail_message_reads').' WHERE id=?',[$r['request_id']])['folder']==='Sent');
