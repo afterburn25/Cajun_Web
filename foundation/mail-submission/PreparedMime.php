@@ -15,7 +15,7 @@ final readonly class PreparedMime
     {
         // Until multipart/thread encoding is independently integrated, never
         // flatten an extended immutable snapshot into incomplete plain MIME.
-        if($snapshot->content->html!==null || $snapshot->attachments!==[] || $snapshot->thread!==null) {
+        if($snapshot->content->html!==null || $snapshot->attachments!==[]) {
             throw new PreparationFailure('encoding_failed');
         }
         foreach(['ctype_alnum','filter_var','hash','json_encode'] as $function) {
