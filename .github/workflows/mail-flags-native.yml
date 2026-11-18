@@ -59,7 +59,7 @@ jobs:
           from pathlib import Path
           root=Path('qa/mail-flags-native/source')
           for mode in ('normal','noini'):
-              for name,count in (('flags',48),('schema-registry',387)):
+              for name,count in (('flags',48),('schema-registry',396)):
                   report=json.loads((root/f'portable-{mode}-{name}.json').read_text())
                   assert report['passed'] is True and len(report['checks'])==count
                   assert all(row['passed'] is True for row in report['checks'])

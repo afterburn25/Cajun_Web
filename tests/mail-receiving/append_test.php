@@ -2,9 +2,9 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli') exit(2);
 
-require __DIR__.'/../../foundation/mail-receiving/bootstrap.php';
-require __DIR__.'/../../foundation/mail-receiving/AppendReceipt.php';
-require __DIR__.'/../../foundation/mail-receiving/AppendSession.php';
+require_once __DIR__.'/../../foundation/mail-receiving/bootstrap.php';
+require_once __DIR__.'/../../foundation/mail-receiving/AppendReceipt.php';
+require_once __DIR__.'/../../foundation/mail-receiving/AppendSession.php';
 
 use CajunWebPro\Foundation\MailReceiving\{AppendReceipt,AppendSession,ReceivingFailure};
 use DirectoryTree\ImapEngine\Connection\Streams\StreamInterface;

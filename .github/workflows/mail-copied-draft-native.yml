@@ -191,7 +191,7 @@ jobs:
               'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45,
               'copied-source': 19, 'compose-html': 39, 'compose-attachment': 55,
               'storage': 21, 'admin-policy': 23,
-              'adapter': 19, 'schema-registry': 391, 'attachment': 14,
+              'adapter': 19, 'schema-registry': 396, 'attachment': 14,
               'attachment-security': 27,
               'submission-snapshot': 78, 'submission-mime': 55,
           }

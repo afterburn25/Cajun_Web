@@ -16,3 +16,6 @@ require_once __DIR__.'/BodyDecoder.php';
 require_once __DIR__.'/MessageReader.php';
 require_once __DIR__.'/FlagSession.php';
 require_once __DIR__.'/FlagWriter.php';
+require_once __DIR__.'/AppendReceipt.php';
+require_once __DIR__.'/AppendSession.php';
+require_once __DIR__.'/SentCopy.php';

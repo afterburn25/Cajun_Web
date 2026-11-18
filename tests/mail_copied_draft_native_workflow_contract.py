@@ -92,7 +92,7 @@ def validate(text):
         ('tests/mail_copied_draft_storage.php', 'storage', '21'),
         ('tests/mail_copied_draft_admin_policy.php', 'admin-policy', '23'),
         ('tests/mail_copied_draft_create_adapter.php', 'adapter', '19'),
-        ('tests/database_schema_registry_policy.php', 'schema-registry', '391'),
+        ('tests/database_schema_registry_policy.php', 'schema-registry', '396'),
         ('tests/mail-receiving/attachment_test.php', 'attachment', '14'),
         ('tests/mail-receiving/attachment_security_test.php', 'attachment-security', '27'),
         ('tests/mail-submission/run.php', 'submission-snapshot', '78'),

@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/accounts.php';
 require_once CWP_CODE_ROOT.'/app/mail/connections.php';
 require_once CWP_CODE_ROOT.'/app/mail/flags.php';
+require_once CWP_CODE_ROOT.'/app/mail/copies.php';
 
 function mail_accounts_revision(): int {
     $revision=posted('revision',10);
@@ -17,6 +18,13 @@ function mail_accounts_admin_action(string $action): void {
     if ($action==='mail_accounts_connections_setup') {
         $id=posted('account_id',32);mail_accounts_manager();mail_accounts_load($id);
         mail_connections_migrate($password);flash('Connection-check history is ready. No server was contacted.');redirect(admin_url('mail-account',['account_id'=>$id]));
+    }
+    if ($action==='mail_copies_setup') {
+        mail_copies_migrate();flash('Sent-copy storage is ready. No server was contacted and no message was copied.');redirect(admin_url('mail-accounts'));
+    }
+    if ($action==='mail_sent_folder_save') {
+        $id=posted('account_id',32);mail_accounts_manager();mail_accounts_load($id);
+        mail_sent_folder_save($id,posted('sent_folder',64));flash('Server Sent folder setting saved. No server was contacted and no message was copied.');redirect(admin_url('mail-account',['account_id'=>$id]));
     }
     mail_accounts_manager();$id=posted('account_id',32);$revision=mail_accounts_revision();
     if ($action==='mail_accounts_check') {

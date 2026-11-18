@@ -6,8 +6,10 @@ define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/mail/submissions.php';
+require_once __DIR__.'/../site/app/mail/copies.php';
 require_once __DIR__.'/current_owner_authority.php';
 use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailReceiving\{AppendReceipt,ReceivingFailure};
 use CajunWebPro\Foundation\MailSubmission\{PreparedMime,SubmissionSnapshot,TransportOutcome};
 $private=__DIR__.'/../test-runtime/submission-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-submission-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'suci_']];
@@ -28,11 +30,17 @@ function su_audit_failure(callable $fn):bool {
     db()->exec('CREATE TRIGGER suci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic submission audit failure'");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER suci_fail');}return $failed;
 }
+function su_copy_result_audit_failure(callable $fn):bool {
+    db()->exec('CREATE TRIGGER suci_copy_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF LEFT(NEW.action,19)='mail_accounts.copy_' AND NEW.action<>'mail_accounts.copy_started' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic copy result audit failure'; END IF; END");
+    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER suci_copy_fail');}return $failed;
+}
 function su_outcome(array $claim,string $status='accepted',string $phase='confirmation',string $reason='accepted',?int $code=250,?string $attempt=null,?PreparedMime $message=null):TransportOutcome {
     return new TransportOutcome($message??$claim['message'],$attempt??$claim['row']['attempt_id'],$status,$phase,$reason,$code);
 }
 /** Synthetic clock-history setup only, not an application mutation or retry API. */
 function su_age_dispatches():void {query('UPDATE '.table('mail_submission_dispatches').' SET started_epoch=0');}
+function su_age_copies():void {query('UPDATE '.table('mail_copy_attempts').' SET started_epoch=0');}
+function su_accept(string $account):array {su_age_dispatches();[$id]=su_prepare($account);$claim=mail_submissions_claim($id);mail_submissions_record(su_outcome($claim));return [$id,$claim];}
 function su_worker(array $args):array {
     $p=proc_open([PHP_BINARY,__FILE__,...$args],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
     if(!is_resource($p))throw new RuntimeException('Cannot start submission worker');foreach([1,2] as $stream)stream_set_timeout($pipes[$stream],15);return [$p,$pipes];
@@ -48,7 +56,7 @@ if(str_starts_with($argv[1]??'','worker-')) {
 }
 try {
     // Begin before submission setup so additive schema refusal remains exercised.
-    foreach(schema_statements('suci_') as $name=>$sql)if(!str_starts_with($name,'mail_submission'))db()->exec($sql);
+    foreach(schema_statements('suci_') as $name=>$sql)if(!str_starts_with($name,'mail_submission')&&!str_starts_with($name,'mail_sent_')&&!str_starts_with($name,'mail_copy_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=5;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Submission staff '.$i,'submission'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);
@@ -142,6 +150,38 @@ try {
     [$waiting]=su_prepare($a);$worker=staff_locked(function()use($waiting,$a):array {$w=su_worker(['worker-claim',$waiting]);su_ok('Waiting dispatch worker reaches authority boundary',fgets($w[1][1])==="ready\n");query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);return $w;});
     su_ok('Revocation while waiting prevents a dispatch fence',su_finish($worker)==='denied'&&!one('SELECT id FROM '.table('mail_submission_dispatches').' WHERE submission_id=?',[$waiting]));query('UPDATE '.table('mail_account_grants').' SET enabled=1 WHERE account_id=? AND user_id=2',[$a]);
     su_actor(1);query('DELETE FROM '.table('settings').' WHERE name=?',['mail_submissions_schema_version']);$before=su_snapshot();su_deny('Populated unrecognized storage is not adopted',fn()=>mail_submissions_migrate($password));su_ok('Failed adoption preserves every submission/dispatch/result/audit',su_snapshot()===$before&&!mail_submissions_ready());save_setting('mail_submissions_schema_version','1');su_actor();
+    // Explicit server Sent copies: additive metadata-only storage and uncertainty-safe replay.
+    su_actor(1);su_deny('Sent-copy setup rejects revoked owner authority',fn()=>cwp_test_owner_revoked(fn()=>mail_copies_migrate()));
+    su_actor(5);su_deny('Administrator permissions do not confer Sent-copy setup',fn()=>mail_copies_migrate());su_actor(1);
+    save_setting('mail_copies_schema_version','future');su_deny('Future Sent-copy storage version cannot be downgraded',fn()=>mail_copies_migrate());query('DELETE FROM '.table('settings').' WHERE name=?',['mail_copies_schema_version']);
+    foreach(mail_copies_schema('suci_') as $sql)db()->exec($sql);
+    db()->exec('ALTER TABLE '.table('mail_copy_attempts').' ADD INDEX unexpected(folder)');su_deny('Unexpected Sent-copy index is refused and preserved',fn()=>mail_copies_migrate());db()->exec('ALTER TABLE '.table('mail_copy_attempts').' DROP INDEX unexpected');
+    query('INSERT INTO '.table('mail_sent_folders').' (id,sent_folder,updated_by,updated_at) VALUES (?,?,1,?)',[$a,'Sent',gmdate('Y-m-d H:i:s')]);su_deny('Populated unmarked Sent-copy storage is not adopted',fn()=>mail_copies_migrate());query('DELETE FROM '.table('mail_sent_folders'));
+    su_ok('Sent-copy setup audit failure leaves readiness unset',su_audit_failure(fn()=>mail_copies_migrate())&&!mail_copies_ready());mail_copies_migrate();mail_copies_migrate();
+    su_ok('Repeated Sent-copy setup is additive and ready',mail_copies_ready());
+    su_deny('Wire-unsafe Sent folder names refuse before storage',fn()=>mail_sent_folder_save($a,'Sent"Items'));su_deny('Sent folder wildcard is refused',fn()=>mail_sent_folder_save($a,'Sent*'));
+    su_actor(5);su_deny('Only the current owner session can configure a Sent folder',fn()=>mail_sent_folder_save($a,'Sent'));su_actor(2);
+    su_deny('A copy cannot run without a configured server Sent folder',fn()=>mail_submission_copy($id));
+    su_actor(1);mail_sent_folder_save($a,'Sent');su_actor(2);su_ok('Exact Sent folder is saved without contacting a server',mail_sent_folder($a)==='Sent');
+    $resolver=fn($host)=>['8.8.8.8'];$copiedBytes=null;
+    $copied=mail_submission_copy($id,$resolver,function($row,$secrets,$address,$folder,$mime,$authorize)use(&$copiedBytes){$authorize();$copiedBytes=$mime;return new AppendReceipt(true);});
+    su_ok('Copy persists exact accepted MIME only after an explicit action',$copied['code']==='appended'&&$copiedBytes===$claim['message']->bytes&&$copied['folder']==='Sent'&&mail_copy_status($id)['result_code']==='appended');
+    $attemptCount=(int)query('SELECT COUNT(*) FROM '.table('mail_copy_attempts').' WHERE submission_id=?',[$id])->fetchColumn();su_deny('A confirmed Sent copy cannot be appended again',fn()=>mail_submission_copy($id,$resolver,fn()=>new AppendReceipt(true)));su_ok('Refused recopy adds no attempt row',(int)query('SELECT COUNT(*) FROM '.table('mail_copy_attempts').' WHERE submission_id=?',[$id])->fetchColumn()===$attemptCount);
+    [$uncopied]=su_accept($a);su_age_copies();
+    $mid=mail_submission_copy($uncopied,$resolver,function($row,$secrets,$address,$folder,$mime,$authorize)use($a){$authorize();query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);$authorize();return new AppendReceipt(true);});
+    query('UPDATE '.table('mail_account_grants').' SET enabled=1 WHERE account_id=? AND user_id=2',[$a]);su_actor(2);
+    su_ok('Mid-copy grant loss records a definite bounded failure',$mid['code']==='access_changed'&&mail_copy_status($uncopied)['result_code']==='access_changed');su_age_copies();
+    $failed=mail_submission_copy($uncopied,$resolver,fn()=>throw new ReceivingFailure('folder'));su_ok('Pre-literal server folder refusal remains retryable',$failed['code']==='folder'&&mail_copy_status($uncopied)['result_code']==='folder');su_age_copies();
+    $copied2=mail_submission_copy($uncopied,$resolver,fn()=>new AppendReceipt(true));su_ok('Definite failed copy retries cleanly under restored authority',$copied2['code']==='appended'&&mail_copy_status($uncopied)['result_code']==='appended');
+    [$uncertain]=su_accept($a);su_age_copies();$unknownCopy=mail_submission_copy($uncertain,$resolver,fn()=>throw new ReceivingFailure('uncertain'));
+    su_ok('Literal-start uncertainty is recorded as unknown',$unknownCopy['code']==='uncertain'&&mail_copy_status($uncertain)['outcome']==='unknown');su_age_copies();su_deny('Uncertain Sent copy can never be replayed',fn()=>mail_submission_copy($uncertain,$resolver,fn()=>new AppendReceipt(true)));
+    [$lateAccepted]=su_accept($a);su_age_copies();$late=mail_submission_copy($lateAccepted,$resolver,function($row,$secrets,$address,$folder,$mime,$authorize)use($a){$authorize();query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);return new AppendReceipt(false);});
+    query('UPDATE '.table('mail_account_grants').' SET enabled=1 WHERE account_id=? AND user_id=2',[$a]);su_actor(2);su_ok('Tagged acceptance remains appended after late authority withdrawal',$late['code']==='appended'&&mail_copy_status($lateAccepted)['result_code']==='appended');
+    [$privateDns]=su_accept($a);su_age_copies();$dns=mail_submission_copy($privateDns,fn($host)=>['127.0.0.1'],fn()=>throw new RuntimeException('transport must not run'));su_ok('Private DNS is refused before copy transport',$dns['code']==='destination');
+    [$unknownCode]=su_accept($a);su_age_copies();$bounded=mail_submission_copy($unknownCode,$resolver,fn()=>throw new ReceivingFailure('mailbox_changed'));su_ok('Unrelated receiving failures are normalized to protocol',$bounded['code']==='protocol');
+    [$auditLost]=su_accept($a);su_age_copies();su_ok('Result audit failure leaves an unresolved durable attempt',su_copy_result_audit_failure(fn()=>mail_submission_copy($auditLost,$resolver,fn()=>new AppendReceipt(true)))&&mail_copy_status($auditLost)['result_code']===null);su_age_copies();su_deny('Unresolved result storage can never replay the copy',fn()=>mail_submission_copy($auditLost,$resolver,fn()=>new AppendReceipt(true)));
+    su_deny('Copy status requires the submission author',function()use($id){su_actor(5);try{mail_copy_status($id);}finally{su_actor(2);}});su_deny('Rejected submissions cannot be copied',fn()=>mail_submission_copy($new,$resolver,fn()=>new AppendReceipt(true)));
+    $copyMetadata=json_encode([all('SELECT * FROM '.table('mail_copy_attempts')),all('SELECT * FROM '.table('mail_copy_results')),all('SELECT detail FROM '.table('audit')." WHERE action LIKE 'mail_accounts.copy_%'")]);su_ok('Sent-copy persistence and audit are metadata only',!str_contains($copyMetadata,'SYNTHETIC_SUBMISSION')&&!str_contains($copyMetadata,'private@example.invalid'));
     // Formatted alternative: prepare/snapshot/persisted-MIME round-trip and damage fence.
     $richDraft=su_draft($a);mail_drafts_save($richDraft,1,$a,1,new DraftContent(['client@example.invalid'],['copy@example.invalid'],['private@example.invalid'],'Rich draft','Plain body','<p>Formatted <b>part</b></p>'));
     $richId=mail_submissions_prepare(bin2hex(random_bytes(16)),$richDraft,2,1);
@@ -168,5 +208,5 @@ try {
     $count=(int)query('SELECT COUNT(*) FROM '.table('mail_submissions').' WHERE owner_id=2')->fetchColumn();for($i=$count;$i<100;$i++)su_prepare($b);
     $limitDraft=su_draft($b);$before=su_snapshot();su_deny('Preparation limit bounds abandoned intents per actor',fn()=>mail_submissions_prepare(bin2hex(random_bytes(16)),$limitDraft,1,1));su_ok('Preparation limit leaves no partial intent or audit',su_snapshot()===$before);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
-$ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/mail-submissions-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB current-authorized preparation/fences/receipts/audit/process races; no network, credential decryption, application routes or Send UI','checks'=>$checks],JSON_PRETTY_PRINT)."\n");
+$ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/mail-submissions-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB current-authorized preparation/fences/receipts/Sent-copy metadata/audit/process races with injected closed transports; no live network, application routes or Send UI','checks'=>$checks],JSON_PRETTY_PRINT)."\n");
 echo ($ok?'PASS':'FAIL').': '.count($checks)." native submission storage checks\n";exit($ok?0:1);

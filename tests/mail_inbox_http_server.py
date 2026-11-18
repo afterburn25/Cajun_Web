@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 class InboxServer:
     def __init__(self,root):
         self.root=Path(root)/'test-runtime/mail-inbox-http';self.root.mkdir(parents=True,exist_ok=True)
-        self.mode='ok';self.commands=[];self.errors=[];self.connections=0;self.stopped=threading.Event()
+        self.mode='ok';self.commands=[];self.errors=[];self.connections=0;self.appended=None;self.stopped=threading.Event()
         key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
         name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,'inbox-fixture.example.net')]);now=datetime.datetime.now(datetime.timezone.utc)
         certificate=x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(now-datetime.timedelta(days=1)).not_valid_after(now+datetime.timedelta(days=1)).add_extension(x509.SubjectAlternativeName([x509.DNSName('inbox-fixture.example.net')]),critical=False).add_extension(x509.BasicConstraints(ca=True,path_length=None),critical=True).sign(key,hashes.SHA256())
@@ -36,6 +36,25 @@ class InboxServer:
                         assert len(data)<4096
                     value=data[:-2].decode();assert value in expected if isinstance(expected,tuple) else value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value);return value
                 send('* OK Synthetic HTTP inbox fixture')
+                if mode.startswith('append'):
+                    expect('CWA001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWA001 OK done')
+                    expect('CWA002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWA002 OK authenticated')
+                    data=b''
+                    while not data.endswith(b'\r\n'):
+                        part=s.recv(1)
+                        if not part:raise EOFError()
+                        data+=part
+                        assert len(data)<4096
+                    line=data[:-2].decode();assert line.startswith('CWA003 APPEND "Sent" (\\Seen) {'),'Unexpected synthetic IMAP command';self.commands.append('APPEND Sent')
+                    count=int(line.rsplit('{',1)[1].rstrip('}'));send('+ ');payload=b''
+                    while len(payload)<count+2:
+                        part=s.recv(count+2-len(payload))
+                        if not part:raise EOFError()
+                        payload+=part
+                    assert payload[count:]==b'\r\n','Missing synthetic APPEND terminator';self.appended=payload[:count]
+                    send('CWA003 NO folder unavailable' if mode=='append-refused' else 'CWA003 OK appended')
+                    if mode=='append':expect('CWA004 LOGOUT')
+                    continue
                 if mode.startswith('flag'):
                     expect('CWF001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWF001 OK done')
                     expect('CWF002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWF002 OK authenticated')
