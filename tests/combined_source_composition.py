@@ -816,6 +816,16 @@ MAIL_ACCEPTANCE_PORTABILITY_PATHS = frozenset((
     'tests/mail_inbox_native.php',
     'tests/mail_message_native.php',
 ))
+MAIL_ADMISSION_EVIDENCE_BASE = '235561bf035fc9d67e2b509d3f42916f738da98c'
+MAIL_ADMISSION_EVIDENCE_BASE_TREE = 'de067cef42b9f2820c028ea4073d832b2e1ccb34'
+MAIL_ADMISSION_EVIDENCE_SOURCE = 'c0e713e4a382f42fdaa08d63d04328af70950df5'
+MAIL_ADMISSION_EVIDENCE_SOURCE_TREE = 'da2a2dd8ffcd5e9284552c6af12e6bfe593b0eed'
+MAIL_ADMISSION_EVIDENCE_PATHS = frozenset((
+    '.github/workflows/mail-flags-native.yml',
+    '.github/workflows/mail-folder-native.yml',
+    'tests/mail_flags_native_workflow_contract.py',
+    'tests/mail_folder_native_workflow_contract.py',
+))
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -4649,7 +4659,7 @@ def validate_mail_acceptance_portability_source(root):
     base_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_BASE)
     source_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_SOURCE)
     for path in sorted(MAIL_ACCEPTANCE_PORTABILITY_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_admission_evidence(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_BASE + ':' + path)
         require(current == source
@@ -4657,11 +4667,19 @@ def validate_mail_acceptance_portability_source(root):
                 and project_mail_acceptance_portability(root, path, current) == base
                 and project_mail_acceptance_portability(root, path, base) == base,
                 'Mail acceptance portability identity or projection changed: ' + path)
-    flags = ordinary(root, '.github/workflows/mail-flags-native.yml')
-    folder = ordinary(root, '.github/workflows/mail-folder-native.yml')
+    flags = project_mail_admission_evidence(
+        root, '.github/workflows/mail-flags-native.yml',
+        ordinary(root, '.github/workflows/mail-flags-native.yml'))
+    folder = project_mail_admission_evidence(
+        root, '.github/workflows/mail-folder-native.yml',
+        ordinary(root, '.github/workflows/mail-folder-native.yml'))
     receiving = ordinary(root, '.github/workflows/mail-receiving.yml')
-    flags_contract = ordinary(root, 'tests/mail_flags_native_workflow_contract.py')
-    folder_contract = ordinary(root, 'tests/mail_folder_native_workflow_contract.py')
+    flags_contract = project_mail_admission_evidence(
+        root, 'tests/mail_flags_native_workflow_contract.py',
+        ordinary(root, 'tests/mail_flags_native_workflow_contract.py'))
+    folder_contract = project_mail_admission_evidence(
+        root, 'tests/mail_folder_native_workflow_contract.py',
+        ordinary(root, 'tests/mail_folder_native_workflow_contract.py'))
     require(flags.count(b'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu') == 2
             and folder.count(b'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu') == 2
             and flags.count(b'ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json') == 2
@@ -4706,6 +4724,7 @@ def validate_mail_acceptance_portability_source(root):
 
 def project_mail_acceptance_portability(root, path, current):
     """Restore the reviewed proof head before first-attempt mail corrections."""
+    current = project_mail_admission_evidence(root, path, current)
     if path not in MAIL_ACCEPTANCE_PORTABILITY_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + ':' + path)
@@ -4716,6 +4735,64 @@ def project_mail_acceptance_portability(root, path, current):
         return current
     require(current == source,
             'Current mail acceptance portability source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_admission_evidence_source(root):
+    """Bind structured runner-admission diagnostics on both success and failure."""
+    require(git(root, 'rev-parse', MAIL_ADMISSION_EVIDENCE_BASE + '^{tree}').decode().strip()
+            == MAIL_ADMISSION_EVIDENCE_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ADMISSION_EVIDENCE_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ADMISSION_EVIDENCE_SOURCE_TREE,
+            'Mail admission evidence source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ADMISSION_EVIDENCE_SOURCE).decode().split()
+            == [MAIL_ADMISSION_EVIDENCE_SOURCE, MAIL_ADMISSION_EVIDENCE_BASE],
+            'Mail admission evidence source is not the direct reviewed proof successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ADMISSION_EVIDENCE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ADMISSION_EVIDENCE_BASE,
+                MAIL_ADMISSION_EVIDENCE_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ADMISSION_EVIDENCE_PATHS)],
+            'Mail admission evidence source changed another path or status')
+    base_entries = entries(root, MAIL_ADMISSION_EVIDENCE_BASE)
+    source_entries = entries(root, MAIL_ADMISSION_EVIDENCE_SOURCE)
+    for path in sorted(MAIL_ADMISSION_EVIDENCE_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_admission_evidence(root, path, current) == base
+                and project_mail_admission_evidence(root, path, base) == base,
+                'Mail admission evidence identity or projection changed: ' + path)
+    flags = ordinary(root, '.github/workflows/mail-flags-native.yml')
+    folder = ordinary(root, '.github/workflows/mail-folder-native.yml')
+    flags_contract = ordinary(root, 'tests/mail_flags_native_workflow_contract.py')
+    folder_contract = ordinary(root, 'tests/mail_folder_native_workflow_contract.py')
+    for name, workflow, contract in (
+            ('flags', flags, flags_contract), ('folder', folder, folder_contract)):
+        require(workflow.count(b'prepare-ubuntu >') == 2
+                and workflow.count(b'|| status=$?') >= 2
+                and workflow.count(b'sudo test -f qa/ubuntu-apt-source-preflight.json') == 2
+                and workflow.count(b'sudo mv qa/ubuntu-apt-source-preflight.json') == 2
+                and workflow.count(b'if [ -f qa/ubuntu-apt-source.json ]; then sudo mv qa/ubuntu-apt-source.json') == 2
+                and contract.count(b"'lost runner failure receipt'") == 1,
+                'Mail ' + name + ' admission failure evidence retention changed')
+
+
+def project_mail_admission_evidence(root, path, current):
+    """Restore the first reviewed portability proof before evidence retention."""
+    if path not in MAIL_ADMISSION_EVIDENCE_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail admission evidence source changed before predecessor projection: ' + path)
     return base
 
 
@@ -7784,6 +7861,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_admission_evidence_source(root)
     validate_mail_acceptance_portability_source(root)
     validate_mail_reply_all_replay_source(root)
     validate_mail_attachment_claim_fix(root)
@@ -8221,6 +8299,7 @@ def verify_current(root):
         {'name': 'Exact Sent-copy review successor restores copied-origin Read authority before attempt and transport', 'passed': True},
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
         {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
+        {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact Reply All replay successor binds native SQL and HTTP controller no-network no-write acceptance', 'passed': True},
         {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
