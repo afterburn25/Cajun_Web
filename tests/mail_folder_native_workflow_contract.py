@@ -87,7 +87,7 @@ def validate(text):
           'for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text
           and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
     check('Only synthetic local receiving copy and native suites run',
-          'php_flags="-n -d extension=mbstring -d extension=ctype"' in text
+          'php_flags="-n"' in text
           and text.count('php $php_flags tests/mail-receiving/session_test.php') == 1
           and text.count('php $php_flags tests/mail-receiving/message_session_test.php') == 1
           and text.count('php $php_flags tests/mail-receiving/attachment_test.php') == 1
@@ -130,7 +130,7 @@ def validate(text):
           and "'receiving': 17, 'header-session': 56, 'message-session': 46" in text
           and "'body': 34, 'attachment': 14, 'attachment-security': 27" in text
           and "'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
-          and "'copied-source': 19, 'storage': 20, 'admin-policy': 23" in text
+          and "'copied-source': 19, 'storage': 21, 'admin-policy': 23" in text
           and "'adapter': 20, 'schema-registry': 401" in text
           and "assert len(report['checks']) == count" in text)
     check('Native report counts retain every predecessor and composed assertion',
@@ -182,13 +182,14 @@ def self_test(text):
         ('lost matrix identity', 'tree=$(git rev-parse HEAD^{tree})', 'tree=unknown'),
         ('lost PDO MySQL', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install mbstring dom'),
         ('lost DOM', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install pdo_mysql mbstring'),
-        ('lost no-INI ctype', 'php_flags="-n -d extension=mbstring -d extension=ctype"', 'php_flags="-n -d extension=mbstring"'),
+        ('lost no-INI isolation', 'php_flags="-n"', 'php_flags=""'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost named migration gate', 'Declared-current refusal does not heal the table', 'Unrelated assertion'),
         ('lost runner-image guard', 'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu', 'true # runner admission omitted'),
         ('lost runner failure receipt', 'sudo test -f qa/ubuntu-apt-source-preflight.json', 'true # preflight receipt omitted'),
         ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # reply all omitted'),
         ('changed copied-source report count', "'copied-source': 19", "'copied-source': 21"),
+        ('lost retained storage report count', "'storage': 21", "'storage': 20"),
         ('changed exact native report count', "'message': (cell / 'message-results.json', 94)", "'message': (cell / 'message-results.json', 30)"),
         ('lost failure evidence', 'if: always()', 'if: success()'),
     )

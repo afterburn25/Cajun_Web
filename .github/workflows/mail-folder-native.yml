@@ -189,7 +189,7 @@ jobs:
               '\''
               for mode in normal noini; do
                 php_flags=""
-                if [ "$mode" = noini ]; then php_flags="-n -d extension=mbstring -d extension=ctype"; fi
+                if [ "$mode" = noini ]; then php_flags="-n"; fi
                 php $php_flags tests/mail-receiving/run.php > "$cell/portable-$mode-receiving.json"
                 php $php_flags tests/mail-receiving/session_test.php > "$cell/portable-$mode-header-session.json"
                 php $php_flags tests/mail-receiving/message_session_test.php > "$cell/portable-$mode-message-session.json"
@@ -229,7 +229,7 @@ jobs:
               'receiving': 17, 'header-session': 56, 'message-session': 46,
               'body': 34, 'attachment': 14, 'attachment-security': 27,
               'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45,
-              'copied-source': 19, 'storage': 20, 'admin-policy': 23,
+              'copied-source': 19, 'storage': 21, 'admin-policy': 23,
               'adapter': 20, 'schema-registry': 401,
           }
           for mode in ('normal', 'noini'):
