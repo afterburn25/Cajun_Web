@@ -56,9 +56,18 @@ final class HeaderDecoder
             $value=mb_convert_encoding($value,'UTF-8','UTF-8');
             $value=preg_replace('/[\p{Cc}\p{Cf}]+/u',' ',$value)??'';
             if(strlen($value)>1000) $result['headers_truncated']=true;
-            $result[$name]=trim(mb_strcut($value,0,1000,'UTF-8'));
+            $result[$name]=trim(self::utf8Bytes($value,1000));
         }
         if($message->getAllErrors(false)) throw new ReceivingFailure('protocol');
         return $result;
+    }
+
+    /** Cut a validated UTF-8 header value at a byte boundary without mbstring. */
+    private static function utf8Bytes(string $value,int $maximum):string
+    {
+        if(strlen($value)<=$maximum)return $value;
+        $cut=substr($value,0,$maximum);
+        while($cut!==''&&preg_match('//u',$cut)!==1)$cut=substr($cut,0,-1);
+        return $cut;
     }
 }

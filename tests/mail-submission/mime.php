@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__.'/../../foundation/mail-submission/PreparedMime.php';
 use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailCompose\MessageThread;
 use CajunWebPro\Foundation\MailSubmission\{SubmissionSnapshot,PreparedMime,PreparationFailure,OfflineMailer};
 $checks=[];$messages=[];$complete=false;
 function check(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
@@ -24,10 +25,25 @@ try {
         $snap=snapshot($draft);$a=PreparedMime::fromSnapshot($snap);check('Bounded immutable MIME for '.$name,strlen($a->bytes)<=PreparedMime::MAX_BYTES&&$a->snapshot===$snap);
         $messages[]=['name'=>$name,'snapshot'=>$snap->privatePayload(),'mime_base64'=>base64_encode($a->bytes)];
     }
+    $references=[];for($i=0;$i<19;$i++)$references[]='<'.str_repeat('r',58).sprintf('%02d',$i).'@x>';
+    $parent='<'.str_repeat('p',60).'@x>';
+    $thread=MessageThread::reply($parent,$references);
+    $threaded=new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,"Studio+o'neil@example.invalid",new DraftContent(['client@example.invalid'],[],[],'Long thread','Body'),1791964800,$thread,str_repeat('b',64));
+    $threadedMime=PreparedMime::fromSnapshot($threaded);
+    $threadHeaders=explode("\r\n\r\n",$threadedMime->bytes,2)[0];$inReply=[];$referenceHeader=[];
+    preg_match('/^In-Reply-To:[^\r\n]*(?:\r\n[ \t][^\r\n]*)*/m',$threadHeaders,$inReply);
+    preg_match('/^References:[^\r\n]*(?:\r\n[ \t][^\r\n]*)*/m',$threadHeaders,$referenceHeader);
+    check('Long structured thread is not transformed into encoded words',strlen(implode(' ',$thread->references))>982&&count($inReply)===1&&count($referenceHeader)===1&&!str_contains($inReply[0].$referenceHeader[0],'=?'));
+    $messages[]=['name'=>'long-thread','snapshot'=>$threaded->privatePayload(),'mime_base64'=>base64_encode($threadedMime->bytes)];
+    foreach(['In-Reply-To','References'] as $header){$mail=new OfflineMailer();$mail->setFrom('sender@example.invalid');$mail->addAddress('recipient@example.invalid');$mail->Body='Alias fixture';$identifier='<safe@example.com>';$aliases=[&$identifier];$accepted=$mail->addIdentifierHeader($header,$aliases);$identifier="<safe@example.com>\r\nBcc: injected@example.invalid";$prepared=$mail->preSend();$wire=$mail->getSentMIMEMessage();check('Structured '.$header.' detaches caller aliases before render',$accepted&&$prepared&&str_contains($wire,$header.': <safe@example.com>')&&!str_contains($wire,"\r\nBcc: injected@example.invalid"));unset($aliases,$identifier);}
     $denied=false;try{PreparedMime::fromSnapshot(snapshot(new DraftContent(['Client@example.invalid','client@example.invalid'],[],[],'','')));}catch(PreparationFailure $e){$denied=$e->reason==='recipient_mismatch'&&!str_contains($e->getMessage(),'example.invalid')&&$e->getPrevious()===null;}
     check('Maintained library case conflation refuses instead of silently dropping a recipient',$denied);
     $one=PreparedMime::fromSnapshot(snapshot(new DraftContent(['client@example.invalid'],[],['first-private@example.invalid'],'Same visible message','Body')));$two=PreparedMime::fromSnapshot(snapshot(new DraftContent(['client@example.invalid'],[],['second-private@example.invalid'],'Same visible message','Body')));
     check('Full snapshot fingerprint binds hidden envelope even when MIME checksum is identical',$one->bytes===$two->bytes&&$one->sha256===$two->sha256&&$one->snapshot->fingerprint!==$two->snapshot->fingerprint);
+    $formatOne=new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'Studio+work@Example.INVALID',new DraftContent(['Client@example.invalid'],['copy@example.invalid'],['private@example.invalid'],'Project update','Saved literal body'),1791964800);
+    $formatOneMime=PreparedMime::fromSnapshot($formatOne);
+    check('Ordinary format-1 MIME bytes retain their exact checksum',$formatOneMime->sha256==='eded77d9b87f652450215918e2fb55e890fd20c1eb8298c3d9b1f73ed96281c7');
+    check('Ordinary format-1 MIME does not invent reply-thread headers',!str_contains($formatOneMime->bytes,"\r\nIn-Reply-To:")&&!str_contains($formatOneMime->bytes,"\r\nReferences:"));
     $mail=new OfflineMailer();$denied=false;try{$mail->postSend();}catch(LogicException){$denied=true;}check('Offline mailer postSend refuses any delivery',$denied);
     $mail->setFrom('sender@example.invalid');$mail->addAddress('recipient@example.invalid');$mail->Body='Fixture';$denied=false;try{$mail->send();}catch(LogicException){$denied=true;}check('Accidental high-level send also refuses delivery',$denied);
     $old=date_default_timezone_get();date_default_timezone_set('Pacific/Auckland');$one=PreparedMime::fromSnapshot(snapshot(new DraftContent(['client@example.invalid'],[],[],'Time','Body')))->bytes;date_default_timezone_set('America/Chicago');$two=PreparedMime::fromSnapshot(snapshot(new DraftContent(['client@example.invalid'],[],[],'Time','Body')))->bytes;date_default_timezone_set($old);check('Saved Date and bytes do not depend on host timezone',$one===$two);

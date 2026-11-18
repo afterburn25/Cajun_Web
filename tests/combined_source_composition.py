@@ -544,6 +544,152 @@ NOTIFICATION_HEALTH_ADDITIONS = frozenset((
     'docs/agent-handoffs/2026-11-16-codex-notification-health-component.md',
     'tests/notification_health_view_contract.php',
 ))
+MAIL_REPLY_FORWARD_BASE = '0a713da7b280cb3f2ec873eb419fed025d2c6dec'
+MAIL_REPLY_FORWARD_BASE_TREE = '21ba22ff7a96b70167a51ac217f74476b7a00217'
+MAIL_REPLY_FORWARD_PREPARED = 'f592ce999b1e9d99a6a94e0865e18f12393ffec9'
+MAIL_REPLY_FORWARD_PREPARED_TREE = 'ff548ad35bdf31da07ae6b17197c2b0d04997a0e'
+MAIL_REPLY_FORWARD_SOURCE = '0b5838aff1664a52cfcd86d7272649fe067c6070'
+MAIL_REPLY_FORWARD_SOURCE_TREE = '896ecf9f53c3f6076a6844d81cde9bd595f55b7c'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE = '167073ead347ae606a827104308d8b2817e7731f'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE_TREE = '4a44211f5141336b8ed4d301a23aba5d10fb1474'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE = 'd395eb5294647b80f723ad29617d92b21b6afc2e'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE_TREE = '61cac762b98f3dca1a19938c0799fbb84762bd47'
+MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
+MAIL_BACKUP_PROJECTION_FIX_BASE = 'f025b9637c1fa011c7e85c1eb910d4a74aa16219'
+MAIL_BACKUP_PROJECTION_FIX_BASE_TREE = '58163a6ebd87eca7b078c8bb636c5dcd46f98fef'
+MAIL_BACKUP_PROJECTION_FIX_SOURCE = '61733d7e9ac3166d3f614a8e29fd67d9b87d746e'
+MAIL_BACKUP_PROJECTION_FIX_SOURCE_TREE = 'dc578eb8f781f9d46c2b2ab19758e2d71e0050fd'
+MAIL_BACKUP_PROJECTION_FIX_PATH = 'tests/backups_acceptance_wiring.py'
+MAIL_ARTIFACT_PROJECTION_FIX_BASE = 'fab39f449f7aa37014345a82fcb5bae2b69c9ce7'
+MAIL_ARTIFACT_PROJECTION_FIX_BASE_TREE = 'b31e0ea58db081c16b7af55332ccc521cd6341f9'
+MAIL_ARTIFACT_PROJECTION_FIX_SOURCE = '91f9b969698ddadca5e85d0fc5856a6ad6118493'
+MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE = '3e0415069618670c0123a4b91a1cf3cafdf47263'
+MAIL_ARTIFACT_PROJECTION_FIX_PATH = 'tests/acceptance_artifacts_test.py'
+MAIL_ARTIFACT_OVERLAP_FIX_BASE = '46b4e58db17a9b33d95ec72fdd70f9cb9b99e736'
+MAIL_ARTIFACT_OVERLAP_FIX_BASE_TREE = '7ed574a318f2011a2cd75f284c58c0b567330c62'
+MAIL_ARTIFACT_OVERLAP_FIX_SOURCE = '77f2045f990e014a8f5280b7966fb0abf84dbe14'
+MAIL_ARTIFACT_OVERLAP_FIX_SOURCE_TREE = '2c88257a650f70d2e3884a0bfea62e9fe3103a6b'
+MAIL_ARTIFACT_OVERLAP_FIX_PATH = 'tests/acceptance_artifacts_test.py'
+MAIL_THREAD_HEADER_FIX_BASE = '0bb81978a6573b600bfd38c2f66639ea4f63844b'
+MAIL_THREAD_HEADER_FIX_BASE_TREE = 'fc16ae880ec086a661e77c1fed3ea043bd9138b6'
+MAIL_THREAD_HEADER_FIX_SOURCE = '64480db8d9be5f88f1c1c4ae53304a7a363b13a5'
+MAIL_THREAD_HEADER_FIX_SOURCE_TREE = '42e8dfcec333a2869e7c6e6159d8edb74ca24e9e'
+MAIL_THREAD_HEADER_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'foundation/mail-submission/OfflineMailer.php',
+    'foundation/mail-submission/PreparedMime.php',
+    'site/includes/foundation/mail-submission/OfflineMailer.php',
+    'site/includes/foundation/mail-submission/PreparedMime.php',
+    'site/install/inventory.generated.php',
+    'tests/mail-submission/mime.php',
+    'tests/mail-submission/verify_mime.py',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
+MAIL_NATIVE_FIXTURE_POLICY_BASE = '64480db8d9be5f88f1c1c4ae53304a7a363b13a5'
+MAIL_NATIVE_FIXTURE_POLICY_BASE_TREE = '42e8dfcec333a2869e7c6e6159d8edb74ca24e9e'
+MAIL_NATIVE_FIXTURE_POLICY_SOURCE = '158159ea5b9f1de6a2ab32fcb5fa77bfedda9fc2'
+MAIL_NATIVE_FIXTURE_POLICY_SOURCE_TREE = '5dae136f62772a4ec06bce0aaec8c42e2ec569cd'
+MAIL_NATIVE_FIXTURE_POLICY_PATH = 'tests/mail_copied_draft_create_native.php'
+MAIL_REPLY_SESSION_FIX_BASE = '681bcd2de5f211f31a709d647804c6717516b440'
+MAIL_REPLY_SESSION_FIX_BASE_TREE = 'c4bd5f3e552b51a46e13d1fa1975f835707896c1'
+MAIL_REPLY_SESSION_FIX_SOURCE = '48d13fa964f57e95a2ee53e596c38a535b703d0d'
+MAIL_REPLY_SESSION_FIX_SOURCE_TREE = 'f876dd293e2d8d2f4e350769e809bb5fb878a81b'
+MAIL_REPLY_SESSION_FIX_PATH = 'tests/mail_reply_cases.py'
+MAIL_MYSQL_TRIGGER_FIX_BASE = 'e9d252d12e6d900f891e760e2505bd843c958e32'
+MAIL_MYSQL_TRIGGER_FIX_BASE_TREE = 'd9c0e64d3b5346f96bb1feabddd9bd6bb5d41995'
+MAIL_MYSQL_TRIGGER_FIX_SOURCE = '40f06f6cd71ccb48558e495585f774f5e4d88164'
+MAIL_MYSQL_TRIGGER_FIX_SOURCE_TREE = '83e97e489914bb53144ef8266b3caf771cf80256'
+MAIL_MYSQL_TRIGGER_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
+MAIL_REPLY_FORM_HELPER_FIX_BASE = '6357fa812eb4ffbc401a92f73e16c12d06d8508d'
+MAIL_REPLY_FORM_HELPER_FIX_BASE_TREE = 'e6cc51600697309966b969f5124943718435be19'
+MAIL_REPLY_FORM_HELPER_FIX_SOURCE = '21572347519cf78cf17f47c041682645278e1b35'
+MAIL_REPLY_FORM_HELPER_FIX_SOURCE_TREE = 'aa3794bda8c43811d3685a1ccd4b96a8b6a91066'
+MAIL_REPLY_FORM_HELPER_FIX_PATH = 'tests/mail_reply_cases.py'
+MAIL_COPY_CONTROLS_FIX_BASE = '740609d47cad1fd4f630f95b84a0c597f9d553eb'
+MAIL_COPY_CONTROLS_FIX_BASE_TREE = '4d031bde857d42f098a2a8a9ef4a6329805afbed'
+MAIL_COPY_CONTROLS_FIX_SOURCE = '5bfdbe7027973d66efec939478feeba17f498a46'
+MAIL_COPY_CONTROLS_FIX_SOURCE_TREE = '60a71d7e0f694ca19e7303c6488dcb174a56b5e3'
+MAIL_COPY_CONTROLS_FIX_PATHS = frozenset((
+    'site/admin/controllers/mail_message.php',
+    'site/install/inventory.generated.php',
+    'tests/mail_copied_draft_create_adapter.php',
+))
+MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
+MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
+MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
+MAIL_THREAD_ALIAS_FIX_SOURCE_TREE = 'a361151f82a48d79eae73e251fd41826bbddd5aa'
+MAIL_THREAD_ALIAS_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'foundation/mail-submission/OfflineMailer.php',
+    'site/includes/foundation/mail-submission/OfflineMailer.php',
+    'site/install/inventory.generated.php',
+    'tests/mail-submission/mime.php',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+))
+MAIL_REPLY_FORWARD_MODIFIED = frozenset((
+    'foundation/mail-receiving/HeaderDecoder.php',
+    'foundation/mail-submission/PreparedMime.php',
+    'foundation/mail-submission/SubmissionSnapshot.php',
+    'site/admin/controllers/mail_drafts.php',
+    'site/admin/controllers/mail_message.php',
+    'site/admin/views/mail_drafts.php',
+    'site/admin/views/mail_message.php',
+    'site/app/mail/drafts.php',
+    'site/app/mail/messages.php',
+    'site/app/mail/submission_views.php',
+    'site/app/mail/submissions.php',
+    'site/app/settings/database_schemas.php',
+    'site/app/staff/accounts.php',
+    'site/includes/foundation/mail-receiving/HeaderDecoder.php',
+    'site/includes/foundation/mail-submission/PreparedMime.php',
+    'site/includes/foundation/mail-submission/SubmissionSnapshot.php',
+    'site/install/inventory.generated.php',
+    'tests/apache_acceptance.py',
+    'tests/browser_acceptance.py',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/mail-submission/mime.php',
+    'tests/mail-submission/run.php',
+    'tests/mail_inbox_http_server.py',
+    'tests/mail_message_native.php',
+    'tests/mail_submission_server.py',
+))
+MAIL_REPLY_FORWARD_ADDITIONS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'docs/MAIL_REPLY_FORWARD.md',
+    'foundation/mail-compose/CopiedDraftSource.php',
+    'foundation/mail-compose/DraftOrigin.php',
+    'foundation/mail-compose/MessageThread.php',
+    'foundation/mail-compose/ReplyDraft.php',
+    'foundation/mail-compose/ReplyMetadata.php',
+    'site/app/mail/copied_drafts.php',
+    'site/app/mail/replies.php',
+    'site/database/migrations/mail_replies_migrate.php',
+    'site/database/schema/mail_replies_schema.php',
+    'site/includes/foundation/mail-compose/CopiedDraftSource.php',
+    'site/includes/foundation/mail-compose/DraftOrigin.php',
+    'site/includes/foundation/mail-compose/MessageThread.php',
+    'site/includes/foundation/mail-compose/ReplyDraft.php',
+    'site/includes/foundation/mail-compose/ReplyMetadata.php',
+    'tests/mail-compose/copied_source.php',
+    'tests/mail-compose/origin.php',
+    'tests/mail-compose/reply.php',
+    'tests/mail-compose/thread.php',
+    'tests/mail_copied_draft_admin_policy.php',
+    'tests/mail_copied_draft_create_adapter.php',
+    'tests/mail_copied_draft_create_native.php',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+    'tests/mail_copied_draft_storage.php',
+    'tests/mail_replies_native.php',
+    'tests/mail_reply_cases.py',
+))
+MAIL_REPLY_FORWARD_PATHS = MAIL_REPLY_FORWARD_MODIFIED | MAIL_REPLY_FORWARD_ADDITIONS
 PROJECT_PRIVATE_NOTES_BASE = '803705fc76bfce3e0e2dba1125e73267165847a9'
 PROJECT_PRIVATE_NOTES_BASE_TREE = '0cf9421972425bd3f54329abba6eece9ecdca917'
 PROJECT_PRIVATE_NOTES_MODEL = 'ef02fe058feb2cb655cbd602f06bd5f1a1d6f740'
@@ -1314,7 +1460,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '2f7dd598adde3e04054b46b4b62c6bb90e79014a332d103ca6c0ecabb496b3d6'
+REGRESSION_SHA256 = 'de63df192e891a90ef0f13bfaa538e9ed3fd3ece80f4b9fdc7e09a77325791df'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2242,6 +2388,7 @@ def validate_ux09_fixture_receipt_source(root):
 
 def project_ux09_fixture_receipt(root, path, current):
     """Restore the predecessor receipt only for older source proofs."""
+    current = project_mail_reply_forward_source(root, path, current)
     current = project_runner_application_intake_binding(root, path, current)
     current = project_runner_application_source_binding(root, path, current)
     current = project_ux08_browser_navigation(root, path, current)
@@ -3562,6 +3709,7 @@ def validate_runner_mirror_compat_source(root):
 
 def project_runner_mirror_compat(root, path, current):
     """Project the reviewed runner correction to exact resulting-main bytes."""
+    current = project_mail_reply_forward_source(root, path, current)
     current = project_domain_expiry_port_source(root, path, current)
     current = project_notification_health_source(root, path, current)
     current = project_runner_application_source_binding(root, path, current)
@@ -3664,6 +3812,748 @@ def project_ux08_hosted_mirror_contract_fix(root, path, current):
         return current
     require(current == source,
             'Current UX-08 hosted mirror contract changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_thread_header_fix(root):
+    """Bind the long structured-thread correction to its reviewed source."""
+    require(git(root, 'rev-parse', MAIL_THREAD_HEADER_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_THREAD_HEADER_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_THREAD_HEADER_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_THREAD_HEADER_FIX_SOURCE_TREE,
+            'Mail structured-thread source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_THREAD_HEADER_FIX_SOURCE).decode().split()
+            == [MAIL_THREAD_HEADER_FIX_SOURCE, MAIL_THREAD_HEADER_FIX_BASE],
+            'Mail structured-thread fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_THREAD_HEADER_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_THREAD_HEADER_FIX_BASE,
+                MAIL_THREAD_HEADER_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_THREAD_HEADER_FIX_PATHS)],
+            'Mail structured-thread fix changed another path or status')
+    base_entries = entries(root, MAIL_THREAD_HEADER_FIX_BASE)
+    source_entries = entries(root, MAIL_THREAD_HEADER_FIX_SOURCE)
+    for path in sorted(MAIL_THREAD_HEADER_FIX_PATHS):
+        current = project_mail_thread_alias_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_thread_header_fix(root, path, current) == base
+                and project_mail_thread_header_fix(root, path, base) == base,
+                'Mail structured-thread source identity or projection changed: ' + path)
+    canonical_mailer = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                           + ':foundation/mail-submission/OfflineMailer.php')
+    shipping_mailer = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                          + ':site/includes/foundation/mail-submission/OfflineMailer.php')
+    canonical_prepared = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                             + ':foundation/mail-submission/PreparedMime.php')
+    shipping_prepared = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                            + ':site/includes/foundation/mail-submission/PreparedMime.php')
+    mime_test = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                    + ':tests/mail-submission/mime.php')
+    parser_test = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                      + ':tests/mail-submission/verify_mime.py')
+    workflow = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    require(canonical_mailer == shipping_mailer
+            and canonical_prepared == shipping_prepared
+            and canonical_mailer.count(b'public function addIdentifierHeader(') == 1
+            and canonical_mailer.count(b'private function identifierHeaderLine(') == 1
+            and b"MessageThread::fromStored(['in_reply_to'" in canonical_mailer
+            and b"MessageThread::fromStored(['in_reply_to'=>null,'references'=>$identifiers])" in canonical_mailer
+            and b"strlen($candidate)>77" in canonical_mailer
+            and b"strlen($line)>998" in canonical_mailer
+            and canonical_prepared.count(b"addIdentifierHeader('In-Reply-To'") == 1
+            and canonical_prepared.count(b"addIdentifierHeader('References'") == 1,
+            'Mail structured-thread rendering path is not exact or mirrored')
+    require(b"strlen(implode(' ',$thread->references))>982" in mime_test
+            and b"'name'=>'long-thread'" in mime_test
+            and b"str(message['References']).split()==s['thread']['references']" in parser_test
+            and b"structured identifiers are not RFC 2047 encoded" in parser_test
+            and workflow.count(b"'submission-snapshot': 54, 'submission-mime': 32") == 1
+            and contract.count(b"('tests/mail-submission/mime.php', 'submission-mime', '32')") == 1,
+            'Mail structured-thread regression or exact matrix count changed')
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Mail structured-thread installer inventory is not canonical')
+
+
+def project_mail_thread_header_fix(root, path, current):
+    """Restore the exact pre-review-thread PR head for older mail proofs."""
+    current = project_mail_thread_alias_fix(root, path, current)
+    if path not in MAIL_THREAD_HEADER_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_THREAD_HEADER_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail structured-thread fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_thread_alias_fix(root):
+    """Bind the security-review correction to detached, revalidated values."""
+    require(git(root, 'rev-parse', MAIL_THREAD_ALIAS_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_THREAD_ALIAS_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_THREAD_ALIAS_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_THREAD_ALIAS_FIX_SOURCE_TREE,
+            'Mail thread-alias security source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_THREAD_ALIAS_FIX_SOURCE).decode().split()
+            == [MAIL_THREAD_ALIAS_FIX_SOURCE, MAIL_THREAD_ALIAS_FIX_BASE],
+            'Mail thread-alias security fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_THREAD_ALIAS_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_THREAD_ALIAS_FIX_BASE,
+                MAIL_THREAD_ALIAS_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_THREAD_ALIAS_FIX_PATHS)],
+            'Mail thread-alias security fix changed another path or status')
+    base_entries = entries(root, MAIL_THREAD_ALIAS_FIX_BASE)
+    source_entries = entries(root, MAIL_THREAD_ALIAS_FIX_SOURCE)
+    for path in sorted(MAIL_THREAD_ALIAS_FIX_PATHS):
+        current = project_mail_mysql_trigger_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_thread_alias_fix(root, path, current) == base
+                and project_mail_thread_alias_fix(root, path, base) == base,
+                'Mail thread-alias security source identity or projection changed: ' + path)
+    canonical = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                    + ':foundation/mail-submission/OfflineMailer.php')
+    shipping = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                   + ':site/includes/foundation/mail-submission/OfflineMailer.php')
+    regression = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                     + ':tests/mail-submission/mime.php')
+    workflow = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    require(canonical == shipping
+            and canonical.count(b'private function validatedIdentifierHeader(') == 1
+            and canonical.count(b'$canonical=$this->validatedIdentifierHeader($name,$identifiers);') == 1
+            and canonical.count(b'$identifiers=$this->validatedIdentifierHeader($name,$identifiers);') == 1
+            and canonical.count(b'$this->identifierHeaders[$name]=$canonical;') == 1
+            and b'array_values($identifiers)' not in canonical
+            and canonical.count(b"return $name==='In-Reply-To'?[$thread->inReplyTo]:$thread->references;") == 1,
+            'Mail thread-alias fix no longer detaches and revalidates exact structured values')
+    require(regression.count(b"foreach(['In-Reply-To','References'] as $header)") == 1
+            and b'$aliases=[&$identifier]' in regression
+            and b'Bcc: injected@example.invalid' in regression
+            and b'detaches caller aliases before render' in regression
+            and workflow.count(b"'submission-snapshot': 54, 'submission-mime': 34") == 1
+            and contract.count(b"('tests/mail-submission/mime.php', 'submission-mime', '34')") == 1,
+            'Mail thread-alias adversarial regression or exact matrix count changed')
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Mail thread-alias installer inventory is not canonical')
+
+
+def project_mail_thread_alias_fix(root, path, current):
+    """Restore the security-review-blocked head for older mail proofs."""
+    current = project_mail_mysql_trigger_fix(root, path, current)
+    if path not in MAIL_THREAD_ALIAS_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_THREAD_ALIAS_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail thread-alias security fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_native_fixture_policy_fix(root):
+    """Bind the exact fixture correction discovered by all four hosted cells."""
+    require(git(root, 'rev-parse', MAIL_NATIVE_FIXTURE_POLICY_BASE + '^{tree}').decode().strip()
+            == MAIL_NATIVE_FIXTURE_POLICY_BASE_TREE
+            and git(root, 'rev-parse', MAIL_NATIVE_FIXTURE_POLICY_SOURCE + '^{tree}').decode().strip()
+            == MAIL_NATIVE_FIXTURE_POLICY_SOURCE_TREE,
+            'Mail native fixture-policy source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_NATIVE_FIXTURE_POLICY_SOURCE).decode().split()
+            == [MAIL_NATIVE_FIXTURE_POLICY_SOURCE, MAIL_NATIVE_FIXTURE_POLICY_BASE],
+            'Mail native fixture-policy fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_NATIVE_FIXTURE_POLICY_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_NATIVE_FIXTURE_POLICY_BASE,
+                MAIL_NATIVE_FIXTURE_POLICY_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_NATIVE_FIXTURE_POLICY_PATH],
+            'Mail native fixture-policy fix changed another path or status')
+    path = MAIL_NATIVE_FIXTURE_POLICY_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_BASE + ':' + path)
+    base_entries = entries(root, MAIL_NATIVE_FIXTURE_POLICY_BASE)
+    source_entries = entries(root, MAIL_NATIVE_FIXTURE_POLICY_SOURCE)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_native_fixture_policy_fix(root, path, current) == base
+            and project_mail_native_fixture_policy_fix(root, path, base) == base,
+            'Mail native fixture-policy source identity or projection changed')
+    require(source.count(b"'imap_host'=>'imap.example.com'") == 1
+            and source.count(b"'smtp_host'=>'smtp.example.com'") == 1
+            and source.count(b"$host!=='imap.example.com'") == 1
+            and source.count(b'function cdc_resolver(string $host):array') == 1
+            and source.count(b'function cdc_transport(array $row,') == 1
+            and b"'cdc_resolver','cdc_transport'" in source,
+            'Mail native fixture no longer uses its exact injected public-host boundary')
+
+
+def project_mail_native_fixture_policy_fix(root, path, current):
+    """Restore the pre-hosted-assertion fixture for older mail proofs."""
+    if path != MAIL_NATIVE_FIXTURE_POLICY_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_NATIVE_FIXTURE_POLICY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail native fixture changed before predecessor projection')
+    return base
+
+
+def validate_mail_reply_session_fix(root):
+    """Bind the hosted browser correction to the accepted no-reentry policy."""
+    require(git(root, 'rev-parse', MAIL_REPLY_SESSION_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_SESSION_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_SESSION_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_SESSION_FIX_SOURCE_TREE,
+            'Mail reply session-policy source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_REPLY_SESSION_FIX_SOURCE).decode().split()
+            == [MAIL_REPLY_SESSION_FIX_SOURCE, MAIL_REPLY_SESSION_FIX_BASE],
+            'Mail reply session-policy fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_SESSION_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_SESSION_FIX_BASE,
+                MAIL_REPLY_SESSION_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_REPLY_SESSION_FIX_PATH],
+            'Mail reply session-policy fix changed another path or status')
+    path = MAIL_REPLY_SESSION_FIX_PATH
+    current = project_mail_reply_form_helper_fix(root, path, ordinary(root, path))
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_BASE + ':' + path)
+    base_entries = entries(root, MAIL_REPLY_SESSION_FIX_BASE)
+    source_entries = entries(root, MAIL_REPLY_SESSION_FIX_SOURCE)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_reply_session_fix(root, path, current) == base
+            and project_mail_reply_session_fix(root, path, base) == base,
+            'Mail reply session-policy source identity or projection changed')
+    require(source.count(b"check('Reply storage setup rejects invalid CSRF'") == 1
+            and source.count(b"check('Reply storage setup refuses a revoked current owner session'") == 1
+            and source.count(b"db('UPDATE ci_users SET auth_version=? WHERE id=?', [uuid.uuid4().hex, oid])") == 1
+            and source.count(b"submit(owner, root + '?view=login', 'login'") == 2
+            and source.count(b"submit(owner, drafts_url, 'mail_drafts_replies_setup')") == 1
+            and b"'current_password': 'wrong'" not in source,
+            'Mail reply browser fixture no longer exercises CSRF and revoked-session authority')
+
+
+def project_mail_reply_session_fix(root, path, current):
+    """Restore the pre-browser-failure fixture for older mail source proofs."""
+    current = project_mail_reply_form_helper_fix(root, path, current)
+    if path != MAIL_REPLY_SESSION_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_SESSION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail reply session fixture changed before predecessor projection')
+    return base
+
+
+def validate_mail_mysql_trigger_fix(root):
+    """Bind the isolated MySQL fixture permission discovered by hosted acceptance."""
+    require(git(root, 'rev-parse', MAIL_MYSQL_TRIGGER_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_MYSQL_TRIGGER_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_MYSQL_TRIGGER_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_MYSQL_TRIGGER_FIX_SOURCE_TREE,
+            'Mail MySQL trigger-fixture source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_MYSQL_TRIGGER_FIX_SOURCE).decode().split()
+            == [MAIL_MYSQL_TRIGGER_FIX_SOURCE, MAIL_MYSQL_TRIGGER_FIX_BASE],
+            'Mail MySQL trigger-fixture fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_MYSQL_TRIGGER_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_MYSQL_TRIGGER_FIX_BASE,
+                MAIL_MYSQL_TRIGGER_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_MYSQL_TRIGGER_FIX_PATHS)],
+            'Mail MySQL trigger-fixture fix changed another path or status')
+    base_entries = entries(root, MAIL_MYSQL_TRIGGER_FIX_BASE)
+    source_entries = entries(root, MAIL_MYSQL_TRIGGER_FIX_SOURCE)
+    for path in sorted(MAIL_MYSQL_TRIGGER_FIX_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_mysql_trigger_fix(root, path, current) == base
+                and project_mail_mysql_trigger_fix(root, path, base) == base,
+                'Mail MySQL trigger-fixture source identity or projection changed: ' + path)
+    workflow = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    step = b'- name: Allow isolated MySQL audit-failure fixture triggers'
+    condition = b"if: matrix.database == 'mysql'"
+    command = (b'docker exec -e MYSQL_PWD=synthetic-root-only '
+               b'${{ job.services.database.id }} mysql -uroot -e '
+               b"'SET GLOBAL log_bin_trust_function_creators=1'")
+    require(workflow.count(step) == workflow.count(condition) == workflow.count(command) == 1
+            and workflow.index(b'- name: Prove the synthetic database is ready')
+            < workflow.index(step) < workflow.index(b'- name: Run isolated copied-draft SQL acceptance')
+            and contract.count(b'Only isolated MySQL cells grant their synthetic fixture triggers') == 1
+            and contract.count(b"('lost isolated MySQL trigger admission',") == 1,
+            'Mail MySQL trigger-fixture permission is missing, broadened or unguarded')
+
+
+def project_mail_mysql_trigger_fix(root, path, current):
+    """Restore the accepted predecessor before the isolated MySQL fixture permission."""
+    current = project_mail_copy_controls_fix(root, path, current)
+    if path not in MAIL_MYSQL_TRIGGER_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_MYSQL_TRIGGER_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail MySQL trigger-fixture fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_reply_form_helper_fix(root):
+    """Bind the missing packaged-browser form helper discovered by hosted acceptance."""
+    require(git(root, 'rev-parse', MAIL_REPLY_FORM_HELPER_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORM_HELPER_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORM_HELPER_FIX_SOURCE_TREE,
+            'Mail reply form-helper source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_REPLY_FORM_HELPER_FIX_SOURCE).decode().split()
+            == [MAIL_REPLY_FORM_HELPER_FIX_SOURCE, MAIL_REPLY_FORM_HELPER_FIX_BASE],
+            'Mail reply form-helper fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_FORM_HELPER_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_FORM_HELPER_FIX_BASE,
+                MAIL_REPLY_FORM_HELPER_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_REPLY_FORM_HELPER_FIX_PATH],
+            'Mail reply form-helper fix changed another path or status')
+    path = MAIL_REPLY_FORM_HELPER_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_BASE + ':' + path)
+    base_entries = entries(root, MAIL_REPLY_FORM_HELPER_FIX_BASE)
+    source_entries = entries(root, MAIL_REPLY_FORM_HELPER_FIX_SOURCE)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_reply_form_helper_fix(root, path, current) == base
+            and project_mail_reply_form_helper_fix(root, path, base) == base,
+            'Mail reply form-helper source identity or projection changed')
+    require(source.count(b"'form_data', 'form_for', 'submit'") == 1
+            and base.count(b"'form_data', 'form_for', 'submit'") == 0
+            and source.count(b"form = form_for(setup, 'mail_drafts_replies_setup')") == 1,
+            'Mail reply packaged fixture does not import the exact helper it invokes')
+
+
+def project_mail_reply_form_helper_fix(root, path, current):
+    """Restore the accepted predecessor before the packaged-browser helper binding."""
+    if path != MAIL_REPLY_FORM_HELPER_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORM_HELPER_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail reply form-helper fix changed before predecessor projection')
+    return base
+
+
+def validate_mail_copy_controls_fix(root):
+    """Bind the hosted browser product correction without weakening mailbox authority."""
+    require(git(root, 'rev-parse', MAIL_COPY_CONTROLS_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_COPY_CONTROLS_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_COPY_CONTROLS_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_COPY_CONTROLS_FIX_SOURCE_TREE,
+            'Mail copy-controls fix source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_COPY_CONTROLS_FIX_SOURCE).decode().split()
+            == [MAIL_COPY_CONTROLS_FIX_SOURCE, MAIL_COPY_CONTROLS_FIX_BASE],
+            'Mail copy-controls fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_COPY_CONTROLS_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_COPY_CONTROLS_FIX_BASE,
+                MAIL_COPY_CONTROLS_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_COPY_CONTROLS_FIX_PATHS)],
+            'Mail copy-controls fix changed another path or status')
+    base_entries = entries(root, MAIL_COPY_CONTROLS_FIX_BASE)
+    source_entries = entries(root, MAIL_COPY_CONTROLS_FIX_SOURCE)
+    for path in sorted(MAIL_COPY_CONTROLS_FIX_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_copy_controls_fix(root, path, current) == base
+                and project_mail_copy_controls_fix(root, path, base) == base,
+                'Mail copy-controls fix source identity or projection changed: ' + path)
+    controller = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE
+                     + ':site/admin/controllers/mail_message.php')
+    predecessor = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_BASE
+                      + ':site/admin/controllers/mail_message.php')
+    contract = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE
+                   + ':tests/mail_copied_draft_create_adapter.php')
+    inventory = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE
+                    + ':site/install/inventory.generated.php')
+    require(controller.count(b'$mailCopyAllowed=false') == 1
+            and controller.count(b'$mailCopyReady&&mail_drafts_admin_access($actor)') == 1
+            and controller.count(b'$draftActor=mail_drafts_actor()') == 1
+            and controller.count(b"(int)$draftActor['id']===(int)$actor['id']") == 1
+            and controller.count(b"hash_equals($draftActor['auth_version'],$actor['auth_version'])") == 1
+            and b"staff_can('mail.send',$actor)" not in controller
+            and predecessor.count(b"staff_can('mail.send',$actor)") == 1
+            and contract.count(b'canonical current Send actor') == 1
+            and contract.count(b"!str_contains($controller,\"staff_can('mail.send',\\$actor)\")") == 1
+            and inventory.count(b"'admin/controllers/mail_message.php'=>'83a8ebce4a603c313103aaef71b08d7d535d52e8e0be652857f766fd96576fe2'") == 1,
+            'Mail copy-controls fix broadened or lost its current-actor and exact-mailbox boundary')
+
+
+def project_mail_copy_controls_fix(root, path, current):
+    """Restore the preserved failed exact head before the product correction."""
+    if path not in MAIL_COPY_CONTROLS_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_COPY_CONTROLS_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail copy-controls fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_reply_forward_source(root):
+    """Bind the complete bounded Reply/Forward successor to resulting main."""
+    require(git(root, 'rev-parse', MAIL_REPLY_FORWARD_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_FORWARD_PREPARED + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_PREPARED_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_FORWARD_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_SOURCE_TREE,
+            'Mail Reply/Forward source tree changed')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_FORWARD_BASE,
+        MAIL_REPLY_FORWARD_PREPARED)
+    require(git(root, 'rev-list', '--parents', '-n', '1', MAIL_REPLY_FORWARD_SOURCE).decode().split()
+            == [MAIL_REPLY_FORWARD_SOURCE, MAIL_REPLY_FORWARD_PREPARED],
+            'Mail Reply/Forward source is not the direct child of the prepared head')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_FORWARD_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  MAIL_REPLY_FORWARD_BASE, MAIL_REPLY_FORWARD_SOURCE).decode().splitlines()
+    modified = {line.split('\t', 1)[1] for line in changes if line.startswith('M\t')}
+    additions = {line.split('\t', 1)[1] for line in changes if line.startswith('A\t')}
+    require(len(changes) == len(MAIL_REPLY_FORWARD_PATHS)
+            and modified == MAIL_REPLY_FORWARD_MODIFIED
+            and additions == MAIL_REPLY_FORWARD_ADDITIONS,
+            'Mail Reply/Forward source changed a different path or status set')
+    base_entries = entries(root, MAIL_REPLY_FORWARD_BASE)
+    source_entries = entries(root, MAIL_REPLY_FORWARD_SOURCE)
+    require(not MAIL_REPLY_FORWARD_ADDITIONS & set(base_entries)
+            and MAIL_REPLY_FORWARD_ADDITIONS <= set(source_entries),
+            'Mail Reply/Forward additions did not originate in the source range')
+    for path in sorted(MAIL_REPLY_FORWARD_MODIFIED):
+        current = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        current = project_mail_thread_header_fix(root, path, current)
+        source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_reply_forward_source(root, path, current) == base
+                and project_mail_reply_forward_source(root, path, base) == base,
+                'Mail Reply/Forward modified source identity or projection changed: ' + path)
+    for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
+        current = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        current = project_mail_reply_session_fix(root, path, current)
+        current = project_mail_native_fixture_policy_fix(root, path, current)
+        current = project_mail_thread_header_fix(root, path, current)
+        current = project_mail_reply_forward_workflow_fix(root, path, current)
+        require(current
+                == git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Mail Reply/Forward addition identity changed: ' + path)
+    workflow = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    snapshot = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE
+                   + ':foundation/mail-submission/SubmissionSnapshot.php')
+    mime_test = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE
+                    + ':tests/mail-submission/mime.php')
+    require(b'test "$CWP_RUN_ATTEMPT" = "1"' in workflow
+            and b'workflow_dispatch:' not in workflow
+            and b'contents: read' in workflow
+            and b"php: ['8.2', '8.4']" in workflow
+            and b'database: [mariadb, mysql]' in workflow
+            and b'sudo apt' not in workflow and b'--allow-unauthenticated' not in workflow,
+            'Mail Reply/Forward first-attempt matrix or signed-package boundary changed')
+    require(b"$payload['format']=2;" in snapshot
+            and b"'format'=>1" in snapshot
+            and b'eded77d9b87f652450215918e2fb55e890fd20c1eb8298c3d9b1f73ed96281c7'
+            in mime_test,
+            'Mail Reply/Forward format-1 compatibility or format-2 binding changed')
+    require(ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Mail Reply/Forward installer inventory is not canonical')
+
+
+def project_mail_reply_forward_source(root, path, current):
+    """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_mail_copy_controls_fix(root, path, current)
+    current = project_mail_reply_session_fix(root, path, current)
+    current = project_mail_thread_header_fix(root, path, current)
+    current = project_mail_reply_forward_workflow_fix(root, path, current)
+    if path not in MAIL_REPLY_FORWARD_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Mail Reply/Forward source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_reply_forward_workflow_fix(root):
+    """Bind the dependency-free source admission after its preserved hosted failure."""
+    require(git(root, 'rev-parse', MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE_TREE,
+            'Mail Reply/Forward workflow-fix tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE).decode().split()
+            == [MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE, MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE],
+            'Mail Reply/Forward workflow fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE,
+                MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS)],
+            'Mail Reply/Forward workflow fix changed another path or status')
+    base_entries = entries(root, MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE)
+    source_entries = entries(root, MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE)
+    for path in sorted(MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS):
+        current = project_mail_thread_header_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_reply_forward_workflow_fix(root, path, current) == base
+                and project_mail_reply_forward_workflow_fix(root, path, base) == base,
+                'Mail Reply/Forward workflow-fix source identity or projection changed: ' + path)
+    workflow = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE
+                   + ':.github/workflows/mail-copied-draft-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE
+                   + ':tests/mail_copied_draft_native_workflow_contract.py')
+    require(b'python3 tests/mail_message_cases.py' not in workflow
+            and workflow.count(b"for path in ('tests/mail_message_cases.py', 'tests/mail_reply_cases.py'):") == 1
+            and workflow.count(b"compile(Path(path).read_bytes(), path, 'exec')") == 1
+            and b'Source admission compiles the reviewed browser modules without importing browser dependencies' in contract
+            and b"('lost source message compilation', \"compile(Path(path).read_bytes(), path, 'exec')\"" in contract,
+            'Mail Reply/Forward workflow fix does not preserve dependency-free syntax admission')
+
+
+def project_mail_reply_forward_workflow_fix(root, path, current):
+    """Restore the preserved failed exact-head workflow bytes for older proofs."""
+    current = project_mail_thread_header_fix(root, path, current)
+    if path not in MAIL_REPLY_FORWARD_WORKFLOW_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Mail Reply/Forward workflow fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_backup_projection_fix(root):
+    """Bind the backup predecessor projection after its preserved Application failure."""
+    require(git(root, 'rev-parse', MAIL_BACKUP_PROJECTION_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_BACKUP_PROJECTION_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_BACKUP_PROJECTION_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_BACKUP_PROJECTION_FIX_SOURCE_TREE,
+            'Mail backup-projection source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_BACKUP_PROJECTION_FIX_SOURCE).decode().split()
+            == [MAIL_BACKUP_PROJECTION_FIX_SOURCE, MAIL_BACKUP_PROJECTION_FIX_BASE],
+            'Mail backup-projection fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_BACKUP_PROJECTION_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_BACKUP_PROJECTION_FIX_BASE,
+                MAIL_BACKUP_PROJECTION_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_BACKUP_PROJECTION_FIX_PATH],
+            'Mail backup-projection fix changed another path or status')
+    base_entries = entries(root, MAIL_BACKUP_PROJECTION_FIX_BASE)
+    source_entries = entries(root, MAIL_BACKUP_PROJECTION_FIX_SOURCE)
+    path = MAIL_BACKUP_PROJECTION_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_BACKUP_PROJECTION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_BACKUP_PROJECTION_FIX_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_backup_projection_fix(root, path, current) == base
+            and project_mail_backup_projection_fix(root, path, base) == base,
+            'Mail backup-projection source identity or projection changed')
+    require(source.count(b'composition.project_mail_reply_forward_source(') == 1
+            and source.count(b'composition.project_ux09_security(') == 1
+            and source.index(b'composition.project_mail_reply_forward_source(')
+            < source.index(b'composition.project_ux09_security(')
+            and source.count(b'composition.verify_current(root)') == 1,
+            'Mail backup predecessor does not project current source before UX-09')
+
+
+def project_mail_backup_projection_fix(root, path, current):
+    """Restore the exact failed Application-head helper for older receipts."""
+    if path != MAIL_BACKUP_PROJECTION_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_BACKUP_PROJECTION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_BACKUP_PROJECTION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail backup-projection fix changed before predecessor projection')
+    return base
+
+
+def validate_mail_artifact_projection_fix(root):
+    """Bind the public-identity artifact projection after its preserved Application failure."""
+    require(git(root, 'rev-parse', MAIL_ARTIFACT_PROJECTION_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_PROJECTION_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE,
+            'Mail artifact-projection source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ARTIFACT_PROJECTION_FIX_SOURCE).decode().split()
+            == [MAIL_ARTIFACT_PROJECTION_FIX_SOURCE, MAIL_ARTIFACT_PROJECTION_FIX_BASE],
+            'Mail artifact-projection fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ARTIFACT_PROJECTION_FIX_BASE,
+                MAIL_ARTIFACT_PROJECTION_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_ARTIFACT_PROJECTION_FIX_PATH],
+            'Mail artifact-projection fix changed another path or status')
+    base_entries = entries(root, MAIL_ARTIFACT_PROJECTION_FIX_BASE)
+    source_entries = entries(root, MAIL_ARTIFACT_PROJECTION_FIX_SOURCE)
+    path = MAIL_ARTIFACT_PROJECTION_FIX_PATH
+    current = project_mail_artifact_overlap_fix(root, path, ordinary(root, path))
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_artifact_projection_fix(root, path, current) == base
+            and project_mail_artifact_projection_fix(root, path, base) == base,
+            'Mail artifact-projection source identity or projection changed')
+    require(source.count(b'def project_mail_reply_forward_artifact_predecessor(path, current):') == 1
+            and source.count(b'composition.project_mail_reply_forward_source(ROOT, path, current)') == 1
+            and source.count(b'current=project_mail_reply_forward_artifact_predecessor(path,current)') == 1
+            and source.index(b'current=project_mail_reply_forward_artifact_predecessor(path,current)')
+            < source.index(b'current=project_private_notes_artifact_predecessor(path,current)'),
+            'Mail public-identity artifact projection is not exact and ordered')
+
+
+def project_mail_artifact_projection_fix(root, path, current):
+    """Restore the exact failed Application-head artifact proof for older receipts."""
+    current = project_mail_artifact_overlap_fix(root, path, current)
+    if path != MAIL_ARTIFACT_PROJECTION_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_PROJECTION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail artifact-projection fix changed before predecessor projection')
+    return base
+
+
+def validate_mail_artifact_overlap_fix(root):
+    """Bind complete mail-overlay projection after its preserved Application failure."""
+    require(git(root, 'rev-parse', MAIL_ARTIFACT_OVERLAP_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_OVERLAP_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ARTIFACT_OVERLAP_FIX_SOURCE_TREE,
+            'Mail artifact-overlap source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ARTIFACT_OVERLAP_FIX_SOURCE).decode().split()
+            == [MAIL_ARTIFACT_OVERLAP_FIX_SOURCE, MAIL_ARTIFACT_OVERLAP_FIX_BASE],
+            'Mail artifact-overlap fix is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ARTIFACT_OVERLAP_FIX_BASE,
+                MAIL_ARTIFACT_OVERLAP_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_ARTIFACT_OVERLAP_FIX_PATH],
+            'Mail artifact-overlap fix changed another path or status')
+    base_entries = entries(root, MAIL_ARTIFACT_OVERLAP_FIX_BASE)
+    source_entries = entries(root, MAIL_ARTIFACT_OVERLAP_FIX_SOURCE)
+    path = MAIL_ARTIFACT_OVERLAP_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_mail_artifact_overlap_fix(root, path, current) == base
+            and project_mail_artifact_overlap_fix(root, path, base) == base,
+            'Mail artifact-overlap source identity or projection changed')
+    contract = json.loads(git(root, 'cat-file', 'blob',
+                              MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':tools/acceptance-contract.json'))
+    overlap = set()
+    for section in ('client_identity_native_command_extension',
+                    'database_schema_native_command_extension'):
+        overlap.update(set(contract[section]['source_sha256']) & MAIL_REPLY_FORWARD_MODIFIED)
+    require(overlap == {
+        'tests/browser_acceptance.py',
+        'site/app/settings/database_schemas.php',
+        'tests/database_schema_registry_policy.php',
+        'tests/database_schema_view_policy.php',
+    } and source.count(b'current=project_mail_reply_forward_artifact_predecessor(path,current)') == 1
+      and source.count(b'retained=project_mail_reply_forward_artifact_predecessor(path,retained)') == 1
+      and source.count(b'return composition.project_mail_reply_forward_source(ROOT, path, current)') == 1,
+            'Mail artifact proof does not project the complete bounded receipt overlap')
+
+
+def project_mail_artifact_overlap_fix(root, path, current):
+    """Restore the exact failed Application-head artifact proof for predecessor checks."""
+    if path != MAIL_ARTIFACT_OVERLAP_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail artifact-overlap fix changed before predecessor projection')
     return base
 
 
@@ -3798,7 +4688,7 @@ def validate_project_private_notes_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_MODIFIED):
-        current = ordinary(root, path)
+        current = project_mail_reply_forward_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_BASE + ':' + path)
         require(current == source
@@ -3821,6 +4711,7 @@ def validate_project_private_notes_source(root):
 
 def project_project_private_notes_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_mail_reply_forward_source(root, path, current)
     current = project_project_private_notes_evidence_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_MODIFIED:
         return current
@@ -4037,7 +4928,7 @@ def validate_project_private_notes_static_intake_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_artifact_projection_fix(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_STATIC_INTAKE_BASE + ':' + path)
         require(current == source
@@ -4063,6 +4954,7 @@ def validate_project_private_notes_static_intake_source(root):
 
 def project_project_private_notes_static_intake_source(root, path, current):
     """Restore the preserved failed head for older source receipts."""
+    current = project_mail_artifact_projection_fix(root, path, current)
     current = project_project_private_notes_native_fixture_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_STATIC_INTAKE_PATHS:
         return current
@@ -4506,6 +5398,9 @@ def project_proof_cache_hardening_source(root, path, current):
         return current
     source = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_BASE + ':' + path)
+    if (path == REGRESSION and current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
     if current == source:
         return base
     if current == base or current != ordinary(root, path):
@@ -4611,7 +5506,7 @@ def validate_pr391_recovery_successor(root):
     git(root, 'merge-base', '--is-ancestor', PR391_RECOVERY_HEAD, 'HEAD')
     require(set(git(root, 'diff', '--name-only', '--no-renames',
                     PR391_RECOVERY_HEAD, 'HEAD').decode().splitlines())
-            == ({VERIFIER, RECEIPT} | RUNNER_MIRROR_COMPAT_MODIFIED
+            == ({VERIFIER, RECEIPT, REGRESSION} | RUNNER_MIRROR_COMPAT_MODIFIED
                 | RUNNER_MIRROR_PHASE_MODIFIED | RUNNER_MIRROR_PHASE_ADDITIONS
                 | RUNNER_APPLICATION_COMPLETION_MODIFIED
                 | RUNNER_EVIDENCE_PROVENANCE_MODIFIED | RUNNER_AWS_PROFILE_MODIFIED
@@ -4640,7 +5535,12 @@ def validate_pr391_recovery_successor(root):
                 | {DOMAIN_EXPIRY_PORT_PATH}
                 | PROOF_RUNTIME_MODIFIED
                 | PROOF_CACHE_HARDENING_MODIFIED
-                | NOTIFICATION_METRIC_LABEL_MODIFIED),
+                | NOTIFICATION_METRIC_LABEL_MODIFIED
+                | {MAIL_BACKUP_PROJECTION_FIX_PATH}
+                | MAIL_REPLY_FORWARD_PATHS
+                | MAIL_THREAD_HEADER_FIX_PATHS
+                | MAIL_THREAD_ALIAS_FIX_PATHS
+                | {MAIL_NATIVE_FIXTURE_POLICY_PATH, MAIL_REPLY_SESSION_FIX_PATH}),
             'Current recovery successor contains an unbound path')
 
 
@@ -5691,6 +6591,10 @@ def project_ux08_storefront_repair_input(root, path, current):
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_mail_artifact_projection_fix(
+        Path(__file__).resolve().parents[1], path, current)
+    current = project_mail_backup_projection_fix(
+        Path(__file__).resolve().parents[1], path, current)
     current = project_ux08_payment(Path(__file__).resolve().parents[1], path, current)
     current = project_ux08_storefront_repair_input(Path(__file__).resolve().parents[1], path, current)
     row = data['integration_repairs'][path]
@@ -5880,6 +6784,18 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_copy_controls_fix(root)
+    validate_mail_reply_form_helper_fix(root)
+    validate_mail_mysql_trigger_fix(root)
+    validate_mail_thread_alias_fix(root)
+    validate_mail_native_fixture_policy_fix(root)
+    validate_mail_reply_session_fix(root)
+    validate_mail_thread_header_fix(root)
+    validate_mail_artifact_overlap_fix(root)
+    validate_mail_artifact_projection_fix(root)
+    validate_mail_backup_projection_fix(root)
+    validate_mail_reply_forward_workflow_fix(root)
+    validate_mail_reply_forward_source(root)
     validate_runner_application_build_budget(root)
     validate_runner_account_source_budget(root)
     validate_runner_finite_tool_refusal_source(root)
@@ -6155,6 +7071,7 @@ def verify_current(root):
                | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
                | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
+               | MAIL_REPLY_FORWARD_ADDITIONS
                | PROJECT_PRIVATE_NOTES_ADDITIONS
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
                   UX09_SOURCE_RECEIPT})
@@ -6162,7 +7079,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_runner_mirror_compat(root, path, ordinary(root, path))
+        value = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        value = project_runner_mirror_compat(root, path, value)
         value = project_ux08_agreement_link_fix(root, path, value)
         value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
@@ -6202,6 +7120,15 @@ def verify_current(root):
                 == git(root, 'cat-file', 'blob', UX08_PAYMENT_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'UX-08 payment addition no longer matches its exact source: ' + path)
+    for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
+        current = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        current = project_mail_reply_session_fix(root, path, current)
+        current = project_mail_native_fixture_policy_fix(root, path, current)
+        current = project_mail_reply_forward_workflow_fix(root, path, current)
+        require(current
+                == git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
+                and mode(root, path) == '100644',
+                'Mail Reply/Forward addition no longer matches its exact source: ' + path)
     for path in sorted(ADDITIONS):
         original = reconstruct_addition(data, path, ordinary(root, path))
         require(mode(root, path) == addition_entries[path][0] == '100644'
@@ -6242,9 +7169,17 @@ def verify_current(root):
         {'name': 'Six diagnostic additions retain their exact source commit/tree/path set, current bytes, complete deltas and modes as a disjoint second addition source', 'passed': True},
         {'name': 'Exact UX-07 base-to-source range binds ' + str(len(DATABASE_WORKFLOW_SOURCE_PATHS)) + ' database workflow paths and seven disjoint additions', 'passed': True},
         {'name': 'Exact current-main-to-cloud-intake range binds ' + str(len(CLOUD_INTAKE_SOURCE_PATHS)) + ' source paths, two disjoint additions and the bounded narrative exception', 'passed': True},
+        {'name': 'Exact resulting-main-to-Reply/Forward range binds ' + str(len(MAIL_REPLY_FORWARD_MODIFIED)) + ' modified paths and ' + str(len(MAIL_REPLY_FORWARD_ADDITIONS)) + ' disjoint additions', 'passed': True},
+        {'name': 'Exact Reply/Forward workflow successor binds dependency-free browser-module compilation after the preserved first-attempt failure', 'passed': True},
+        {'name': 'Exact structured-thread successor preserves long message identifiers without RFC 2047 transformation', 'passed': True},
+        {'name': 'Exact security successor detaches caller aliases and revalidates structured identifiers at render', 'passed': True},
+        {'name': 'Exact native-fixture successor admits a policy-valid host while retaining injected resolver and transport boundaries', 'passed': True},
+        {'name': 'Exact mail backup-projection successor restores Reply/Forward browser bytes before historical UX-09 and backup proofs', 'passed': True},
+        {'name': 'Exact mail artifact-projection successor restores Reply/Forward browser bytes before the public-identity receipt', 'passed': True},
+        {'name': 'Exact mail artifact-overlap successor projects all four bounded mail paths before identity and schema receipts', 'passed': True},
         {'name': 'Exact resulting-main-to-UX-09 range binds ' + str(len(UX09_MODIFIED)) + ' modified paths and six disjoint additions', 'passed': True},
         {'name': 'Exact qualified-main-to-UX-08-payment range binds ' + str(len(UX08_PAYMENT_MODIFIED)) + ' modified paths and eight disjoint additions', 'passed': True},
-        {'name': 'Exact PR #391 recovery predecessor is retained and the current successor changes only its proof verifier and receipt', 'passed': True},
+        {'name': 'Exact PR #391 recovery predecessor is retained and the current range is limited to its proof files and explicitly bound successors', 'passed': True},
         {'name': 'Exact billing-network-proof-to-payment-fixture-lock-fix range binds two reversible test paths', 'passed': True},
         {'name': 'Exact storefront-proof-head-to-inbox-state-fix range binds one reversible read-only browser fixture path', 'passed': True},
         {'name': 'Exact browser-proof-head-to-storefront-network-fix range binds one reversible test path and performs no live tokenization fetch', 'passed': True},

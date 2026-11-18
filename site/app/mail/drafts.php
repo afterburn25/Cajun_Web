@@ -25,6 +25,21 @@ function mail_drafts_account(string $id,?int $revision=null):array {
     if($revision!==null && ($revision<1 || $revision!==(int)$row['revision']))throw new RuntimeException('The sending account changed. Reload and review the current sender.');
     return ['id'=>$row['id'],'revision'=>(int)$row['revision'],'label'=>$row['label'],'address'=>$row['address']];
 }
+/** Stable pages contain Send-capable accounts only; Read-only grants do not consume sender slots. */
+function mail_drafts_senders(int $page=1):array {
+    $actor=mail_drafts_actor();$page=max(1,min($page,100000));$now=time();
+    $rows=all('SELECT a.id FROM '.table('mail_accounts').' a JOIN '.table('mail_account_grants')." g ON g.account_id=a.id WHERE g.user_id=? AND g.can_send=1 AND g.enabled=1 AND a.enabled=1 AND a.credentials<>'' AND g.issued_at<=? AND (g.expires_at IS NULL OR g.expires_at>?) ORDER BY a.label,a.id LIMIT 21 OFFSET ".(($page-1)*20),[$actor['id'],$now,$now]);
+    $result=[];
+    foreach($rows as $row){
+        try{$result[]=mail_drafts_account($row['id']);}
+        catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}
+    }
+    return $result;
+}
+function mail_drafts_reference(string $value):array {
+    if(!preg_match('/\A([a-f0-9]{32}):([1-9][0-9]{0,9})\z/D',$value,$parts)||(int)$parts[2]>=2147483647)throw new InvalidArgumentException('Choose a current saved sending account.');
+    return [$parts[1],(int)$parts[2]];
+}
 function mail_drafts_id(string $id):void {if(!preg_match('/^[a-f0-9]{32}$/D',$id))throw new InvalidArgumentException('Draft unavailable.');}
 function mail_drafts_audit(int $actor,string $action,string $detail):void {
     query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'mail_drafts.'.$action,$detail,gmdate('Y-m-d H:i:s')]);

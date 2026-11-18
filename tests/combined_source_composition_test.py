@@ -171,6 +171,259 @@ def run(root=ROOT):
         refuses('Refuses omitting an exact UX-09 addition admission',
                 lambda: altered_ux09_receipt(lambda data: data['added'].pop('site/app/clients/public_identity.php')))
 
+        for name, path in (
+            ('Reply/Forward submission runtime', 'site/app/mail/submissions.php'),
+            ('Reply/Forward canonical class', 'foundation/mail-compose/ReplyDraft.php'),
+            ('Reply/Forward shipping mirror', 'site/includes/foundation/mail-compose/ReplyDraft.php'),
+            ('Reply/Forward shared schema registry', 'site/app/settings/database_schemas.php'),
+            ('Reply/Forward shared staff authority', 'site/app/staff/accounts.php'),
+            ('Reply/Forward canonical installer inventory', proof.INVENTORY),
+        ):
+            refuses('Refuses altered exact ' + name,
+                    lambda path=path: modified(
+                        path, lambda target: target.write_bytes(
+                            target.read_bytes() + b'\n# unreviewed Reply/Forward source\n')))
+        refuses('Refuses a missing Reply/Forward addition',
+                lambda: modified('site/app/mail/replies.php', lambda target: target.unlink()))
+        refuses('Refuses an executable mode on a Reply/Forward addition',
+                lambda: modified('foundation/mail-compose/ReplyDraft.php',
+                                 lambda target: target.chmod(0o755)))
+        refuses('Refuses an alternate Reply/Forward workflow trigger',
+                lambda: modified('.github/workflows/mail-copied-draft-native.yml',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\nworkflow_dispatch:\n')))
+
+        def altered_mail_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_forward_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Reply/Forward source tree',
+                lambda: altered_mail_identity('MAIL_REPLY_FORWARD_SOURCE_TREE'))
+        refuses('Refuses a substituted Reply/Forward prepared parent',
+                lambda: altered_mail_identity('MAIL_REPLY_FORWARD_PREPARED'))
+
+        def altered_mail_workflow_fix_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_forward_workflow_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Reply/Forward workflow-fix source tree',
+                lambda: altered_mail_workflow_fix_identity(
+                    'MAIL_REPLY_FORWARD_WORKFLOW_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted Reply/Forward workflow-fix parent',
+                lambda: altered_mail_workflow_fix_identity(
+                    'MAIL_REPLY_FORWARD_WORKFLOW_FIX_BASE'))
+
+        def altered_mail_thread_header_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_thread_header_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted structured-thread source tree',
+                lambda: altered_mail_thread_header_identity(
+                    'MAIL_THREAD_HEADER_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted structured-thread direct parent',
+                lambda: altered_mail_thread_header_identity(
+                    'MAIL_THREAD_HEADER_FIX_BASE'))
+        refuses('Refuses altered structured-thread rendering source',
+                lambda: modified('foundation/mail-submission/OfflineMailer.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed header rendering\n')))
+
+        def altered_mail_thread_alias_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_thread_alias_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted thread-alias security source tree',
+                lambda: altered_mail_thread_alias_identity(
+                    'MAIL_THREAD_ALIAS_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted thread-alias security direct parent',
+                lambda: altered_mail_thread_alias_identity(
+                    'MAIL_THREAD_ALIAS_FIX_BASE'))
+        refuses('Refuses altered thread-alias security source',
+                lambda: modified('site/includes/foundation/mail-submission/OfflineMailer.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed alias handling\n')))
+
+        def altered_mail_native_fixture_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_native_fixture_policy_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted native fixture-policy source tree',
+                lambda: altered_mail_native_fixture_identity(
+                    'MAIL_NATIVE_FIXTURE_POLICY_SOURCE_TREE'))
+        refuses('Refuses a substituted native fixture-policy direct parent',
+                lambda: altered_mail_native_fixture_identity(
+                    'MAIL_NATIVE_FIXTURE_POLICY_BASE'))
+        refuses('Refuses altered native copied-draft fixture policy',
+                lambda: modified('tests/mail_copied_draft_create_native.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed native fixture\n')))
+
+        def altered_mail_mysql_trigger_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_mysql_trigger_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail MySQL trigger-fixture source tree',
+                lambda: altered_mail_mysql_trigger_identity(
+                    'MAIL_MYSQL_TRIGGER_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail MySQL trigger-fixture direct parent',
+                lambda: altered_mail_mysql_trigger_identity(
+                    'MAIL_MYSQL_TRIGGER_FIX_BASE'))
+        refuses('Refuses altered mail MySQL trigger-fixture workflow source',
+                lambda: modified('.github/workflows/mail-copied-draft-native.yml',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed trigger permission\n')))
+
+        def altered_mail_reply_form_helper_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_form_helper_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail reply form-helper source tree',
+                lambda: altered_mail_reply_form_helper_identity(
+                    'MAIL_REPLY_FORM_HELPER_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail reply form-helper direct parent',
+                lambda: altered_mail_reply_form_helper_identity(
+                    'MAIL_REPLY_FORM_HELPER_FIX_BASE'))
+        refuses('Refuses altered mail reply form-helper fixture source',
+                lambda: modified('tests/mail_reply_cases.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed helper binding\n')))
+
+        def altered_mail_copy_controls_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_copy_controls_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail copy-controls source tree',
+                lambda: altered_mail_copy_controls_identity(
+                    'MAIL_COPY_CONTROLS_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail copy-controls direct parent',
+                lambda: altered_mail_copy_controls_identity(
+                    'MAIL_COPY_CONTROLS_FIX_BASE'))
+        refuses('Refuses altered mail copy-controls controller source',
+                lambda: modified('site/admin/controllers/mail_message.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed copy authority\n')))
+        refuses('Refuses altered mail copy-controls contract source',
+                lambda: modified('tests/mail_copied_draft_create_adapter.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed copy contract\n')))
+
+        def altered_mail_reply_session_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_reply_session_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail reply session-policy source tree',
+                lambda: altered_mail_reply_session_identity(
+                    'MAIL_REPLY_SESSION_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail reply session-policy direct parent',
+                lambda: altered_mail_reply_session_identity(
+                    'MAIL_REPLY_SESSION_FIX_BASE'))
+        refuses('Refuses altered mail reply session-policy fixture source',
+                lambda: modified('tests/mail_reply_cases.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed session fixture\n')))
+        refuses('Refuses an altered mail backup predecessor projection',
+                lambda: modified('tests/backups_acceptance_wiring.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed mail projection\n')))
+
+        def altered_mail_backup_projection_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_backup_projection_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail backup-projection source tree',
+                lambda: altered_mail_backup_projection_identity(
+                    'MAIL_BACKUP_PROJECTION_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail backup-projection parent',
+                lambda: altered_mail_backup_projection_identity(
+                    'MAIL_BACKUP_PROJECTION_FIX_BASE'))
+        refuses('Refuses an altered mail public-identity artifact projection',
+                lambda: modified('tests/acceptance_artifacts_test.py',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n# unreviewed identity projection\n')))
+
+        def altered_mail_artifact_projection_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_artifact_projection_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail artifact-projection source tree',
+                lambda: altered_mail_artifact_projection_identity(
+                    'MAIL_ARTIFACT_PROJECTION_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail artifact-projection parent',
+                lambda: altered_mail_artifact_projection_identity(
+                    'MAIL_ARTIFACT_PROJECTION_FIX_BASE'))
+
+        def altered_mail_artifact_overlap_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_mail_artifact_overlap_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted mail artifact-overlap source tree',
+                lambda: altered_mail_artifact_overlap_identity(
+                    'MAIL_ARTIFACT_OVERLAP_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted mail artifact-overlap parent',
+                lambda: altered_mail_artifact_overlap_identity(
+                    'MAIL_ARTIFACT_OVERLAP_FIX_BASE'))
+        for path in (
+            'site/app/settings/database_schemas.php',
+            'site/app/staff/accounts.php',
+            proof.INVENTORY,
+            'tests/browser_acceptance.py',
+            'tests/database_schema_registry_policy.php',
+            'tests/database_schema_view_policy.php',
+        ):
+            projected = proof.project_mail_reply_forward_source(
+                fixture, path, proof.ordinary(fixture, path))
+            assert projected == proof.git(
+                fixture, 'cat-file', 'blob', proof.MAIL_REPLY_FORWARD_BASE + ':' + path)
+            passed('Reply/Forward shared projection restores exact resulting-main bytes: ' + path)
+
         def altered_receipt(change):
             def rewrite(target):
                 data = json.loads(target.read_bytes())

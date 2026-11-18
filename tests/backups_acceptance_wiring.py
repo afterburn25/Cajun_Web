@@ -14,7 +14,9 @@ def predecessor_browser(root, contract):
             raise AssertionError('Unreviewed backup comparison contract')
         receipt = json.loads(composition.ordinary(root, composition.RECEIPT))
         ux09 = composition.validate_ux09_source(root)
-        driver = composition.project_ux09_security(root, 'tests/browser_acceptance.py', driver.encode())
+        driver = composition.project_mail_reply_forward_source(
+            root, 'tests/browser_acceptance.py', driver.encode())
+        driver = composition.project_ux09_security(root, 'tests/browser_acceptance.py', driver)
         driver = composition.project_ux09(root, ux09, 'tests/browser_acceptance.py', driver)
         driver = composition.reconstruct_repair(
             receipt, 'tests/browser_acceptance.py',
