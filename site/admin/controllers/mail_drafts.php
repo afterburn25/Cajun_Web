@@ -56,7 +56,7 @@ function mail_drafts_admin_can_review_send(?array $row):bool {
     return $row!==null&&($row['status']??null)==='draft';
 }
 function mail_drafts_admin_origin_action(string $mode):string {
-    return match($mode){'reply'=>'replying to','forward'=>'forwarding',default=>throw new RuntimeException('Protected draft origin is inconsistent. Existing data was preserved.')};
+    return match($mode){'reply'=>'replying to','reply-all'=>'replying to all recipients of','forward'=>'forwarding',default=>throw new RuntimeException('Protected draft origin is inconsistent. Existing data was preserved.')};
 }
 function mail_drafts_admin_omission(string $flag):string {
     return match($flag){

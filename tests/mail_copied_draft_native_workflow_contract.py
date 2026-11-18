@@ -87,7 +87,7 @@ def validate(text):
         ('tests/mail-compose/reply_all.php', 'reply-all', '37'),
         ('tests/mail-compose/thread.php', 'thread', '45'),
         ('tests/mail-compose/copied_source.php', 'copied-source', '19'),
-        ('tests/mail_copied_draft_storage.php', 'storage', '20'),
+        ('tests/mail_copied_draft_storage.php', 'storage', '21'),
         ('tests/mail_copied_draft_admin_policy.php', 'admin-policy', '23'),
         ('tests/mail_copied_draft_create_adapter.php', 'adapter', '19'),
         ('tests/database_schema_registry_policy.php', 'schema-registry', '391'),
