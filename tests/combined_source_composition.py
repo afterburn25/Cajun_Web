@@ -369,6 +369,14 @@ PR391_RECOVERY_SOURCE = '511a5d91627374878780a8dbb800d51b24d8a087'
 PR391_RECOVERY_SOURCE_TREE = '31be156cbd38bac2e49ba7aedcb0c0d61b78cce1'
 PR391_RECOVERY_HEAD = '331572f0de664a50c0a3b1df7cd671bb38e9df73'
 PR391_RECOVERY_HEAD_TREE = '713c63e742c524be1ebd9c8ea3a0ee71bf3392ff'
+RUNNER_AWS_FULL_MIRROR_BASE = '9c44df1a3a0da13f1a9ecd1e51a58ffed42314ab'
+RUNNER_AWS_FULL_MIRROR_BASE_TREE = '3c524240336cb6bb37374c9013d20bd7a6750c2f'
+RUNNER_AWS_FULL_MIRROR_SOURCE = '000d423c141483b33bde0f5e849c52764fce873b'
+RUNNER_AWS_FULL_MIRROR_SOURCE_TREE = 'cb3f6d35644436ed9c29477fe5c0862f27f097dc'
+RUNNER_AWS_FULL_MIRROR_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
 RUNNER_MIRROR_COMPAT_BASE = '161cc51dd5610f8166c002fe1121c178f996ec84'
 RUNNER_MIRROR_COMPAT_BASE_TREE = '35e38293bc31a8e3307884db72b931565630b0b7'
 RUNNER_MIRROR_COMPAT_SOURCE = '0f9bceed32a9f4836671bd226f3582c844a6b32f'
@@ -3247,6 +3255,63 @@ def project_runner_finite_tool_refusal(root, path, current):
     return base
 
 
+def validate_runner_aws_full_mirror_source(root):
+    """Bind the exact fully converted GitHub AWS mirror-list profile."""
+    require(git(root, 'rev-parse', RUNNER_AWS_FULL_MIRROR_BASE + '^{tree}').decode().strip()
+            == RUNNER_AWS_FULL_MIRROR_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_AWS_FULL_MIRROR_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_AWS_FULL_MIRROR_SOURCE_TREE,
+            'Runner fully converted AWS mirror source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_AWS_FULL_MIRROR_SOURCE).decode().strip().split()
+            == [RUNNER_AWS_FULL_MIRROR_BASE],
+            'Runner fully converted AWS mirror source parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_AWS_FULL_MIRROR_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_AWS_FULL_MIRROR_BASE, RUNNER_AWS_FULL_MIRROR_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_AWS_FULL_MIRROR_MODIFIED)],
+            'Runner fully converted AWS mirror source changed another path or status')
+    base_entries = entries(root, RUNNER_AWS_FULL_MIRROR_BASE)
+    source_entries = entries(root, RUNNER_AWS_FULL_MIRROR_SOURCE)
+    for path in sorted(RUNNER_AWS_FULL_MIRROR_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_aws_full_mirror(root, path, current) == base
+                and project_runner_aws_full_mirror(root, path, base) == base,
+                'Runner fully converted AWS mirror identity or projection changed: ' + path)
+    script = ordinary(root, '.github/scripts/prepare_ubuntu_apt.py')
+    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    require(script.count(b'expected_aws_mirrors = {') == 1
+            and script.count(b'elif mirror_data in expected_aws_mirrors:') == 1
+            and script.count(b"profile = 'aws-mirror-list'") == 2
+            and script.count(b'if mirror_data not in expected_aws_mirrors:') == 1
+            and script.count(b"'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/'") == 1
+            and script.count(b"'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/'") == 0
+            and script.count(b"'APT::Get::AllowUnauthenticated'") == 1
+            and script.count(b"'80a36b0a6de2f69f49d2df75ef473ccde121e9e190b9ea01d20a4f63778d5c31'") == 1
+            and contract.count(b'Executable guard accepts exact fully converted AWS mirror-list profile') == 1
+            and contract.count(b'Executable guard rejects an unknown fully converted AWS mirror-list archive host') == 1
+            and contract.count(b"'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/\\tpriority:1\\n'") == 2,
+            'Exact AWS mirror allowlist, trust guard or positive/negative fixture changed')
+
+
+def project_runner_aws_full_mirror(root, path, current):
+    """Restore the reviewed mail proof before the AWS full-mirror correction."""
+    if path not in RUNNER_AWS_FULL_MIRROR_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner fully converted AWS mirror source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_build_budget(root):
     """Bind the exact Application build-proof timeout correction to its failed head."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_BUDGET_BASE + '^{tree}').decode().strip()
@@ -3266,7 +3331,8 @@ def validate_runner_application_build_budget(root):
     base_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_SOURCE)
     for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED):
-        current = project_proof_runtime_source(root, path, ordinary(root, path))
+        current = project_runner_aws_full_mirror(root, path, ordinary(root, path))
+        current = project_proof_runtime_source(root, path, current)
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
         require(current == source
@@ -3278,6 +3344,7 @@ def validate_runner_application_build_budget(root):
 
 def project_runner_application_build_budget(root, path, current):
     """Restore the failed hosted head only for the exact Application budget paths."""
+    current = project_runner_aws_full_mirror(root, path, current)
     current = project_proof_runtime_source(root, path, current)
     if path not in RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED:
         return current
@@ -7887,6 +7954,7 @@ def verify_current(root):
     validate_mail_backup_projection_fix(root)
     validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
+    validate_runner_aws_full_mirror_source(root)
     validate_runner_application_build_budget(root)
     validate_runner_account_source_budget(root)
     validate_runner_finite_tool_refusal_source(root)
@@ -8300,6 +8368,7 @@ def verify_current(root):
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
         {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
+        {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
         {'name': 'Exact Reply All replay successor binds native SQL and HTTP controller no-network no-write acceptance', 'passed': True},
         {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
