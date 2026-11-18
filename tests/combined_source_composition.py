@@ -5995,7 +5995,8 @@ def validate_project_private_notes_proof_compat_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS):
-        current = project_project_private_notes_static_intake_source(root, path, ordinary(root, path))
+        current = project_runner_aws_full_mirror(root, path, ordinary(root, path))
+        current = project_project_private_notes_static_intake_source(root, path, current)
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_PROOF_COMPAT_BASE + ':' + path)
         require(current == source
@@ -6020,6 +6021,7 @@ def validate_project_private_notes_proof_compat_source(root):
 
 def project_project_private_notes_proof_compat_source(root, path, current):
     """Restore the failed hosted head for older proof receipts."""
+    current = project_runner_aws_full_mirror(root, path, current)
     current = project_project_private_notes_static_intake_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_PROOF_COMPAT_PATHS:
         return current
