@@ -37,8 +37,10 @@ jobs:
     runs-on: ubuntu-24.04
     # Exact-source composition completed in 51m on image 20261111.127.1 but
     # exceeded 83m on 20261111.370.1 after the package and all build guards
-    # had passed. Keep every assertion and allow bounded hosted-runner margin.
-    timeout-minutes: 180
+    # had passed. Run 44385954180 then reached the exact 180m job ceiling after
+    # 2,937 helper checks, the package build and all 94 build guards passed.
+    # Keep every assertion and match the existing bounded native/browser limit.
+    timeout-minutes: 240
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}
