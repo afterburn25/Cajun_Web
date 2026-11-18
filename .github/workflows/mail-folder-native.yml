@@ -246,7 +246,7 @@ jobs:
               'body': 34, 'attachment': 14, 'attachment-security': 27,
               'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45,
               'copied-source': 21, 'storage': 20, 'admin-policy': 23,
-              'adapter': 20, 'schema-registry': 396,
+              'adapter': 20, 'schema-registry': 401,
           }
           for mode in ('normal', 'noini'):
               for name, count in portable.items():

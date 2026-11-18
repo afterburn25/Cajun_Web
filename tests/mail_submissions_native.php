@@ -8,7 +8,7 @@ require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/mail/submissions.php';
 require_once __DIR__.'/../site/app/mail/copies.php';
 require_once __DIR__.'/current_owner_authority.php';
-use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailCompose\{DraftAttachment,DraftContent};
 use CajunWebPro\Foundation\MailReceiving\{AppendReceipt,ReceivingFailure};
 use CajunWebPro\Foundation\MailSubmission\{PreparedMime,SubmissionSnapshot,TransportOutcome};
 $private=__DIR__.'/../test-runtime/submission-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
@@ -182,12 +182,45 @@ try {
     [$auditLost]=su_accept($a);su_age_copies();su_ok('Result audit failure leaves an unresolved durable attempt',su_copy_result_audit_failure(fn()=>mail_submission_copy($auditLost,$resolver,fn()=>new AppendReceipt(true)))&&mail_copy_status($auditLost)['result_code']===null);su_age_copies();su_deny('Unresolved result storage can never replay the copy',fn()=>mail_submission_copy($auditLost,$resolver,fn()=>new AppendReceipt(true)));
     su_deny('Copy status requires the submission author',function()use($id){su_actor(5);try{mail_copy_status($id);}finally{su_actor(2);}});su_deny('Rejected submissions cannot be copied',fn()=>mail_submission_copy($new,$resolver,fn()=>new AppendReceipt(true)));
     $copyMetadata=json_encode([all('SELECT * FROM '.table('mail_copy_attempts')),all('SELECT * FROM '.table('mail_copy_results')),all('SELECT detail FROM '.table('audit')." WHERE action LIKE 'mail_accounts.copy_%'")]);su_ok('Sent-copy persistence and audit are metadata only',!str_contains($copyMetadata,'SYNTHETIC_SUBMISSION')&&!str_contains($copyMetadata,'private@example.invalid'));
-    // Formatted alternative: prepare/snapshot/persisted-MIME round-trip and damage fence.
+    // Bounded private draft files: additive storage, exact author/revision binding,
+    // immutable submission copies and dispatch-time current-set authorization.
+    su_actor(1);su_deny('Attachment setup rejects revoked owner authority',fn()=>cwp_test_owner_revoked(fn()=>mail_files_migrate()));
+    su_actor(5);su_deny('Administrator permissions do not confer attachment setup',fn()=>mail_files_migrate());su_actor(1);
+    save_setting('mail_files_schema_version','future');su_deny('Future attachment storage version cannot be downgraded',fn()=>mail_files_migrate());query('DELETE FROM '.table('settings').' WHERE name=?',['mail_files_schema_version']);
+    db()->exec('ALTER TABLE '.table('mail_draft_files').' ADD INDEX unexpected(created_at)');su_deny('Unexpected attachment index is refused and preserved',fn()=>mail_files_migrate());db()->exec('ALTER TABLE '.table('mail_draft_files').' DROP INDEX unexpected');
+    su_ok('Attachment setup audit failure leaves readiness unset',su_audit_failure(fn()=>mail_files_migrate())&&!mail_files_ready());mail_files_migrate();mail_files_migrate();
+    su_ok('Repeated attachment setup is additive and ready',mail_files_ready());
+    su_actor(2);$attachDraft=su_draft($a);
+    su_deny('Attachment requires an exact saved revision',fn()=>mail_drafts_attach($attachDraft,2,new DraftAttachment('a.txt','text/plain','bytes one')));
+    mail_drafts_attach($attachDraft,1,new DraftAttachment('report.pdf','application/pdf','%PDF '.str_repeat("\x00\xff",50)));
+    su_ok('Attaching bumps the saved draft revision',(int)mail_drafts_get($attachDraft)['revision']===2);
+    su_deny('Attachment names are unique without case ambiguity',fn()=>mail_drafts_attach($attachDraft,2,new DraftAttachment('REPORT.PDF','application/pdf','different')));
+    mail_drafts_attach($attachDraft,2,new DraftAttachment('notes.txt','text/plain','second file'));
+    $files=mail_drafts_files($attachDraft);
+    su_ok('Draft lists bounded attachment metadata without bytes',count($files)===2&&$files[0]['name']==='report.pdf'&&!array_key_exists('data',$files[0]));
+    su_deny('Malformed attachment id is refused before lookup',fn()=>mail_drafts_file($attachDraft,"' OR 1=1 --"));
+    $download=mail_drafts_file($attachDraft,$files[1]['id']);
+    su_ok('Author downloads exact stored attachment bytes',hash_equals($download['sha256'],hash('sha256',$download['data']))&&$download['data']==='second file');
+    su_actor(4);su_deny('Another author cannot list draft attachments',fn()=>mail_drafts_files($attachDraft));su_deny('Another author cannot download draft attachments',fn()=>mail_drafts_file($attachDraft,$files[0]['id']));su_deny('Another author cannot detach draft attachments',fn()=>mail_drafts_detach($attachDraft,3,$files[0]['id']));su_actor(2);
+    su_deny('Stale revision cannot attach',fn()=>mail_drafts_attach($attachDraft,1,new DraftAttachment('x.txt','text/plain','x')));su_deny('Stale revision cannot detach',fn()=>mail_drafts_detach($attachDraft,1,$files[0]['id']));
+    mail_drafts_attach($attachDraft,3,new DraftAttachment('x.txt','text/plain','x'));mail_drafts_attach($attachDraft,4,new DraftAttachment('y.txt','text/plain','y'));
+    su_deny('A fifth attachment exceeds the per-draft bound',fn()=>mail_drafts_attach($attachDraft,5,new DraftAttachment('z.txt','text/plain','z')));
+    $extra=all('SELECT id FROM '.table('mail_draft_files').' WHERE draft_id=? AND name IN (?,?) ORDER BY name',[$attachDraft,'x.txt','y.txt']);mail_drafts_detach($attachDraft,5,$extra[0]['id']);mail_drafts_detach($attachDraft,6,$extra[1]['id']);
+    su_ok('Bound refusal and cleanup restore the two saved attachments',(int)mail_drafts_get($attachDraft)['revision']===7&&count(mail_drafts_files($attachDraft))===2);
+    su_age_dispatches();$attachId=mail_submissions_prepare(bin2hex(random_bytes(16)),$attachDraft,7,1);$attachMessage=mail_submissions_message(mail_submissions_row($attachId));
+    su_ok('Plain attachment submission uses payload format 3',$attachMessage->snapshot->privatePayload()['format']===3);
+    su_ok('Preparation copies exact files into immutable submission storage',(int)query('SELECT COUNT(*) FROM '.table('mail_submission_files').' WHERE submission_id=?',[$attachId])->fetchColumn()===2&&str_contains($attachMessage->bytes,'multipart/mixed')&&str_contains($attachMessage->bytes,'report.pdf'));
+    mail_drafts_detach($attachDraft,7,$files[0]['id']);su_ok('Later draft file changes cannot rewrite saved submission bytes',mail_submissions_message(mail_submissions_row($attachId))->bytes===$attachMessage->bytes);su_deny('A changed attachment set prevents dispatch of its reviewed submission',fn()=>mail_submissions_claim($attachId));
+    $attachId2=mail_submissions_prepare(bin2hex(random_bytes(16)),$attachDraft,8,1);$attachClaim=mail_submissions_claim($attachId2);
+    su_ok('A re-reviewed attachment set dispatches only current files',$attachClaim!==null&&str_contains($attachClaim['message']->bytes,'notes.txt')&&!str_contains($attachClaim['message']->bytes,'report.pdf'));mail_submissions_record(su_outcome($attachClaim));
+    $kept=one('SELECT data FROM '.table('mail_submission_files').' WHERE submission_id=? LIMIT 1',[$attachId2]);query('UPDATE '.table('mail_submission_files').' SET data=? WHERE submission_id=? LIMIT 1',['tampered',$attachId2]);su_deny('Damaged immutable submission attachment refuses disclosure',fn()=>mail_submissions_get($attachId2));query('UPDATE '.table('mail_submission_files').' SET data=? WHERE submission_id=?',[$kept['data'],$attachId2]);
+    // Formatted alternative plus attachment: combined format 7 round-trip.
     $richDraft=su_draft($a);mail_drafts_save($richDraft,1,$a,1,new DraftContent(['client@example.invalid'],['copy@example.invalid'],['private@example.invalid'],'Rich draft','Plain body','<p>Formatted <b>part</b></p>'));
-    $richId=mail_submissions_prepare(bin2hex(random_bytes(16)),$richDraft,2,1);
+    mail_drafts_attach($richDraft,2,new DraftAttachment('formatted.txt','text/plain','formatted attachment'));
+    $richId=mail_submissions_prepare(bin2hex(random_bytes(16)),$richDraft,3,1);
     $richMessage=mail_submissions_message(mail_submissions_row($richId));
-    su_ok('Formatted alternative uses payload format 5 with exact alternative bytes',$richMessage->snapshot->privatePayload()['format']===5&&$richMessage->snapshot->privatePayload()['body_html']==='<p>Formatted <b>part</b></p>'&&str_contains($richMessage->bytes,'multipart/alternative'));
-    su_ok('Formatted submission reconstructs byte-exactly from private storage',mail_submissions_message(mail_submissions_row($richId))->bytes===$richMessage->bytes&&str_contains($richMessage->bytes,'Content-Type: text/html'));
+    su_ok('Formatted attachment uses payload format 7 with exact alternative bytes',$richMessage->snapshot->privatePayload()['format']===7&&$richMessage->snapshot->privatePayload()['body_html']==='<p>Formatted <b>part</b></p>'&&str_contains($richMessage->bytes,'multipart/alternative'));
+    su_ok('Formatted attachment submission reconstructs byte-exactly',mail_submissions_message(mail_submissions_row($richId))->bytes===$richMessage->bytes&&str_contains($richMessage->bytes,'Content-Type: text/html')&&str_contains($richMessage->bytes,'formatted.txt'));
     $richPayload=one('SELECT payload_json FROM '.table('mail_submissions').' WHERE id=?',[$richId])['payload_json'];
     $tampered=$richMessage->snapshot->privatePayload();$tampered['body_html']='<p>tampered</p>';
     query('UPDATE '.table('mail_submissions').' SET payload_json=? WHERE id=?',[json_encode($tampered,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),$richId]);

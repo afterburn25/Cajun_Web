@@ -2,9 +2,9 @@ name: Mail submission storage checks
 on:
   push:
     branches: [main, codex/mail-submission]
-    paths: ['site/app/mail/**', 'site/admin/controllers/mail_submissions.php', 'site/admin/views/mail_submissions.php', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', 'tests/mail_submission_forms.php', '.github/workflows/mail-submission-storage.yml']
+    paths: ['site/app/mail/**', 'site/admin/controllers/mail_drafts.php', 'site/admin/controllers/mail_submissions.php', 'site/admin/views/mail_drafts.php', 'site/admin/views/mail_submissions.php', 'site/database/**', 'site/includes/foundation/mail-compose/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', 'tests/mail_submission_forms.php', '.github/workflows/mail-submission-storage.yml']
   pull_request:
-    paths: ['site/app/mail/**', 'site/admin/controllers/mail_submissions.php', 'site/admin/views/mail_submissions.php', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', 'tests/mail_submission_forms.php', '.github/workflows/mail-submission-storage.yml']
+    paths: ['site/app/mail/**', 'site/admin/controllers/mail_drafts.php', 'site/admin/controllers/mail_submissions.php', 'site/admin/views/mail_drafts.php', 'site/admin/views/mail_submissions.php', 'site/database/**', 'site/includes/foundation/mail-compose/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', 'tests/mail_submission_forms.php', '.github/workflows/mail-submission-storage.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -51,10 +51,15 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-submission-storage sh -ec '
               php -l site/app/mail/submissions.php
+              php -l site/app/mail/files.php
               php -l site/app/mail/submission_dispatch.php
               php -l site/app/mail/submission_views.php
+              php -l site/admin/controllers/mail_drafts.php
               php -l site/admin/controllers/mail_submissions.php
+              php -l site/admin/views/mail_drafts.php
               php -l site/admin/views/mail_submissions.php
+              php -l site/database/schema/mail_files_schema.php
+              php -l site/database/migrations/mail_files_migrate.php
               php -l site/database/schema/mail_submissions_schema.php
               php -l site/database/migrations/mail_submissions_migrate.php
               php -l tests/mail_submissions_native.php

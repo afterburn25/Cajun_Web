@@ -28,6 +28,7 @@ def run_browser(env, browser):
     inbox_connections, provider_calls = inbox_server.connections, provider_server.calls
     check('Fresh install has ready empty submission tables', db("SELECT value FROM fresh_settings WHERE name='mail_submissions_schema_version'") == [{'value': '1'}] and all(not db('SELECT * FROM fresh_' + t) for t in ['mail_submissions', 'mail_submission_dispatches', 'mail_submission_results']))
     check('Fresh install has ready empty Sent-copy tables', db("SELECT value FROM fresh_settings WHERE name='mail_copies_schema_version'") == [{'value': '1'}] and all(not db('SELECT * FROM fresh_' + t) for t in ['mail_sent_folders', 'mail_copy_attempts', 'mail_copy_results']))
+    check('Fresh install has ready empty attachment tables', db("SELECT value FROM fresh_settings WHERE name='mail_files_schema_version'") == [{'value': '1'}] and all(not db('SELECT * FROM fresh_' + t) for t in ['mail_draft_files', 'mail_submission_files']))
     snapshot, jobs = db('SELECT * FROM ci_settings'), db('SELECT * FROM ci_studio_jobs')
     r = submit(owner, library, 'mail_submissions_setup', {'csrf': 'invalid'})
     check('Submission setup rejects invalid CSRF', not db("SELECT value FROM ci_settings WHERE name='mail_submissions_schema_version'") and 'session expired' in r.text.lower())
@@ -242,9 +243,50 @@ def run_browser(env, browser):
     r = member.post(refused_page, data={'csrf': token(member.get(refused_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': refused_sid, 'confirm_copy': '1'}); copy_connections += 1
     check('Server folder refusal records a bounded retryable failure', 'server refused the configured Sent folder' in r.text and db('SELECT outcome,result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'outcome': 'failed', 'result_code': 'folder'}] and inbox_server.connections == inbox_connections + copy_connections)
     inbox_server.mode = 'ok'
+    # Bounded private draft attachments: current-owner setup, exact author/revision
+    # binding, byte-exact SMTP/Sent copy and immutable submission history.
+    drafts_page = root + '?view=mail-drafts'
+    r = submit(owner, drafts_page, 'mail_drafts_files_setup', {'csrf': 'invalid'})
+    check('Attachment setup rejects invalid CSRF', 'session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_files_schema_version'"))
+    setup_form = soup(owner.get(drafts_page)).find('input', {'name': 'action', 'value': 'mail_drafts_files_setup'}).find_parent('form')
+    check('Attachment setup uses current owner session without password re-entry', setup_form.find('input', {'name': 'current_password'}) is None)
+    r = submit(owner, drafts_page, 'mail_drafts_files_setup', {})
+    check('Owner prepares additive attachment storage without network access', 'Draft attachments are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_files_schema_version'") == [{'value': '1'}] and inbox_server.connections == inbox_connections + copy_connections)
+    attach_did, attach_url = create(sent_aid)
+    attach_page = draft_url + '&draft_id=' + attach_did
+    attach_bytes = b'SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400
+    def file_post(action, revision, **extra):
+        data = {'csrf': token(member.get(attach_page)), 'action': action, 'draft_id': attach_did, 'revision': str(revision), **extra}
+        files = {'file': ('report.pdf', attach_bytes, 'application/pdf')} if action == 'mail_drafts_attach' else None
+        return member.post(attach_page, data=data, files=files)
+    r = file_post('mail_drafts_attach', 2)
+    check('Stale revision cannot attach over HTTP', 'changed' in r.text.lower() and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
+    r = file_post('mail_drafts_attach', 1)
+    check('Multipart upload attaches exact private bytes', 'File attached' in r.text and db('SELECT name,mime,LENGTH(data) AS size FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'name': 'report.pdf', 'mime': 'application/pdf', 'size': len(attach_bytes)}])
+    file_id = db('SELECT id FROM ci_mail_draft_files WHERE draft_id=?', [attach_did])[0]['id']
+    r = file_post('mail_drafts_file', 2, file_id=file_id)
+    check('Attachment download streams exact author bytes with safe headers', r.content == attach_bytes and r.headers.get('Content-Type') == 'application/octet-stream' and r.headers.get('X-Content-Type-Options') == 'nosniff' and 'no-store' in r.headers.get('Cache-Control', ''))
+    r = owner.post(attach_page, data={'csrf': token(owner.get(attach_page)), 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
+    check('Another author cannot download a private draft attachment', r.content != attach_bytes)
+    r = file_post('mail_drafts_detach', 1, file_id=file_id)
+    check('Stale revision cannot detach over HTTP', 'changed' in r.text.lower() and db('SELECT COUNT(*) AS n FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'n': 1}])
+    review_page = member.get(attach_url)
+    check('Send review displays attachment metadata without raw bytes', 'report.pdf' in review_page.text and soup(review_page).select_one('[data-mail-submission-files]') is not None and 'SYNTHETIC_ATTACHMENT_BYTES' not in review_page.text)
+    age_dispatches(); attach_target, attach_data = review(attach_url); count = submission_server.connections
+    r = member.post(attach_target, data={**attach_data, 'confirm_send': '1'})
+    attach_sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
+    wire = submission_server.attempts[-1]; parts = BytesParser(policy=policy.default).parsebytes(wire['data']); decoded = [p.get_payload(decode=True) for p in parts.walk() if p.get_content_disposition() == 'attachment']
+    stored_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [attach_sid])[0]['mime_bytes'].encode('ascii')
+    check('HTTP sends attachment MIME byte-exactly', wire['data'] == stored_mime and decoded == [attach_bytes] and submission_server.connections == count + 1)
+    check('Submission history shows only attachment metadata', 'report.pdf' in member.get(root + '?view=mail-submission&submission_id=' + attach_sid).text)
+    db('UPDATE ci_mail_copy_attempts SET started_epoch=0'); attach_copy_page = root + '?view=mail-submission&submission_id=' + attach_sid
+    r = member.post(attach_copy_page, data={'csrf': token(member.get(attach_copy_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': attach_sid, 'confirm_copy': '1'}); copy_connections += 1
+    check('Sent copy appends the exact larger attachment MIME', inbox_server.appended == wire['data'] and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [attach_sid]) == [{'result_code': 'appended'}])
+    r = file_post('mail_drafts_detach', 2, file_id=file_id)
+    check('Author removes the saved attachment as a new draft revision', 'Attachment removed' in r.text and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
     metadata = json.dumps(db("SELECT * FROM ci_audit WHERE action LIKE 'mail_submissions.%' OR action LIKE 'mail_accounts.copy_%'"))
     check('Submission and Sent-copy audits exclude message content recipients and credentials', all(x not in metadata for x in ['SYNTHETIC_PRIVATE_SUBMISSION_BODY', 'private@example.invalid', payload['subject'], submission_server.password, 'Synthetic receiving HTTP password']))
-    for path in ['app/mail/copies.php', 'app/mail/submissions.php', 'app/mail/submission_dispatch.php', 'app/mail/submission_views.php', 'admin/controllers/mail_submissions.php', 'admin/views/mail_submissions.php', 'database/schema/mail_copies_schema.php', 'database/migrations/mail_copies_migrate.php', 'database/schema/mail_submissions_schema.php', 'database/migrations/mail_submissions_migrate.php', 'includes/foundation/mail-receiving/SentCopy.php', 'includes/foundation/mail-submission/SubmissionChannel.php']:
+    for path in ['app/mail/copies.php', 'app/mail/files.php', 'app/mail/submissions.php', 'app/mail/submission_dispatch.php', 'app/mail/submission_views.php', 'admin/controllers/mail_submissions.php', 'admin/views/mail_submissions.php', 'database/schema/mail_copies_schema.php', 'database/migrations/mail_copies_migrate.php', 'database/schema/mail_files_schema.php', 'database/migrations/mail_files_migrate.php', 'database/schema/mail_submissions_schema.php', 'database/migrations/mail_submissions_migrate.php', 'includes/foundation/mail-receiving/SentCopy.php', 'includes/foundation/mail-submission/SubmissionChannel.php']:
         check('HTTP denies direct submission internal ' + path, requests.get(BASE + '/existing/' + path).status_code == 404)
     check('Submission workflows use only expected synthetic IMAP copies and leave provider/system mail unchanged', inbox_server.connections == inbox_connections + copy_connections and not inbox_server.errors and provider_server.calls == provider_calls and (QA / 'mail-capture.txt').read_bytes() == capture)
     check('Isolated submission SMTP server observed only expected protocol', not submission_server.errors)
