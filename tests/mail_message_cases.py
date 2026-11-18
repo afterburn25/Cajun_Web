@@ -70,9 +70,9 @@ def run_browser(env,browser):
         return session.post(message,data=fields,timeout=30)
     before=inbox_server.connections
     r=mark(owner);check('Flag marking waits for owner flag preparation','prepare message flags' in r.text and inbox_server.connections==before)
-    r=submit(owner,library,'mail_message_flags_setup',{'csrf':'bad','current_password':OWNER});check('Flag preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_flags_schema_version'"))
-    r=submit(owner,library,'mail_message_flags_setup',{'current_password':'wrong'});check('Flag preparation requires current owner password','current password' in r.text and not db("SELECT value FROM ci_settings WHERE name='mail_flags_schema_version'"))
-    r=submit(owner,library,'mail_message_flags_setup',{'current_password':OWNER});check('Flag preparation commits without mailbox access','Message flag history is ready' in r.text and inbox_server.connections==before)
+    r=submit(owner,library,'mail_message_flags_setup',{'csrf':'bad'});check('Flag preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_flags_schema_version'"))
+    flag_setup=soup(owner.get(library)).find('input',{'name':'action','value':'mail_message_flags_setup'}).find_parent('form');check('Flag preparation uses the current owner session without password re-entry',flag_setup.find('input',{'name':'current_password'}) is None)
+    r=submit(owner,library,'mail_message_flags_setup',{});check('Flag preparation commits without mailbox access','Message flag history is ready' in r.text and inbox_server.connections==before)
     for overrides,phrase in [({'mark':'flagged'},'mark the message read or unread'),({'uid':'81'},'no longer matches'),({'folder':'Sent'},'no longer matches')]:
         before=inbox_server.connections;r=mark(owner,**overrides);check('Malformed flag POST refused before network '+str(overrides),phrase in r.text.lower() and inbox_server.connections==before and not db('SELECT * FROM ci_mail_flag_requests'))
     inbox_server.mode='flag';r=mark(owner)

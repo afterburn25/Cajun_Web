@@ -28,7 +28,7 @@ $page=max(1,min((int)($_GET['p']??1),100000));
 <?php else: ?><p>Message reading is ready. Use Open message after loading recent inbox headers.</p><?php endif; ?>
 <?php if(mail_messages_ready()&&!mail_flags_ready()): ?>
 <section class="workspace-card" data-flag-setup><h2>Prepare message flags</h2><p>Prepare private request history before assigned staff mark messages read or unread on the server. This step connects to no email server.</p>
-<form method="post"><?php admin_action('mail_message_flags_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare message flags</button></form></section>
+<form method="post"><?php admin_action('mail_message_flags_setup'); ?><button class="btn outline">Prepare message flags</button></form></section>
 <?php elseif(mail_flags_ready()): ?><p>Message flags are ready. Loaded messages offer Mark read or Mark unread on server.</p><?php endif; ?>
 <?php if(!mail_notices_ready()): ?>
 <section class="workspace-card" data-mail-notices-setup><h2>Prepare email notices</h2><p>After inbox and message reading are prepared, enable recent email notices for assigned administrators. The bell uses the newest checked message window; this step contacts no server.</p>

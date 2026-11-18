@@ -20,7 +20,7 @@ function mail_message_admin_action(string $action): array {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
     if($action==='mail_message_flags_setup') {
-        mail_flags_migrate(posted('current_password',200));flash('Message flag history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
+        mail_flags_migrate();flash('Message flag history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
     $copyModes=['mail_message_reply'=>'reply','mail_message_reply_all'=>'reply-all','mail_message_forward'=>'forward'];
     if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_flag','mail_message_attachment',...array_keys($copyModes)],true))throw new InvalidArgumentException('Open the current message form before requesting content.');

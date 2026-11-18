@@ -27,9 +27,9 @@ function mail_flags_validate_schema(string $name,string $sql): void {
     $database=(string)query('SELECT DATABASE()')->fetchColumn();
     if(count($relations)!==1||$relations[0]['COLUMN_NAME']!==$field||$relations[0]['REFERENCED_TABLE_SCHEMA']!==$database||$relations[0]['REFERENCED_TABLE_NAME']!==config()['db']['prefix'].$parent||$relations[0]['REFERENCED_COLUMN_NAME']!=='id'||!in_array($relations[0]['DELETE_RULE'],['RESTRICT','NO ACTION'],true)||!in_array($relations[0]['UPDATE_RULE'],['RESTRICT','NO ACTION'],true))throw new RuntimeException('Incompatible flag request relationships. Existing data was preserved.');
 }
-function mail_flags_migrate(#[\SensitiveParameter] string $password): void {
-    staff_locked(function()use($password):void {
-        $actor=mail_accounts_owner($password);
+function mail_flags_migrate(): void {
+    staff_locked(function():void {
+        $actor=mail_accounts_owner('');
         if(!mail_messages_ready())throw new RuntimeException('An owner must prepare message reading in Email accounts first.');
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_flags_schema_version'])['value']??'';
         if(!in_array($version,['','1'],true))throw new RuntimeException('Unsupported message flag storage version. Existing data was preserved.');
