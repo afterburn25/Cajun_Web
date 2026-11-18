@@ -205,7 +205,7 @@ try {
     foreach(['send','grant','expiry','account'] as $mode) {
         if($mode==='send')query('UPDATE '.table('mail_account_grants').' SET can_send=0 WHERE account_id=? AND user_id=2',[$a]);
         elseif($mode==='grant')query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);
-        elseif($mode==='expiry')query("UPDATE ".table('mail_account_grants')." SET expires_at='2000-01-01 00:00:00' WHERE account_id=? AND user_id=2",[$a]);
+        elseif($mode==='expiry')query('UPDATE '.table('mail_account_grants').' SET expires_at=? WHERE account_id=? AND user_id=2',[1,$a]);
         else query('UPDATE '.table('mail_accounts').' SET enabled=0 WHERE id=?',[$a]);
         su_deny('Current '.$mode.' authority refuses attachment metadata',fn()=>mail_drafts_files($attachDraft));su_deny('Current '.$mode.' authority refuses attachment download',fn()=>mail_drafts_file($attachDraft,$files[0]['id']));
         query('UPDATE '.table('mail_account_grants').' SET can_send=1,enabled=1,expires_at=NULL WHERE account_id=? AND user_id=2',[$a]);query('UPDATE '.table('mail_accounts').' SET enabled=1 WHERE id=?',[$a]);
