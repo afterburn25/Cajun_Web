@@ -331,13 +331,27 @@ def prepare_ubuntu():
         (archive_record, uri),
         (security_record, 'http://security.ubuntu.com/ubuntu/'),
     } for uri in aws_archives]
+    fallback_mirrors = (
+        b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+        b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+    )
+    expected = b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n' + fallback_mirrors
+    expected_aws_mirrors = {
+        uri.encode('ascii') + b'\tpriority:1\n' + fallback_mirrors
+        for uri in aws_archives
+    }
     record_set = set(records)
     if len(records) != 2 or len(record_set) != 2 or seen_suites != archive_suites | security_suites:
         fail('Ubuntu source must contain the exact archive and security stanzas')
     if record_set == mirror_records:
-        profile = 'github-mirror-list'
         if references != [ubuntu]:
             fail('unexpected active APT mirror-list reference')
+        if mirror_data == expected:
+            profile = 'github-mirror-list'
+        elif mirror_data in expected_aws_mirrors:
+            profile = 'aws-mirror-list'
+        else:
+            fail('unknown or untrusted active Ubuntu mirror list')
     elif record_set == aws_mirror_records:
         profile = 'aws-mirror-list'
         if references != [ubuntu]:
@@ -349,28 +363,12 @@ def prepare_ubuntu():
     else:
         fail('unknown or untrusted Ubuntu source URI or suite grouping')
 
-    expected = (
-        b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-        b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-        b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-    )
-    if profile == 'github-mirror-list' and mirror_data != expected:
-        fail('unknown or untrusted active Ubuntu mirror list')
     if profile == 'aws-mirror-list':
-        expected_aws_mirror = (
-            b'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-            b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-            b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-        )
-        if mirror_data != expected_aws_mirror:
+        if mirror_data not in expected_aws_mirrors:
             fail('unknown or untrusted AWS Ubuntu mirror list')
     if profile == 'aws-direct':
         archive_uri = next(uri for suites, uri in records if suites == archive_record)
-        expected_aws = (
-            archive_uri.encode('ascii') + b'\tpriority:1\n'
-            b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-            b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-        )
+        expected_aws = archive_uri.encode('ascii') + b'\tpriority:1\n' + fallback_mirrors
         if mirror_data != expected_aws:
             fail('unknown or untrusted AWS Ubuntu mirror list')
     diagnostic['profile'] = profile
