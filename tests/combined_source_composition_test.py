@@ -428,6 +428,25 @@ def run(root=ROOT):
                                          b'Uncertain Sent copy can never be replayed',
                                          b'Uncertain Sent copy may be replayed', 1))))
 
+        def altered_mail_sent_copy_origin_fix_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_sent_copy_origin_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Sent-copy copied-origin fix tree',
+                lambda: altered_mail_sent_copy_origin_fix_identity('MAIL_SENT_COPY_ORIGIN_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted Sent-copy copied-origin fix parent',
+                lambda: altered_mail_sent_copy_origin_fix_identity('MAIL_SENT_COPY_ORIGIN_FIX_BASE'))
+        refuses('Refuses a removed Sent-copy copied-origin transport recheck',
+                lambda: modified('site/app/mail/copies.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(
+                                         b'mail_submissions_origin($saved,$prepared,$actor);',
+                                         b'/* copied-origin check removed */', 1))))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:
