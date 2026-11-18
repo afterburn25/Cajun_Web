@@ -793,6 +793,29 @@ MAIL_REPLY_ALL_REPLAY_PATHS = frozenset((
     'tests/mail_copied_draft_create_native.php',
     'tests/mail_reply_cases.py',
 ))
+MAIL_ACCEPTANCE_PORTABILITY_BASE = '6207e36d0f1ca68887a93ded09b33478296594b4'
+MAIL_ACCEPTANCE_PORTABILITY_BASE_TREE = '093fdbd211d9fb48856bc8b3f0217d015d6a3fe1'
+MAIL_ACCEPTANCE_PORTABILITY_SOURCE = '273640171bc70b4ad2bc4f4e0036d80a52fdc823'
+MAIL_ACCEPTANCE_PORTABILITY_SOURCE_TREE = 'eecf48ab0eae41849337b52dd306ea40a26a1db8'
+MAIL_ACCEPTANCE_PORTABILITY_PATHS = frozenset((
+    '.github/workflows/mail-flags-native.yml',
+    '.github/workflows/mail-folder-native.yml',
+    '.github/workflows/mail-receiving.yml',
+    'foundation/mail-compose/ComposeHtml.php',
+    'foundation/mail-receiving/BodyHtml.php',
+    'site/database/schema/catalog_validate_schema.php',
+    'site/includes/foundation/mail-compose/ComposeHtml.php',
+    'site/includes/foundation/mail-receiving/BodyHtml.php',
+    'site/install/inventory.generated.php',
+    'tests/mail-compose/html.php',
+    'tests/mail-submission/verify_mime.py',
+    'tests/mail_accounts_native.php',
+    'tests/mail_drafts_native.php',
+    'tests/mail_flags_native_workflow_contract.py',
+    'tests/mail_folder_native_workflow_contract.py',
+    'tests/mail_inbox_native.php',
+    'tests/mail_message_native.php',
+))
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -4592,6 +4615,7 @@ def validate_mail_reply_all_replay_source(root):
 
 def project_mail_reply_all_replay(root, path, current):
     """Restore the first consolidated-mail proof head before replay coverage."""
+    current = project_mail_acceptance_portability(root, path, current)
     if path not in MAIL_REPLY_ALL_REPLAY_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_SOURCE + ':' + path)
@@ -4602,6 +4626,96 @@ def project_mail_reply_all_replay(root, path, current):
         return current
     require(current == source,
             'Current Reply All replay source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_acceptance_portability_source(root):
+    """Bind the exact product and proof correction discovered by first-attempt CI."""
+    require(git(root, 'rev-parse', MAIL_ACCEPTANCE_PORTABILITY_BASE + '^{tree}').decode().strip()
+            == MAIL_ACCEPTANCE_PORTABILITY_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ACCEPTANCE_PORTABILITY_SOURCE_TREE,
+            'Mail acceptance portability source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ACCEPTANCE_PORTABILITY_SOURCE).decode().split()
+            == [MAIL_ACCEPTANCE_PORTABILITY_SOURCE, MAIL_ACCEPTANCE_PORTABILITY_BASE],
+            'Mail acceptance portability source is not the direct proof-head successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ACCEPTANCE_PORTABILITY_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ACCEPTANCE_PORTABILITY_BASE,
+                MAIL_ACCEPTANCE_PORTABILITY_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ACCEPTANCE_PORTABILITY_PATHS)],
+            'Mail acceptance portability source changed another path or status')
+    base_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_BASE)
+    source_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_SOURCE)
+    for path in sorted(MAIL_ACCEPTANCE_PORTABILITY_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_acceptance_portability(root, path, current) == base
+                and project_mail_acceptance_portability(root, path, base) == base,
+                'Mail acceptance portability identity or projection changed: ' + path)
+    flags = ordinary(root, '.github/workflows/mail-flags-native.yml')
+    folder = ordinary(root, '.github/workflows/mail-folder-native.yml')
+    receiving = ordinary(root, '.github/workflows/mail-receiving.yml')
+    flags_contract = ordinary(root, 'tests/mail_flags_native_workflow_contract.py')
+    folder_contract = ordinary(root, 'tests/mail_folder_native_workflow_contract.py')
+    require(flags.count(b'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu') == 2
+            and folder.count(b'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu') == 2
+            and flags.count(b'ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json') == 2
+            and folder.count(b'ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json') == 2
+            and flags.count(b'flags="-n -d extension=ctype"') == 1
+            and folder.count(b'php_flags="-n -d extension=mbstring -d extension=ctype"') == 1
+            and receiving.count(b'php -n -d extension=ctype tests/mail-receiving/append_test.php') == 1
+            and flags_contract.count(b"'lost explicit no-INI ctype'") == 1
+            and folder_contract.count(b"'lost no-INI ctype'") == 1
+            and folder.count(b"'copied-source': 19") == 1
+            and folder_contract.count(b"'changed copied-source report count'") == 1,
+            'Signed runner admission, exact count or no-INI mail coverage changed')
+    parser = ordinary(root, 'foundation/mail-receiving/BodyHtml.php')
+    compose = ordinary(root, 'foundation/mail-compose/ComposeHtml.php')
+    require(parser.count(b'public function __construct(bool $portable=false)') == 1
+            and parser.count(b'$portable || PHP_VERSION_ID<80400 ? new MastermindsParser() : new NativeParser()') == 1
+            and compose.count(b'new BodyHtmlParser(true)') == 1
+            and parser == ordinary(root, 'site/includes/foundation/mail-receiving/BodyHtml.php')
+            and compose == ordinary(root, 'site/includes/foundation/mail-compose/ComposeHtml.php')
+            and ordinary(root, 'tests/mail-compose/html.php').count(
+                b'Accepted canonical output is an exact portable fixed point') == 1,
+            'Portable outbound HTML fixed point or deployed mirror changed')
+    validator = ordinary(root, 'site/database/schema/catalog_validate_schema.php')
+    mime_parser = ordinary(root, 'tests/mail-submission/verify_mime.py')
+    require(validator.count(b'MEDIUMTEXT|LONGTEXT|TEXT|MEDIUMBLOB') == 1
+            and mime_parser.count(b"re.findall(rb'(?m)^Message-ID:") == 1
+            and mime_parser.count(b"re.sub(rb'\\r\\n[ \\t]+'") == 1
+            and mime_parser.count(b"message['Message-ID'] is not None") == 1,
+            'Catalog type or independent exact wire Message-ID proof changed')
+    require(ordinary(root, 'tests/mail_drafts_native.php').count(
+                b"['mail_drafts','mail_draft_revisions','mail_draft_files']") == 1
+            and ordinary(root, 'tests/mail_accounts_native.php').count(
+                b'mail_accounts_grant($id,2,2,false,false,false,0,$password)') == 1
+            and ordinary(root, 'tests/mail_inbox_native.php').count(b'$read||$send,0,$password') == 1
+            and ordinary(root, 'tests/mail_inbox_native.php').count(
+                b"mail_accounts_grant($interleave,1,(int)$g['revision'],false,false,false") == 1
+            and ordinary(root, 'tests/mail_message_native.php').count(b'$read||$send,0,$password') == 1
+            and ordinary(root, 'tests/mail_message_native.php').count(
+                b"mail_accounts_grant($interleave,1,(int)$g['revision'],false,false,false") == 1,
+            'Schema fixture or disabled mailbox-grant coverage changed')
+
+
+def project_mail_acceptance_portability(root, path, current):
+    """Restore the reviewed proof head before first-attempt mail corrections."""
+    if path not in MAIL_ACCEPTANCE_PORTABILITY_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail acceptance portability source changed before predecessor projection: ' + path)
     return base
 
 
@@ -6425,6 +6539,7 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_ATTACHMENT_READINESS_FIX_PATHS
                 | MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS
                 | {MAIL_ATTACHMENT_CLAIM_FIX_PATH}
+                | MAIL_ACCEPTANCE_PORTABILITY_PATHS
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -7669,6 +7784,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_acceptance_portability_source(root)
     validate_mail_reply_all_replay_source(root)
     validate_mail_attachment_claim_fix(root)
     validate_mail_attachment_submission_fix(root)
@@ -8104,6 +8220,7 @@ def verify_current(root):
         {'name': 'Exact Sent-copy successor binds explicit confirmation, immutable MIME, uncertainty and additive storage', 'passed': True},
         {'name': 'Exact Sent-copy review successor restores copied-origin Read authority before attempt and transport', 'passed': True},
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
+        {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
         {'name': 'Exact Reply All replay successor binds native SQL and HTTP controller no-network no-write acceptance', 'passed': True},
         {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
