@@ -702,6 +702,89 @@ MAIL_SENT_COPY_ORIGIN_FIX_PATHS = frozenset((
     'tests/mail_replies_native.php',
     'tests/mail_reply_cases.py',
 ))
+MAIL_ATTACHMENT_PORTABLE_BASE = '0233faa7f5e6207ea2bf595dcf454ce4e7856f7b'
+MAIL_ATTACHMENT_PORTABLE_BASE_TREE = '68e13b9ea7eacbbe7b8e3c9bce1f83de4915375a'
+MAIL_ATTACHMENT_PORTABLE_SOURCE = 'bf41fbc332c735667568666a1647328a5a2a460b'
+MAIL_ATTACHMENT_PORTABLE_SOURCE_TREE = '27676e2194f5ea27a58828b3fb47bf3e72fcd30c'
+MAIL_ATTACHMENT_PORTABLE_ADDITIONS = frozenset((
+    'tests/mail-submission/attachments.php',
+    'tests/mail-submission/verify_attachments.py',
+))
+MAIL_ATTACHMENT_SOURCE_BASE = MAIL_ATTACHMENT_PORTABLE_SOURCE
+MAIL_ATTACHMENT_SOURCE_BASE_TREE = MAIL_ATTACHMENT_PORTABLE_SOURCE_TREE
+MAIL_ATTACHMENT_SOURCE = '97ce65809f3fe143088d7d0c04043b9d6ccaa132'
+MAIL_ATTACHMENT_SOURCE_TREE = '78619844fa4081fa890f2e396df2f34a745dc84c'
+MAIL_ATTACHMENT_MODIFIED = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    '.github/workflows/mail-flags-native.yml',
+    '.github/workflows/mail-folder-native.yml',
+    '.github/workflows/mail-submission-storage.yml',
+    '.github/workflows/mail-submission.yml',
+    'site/admin/controllers/mail_drafts.php',
+    'site/admin/views/mail_drafts.php',
+    'site/admin/views/mail_submissions.php',
+    'site/app/mail/submission_views.php',
+    'site/app/mail/submissions.php',
+    'site/app/settings/database_schemas.php',
+    'site/database/schema/base.php',
+    'site/install/actions/deploy.php',
+    'site/install/inventory.generated.php',
+    'tests/apache_acceptance.py',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+    'tests/mail_flags_native_workflow_contract.py',
+    'tests/mail_folder_native_workflow_contract.py',
+    'tests/mail_submissions_cases.py',
+    'tests/mail_submissions_native.php',
+))
+MAIL_ATTACHMENT_ADDITIONS = frozenset((
+    'site/app/mail/files.php',
+    'site/database/migrations/mail_files_migrate.php',
+    'site/database/schema/mail_files_schema.php',
+))
+MAIL_ATTACHMENT_AUTH_FIX_BASE = MAIL_ATTACHMENT_SOURCE
+MAIL_ATTACHMENT_AUTH_FIX_BASE_TREE = MAIL_ATTACHMENT_SOURCE_TREE
+MAIL_ATTACHMENT_AUTH_FIX_SOURCE = '53efa17222858dda47f852d959494ba86f19bb8f'
+MAIL_ATTACHMENT_AUTH_FIX_SOURCE_TREE = '6a311a9c4f39083e3f6ffbef9d3d57626933e280'
+MAIL_ATTACHMENT_AUTH_FIX_PATHS = frozenset((
+    'site/admin/controllers/mail_drafts.php',
+    'site/app/mail/files.php',
+    'site/database/migrations/mail_files_migrate.php',
+    'site/install/inventory.generated.php',
+    'tests/mail_replies_native.php',
+    'tests/mail_reply_cases.py',
+    'tests/mail_submissions_cases.py',
+    'tests/mail_submissions_native.php',
+))
+MAIL_ATTACHMENT_READINESS_FIX_BASE = MAIL_ATTACHMENT_AUTH_FIX_SOURCE
+MAIL_ATTACHMENT_READINESS_FIX_BASE_TREE = MAIL_ATTACHMENT_AUTH_FIX_SOURCE_TREE
+MAIL_ATTACHMENT_READINESS_FIX_SOURCE = '87bc71ae87ba6b13d4f2c561895897101fb0e740'
+MAIL_ATTACHMENT_READINESS_FIX_SOURCE_TREE = 'e3700bdf07082ff92ee712da2bdd0d69abd964e3'
+MAIL_ATTACHMENT_READINESS_FIX_PATHS = frozenset((
+    'site/app/mail/files.php',
+    'site/install/inventory.generated.php',
+    'tests/mail_replies_native.php',
+    'tests/mail_reply_cases.py',
+    'tests/mail_submissions_cases.py',
+))
+MAIL_ATTACHMENT_SUBMISSION_FIX_BASE = MAIL_ATTACHMENT_READINESS_FIX_SOURCE
+MAIL_ATTACHMENT_SUBMISSION_FIX_BASE_TREE = MAIL_ATTACHMENT_READINESS_FIX_SOURCE_TREE
+MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE = 'b199c5b7ae227ae5c60f636718ffa9a90ddd4ead'
+MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE_TREE = 'd934a3da2339a459831e97e6914e012a51109688'
+MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    'site/app/mail/replies.php',
+    'site/install/inventory.generated.php',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+    'tests/mail_replies_native.php',
+    'tests/mail_submissions_cases.py',
+))
+MAIL_ATTACHMENT_CLAIM_FIX_BASE = MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE
+MAIL_ATTACHMENT_CLAIM_FIX_BASE_TREE = MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE_TREE
+MAIL_ATTACHMENT_CLAIM_FIX_SOURCE = '33ca06fb9fe29d286442a44d43c81f329d7dac68'
+MAIL_ATTACHMENT_CLAIM_FIX_SOURCE_TREE = 'e363c21ef9296889d9bb3c68d804fa863fc6e7fd'
+MAIL_ATTACHMENT_CLAIM_FIX_PATH = 'tests/mail_replies_native.php'
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -4420,6 +4503,318 @@ def project_mail_sent_copy_source(root, path, current):
     return base
 
 
+def validate_mail_attachment_portable_source(root):
+    """Bind the independent formats 1..8 attachment MIME source."""
+    require(git(root, 'rev-parse', MAIL_ATTACHMENT_PORTABLE_BASE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_PORTABLE_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ATTACHMENT_PORTABLE_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_PORTABLE_SOURCE_TREE,
+            'Portable attachment source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ATTACHMENT_PORTABLE_SOURCE).decode().split()
+            == [MAIL_ATTACHMENT_PORTABLE_SOURCE, MAIL_ATTACHMENT_PORTABLE_BASE],
+            'Portable attachment source is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ATTACHMENT_PORTABLE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ATTACHMENT_PORTABLE_BASE,
+                MAIL_ATTACHMENT_PORTABLE_SOURCE).decode().splitlines()
+            == ['A\t' + path for path in sorted(MAIL_ATTACHMENT_PORTABLE_ADDITIONS)],
+            'Portable attachment source changed another path or status')
+    base_entries = entries(root, MAIL_ATTACHMENT_PORTABLE_BASE)
+    source_entries = entries(root, MAIL_ATTACHMENT_PORTABLE_SOURCE)
+    for path in sorted(MAIL_ATTACHMENT_PORTABLE_ADDITIONS):
+        source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_PORTABLE_SOURCE + ':' + path)
+        require(path not in base_entries and ordinary(root, path) == source
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Portable attachment addition identity or mode changed: ' + path)
+    fixture = ordinary(root, 'tests/mail-submission/attachments.php')
+    parser = ordinary(root, 'tests/mail-submission/verify_attachments.py')
+    require(fixture.count(b'for($format=1;$format<=8;$format++)') == 1
+            and fixture.count(b'DraftAttachment::MAX_FILES') >= 1
+            and parser.count(b'email.message_from_bytes') == 1
+            and parser.count(b'get_content_disposition() == "attachment"') == 1,
+            'Portable attachment format, bound or independent-parser coverage changed')
+
+
+def validate_mail_attachment_claim_fix(root):
+    """Bind the current-intent causal claim regression for protected readiness."""
+    require(git(root, 'rev-parse', MAIL_ATTACHMENT_CLAIM_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_CLAIM_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_CLAIM_FIX_SOURCE_TREE,
+            'Attachment causal-claim fix tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE).decode().split()
+            == [MAIL_ATTACHMENT_CLAIM_FIX_SOURCE, MAIL_ATTACHMENT_CLAIM_FIX_BASE],
+            'Attachment causal-claim fix is not the direct submission-fix successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ATTACHMENT_CLAIM_FIX_BASE,
+                MAIL_ATTACHMENT_CLAIM_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_ATTACHMENT_CLAIM_FIX_PATH],
+            'Attachment causal-claim fix changed another path or status')
+    path = MAIL_ATTACHMENT_CLAIM_FIX_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_BASE + ':' + path)
+    require(current == source and mode(root, path) == '100644'
+            and project_mail_attachment_claim_fix(root, path, current) == base
+            and project_mail_attachment_claim_fix(root, path, base) == base
+            and current.count(b'$fileClaimIntent=$fileIntent;') == 1
+            and current.count(b'$fileClaimIntent=$fileRichIntent;') == 1
+            and current.count(b'mail_submissions_claim($fileClaimIntent)') == 1,
+            'Attachment causal-claim identity, projection or current-intent boundary changed')
+
+
+def project_mail_attachment_claim_fix(root, path, current):
+    """Restore the submission-readiness source before its causal test correction."""
+    if path != MAIL_ATTACHMENT_CLAIM_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current attachment causal-claim fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_attachment_submission_fix(root):
+    """Bind central copied-submission readiness and mandatory format-8 coverage."""
+    require(git(root, 'rev-parse', MAIL_ATTACHMENT_SUBMISSION_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_SUBMISSION_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE_TREE,
+            'Attachment submission-fix tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE).decode().split()
+            == [MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE, MAIL_ATTACHMENT_SUBMISSION_FIX_BASE],
+            'Attachment submission fix is not the direct readiness-review successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ATTACHMENT_SUBMISSION_FIX_BASE,
+                MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS)],
+            'Attachment submission fix changed another path or status')
+    base_entries = entries(root, MAIL_ATTACHMENT_SUBMISSION_FIX_BASE)
+    source_entries = entries(root, MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE)
+    for path in sorted(MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS):
+        current = project_mail_attachment_claim_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SUBMISSION_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_attachment_submission_fix(root, path, current) == base
+                and project_mail_attachment_submission_fix(root, path, base) == base,
+                'Attachment submission-fix identity or projection changed: ' + path)
+    replies = ordinary(root, 'site/app/mail/replies.php')
+    native = ordinary(root, 'tests/mail_replies_native.php')
+    workflow = ordinary(root, '.github/workflows/mail-copied-draft-native.yml')
+    contract = ordinary(root, 'tests/mail_copied_draft_native_workflow_contract.py')
+    browser = ordinary(root, 'tests/mail_submissions_cases.py')
+    require(replies.count(b"if(!mail_replies_ready())throw new RuntimeException('Protected draft storage is unavailable. Existing data was preserved.');") == 1
+            and native.count(b'Copied submission preparation refuses ') == 1
+            and native.count(b'Copied submission claim refuses ') == 1
+            and native.count(b'Dedicated attachment fixture leaves the active pagination set') == 1
+            and workflow.count(b'docker-php-ext-install pdo_mysql mbstring dom') == 1
+            and workflow.count(b'extension_loaded("dom")') == 1
+            and contract.count(b'required DOM coverage') == 1
+            and browser.count(b'Another author cannot download a private draft attachment') == 1
+            and browser.count(b'attach_bytes not in r.content') == 1
+            and ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Attachment submission readiness, DOM coverage, pagination or denial boundary changed')
+
+
+def project_mail_attachment_submission_fix(root, path, current):
+    """Restore the file-readiness correction before submission review fixes."""
+    current = project_mail_attachment_claim_fix(root, path, current)
+    if path not in MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SUBMISSION_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current attachment submission fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_attachment_readiness_fix(root):
+    """Bind fail-closed protected-storage readiness and corrected format coverage."""
+    require(git(root, 'rev-parse', MAIL_ATTACHMENT_READINESS_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_READINESS_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ATTACHMENT_READINESS_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_READINESS_FIX_SOURCE_TREE,
+            'Attachment readiness-fix tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ATTACHMENT_READINESS_FIX_SOURCE).decode().split()
+            == [MAIL_ATTACHMENT_READINESS_FIX_SOURCE, MAIL_ATTACHMENT_READINESS_FIX_BASE],
+            'Attachment readiness fix is not the direct failed-review successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ATTACHMENT_READINESS_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ATTACHMENT_READINESS_FIX_BASE,
+                MAIL_ATTACHMENT_READINESS_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ATTACHMENT_READINESS_FIX_PATHS)],
+            'Attachment readiness fix changed another path or status')
+    base_entries = entries(root, MAIL_ATTACHMENT_READINESS_FIX_BASE)
+    source_entries = entries(root, MAIL_ATTACHMENT_READINESS_FIX_SOURCE)
+    for path in sorted(MAIL_ATTACHMENT_READINESS_FIX_PATHS):
+        current = project_mail_attachment_submission_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_READINESS_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_READINESS_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_attachment_readiness_fix(root, path, current) == base
+                and project_mail_attachment_readiness_fix(root, path, base) == base,
+                'Attachment readiness-fix identity or projection changed: ' + path)
+    files = ordinary(root, 'site/app/mail/files.php')
+    native = ordinary(root, 'tests/mail_replies_native.php')
+    ordinary_http = ordinary(root, 'tests/mail_submissions_cases.py')
+    copied_http = ordinary(root, 'tests/mail_reply_cases.py')
+    require(files.count(b'if(!mail_replies_ready())') == 2
+            and native.count(b"foreach(['missing','future'] as $marker)") == 2
+            and native.count(b'Copied attachment submission uses format 4') == 1
+            and native.count(b'Formatted copied attachment submission uses format 8') == 1
+            and native.count(b'mail_drafts_attach($fileDraft,1') == 1
+            and ordinary_http.count(b'attach_bytes not in denied.content') == 1
+            and copied_http.count(b'copied_file_bytes not in r.content') == 1
+            and ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Attachment readiness, format-coverage, denial or inventory boundary changed')
+
+
+def project_mail_attachment_readiness_fix(root, path, current):
+    """Restore the first authority correction before readiness review fixes."""
+    current = project_mail_attachment_submission_fix(root, path, current)
+    if path not in MAIL_ATTACHMENT_READINESS_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_READINESS_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_READINESS_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current attachment readiness fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_attachment_auth_fix(root):
+    """Bind current-mailbox/origin authority and compatibility review corrections."""
+    require(git(root, 'rev-parse', MAIL_ATTACHMENT_AUTH_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_AUTH_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ATTACHMENT_AUTH_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_AUTH_FIX_SOURCE_TREE,
+            'Attachment authority-fix tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ATTACHMENT_AUTH_FIX_SOURCE).decode().split()
+            == [MAIL_ATTACHMENT_AUTH_FIX_SOURCE, MAIL_ATTACHMENT_AUTH_FIX_BASE],
+            'Attachment authority fix is not the direct blocked-source successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ATTACHMENT_AUTH_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ATTACHMENT_AUTH_FIX_BASE,
+                MAIL_ATTACHMENT_AUTH_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ATTACHMENT_AUTH_FIX_PATHS)],
+            'Attachment authority fix changed another path or status')
+    base_entries = entries(root, MAIL_ATTACHMENT_AUTH_FIX_BASE)
+    source_entries = entries(root, MAIL_ATTACHMENT_AUTH_FIX_SOURCE)
+    for path in sorted(MAIL_ATTACHMENT_AUTH_FIX_PATHS):
+        current = project_mail_attachment_readiness_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_AUTH_FIX_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_AUTH_FIX_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_attachment_auth_fix(root, path, current) == base
+                and project_mail_attachment_auth_fix(root, path, base) == base,
+                'Attachment authority-fix identity or projection changed: ' + path)
+    files = ordinary(root, 'site/app/mail/files.php')
+    migration = ordinary(root, 'site/database/migrations/mail_files_migrate.php')
+    controller = ordinary(root, 'site/admin/controllers/mail_drafts.php')
+    browser = ordinary(root, 'tests/mail_submissions_cases.py')
+    require(files.count(b'mail_drafts_file_authority($draftId,$actor)') == 2
+            and files.count(b'mail_drafts_account($row[\'account_id\'])') >= 1
+            and migration.count(b"['1','2'],true") == 1
+            and controller.count(b'$editorAction=in_array(') == 1
+            and browser.count(b"b'%PDF-1.4") == 1,
+            'Attachment current authority, marker compatibility, rerender or MIME fixture changed')
+
+
+def project_mail_attachment_auth_fix(root, path, current):
+    """Restore the blocked attachment implementation before authority corrections."""
+    current = project_mail_attachment_readiness_fix(root, path, current)
+    if path not in MAIL_ATTACHMENT_AUTH_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_AUTH_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_AUTH_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current attachment authority fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_attachment_source(root):
+    """Bind the reviewed private outgoing-attachment implementation source."""
+    require(git(root, 'rev-parse', MAIL_ATTACHMENT_SOURCE_BASE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_SOURCE_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ATTACHMENT_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ATTACHMENT_SOURCE_TREE,
+            'Attachment implementation source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1', MAIL_ATTACHMENT_SOURCE).decode().split()
+            == [MAIL_ATTACHMENT_SOURCE, MAIL_ATTACHMENT_SOURCE_BASE],
+            'Attachment implementation is not the direct portable-source successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ATTACHMENT_SOURCE, 'HEAD')
+    expected = [('A' if path in MAIL_ATTACHMENT_ADDITIONS else 'M') + '\t' + path
+                for path in sorted(MAIL_ATTACHMENT_MODIFIED | MAIL_ATTACHMENT_ADDITIONS)]
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ATTACHMENT_SOURCE_BASE, MAIL_ATTACHMENT_SOURCE).decode().splitlines() == expected,
+            'Attachment implementation changed another path or status')
+    base_entries = entries(root, MAIL_ATTACHMENT_SOURCE_BASE)
+    source_entries = entries(root, MAIL_ATTACHMENT_SOURCE)
+    for path in sorted(MAIL_ATTACHMENT_MODIFIED):
+        current = project_mail_attachment_auth_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SOURCE_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_attachment_source(root, path, current) == base
+                and project_mail_attachment_source(root, path, base) == base,
+                'Attachment modified source identity or projection changed: ' + path)
+    for path in sorted(MAIL_ATTACHMENT_ADDITIONS):
+        current = project_mail_attachment_auth_fix(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SOURCE + ':' + path)
+        require(path not in base_entries and current == source
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Attachment addition identity or mode changed: ' + path)
+    require(ordinary(root, 'foundation/mail-compose/DraftAttachment.php')
+            == ordinary(root, 'site/includes/foundation/mail-compose/DraftAttachment.php')
+            and ordinary(root, 'site/app/mail/submissions.php').count(b'mail_submission_files(') >= 1
+            and ordinary(root, 'site/database/schema/base.php').count(b'mail_files_schema($prefix)') == 1
+            and ordinary(root, 'site/install/actions/deploy.php').count(b"save_setting('mail_files_schema_version','1')") == 1
+            and ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Attachment canonical runtime, schema, fresh-install or inventory boundary changed')
+
+
+def project_mail_attachment_source(root, path, current):
+    """Restore the Sent-copy proof head before the attachment implementation."""
+    current = project_mail_attachment_auth_fix(root, path, current)
+    if path not in MAIL_ATTACHMENT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SOURCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current attachment implementation changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_mail_sent_copy_origin_fix(root):
     """Bind the copied-origin Read-authority correction for direct Sent copies."""
     require(git(root, 'rev-parse', MAIL_SENT_COPY_ORIGIN_FIX_BASE + '^{tree}').decode().strip()
@@ -4440,7 +4835,7 @@ def validate_mail_sent_copy_origin_fix(root):
     base_entries = entries(root, MAIL_SENT_COPY_ORIGIN_FIX_BASE)
     source_entries = entries(root, MAIL_SENT_COPY_ORIGIN_FIX_SOURCE)
     for path in sorted(MAIL_SENT_COPY_ORIGIN_FIX_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_attachment_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_ORIGIN_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_ORIGIN_FIX_BASE + ':' + path)
         require(current == source
@@ -4462,6 +4857,7 @@ def validate_mail_sent_copy_origin_fix(root):
 
 def project_mail_sent_copy_origin_fix(root, path, current):
     """Restore the first Sent-copy proof head before copied-origin correction."""
+    current = project_mail_attachment_source(root, path, current)
     if path not in MAIL_SENT_COPY_ORIGIN_FIX_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_ORIGIN_FIX_SOURCE + ':' + path)
@@ -5952,6 +6348,13 @@ def validate_pr391_recovery_successor(root):
                 | {MAIL_NATIVE_FIXTURE_POLICY_PATH, MAIL_REPLY_SESSION_FIX_PATH}
                 | MAIL_SENT_COPY_MODIFIED
                 | MAIL_SENT_COPY_ADDITIONS
+                | MAIL_ATTACHMENT_PORTABLE_ADDITIONS
+                | MAIL_ATTACHMENT_MODIFIED
+                | MAIL_ATTACHMENT_ADDITIONS
+                | MAIL_ATTACHMENT_AUTH_FIX_PATHS
+                | MAIL_ATTACHMENT_READINESS_FIX_PATHS
+                | MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS
+                | {MAIL_ATTACHMENT_CLAIM_FIX_PATH}
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -7196,6 +7599,12 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_attachment_claim_fix(root)
+    validate_mail_attachment_submission_fix(root)
+    validate_mail_attachment_readiness_fix(root)
+    validate_mail_attachment_auth_fix(root)
+    validate_mail_attachment_source(root)
+    validate_mail_attachment_portable_source(root)
     validate_mail_sent_copy_origin_fix(root)
     validate_mail_sent_copy_source(root)
     validate_mail_consolidated_review_recovery(root)
@@ -7491,6 +7900,8 @@ def verify_current(root):
                | MAIL_REPLY_FORWARD_ADDITIONS
                | MAIL_SENT_COPY_ADDITIONS
                | MAIL_SENT_COPY_ORIGIN_FIX_PATHS
+               | MAIL_ATTACHMENT_PORTABLE_ADDITIONS
+               | MAIL_ATTACHMENT_ADDITIONS
                | PROJECT_PRIVATE_NOTES_ADDITIONS
                | {path for path,status in mail_consolidated_changes(root).items() if status == 'A'}
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
@@ -7549,6 +7960,16 @@ def verify_current(root):
                 == git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
                 and mode(root, path) == '100644',
                 'Mail Reply/Forward addition no longer matches its exact source: ' + path)
+    for path in sorted(MAIL_ATTACHMENT_PORTABLE_ADDITIONS):
+        require(ordinary(root, path)
+                == git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_PORTABLE_SOURCE + ':' + path)
+                and mode(root, path) == '100644',
+                'Portable attachment addition no longer matches its exact source: ' + path)
+    for path in sorted(MAIL_ATTACHMENT_ADDITIONS):
+        current = project_mail_attachment_auth_fix(root, path, ordinary(root, path))
+        require(current == git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SOURCE + ':' + path)
+                and mode(root, path) == '100644',
+                'Attachment implementation addition no longer matches its exact source: ' + path)
     for path in sorted(ADDITIONS):
         original = reconstruct_addition(data, path, ordinary(root, path))
         require(mode(root, path) == addition_entries[path][0] == '100644'
@@ -7611,6 +8032,7 @@ def verify_current(root):
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
         {'name': 'Exact Sent-copy successor binds explicit confirmation, immutable MIME, uncertainty and additive storage', 'passed': True},
         {'name': 'Exact Sent-copy review successor restores copied-origin Read authority before attempt and transport', 'passed': True},
+        {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
         {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
