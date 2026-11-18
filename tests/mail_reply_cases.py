@@ -51,11 +51,11 @@ def run_browser(env, browser):
     owner.post(detail, data={'csrf': token(owner.get(detail)), 'action': 'mail_accounts_grant', 'account_id': sender, 'revision': '0', 'user_id': oid, 'can_read': '0', 'can_send': '1', 'enabled': '1', 'days': '0', 'current_password': OWNER})
     sender_ref = sender + ':1'
 
-    inbox_server.mode = 'message'
+    inbox_server.mode = 'message-reply-all'
     db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
     before = inbox_server.connections
     r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_read', **route}, timeout=30)
-    check('Loaded message retains Reply and Forward controls to the author', 'data-mail-copy-controls' in r.text and 'value="mail_message_reply"' in r.text and 'value="mail_message_forward"' in r.text and 'Nothing is submitted or sent' in r.text and inbox_server.connections == before + 1)
+    check('Loaded message retains Reply Reply all and Forward controls to the author', 'data-mail-copy-controls' in r.text and 'value="mail_message_reply"' in r.text and 'value="mail_message_reply_all"' in r.text and 'value="mail_message_forward"' in r.text and 'Nothing is submitted or sent' in r.text and inbox_server.connections == before + 1)
     cooldown = uuid.uuid4().hex
     cooldown_data = {'csrf': token(owner.get(message)), 'action': 'mail_message_reply', **route, 'draft_id': cooldown, 'sender': sender_ref}
     r = owner.post(message, data=cooldown_data, timeout=30)
@@ -93,6 +93,17 @@ def run_browser(env, browser):
     r = reply_post('mail_message_forward')
     check('Reusing a reply draft identity for forward is refused', 'different message or sender' in r.text and len(db('SELECT * FROM ci_mail_reply_drafts')) == 1 and inbox_server.connections == before + 1)
 
+    reply_all = uuid.uuid4().hex
+    db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
+    r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_reply_all', **route, 'draft_id': reply_all, 'sender': sender_ref}, timeout=30)
+    check('Reply all performs one fresh authorized read and opens a protected draft', inbox_server.connections == before + 2 and 'draft_id=' + reply_all in r.url)
+    all_row = db('SELECT origin_json,content_json FROM ci_mail_reply_drafts WHERE id=?', [reply_all])[0]
+    all_origin = json.loads(all_row['origin_json']); all_content = json.loads(all_row['content_json'])
+    check('Reply all excludes the chosen sender and hidden recipients while retaining visible To and Cc',
+          all_origin['mode'] == 'reply-all' and all_content['to'] == ['synthetic@example.net', 'visible@example.invalid']
+          and all_content['cc'] == ['cc@example.invalid'] and all_content['bcc'] == []
+          and 'reply-sender@example.invalid' not in json.dumps(all_content) and 'hidden@example.invalid' not in json.dumps(all_content))
+
     page_text = owner.get(draft_url + '&draft_id=' + draft).text
     check('Copied draft editor shows content, origin and omissions panel', 'SYNTHETIC PRIVATE BODY' in page_text and 'data-mail-draft-origin' in page_text and 'replying to' in page_text and 'rechecked whenever this draft opens' in page_text)
     check('Copied draft keeps the quoted message out of the ordinary columns', base['body'] == '' and db('SELECT body FROM ci_mail_drafts WHERE id=?', [draft])[0]['body'] == '')
@@ -101,7 +112,7 @@ def run_browser(env, browser):
     data = {'csrf': token(owner.get(message)), 'action': 'mail_message_forward', **route, 'draft_id': forward, 'sender': sender_ref}
     db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
     r = owner.post(message, data=data, timeout=30)
-    check('Forward performs one fresh authorized read and opens a recipientless draft', inbox_server.connections == before + 2 and 'draft_id=' + forward in r.url)
+    check('Forward performs one fresh authorized read and opens a recipientless draft', inbox_server.connections == before + 3 and 'draft_id=' + forward in r.url)
     forigin = json.loads(db('SELECT origin_json FROM ci_mail_reply_drafts WHERE id=?', [forward])[0]['origin_json'])
     fcontent = json.loads(db('SELECT content_json FROM ci_mail_reply_drafts WHERE id=?', [forward])[0]['content_json'])
     check('Forward starts without recipients or reply thread', forigin['mode'] == 'forward' and forigin['thread'] == {'in_reply_to': None, 'references': []} and fcontent['to'] == [] and fcontent['cc'] == [] and fcontent['bcc'] == [] and 'SYNTHETIC PRIVATE BODY' in fcontent['body'])

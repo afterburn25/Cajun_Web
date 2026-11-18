@@ -23,6 +23,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <input type="hidden" name="draft_id" value="<?=esc(bin2hex(random_bytes(16)))?>">
 <label>From account<select name="sender" required><?php foreach($replySenders as $senderAccount): ?><option value="<?=esc($senderAccount['id'].':'.$senderAccount['revision'])?>"><?=esc($senderAccount['label'].' · '.$senderAccount['address'])?></option><?php endforeach; ?></select></label>
 <button class="btn gold" name="action" value="mail_message_reply">Reply</button>
+<button class="btn outline" name="action" value="mail_message_reply_all">Reply all</button>
 <button class="btn outline" name="action" value="mail_message_forward">Forward</button></form>
 <?php else: ?><p class="notice">No current Send-capable account appears on this page. An owner can review your email account assignments.</p><?php endif; ?>
 <nav aria-label="Sending account pages">
