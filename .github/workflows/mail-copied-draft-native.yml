@@ -156,6 +156,8 @@ jobs:
                 php $php_flags tests/mail-compose/reply_all.php > "$cell/portable-$mode-reply-all.json"
                 php $php_flags tests/mail-compose/thread.php > "$cell/portable-$mode-thread.json"
                 php $php_flags tests/mail-compose/copied_source.php > "$cell/portable-$mode-copied-source.json"
+                php $php_flags tests/mail-compose/html.php "$cell/portable-$mode-compose-html.json" > "$cell/portable-$mode-compose-html.stdout.log"
+                php $php_flags tests/mail-compose/attachment.php > "$cell/portable-$mode-compose-attachment.json"
                 php $php_flags tests/mail_copied_draft_storage.php > "$cell/portable-$mode-storage.json"
                 php $php_flags tests/mail_copied_draft_admin_policy.php > "$cell/portable-$mode-admin-policy.json"
                 php $php_flags tests/mail_copied_draft_create_adapter.php > "$cell/portable-$mode-adapter.json"
@@ -187,10 +189,11 @@ jobs:
           cell = Path('qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}')
           expected = {
               'origin': 17, 'reply': 60, 'reply-all': 37, 'thread': 45,
-              'copied-source': 19, 'storage': 21, 'admin-policy': 23,
+              'copied-source': 19, 'compose-html': 39, 'compose-attachment': 55,
+              'storage': 21, 'admin-policy': 23,
               'adapter': 19, 'schema-registry': 391, 'attachment': 14,
               'attachment-security': 27,
-              'submission-snapshot': 54, 'submission-mime': 34,
+              'submission-snapshot': 78, 'submission-mime': 55,
           }
           for mode in ('normal', 'noini'):
               for name, count in expected.items():

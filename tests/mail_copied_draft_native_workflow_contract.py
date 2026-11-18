@@ -87,14 +87,16 @@ def validate(text):
         ('tests/mail-compose/reply_all.php', 'reply-all', '37'),
         ('tests/mail-compose/thread.php', 'thread', '45'),
         ('tests/mail-compose/copied_source.php', 'copied-source', '19'),
+        ('tests/mail-compose/html.php', 'compose-html', '39'),
+        ('tests/mail-compose/attachment.php', 'compose-attachment', '55'),
         ('tests/mail_copied_draft_storage.php', 'storage', '21'),
         ('tests/mail_copied_draft_admin_policy.php', 'admin-policy', '23'),
         ('tests/mail_copied_draft_create_adapter.php', 'adapter', '19'),
         ('tests/database_schema_registry_policy.php', 'schema-registry', '391'),
         ('tests/mail-receiving/attachment_test.php', 'attachment', '14'),
         ('tests/mail-receiving/attachment_security_test.php', 'attachment-security', '27'),
-        ('tests/mail-submission/run.php', 'submission-snapshot', '54'),
-        ('tests/mail-submission/mime.php', 'submission-mime', '34'),
+        ('tests/mail-submission/run.php', 'submission-snapshot', '78'),
+        ('tests/mail-submission/mime.php', 'submission-mime', '55'),
     )
     check('Every native cell runs the reviewed portable surface in normal and no-INI modes',
           'for mode in normal noini; do' in text
@@ -102,7 +104,7 @@ def validate(text):
           and all(text.count(
               'php $php_flags ' + path + (
                   ' "$cell/portable-$mode-' + report + '.json" > "$cell/portable-$mode-' + report + '.stdout.log"'
-                  if path.startswith('tests/mail-submission/')
+                  if path.startswith('tests/mail-submission/') or path == 'tests/mail-compose/html.php'
                   else ' > "$cell/portable-$mode-' + report + '.json"'
               )
           ) == 1 for path, report, _ in portable))
