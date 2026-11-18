@@ -134,6 +134,9 @@ def run_browser(env, browser):
     r = owner.post(target, data={**data, 'confirm_send': '1'}, timeout=30)
     check('Reviewed reply send records server acceptance', 'Server accepted' in r.text and submission_server.connections == smtp_before + 1)
     sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
+    copy_page = root + '?view=mail-submission&submission_id=' + sid
+    copy_csrf = token(owner.get(copy_page))
+    owner.post(detail, data={'csrf': token(owner.get(detail)), 'action': 'mail_sent_folder_save', 'account_id': sender, 'sent_folder': 'Sent'})
     saved = db('SELECT * FROM ci_mail_submissions WHERE id=?', [sid])[0]
     mime = saved['mime_bytes'].encode('ascii')
     parsed = BytesParser(policy=policy.default).parsebytes(mime)
@@ -167,6 +170,9 @@ def run_browser(env, browser):
     check('Revoked source Read blocks copied send before SMTP', submission_server.connections == smtp_before and 'inbox is unavailable' in r.text and len(db('SELECT * FROM ci_mail_submissions WHERE draft_id=?', [forward])) == 1)
     r = owner.get(root + '?view=mail-submission&submission_id=' + sid)
     check('Revoked source Read hides saved copied submission detail', 'inbox is unavailable' in r.text and 'SYNTHETIC PRIVATE' not in r.text)
+    copy_before = inbox_server.connections
+    r = owner.post(copy_page, data={'csrf': copy_csrf, 'action': 'mail_submissions_copy_sent', 'submission_id': sid, 'confirm_copy': '1'}, timeout=30)
+    check('Revoked source Read blocks known-id direct Sent copy before attempt or IMAP', 'inbox is unavailable' in r.text and inbox_server.connections == copy_before and not db('SELECT * FROM ci_mail_copy_attempts WHERE submission_id=?', [sid]))
     r = owner.get(root + '?view=mail-submissions&account_id=' + sender)
     check('Revoked source Read masks copied subjects in submission history', 'Copied message unavailable' in r.text and 'SYNTHETIC PRIVATE' not in r.text)
     r = owner.post(root + '?view=mail-send&draft_id=' + draft, data={'csrf': token(owner.get(draft_url + '&draft_id=' + draft)), 'action': 'mail_submissions_send', 'submission_id': sid, 'draft_id': draft, 'draft_revision': '1', 'account_revision': '1', 'confirm_send': '1'}, timeout=30)

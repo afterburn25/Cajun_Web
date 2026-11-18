@@ -105,6 +105,7 @@ function mail_submission_copy(string $submissionId,?callable $resolver=null,?cal
         if(one('SELECT id FROM '.table('mail_copy_attempts').' WHERE account_id=? AND started_epoch>? LIMIT 1',[$row['account_id'],$now-2]))throw new RuntimeException('Wait 2 seconds between copy requests for this account.');
         if((int)query('SELECT COUNT(*) FROM '.table('mail_copy_attempts').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=60)throw new RuntimeException('The hourly copy request limit has been reached. Try again later.');
         $prepared=mail_submissions_message($row);
+        mail_submissions_origin($row,$prepared,$actor);
         $started=['id'=>bin2hex(random_bytes(16)),'submission_id'=>$submissionId,'account_id'=>$row['account_id'],'account_revision'=>(int)$row['account_revision'],'actor_id'=>(int)$actor['id'],'folder'=>$folder,'mime_sha256'=>$prepared->sha256,'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
         query('INSERT INTO '.table('mail_copy_attempts').' (id,submission_id,account_id,account_revision,actor_id,folder,mime_sha256,started_at,started_epoch) VALUES (?,?,?,?,?,?,?,?,?)',array_values($started));
         mail_accounts_audit((int)$actor['id'],'copy_started','Sent copy '.$started['id'].' submission '.$submissionId.' account '.$row['account_id']);
@@ -124,7 +125,9 @@ function mail_submission_copy(string $submissionId,?callable $resolver=null,?cal
                 $result=one('SELECT status FROM '.table('mail_submission_results').' WHERE submission_id=?',[$started['submission_id']]);
                 if(($result['status']??'')!=='accepted'||mail_sent_folder($started['account_id'])!==$started['folder'])throw new RuntimeException('Changed state.');
                 $saved=mail_submissions_row($started['submission_id'],(int)$actor['id']);
-                if(!hash_equals($started['mime_sha256'],mail_submissions_message($saved)->sha256))throw new RuntimeException('Changed content.');
+                $prepared=mail_submissions_message($saved);
+                mail_submissions_origin($saved,$prepared,$actor);
+                if(!hash_equals($started['mime_sha256'],$prepared->sha256))throw new RuntimeException('Changed content.');
             } catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;throw new ReceivingFailure('access_changed');}
         };
         try {
