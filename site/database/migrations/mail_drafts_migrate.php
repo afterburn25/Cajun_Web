@@ -55,6 +55,7 @@ function mail_drafts_migrate(#[\SensitiveParameter] string $password):void {
             if(!mail_drafts_ready()) {
                 save_setting('mail_drafts_schema_version','1');
             }
+            if((one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')!=='1')save_setting('mail_drafts_html_ready','1');
             mail_drafts_audit((int)$actor['id'],'setup','Additive local draft storage verified');
         });
     });

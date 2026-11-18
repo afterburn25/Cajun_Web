@@ -101,7 +101,7 @@ function mail_drafts_admin_action(string $action):?DraftContent {
         $content=mail_drafts_form_content($_POST);
         if($action==='mail_drafts_preview')return $content;
         if($action==='mail_drafts_insert') {
-            if(($content->subject!==''||$content->body!=='')&&posted('replace_text',1)!=='1')throw new InvalidArgumentException('Confirm replacing the subject and message before inserting a template.');
+            if(($content->subject!==''||$content->body!==''||$content->html!==null)&&posted('replace_text',1)!=='1')throw new InvalidArgumentException('Confirm replacing the subject and message before inserting a template.');
             [$template,$templateRevision]=mail_drafts_form_reference(posted('template',43));
             $samples=[];foreach(['client_name','project_name','studio_name'] as $key)$samples[$key]=mail_drafts_form_text($_POST,'sample_'.$key,200);
             return mail_drafts_template($account,$accountRevision,$template,$templateRevision,$samples,$content->to,$content->cc,$content->bcc);

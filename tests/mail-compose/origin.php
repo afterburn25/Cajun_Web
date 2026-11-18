@@ -69,6 +69,18 @@ origin_check('combined plain and formatted copied content is bounded before stor
     $error=origin_failure(fn()=>DraftOrigin::contentJson($content));
     return $error instanceof InvalidArgumentException&&$error->getMessage()==='Copied draft content exceeds its limit.';
 });
+origin_check('copied content accepts the exact TEXT byte ceiling and refuses one byte more',function(){
+    if(!extension_loaded('dom'))return true;
+    $html='<p>'.str_repeat('h',59000).'</p>';
+    $empty=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded','',$html);
+    $remaining=DraftOrigin::MAX_CONTENT_JSON_BYTES-strlen(DraftOrigin::contentJson($empty));
+    if($remaining<1||$remaining>=\CajunWebPro\Foundation\MailCompose\DraftContent::MAX_BODY_BYTES)return false;
+    $exact=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded',str_repeat('b',$remaining),$html);
+    $json=DraftOrigin::contentJson($exact);
+    $error=origin_failure(fn()=>DraftOrigin::contentJson(new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded',str_repeat('b',$remaining+1),$html)));
+    return strlen($json)===65535&&DraftOrigin::contentFromJson($json)->body===$exact->body
+        &&$error instanceof InvalidArgumentException&&$error->getMessage()==='Copied draft content exceeds its limit.';
+});
 foreach([
     'float format'=>fn($json)=>str_replace('"format":1','"format":1.0',$json),
     'duplicate key'=>fn($json)=>str_replace('"format":1','"format":1,"format":1',$json),

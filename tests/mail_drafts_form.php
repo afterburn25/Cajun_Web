@@ -34,6 +34,7 @@ df_check('Missing formatted field keeps a plain draft',mail_drafts_form_content(
 if(extension_loaded('dom')) {
     df_check('Posted formatted markup is sanitized into the draft alternative',mail_drafts_form_content(['body'=>'B','body_html'=>'<p>Hi <b>x</b><script>bad()</script></p>'])->html==='<p>Hi <b>x</b></p>');
     df_check('Empty formatted input means plain text only',mail_drafts_form_content(['body'=>'B','body_html'=>'   '])->html===null);
+    df_check('Canonical zero formatted input remains content',mail_drafts_form_content(['body'=>'B','body_html'=>'0'])->html==='0');
     df_deny('Formatted input over the raw bound is refused',fn()=>mail_drafts_form_content(['body_html'=>str_repeat('x',65537)]));
     df_deny('Non-string formatted input is refused',fn()=>mail_drafts_form_content(['body_html'=>[]]));
     df_deny('Oversized formatted markup is refused',fn()=>mail_drafts_form_content(['body_html'=>'<p>'.str_repeat('x',61440).'</p>']));

@@ -65,7 +65,7 @@ try {
     dr_deny('Populated unrecognized draft storage is not adopted',fn()=>mail_drafts_migrate($password));dr_ok('Failed adoption retains unknown record, schema and disabled readiness',!mail_drafts_ready()&&one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$unknown])!==null&&!one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].'mail_drafts']));query('DELETE FROM '.table('mail_drafts').' WHERE id=?',[$unknown]);
     dr_ok('Strict setup audit rolls back readiness',dr_audit_failure(fn()=>mail_drafts_migrate($password))&&!mail_drafts_ready());
     mail_drafts_migrate($password);mail_drafts_migrate($password);
-    dr_ok('Repeated setup is additive and earlier settings remain exact',mail_drafts_ready()&&all('SELECT * FROM '.table('settings')." WHERE name<>'mail_drafts_schema_version' ORDER BY name")===$settings);
+    dr_ok('Repeated setup is additive and earlier settings remain exact',mail_drafts_ready()&&mail_drafts_html_ready()&&all('SELECT * FROM '.table('settings')." WHERE name NOT IN ('mail_drafts_schema_version','mail_drafts_html_ready') ORDER BY name")===$settings);
     dr_deny('Owner still requires a sending assignment',fn()=>mail_drafts_list($a));
     dr_grant($a,1,false);dr_deny('Owner Read assignment does not grant Send drafts',fn()=>mail_drafts_list($a));dr_grant($a,1);
     dr_grant($a,2);dr_grant($a,3);dr_grant($a,4);dr_grant($a,5);dr_grant($b,1);
@@ -153,12 +153,17 @@ try {
         mail_drafts_discard($rich,2);
     } else $checks[]=['name'=>'DOM unavailable; formatted-compose checks skipped','passed'=>true];
     // Version-1 upgrade: populated pre-alternative storage gains the additive column in place.
-    dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_schema_version','1');
+    dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');query('DELETE FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready']);save_setting('mail_drafts_schema_version','1');
     $legacy=bin2hex(random_bytes(16));query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,1,?,1,1,'draft',?,'[]','[]','[]','Legacy','Text',?,?)",[$legacy,$b,str_repeat('0',64),gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
     dr_ok('Version-1 storage keeps existing drafts readable and listed',mail_drafts_get($legacy)['subject']==='Legacy'&&in_array($legacy,array_column(mail_drafts_list($b),'id'),true));
     dr_deny('Version-1 storage refuses edits until formatted storage is prepared',fn()=>mail_drafts_save($legacy,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Changed','Text')));
+    db()->exec('ALTER TABLE '.table('mail_draft_revisions').' ADD INDEX unexpected_action(action)');
+    dr_deny('Later schema validation failure leaves an added HTML column unready',fn()=>mail_drafts_migrate($password));
+    dr_ok('Failed later validation cannot enable formatted editing',one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
+    db()->exec('ALTER TABLE '.table('mail_draft_revisions').' DROP INDEX unexpected_action');
+    dr_ok('Post-ALTER audit failure rolls back only the readiness marker',dr_audit_failure(fn()=>mail_drafts_migrate($password))&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
     mail_drafts_migrate($password);
-    dr_ok('Version 1 populated storage upgrades additively and preserves records',mail_drafts_ready()&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&mail_drafts_get($legacy)['subject']==='Legacy'&&mail_drafts_get($legacy)['html']===null);
+    dr_ok('Version 1 populated storage upgrades additively and preserves records',mail_drafts_ready()&&mail_drafts_html_ready()&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&mail_drafts_get($legacy)['subject']==='Legacy'&&mail_drafts_get($legacy)['html']===null);
     mail_drafts_discard($legacy,1);
     $metadata=json_encode([all('SELECT * FROM '.table('mail_draft_revisions')),all('SELECT * FROM '.table('audit'))]);dr_ok('Audit and draft history exclude subject body and recipients',!str_contains($metadata,'SYNTHETIC_PRIVATE_DRAFT')&&!str_contains($metadata,'private@example.invalid')&&!str_contains($metadata,'client@example.invalid'));
     dr_ok('Draft workflows preserve the original mailbox encryption key',file_get_contents($private.'/mail-master.key')===$key);

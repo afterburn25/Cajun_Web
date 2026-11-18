@@ -8,7 +8,8 @@ use InvalidArgumentException;
 /** Immutable source/creation binding; native code must separately establish current authority. */
 final readonly class DraftOrigin
 {
-    public const MAX_CONTENT_JSON_BYTES=65536;
+    /** MySQL TEXT stores at most 65,535 bytes. */
+    public const MAX_CONTENT_JSON_BYTES=65535;
     public string $json;
     public string $fingerprint;
     private function __construct(public array $data) {

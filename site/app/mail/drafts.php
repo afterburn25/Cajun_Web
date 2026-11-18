@@ -14,8 +14,8 @@ require_once CWP_CODE_ROOT.'/database/schema/mail_drafts_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_drafts_migrate.php';
 
 function mail_drafts_ready():bool {return in_array(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'',['1','2'],true);}
-/** The formatted alternative exists once the additive column does; the storage marker stays compatible with earlier releases. */
-function mail_drafts_html_ready():bool {return (bool)one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].'mail_drafts']);}
+/** Formatted editing starts only after both additive DDL and its transactional setup audit succeed. */
+function mail_drafts_html_ready():bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='1'&&(bool)one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].'mail_drafts']);}
 function mail_drafts_actor():array {
     $actor=mail_accounts_actor();
     // The canonical mailbox decision below still requires both global Send and an exact grant.
@@ -49,7 +49,7 @@ function mail_drafts_id(string $id):void {if(!preg_match('/^[a-f0-9]{32}$/D',$id
 /** Bounded optional formatted alternative; '' input means plain text only. */
 function mail_drafts_html(string $raw):?string {
     if($raw==='')return null;
-    try {return ComposeHtml::sanitize($raw)?:null;}
+    try {$html=ComposeHtml::sanitize($raw);return $html===''?null:$html;}
     catch(ReceivingFailure $e){throw new InvalidArgumentException($e->getMessage()==='limit'?'The formatted message text is too long.':'The formatted message text is not valid HTML.');}
 }
 function mail_drafts_audit(int $actor,string $action,string $detail):void {
