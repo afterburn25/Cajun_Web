@@ -44,6 +44,14 @@ function mail_drafts_migrate(#[\SensitiveParameter] string $password):void {
         if($version==='')foreach(array_keys($schema) as $name) {
             if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])&&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized draft records exist. No data was adopted.');
         }
+        $htmlColumn=(bool)one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].'mail_drafts']);
+        $htmlMarker=(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='1';
+        // A restored or interrupted schema can retain the marker while losing
+        // its column. Commit an audited invalidation before implicit-commit DDL.
+        if($htmlMarker&&!$htmlColumn)staff_transaction(function()use($actor):void {
+            query('DELETE FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready']);
+            mail_drafts_audit((int)$actor['id'],'html_repair_pending','Formatted draft storage requires additive repair');
+        });
         foreach($schema as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
             elseif($name==='mail_drafts' && !one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].$name])) {

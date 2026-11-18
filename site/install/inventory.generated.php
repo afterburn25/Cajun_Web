@@ -462,7 +462,7 @@ function setup_expected_files(): array { return [
     'database/migrations/license_migrate.php'=>'e50f345d20b0bf33e34925142a1a15c94b1d9f112e49bb8ada17362199e1d8e9',
     'database/migrations/mail_accounts_migrate.php'=>'2734d3c86c213da8da4f7c3cae659a3945cf04e0db724e66dd147c7a6d6b1e31',
     'database/migrations/mail_connections_migrate.php'=>'95e251346117567755caf4e6c4dbf169ba0d87b1c173779d4551163931f4b20d',
-    'database/migrations/mail_drafts_migrate.php'=>'aa5ab44e6ea7d3715ecaebff7090c86932f162d63dc9e87559250a2fcae6c9e4',
+    'database/migrations/mail_drafts_migrate.php'=>'1812f12fba8022c084c43f263226455181b19075f331c85d02b5b60c59483a8c',
     'database/migrations/mail_flags_migrate.php'=>'8ac7c7df713920a42f1bfc9dc8702b456a5cd5d2d2ec645418c5dc8e891303a4',
     'database/migrations/mail_inbox_migrate.php'=>'edd4037917f304a7868ce96f90e792582f63ef927874556636c4d88fffe23b64',
     'database/migrations/mail_messages_migrate.php'=>'3b471385d4e8dbd1e8770bcbbc966a41d58f16a805fc63d541f5dccfc1e7a0d0',

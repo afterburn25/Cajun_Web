@@ -27,6 +27,10 @@ function dr_audit_failure(callable $fn):bool {
     db()->exec('CREATE TRIGGER drci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic draft audit failure'");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER drci_fail');}return $failed;
 }
+function dr_setup_audit_failure(callable $fn):bool {
+    db()->exec('CREATE TRIGGER drci_setup_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='mail_drafts.setup' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic draft setup audit failure'; END IF; END");
+    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER drci_setup_fail');}return $failed;
+}
 function dr_worker(string $id,string $revision,string $account,string $subject,int $actor=2):array {
     $p=proc_open([PHP_BINARY,__FILE__,'worker',$id,$revision,$account,$subject,(string)$actor],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
     if(!is_resource($p))throw new RuntimeException('Cannot start draft fixture worker');foreach([1,2] as $stream)stream_set_timeout($pipes[$stream],15);return [$p,$pipes];
@@ -153,15 +157,16 @@ try {
         mail_drafts_discard($rich,2);
     } else $checks[]=['name'=>'DOM unavailable; formatted-compose checks skipped','passed'=>true];
     // Version-1 upgrade: populated pre-alternative storage gains the additive column in place.
-    dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');query('DELETE FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready']);save_setting('mail_drafts_schema_version','1');
+    dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_html_ready','1');save_setting('mail_drafts_schema_version','1');
     $legacy=bin2hex(random_bytes(16));query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,1,?,1,1,'draft',?,'[]','[]','[]','Legacy','Text',?,?)",[$legacy,$b,str_repeat('0',64),gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
-    dr_ok('Version-1 storage keeps existing drafts readable and listed',mail_drafts_get($legacy)['subject']==='Legacy'&&in_array($legacy,array_column(mail_drafts_list($b),'id'),true));
+    dr_ok('Stale HTML marker without its column remains unready while version-1 drafts stay readable',!mail_drafts_html_ready()&&mail_drafts_get($legacy)['subject']==='Legacy'&&in_array($legacy,array_column(mail_drafts_list($b),'id'),true));
     dr_deny('Version-1 storage refuses edits until formatted storage is prepared',fn()=>mail_drafts_save($legacy,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Changed','Text')));
     db()->exec('ALTER TABLE '.table('mail_draft_revisions').' ADD INDEX unexpected_action(action)');
-    dr_deny('Later schema validation failure leaves an added HTML column unready',fn()=>mail_drafts_migrate($password));
-    dr_ok('Failed later validation cannot enable formatted editing',one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
+    dr_deny('Later schema validation failure leaves a stale-marker repair unready',fn()=>mail_drafts_migrate($password));
+    dr_ok('Failed later validation cannot restore the invalidated marker after repair DDL',one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
     db()->exec('ALTER TABLE '.table('mail_draft_revisions').' DROP INDEX unexpected_action');
-    dr_ok('Post-ALTER audit failure rolls back only the readiness marker',dr_audit_failure(fn()=>mail_drafts_migrate($password))&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
+    db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_html_ready','1');
+    dr_ok('Post-ALTER setup audit failure cannot revive a stale readiness marker',dr_setup_audit_failure(fn()=>mail_drafts_migrate($password))&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
     mail_drafts_migrate($password);
     dr_ok('Version 1 populated storage upgrades additively and preserves records',mail_drafts_ready()&&mail_drafts_html_ready()&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&mail_drafts_get($legacy)['subject']==='Legacy'&&mail_drafts_get($legacy)['html']===null);
     mail_drafts_discard($legacy,1);
