@@ -267,7 +267,7 @@ function setup_expected_files(): array { return [
     'app/mail/inbox.php'=>'4960933e1f0ed4d1ad01fe924d2042f8852fa968677f15b72576f07ae3b2295e',
     'app/mail/messages.php'=>'bd425abbb32c2111cdcfd0cfe26d18f8dced3e7c12540c30d171026925b35bfc',
     'app/mail/notices.php'=>'09fff56c653d58cfd26cd88bce16d5240c93eaa2ac34c36bef0949629bd711c8',
-    'app/mail/replies.php'=>'83d93e5907cc7f41d85e6da2bca7dce5ec0ef8b07c5a381d3de228afce9f6d28',
+    'app/mail/replies.php'=>'2c7421f084a09c767b96de614893c4186f6226a1216690fbd9487c019982c2f9',
     'app/mail/submission_dispatch.php'=>'1a79d3e85698dd9a65f81c80f669337d87fbd9597e3643128c3bd3b6fb1edad0',
     'app/mail/submission_views.php'=>'cfd0fb4b56cd2ba2575f1b3da627f8eed368966bdbbc657e0f140e3a988c77bf',
     'app/mail/submissions.php'=>'f31430a0f6922acb6f66a2b167f0e1e87fbfbede51d84ab1c761757b323fb1bd',

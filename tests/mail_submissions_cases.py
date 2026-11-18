@@ -279,7 +279,7 @@ def run_browser(env, browser):
         check('Known-id attachment download rechecks current ' + label, attach_bytes not in denied.content and b'SYNTHETIC_ATTACHMENT_BYTES' not in denied.content and 'Content-Disposition' not in denied.headers and denied.headers.get('Content-Type') != 'application/octet-stream')
         db(restore, params)
     r = owner.post(attach_page, data={'csrf': token(owner.get(attach_page)), 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
-    check('Another author cannot download a private draft attachment', r.content != attach_bytes)
+    check('Another author cannot download a private draft attachment', attach_bytes not in r.content and b'SYNTHETIC_ATTACHMENT_BYTES' not in r.content and 'Content-Disposition' not in r.headers and r.headers.get('Content-Type') != 'application/octet-stream')
     r = file_post('mail_drafts_detach', 1, file_id=file_id)
     check('Stale revision cannot detach over HTTP and rerenders the current editor', 'changed' in r.text.lower() and soup(r).select_one('[data-mail-draft-editor]') is not None and soup(r).select_one('[data-mail-draft-files]') is not None and db('SELECT COUNT(*) AS n FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'n': 1}])
     review_page = member.get(attach_url)

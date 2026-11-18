@@ -114,7 +114,7 @@ jobs:
           docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-copied-draft-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
           ARG PHP_VERSION
           FROM php:${PHP_VERSION}-cli
-          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev && docker-php-ext-install pdo_mysql mbstring && rm -rf /var/lib/apt/lists/*
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev libxml2-dev && docker-php-ext-install pdo_mysql mbstring dom && php -r 'exit(extension_loaded("dom") ? 0 : 1);' && rm -rf /var/lib/apt/lists/*
           DOCKER
           test "$status" -eq 0
       - name: Prove the synthetic database is ready for the assigned user

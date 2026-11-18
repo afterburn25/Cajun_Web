@@ -79,6 +79,15 @@ try{
         $fileRichIntent=bin2hex(random_bytes(16));mail_submissions_prepare($fileRichIntent,$fileDraft,3,1);$fileRichSub=mail_submissions_get($fileRichIntent);$fileRichRow=mail_submissions_row($fileRichIntent);$fileRichMime=mail_submissions_message($fileRichRow);
         rp_ok('Formatted copied attachment submission uses format 8 with exact descriptor thread HTML and MIME',$fileRichSub['content']['format']===8&&$fileRichSub['content']['attachments'][0]['name']==='copied.txt'&&$fileRichSub['content']['body_html']==='<p>Formatted <b>file</b> body</p>'&&$fileRichSub['content']['thread']===['in_reply_to'=>'<source@example.invalid>','references'=>['<source@example.invalid>']]&&str_contains($fileRichMime->bytes,'multipart/alternative')&&str_contains($fileRichMime->bytes,'copied.txt')&&$fileRichMime->bytes===$fileRichRow['mime_bytes']);
     }
+    $fileRevision=extension_loaded('dom')?3:2;
+    foreach(['missing','future'] as $marker) {
+        if($marker==='missing')query('DELETE FROM '.table('settings').' WHERE name=?',['mail_replies_schema_version']);else save_setting('mail_replies_schema_version','future');
+        $submissionState=json_encode([all('SELECT * FROM '.table('mail_submissions').' ORDER BY id'),all('SELECT * FROM '.table('mail_submission_dispatches').' ORDER BY id'),all('SELECT * FROM '.table('mail_submission_results').' ORDER BY id'),all('SELECT * FROM '.table('audit').' ORDER BY id')],JSON_THROW_ON_ERROR);
+        rp_deny('Copied submission preparation refuses '.$marker.' protected storage marker',fn()=>mail_submissions_prepare(bin2hex(random_bytes(16)),$fileDraft,$fileRevision,1));
+        rp_deny('Copied submission claim refuses '.$marker.' protected storage marker',fn()=>mail_submissions_claim($fileIntent));
+        rp_ok('Copied submission boundaries preserve intents attempts results and audit with '.$marker.' protected storage marker',$submissionState===json_encode([all('SELECT * FROM '.table('mail_submissions').' ORDER BY id'),all('SELECT * FROM '.table('mail_submission_dispatches').' ORDER BY id'),all('SELECT * FROM '.table('mail_submission_results').' ORDER BY id'),all('SELECT * FROM '.table('audit').' ORDER BY id')],JSON_THROW_ON_ERROR));
+        save_setting('mail_replies_schema_version','1');
+    }
     rp_ok('Author can create and reopen copied content with separate source and sender',$draft['body']===$prepared->draft->content->body&&$draft['subject']==='Re: PRIVATE_COPIED_SUBJECT'&&$draft['origin']['source_account_id']===$source&&$draft['account_id']===$sender&&$draft['to']===['source@example.invalid']);
     rp_ok('Copied list exposes content only after current authority',mail_reply_drafts_list($sender)[0]['subject']===$draft['subject']&&!mail_reply_drafts_list($sender)[0]['unavailable']);
     $legacy=mail_drafts_get($id);rp_ok('Retained ordinary getter exposes only a content-free recovery placeholder',$legacy['status']==='source'&&$legacy['subject']==='Copied message draft'&&$legacy['body']===''&&$legacy['to']===[]&&$legacy['cc']===[]&&$legacy['bcc']===[]);
@@ -161,6 +170,7 @@ try{
     rp_ok('Forward submission is format 2 with no inherited reply headers',mail_submissions_get($forwardIntent)['content']['format']===2&&mail_submissions_get($forwardIntent)['content']['thread']===['in_reply_to'=>null,'references'=>[]]);
     $forwardMime=mail_submissions_message(one('SELECT * FROM '.table('mail_submissions').' WHERE id=?',[$forwardIntent]));
     rp_ok('Forward MIME carries no reply threading headers',!str_contains($forwardMime->bytes,'In-Reply-To:')&&!str_contains($forwardMime->bytes,'References:'));
+    mail_reply_drafts_discard($fileDraft,$fileRevision);rp_ok('Dedicated attachment fixture leaves the active pagination set',mail_reply_drafts_get($fileDraft)['status']==='discarded');
     // One stable merged page boundary over ordinary and copied drafts.
     for($i=0;$i<21;$i++){mail_drafts_save(bin2hex(random_bytes(16)),0,$sender,1,new DraftContent(['p'.$i.'@example.invalid'],[],[],'Paged ordinary '.$i,'Body '.$i));}
     for($i=0;$i<21;$i++){$pageRead=rp_read($source,(string)(100+$i));mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,rp_source($pageRead));}

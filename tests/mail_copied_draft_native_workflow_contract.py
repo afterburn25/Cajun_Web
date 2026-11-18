@@ -68,9 +68,10 @@ def validate(text):
     check('Acceptance retains the complete PHP and database matrix',
           "php: ['8.2', '8.4']" in text and 'database: [mariadb, mysql]' in text
           and "image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}" in text)
-    check('The disposable PHP image retains PDO MySQL and mbstring',
-          'apt-get install -y --no-install-recommends libonig-dev' in text
-          and 'docker-php-ext-install pdo_mysql mbstring' in text)
+    check('The disposable PHP image retains PDO MySQL mbstring and required DOM coverage',
+          'apt-get install -y --no-install-recommends libonig-dev libxml2-dev' in text
+          and 'docker-php-ext-install pdo_mysql mbstring dom' in text
+          and 'extension_loaded("dom")' in text)
     check('The assigned synthetic user has a bounded retained PDO readiness proof',
           'for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text
           and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
@@ -148,7 +149,7 @@ def self_test(text):
         ('write permission', 'contents: read', 'contents: write'),
         ('cancelled main evidence', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", 'cancel-in-progress: true'),
         ('rerun admission', 'test "$CWP_RUN_ATTEMPT" = "1"', 'test -n "$CWP_RUN_ATTEMPT"'),
-        ('lost mbstring', 'docker-php-ext-install pdo_mysql mbstring', 'docker-php-ext-install pdo_mysql'),
+        ('lost mbstring or DOM', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install pdo_mysql'),
         ('lost admin path admission', "'site/admin/**'", "'site/app/mail/**'"),
         ('lost genuine no-INI run', 'php_flags="-n"', 'php_flags=""'),
         ('lost isolated MySQL trigger admission', "SET GLOBAL log_bin_trust_function_creators=1", 'SELECT 1'),
