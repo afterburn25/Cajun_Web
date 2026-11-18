@@ -647,6 +647,15 @@ MAIL_CONSOLIDATED_REVIEW_FIX_PATHS = frozenset((
     'tests/mail_drafts_native.php',
     'tests/mail_folder_native_workflow_contract.py',
 ))
+MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE = '2b05e0271b85009ae7685ffda3fe888c696aa322'
+MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE_TREE = 'bf816533aa9e1e3a4297e710f45192aa329758a5'
+MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE = '2abf8e990b3360d94db5ed2ac8258cd1b082c7b7'
+MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE_TREE = '7b1235f90017946e8a7449fa22aba5bd4a64e960'
+MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS = frozenset((
+    'site/database/migrations/mail_drafts_migrate.php',
+    'site/install/inventory.generated.php',
+    'tests/mail_drafts_native.php',
+))
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -1487,7 +1496,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '8e802a0d227341d74c5e7263eb5f04abb64d35bb92ca5e8cda01abe61c88b759'
+REGRESSION_SHA256 = '486be08895336d09f8548477a7ae65eeabe130cc6b8d9de24ce7ea40dea5a594'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -4236,6 +4245,60 @@ def mail_consolidated_changes(root):
     return changes
 
 
+def validate_mail_consolidated_review_recovery(root):
+    """Bind the stale-marker invalidation required by independent review."""
+    require(git(root, 'rev-parse', MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE + '^{tree}').decode().strip()
+            == MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE_TREE
+            and git(root, 'rev-parse', MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE + '^{tree}').decode().strip()
+            == MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE_TREE,
+            'Consolidated mail review-recovery source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE).decode().split()
+            == [MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE,
+                MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE],
+            'Consolidated mail review recovery is not the direct proof successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE,
+                MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS)],
+            'Consolidated mail review recovery changed another path or status')
+    base_entries = entries(root, MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE)
+    source_entries = entries(root, MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE)
+    for path in sorted(MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_consolidated_review_recovery(root, path, current) == base
+                and project_mail_consolidated_review_recovery(root, path, base) == base,
+                'Consolidated mail review-recovery identity or projection changed: ' + path)
+    migration = ordinary(root, 'site/database/migrations/mail_drafts_migrate.php')
+    native = ordinary(root, 'tests/mail_drafts_native.php')
+    require(migration.count(b"query('DELETE FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])") == 1
+            and migration.index(b"'html_repair_pending'")
+            < migration.index(b'ADD COLUMN body_html MEDIUMTEXT NULL')
+            and native.count(b"NEW.action='mail_drafts.setup'") == 1
+            and native.count(b'Post-ALTER setup audit failure cannot revive a stale readiness marker') == 1,
+            'Consolidated mail stale-marker recovery boundary changed')
+
+
+def project_mail_consolidated_review_recovery(root, path, current):
+    """Restore the first review proof before its stale-marker correction."""
+    if path not in MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current consolidated mail review recovery changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_mail_consolidated_review_fix(root):
     """Bind the independently reviewed formatted-mail safety corrections."""
     require(git(root, 'rev-parse', MAIL_CONSOLIDATED_REVIEW_FIX_BASE + '^{tree}').decode().strip()
@@ -4256,7 +4319,7 @@ def validate_mail_consolidated_review_fix(root):
     base_entries = entries(root, MAIL_CONSOLIDATED_REVIEW_FIX_BASE)
     source_entries = entries(root, MAIL_CONSOLIDATED_REVIEW_FIX_SOURCE)
     for path in sorted(MAIL_CONSOLIDATED_REVIEW_FIX_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_consolidated_review_recovery(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_FIX_BASE + ':' + path)
         require(current == source
@@ -4281,6 +4344,7 @@ def validate_mail_consolidated_review_fix(root):
 
 def project_mail_consolidated_review_fix(root, path, current):
     """Restore the consolidated proof predecessor before review corrections."""
+    current = project_mail_consolidated_review_recovery(root, path, current)
     if path not in MAIL_CONSOLIDATED_REVIEW_FIX_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_FIX_SOURCE + ':' + path)
@@ -6954,6 +7018,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_consolidated_review_recovery(root)
     validate_mail_consolidated_review_fix(root)
     validate_mail_consolidated_source(root)
     validate_mail_copy_controls_fix(root)

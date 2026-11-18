@@ -390,6 +390,25 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes().replace(b"['mail_drafts_html_ready']", b"['mail_drafts_schema_version']", 1))))
 
+        def altered_mail_review_recovery_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_consolidated_review_recovery(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted consolidated mail review-recovery source tree',
+                lambda: altered_mail_review_recovery_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE_TREE'))
+        refuses('Refuses a substituted consolidated mail review-recovery direct parent',
+                lambda: altered_mail_review_recovery_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE'))
+        refuses('Refuses altered formatted-mail stale-marker invalidation',
+                lambda: modified('site/database/migrations/mail_drafts_migrate.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(b"'html_repair_pending'", b"'setup'", 1))))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:
