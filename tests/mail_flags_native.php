@@ -86,7 +86,7 @@ try {
     mf_ok('A flag request can receive only one immutable terminal result',$duplicate);
     mf_age();$other=mf_create();for($i=0;$i<120;$i++)query('INSERT INTO '.table('mail_flag_requests').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,mark_seen,started_at,started_epoch) VALUES (?,?,1,1,\'INBOX\',\'4294967295\',\'4294967295\',1,?,?)',[bin2hex(random_bytes(16)),$other,gmdate('Y-m-d H:i:s'),time()-100]);mf_deny('Per-staff hourly flag ceiling includes requests to other accounts',fn()=>mf_mark($id));mf_age();
     for($i=0;$i<120;$i++)query('INSERT INTO '.table('mail_flag_requests').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,mark_seen,started_at,started_epoch) VALUES (?,?,1,2,\'INBOX\',\'4294967295\',\'4294967295\',1,?,?)',[bin2hex(random_bytes(16)),$id,gmdate('Y-m-d H:i:s'),time()-100]);mf_deny('Per-account hourly flag ceiling includes requests by other administrators',fn()=>mf_mark($id));mf_age();
-    save_setting('mail_notices_schema_version','2');
+    save_setting('mail_notices_schema_version','1');
     query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,folder,started_at,started_epoch) VALUES (?,?,1,1,\'INBOX\',?,?)',[str_repeat('b',32),$id,gmdate('Y-m-d H:i:s'),time()]);
     query('INSERT INTO '.table('mail_notice_windows').' (account_id,account_revision,folder,uidvalidity,request_id,checked_at) VALUES (?,1,\'INBOX\',\'4294967295\',?,?)',[$id,str_repeat('b',32),gmdate('Y-m-d H:i:s')]);
     query('INSERT INTO '.table('mail_notice_items').' (handle,account_id,account_revision,folder,uidvalidity,uid,slot,server_seen,flags_observed_at) VALUES (?,?,1,\'INBOX\',\'4294967295\',\'4294967295\',1,0,?)',[str_repeat('c',32),$id,gmdate('Y-m-d H:i:s')]);
