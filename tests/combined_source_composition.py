@@ -785,6 +785,14 @@ MAIL_ATTACHMENT_CLAIM_FIX_BASE_TREE = MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE_TREE
 MAIL_ATTACHMENT_CLAIM_FIX_SOURCE = '33ca06fb9fe29d286442a44d43c81f329d7dac68'
 MAIL_ATTACHMENT_CLAIM_FIX_SOURCE_TREE = 'e363c21ef9296889d9bb3c68d804fa863fc6e7fd'
 MAIL_ATTACHMENT_CLAIM_FIX_PATH = 'tests/mail_replies_native.php'
+MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
+MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
+MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
+MAIL_REPLY_ALL_REPLAY_SOURCE_TREE = '1bac0f7b237fdfbb157337b976fd379432785421'
+MAIL_REPLY_ALL_REPLAY_PATHS = frozenset((
+    'tests/mail_copied_draft_create_native.php',
+    'tests/mail_reply_cases.py',
+))
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -4536,6 +4544,67 @@ def validate_mail_attachment_portable_source(root):
             'Portable attachment format, bound or independent-parser coverage changed')
 
 
+def validate_mail_reply_all_replay_source(root):
+    """Bind exact existing Reply All replay through native SQL and HTTP."""
+    require(git(root, 'rev-parse', MAIL_REPLY_ALL_REPLAY_BASE + '^{tree}').decode().strip()
+            == MAIL_REPLY_ALL_REPLAY_BASE_TREE
+            and git(root, 'rev-parse', MAIL_REPLY_ALL_REPLAY_SOURCE + '^{tree}').decode().strip()
+            == MAIL_REPLY_ALL_REPLAY_SOURCE_TREE,
+            'Reply All replay source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1', MAIL_REPLY_ALL_REPLAY_SOURCE).decode().split()
+            == [MAIL_REPLY_ALL_REPLAY_SOURCE, MAIL_REPLY_ALL_REPLAY_BASE],
+            'Reply All replay source is not the direct reviewed proof-head successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_REPLY_ALL_REPLAY_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_REPLY_ALL_REPLAY_BASE,
+                MAIL_REPLY_ALL_REPLAY_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_REPLY_ALL_REPLAY_PATHS)],
+            'Reply All replay source changed another path or status')
+    base_entries = entries(root, MAIL_REPLY_ALL_REPLAY_BASE)
+    source_entries = entries(root, MAIL_REPLY_ALL_REPLAY_SOURCE)
+    for path in sorted(MAIL_REPLY_ALL_REPLAY_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_reply_all_replay(root, path, current) == base
+                and project_mail_reply_all_replay(root, path, base) == base,
+                'Reply All replay identity or projection changed: ' + path)
+    native = ordinary(root, 'tests/mail_copied_draft_create_native.php')
+    browser = ordinary(root, 'tests/mail_reply_cases.py')
+    require(native.count(b'Exact reply all replay returns the existing draft before network or mutation') == 1
+            and native.count(b"$replyAllReplay===['state'=>'existing','draft_id'=>$replyAll,'result'=>null]") == 1
+            and native.count(b'[$resolveCalls,$transportCalls]===$replyAllCalls') == 1
+            and native.count(b'cdc_tables()===$replyAllBefore') == 1
+            and browser.count(b'Exact reply all replay reopens the existing draft without another fetch or write') == 1
+            and browser.count(b"'action': 'mail_message_reply_all'") == 2
+            and browser.count(b"'existing copied-message draft' in r.text.lower()") == 1
+            and browser.count(b'inbox_server.connections == before + 2') >= 2
+            and browser.count(b"db('SELECT * FROM ci_mail_message_reads ORDER BY id')") == 2
+            and browser.count(b"db('SELECT * FROM ci_mail_message_results ORDER BY id')") == 2
+            and browser.count(b"db('SELECT * FROM ci_mail_drafts ORDER BY id')") == 2
+            and browser.count(b"db('SELECT * FROM ci_mail_reply_drafts ORDER BY id')") == 2
+            and browser.count(b"db('SELECT * FROM ci_mail_draft_revisions ORDER BY draft_id,revision')") == 2
+            and browser.count(b"db('SELECT * FROM ci_audit ORDER BY id')") == 2,
+            'Reply All replay native, controller, no-network or no-write assertion changed')
+
+
+def project_mail_reply_all_replay(root, path, current):
+    """Restore the first consolidated-mail proof head before replay coverage."""
+    if path not in MAIL_REPLY_ALL_REPLAY_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Reply All replay source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_mail_attachment_claim_fix(root):
     """Bind the current-intent causal claim regression for protected readiness."""
     require(git(root, 'rev-parse', MAIL_ATTACHMENT_CLAIM_FIX_BASE + '^{tree}').decode().strip()
@@ -4567,6 +4636,7 @@ def validate_mail_attachment_claim_fix(root):
 
 def project_mail_attachment_claim_fix(root, path, current):
     """Restore the submission-readiness source before its causal test correction."""
+    current = project_mail_reply_all_replay(root, path, current)
     if path != MAIL_ATTACHMENT_CLAIM_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE + ':' + path)
@@ -7599,6 +7669,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_reply_all_replay_source(root)
     validate_mail_attachment_claim_fix(root)
     validate_mail_attachment_submission_fix(root)
     validate_mail_attachment_readiness_fix(root)
@@ -8033,6 +8104,7 @@ def verify_current(root):
         {'name': 'Exact Sent-copy successor binds explicit confirmation, immutable MIME, uncertainty and additive storage', 'passed': True},
         {'name': 'Exact Sent-copy review successor restores copied-origin Read authority before attempt and transport', 'passed': True},
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
+        {'name': 'Exact Reply All replay successor binds native SQL and HTTP controller no-network no-write acceptance', 'passed': True},
         {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
