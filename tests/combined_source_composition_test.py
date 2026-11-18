@@ -367,6 +367,29 @@ def run(root=ROOT):
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n// unreviewed migration\n')))
 
+        def altered_mail_consolidated_review_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_consolidated_review_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted consolidated mail review source tree',
+                lambda: altered_mail_consolidated_review_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted consolidated mail review direct parent',
+                lambda: altered_mail_consolidated_review_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_FIX_BASE'))
+        refuses('Refuses altered consolidated mail review storage bound',
+                lambda: modified('foundation/mail-compose/DraftOrigin.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(b'65535', b'65536', 1))))
+        refuses('Refuses altered consolidated mail review readiness marker',
+                lambda: modified('site/app/mail/drafts.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(b"['mail_drafts_html_ready']", b"['mail_drafts_schema_version']", 1))))
+
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)
             try:
