@@ -27,7 +27,7 @@ function mail_files_validate_schema(string $name,string $sql):void {
 function mail_files_migrate():void {
     staff_locked(function():void {
         $actor=mail_accounts_owner('');
-        $draftsReady=(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'')==='1';
+        $draftsReady=in_array(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'',['1','2'],true);
         $submissionsReady=(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_submissions_schema_version'])['value']??'')==='1';
         if(!$draftsReady||!$submissionsReady)throw new RuntimeException('An owner must prepare draft and submission storage first.');
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_files_schema_version'])['value']??'';

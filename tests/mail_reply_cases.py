@@ -1,5 +1,5 @@
 """Actual packaged HTTP/Chromium Reply/Forward flow against isolated MariaDB, IMAP and SMTP/TLS."""
-import json, time, uuid
+import hashlib, json, time, uuid
 from email import policy
 from email.parser import BytesParser
 from urllib.parse import parse_qs, urlparse, urlencode, urljoin
@@ -103,6 +103,13 @@ def run_browser(env, browser):
           all_origin['mode'] == 'reply-all' and all_content['to'] == ['synthetic@example.net', 'visible@example.invalid']
           and all_content['cc'] == ['cc@example.invalid'] and all_content['bcc'] == []
           and 'reply-sender@example.invalid' not in json.dumps(all_content) and 'hidden@example.invalid' not in json.dumps(all_content))
+    copied_file = uuid.uuid4().hex
+    copied_file_bytes = b'PRIVATE_COPIED_ATTACHMENT_BYTES'
+    db('INSERT INTO ci_mail_draft_files (id,slot,name,mime,bytes,sha256,data,created_at,draft_id) VALUES (?,1,?,?,?,?,UNHEX(?),UTC_TIMESTAMP(),?)', [copied_file, 'copied.txt', 'text/plain', len(copied_file_bytes), hashlib.sha256(copied_file_bytes).hexdigest(), copied_file_bytes.hex(), reply_all])
+    copied_file_page = draft_url + '&draft_id=' + reply_all
+    copied_file_csrf = token(owner.get(copied_file_page))
+    r = owner.post(copied_file_page, data={'csrf': copied_file_csrf, 'action': 'mail_drafts_file', 'draft_id': reply_all, 'revision': '1', 'file_id': copied_file})
+    check('Copied known-id attachment download succeeds under current source and sender authority', r.content == copied_file_bytes)
 
     page_text = owner.get(draft_url + '&draft_id=' + draft).text
     check('Copied draft editor shows content, origin and omissions panel', 'SYNTHETIC PRIVATE BODY' in page_text and 'data-mail-draft-origin' in page_text and 'replying to' in page_text and 'rechecked whenever this draft opens' in page_text)
@@ -160,6 +167,8 @@ def run_browser(env, browser):
     check('Forward wire carries no In-Reply-To or References', parsed['In-Reply-To'] is None and parsed['References'] is None and 'SYNTHETIC PRIVATE BODY' in parsed.get_content())
 
     db('UPDATE ci_mail_account_grants SET can_read=0 WHERE account_id=? AND user_id=?', [aid, oid])
+    r = owner.post(copied_file_page, data={'csrf': copied_file_csrf, 'action': 'mail_drafts_file', 'draft_id': reply_all, 'revision': '1', 'file_id': copied_file})
+    check('Revoking copied source Read blocks known-id attachment bytes', r.content != copied_file_bytes and 'inbox is unavailable' in r.text)
     r = owner.get(draft_url + '&draft_id=' + forward)
     check('Revoking source Read hides copied content on open', 'SYNTHETIC PRIVATE BODY' not in r.text and 'inbox is unavailable' in r.text)
     send_page = root + '?view=mail-send&draft_id=' + forward

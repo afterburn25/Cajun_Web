@@ -184,12 +184,13 @@ try {
     $copyMetadata=json_encode([all('SELECT * FROM '.table('mail_copy_attempts')),all('SELECT * FROM '.table('mail_copy_results')),all('SELECT detail FROM '.table('audit')." WHERE action LIKE 'mail_accounts.copy_%'")]);su_ok('Sent-copy persistence and audit are metadata only',!str_contains($copyMetadata,'SYNTHETIC_SUBMISSION')&&!str_contains($copyMetadata,'private@example.invalid'));
     // Bounded private draft files: additive storage, exact author/revision binding,
     // immutable submission copies and dispatch-time current-set authorization.
+    save_setting('mail_drafts_schema_version','2');
     su_actor(1);su_deny('Attachment setup rejects revoked owner authority',fn()=>cwp_test_owner_revoked(fn()=>mail_files_migrate()));
     su_actor(5);su_deny('Administrator permissions do not confer attachment setup',fn()=>mail_files_migrate());su_actor(1);
     save_setting('mail_files_schema_version','future');su_deny('Future attachment storage version cannot be downgraded',fn()=>mail_files_migrate());query('DELETE FROM '.table('settings').' WHERE name=?',['mail_files_schema_version']);
     db()->exec('ALTER TABLE '.table('mail_draft_files').' ADD INDEX unexpected(created_at)');su_deny('Unexpected attachment index is refused and preserved',fn()=>mail_files_migrate());db()->exec('ALTER TABLE '.table('mail_draft_files').' DROP INDEX unexpected');
     su_ok('Attachment setup audit failure leaves readiness unset',su_audit_failure(fn()=>mail_files_migrate())&&!mail_files_ready());mail_files_migrate();mail_files_migrate();
-    su_ok('Repeated attachment setup is additive and ready',mail_files_ready());
+    su_ok('Repeated attachment setup accepts retained current draft marker 2 without rewriting it',mail_files_ready()&&setting('mail_drafts_schema_version')==='2');
     su_actor(2);$attachDraft=su_draft($a);
     su_deny('Attachment requires an exact saved revision',fn()=>mail_drafts_attach($attachDraft,2,new DraftAttachment('a.txt','text/plain','bytes one')));
     mail_drafts_attach($attachDraft,1,new DraftAttachment('report.pdf','application/pdf','%PDF '.str_repeat("\x00\xff",50)));
@@ -201,6 +202,14 @@ try {
     su_deny('Malformed attachment id is refused before lookup',fn()=>mail_drafts_file($attachDraft,"' OR 1=1 --"));
     $download=mail_drafts_file($attachDraft,$files[1]['id']);
     su_ok('Author downloads exact stored attachment bytes',hash_equals($download['sha256'],hash('sha256',$download['data']))&&$download['data']==='second file');
+    foreach(['send','grant','expiry','account'] as $mode) {
+        if($mode==='send')query('UPDATE '.table('mail_account_grants').' SET can_send=0 WHERE account_id=? AND user_id=2',[$a]);
+        elseif($mode==='grant')query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);
+        elseif($mode==='expiry')query("UPDATE ".table('mail_account_grants')." SET expires_at='2000-01-01 00:00:00' WHERE account_id=? AND user_id=2",[$a]);
+        else query('UPDATE '.table('mail_accounts').' SET enabled=0 WHERE id=?',[$a]);
+        su_deny('Current '.$mode.' authority refuses attachment metadata',fn()=>mail_drafts_files($attachDraft));su_deny('Current '.$mode.' authority refuses attachment download',fn()=>mail_drafts_file($attachDraft,$files[0]['id']));
+        query('UPDATE '.table('mail_account_grants').' SET can_send=1,enabled=1,expires_at=NULL WHERE account_id=? AND user_id=2',[$a]);query('UPDATE '.table('mail_accounts').' SET enabled=1 WHERE id=?',[$a]);
+    }
     su_actor(4);su_deny('Another author cannot list draft attachments',fn()=>mail_drafts_files($attachDraft));su_deny('Another author cannot download draft attachments',fn()=>mail_drafts_file($attachDraft,$files[0]['id']));su_deny('Another author cannot detach draft attachments',fn()=>mail_drafts_detach($attachDraft,3,$files[0]['id']));su_actor(2);
     su_deny('Stale revision cannot attach',fn()=>mail_drafts_attach($attachDraft,1,new DraftAttachment('x.txt','text/plain','x')));su_deny('Stale revision cannot detach',fn()=>mail_drafts_detach($attachDraft,1,$files[0]['id']));
     mail_drafts_attach($attachDraft,3,new DraftAttachment('x.txt','text/plain','x'));mail_drafts_attach($attachDraft,4,new DraftAttachment('y.txt','text/plain','y'));

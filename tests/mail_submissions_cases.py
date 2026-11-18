@@ -254,22 +254,34 @@ def run_browser(env, browser):
     check('Owner prepares additive attachment storage without network access', 'Draft attachments are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_files_schema_version'") == [{'value': '1'}] and inbox_server.connections == inbox_connections + copy_connections)
     attach_did, attach_url = create(sent_aid)
     attach_page = draft_url + '&draft_id=' + attach_did
-    attach_bytes = b'SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400
+    attach_bytes = b'%PDF-1.4\n%SYNTHETIC_ATTACHMENT_BYTES\x00\xff\n' + bytes(range(256)) * 400
     def file_post(action, revision, **extra):
         data = {'csrf': token(member.get(attach_page)), 'action': action, 'draft_id': attach_did, 'revision': str(revision), **extra}
         files = {'file': ('report.pdf', attach_bytes, 'application/pdf')} if action == 'mail_drafts_attach' else None
         return member.post(attach_page, data=data, files=files)
     r = file_post('mail_drafts_attach', 2)
-    check('Stale revision cannot attach over HTTP', 'changed' in r.text.lower() and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
+    check('Stale revision cannot attach over HTTP and rerenders the current editor', 'changed' in r.text.lower() and soup(r).select_one('[data-mail-draft-editor]') is not None and soup(r).select_one('[data-mail-draft-files]') is not None and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
     r = file_post('mail_drafts_attach', 1)
     check('Multipart upload attaches exact private bytes', 'File attached' in r.text and db('SELECT name,mime,LENGTH(data) AS size FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'name': 'report.pdf', 'mime': 'application/pdf', 'size': len(attach_bytes)}])
     file_id = db('SELECT id FROM ci_mail_draft_files WHERE draft_id=?', [attach_did])[0]['id']
     r = file_post('mail_drafts_file', 2, file_id=file_id)
     check('Attachment download streams exact author bytes with safe headers', r.content == attach_bytes and r.headers.get('Content-Type') == 'application/octet-stream' and r.headers.get('X-Content-Type-Options') == 'nosniff' and 'no-store' in r.headers.get('Cache-Control', ''))
+    known_file_csrf = token(member.get(attach_page))
+    authority_cases = [
+        ('sender Send grant', 'UPDATE ci_mail_account_grants SET can_send=0 WHERE account_id=? AND user_id=?', 'UPDATE ci_mail_account_grants SET can_send=1 WHERE account_id=? AND user_id=?', [sent_aid, uid]),
+        ('sender grant enablement', 'UPDATE ci_mail_account_grants SET enabled=0 WHERE account_id=? AND user_id=?', 'UPDATE ci_mail_account_grants SET enabled=1 WHERE account_id=? AND user_id=?', [sent_aid, uid]),
+        ('sender grant expiry', "UPDATE ci_mail_account_grants SET expires_at='2000-01-01 00:00:00' WHERE account_id=? AND user_id=?", 'UPDATE ci_mail_account_grants SET expires_at=NULL WHERE account_id=? AND user_id=?', [sent_aid, uid]),
+        ('sending account enablement', 'UPDATE ci_mail_accounts SET enabled=0 WHERE id=?', 'UPDATE ci_mail_accounts SET enabled=1 WHERE id=?', [sent_aid]),
+    ]
+    for label, revoke, restore, params in authority_cases:
+        db(revoke, params)
+        denied = member.post(attach_page, data={'csrf': known_file_csrf, 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
+        check('Known-id attachment download rechecks current ' + label, denied.content != attach_bytes)
+        db(restore, params)
     r = owner.post(attach_page, data={'csrf': token(owner.get(attach_page)), 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
     check('Another author cannot download a private draft attachment', r.content != attach_bytes)
     r = file_post('mail_drafts_detach', 1, file_id=file_id)
-    check('Stale revision cannot detach over HTTP', 'changed' in r.text.lower() and db('SELECT COUNT(*) AS n FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'n': 1}])
+    check('Stale revision cannot detach over HTTP and rerenders the current editor', 'changed' in r.text.lower() and soup(r).select_one('[data-mail-draft-editor]') is not None and soup(r).select_one('[data-mail-draft-files]') is not None and db('SELECT COUNT(*) AS n FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'n': 1}])
     review_page = member.get(attach_url)
     check('Send review displays attachment metadata without raw bytes', 'report.pdf' in review_page.text and soup(review_page).select_one('[data-mail-submission-files]') is not None and 'SYNTHETIC_ATTACHMENT_BYTES' not in review_page.text)
     age_dispatches(); attach_target, attach_data = review(attach_url); count = submission_server.connections

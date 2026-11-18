@@ -182,7 +182,8 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
             if(!hash_equals($id,$postedId))throw new InvalidArgumentException('Draft unavailable.');
             $revision=mail_drafts_form_revision($_POST,'revision');$unsaved=mail_drafts_form_values($_POST);
         }
-        if($post&&$editable&&str_starts_with(is_string($_POST['action']??null)?$_POST['action']:'','mail_drafts_')) {
+        $editorAction=in_array($_POST['action']??null,['mail_drafts_save','mail_drafts_preview','mail_drafts_insert','mail_drafts_accounts','mail_drafts_templates'],true);
+        if($post&&$editable&&$editorAction) {
             $postedId=mail_drafts_form_text($_POST,'draft_id',32);mail_drafts_id($postedId);
             if($id!==''&&!hash_equals($id,$postedId))throw new InvalidArgumentException('Draft unavailable.');
             if($id===''&&one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$postedId]))mail_drafts_get($postedId);

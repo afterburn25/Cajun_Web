@@ -12,6 +12,16 @@ function mail_files_ready():bool {return (one('SELECT value FROM '.table('settin
 function mail_files_actor():array {
     $actor=mail_drafts_actor();if(!mail_files_ready())throw new RuntimeException('An owner must prepare attachment storage in Email drafts first.');return $actor;
 }
+/** Current author, sender and (for copied drafts) source-message authority. */
+function mail_drafts_file_authority(string $draftId,array $actor):array {
+    $row=mail_drafts_row($draftId,(int)$actor['id']);
+    if($row['status']==='source')mail_reply_drafts_load($draftId,$actor);
+    else {
+        if(!in_array($row['status'],['draft','discarded'],true))throw new RuntimeException('Saved draft files are unavailable.');
+        mail_drafts_account($row['account_id']);
+    }
+    return $row;
+}
 /** Internal exact-content loader. Caller supplies the current-authorized draft boundary. */
 function mail_draft_files_content(string $draftId):array {
     if(!mail_files_ready())return [];
@@ -31,7 +41,7 @@ function mail_draft_files_content(string $draftId):array {
 function mail_drafts_files(string $draftId):array {
     if(!mail_files_ready())return [];
     return staff_locked(function()use($draftId):array {
-        $actor=mail_files_actor();mail_drafts_row($draftId,(int)$actor['id']);$result=[];
+        $actor=mail_files_actor();mail_drafts_file_authority($draftId,$actor);$result=[];
         foreach(mail_draft_files_content($draftId) as $item)$result[]=array_intersect_key($item['row'],array_flip(['id','slot','name','mime','bytes','created_at']));
         return $result;
     });
@@ -40,7 +50,7 @@ function mail_drafts_files(string $draftId):array {
 function mail_drafts_file(string $draftId,string $fileId):array {
     if(!preg_match('/\A[a-f0-9]{32}\z/D',$fileId))throw new InvalidArgumentException('This attachment is unavailable.');
     return staff_locked(function()use($draftId,$fileId):array {
-        $actor=mail_files_actor();mail_drafts_row($draftId,(int)$actor['id']);
+        $actor=mail_files_actor();mail_drafts_file_authority($draftId,$actor);
         foreach(mail_draft_files_content($draftId) as $item)if(hash_equals($item['row']['id'],$fileId))return $item['row'];
         throw new InvalidArgumentException('This attachment is unavailable.');
     });

@@ -43,7 +43,7 @@ try{
     foreach(schema_statements($prefix) as $sql)db()->exec($sql);foreach(default_settings() as $k=>$v)save_setting($k,$v);
     for($i=1;$i<=3;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Reply staff '.$i,'reply'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2,3] as $i)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$i,json_encode(['mail.read','mail.send','mail.templates.manage'])]);
-    rp_actor(1);mail_accounts_migrate($password);mail_templates_migrate($password);mail_drafts_migrate($password);mail_messages_migrate($password);mail_submissions_migrate($password);
+    rp_actor(1);mail_accounts_migrate($password);mail_templates_migrate($password);mail_drafts_migrate($password);mail_messages_migrate($password);mail_submissions_migrate($password);mail_files_migrate();
     $source=rp_account('Source mailbox');$sender=rp_account('Sending mailbox');$other=rp_account('Other sender');$key=file_get_contents($private.'/mail-master.key');
     rp_grant($source,1,true,true);rp_grant($sender,1,true,true);rp_grant($source,2,true,false);rp_grant($sender,2,false,true);rp_grant($other,2,false,true);rp_grant($source,3,true,true);rp_grant($sender,3,true,true);
     rp_deny('Reply setup refuses revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>mail_replies_migrate('')));
@@ -58,6 +58,9 @@ try{
     rp_actor();$read=rp_read($source);$prepared=rp_source($read);$id=bin2hex(random_bytes(16));
     rp_ok('Fresh creation request resolves no existing draft',mail_reply_drafts_existing($id,$source,1,'7','44','reply',$sender,1)===null);
     mail_reply_drafts_create($id,$sender,1,$prepared);$draft=mail_reply_drafts_get($id);
+    $copiedFile=bin2hex(random_bytes(16));$copiedBytes='PRIVATE_COPIED_ATTACHMENT';
+    query('INSERT INTO '.table('mail_draft_files').' (id,slot,name,mime,bytes,sha256,data,created_at,draft_id) VALUES (?,1,?,?,?,?,?,?,?)',[$copiedFile,'copied.txt','text/plain',strlen($copiedBytes),hash('sha256',$copiedBytes),$copiedBytes,gmdate('Y-m-d H:i:s'),$id]);
+    rp_ok('Copied draft attachment is available only through its protected draft',mail_drafts_files($id)[0]['id']===$copiedFile&&mail_drafts_file($id,$copiedFile)['data']===$copiedBytes);
     rp_ok('Author can create and reopen copied content with separate source and sender',$draft['body']===$prepared->draft->content->body&&$draft['subject']==='Re: PRIVATE_COPIED_SUBJECT'&&$draft['origin']['source_account_id']===$source&&$draft['account_id']===$sender&&$draft['to']===['source@example.invalid']);
     rp_ok('Copied list exposes content only after current authority',mail_reply_drafts_list($sender)[0]['subject']===$draft['subject']&&!mail_reply_drafts_list($sender)[0]['unavailable']);
     $legacy=mail_drafts_get($id);rp_ok('Retained ordinary getter exposes only a content-free recovery placeholder',$legacy['status']==='source'&&$legacy['subject']==='Copied message draft'&&$legacy['body']===''&&$legacy['to']===[]&&$legacy['cc']===[]&&$legacy['bcc']===[]);
@@ -85,6 +88,7 @@ try{
     rp_deny('Source byte evidence must match successful read',fn()=>mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,rp_source($read,'reply',rp_raw()."x")));
     rp_actor(3);rp_deny('Another authorized staff member cannot read the private draft',fn()=>mail_reply_drafts_get($id));rp_deny('Another staff member cannot reuse the creation identity',fn()=>mail_reply_drafts_create($id,$sender,1,$prepared));rp_actor();
     query('UPDATE '.table('mail_account_grants').' SET can_read=0 WHERE account_id=? AND user_id=2',[$source]);
+    rp_deny('Revoked source Read refuses copied attachment metadata',fn()=>mail_drafts_files($id));rp_deny('Revoked source Read refuses copied attachment download',fn()=>mail_drafts_file($id,$copiedFile));
     rp_deny('Revoked source Read refuses copied detail',fn()=>mail_reply_drafts_get($id));rp_deny('Revoked source Read refuses copied history',fn()=>mail_reply_drafts_history($id));rp_deny('Revoked source Read refuses new creation',fn()=>mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,$prepared));
     rp_deny('Revoked source Read refuses edits',fn()=>mail_reply_drafts_save($id,1,$sender,1,new DraftContent([],[],[],'Edited','Body')));
     rp_deny('Revoked source Read refuses discard',fn()=>mail_reply_drafts_discard($id,1));
@@ -98,7 +102,7 @@ try{
     rp_ok('Restored source Read returns copied submission detail',mail_submissions_get($intent)['content']['subject']==='Re: PRIVATE_COPIED_SUBJECT');
     rp_ok('Restored source Read replays the committed intent',mail_submissions_prepare($intent,$id,1,1)===$intent);
     query('UPDATE '.table('mail_accounts').' SET revision=2 WHERE id=?',[$source]);rp_deny('Source revision change cannot silently rebind copied content',fn()=>mail_reply_drafts_get($id));rp_deny('Source revision change refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('mail_accounts').' SET revision=1 WHERE id=?',[$source]);
-    query('UPDATE '.table('mail_account_grants').' SET can_send=0 WHERE account_id=? AND user_id=2',[$sender]);rp_deny('Current sender Send is independently required',fn()=>mail_reply_drafts_get($id));rp_deny('Sender Send loss also refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('mail_account_grants').' SET can_send=1 WHERE account_id=? AND user_id=2',[$sender]);
+    query('UPDATE '.table('mail_account_grants').' SET can_send=0 WHERE account_id=? AND user_id=2',[$sender]);rp_deny('Current sender Send is independently required',fn()=>mail_reply_drafts_get($id));rp_deny('Sender Send loss refuses copied attachment metadata',fn()=>mail_drafts_files($id));rp_deny('Sender Send loss refuses copied attachment download',fn()=>mail_drafts_file($id,$copiedFile));rp_deny('Sender Send loss also refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('mail_account_grants').' SET can_send=1 WHERE account_id=? AND user_id=2',[$sender]);
     query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['mail.send'])]);rp_deny('Mailbox Read grant cannot replace global Read',fn()=>mail_reply_drafts_get($id));rp_deny('Global mail.read loss refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['mail.read','mail.send','mail.templates.manage'])]);
     $_SESSION['auth_version']='stale';rp_deny('Revoked staff session cannot read copied content',fn()=>mail_reply_drafts_get($id));rp_actor();$_SESSION['last_activity']=time()-1801;rp_deny('Expired session cannot read copied content',fn()=>mail_reply_drafts_get($id));rp_actor();
     $_GET['support']='synthetic';rp_deny('Support context cannot read private copied drafts',fn()=>mail_reply_drafts_get($id));unset($_GET['support']);
