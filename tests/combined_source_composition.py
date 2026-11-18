@@ -525,6 +525,14 @@ RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED = frozenset((
     '.github/workflows/application-tests.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_APPLICATION_BUILD_COMPLETION_BASE = 'c45be42591ebd3295c929970b52662585fe4155f'
+RUNNER_APPLICATION_BUILD_COMPLETION_BASE_TREE = '46cb7b37a0acda3712128b44f6577e74b055bbc1'
+RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE = '2d2c214805f6d26459794538badc6a16df5d20eb'
+RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE_TREE = '705294538c2c097cb77adb913adba84e8934d6aa'
+RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -3325,7 +3333,7 @@ def validate_runner_aws_full_mirror_source(root):
     base_entries = entries(root, RUNNER_AWS_FULL_MIRROR_BASE)
     source_entries = entries(root, RUNNER_AWS_FULL_MIRROR_SOURCE)
     for path in sorted(RUNNER_AWS_FULL_MIRROR_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_application_build_completion(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_BASE + ':' + path)
         require(current == source
@@ -3351,6 +3359,7 @@ def validate_runner_aws_full_mirror_source(root):
 
 def project_runner_aws_full_mirror(root, path, current):
     """Restore the reviewed mail proof before the AWS full-mirror correction."""
+    current = project_runner_application_build_completion(root, path, current)
     if path not in RUNNER_AWS_FULL_MIRROR_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_AWS_FULL_MIRROR_SOURCE + ':' + path)
@@ -3361,6 +3370,50 @@ def project_runner_aws_full_mirror(root, path, current):
         return current
     require(current == source,
             'Current runner fully converted AWS mirror source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_runner_application_build_completion(root):
+    """Bind the bounded completion budget discovered by preserved run 44385954180."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_BUILD_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE_TREE,
+            'Runner Application build completion identity changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_BUILD_COMPLETION_BASE],
+            'Runner Application build completion parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_BUILD_COMPLETION_BASE,
+                  RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED)],
+            'Runner Application build completion changed a different path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_BUILD_COMPLETION_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_build_completion(root, path, current) == base
+                and project_runner_application_build_completion(root, path, base) == base,
+                'Runner Application build completion identity or projection changed: ' + path)
+
+
+def project_runner_application_build_completion(root, path, current):
+    """Restore c45 only for the exact 240-minute Application completion paths."""
+    if path not in RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application build completion changed before predecessor projection: ' + path)
     return base
 
 
@@ -3383,7 +3436,8 @@ def validate_runner_application_build_budget(root):
     base_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_BUILD_BUDGET_SOURCE)
     for path in sorted(RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED):
-        current = project_runner_aws_full_mirror(root, path, ordinary(root, path))
+        current = project_runner_application_build_completion(root, path, ordinary(root, path))
+        current = project_runner_aws_full_mirror(root, path, current)
         current = project_proof_runtime_source(root, path, current)
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_BUDGET_BASE + ':' + path)
@@ -3396,6 +3450,7 @@ def validate_runner_application_build_budget(root):
 
 def project_runner_application_build_budget(root, path, current):
     """Restore the failed hosted head only for the exact Application budget paths."""
+    current = project_runner_application_build_completion(root, path, current)
     current = project_runner_aws_full_mirror(root, path, current)
     current = project_proof_runtime_source(root, path, current)
     if path not in RUNNER_APPLICATION_BUILD_BUDGET_MODIFIED:
@@ -6241,7 +6296,8 @@ def validate_project_private_notes_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_MODIFIED):
-        current = project_mail_reply_forward_source(root, path, ordinary(root, path))
+        current = project_runner_application_build_completion(root, path, ordinary(root, path))
+        current = project_mail_reply_forward_source(root, path, current)
         source = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', PROJECT_PRIVATE_NOTES_BASE + ':' + path)
         require(current == source
@@ -6264,6 +6320,7 @@ def validate_project_private_notes_source(root):
 
 def project_project_private_notes_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_runner_application_build_completion(root, path, current)
     current = project_mail_reply_forward_source(root, path, current)
     current = project_project_private_notes_evidence_source(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_MODIFIED:
@@ -8382,6 +8439,7 @@ def verify_current(root):
     validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
     validate_runner_aws_full_mirror_source(root)
+    validate_runner_application_build_completion(root)
     validate_runner_application_build_budget(root)
     validate_runner_account_source_completion(root)
     validate_runner_account_source_budget(root)
