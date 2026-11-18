@@ -276,7 +276,7 @@ def run_browser(env, browser):
     for label, revoke, restore, params in authority_cases:
         db(revoke, params)
         denied = member.post(attach_page, data={'csrf': known_file_csrf, 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
-        check('Known-id attachment download rechecks current ' + label, denied.content != attach_bytes)
+        check('Known-id attachment download rechecks current ' + label, attach_bytes not in denied.content and b'SYNTHETIC_ATTACHMENT_BYTES' not in denied.content and 'Content-Disposition' not in denied.headers and denied.headers.get('Content-Type') != 'application/octet-stream')
         db(restore, params)
     r = owner.post(attach_page, data={'csrf': token(owner.get(attach_page)), 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
     check('Another author cannot download a private draft attachment', r.content != attach_bytes)

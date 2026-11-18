@@ -168,7 +168,7 @@ def run_browser(env, browser):
 
     db('UPDATE ci_mail_account_grants SET can_read=0 WHERE account_id=? AND user_id=?', [aid, oid])
     r = owner.post(copied_file_page, data={'csrf': copied_file_csrf, 'action': 'mail_drafts_file', 'draft_id': reply_all, 'revision': '1', 'file_id': copied_file})
-    check('Revoking copied source Read blocks known-id attachment bytes', r.content != copied_file_bytes and 'inbox is unavailable' in r.text)
+    check('Revoking copied source Read blocks known-id attachment bytes', copied_file_bytes not in r.content and 'Content-Disposition' not in r.headers and r.headers.get('Content-Type') != 'application/octet-stream' and 'inbox is unavailable' in r.text)
     r = owner.get(draft_url + '&draft_id=' + forward)
     check('Revoking source Read hides copied content on open', 'SYNTHETIC PRIVATE BODY' not in r.text and 'inbox is unavailable' in r.text)
     send_page = root + '?view=mail-send&draft_id=' + forward

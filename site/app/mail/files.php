@@ -15,7 +15,10 @@ function mail_files_actor():array {
 /** Current author, sender and (for copied drafts) source-message authority. */
 function mail_drafts_file_authority(string $draftId,array $actor):array {
     $row=mail_drafts_row($draftId,(int)$actor['id']);
-    if($row['status']==='source')mail_reply_drafts_load($draftId,$actor);
+    if($row['status']==='source') {
+        if(!mail_replies_ready())throw new RuntimeException('Protected draft storage is unavailable. Existing data was preserved.');
+        mail_reply_drafts_load($draftId,$actor);
+    }
     else {
         if(!in_array($row['status'],['draft','discarded'],true))throw new RuntimeException('Saved draft files are unavailable.');
         mail_drafts_account($row['account_id']);
@@ -70,6 +73,7 @@ function mail_drafts_file_base(array $actor,string $draftId,int $revision):array
     $row=mail_drafts_row($draftId,(int)$actor['id'],true);
     if($revision<1||$revision>=2147483647||(int)$row['revision']!==$revision)throw new RuntimeException('The draft changed. Reload before adding files.');
     if($row['status']==='source') {
+        if(!mail_replies_ready())throw new RuntimeException('Protected draft storage is unavailable. Existing data was preserved.');
         $loaded=mail_reply_drafts_load($draftId,$actor,true);
         if($loaded['row']['status']!=='draft')throw new RuntimeException('Only a saved draft can hold attachments.');
     }elseif($row['status']!=='draft')throw new RuntimeException('Only a saved draft can hold attachments.');
