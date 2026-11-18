@@ -39,6 +39,7 @@ def validate(text):
           and text.count("'tests/mail-compose/**'") == 2
           and text.count("'tests/mail_copied_draft_*'") == 2
           and text.count("'tests/mail-receiving/**'") == 2
+          and text.count("'.github/scripts/prepare_ubuntu_apt.py'") == 2
           and text.count('branches: [main]') == 2)
     check('Manual redispatch cannot replace a natural first attempt', 'workflow_dispatch:' not in text)
     immutable = '${{ github.event.pull_request.head.sha || github.sha }}'
@@ -62,12 +63,11 @@ def validate(text):
           and 'php tests/database_schema_registry_policy.php' in text
           and 'for file in HeaderSession.php InboxReader.php MessageReader.php ReadSession.php ReceivingFailure.php' in text
           and 'cmp -s "foundation/mail-receiving/$file" "site/includes/foundation/mail-receiving/$file"' in text)
-    check('Every hosted lane refuses a withdrawn Ubuntu runner image before networking',
-          text.count("source = Path('/etc/apt/apt-mirrors.txt')") == 2
-          and text.count("raise SystemExit('Unexpected Ubuntu mirror list')") == 2
-          and text.count("b'http://azure.archive.ubuntu.com/ubuntu/\\tpriority:1\\n'") == 2
+    check('Every hosted lane uses reviewed signed-source image admission before networking',
+          text.count('sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu') == 2
+          and text.count('ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json') == 2
           and text.count('runner-image.log') == 2
-          and text.index("source = Path('/etc/apt/apt-mirrors.txt')") < text.index('docker build --build-arg PHP_VERSION='))
+          and text.index('prepare_ubuntu_apt.py prepare-ubuntu') < text.index('docker build --build-arg PHP_VERSION='))
     check('Acceptance retains PHP and database support matrix',
           "php: ['8.2', '8.4']" in text and 'database: [mariadb, mysql]' in text
           and "image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}" in text)
@@ -83,7 +83,8 @@ def validate(text):
           'for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text
           and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
     check('Only synthetic local receiving copy and native suites run',
-          text.count('php $php_flags tests/mail-receiving/session_test.php') == 1
+          'php_flags="-n -d extension=mbstring -d extension=ctype"' in text
+          and text.count('php $php_flags tests/mail-receiving/session_test.php') == 1
           and text.count('php $php_flags tests/mail-receiving/message_session_test.php') == 1
           and text.count('php $php_flags tests/mail-receiving/attachment_test.php') == 1
           and text.count('php $php_flags tests/mail-compose/reply_all.php') == 1
@@ -125,6 +126,7 @@ def validate(text):
           and "'receiving': 17, 'header-session': 56, 'message-session': 46" in text
           and "'body': 34, 'attachment': 14, 'attachment-security': 27" in text
           and "'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
+          and "'copied-source': 19, 'storage': 20, 'admin-policy': 23" in text
           and "'adapter': 20, 'schema-registry': 401" in text
           and "assert len(report['checks']) == count" in text)
     check('Native report counts retain every predecessor and composed assertion',
@@ -176,10 +178,12 @@ def self_test(text):
         ('lost matrix identity', 'tree=$(git rev-parse HEAD^{tree})', 'tree=unknown'),
         ('lost PDO MySQL', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install mbstring dom'),
         ('lost DOM', 'docker-php-ext-install pdo_mysql mbstring dom', 'docker-php-ext-install pdo_mysql mbstring'),
+        ('lost no-INI ctype', 'php_flags="-n -d extension=mbstring -d extension=ctype"', 'php_flags="-n -d extension=mbstring"'),
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost named migration gate', 'Declared-current refusal does not heal the table', 'Unrelated assertion'),
-        ('lost runner-image guard', "raise SystemExit('Unexpected Ubuntu mirror list')", "print('Unexpected Ubuntu mirror list')"),
+        ('lost runner-image guard', 'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu', 'true # runner admission omitted'),
         ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # reply all omitted'),
+        ('changed copied-source report count', "'copied-source': 19", "'copied-source': 21"),
         ('changed exact native report count', "'message': (cell / 'message-results.json', 94)", "'message': (cell / 'message-results.json', 30)"),
         ('lost failure evidence', 'if: always()', 'if: success()'),
     )

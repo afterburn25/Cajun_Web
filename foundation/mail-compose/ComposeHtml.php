@@ -40,7 +40,9 @@ final class ComposeHtml
                 $config=$config->allowElement('a',['href','title'])
                     ->forceAttribute('a','rel','noopener noreferrer')
                     ->forceAttribute('a','target','_blank');
-                $sanitizer=new HtmlSanitizer($config,new BodyHtmlParser());
+                // Outbound canonical values must remain exact fixed points when a
+                // stored draft moves between supported PHP runtimes.
+                $sanitizer=new HtmlSanitizer($config,new BodyHtmlParser(true));
             }
             $result=$sanitizer->sanitize($html);
             if (strlen($result)>self::MAX_BYTES) throw new ReceivingFailure('limit');

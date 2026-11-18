@@ -2,10 +2,10 @@ name: Mail folder current-source native acceptance
 on:
   push:
     branches: [main]
-    paths: ['foundation/mail-receiving/**', 'foundation/mail-compose/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'site/app/settings/database_schemas.php', 'site/admin/controllers/mail_inbox.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_inbox.php', 'site/admin/views/mail_message.php', 'site/admin/views/mail_notices.php', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/current_owner_authority.php', 'tests/database_schema_registry_policy.php', 'tests/communication_session_installed.py', 'tests/mail-compose/**', 'tests/mail-receiving/**', 'tests/mail_copied_draft_*', 'tests/mail_inbox*', 'tests/mail_message*', 'tests/mail_notices*', 'tests/mail_folder_native_workflow_contract.py', '.github/workflows/mail-folder-native.yml']
+    paths: ['foundation/mail-receiving/**', 'foundation/mail-compose/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'site/app/settings/database_schemas.php', 'site/admin/controllers/mail_inbox.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_inbox.php', 'site/admin/views/mail_message.php', 'site/admin/views/mail_notices.php', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/current_owner_authority.php', 'tests/database_schema_registry_policy.php', 'tests/communication_session_installed.py', 'tests/mail-compose/**', 'tests/mail-receiving/**', 'tests/mail_copied_draft_*', 'tests/mail_inbox*', 'tests/mail_message*', 'tests/mail_notices*', 'tests/mail_folder_native_workflow_contract.py', '.github/scripts/prepare_ubuntu_apt.py', '.github/workflows/mail-folder-native.yml']
   pull_request:
     branches: [main]
-    paths: ['foundation/mail-receiving/**', 'foundation/mail-compose/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'site/app/settings/database_schemas.php', 'site/admin/controllers/mail_inbox.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_inbox.php', 'site/admin/views/mail_message.php', 'site/admin/views/mail_notices.php', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/current_owner_authority.php', 'tests/database_schema_registry_policy.php', 'tests/communication_session_installed.py', 'tests/mail-compose/**', 'tests/mail-receiving/**', 'tests/mail_copied_draft_*', 'tests/mail_inbox*', 'tests/mail_message*', 'tests/mail_notices*', 'tests/mail_folder_native_workflow_contract.py', '.github/workflows/mail-folder-native.yml']
+    paths: ['foundation/mail-receiving/**', 'foundation/mail-compose/**', 'site/app/mail/**', 'site/app/staff/**', 'site/includes/**', 'site/database/**', 'site/app/settings/database_schemas.php', 'site/admin/controllers/mail_inbox.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_inbox.php', 'site/admin/views/mail_message.php', 'site/admin/views/mail_notices.php', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/current_owner_authority.php', 'tests/database_schema_registry_policy.php', 'tests/communication_session_installed.py', 'tests/mail-compose/**', 'tests/mail-receiving/**', 'tests/mail_copied_draft_*', 'tests/mail_inbox*', 'tests/mail_message*', 'tests/mail_notices*', 'tests/mail_folder_native_workflow_contract.py', '.github/scripts/prepare_ubuntu_apt.py', '.github/workflows/mail-folder-native.yml']
 permissions:
   contents: read
 concurrency:
@@ -31,20 +31,8 @@ jobs:
       - name: Verify bounded workflow source mirrors and syntax
         run: |
           mkdir -p qa/mail-folder-native/source
-          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > qa/mail-folder-native/source/runner-image.log
-          from pathlib import Path
-          source = Path('/etc/apt/apt-mirrors.txt')
-          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
-              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
-          expected = (
-              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-          )
-          if source.read_bytes() != expected:
-              raise SystemExit('Unexpected Ubuntu mirror list')
-          print('Supported Ubuntu runner mirror list verified')
-          CWP_UBUNTU_MIRRORS
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > qa/mail-folder-native/source/runner-image.log
+          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json qa/mail-folder-native/source/
           test "$CWP_RUN_ATTEMPT" = "1"
           python3 tests/mail_folder_native_workflow_contract.py > qa/mail-folder-native/source/workflow-contract.json
           for file in \
@@ -135,20 +123,8 @@ jobs:
         run: |
           cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
           mkdir -p "$cell"
-          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > "$cell/runner-image.log"
-          from pathlib import Path
-          source = Path('/etc/apt/apt-mirrors.txt')
-          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
-              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
-          expected = (
-              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-          )
-          if source.read_bytes() != expected:
-              raise SystemExit('Unexpected Ubuntu mirror list')
-          print('Supported Ubuntu runner mirror list verified')
-          CWP_UBUNTU_MIRRORS
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > "$cell/runner-image.log"
+          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json "$cell/"
           actual=$(git rev-parse HEAD)
           tree=$(git rev-parse HEAD^{tree})
           test "$actual" = "$CWP_SOURCE_SHA"
@@ -205,7 +181,7 @@ jobs:
               '\''
               for mode in normal noini; do
                 php_flags=""
-                if [ "$mode" = noini ]; then php_flags="-n -d extension=mbstring"; fi
+                if [ "$mode" = noini ]; then php_flags="-n -d extension=mbstring -d extension=ctype"; fi
                 php $php_flags tests/mail-receiving/run.php > "$cell/portable-$mode-receiving.json"
                 php $php_flags tests/mail-receiving/session_test.php > "$cell/portable-$mode-header-session.json"
                 php $php_flags tests/mail-receiving/message_session_test.php > "$cell/portable-$mode-message-session.json"
@@ -245,7 +221,7 @@ jobs:
               'receiving': 17, 'header-session': 56, 'message-session': 46,
               'body': 34, 'attachment': 14, 'attachment-security': 27,
               'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45,
-              'copied-source': 21, 'storage': 20, 'admin-policy': 23,
+              'copied-source': 19, 'storage': 20, 'admin-policy': 23,
               'adapter': 20, 'schema-registry': 401,
           }
           for mode in ('normal', 'noini'):

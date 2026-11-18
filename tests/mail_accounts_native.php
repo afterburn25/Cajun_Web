@@ -97,7 +97,7 @@ try {
     $_SESSION['auth_version']='stale';ma_ok('Revoked session cannot use old mailbox grant',!mail_accounts_can('mail.read',$id));ma_actor(2);
     $_GET['support']='fixture';ma_ok('Support context cannot use staff mailbox access',!mail_accounts_can('mail.read',$id));unset($_GET['support']);
     $_SESSION=['client_id'=>1,'client_auth'=>'fixture'];ma_ok('Client identity cannot use staff mail grants',!mail_accounts_can('mail.read',$id));ma_actor();
-    mail_accounts_grant($id,2,2,true,false,false,0,$password);ma_actor(2);ma_ok('Revoked mailbox assignment applies immediately',!mail_accounts_can('mail.read',$id));ma_actor();
+    mail_accounts_grant($id,2,2,false,false,false,0,$password);ma_actor(2);ma_ok('Revoked mailbox assignment applies immediately',!mail_accounts_can('mail.read',$id));ma_actor();
     ma_deny('Stale assignment form cannot resurrect prior access',fn()=>mail_accounts_grant($id,2,2,true,true,true,0,$password));
     $grants=mail_accounts_grants($id);$history=mail_accounts_grant_history($id);
     ma_ok('Assignment audit failure rolls back current and retained state',ma_audit_failure(fn()=>mail_accounts_grant($id,2,3,true,true,true,0,$password))&&mail_accounts_grants($id)===$grants&&mail_accounts_grant_history($id)===$history);

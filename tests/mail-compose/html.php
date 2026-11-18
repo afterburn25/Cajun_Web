@@ -45,7 +45,8 @@ try {
         denied('Invalid UTF-8 is refused',fn()=>ComposeHtml::sanitize("<p>\xC3\x28</p>"),'protocol');
         denied('NUL bytes are refused',fn()=>ComposeHtml::sanitize("<p>x\0y</p>"),'protocol');
         $canonical=ComposeHtml::sanitize('<p>Round <em>trip</em> <a href="https://example.invalid/">Site</a></p>');
-        check('Accepted canonical output is an exact fixed point',ComposeHtml::sanitize($canonical)===$canonical);
+        $portable="<pre>\nportable</pre>";
+        check('Accepted canonical output is an exact portable fixed point',ComposeHtml::sanitize($canonical)===$canonical&&ComposeHtml::sanitize($portable)===$portable);
         check('DraftContent accepts only that exact canonical value',(new DraftContent([],[],[],'','Plain',$canonical))->html===$canonical);
     } else {
         denied('DOM extension unavailable; sanitizer execution fails with protocol refusal',fn()=>ComposeHtml::sanitize('<p>Formatted</p>'),'protocol');

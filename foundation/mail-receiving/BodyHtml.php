@@ -9,9 +9,9 @@ use Symfony\Component\HtmlSanitizer\Parser\{ParserInterface,NativeParser,Masterm
 final class BodyHtmlParser implements ParserInterface
 {
     private ParserInterface $parser;
-    public function __construct()
+    public function __construct(bool $portable=false)
     {
-        $this->parser=PHP_VERSION_ID>=80400 ? new NativeParser() : new MastermindsParser();
+        $this->parser=$portable || PHP_VERSION_ID<80400 ? new MastermindsParser() : new NativeParser();
     }
     public function parse(string $html,string $context='body'): \DOMNode|\Dom\Node|null
     {

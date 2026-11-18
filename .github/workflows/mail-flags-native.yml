@@ -2,10 +2,10 @@ name: Mail flags current-source native acceptance
 on:
   push:
     branches: [main]
-    paths: ['foundation/mail-receiving/**', 'site/app/mail/flags.php', 'site/app/settings/database_schemas.php', 'site/app/staff/accounts.php', 'site/admin/controllers/mail_accounts.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_accounts.php', 'site/admin/views/mail_message.php', 'site/database/schema/base.php', 'site/database/schema/mail_flags_schema.php', 'site/database/migrations/mail_flags_migrate.php', 'site/includes/foundation/mail-receiving/**', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/database_schema_registry_policy.php', 'tests/mail-receiving/flag_test.php', 'tests/mail_flags_native.php', 'tests/mail_flags_native_workflow_contract.py', 'tests/mail_inbox_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_message_cases.py', '.github/workflows/mail-flags-native.yml']
+    paths: ['foundation/mail-receiving/**', 'site/app/mail/flags.php', 'site/app/settings/database_schemas.php', 'site/app/staff/accounts.php', 'site/admin/controllers/mail_accounts.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_accounts.php', 'site/admin/views/mail_message.php', 'site/database/schema/base.php', 'site/database/schema/mail_flags_schema.php', 'site/database/migrations/mail_flags_migrate.php', 'site/includes/foundation/mail-receiving/**', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/database_schema_registry_policy.php', 'tests/mail-receiving/flag_test.php', 'tests/mail_flags_native.php', 'tests/mail_flags_native_workflow_contract.py', 'tests/mail_inbox_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_message_cases.py', '.github/scripts/prepare_ubuntu_apt.py', '.github/workflows/mail-flags-native.yml']
   pull_request:
     branches: [main]
-    paths: ['foundation/mail-receiving/**', 'site/app/mail/flags.php', 'site/app/settings/database_schemas.php', 'site/app/staff/accounts.php', 'site/admin/controllers/mail_accounts.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_accounts.php', 'site/admin/views/mail_message.php', 'site/database/schema/base.php', 'site/database/schema/mail_flags_schema.php', 'site/database/migrations/mail_flags_migrate.php', 'site/includes/foundation/mail-receiving/**', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/database_schema_registry_policy.php', 'tests/mail-receiving/flag_test.php', 'tests/mail_flags_native.php', 'tests/mail_flags_native_workflow_contract.py', 'tests/mail_inbox_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_message_cases.py', '.github/workflows/mail-flags-native.yml']
+    paths: ['foundation/mail-receiving/**', 'site/app/mail/flags.php', 'site/app/settings/database_schemas.php', 'site/app/staff/accounts.php', 'site/admin/controllers/mail_accounts.php', 'site/admin/controllers/mail_message.php', 'site/admin/views/mail_accounts.php', 'site/admin/views/mail_message.php', 'site/database/schema/base.php', 'site/database/schema/mail_flags_schema.php', 'site/database/migrations/mail_flags_migrate.php', 'site/includes/foundation/mail-receiving/**', 'site/install/actions/deploy.php', 'site/install/inventory.generated.php', 'tests/database_schema_registry_policy.php', 'tests/mail-receiving/flag_test.php', 'tests/mail_flags_native.php', 'tests/mail_flags_native_workflow_contract.py', 'tests/mail_inbox_cases.py', 'tests/mail_inbox_http_server.py', 'tests/mail_message_cases.py', '.github/scripts/prepare_ubuntu_apt.py', '.github/workflows/mail-flags-native.yml']
 permissions:
   contents: read
 concurrency:
@@ -31,26 +31,14 @@ jobs:
       - name: Verify bounded source and portable contracts
         run: |
           mkdir -p qa/mail-flags-native/source
-          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > qa/mail-flags-native/source/runner-image.log
-          from pathlib import Path
-          source = Path('/etc/apt/apt-mirrors.txt')
-          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
-              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
-          expected = (
-              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-          )
-          if source.read_bytes() != expected:
-              raise SystemExit('Unexpected Ubuntu mirror list')
-          print('Supported Ubuntu runner mirror list verified')
-          CWP_UBUNTU_MIRRORS
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > qa/mail-flags-native/source/runner-image.log
+          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json qa/mail-flags-native/source/
           test "$CWP_RUN_ATTEMPT" = "1"
           python3 tests/mail_flags_native_workflow_contract.py > qa/mail-flags-native/source/workflow-contract.json
           python3 -m py_compile tests/mail_inbox_cases.py tests/mail_inbox_http_server.py tests/mail_message_cases.py
           for file in foundation/mail-receiving/FlagSession.php foundation/mail-receiving/FlagWriter.php foundation/mail-receiving/ReadProfile.php foundation/mail-receiving/ReceivingFailure.php foundation/mail-receiving/bootstrap.php site/app/mail/flags.php site/app/settings/database_schemas.php site/app/staff/accounts.php site/admin/controllers/mail_accounts.php site/admin/controllers/mail_message.php site/admin/views/mail_accounts.php site/admin/views/mail_message.php site/database/schema/base.php site/database/schema/mail_flags_schema.php site/database/migrations/mail_flags_migrate.php site/install/actions/deploy.php tests/mail-receiving/flag_test.php tests/mail_flags_native.php; do php -l "$file"; done > qa/mail-flags-native/source/lint.log
           for mode in normal noini; do
-            flags=""; if [ "$mode" = noini ]; then flags="-n"; fi
+            flags=""; if [ "$mode" = noini ]; then flags="-n -d extension=ctype"; fi
             php $flags tests/mail-receiving/flag_test.php > "qa/mail-flags-native/source/portable-$mode-flags.json"
             php $flags tests/database_schema_registry_policy.php > "qa/mail-flags-native/source/portable-$mode-schema-registry.json"
           done
@@ -131,20 +119,8 @@ jobs:
         run: |
           cell=qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}
           mkdir -p "$cell"
-          sudo python3 - <<'CWP_UBUNTU_MIRRORS' > "$cell/runner-image.log"
-          from pathlib import Path
-          source = Path('/etc/apt/apt-mirrors.txt')
-          if source.is_symlink() or not source.is_file() or source.stat().st_size > 4096:
-              raise SystemExit('Expected regular Ubuntu mirror list is unavailable')
-          expected = (
-              b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-              b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-              b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-          )
-          if source.read_bytes() != expected:
-              raise SystemExit('Unexpected Ubuntu mirror list')
-          print('Supported Ubuntu runner mirror list verified')
-          CWP_UBUNTU_MIRRORS
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > "$cell/runner-image.log"
+          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json "$cell/"
           actual=$(git rev-parse HEAD); tree=$(git rev-parse HEAD^{tree})
           test "$actual" = "$CWP_SOURCE_SHA"; test "$CWP_RUN_ATTEMPT" = "1"
           printf 'source=%s\ntree=%s\nrun_id=%s\nrun_attempt=%s\nphp=%s\ndatabase=%s\n' "$actual" "$tree" "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" '${{ matrix.php }}' '${{ matrix.database }}' > "$cell/identity.txt"

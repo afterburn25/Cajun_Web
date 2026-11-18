@@ -1,6 +1,6 @@
 """Independent Python standard-library parsing of actual PHPMailer-produced bytes."""
 from pathlib import Path
-import base64,email,email.policy,email.utils,hashlib,json,sys
+import base64,email,email.policy,email.utils,hashlib,json,re,sys
 
 source=Path(sys.argv[1]);data=json.loads(source.read_text(encoding='utf-8'));assert data['passed'] is True
 checks=[]
@@ -13,16 +13,17 @@ check('complete fixture family',len(data['messages'])==27 and {fixture['name'] f
 for fixture in data['messages']:
     name=fixture['name'];s=fixture['snapshot'];raw=base64.b64decode(fixture['mime_base64'],validate=True)
     message=email.message_from_bytes(raw,policy=email.policy.default)
+    header=raw.split(b'\r\n\r\n',1)[0]
     check(name+' independent parser has no MIME defects',not message.defects)
     check(name+' exact literal decoded subject',str(message['Subject'])==s['subject'])
-    check(name+' fixed Message-ID',str(message['Message-ID'])==s['message_id'])
+    ids=re.findall(rb'(?m)^Message-ID:[ \t]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)\r?$',header)
+    check(name+' exact wire Message-ID and parser acceptance',len(ids)==1 and re.sub(rb'\r\n[ \t]+',b'',ids[0]).decode('ascii')==s['message_id'] and message['Message-ID'] is not None and not message['Message-ID'].defects)
     check(name+' fixed UTC Date',int(email.utils.parsedate_to_datetime(str(message['Date'])).timestamp())==s['prepared_epoch'])
     check(name+' exact From',email.utils.getaddresses(message.get_all('From',[]))==[('',s['from'])])
     to=[address for _,address in email.utils.getaddresses(message.get_all('To',[])) if address]
     check(name+' visible To unchanged',to==s['to'])
     check(name+' visible Cc unchanged',[address for _,address in email.utils.getaddresses(message.get_all('Cc',[]))]==s['cc'])
     check(name+' no hidden-recipient or extra authority headers',all(message.get(h) is None for h in ['Bcc','Resent-Bcc','Reply-To','Return-Path','Disposition-Notification-To','X-Mailer']))
-    header=raw.split(b'\r\n\r\n',1)[0]
     check(name+' hidden envelope addresses absent from headers',all(address.encode('ascii') not in header for address in s['bcc']))
     thread=s.get('thread')
     if thread:
