@@ -793,6 +793,11 @@ MAIL_ATTACHMENT_CLAIM_FIX_BASE_TREE = MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE_TREE
 MAIL_ATTACHMENT_CLAIM_FIX_SOURCE = '33ca06fb9fe29d286442a44d43c81f329d7dac68'
 MAIL_ATTACHMENT_CLAIM_FIX_SOURCE_TREE = 'e363c21ef9296889d9bb3c68d804fa863fc6e7fd'
 MAIL_ATTACHMENT_CLAIM_FIX_PATH = 'tests/mail_replies_native.php'
+MAIL_SUBMISSION_EXPIRY_FIX_BASE = '3576e6b5640a56175efbc475b42b2d85323ab472'
+MAIL_SUBMISSION_EXPIRY_FIX_BASE_TREE = '185e1cee0ee80226ae0da4eb8ec0fce94380de3c'
+MAIL_SUBMISSION_EXPIRY_FIX_SOURCE = 'a5131a0c8d5f7eaa3a7acc9b3fcccb1a0135cd8e'
+MAIL_SUBMISSION_EXPIRY_FIX_SOURCE_TREE = 'cbeda4f6bd647756a7aab2b8e7a03d2459b33714'
+MAIL_SUBMISSION_EXPIRY_FIX_PATH = 'tests/mail_submissions_native.php'
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -4894,6 +4899,7 @@ def validate_mail_attachment_claim_fix(root):
 
 def project_mail_attachment_claim_fix(root, path, current):
     """Restore the submission-readiness source before its causal test correction."""
+    current = project_mail_submission_expiry_fix(root, path, current)
     current = project_mail_reply_all_replay(root, path, current)
     if path != MAIL_ATTACHMENT_CLAIM_FIX_PATH:
         return current
@@ -4905,6 +4911,69 @@ def project_mail_attachment_claim_fix(root, path, current):
         return current
     require(current == source,
             'Current attachment causal-claim fix changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_submission_expiry_fix(root):
+    """Bind the native expired-grant fixture to the canonical epoch schema."""
+    require(git(root, 'rev-parse', MAIL_SUBMISSION_EXPIRY_FIX_BASE + '^{tree}').decode().strip()
+            == MAIL_SUBMISSION_EXPIRY_FIX_BASE_TREE
+            and git(root, 'rev-parse', MAIL_SUBMISSION_EXPIRY_FIX_SOURCE + '^{tree}').decode().strip()
+            == MAIL_SUBMISSION_EXPIRY_FIX_SOURCE_TREE,
+            'Mail submission expiry-fixture source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_SUBMISSION_EXPIRY_FIX_SOURCE).decode().split()
+            == [MAIL_SUBMISSION_EXPIRY_FIX_SOURCE, MAIL_SUBMISSION_EXPIRY_FIX_BASE],
+            'Mail submission expiry fixture is not the direct failed-run successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_SUBMISSION_EXPIRY_FIX_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_SUBMISSION_EXPIRY_FIX_BASE,
+                MAIL_SUBMISSION_EXPIRY_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + MAIL_SUBMISSION_EXPIRY_FIX_PATH],
+            'Mail submission expiry fixture changed another path or status')
+    base_entries = entries(root, MAIL_SUBMISSION_EXPIRY_FIX_BASE)
+    source_entries = entries(root, MAIL_SUBMISSION_EXPIRY_FIX_SOURCE)
+    current = ordinary(root, MAIL_SUBMISSION_EXPIRY_FIX_PATH)
+    source = git(root, 'cat-file', 'blob',
+                 MAIL_SUBMISSION_EXPIRY_FIX_SOURCE + ':' + MAIL_SUBMISSION_EXPIRY_FIX_PATH)
+    base = git(root, 'cat-file', 'blob',
+               MAIL_SUBMISSION_EXPIRY_FIX_BASE + ':' + MAIL_SUBMISSION_EXPIRY_FIX_PATH)
+    require(current == source
+            and mode(root, MAIL_SUBMISSION_EXPIRY_FIX_PATH)
+            == base_entries[MAIL_SUBMISSION_EXPIRY_FIX_PATH][0]
+            == source_entries[MAIL_SUBMISSION_EXPIRY_FIX_PATH][0] == '100644'
+            and project_mail_submission_expiry_fix(
+                root, MAIL_SUBMISSION_EXPIRY_FIX_PATH, current) == base
+            and project_mail_submission_expiry_fix(
+                root, MAIL_SUBMISSION_EXPIRY_FIX_PATH, base) == base,
+            'Mail submission expiry-fixture identity, mode or projection changed')
+    replacement = (b"elseif($mode==='expiry')query('UPDATE '.table('mail_account_grants')"
+                   b".' SET expires_at=? WHERE account_id=? AND user_id=2',[1,$a]);")
+    legacy = (b"elseif($mode==='expiry')query(\"UPDATE \".table('mail_account_grants')"
+              b".\" SET expires_at='2000-01-01 00:00:00' WHERE account_id=? AND user_id=2\",[$a]);")
+    schema = ordinary(root, 'site/database/schema/mail_accounts_schema.php')
+    require(current.count(replacement) == 1
+            and legacy not in current
+            and current.count(b"foreach(['send','grant','expiry','account'] as $mode)") == 1
+            and current.count(b"su_deny('Current '.$mode.' authority refuses attachment metadata'") == 1
+            and current.count(b"su_deny('Current '.$mode.' authority refuses attachment download'") == 1
+            and schema.count(b'mail_account_grants') >= 1
+            and schema.count(b'expires_at BIGINT UNSIGNED NULL') >= 1,
+            'Mail submission expiry fixture or canonical epoch-schema boundary changed')
+
+
+def project_mail_submission_expiry_fix(root, path, current):
+    """Restore the accepted hosted source before the strict-DB fixture correction."""
+    if path != MAIL_SUBMISSION_EXPIRY_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_SUBMISSION_EXPIRY_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_SUBMISSION_EXPIRY_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail submission expiry fixture changed before predecessor projection')
     return base
 
 
@@ -7933,6 +8002,7 @@ def verify_current(root):
     validate_mail_admission_evidence_source(root)
     validate_mail_acceptance_portability_source(root)
     validate_mail_reply_all_replay_source(root)
+    validate_mail_submission_expiry_fix(root)
     validate_mail_attachment_claim_fix(root)
     validate_mail_attachment_submission_fix(root)
     validate_mail_attachment_readiness_fix(root)
