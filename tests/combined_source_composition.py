@@ -798,6 +798,26 @@ MAIL_SUBMISSION_EXPIRY_FIX_BASE_TREE = '185e1cee0ee80226ae0da4eb8ec0fce94380de3c
 MAIL_SUBMISSION_EXPIRY_FIX_SOURCE = 'a5131a0c8d5f7eaa3a7acc9b3fcccb1a0135cd8e'
 MAIL_SUBMISSION_EXPIRY_FIX_SOURCE_TREE = 'cbeda4f6bd647756a7aab2b8e7a03d2459b33714'
 MAIL_SUBMISSION_EXPIRY_FIX_PATH = 'tests/mail_submissions_native.php'
+MAIL_ACCEPTANCE_REPAIR_BASE = '007785194f3646fd831189536a25d825b271c77c'
+MAIL_ACCEPTANCE_REPAIR_BASE_TREE = 'd019dac150ea98ed93c3ae6dc7783cf7469c8d6f'
+MAIL_ACCEPTANCE_REPAIR_SOURCE = 'f2e7066f5d909de1aac823cda161050ce3ad93f9'
+MAIL_ACCEPTANCE_REPAIR_SOURCE_TREE = '2e87cafec0efb27f4d1eb2f0b31337f8146f86ac'
+MAIL_ACCEPTANCE_REPAIR_PATHS = frozenset((
+    '.github/workflows/mail-folder-native.yml',
+    'tests/mail_copied_draft_create_native.php',
+    'tests/mail_flags_native.php',
+    'tests/mail_folder_native_workflow_contract.py',
+    'tests/mail_message_native.php',
+))
+MAIL_ACCEPTANCE_HARDENING_BASE = MAIL_ACCEPTANCE_REPAIR_SOURCE
+MAIL_ACCEPTANCE_HARDENING_BASE_TREE = MAIL_ACCEPTANCE_REPAIR_SOURCE_TREE
+MAIL_ACCEPTANCE_HARDENING_SOURCE = '7dbff127e3d49028d6176b9449265fdaad5e9285'
+MAIL_ACCEPTANCE_HARDENING_SOURCE_TREE = '60713893cb1783b8738901ee4ca3b066a5645bb9'
+MAIL_ACCEPTANCE_HARDENING_PATHS = frozenset((
+    '.github/workflows/mail-folder-native.yml',
+    'tests/mail_folder_native_workflow_contract.py',
+    'tests/mail_message_native.php',
+))
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -4668,7 +4688,7 @@ def validate_mail_reply_all_replay_source(root):
     base_entries = entries(root, MAIL_REPLY_ALL_REPLAY_BASE)
     source_entries = entries(root, MAIL_REPLY_ALL_REPLAY_SOURCE)
     for path in sorted(MAIL_REPLY_ALL_REPLAY_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_acceptance_repair_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_BASE + ':' + path)
         require(current == source
@@ -4830,7 +4850,7 @@ def validate_mail_admission_evidence_source(root):
     base_entries = entries(root, MAIL_ADMISSION_EVIDENCE_BASE)
     source_entries = entries(root, MAIL_ADMISSION_EVIDENCE_SOURCE)
     for path in sorted(MAIL_ADMISSION_EVIDENCE_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_acceptance_repair_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_BASE + ':' + path)
         require(current == source
@@ -4855,6 +4875,7 @@ def validate_mail_admission_evidence_source(root):
 
 def project_mail_admission_evidence(root, path, current):
     """Restore the first reviewed portability proof before evidence retention."""
+    current = project_mail_acceptance_repair_source(root, path, current)
     if path not in MAIL_ADMISSION_EVIDENCE_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_ADMISSION_EVIDENCE_SOURCE + ':' + path)
@@ -4974,6 +4995,134 @@ def project_mail_submission_expiry_fix(root, path, current):
         return current
     require(current == source,
             'Current mail submission expiry fixture changed before predecessor projection')
+    return base
+
+
+def validate_mail_acceptance_hardening_source(root):
+    """Bind the complete retained-matrix correction after artifact inspection."""
+    require(git(root, 'rev-parse', MAIL_ACCEPTANCE_HARDENING_BASE + '^{tree}').decode().strip()
+            == MAIL_ACCEPTANCE_HARDENING_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ACCEPTANCE_HARDENING_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ACCEPTANCE_HARDENING_SOURCE_TREE,
+            'Mail acceptance hardening source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ACCEPTANCE_HARDENING_SOURCE).decode().split()
+            == [MAIL_ACCEPTANCE_HARDENING_SOURCE, MAIL_ACCEPTANCE_HARDENING_BASE],
+            'Mail acceptance hardening is not the direct inspected-artifact successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ACCEPTANCE_HARDENING_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ACCEPTANCE_HARDENING_BASE,
+                MAIL_ACCEPTANCE_HARDENING_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ACCEPTANCE_HARDENING_PATHS)],
+            'Mail acceptance hardening changed another path or status')
+    base_entries = entries(root, MAIL_ACCEPTANCE_HARDENING_BASE)
+    source_entries = entries(root, MAIL_ACCEPTANCE_HARDENING_SOURCE)
+    for path in sorted(MAIL_ACCEPTANCE_HARDENING_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_acceptance_hardening_source(root, path, current) == base
+                and project_mail_acceptance_hardening_source(root, path, base) == base,
+                'Mail acceptance hardening identity, mode or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/mail-folder-native.yml')
+    contract = ordinary(root, 'tests/mail_folder_native_workflow_contract.py')
+    native = ordinary(root, 'tests/mail_message_native.php')
+    require(workflow.count(b'php_flags="-n"') == 1
+            and workflow.count(b'php -n -r') == 1
+            and workflow.count(b'function_exists("mb_convert_encoding")') == 1
+            and workflow.count(b'function_exists("ctype_digit")') == 1
+            and workflow.count(b'class_exists("DOMDocument")') == 1
+            and workflow.count(b"'adapter': 19, 'schema-registry': 401") == 1
+            and workflow.count(b"assert 'Revoked read grant records a bounded failure, not bytes'") == 1
+            and contract.count(b"'lost no-INI mbstring capability'") == 1
+            and contract.count(b"'lost no-INI ctype capability'") == 1
+            and contract.count(b"'lost no-INI DOM capability'") == 1
+            and contract.count(b"'lost retained adapter report count'") == 1
+            and native.count(b"in_array($mode,['after','attachment_after'],true)") == 1
+            and native.count(b"in_array($mode,['attachment','attachment_after'],true)") == 1
+            and native.count(b"$mode='attachment_after'") == 1
+            and native.count(b'$transportCalls===$beforeAttach+1') == 1
+            and native.count(b"$lateResult['result_code']==='access_changed'") == 1
+            and native.count(b"!str_contains(json_encode($r),'SYNTHETIC_ATTACHMENT_BYTES')") == 1,
+            'Mail matrix capability, exact-count or late-authority proof changed')
+
+
+def project_mail_acceptance_hardening_source(root, path, current):
+    """Restore the first retained-mail repair before its evidence hardening."""
+    if path not in MAIL_ACCEPTANCE_HARDENING_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail acceptance hardening changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_acceptance_repair_source(root):
+    """Bind the minimal fixes for every retained first-attempt mail failure."""
+    require(git(root, 'rev-parse', MAIL_ACCEPTANCE_REPAIR_BASE + '^{tree}').decode().strip()
+            == MAIL_ACCEPTANCE_REPAIR_BASE_TREE
+            and git(root, 'rev-parse', MAIL_ACCEPTANCE_REPAIR_SOURCE + '^{tree}').decode().strip()
+            == MAIL_ACCEPTANCE_REPAIR_SOURCE_TREE,
+            'Mail acceptance repair source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_ACCEPTANCE_REPAIR_SOURCE).decode().split()
+            == [MAIL_ACCEPTANCE_REPAIR_SOURCE, MAIL_ACCEPTANCE_REPAIR_BASE],
+            'Mail acceptance repair is not the direct proof-head successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_ACCEPTANCE_REPAIR_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_ACCEPTANCE_REPAIR_BASE,
+                MAIL_ACCEPTANCE_REPAIR_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_ACCEPTANCE_REPAIR_PATHS)],
+            'Mail acceptance repair changed another path or status')
+    base_entries = entries(root, MAIL_ACCEPTANCE_REPAIR_BASE)
+    source_entries = entries(root, MAIL_ACCEPTANCE_REPAIR_SOURCE)
+    for path in sorted(MAIL_ACCEPTANCE_REPAIR_PATHS):
+        current = project_mail_acceptance_hardening_source(root, path, ordinary(root, path))
+        source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_acceptance_repair_source(root, path, current) == base
+                and project_mail_acceptance_repair_source(root, path, base) == base,
+                'Mail acceptance repair identity, mode or projection changed: ' + path)
+    copied = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE
+                 + ':tests/mail_copied_draft_create_native.php')
+    flags = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE
+                + ':tests/mail_flags_native.php')
+    workflow = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE
+                   + ':.github/workflows/mail-folder-native.yml')
+    contract = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE
+                   + ':tests/mail_folder_native_workflow_contract.py')
+    require(copied.count(b"['name'=>'RAW_ATTACHMENT_MARKER.bin','type'=>'application/octet-stream','size'=>20]") == 1
+            and copied.count(b"!str_contains($createdJson,'RAW_HIDDEN_MARKER')") == 1
+            and copied.count(b"!str_contains($createdJson,'RAW_ATTACHMENT_BYTES')") == 1
+            and copied.count(b"!str_contains($createdJson,'UkFXX0FUVEFDSE1FTlRfQllURVM=')") == 1
+            and flags.count(b"require_once __DIR__.'/../site/app/mail/flags.php'") == 1
+            and workflow.count(b"'copied-source': 19, 'storage': 21, 'admin-policy': 23") == 1
+            and contract.count(b"'lost retained storage report count'") == 1,
+            'Mail sanitized-metadata, include or exact-count repair changed')
+
+
+def project_mail_acceptance_repair_source(root, path, current):
+    """Restore the accepted proof head before retained mail acceptance repairs."""
+    current = project_mail_acceptance_hardening_source(root, path, current)
+    if path not in MAIL_ACCEPTANCE_REPAIR_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail acceptance repair changed before predecessor projection: ' + path)
     return base
 
 
@@ -7999,6 +8148,8 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_acceptance_hardening_source(root)
+    validate_mail_acceptance_repair_source(root)
     validate_mail_admission_evidence_source(root)
     validate_mail_acceptance_portability_source(root)
     validate_mail_reply_all_replay_source(root)
@@ -8315,7 +8466,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_mail_submission_expiry_fix(root, path, ordinary(root, path))
+        value = project_mail_acceptance_repair_source(root, path, ordinary(root, path))
+        value = project_mail_submission_expiry_fix(root, path, value)
         value = project_mail_copy_controls_fix(root, path, value)
         value = project_runner_mirror_compat(root, path, value)
         value = project_ux08_agreement_link_fix(root, path, value)
