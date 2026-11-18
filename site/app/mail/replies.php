@@ -30,7 +30,7 @@ function mail_reply_drafts_fingerprint(array $base,DraftOrigin $origin,string $s
 /** Internal locked projection; copied content is decoded only after current Read and Send. */
 function mail_reply_drafts_load(string $id,array $actor,bool $lock=false):array{
     $base=mail_drafts_row($id,(int)$actor['id'],$lock);
-    if($base['status']!=='source'||$base['subject']!=='Copied message draft'||$base['body']!==''||$base['to_json']!=='[]'||$base['cc_json']!=='[]'||$base['bcc_json']!=='[]')throw new RuntimeException('Protected draft placeholder is damaged. Existing data was preserved.');
+    if($base['status']!=='source'||$base['subject']!=='Copied message draft'||$base['body']!==''||($base['body_html']??null)!==null||$base['to_json']!=='[]'||$base['cc_json']!=='[]'||$base['bcc_json']!=='[]')throw new RuntimeException('Protected draft placeholder is damaged. Existing data was preserved.');
     $row=one('SELECT * FROM '.table('mail_reply_drafts').' WHERE id=?'.($lock?' FOR UPDATE':''),[$id]);
     if(!$row)throw new RuntimeException('Protected draft content is unavailable. Existing data was preserved.');
     try{$origin=DraftOrigin::fromJson($row['origin_json']);}

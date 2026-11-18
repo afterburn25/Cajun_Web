@@ -57,6 +57,18 @@ origin_check('content JSON preserves Unicode without escaped slashes',function()
     $json=DraftOrigin::contentJson($content);
     return !str_contains($json,'\\/') && DraftOrigin::contentFromJson($json)->body===$content->body;
 });
+origin_check('content JSON round trips a canonical formatted alternative',function(){
+    if(!extension_loaded('dom'))return true;
+    $content=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Formatted','Plain','<p>Formatted <b>copy</b></p>');
+    $json=DraftOrigin::contentJson($content);$copy=DraftOrigin::contentFromJson($json);
+    return $copy->html===$content->html&&str_contains($json,'"body_html"');
+});
+origin_check('combined plain and formatted copied content is bounded before storage',function(){
+    if(!extension_loaded('dom'))return true;
+    $content=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded',str_repeat('p',20000),'<p>'.str_repeat('h',50000).'</p>');
+    $error=origin_failure(fn()=>DraftOrigin::contentJson($content));
+    return $error instanceof InvalidArgumentException&&$error->getMessage()==='Copied draft content exceeds its limit.';
+});
 foreach([
     'float format'=>fn($json)=>str_replace('"format":1','"format":1.0',$json),
     'duplicate key'=>fn($json)=>str_replace('"format":1','"format":1,"format":1',$json),

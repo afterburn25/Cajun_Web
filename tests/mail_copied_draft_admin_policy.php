@@ -51,7 +51,7 @@ copied_admin_check('controller selects protected get save discard history and co
 });
 copied_admin_check('owner setup uses the additive protected migration without direct schema execution',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php');
-    return str_contains($source,"mail_replies_migrate(posted('current_password',200))")&&!str_contains($source,'db()->exec');
+    return str_contains($source,"mail_replies_migrate('')")&&!str_contains($source,'db()->exec')&&!str_contains($source,"admin_action('mail_drafts_replies_setup');admin_input('current_password'");
 });
 copied_admin_check('copied origin presentation exposes no account read or fingerprint identifiers',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/admin/views/mail_drafts.php');

@@ -82,7 +82,7 @@ def validate(text):
           text.count('php tests/mail_copied_draft_create_native.php\n') == 1
           and text.count('php tests/mail_replies_native.php\n') == 1)
     portable = (
-        ('tests/mail-compose/origin.php', 'origin', '17'),
+        ('tests/mail-compose/origin.php', 'origin', '19'),
         ('tests/mail-compose/reply.php', 'reply', '60'),
         ('tests/mail-compose/reply_all.php', 'reply-all', '37'),
         ('tests/mail-compose/thread.php', 'thread', '45'),

@@ -142,6 +142,18 @@ try {
     [$waiting]=su_prepare($a);$worker=staff_locked(function()use($waiting,$a):array {$w=su_worker(['worker-claim',$waiting]);su_ok('Waiting dispatch worker reaches authority boundary',fgets($w[1][1])==="ready\n");query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);return $w;});
     su_ok('Revocation while waiting prevents a dispatch fence',su_finish($worker)==='denied'&&!one('SELECT id FROM '.table('mail_submission_dispatches').' WHERE submission_id=?',[$waiting]));query('UPDATE '.table('mail_account_grants').' SET enabled=1 WHERE account_id=? AND user_id=2',[$a]);
     su_actor(1);query('DELETE FROM '.table('settings').' WHERE name=?',['mail_submissions_schema_version']);$before=su_snapshot();su_deny('Populated unrecognized storage is not adopted',fn()=>mail_submissions_migrate($password));su_ok('Failed adoption preserves every submission/dispatch/result/audit',su_snapshot()===$before&&!mail_submissions_ready());save_setting('mail_submissions_schema_version','1');su_actor();
+    // Formatted alternative: prepare/snapshot/persisted-MIME round-trip and damage fence.
+    $richDraft=su_draft($a);mail_drafts_save($richDraft,1,$a,1,new DraftContent(['client@example.invalid'],['copy@example.invalid'],['private@example.invalid'],'Rich draft','Plain body','<p>Formatted <b>part</b></p>'));
+    $richId=mail_submissions_prepare(bin2hex(random_bytes(16)),$richDraft,2,1);
+    $richMessage=mail_submissions_message(mail_submissions_row($richId));
+    su_ok('Formatted alternative uses payload format 5 with exact alternative bytes',$richMessage->snapshot->privatePayload()['format']===5&&$richMessage->snapshot->privatePayload()['body_html']==='<p>Formatted <b>part</b></p>'&&str_contains($richMessage->bytes,'multipart/alternative'));
+    su_ok('Formatted submission reconstructs byte-exactly from private storage',mail_submissions_message(mail_submissions_row($richId))->bytes===$richMessage->bytes&&str_contains($richMessage->bytes,'Content-Type: text/html'));
+    $richPayload=one('SELECT payload_json FROM '.table('mail_submissions').' WHERE id=?',[$richId])['payload_json'];
+    $tampered=$richMessage->snapshot->privatePayload();$tampered['body_html']='<p>tampered</p>';
+    query('UPDATE '.table('mail_submissions').' SET payload_json=? WHERE id=?',[json_encode($tampered,JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),$richId]);
+    su_deny('Damaged formatted alternative refuses disclosure',fn()=>mail_submissions_get($richId));
+    query('UPDATE '.table('mail_submissions').' SET payload_json=? WHERE id=?',[$richPayload,$richId]);
+    su_actor(2);
     $metadata=json_encode(all('SELECT detail FROM '.table('audit')." WHERE action LIKE 'mail_submissions.%'"));su_ok('Audit omits subject/body and recipient identities',!str_contains($metadata,'SYNTHETIC_SUBMISSION')&&!str_contains($metadata,'private@example.invalid')&&!str_contains($metadata,'client@example.invalid'));
     su_ok('Private original mailbox and provider keys stay exact',file_get_contents($private.'/mail-master.key')===$mailKey&&file_get_contents($private.'/provider-master.key')===$providerKey);
     su_ok('No system-mail configuration enabled by storage',setting('email_mode')==='disabled'&&setting('smtp_host')===''&&setting('smtp_password')==='');

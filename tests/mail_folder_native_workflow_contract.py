@@ -124,7 +124,7 @@ def validate(text):
           "for mode in ('normal', 'noini')" in text
           and "'receiving': 17, 'header-session': 56, 'message-session': 46" in text
           and "'body': 34, 'attachment': 14, 'attachment-security': 27" in text
-          and "'origin': 17, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
+          and "'origin': 19, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
           and "'adapter': 20, 'schema-registry': 387" in text
           and "assert len(report['checks']) == count" in text)
     check('Native report counts retain every predecessor and composed assertion',

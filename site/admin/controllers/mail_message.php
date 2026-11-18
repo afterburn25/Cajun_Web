@@ -5,6 +5,7 @@ require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 require_once CWP_CODE_ROOT.'/app/mail/notices.php';
 require_once CWP_CODE_ROOT.'/app/mail/copied_drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/flags.php';
+require_once CWP_CODE_ROOT.'/app/mail/document.php';
 function mail_message_route(): array {
     $id=$_GET['account_id']??null;$revision=$_GET['revision']??null;$validity=$_GET['uidvalidity']??null;$uid=$_GET['uid']??null;
     if(!is_string($id)||!is_string($revision)||!preg_match('/\A[1-9][0-9]{0,9}\z/D',$revision)||(float)$revision>4294967295)throw new InvalidArgumentException('Open a message from the current folder headers.');
@@ -47,14 +48,6 @@ function mail_message_admin_action(string $action): array {
     if($created['state']==='read_failed')return $created['result'];
     flash($created['state']==='existing'?'Your existing copied-message draft is open. No email was sent.':'A protected copied-message draft was created. No email was sent.');
     redirect(admin_url('mail-draft',['draft_id'=>$created['draft_id']]));
-}
-/** Caller supplies only BodyDecoder's sanitized output in a currently authorized response. */
-function mail_message_document(#[\SensitiveParameter] string $sanitized): string {
-    $token=$GLOBALS['cwp_nonce']??'';
-    if(!is_string($token)||!preg_match('/\A[A-Za-z0-9+\/]{24}\z/D',$token))throw new RuntimeException('Message formatting could not be prepared.');
-    $policy="default-src 'none'; script-src 'none'; style-src 'nonce-".$token."'; img-src 'none'; base-uri 'none'; form-action 'none'; connect-src 'none'; object-src 'none'; frame-src 'none'";
-    $style='body{margin:16px;background:#102338;color:#eff6ff;font:16px/1.6 system-ui;overflow-wrap:anywhere}a{color:#efc36b}table{max-width:100%;border-collapse:collapse}td,th{padding:4px;border:1px solid #476079}pre{white-space:pre-wrap}blockquote{margin-left:12px;padding-left:12px;border-left:3px solid #efc36b}';
-    return '<!doctype html><html><head><meta charset="utf-8"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="'.esc($policy).'"><style nonce="'.esc($token).'">'.$style.'</style></head><body>'.$sanitized.'</body></html>';
 }
 function mail_message_admin_render(string $error,#[\SensitiveParameter] ?array $result): never {
     header('Cache-Control: no-store, private');header('Pragma: no-cache');header('Referrer-Policy: no-referrer');

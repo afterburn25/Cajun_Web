@@ -55,7 +55,7 @@ function mail_submissions_review(string $draft,?int $revision=null,?int $account
         if($saved['status']!=='draft' || ($revision!==null&&$revision!==(int)$saved['revision']) || ($accountRevision!==null&&$accountRevision!==(int)$saved['account_revision']))throw new RuntimeException('The reviewed draft changed. Reopen the saved draft before sending.');
         mail_submissions_prior_attempt($draft);$account=mail_drafts_account($saved['account_id'],(int)$saved['account_revision']);
         // Same maintained preparation gate as dispatch; the preview identity is never persisted.
-        $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body']);
+        $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body'],$saved['body_html']??($saved['html']??null));
         \CajunWebPro\Foundation\MailSubmission\PreparedMime::fromSnapshot(new \CajunWebPro\Foundation\MailSubmission\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time(),$thread,$originFingerprint));
         return ['existing'=>null,'draft'=>$saved,'account'=>$account];
     });

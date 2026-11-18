@@ -31,17 +31,20 @@ function mail_submissions_message(array $row):PreparedMime {
         $p=json_decode($row['payload_json'],true,16,JSON_THROW_ON_ERROR);
         $base=['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'];
         $format=is_array($p)?($p['format']??null):null;$thread=null;$origin=null;
-        if($format===1) {
-            if(array_keys($p)!==$base)throw new InvalidArgumentException('Invalid preparation format.');
-        }elseif($format===2) {
-            if(array_keys($p)!==[...$base,'thread','origin_fingerprint'])throw new InvalidArgumentException('Invalid preparation format.');
-            $thread=MessageThread::fromStored(is_array($p['thread'])?$p['thread']:[]);
-            if(!is_string($p['origin_fingerprint']))throw new InvalidArgumentException('Invalid copied draft binding.');
+        if(!in_array($format,[1,2,5,6],true))throw new InvalidArgumentException('Invalid preparation format.');
+        $html=$format>=5;$hasThread=in_array($format,[2,6],true);$keys=$base;
+        if($html)$keys[]='body_html';
+        if($hasThread) {
+            $keys[]='thread';$keys[]='origin_fingerprint';
+            if(!is_string($p['origin_fingerprint']??null))throw new InvalidArgumentException('Invalid copied draft binding.');
+            $thread=MessageThread::fromStored(is_array($p['thread']??null)?$p['thread']:[]);
             $origin=$p['origin_fingerprint'];
-        }else throw new InvalidArgumentException('Invalid preparation format.');
+        }
+        if(array_keys($p)!==$keys)throw new InvalidArgumentException('Invalid preparation format.');
         foreach(['from','subject','body'] as $field)if(!is_string($p[$field]))throw new InvalidArgumentException('Invalid private text.');
+        if($html&&!is_string($p['body_html']))throw new InvalidArgumentException('Invalid private text.');
         foreach(['to','cc','bcc'] as $field)if(!is_array($p[$field]))throw new InvalidArgumentException('Invalid private recipients.');
-        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch'],$thread,$origin);
+        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body'],$html?$p['body_html']:null),(int)$row['prepared_epoch'],$thread,$origin);
         if($p!==$snapshot->privatePayload() || $row['payload_json']!==json_encode($snapshot->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) || !hash_equals($snapshot->fingerprint,$row['snapshot_fingerprint']))throw new InvalidArgumentException('Invalid private fingerprint.');
         $mime=PreparedMime::fromSnapshot($snapshot);
         if(!hash_equals($mime->sha256,$row['mime_sha256']) || !hash_equals($mime->bytes,$row['mime_bytes']))throw new InvalidArgumentException('Invalid saved MIME.');
@@ -126,7 +129,7 @@ function mail_submissions_authorize(array $row,PreparedMime $mime):array {
     }
     // A changed saved row at an unchanged revision is damaged, not a new review.
     $p=$mime->snapshot->content;
-    if([$content->to,$content->cc,$content->bcc,$content->subject,$content->body]!==[$p->to,$p->cc,$p->bcc,$p->subject,$p->body])throw new RuntimeException('The reviewed draft content changed. No message was submitted.');
+    if([$content->to,$content->cc,$content->bcc,$content->subject,$content->body,$content->html]!==[$p->to,$p->cc,$p->bcc,$p->subject,$p->body,$p->html])throw new RuntimeException('The reviewed draft content changed. No message was submitted.');
     return mail_accounts_load($row['account_id']);
 }
 /** Internal dispatcher claim, atomically audited. A replay never grants another attempt. */
