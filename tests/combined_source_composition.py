@@ -8315,7 +8315,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        value = project_mail_submission_expiry_fix(root, path, ordinary(root, path))
+        value = project_mail_copy_controls_fix(root, path, value)
         value = project_runner_mirror_compat(root, path, value)
         value = project_ux08_agreement_link_fix(root, path, value)
         value = project_ux09_fixture_receipt(root, path, value)
