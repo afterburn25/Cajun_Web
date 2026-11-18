@@ -63,9 +63,13 @@ def validate(text):
           and 'php tests/database_schema_registry_policy.php' in text
           and 'for file in HeaderSession.php InboxReader.php MessageReader.php ReadSession.php ReceivingFailure.php' in text
           and 'cmp -s "foundation/mail-receiving/$file" "site/includes/foundation/mail-receiving/$file"' in text)
-    check('Every hosted lane uses reviewed signed-source image admission before networking',
+    check('Every hosted lane uses reviewed signed-source image admission and retains failure evidence before networking',
           text.count('sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu') == 2
-          and text.count('ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json') == 2
+          and text.count('prepare-ubuntu >') == 2
+          and text.count('|| status=$?') >= 2
+          and text.count('sudo test -f qa/ubuntu-apt-source-preflight.json') == 2
+          and text.count('sudo mv qa/ubuntu-apt-source-preflight.json') == 2
+          and text.count('if [ -f qa/ubuntu-apt-source.json ]; then sudo mv qa/ubuntu-apt-source.json') == 2
           and text.count('runner-image.log') == 2
           and text.index('prepare_ubuntu_apt.py prepare-ubuntu') < text.index('docker build --build-arg PHP_VERSION='))
     check('Acceptance retains PHP and database support matrix',
@@ -182,6 +186,7 @@ def self_test(text):
         ('softened failure', 'git diff --exit-code', 'git diff --exit-code || true'),
         ('lost named migration gate', 'Declared-current refusal does not heal the table', 'Unrelated assertion'),
         ('lost runner-image guard', 'sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu', 'true # runner admission omitted'),
+        ('lost runner failure receipt', 'sudo test -f qa/ubuntu-apt-source-preflight.json', 'true # preflight receipt omitted'),
         ('lost portable reply all', 'php $php_flags tests/mail-compose/reply_all.php', 'true # reply all omitted'),
         ('changed copied-source report count', "'copied-source': 19", "'copied-source': 21"),
         ('changed exact native report count', "'message': (cell / 'message-results.json', 94)", "'message': (cell / 'message-results.json', 30)"),

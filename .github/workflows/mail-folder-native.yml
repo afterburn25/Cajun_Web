@@ -31,8 +31,12 @@ jobs:
       - name: Verify bounded workflow source mirrors and syntax
         run: |
           mkdir -p qa/mail-folder-native/source
-          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > qa/mail-folder-native/source/runner-image.log
-          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json qa/mail-folder-native/source/
+          status=0
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > qa/mail-folder-native/source/runner-image.log || status=$?
+          sudo test -f qa/ubuntu-apt-source-preflight.json
+          sudo mv qa/ubuntu-apt-source-preflight.json qa/mail-folder-native/source/
+          if [ -f qa/ubuntu-apt-source.json ]; then sudo mv qa/ubuntu-apt-source.json qa/mail-folder-native/source/; fi
+          test "$status" -eq 0
           test "$CWP_RUN_ATTEMPT" = "1"
           python3 tests/mail_folder_native_workflow_contract.py > qa/mail-folder-native/source/workflow-contract.json
           for file in \
@@ -123,8 +127,12 @@ jobs:
         run: |
           cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
           mkdir -p "$cell"
-          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > "$cell/runner-image.log"
-          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json "$cell/"
+          status=0
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > "$cell/runner-image.log" || status=$?
+          sudo test -f qa/ubuntu-apt-source-preflight.json
+          sudo mv qa/ubuntu-apt-source-preflight.json "$cell/"
+          if [ -f qa/ubuntu-apt-source.json ]; then sudo mv qa/ubuntu-apt-source.json "$cell/"; fi
+          test "$status" -eq 0
           actual=$(git rev-parse HEAD)
           tree=$(git rev-parse HEAD^{tree})
           test "$actual" = "$CWP_SOURCE_SHA"

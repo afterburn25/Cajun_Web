@@ -31,8 +31,12 @@ jobs:
       - name: Verify bounded source and portable contracts
         run: |
           mkdir -p qa/mail-flags-native/source
-          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > qa/mail-flags-native/source/runner-image.log
-          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json qa/mail-flags-native/source/
+          status=0
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > qa/mail-flags-native/source/runner-image.log || status=$?
+          sudo test -f qa/ubuntu-apt-source-preflight.json
+          sudo mv qa/ubuntu-apt-source-preflight.json qa/mail-flags-native/source/
+          if [ -f qa/ubuntu-apt-source.json ]; then sudo mv qa/ubuntu-apt-source.json qa/mail-flags-native/source/; fi
+          test "$status" -eq 0
           test "$CWP_RUN_ATTEMPT" = "1"
           python3 tests/mail_flags_native_workflow_contract.py > qa/mail-flags-native/source/workflow-contract.json
           python3 -m py_compile tests/mail_inbox_cases.py tests/mail_inbox_http_server.py tests/mail_message_cases.py
@@ -119,8 +123,12 @@ jobs:
         run: |
           cell=qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}
           mkdir -p "$cell"
-          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > "$cell/runner-image.log"
-          sudo mv qa/ubuntu-apt-source.json qa/ubuntu-apt-source-preflight.json "$cell/"
+          status=0
+          sudo python3 -I .github/scripts/prepare_ubuntu_apt.py prepare-ubuntu > "$cell/runner-image.log" || status=$?
+          sudo test -f qa/ubuntu-apt-source-preflight.json
+          sudo mv qa/ubuntu-apt-source-preflight.json "$cell/"
+          if [ -f qa/ubuntu-apt-source.json ]; then sudo mv qa/ubuntu-apt-source.json "$cell/"; fi
+          test "$status" -eq 0
           actual=$(git rev-parse HEAD); tree=$(git rev-parse HEAD^{tree})
           test "$actual" = "$CWP_SOURCE_SHA"; test "$CWP_RUN_ATTEMPT" = "1"
           printf 'source=%s\ntree=%s\nrun_id=%s\nrun_attempt=%s\nphp=%s\ndatabase=%s\n' "$actual" "$tree" "$CWP_RUN_ID" "$CWP_RUN_ATTEMPT" '${{ matrix.php }}' '${{ matrix.database }}' > "$cell/identity.txt"
