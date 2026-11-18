@@ -656,6 +656,42 @@ MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS = frozenset((
     'site/install/inventory.generated.php',
     'tests/mail_drafts_native.php',
 ))
+MAIL_SENT_COPY_BASE = 'b9a021a643cf3ea015900ccd84cbb5cc9f0bd1e1'
+MAIL_SENT_COPY_BASE_TREE = 'f79abfb7da91ad17f4902aaae3db1fdfb8e069a2'
+MAIL_SENT_COPY_SOURCE = '78020344d8d20b67950f66993f466b267c6262f2'
+MAIL_SENT_COPY_SOURCE_TREE = '6c3ce08b8ad6ef1b9790ab1a495d506628d9ddf4'
+MAIL_SENT_COPY_MODIFIED = frozenset((
+    '.github/workflows/mail-copied-draft-native.yml',
+    '.github/workflows/mail-flags-native.yml',
+    '.github/workflows/mail-folder-native.yml',
+    'foundation/mail-receiving/bootstrap.php',
+    'site/admin/controllers/mail_accounts.php',
+    'site/admin/controllers/mail_submissions.php',
+    'site/admin/views/mail_accounts.php',
+    'site/admin/views/mail_submissions.php',
+    'site/app/settings/database_schemas.php',
+    'site/database/schema/base.php',
+    'site/includes/foundation/mail-receiving/bootstrap.php',
+    'site/install/actions/deploy.php',
+    'site/install/inventory.generated.php',
+    'tests/database_schema_registry_policy.php',
+    'tests/mail-receiving/append_test.php',
+    'tests/mail_accounts_native.php',
+    'tests/mail_copied_draft_native_workflow_contract.py',
+    'tests/mail_drafts_native.php',
+    'tests/mail_flags_native_workflow_contract.py',
+    'tests/mail_folder_native_workflow_contract.py',
+    'tests/mail_inbox_http_server.py',
+    'tests/mail_submissions_cases.py',
+    'tests/mail_submissions_native.php',
+))
+MAIL_SENT_COPY_ADDITIONS = frozenset((
+    'foundation/mail-receiving/SentCopy.php',
+    'site/app/mail/copies.php',
+    'site/database/migrations/mail_copies_migrate.php',
+    'site/database/schema/mail_copies_schema.php',
+    'site/includes/foundation/mail-receiving/SentCopy.php',
+))
 MAIL_THREAD_ALIAS_FIX_BASE = '3963afb9ade411960a55b555bccc2c4b81d5db3e'
 MAIL_THREAD_ALIAS_FIX_BASE_TREE = '0d525c706bcf059053b02948008fdcc4a16b9996'
 MAIL_THREAD_ALIAS_FIX_SOURCE = 'ec6ba09b4465c747398044835aaf5f0575a4635f'
@@ -1496,7 +1532,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '486be08895336d09f8548477a7ae65eeabe130cc6b8d9de24ce7ea40dea5a594'
+REGRESSION_SHA256 = '656ee7d67b3d1d5cbf2616dade5748d6c83376e6c3fbd0a8280c4892af8060d3'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -4266,7 +4302,7 @@ def validate_mail_consolidated_review_recovery(root):
     base_entries = entries(root, MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE)
     source_entries = entries(root, MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE)
     for path in sorted(MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_sent_copy_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE + ':' + path)
         require(current == source
@@ -4286,6 +4322,7 @@ def validate_mail_consolidated_review_recovery(root):
 
 def project_mail_consolidated_review_recovery(root, path, current):
     """Restore the first review proof before its stale-marker correction."""
+    current = project_mail_sent_copy_source(root, path, current)
     if path not in MAIL_CONSOLIDATED_REVIEW_RECOVERY_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE + ':' + path)
@@ -4296,6 +4333,78 @@ def project_mail_consolidated_review_recovery(root, path, current):
         return current
     require(current == source,
             'Current consolidated mail review recovery changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_mail_sent_copy_source(root):
+    """Bind the explicit, uncertainty-safe server Sent-copy implementation."""
+    require(git(root, 'rev-parse', MAIL_SENT_COPY_BASE + '^{tree}').decode().strip()
+            == MAIL_SENT_COPY_BASE_TREE
+            and git(root, 'rev-parse', MAIL_SENT_COPY_SOURCE + '^{tree}').decode().strip()
+            == MAIL_SENT_COPY_SOURCE_TREE,
+            'Sent-copy source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_SENT_COPY_SOURCE).decode().split()
+            == [MAIL_SENT_COPY_SOURCE, MAIL_SENT_COPY_BASE],
+            'Sent-copy source is not the direct consolidated-mail successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_SENT_COPY_SOURCE, 'HEAD')
+    expected = [('A' if path in MAIL_SENT_COPY_ADDITIONS else 'M') + '\t' + path
+                for path in sorted(MAIL_SENT_COPY_MODIFIED | MAIL_SENT_COPY_ADDITIONS)]
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_SENT_COPY_BASE, MAIL_SENT_COPY_SOURCE).decode().splitlines() == expected,
+            'Sent-copy source changed another path or status')
+    base_entries = entries(root, MAIL_SENT_COPY_BASE)
+    source_entries = entries(root, MAIL_SENT_COPY_SOURCE)
+    for path in sorted(MAIL_SENT_COPY_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_sent_copy_source(root, path, current) == base
+                and project_mail_sent_copy_source(root, path, base) == base,
+                'Sent-copy modified source identity or projection changed: ' + path)
+    for path in sorted(MAIL_SENT_COPY_ADDITIONS):
+        source = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_SOURCE + ':' + path)
+        require(path not in base_entries and ordinary(root, path) == source
+                and mode(root, path) == source_entries[path][0] == '100644',
+                'Sent-copy addition identity or mode changed: ' + path)
+    canonical = ordinary(root, 'foundation/mail-receiving/SentCopy.php')
+    shipped = ordinary(root, 'site/includes/foundation/mail-receiving/SentCopy.php')
+    adapter = ordinary(root, 'site/app/mail/copies.php')
+    migration = ordinary(root, 'site/database/migrations/mail_copies_migrate.php')
+    native = ordinary(root, 'tests/mail_submissions_native.php')
+    browser = ordinary(root, 'tests/mail_submissions_cases.py')
+    require(canonical == shipped
+            and canonical.count(b'ReadProfile::Append') == 1
+            and adapter.count(b"'uncertain'=>'unknown'") == 1
+            and adapter.count(b"r.id IS NULL OR r.result_code IN (?,?)") == 1
+            and adapter.count(b"if(!$receipt instanceof AppendReceipt||!$receipt->accepted)") == 1
+            and migration.count(b"Unrecognized Sent-copy records exist. No data was adopted.") == 1
+            and migration.count(b"mail_accounts_owner('')") == 1
+            and native.count(b'Uncertain Sent copy can never be replayed') == 1
+            and native.count(b'Result audit failure leaves an unresolved durable attempt') == 1
+            and browser.count(b'Acceptance never appends a Sent copy silently') == 1
+            and browser.count(b'HTTP copy appends the exact accepted MIME once') == 1
+            and ordinary(root, 'site/database/schema/base.php').count(b'mail_copies_schema($prefix)') == 1
+            and ordinary(root, 'site/install/actions/deploy.php').count(b"save_setting('mail_copies_schema_version','1')") == 1
+            and ordinary(root, 'site/admin/controllers/mail_submissions.php').count(b"($_POST['confirm_copy']??null)!=='1'") == 1
+            and ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Sent-copy authority, uncertainty, fresh-install, browser or inventory boundary changed')
+
+
+def project_mail_sent_copy_source(root, path, current):
+    """Restore the reviewed formatted-mail proof head before Sent-copy source."""
+    if path not in MAIL_SENT_COPY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_SENT_COPY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Sent-copy source changed before predecessor projection: ' + path)
     return base
 
 
@@ -5774,6 +5883,8 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_THREAD_HEADER_FIX_PATHS
                 | MAIL_THREAD_ALIAS_FIX_PATHS
                 | {MAIL_NATIVE_FIXTURE_POLICY_PATH, MAIL_REPLY_SESSION_FIX_PATH}
+                | MAIL_SENT_COPY_MODIFIED
+                | MAIL_SENT_COPY_ADDITIONS
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -7018,6 +7129,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_sent_copy_source(root)
     validate_mail_consolidated_review_recovery(root)
     validate_mail_consolidated_review_fix(root)
     validate_mail_consolidated_source(root)
@@ -7309,6 +7421,7 @@ def verify_current(root):
                | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
                | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
                | MAIL_REPLY_FORWARD_ADDITIONS
+               | MAIL_SENT_COPY_ADDITIONS
                | PROJECT_PRIVATE_NOTES_ADDITIONS
                | {path for path,status in mail_consolidated_changes(root).items() if status == 'A'}
                | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
@@ -7427,6 +7540,7 @@ def verify_current(root):
         {'name': 'Exact UX-08 installed-browser successor binds the native Hosting disclosure contract and reversible predecessor bytes', 'passed': True},
         {'name': 'Exact initial-CI successor binds the private-draft fixture to current identity schema', 'passed': True},
         {'name': 'Exact review-blocker successor binds bounded mail readiness, overlapping links and neutral timing', 'passed': True},
+        {'name': 'Exact Sent-copy successor binds explicit confirmation, immutable MIME, uncertainty and additive storage', 'passed': True},
         {'name': 'Exact notification-health review successor labels retained delivery rows as records and preserves its regression assertion', 'passed': True},
         {'name': 'Exact hosted-proof successor projects only later UX-09 commands and reports from cloud-intake history', 'passed': True},
         {'name': 'CI-discovered workflow, predecessor-projection and browser-fixture successors are exact and reversible', 'passed': True},
