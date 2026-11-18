@@ -510,6 +510,13 @@ RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE_TREE = '5e3cff7e64d297920bac4414e0794a48d8be
 RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
 ))
+RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE = 'c45be42591ebd3295c929970b52662585fe4155f'
+RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE_TREE = '46cb7b37a0acda3712128b44f6577e74b055bbc1'
+RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE = 'c7cbc62d977d7612fa016b044058cfad60fcf353'
+RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE_TREE = '7dd903aabef4ee94bcfc8ad693697ce0b66f2629'
+RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+))
 RUNNER_APPLICATION_BUILD_BUDGET_BASE = '0382da0e1b8d55ae1edc921b985cb569ea53823d'
 RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE = 'acb09bb392c96cd83c40561c966f46f4dedc81df'
 RUNNER_APPLICATION_BUILD_BUDGET_SOURCE = '7e108b483e0ebeb39a42f670c42f20d9f54a04f8'
@@ -818,6 +825,26 @@ MAIL_ACCEPTANCE_HARDENING_PATHS = frozenset((
     'tests/mail_folder_native_workflow_contract.py',
     'tests/mail_message_native.php',
 ))
+FORCE_SSL_RUNNER_PORT_BASE = 'c45be42591ebd3295c929970b52662585fe4155f'
+FORCE_SSL_RUNNER_PORT_BASE_TREE = '46cb7b37a0acda3712128b44f6577e74b055bbc1'
+FORCE_SSL_RUNNER_PORT_SOURCE = '3f3bd69c68cbf858cf3bf5342682779a7f385b64'
+FORCE_SSL_RUNNER_PORT_SOURCE_TREE = '20d83937cc4abe95bf5ab64de273ba29eeeeee86'
+FORCE_SSL_RUNNER_PORT_PATH = '.github/workflows/provider-force-ssl-controls.yml'
+MAIL_REPLY_ALL_BOUNDARY_BASE = FORCE_SSL_RUNNER_PORT_BASE
+MAIL_REPLY_ALL_BOUNDARY_BASE_TREE = FORCE_SSL_RUNNER_PORT_BASE_TREE
+MAIL_REPLY_ALL_BOUNDARY_SOURCE = '3a658a02336ed48e65e5b04bdff6c9d025a7c636'
+MAIL_REPLY_ALL_BOUNDARY_SOURCE_TREE = '005a3fab7ca66704e1954c7b8d1e7f9135f58744'
+MAIL_REPLY_ALL_BOUNDARY_PATH = 'tests/mail_copied_draft_create_native.php'
+MAIL_FLAGS_IDENTITY_BASE = FORCE_SSL_RUNNER_PORT_BASE
+MAIL_FLAGS_IDENTITY_BASE_TREE = FORCE_SSL_RUNNER_PORT_BASE_TREE
+MAIL_FLAGS_IDENTITY_SOURCE = 'fb07a60ae8a3a2b292e3f4891604559efc022668'
+MAIL_FLAGS_IDENTITY_SOURCE_TREE = 'b16d7d76c3e54ae80a6cb090bebbfefdd9f87a1e'
+MAIL_FLAGS_IDENTITY_PATH = 'tests/mail_flags_native.php'
+MAIL_FLAGS_MARKER_BASE = MAIL_FLAGS_IDENTITY_SOURCE
+MAIL_FLAGS_MARKER_BASE_TREE = MAIL_FLAGS_IDENTITY_SOURCE_TREE
+MAIL_FLAGS_MARKER_SOURCE = 'edebd5ec41a7ad3189568d1c2987e6d63b14a612'
+MAIL_FLAGS_MARKER_SOURCE_TREE = '36707a42eb5591624e51aeaa016556e95088d5af'
+MAIL_FLAGS_MARKER_PATH = MAIL_FLAGS_IDENTITY_PATH
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -3384,6 +3411,53 @@ def project_runner_application_build_budget(root, path, current):
     return base
 
 
+def validate_runner_account_source_completion(root):
+    """Bind the bounded completion budget discovered by the preserved c45 run."""
+    require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE_TREE,
+            'Runner account source completion identity changed')
+    require(git(root, 'show', '-s', '--format=%P', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE)
+            .decode().strip().split() == [RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE],
+            'Runner account source completion parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE,
+                  RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED)],
+            'Runner account source completion changed a different path or status set')
+    base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE)
+    source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE)
+    for path in sorted(RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and source.count(b'    timeout-minutes: 50\n') == 1
+                and source.count(b'    timeout-minutes: 35\n') == 1
+                and base.count(b'    timeout-minutes: 35\n') == 2
+                and project_runner_account_source_completion(root, path, current) == base
+                and project_runner_account_source_completion(root, path, base) == base,
+                'Runner account source completion identity or projection changed: ' + path)
+
+
+def project_runner_account_source_completion(root, path, current):
+    """Restore c45 only for the exact 50-to-35-minute source budget."""
+    if path not in RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner account source completion changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_account_source_budget(root):
     """Bind the exact account source-proof timeout correction to its failed head."""
     require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_BUDGET_BASE + '^{tree}').decode().strip()
@@ -3403,7 +3477,7 @@ def validate_runner_account_source_budget(root):
     base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_BUDGET_BASE)
     source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE)
     for path in sorted(RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_account_source_completion(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_BUDGET_BASE + ':' + path)
         require(current == source
@@ -3415,6 +3489,7 @@ def validate_runner_account_source_budget(root):
 
 def project_runner_account_source_budget(root, path, current):
     """Restore the failed hosted head only for the exact account timeout path."""
+    current = project_runner_account_source_completion(root, path, current)
     current = project_runner_application_build_budget(root, path, current)
     if path not in RUNNER_ACCOUNT_SOURCE_BUDGET_MODIFIED:
         return current
@@ -4688,7 +4763,8 @@ def validate_mail_reply_all_replay_source(root):
     base_entries = entries(root, MAIL_REPLY_ALL_REPLAY_BASE)
     source_entries = entries(root, MAIL_REPLY_ALL_REPLAY_SOURCE)
     for path in sorted(MAIL_REPLY_ALL_REPLAY_PATHS):
-        current = project_mail_acceptance_repair_source(root, path, ordinary(root, path))
+        current = project_latest_acceptance_successors(root, path, ordinary(root, path))
+        current = project_mail_acceptance_repair_source(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_BASE + ':' + path)
         require(current == source
@@ -4998,6 +5074,130 @@ def project_mail_submission_expiry_fix(root, path, current):
     return base
 
 
+def validate_latest_acceptance_successors(root):
+    """Bind the three reviewed corrections from the preserved c45 cohort."""
+    sources = (
+        (FORCE_SSL_RUNNER_PORT_BASE, FORCE_SSL_RUNNER_PORT_BASE_TREE,
+         FORCE_SSL_RUNNER_PORT_SOURCE, FORCE_SSL_RUNNER_PORT_SOURCE_TREE,
+         FORCE_SSL_RUNNER_PORT_PATH, 'Force SSL runner port'),
+        (MAIL_REPLY_ALL_BOUNDARY_BASE, MAIL_REPLY_ALL_BOUNDARY_BASE_TREE,
+         MAIL_REPLY_ALL_BOUNDARY_SOURCE, MAIL_REPLY_ALL_BOUNDARY_SOURCE_TREE,
+         MAIL_REPLY_ALL_BOUNDARY_PATH, 'Reply All recipient boundary'),
+        (MAIL_FLAGS_IDENTITY_BASE, MAIL_FLAGS_IDENTITY_BASE_TREE,
+         MAIL_FLAGS_IDENTITY_SOURCE, MAIL_FLAGS_IDENTITY_SOURCE_TREE,
+         MAIL_FLAGS_IDENTITY_PATH, 'mail flags notice identity'),
+        (MAIL_FLAGS_MARKER_BASE, MAIL_FLAGS_MARKER_BASE_TREE,
+         MAIL_FLAGS_MARKER_SOURCE, MAIL_FLAGS_MARKER_SOURCE_TREE,
+         MAIL_FLAGS_MARKER_PATH, 'mail flags current schema marker'),
+    )
+    for base, base_tree, source, source_tree, path, label in sources:
+        require(git(root, 'rev-parse', base + '^{tree}').decode().strip() == base_tree
+                and git(root, 'rev-parse', source + '^{tree}').decode().strip() == source_tree,
+                label + ' source tree changed')
+        require(git(root, 'rev-list', '--parents', '-n', '1', source).decode().split()
+                == [source, base], label + ' is not the direct reviewed successor')
+        git(root, 'merge-base', '--is-ancestor', source, 'HEAD')
+        require(git(root, 'diff', '--name-status', '--no-renames', base, source)
+                .decode().splitlines() == ['M\t' + path],
+                label + ' changed another path or status')
+        base_entries = entries(root, base)
+        source_entries = entries(root, source)
+        require(base_entries[path][0] == source_entries[path][0] == mode(root, path) == '100644',
+                label + ' mode changed')
+
+    force = ordinary(root, FORCE_SSL_RUNNER_PORT_PATH)
+    reply = ordinary(root, MAIL_REPLY_ALL_BOUNDARY_PATH)
+    flags = ordinary(root, MAIL_FLAGS_MARKER_PATH)
+    notices = ordinary(root, 'site/app/mail/notices.php')
+    require(force == git(root, 'cat-file', 'blob', FORCE_SSL_RUNNER_PORT_SOURCE
+                         + ':' + FORCE_SSL_RUNNER_PORT_PATH)
+            and force.count(b"ports: ['3306/tcp']") == 1
+            and b'33306' not in force
+            and force.count(b'CWP_TEST_PORT=${{ job.services.database.ports[3306] }}') == 1,
+            'Force SSL dynamic service-port boundary changed')
+    require(reply == git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_BOUNDARY_SOURCE
+                         + ':' + MAIL_REPLY_ALL_BOUNDARY_PATH)
+            and reply.count(b"$replyAllRow['sender']===['id'=>$senderAccount,'revision'=>1,'label'=>'Sender account','address'=>'sender@example.invalid']") == 1
+            and reply.count(b"$replyAllRecipients=json_encode([$replyAllRow['to'],$replyAllRow['cc'],$replyAllRow['bcc']],JSON_THROW_ON_ERROR)") == 1
+            and reply.count(b"!str_contains($replyAllRecipients,'sender@example.invalid')") == 1
+            and reply.count(b"!str_contains(json_encode($replyAllRow,JSON_THROW_ON_ERROR),'RAW_HIDDEN_MARKER')") == 1,
+            'Reply All sender metadata or recipient privacy boundary changed')
+    identity = git(root, 'cat-file', 'blob', MAIL_FLAGS_IDENTITY_SOURCE
+                   + ':' + MAIL_FLAGS_IDENTITY_PATH)
+    require(flags == git(root, 'cat-file', 'blob', MAIL_FLAGS_MARKER_SOURCE
+                         + ':' + MAIL_FLAGS_MARKER_PATH)
+            and identity.count(b"save_setting('mail_notices_schema_version','2')") == 1
+            and flags.count(b"save_setting('mail_notices_schema_version','1')") == 1
+            and flags.count(b"(account_id,account_revision,folder,uidvalidity,request_id,checked_at)") == 1
+            and flags.count(b"[$id,str_repeat('b',32),gmdate('Y-m-d H:i:s')]") == 1
+            and notices.count(b"['mail_notices_schema_version'])['value']??'')==='1'") == 1,
+            'Mail flag notice identity or current-schema readiness boundary changed')
+
+
+def project_force_ssl_runner_port(root, path, current):
+    """Restore c45 before the Force SSL ephemeral-port correction."""
+    if path != FORCE_SSL_RUNNER_PORT_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', FORCE_SSL_RUNNER_PORT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', FORCE_SSL_RUNNER_PORT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source, 'Current Force SSL runner port source changed before projection')
+    return base
+
+
+def project_mail_reply_all_boundary(root, path, current):
+    """Restore c45 before the Reply All recipient-boundary fixture correction."""
+    if path != MAIL_REPLY_ALL_BOUNDARY_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_BOUNDARY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_BOUNDARY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source, 'Current Reply All boundary source changed before projection')
+    return base
+
+
+def project_mail_flags_marker(root, path, current):
+    """Restore the reviewed notice-identity source before its marker correction."""
+    if path != MAIL_FLAGS_MARKER_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_FLAGS_MARKER_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_FLAGS_MARKER_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source, 'Current mail flags marker source changed before projection')
+    return base
+
+
+def project_mail_flags_identity(root, path, current):
+    """Restore c45 before the exact notice-identity fixture correction."""
+    if path != MAIL_FLAGS_IDENTITY_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_FLAGS_IDENTITY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_FLAGS_IDENTITY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source, 'Current mail flags identity source changed before projection')
+    return base
+
+
+def project_latest_acceptance_successors(root, path, current):
+    """Restore c45 across the independently reviewed correction sources."""
+    current = project_mail_flags_marker(root, path, current)
+    current = project_mail_flags_identity(root, path, current)
+    current = project_mail_reply_all_boundary(root, path, current)
+    return project_force_ssl_runner_port(root, path, current)
+
+
 def validate_mail_acceptance_hardening_source(root):
     """Bind the complete retained-matrix correction after artifact inspection."""
     require(git(root, 'rev-parse', MAIL_ACCEPTANCE_HARDENING_BASE + '^{tree}').decode().strip()
@@ -5084,7 +5284,8 @@ def validate_mail_acceptance_repair_source(root):
     base_entries = entries(root, MAIL_ACCEPTANCE_REPAIR_BASE)
     source_entries = entries(root, MAIL_ACCEPTANCE_REPAIR_SOURCE)
     for path in sorted(MAIL_ACCEPTANCE_REPAIR_PATHS):
-        current = project_mail_acceptance_hardening_source(root, path, ordinary(root, path))
+        current = project_latest_acceptance_successors(root, path, ordinary(root, path))
+        current = project_mail_acceptance_hardening_source(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_REPAIR_BASE + ':' + path)
         require(current == source
@@ -5112,6 +5313,7 @@ def validate_mail_acceptance_repair_source(root):
 
 def project_mail_acceptance_repair_source(root, path, current):
     """Restore the accepted proof head before retained mail acceptance repairs."""
+    current = project_latest_acceptance_successors(root, path, current)
     current = project_mail_acceptance_hardening_source(root, path, current)
     if path not in MAIL_ACCEPTANCE_REPAIR_PATHS:
         return current
@@ -6904,6 +7106,7 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS
                 | {MAIL_ATTACHMENT_CLAIM_FIX_PATH}
                 | MAIL_ACCEPTANCE_PORTABILITY_PATHS
+                 | {FORCE_SSL_RUNNER_PORT_PATH}
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -8148,6 +8351,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_latest_acceptance_successors(root)
     validate_mail_acceptance_hardening_source(root)
     validate_mail_acceptance_repair_source(root)
     validate_mail_admission_evidence_source(root)
@@ -8179,6 +8383,7 @@ def verify_current(root):
     validate_mail_reply_forward_source(root)
     validate_runner_aws_full_mirror_source(root)
     validate_runner_application_build_budget(root)
+    validate_runner_account_source_completion(root)
     validate_runner_account_source_budget(root)
     validate_runner_finite_tool_refusal_source(root)
     validate_runner_intake_current_binding_source(root)
@@ -8466,7 +8671,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_mail_acceptance_repair_source(root, path, ordinary(root, path))
+        value = project_latest_acceptance_successors(root, path, ordinary(root, path))
+        value = project_mail_acceptance_repair_source(root, path, value)
         value = project_mail_submission_expiry_fix(root, path, value)
         value = project_mail_copy_controls_fix(root, path, value)
         value = project_runner_mirror_compat(root, path, value)
