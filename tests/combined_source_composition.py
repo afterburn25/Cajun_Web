@@ -862,6 +862,14 @@ MAIL_LIST_IDENTITY_PATHS = frozenset((
     'tests/mail_folder_native_workflow_contract.py',
     'tests/mail_replies_native.php',
 ))
+MAIL_FLAGS_REPORT_COUNT_BASE = 'ee29b6f97e7dd18d2435612c4a96fb489137202e'
+MAIL_FLAGS_REPORT_COUNT_BASE_TREE = 'f3b62a964a5f230aa2e152c976d72a42cac15c2c'
+MAIL_FLAGS_REPORT_COUNT_SOURCE = '89d7602f9e338a21922b18345c1c1cd548a110f8'
+MAIL_FLAGS_REPORT_COUNT_SOURCE_TREE = '76b9657ed92bd2b4c9809051ca2939a968bfbddf'
+MAIL_FLAGS_REPORT_COUNT_PATHS = frozenset((
+    '.github/workflows/mail-flags-native.yml',
+    'tests/mail_flags_native_workflow_contract.py',
+))
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -5193,6 +5201,59 @@ def project_mail_list_identity(root, path, current):
     return base
 
 
+def validate_mail_flags_report_count(root):
+    """Bind the exact 45-check flag report after the preserved four-lane failure."""
+    require(git(root, 'rev-parse', MAIL_FLAGS_REPORT_COUNT_BASE + '^{tree}').decode().strip()
+            == MAIL_FLAGS_REPORT_COUNT_BASE_TREE
+            and git(root, 'rev-parse', MAIL_FLAGS_REPORT_COUNT_SOURCE + '^{tree}').decode().strip()
+            == MAIL_FLAGS_REPORT_COUNT_SOURCE_TREE,
+            'Mail flags report-count source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1',
+                MAIL_FLAGS_REPORT_COUNT_SOURCE).decode().split()
+            == [MAIL_FLAGS_REPORT_COUNT_SOURCE, MAIL_FLAGS_REPORT_COUNT_BASE],
+            'Mail flags report-count source is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_FLAGS_REPORT_COUNT_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_FLAGS_REPORT_COUNT_BASE,
+                MAIL_FLAGS_REPORT_COUNT_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_FLAGS_REPORT_COUNT_PATHS)],
+            'Mail flags report-count source changed another path or status')
+    base_entries = entries(root, MAIL_FLAGS_REPORT_COUNT_BASE)
+    source_entries = entries(root, MAIL_FLAGS_REPORT_COUNT_SOURCE)
+    for path in sorted(MAIL_FLAGS_REPORT_COUNT_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_FLAGS_REPORT_COUNT_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_FLAGS_REPORT_COUNT_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_flags_report_count(root, path, current) == base
+                and project_mail_flags_report_count(root, path, base) == base,
+                'Mail flags report-count source or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/mail-flags-native.yml')
+    contract = ordinary(root, 'tests/mail_flags_native_workflow_contract.py')
+    require(workflow.count(b"len(report['checks'])==45") == 1
+            and workflow.count(b"assert all(row['passed'] is True for row in report['checks'])") == 2
+            and workflow.count(b"assert report['passed'] is True") == 2
+            and contract.count(b"len(report['checks'])==45") == 2
+            and contract.count(b"len(report['checks'])>=40") == 1,
+            'Mail flags exact report count or strict all-check gate changed')
+
+
+def project_mail_flags_report_count(root, path, current):
+    """Restore the copied-draft successor before the flag report-count correction."""
+    if path not in MAIL_FLAGS_REPORT_COUNT_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_FLAGS_REPORT_COUNT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_FLAGS_REPORT_COUNT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail flags report-count source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_latest_acceptance_successors(root):
     """Bind the reviewed corrections from the preserved c45 cohort."""
     sources = (
@@ -5311,6 +5372,7 @@ def project_mail_flags_identity(root, path, current):
 
 def project_latest_acceptance_successors(root, path, current):
     """Restore c45 across the independently reviewed correction sources."""
+    current = project_mail_flags_report_count(root, path, current)
     current = project_mail_list_identity(root, path, current)
     current = project_mail_flags_marker(root, path, current)
     current = project_mail_flags_identity(root, path, current)
@@ -8475,6 +8537,7 @@ def verify_current(root):
     ensure_history(root)
     pin_head(root)
     validate_mail_list_identity(root)
+    validate_mail_flags_report_count(root)
     validate_latest_acceptance_successors(root)
     validate_mail_acceptance_hardening_source(root)
     validate_mail_acceptance_repair_source(root)
