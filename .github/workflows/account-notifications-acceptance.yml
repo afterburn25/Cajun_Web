@@ -15,7 +15,10 @@ concurrency:
 jobs:
   source:
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
+    # Attempt-1 run 44423175458 completed the fixture-combination proof but reached the
+    # exact 50m source ceiling during the unchanged core-navigation provenance check.
+    # Keep every source-proof command and allow one bounded complete admission pass.
+    timeout-minutes: 90
     outputs:
       sha: ${{ steps.record.outputs.sha }}
     env:
