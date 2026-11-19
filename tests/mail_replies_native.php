@@ -91,7 +91,8 @@ try{
         save_setting('mail_replies_schema_version','1');
     }
     rp_ok('Author can create and reopen copied content with separate source and sender',$draft['body']===$prepared->draft->content->body&&$draft['subject']==='Re: PRIVATE_COPIED_SUBJECT'&&$draft['origin']['source_account_id']===$source&&$draft['account_id']===$sender&&$draft['to']===['source@example.invalid']);
-    rp_ok('Copied list exposes content only after current authority',mail_reply_drafts_list($sender)[0]['subject']===$draft['subject']&&!mail_reply_drafts_list($sender)[0]['unavailable']);
+    $listed=array_column(mail_reply_drafts_list($sender),null,'id');
+    rp_ok('Copied list exposes content only after current authority',isset($listed[$id])&&$listed[$id]['subject']===$draft['subject']&&!$listed[$id]['unavailable']);
     $legacy=mail_drafts_get($id);rp_ok('Retained ordinary getter exposes only a content-free recovery placeholder',$legacy['status']==='source'&&$legacy['subject']==='Copied message draft'&&$legacy['body']===''&&$legacy['to']===[]&&$legacy['cc']===[]&&$legacy['bcc']===[]);
     rp_ok('Retained ordinary list cannot expose a copied subject',mail_drafts_list($sender)===[]);
     rp_deny('Retained ordinary writer cannot overwrite a copied draft',fn()=>mail_drafts_save($id,1,$sender,1,new DraftContent([],[],[],'Attempted legacy edit','Private')));

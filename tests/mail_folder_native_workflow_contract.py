@@ -144,7 +144,7 @@ def validate(text):
           "'inbox': (cell / 'inbox-results.json', 72)" in text
           and "'message': (cell / 'message-results.json', 94)" in text
           and "'notices': (cell / 'notices-results.json', 81)" in text
-          and "'copied': (cell / 'copied-results.json', 21)" in text
+          and "'copied': (cell / 'copied-results.json', 23)" in text
           and "assert len(report['checks']) >=" not in text)
     check('Passing acceptance requires empty stderr from every PHP test execution',
           "for name in ('inbox.stderr.log', 'message.stderr.log'," in text
