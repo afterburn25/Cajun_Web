@@ -906,6 +906,10 @@ APPLICATION_MESSAGE_FIXTURE_BASE = 'f4b073c351bd2255646c4a3b3f24119cc9e70116'
 APPLICATION_MESSAGE_FIXTURE_BASE_TREE = '49fd3e0e3b892ac65393087ca412ccabd60b5661'
 APPLICATION_MESSAGE_FIXTURE_SOURCE = '134465633c16551b38d5e63879edbd241abc289b'
 APPLICATION_MESSAGE_FIXTURE_SOURCE_TREE = '13a51f7f1445c0f68cb7af808ba9227f30138223'
+APPLICATION_NOTICES_FIXTURE_BASE = '1744bd1208ecc51137961ed7cada8e709ed2753b'
+APPLICATION_NOTICES_FIXTURE_BASE_TREE = '3d0467bf32f667f511dd224f0280ffecbd779a25'
+APPLICATION_NOTICES_FIXTURE_SOURCE = 'c3050a35f7bfd30c33321b71c18fbaf28328b85c'
+APPLICATION_NOTICES_FIXTURE_SOURCE_TREE = 'd4a38f96f39a67fbfbc52bef91c82008545ad1e7'
 APPLICATION_BROWSER_FIXTURE_BASE = 'f51840f68114ec70f3c5821529054d121f803d4b'
 APPLICATION_BROWSER_FIXTURE_BASE_TREE = 'd368a6c60d0f956cfa4a1b4442c1eb1f34b3742e'
 APPLICATION_BROWSER_FIXTURE_SOURCE = 'b8d347fd5ab3e529ee09c9671403b1bcddb5521a'
@@ -5530,6 +5534,61 @@ def project_application_browser_fixture_source(root, path, current):
     return base
 
 
+def validate_application_notices_fixture_source(root):
+    """Bind the retained-v1.18 migration order exposed by preserved run 44502124163."""
+    require(git(root, 'rev-parse', APPLICATION_NOTICES_FIXTURE_BASE + '^{tree}').decode().strip()
+            == APPLICATION_NOTICES_FIXTURE_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_NOTICES_FIXTURE_SOURCE + '^{tree}').decode().strip()
+            == APPLICATION_NOTICES_FIXTURE_SOURCE_TREE,
+            'Application notices fixture source identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                APPLICATION_NOTICES_FIXTURE_SOURCE).decode().strip().split()
+            == [APPLICATION_NOTICES_FIXTURE_BASE],
+            'Application notices fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_NOTICES_FIXTURE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_NOTICES_FIXTURE_BASE,
+                APPLICATION_NOTICES_FIXTURE_SOURCE).decode().splitlines()
+            == ['M\t' + APPLICATION_INBOX_FIXTURE_PATH],
+            'Application notices fixture changed another path or status')
+    base_entries = entries(root, APPLICATION_NOTICES_FIXTURE_BASE)
+    source_entries = entries(root, APPLICATION_NOTICES_FIXTURE_SOURCE)
+    current = ordinary(root, APPLICATION_INBOX_FIXTURE_PATH)
+    source = git(root, 'cat-file', 'blob', APPLICATION_NOTICES_FIXTURE_SOURCE
+                 + ':' + APPLICATION_INBOX_FIXTURE_PATH)
+    base = git(root, 'cat-file', 'blob', APPLICATION_NOTICES_FIXTURE_BASE
+               + ':' + APPLICATION_INBOX_FIXTURE_PATH)
+    require(current == source
+            and mode(root, APPLICATION_INBOX_FIXTURE_PATH)
+            == base_entries[APPLICATION_INBOX_FIXTURE_PATH][0]
+            == source_entries[APPLICATION_INBOX_FIXTURE_PATH][0] == '100644'
+            and project_application_notices_fixture_source(
+                root, APPLICATION_INBOX_FIXTURE_PATH, current) == base
+            and project_application_notices_fixture_source(
+                root, APPLICATION_INBOX_FIXTURE_PATH, base) == base
+            and source.count(b"'action':'mail_inbox_setup','current_password':password") == 2
+            and source.count(b"'action':'mail_message_setup','current_password':password") == 2
+            and source.count(b"owner migrates retained inbox history to scoped reads") == 1
+            and source.count(b"all(q['folder']=='INBOX' for q in migrated_inbox['requests'])") == 1
+            and source.count(b"owner migrates retained message history to scoped reads") == 1,
+            'Application notices fixture identity, projection or retained-data assertions changed')
+
+
+def project_application_notices_fixture_source(root, path, current):
+    """Restore the reviewed proof head before the retained-v1.18 fixture correction."""
+    if path != APPLICATION_INBOX_FIXTURE_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_NOTICES_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_NOTICES_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application notices fixture changed before predecessor projection')
+    return base
+
+
 def validate_application_fixture_successors(root):
     """Bind exact fixture corrections discovered by preserved Application run 44423175477."""
     identities = (
@@ -5567,10 +5626,12 @@ def validate_application_fixture_successors(root):
     git(root, 'merge-base', '--is-ancestor', APPLICATION_MESSAGE_FIXTURE_SOURCE, 'HEAD')
     account = ordinary(root, APPLICATION_ACCOUNT_FIXTURE_PATH)
     inbox = ordinary(root, APPLICATION_INBOX_FIXTURE_PATH)
+    predecessor_inbox = project_application_notices_fixture_source(
+        root, APPLICATION_INBOX_FIXTURE_PATH, inbox)
     require(account == git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE
                            + ':' + APPLICATION_ACCOUNT_FIXTURE_PATH)
-            and inbox == git(root, 'cat-file', 'blob', APPLICATION_MESSAGE_FIXTURE_SOURCE
-                             + ':' + APPLICATION_INBOX_FIXTURE_PATH)
+            and predecessor_inbox == git(root, 'cat-file', 'blob', APPLICATION_MESSAGE_FIXTURE_SOURCE
+                                         + ':' + APPLICATION_INBOX_FIXTURE_PATH)
             and project_application_fixture_successors(
                 root, APPLICATION_ACCOUNT_FIXTURE_PATH, account)
             == git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FIXTURE_BASE
@@ -5596,6 +5657,7 @@ def validate_application_fixture_successors(root):
 
 def project_application_fixture_successors(root, path, current):
     """Restore the accepted 6d576 source before exact Application fixture corrections."""
+    current = project_application_notices_fixture_source(root, path, current)
     current = project_application_browser_fixture_source(root, path, current)
     if path == APPLICATION_ACCOUNT_FIXTURE_PATH:
         final = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE + ':' + path)
@@ -8913,6 +8975,7 @@ def verify_current(root):
     ensure_history(root)
     pin_head(root)
     validate_application_browser_fixture_source(root)
+    validate_application_notices_fixture_source(root)
     validate_mail_list_identity(root)
     validate_mail_flags_report_count(root)
     validate_application_fixture_successors(root)
@@ -9369,6 +9432,7 @@ def verify_current(root):
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
         {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
         {'name': 'Exact Application browser successor binds the current bounded attachment capability copy after the preserved first-attempt failure', 'passed': True},
+        {'name': 'Exact Application notices successor restores the retained-v1.18 owner migration order without changing application behavior', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
