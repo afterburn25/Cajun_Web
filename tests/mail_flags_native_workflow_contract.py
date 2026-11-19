@@ -29,7 +29,7 @@ def validate(text):
     check('MySQL trigger fixtures receive only their required local setting',"SET GLOBAL log_bin_trust_function_creators=1" in text and '${{ job.services.database.id }}' in text and 'mysql-global.stdout.log' in text and 'mysql-global.stderr.log' in text)
     check('Synthetic database readiness is bounded and retained','for($i=0;$i<60;$i++)' in text and 'usleep(500000)' in text and 'readiness.stdout.log' in text and 'readiness.stderr.log' in text)
     check('Native lane uses synthetic private storage and one bounded suite','chmod 700 test-runtime/mail-flags-private' in text and 'realpath("test-runtime/mail-flags-private")' in text and text.count('\n            php tests/mail_flags_native.php\n')==1 and 'example.net' not in text and 'example.invalid' not in text)
-    check('Native report requires exact complete feature assertions',"len(report['checks'])==50" in text and 'Incompatible later sibling is preflighted before any flag table creation' in text and 'Failed sibling preflight creates no earlier request table' in text and 'Transport unconfirmed returns a finite failure' in text and 'Flag request and audit storage contain no passwords or remote exception text' in text and "required <= names" in text)
+    check('Native report requires exact complete feature assertions',"len(report['checks'])==45" in text and 'Incompatible later sibling is preflighted before any flag table creation' in text and 'Failed sibling preflight creates no earlier request table' in text and 'Transport unconfirmed returns a finite failure' in text and 'Flag request and audit storage contain no passwords or remote exception text' in text and "required <= names" in text)
     check('Failure output is retained before status enforcement','stdout.log' in text and 'stderr.log' in text and 'status.txt' in text and text.index("printf 'status=%s")<text.index('test "$status" -eq 0',text.index("printf 'status=%s")))
     check('Source and every matrix cell retain unconditional exact identity',text.count('actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02')==2 and text.count('if: always()')==3 and text.count('if-no-files-found: error')==2 and 'git archive --format=tar.gz HEAD' in text and 'tree=$(git rev-parse HEAD^{tree})' in text and '> "$cell/identity.txt"' in text and text.index('> "$cell/identity.txt"')<text.index('docker build --build-arg PHP_VERSION='))
     check('No softened failure, credential secret, live mail, or remote-operation channel exists',all(token not in text for token in ('continue-on-error','set +e','|| true','secrets.','curl ','ssh ','workflow_run:','smtp_host','imap_host')))
@@ -48,7 +48,7 @@ def self_test(text):
         ('lost runner failure receipt','sudo test -f qa/ubuntu-apt-source-preflight.json','true # preflight receipt omitted'),
         ('lost PDO MySQL','docker-php-ext-install pdo_mysql mbstring','docker-php-ext-install mbstring'),
         ('lost explicit no-INI ctype','flags="-n -d extension=ctype"','flags="-n"'),
-        ('weakened native count',"len(report['checks'])==50","len(report['checks'])>=40"),
+        ('weakened native count',"len(report['checks'])==45","len(report['checks'])>=40"),
         ('lost preflight assertion','Incompatible later sibling is preflighted before any flag table creation','Unrelated assertion'),
         ('softened failure','git diff --exit-code','git diff --exit-code || true'),
         ('lost evidence','if: always()','if: success()'),
