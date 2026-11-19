@@ -878,6 +878,16 @@ MAIL_FLAGS_REPORT_COUNT_PATHS = frozenset((
     '.github/workflows/mail-flags-native.yml',
     'tests/mail_flags_native_workflow_contract.py',
 ))
+APPLICATION_ACCOUNT_FIXTURE_BASE = '6d57621e67f43543906aba54d05bf8a42093bb82'
+APPLICATION_ACCOUNT_FIXTURE_BASE_TREE = 'e214aa19b186a453484b7023f064081084dad5bd'
+APPLICATION_ACCOUNT_FLAGS_SOURCE = '967bfcc97c0bfda78a6c73e39578e5d6528b5df6'
+APPLICATION_ACCOUNT_FLAGS_TREE = 'f4d2d20c10c69628eebf09625bc1339c2d293e2c'
+APPLICATION_ACCOUNT_FILES_SOURCE = '57384ea3a8d75df629b53b4e11d143052f8ef916'
+APPLICATION_ACCOUNT_FILES_TREE = '26aa65ce536afd3cdc4821b7547f1e944f70961f'
+APPLICATION_INBOX_FIXTURE_SOURCE = '410edaa0c97ad2c322ade7b35191a0fa8a4f0a6a'
+APPLICATION_INBOX_FIXTURE_TREE = '53331d93e10c1d44dd79b99faa2046bd4377b1f0'
+APPLICATION_ACCOUNT_FIXTURE_PATH = 'tests/mail_accounts_native.php'
+APPLICATION_INBOX_FIXTURE_PATH = 'tests/organized_update_cases.py'
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -4964,7 +4974,8 @@ def validate_mail_acceptance_portability_source(root):
     base_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_BASE)
     source_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_SOURCE)
     for path in sorted(MAIL_ACCEPTANCE_PORTABILITY_PATHS):
-        current = project_mail_admission_evidence(root, path, ordinary(root, path))
+        current = project_application_fixture_successors(root, path, ordinary(root, path))
+        current = project_mail_admission_evidence(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_BASE + ':' + path)
         require(current == source
@@ -5029,6 +5040,7 @@ def validate_mail_acceptance_portability_source(root):
 
 def project_mail_acceptance_portability(root, path, current):
     """Restore the reviewed proof head before first-attempt mail corrections."""
+    current = project_application_fixture_successors(root, path, current)
     current = project_mail_admission_evidence(root, path, current)
     if path not in MAIL_ACCEPTANCE_PORTABILITY_PATHS:
         return current
@@ -5317,6 +5329,90 @@ def project_mail_flags_report_count(root, path, current):
     require(current == source,
             'Current mail flags report-count source changed before predecessor projection: ' + path)
     return base
+
+
+def validate_application_fixture_successors(root):
+    """Bind exact fixture corrections discovered by preserved Application run 44423175477."""
+    identities = (
+        (APPLICATION_ACCOUNT_FIXTURE_BASE, APPLICATION_ACCOUNT_FIXTURE_BASE_TREE),
+        (APPLICATION_ACCOUNT_FLAGS_SOURCE, APPLICATION_ACCOUNT_FLAGS_TREE),
+        (APPLICATION_ACCOUNT_FILES_SOURCE, APPLICATION_ACCOUNT_FILES_TREE),
+        (APPLICATION_INBOX_FIXTURE_SOURCE, APPLICATION_INBOX_FIXTURE_TREE),
+    )
+    for commit, tree in identities:
+        require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
+                'Application fixture successor tree changed: ' + commit)
+    chain = (
+        (APPLICATION_ACCOUNT_FIXTURE_BASE, APPLICATION_ACCOUNT_FLAGS_SOURCE,
+         APPLICATION_ACCOUNT_FIXTURE_PATH),
+        (APPLICATION_ACCOUNT_FLAGS_SOURCE, APPLICATION_ACCOUNT_FILES_SOURCE,
+         APPLICATION_ACCOUNT_FIXTURE_PATH),
+        (APPLICATION_ACCOUNT_FILES_SOURCE, APPLICATION_INBOX_FIXTURE_SOURCE,
+         APPLICATION_INBOX_FIXTURE_PATH),
+    )
+    for base, source, path in chain:
+        require(git(root, 'rev-list', '--parents', '-n', '1', source).decode().split()
+                == [source, base],
+                'Application fixture source is not the direct reviewed successor: ' + source)
+        require(git(root, 'diff', '--name-status', '--no-renames', base, source)
+                .decode().splitlines() == ['M\t' + path],
+                'Application fixture successor changed another path or status: ' + source)
+        base_entries = entries(root, base)
+        source_entries = entries(root, source)
+        require(base_entries[path][0] == source_entries[path][0] == '100644',
+                'Application fixture successor mode changed: ' + source)
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_INBOX_FIXTURE_SOURCE, 'HEAD')
+    account = ordinary(root, APPLICATION_ACCOUNT_FIXTURE_PATH)
+    inbox = ordinary(root, APPLICATION_INBOX_FIXTURE_PATH)
+    require(account == git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE
+                           + ':' + APPLICATION_ACCOUNT_FIXTURE_PATH)
+            and inbox == git(root, 'cat-file', 'blob', APPLICATION_INBOX_FIXTURE_SOURCE
+                             + ':' + APPLICATION_INBOX_FIXTURE_PATH)
+            and project_application_fixture_successors(
+                root, APPLICATION_ACCOUNT_FIXTURE_PATH, account)
+            == git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FIXTURE_BASE
+                   + ':' + APPLICATION_ACCOUNT_FIXTURE_PATH)
+            and project_application_fixture_successors(
+                root, APPLICATION_INBOX_FIXTURE_PATH, inbox)
+            == git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE
+                   + ':' + APPLICATION_INBOX_FIXTURE_PATH),
+            'Current Application fixture bytes or reversible projection changed')
+    controller = ordinary(root, 'site/admin/controllers/mail_inbox.php')
+    view = ordinary(root, 'site/admin/views/mail_inbox.php')
+    require(account.count(b"mail_flags_schema('maci_')") == 1
+            and account.count(b"mail_files_schema('maci_')") == 1
+            and account.count(b"schema_statements('maci_')") == 1
+            and inbox.count(b"'action':'mail_inbox_read','account_id':account['id'],'revision':account['revision'],'folder':'INBOX'") == 1
+            and inbox.count(b"'public server hostname' in r.text and records('inbox')=={'requests':[],'results':[]}") == 1
+            and controller.count(b"if(posted('folder',64)!==$folder)") == 1
+            and view.count(b'name="folder" value="<?=esc($folder)?>"') == 1,
+            'Application fixture dependency exclusion, route identity or no-network assertion changed')
+
+
+def project_application_fixture_successors(root, path, current):
+    """Restore the accepted 6d576 source before exact Application fixture corrections."""
+    if path == APPLICATION_ACCOUNT_FIXTURE_PATH:
+        final = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE + ':' + path)
+        middle = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FLAGS_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FIXTURE_BASE + ':' + path)
+        if current == final:
+            current = middle
+        if current == middle:
+            return base
+        if current == base or current != ordinary(root, path):
+            return current
+        require(current == final,
+                'Current Application account fixture changed before predecessor projection')
+    if path == APPLICATION_INBOX_FIXTURE_PATH:
+        source = git(root, 'cat-file', 'blob', APPLICATION_INBOX_FIXTURE_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE + ':' + path)
+        if current == source:
+            return base
+        if current == base or current != ordinary(root, path):
+            return current
+        require(current == source,
+                'Current Application inbox fixture changed before predecessor projection')
+    return current
 
 
 def validate_latest_acceptance_successors(root):
@@ -5912,6 +6008,7 @@ def validate_mail_consolidated_review_fix(root):
 
 def project_mail_consolidated_review_fix(root, path, current):
     """Restore the consolidated proof predecessor before review corrections."""
+    current = project_application_fixture_successors(root, path, current)
     current = project_mail_consolidated_review_recovery(root, path, current)
     if path not in MAIL_CONSOLIDATED_REVIEW_FIX_PATHS:
         return current
@@ -7356,7 +7453,8 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS
                 | {MAIL_ATTACHMENT_CLAIM_FIX_PATH}
                 | MAIL_ACCEPTANCE_PORTABILITY_PATHS
-                 | {FORCE_SSL_RUNNER_PORT_PATH}
+                | {APPLICATION_ACCOUNT_FIXTURE_PATH, APPLICATION_INBOX_FIXTURE_PATH}
+                | {FORCE_SSL_RUNNER_PORT_PATH}
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -8408,6 +8506,8 @@ def project_ux08_storefront_repair_input(root, path, current):
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_application_fixture_successors(
+        Path(__file__).resolve().parents[1], path, current)
     current = project_mail_artifact_projection_fix(
         Path(__file__).resolve().parents[1], path, current)
     current = project_mail_backup_projection_fix(
@@ -8603,6 +8703,7 @@ def verify_current(root):
     pin_head(root)
     validate_mail_list_identity(root)
     validate_mail_flags_report_count(root)
+    validate_application_fixture_successors(root)
     validate_latest_acceptance_successors(root)
     validate_mail_acceptance_hardening_source(root)
     validate_mail_acceptance_repair_source(root)
@@ -8925,7 +9026,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_latest_acceptance_successors(root, path, ordinary(root, path))
+        value = project_application_fixture_successors(root, path, ordinary(root, path))
+        value = project_latest_acceptance_successors(root, path, value)
         value = project_mail_acceptance_repair_source(root, path, value)
         value = project_mail_submission_expiry_fix(root, path, value)
         value = project_mail_copy_controls_fix(root, path, value)
