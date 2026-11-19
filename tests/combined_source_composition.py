@@ -517,6 +517,14 @@ RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE_TREE = '7dd903aabef4ee94bcfc8ad693697ce0
 RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
 ))
+RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE = '89d7602f9e338a21922b18345c1c1cd548a110f8'
+RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE_TREE = '76b9657ed92bd2b4c9809051ca2939a968bfbddf'
+RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE = '6d57621e67f43543906aba54d05bf8a42093bb82'
+RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE_TREE = 'e214aa19b186a453484b7023f064081084dad5bd'
+RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 RUNNER_APPLICATION_BUILD_BUDGET_BASE = '0382da0e1b8d55ae1edc921b985cb569ea53823d'
 RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE = 'acb09bb392c96cd83c40561c966f46f4dedc81df'
 RUNNER_APPLICATION_BUILD_BUDGET_SOURCE = '7e108b483e0ebeb39a42f670c42f20d9f54a04f8'
@@ -3390,6 +3398,61 @@ def project_runner_aws_full_mirror(root, path, current):
     return base
 
 
+def validate_runner_account_source_final_budget(root):
+    """Bind the bounded account source budget after preserved run 44423175458."""
+    require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE_TREE,
+            'Runner final account source budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE],
+            'Runner final account source budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE,
+                  RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED)],
+            'Runner final account source budget changed another path or status')
+    base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE)
+    for path in sorted(RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_account_source_final_budget(root, path, current) == base
+                and project_runner_account_source_final_budget(root, path, base) == base,
+                'Runner final account source budget identity or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/account-notifications-acceptance.yml')
+    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    require(workflow.count(b'run 44423175458') == 1
+            and workflow.count(b'    timeout-minutes: 90\n') == 1
+            and workflow.count(b'    timeout-minutes: 50\n') == 0
+            and workflow.count(b'    timeout-minutes: 35\n') == 1
+            and contract.count(b'SOURCE_TIMEOUT_SUCCESSOR =') == 1
+            and contract.count(b'source.count(SOURCE_TIMEOUT_SUCCESSOR) == 1') == 1
+            and contract.count(b"'lost bounded current-source timeout', SOURCE_TIMEOUT_SUCCESSOR") == 1,
+            'Runner final account source timeout or mutation guard changed')
+
+
+def project_runner_account_source_final_budget(root, path, current):
+    """Restore the reviewed flag-count head before the 90-minute account budget."""
+    if path not in RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner final account source budget changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_build_completion(root):
     """Bind the bounded completion budget discovered by preserved run 44385954180."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + '^{tree}').decode().strip()
@@ -3409,7 +3472,7 @@ def validate_runner_application_build_completion(root):
     base_entries = entries(root, RUNNER_APPLICATION_BUILD_COMPLETION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_account_source_final_budget(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + ':' + path)
         require(current == source
@@ -3421,6 +3484,7 @@ def validate_runner_application_build_completion(root):
 
 def project_runner_application_build_completion(root, path, current):
     """Restore c45 only for the exact 240-minute Application completion paths."""
+    current = project_runner_account_source_final_budget(root, path, current)
     if path not in RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE + ':' + path)
@@ -3502,7 +3566,7 @@ def validate_runner_account_source_completion(root):
     base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE)
     source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE)
     for path in sorted(RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_account_source_final_budget(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_BASE + ':' + path)
         require(current == source
@@ -3517,6 +3581,7 @@ def validate_runner_account_source_completion(root):
 
 def project_runner_account_source_completion(root, path, current):
     """Restore c45 only for the exact 50-to-35-minute source budget."""
+    current = project_runner_account_source_final_budget(root, path, current)
     if path not in RUNNER_ACCOUNT_SOURCE_COMPLETION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_COMPLETION_SOURCE + ':' + path)
@@ -8568,6 +8633,7 @@ def verify_current(root):
     validate_mail_backup_projection_fix(root)
     validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
+    validate_runner_account_source_final_budget(root)
     validate_runner_aws_full_mirror_source(root)
     validate_runner_application_build_completion(root)
     validate_runner_application_build_budget(root)
