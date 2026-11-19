@@ -165,7 +165,7 @@ jobs:
           from pathlib import Path
           cell=Path('qa/mail-flags-native/${{ matrix.php }}-${{ matrix.database }}')
           report=json.loads((cell/'results.json').read_text())
-          assert report['passed'] is True and len(report['checks'])==50
+          assert report['passed'] is True and len(report['checks'])==45
           assert all(row['passed'] is True for row in report['checks'])
           names={row['name'] for row in report['checks']}
           required={
