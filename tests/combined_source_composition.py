@@ -853,6 +853,15 @@ MAIL_FLAGS_MARKER_BASE_TREE = MAIL_FLAGS_IDENTITY_SOURCE_TREE
 MAIL_FLAGS_MARKER_SOURCE = 'edebd5ec41a7ad3189568d1c2987e6d63b14a612'
 MAIL_FLAGS_MARKER_SOURCE_TREE = '36707a42eb5591624e51aeaa016556e95088d5af'
 MAIL_FLAGS_MARKER_PATH = MAIL_FLAGS_IDENTITY_PATH
+MAIL_LIST_IDENTITY_BASE = '7e375c4ad4123cea02756cedd64e763be93222b9'
+MAIL_LIST_IDENTITY_BASE_TREE = '9162f616ffb2d444939d7a0e14ed58a7ca6592be'
+MAIL_LIST_IDENTITY_SOURCE = 'ee29b6f97e7dd18d2435612c4a96fb489137202e'
+MAIL_LIST_IDENTITY_SOURCE_TREE = 'f3b62a964a5f230aa2e152c976d72a42cac15c2c'
+MAIL_LIST_IDENTITY_PATHS = frozenset((
+    '.github/workflows/mail-folder-native.yml',
+    'tests/mail_folder_native_workflow_contract.py',
+    'tests/mail_replies_native.php',
+))
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -5037,7 +5046,7 @@ def validate_mail_attachment_claim_fix(root):
             == ['M\t' + MAIL_ATTACHMENT_CLAIM_FIX_PATH],
             'Attachment causal-claim fix changed another path or status')
     path = MAIL_ATTACHMENT_CLAIM_FIX_PATH
-    current = ordinary(root, path)
+    current = project_mail_list_identity(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_CLAIM_FIX_BASE + ':' + path)
     require(current == source and mode(root, path) == '100644'
@@ -5051,6 +5060,7 @@ def validate_mail_attachment_claim_fix(root):
 
 def project_mail_attachment_claim_fix(root, path, current):
     """Restore the submission-readiness source before its causal test correction."""
+    current = project_mail_list_identity(root, path, current)
     current = project_mail_submission_expiry_fix(root, path, current)
     current = project_mail_reply_all_replay(root, path, current)
     if path != MAIL_ATTACHMENT_CLAIM_FIX_PATH:
@@ -5129,8 +5139,62 @@ def project_mail_submission_expiry_fix(root, path, current):
     return base
 
 
+def validate_mail_list_identity(root):
+    """Bind exact-list identity and retained folder-report count after preserved runs."""
+    require(git(root, 'rev-parse', MAIL_LIST_IDENTITY_BASE + '^{tree}').decode().strip()
+            == MAIL_LIST_IDENTITY_BASE_TREE
+            and git(root, 'rev-parse', MAIL_LIST_IDENTITY_SOURCE + '^{tree}').decode().strip()
+            == MAIL_LIST_IDENTITY_SOURCE_TREE,
+            'Mail list-identity source tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1', MAIL_LIST_IDENTITY_SOURCE).decode().split()
+            == [MAIL_LIST_IDENTITY_SOURCE, MAIL_LIST_IDENTITY_BASE],
+            'Mail list-identity source is not the direct failed-head successor')
+    git(root, 'merge-base', '--is-ancestor', MAIL_LIST_IDENTITY_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                MAIL_LIST_IDENTITY_BASE, MAIL_LIST_IDENTITY_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_LIST_IDENTITY_PATHS)],
+            'Mail list-identity source changed another path or status')
+    base_entries = entries(root, MAIL_LIST_IDENTITY_BASE)
+    source_entries = entries(root, MAIL_LIST_IDENTITY_SOURCE)
+    for path in sorted(MAIL_LIST_IDENTITY_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_list_identity(root, path, current) == base
+                and project_mail_list_identity(root, path, base) == base,
+                'Mail list-identity source or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/mail-folder-native.yml')
+    contract = ordinary(root, 'tests/mail_folder_native_workflow_contract.py')
+    native = ordinary(root, 'tests/mail_replies_native.php')
+    require(workflow.count(b"'copied': (cell / 'copied-results.json', 23)") == 1
+            and workflow.count(b"assert len(report['checks']) == count") == 2
+            and workflow.count(b"assert all(check['passed'] is True for check in report['checks'])") == 2
+            and contract.count(b"'copied': (cell / 'copied-results.json', 23)") == 1
+            and contract.count(b'assert len(report[\'checks\']) >=') == 1
+            and native.count(b"$listed=array_column(mail_reply_drafts_list($sender),null,'id');") == 1
+            and native.count(b"isset($listed[$id])&&$listed[$id]['subject']===$draft['subject']&&!$listed[$id]['unavailable']") == 1,
+            'Mail exact list identity, strict report count or all-check gate changed')
+
+
+def project_mail_list_identity(root, path, current):
+    """Restore the preserved 7e375 head before exact-list/count fixture correction."""
+    if path not in MAIL_LIST_IDENTITY_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail list-identity source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_latest_acceptance_successors(root):
-    """Bind the three reviewed corrections from the preserved c45 cohort."""
+    """Bind the reviewed corrections from the preserved c45 cohort."""
     sources = (
         (FORCE_SSL_RUNNER_PORT_BASE, FORCE_SSL_RUNNER_PORT_BASE_TREE,
          FORCE_SSL_RUNNER_PORT_SOURCE, FORCE_SSL_RUNNER_PORT_SOURCE_TREE,
@@ -5247,6 +5311,7 @@ def project_mail_flags_identity(root, path, current):
 
 def project_latest_acceptance_successors(root, path, current):
     """Restore c45 across the independently reviewed correction sources."""
+    current = project_mail_list_identity(root, path, current)
     current = project_mail_flags_marker(root, path, current)
     current = project_mail_flags_identity(root, path, current)
     current = project_mail_reply_all_boundary(root, path, current)
@@ -5273,7 +5338,7 @@ def validate_mail_acceptance_hardening_source(root):
     base_entries = entries(root, MAIL_ACCEPTANCE_HARDENING_BASE)
     source_entries = entries(root, MAIL_ACCEPTANCE_HARDENING_SOURCE)
     for path in sorted(MAIL_ACCEPTANCE_HARDENING_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_list_identity(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_BASE + ':' + path)
         require(current == source
@@ -5306,6 +5371,7 @@ def validate_mail_acceptance_hardening_source(root):
 
 def project_mail_acceptance_hardening_source(root, path, current):
     """Restore the first retained-mail repair before its evidence hardening."""
+    current = project_mail_list_identity(root, path, current)
     if path not in MAIL_ACCEPTANCE_HARDENING_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_HARDENING_SOURCE + ':' + path)
@@ -8408,6 +8474,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_list_identity(root)
     validate_latest_acceptance_successors(root)
     validate_mail_acceptance_hardening_source(root)
     validate_mail_acceptance_repair_source(root)
