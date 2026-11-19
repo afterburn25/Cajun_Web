@@ -25,10 +25,10 @@ APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
 APT_PREPARATION_SHA256 = '37f6a8f12196a7a991dc2d3ed8ec346dd6d51257c39f58c16bc2409af6ad297a'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
-SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44457889547 passed the workflow, fixture, navigation and policy\n'
-                            '    # proofs, then reached the exact 90m ceiling in unchanged artifact verification.\n'
+SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
+                            '    # policy proofs, then reached the exact 180m ceiling before helper verification.\n'
                             '    # Keep every source-proof command and allow one bounded complete admission pass.\n'
-                            '    timeout-minutes: 180\n')
+                            '    timeout-minutes: 360\n')
 PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
                                        '    runs-on: ubuntu-24.04\n'
                                        '    timeout-minutes: 45\n')
@@ -655,7 +655,7 @@ def self_test(root=ROOT):
         ('per-commit cancellation group', 'group: account-notifications-acceptance-${{ github.event.pull_request.number || github.ref }}', 'group: account-notifications-acceptance-${{ github.sha }}'),
         ('cancelled main evidence', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", 'cancel-in-progress: true'),
         ('lost bounded current-source timeout', SOURCE_TIMEOUT_SUCCESSOR,
-         SOURCE_TIMEOUT_SUCCESSOR.replace('timeout-minutes: 180', 'timeout-minutes: 90')),
+         SOURCE_TIMEOUT_SUCCESSOR.replace('timeout-minutes: 360', 'timeout-minutes: 180')),
         ('unbound source output', '          test "$actual" = "$CWP_SOURCE_SHA"\n', ''),
         ('dirty source admission', '          test -z "$(git status --porcelain)"\n', ''),
         ('lost failure evidence', '      - name: Retain exact source and failure evidence\n        if: always()', '      - name: Retain exact source and failure evidence\n        if: success()'),
