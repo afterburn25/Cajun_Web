@@ -918,6 +918,11 @@ APPLICATION_FRESH_DRAFT_READINESS_PATHS = frozenset((
     'site/install/actions/deploy.php',
     'site/install/inventory.generated.php',
 ))
+APPLICATION_SENT_COPY_ABSENCE_BASE = '1a65bd018c7d6cbd0a6bfcb127ed795e079abfcd'
+APPLICATION_SENT_COPY_ABSENCE_BASE_TREE = '9ce92a1e493fbafd8c90e859719467e64448728e'
+APPLICATION_SENT_COPY_ABSENCE_SOURCE = '8950af94e94185af70867f9ca9405c93d70b1577'
+APPLICATION_SENT_COPY_ABSENCE_SOURCE_TREE = '97cf22d547ec42d0fbf4bd84a2829a21a56554e4'
+APPLICATION_SENT_COPY_ABSENCE_PATH = 'tests/mail_submissions_cases.py'
 APPLICATION_BROWSER_FIXTURE_BASE = 'f51840f68114ec70f3c5821529054d121f803d4b'
 APPLICATION_BROWSER_FIXTURE_BASE_TREE = 'd368a6c60d0f956cfa4a1b4442c1eb1f34b3742e'
 APPLICATION_BROWSER_FIXTURE_SOURCE = 'b8d347fd5ab3e529ee09c9671403b1bcddb5521a'
@@ -5656,6 +5661,60 @@ def project_application_fresh_draft_readiness_source(root, path, current):
     return base
 
 
+def validate_application_sent_copy_absence_source(root):
+    """Bind the exact evidence correction exposed by preserved run 44567362237."""
+    require(git(root, 'rev-parse', APPLICATION_SENT_COPY_ABSENCE_BASE + '^{tree}').decode().strip()
+            == APPLICATION_SENT_COPY_ABSENCE_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_SENT_COPY_ABSENCE_SOURCE + '^{tree}').decode().strip()
+            == APPLICATION_SENT_COPY_ABSENCE_SOURCE_TREE,
+            'Application Sent-copy absence source identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                APPLICATION_SENT_COPY_ABSENCE_SOURCE).decode().strip().split()
+            == [APPLICATION_SENT_COPY_ABSENCE_BASE],
+            'Application Sent-copy absence source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_SENT_COPY_ABSENCE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_SENT_COPY_ABSENCE_BASE,
+                APPLICATION_SENT_COPY_ABSENCE_SOURCE).decode().splitlines()
+            == ['M\t' + APPLICATION_SENT_COPY_ABSENCE_PATH],
+            'Application Sent-copy absence source changed another path or status')
+    base_entries = entries(root, APPLICATION_SENT_COPY_ABSENCE_BASE)
+    source_entries = entries(root, APPLICATION_SENT_COPY_ABSENCE_SOURCE)
+    path = APPLICATION_SENT_COPY_ABSENCE_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_ABSENCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_ABSENCE_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_application_sent_copy_absence_source(root, path, current) == base
+            and project_application_sent_copy_absence_source(root, path, base) == base,
+            'Application Sent-copy absence source identity or projection changed')
+    query = (b"SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() "
+             b"AND table_name IN ('ci_mail_sent_folders','ci_mail_copy_attempts','ci_mail_copy_results')")
+    require(source.count(query) == 1
+            and source.count(b"not db(\"SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'\") and not copy_tables") == 1
+            and source.count(b"'sent-copy storage' in r.text.lower() and inbox_server.connections == inbox_connections") == 1
+            and base.count(b"not db(\"SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'\") and not db('SELECT * FROM ci_mail_copy_attempts')") == 1
+            and source.count(b"not db(\"SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'\") and not db('SELECT * FROM ci_mail_copy_attempts')") == 0
+            and query not in base,
+            'Application Sent-copy absence assertion was weakened or changed')
+
+
+def project_application_sent_copy_absence_source(root, path, current):
+    """Restore the preserved failed exact head before the evidence correction."""
+    if path != APPLICATION_SENT_COPY_ABSENCE_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_ABSENCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_ABSENCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application Sent-copy absence source changed before predecessor projection')
+    return base
+
+
 def validate_application_fixture_successors(root):
     """Bind exact fixture corrections discovered by preserved Application run 44423175477."""
     identities = (
@@ -6031,7 +6090,8 @@ def validate_mail_attachment_submission_fix(root):
     base_entries = entries(root, MAIL_ATTACHMENT_SUBMISSION_FIX_BASE)
     source_entries = entries(root, MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE)
     for path in sorted(MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS):
-        current = project_mail_attachment_claim_fix(root, path, ordinary(root, path))
+        current = project_application_sent_copy_absence_source(root, path, ordinary(root, path))
+        current = project_mail_attachment_claim_fix(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SUBMISSION_FIX_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ATTACHMENT_SUBMISSION_FIX_BASE + ':' + path)
         require(current == source
@@ -6059,6 +6119,7 @@ def validate_mail_attachment_submission_fix(root):
 
 def project_mail_attachment_submission_fix(root, path, current):
     """Restore the file-readiness correction before submission review fixes."""
+    current = project_application_sent_copy_absence_source(root, path, current)
     current = project_mail_attachment_claim_fix(root, path, current)
     if path not in MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS:
         return current
@@ -9042,6 +9103,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_sent_copy_absence_source(root)
     validate_application_fresh_draft_readiness_source(root)
     validate_application_browser_fixture_source(root)
     validate_application_notices_fixture_source(root)
@@ -9372,7 +9434,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_fixture_successors(root, path, ordinary(root, path))
+        value = project_application_sent_copy_absence_source(root, path, ordinary(root, path))
+        value = project_application_fixture_successors(root, path, value)
         value = project_latest_acceptance_successors(root, path, value)
         value = project_mail_acceptance_repair_source(root, path, value)
         value = project_mail_submission_expiry_fix(root, path, value)
@@ -9503,6 +9566,7 @@ def verify_current(root):
         {'name': 'Exact Application browser successor binds the current bounded attachment capability copy after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact Application notices successor restores the retained-v1.18 owner migration order without changing application behavior', 'passed': True},
         {'name': 'Exact Application fresh-install successor binds formatted-draft readiness and the canonical installer inventory after the preserved browser failure', 'passed': True},
+        {'name': 'Exact Application Sent-copy evidence successor proves absent pre-migration storage without querying an absent table', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
