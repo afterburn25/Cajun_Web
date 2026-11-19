@@ -894,6 +894,10 @@ APPLICATION_ACCOUNT_FILES_SOURCE = '57384ea3a8d75df629b53b4e11d143052f8ef916'
 APPLICATION_ACCOUNT_FILES_TREE = '26aa65ce536afd3cdc4821b7547f1e944f70961f'
 APPLICATION_INBOX_FIXTURE_SOURCE = '410edaa0c97ad2c322ade7b35191a0fa8a4f0a6a'
 APPLICATION_INBOX_FIXTURE_TREE = '53331d93e10c1d44dd79b99faa2046bd4377b1f0'
+APPLICATION_MESSAGE_FIXTURE_BASE = 'f4b073c351bd2255646c4a3b3f24119cc9e70116'
+APPLICATION_MESSAGE_FIXTURE_BASE_TREE = '49fd3e0e3b892ac65393087ca412ccabd60b5661'
+APPLICATION_MESSAGE_FIXTURE_SOURCE = '134465633c16551b38d5e63879edbd241abc289b'
+APPLICATION_MESSAGE_FIXTURE_SOURCE_TREE = '13a51f7f1445c0f68cb7af808ba9227f30138223'
 APPLICATION_ACCOUNT_FIXTURE_PATH = 'tests/mail_accounts_native.php'
 APPLICATION_INBOX_FIXTURE_PATH = 'tests/organized_update_cases.py'
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
@@ -5406,6 +5410,8 @@ def validate_application_fixture_successors(root):
         (APPLICATION_ACCOUNT_FLAGS_SOURCE, APPLICATION_ACCOUNT_FLAGS_TREE),
         (APPLICATION_ACCOUNT_FILES_SOURCE, APPLICATION_ACCOUNT_FILES_TREE),
         (APPLICATION_INBOX_FIXTURE_SOURCE, APPLICATION_INBOX_FIXTURE_TREE),
+        (APPLICATION_MESSAGE_FIXTURE_BASE, APPLICATION_MESSAGE_FIXTURE_BASE_TREE),
+        (APPLICATION_MESSAGE_FIXTURE_SOURCE, APPLICATION_MESSAGE_FIXTURE_SOURCE_TREE),
     )
     for commit, tree in identities:
         require(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree,
@@ -5416,6 +5422,8 @@ def validate_application_fixture_successors(root):
         (APPLICATION_ACCOUNT_FLAGS_SOURCE, APPLICATION_ACCOUNT_FILES_SOURCE,
          APPLICATION_ACCOUNT_FIXTURE_PATH),
         (APPLICATION_ACCOUNT_FILES_SOURCE, APPLICATION_INBOX_FIXTURE_SOURCE,
+         APPLICATION_INBOX_FIXTURE_PATH),
+        (APPLICATION_MESSAGE_FIXTURE_BASE, APPLICATION_MESSAGE_FIXTURE_SOURCE,
          APPLICATION_INBOX_FIXTURE_PATH),
     )
     for base, source, path in chain:
@@ -5429,12 +5437,12 @@ def validate_application_fixture_successors(root):
         source_entries = entries(root, source)
         require(base_entries[path][0] == source_entries[path][0] == '100644',
                 'Application fixture successor mode changed: ' + source)
-    git(root, 'merge-base', '--is-ancestor', APPLICATION_INBOX_FIXTURE_SOURCE, 'HEAD')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_MESSAGE_FIXTURE_SOURCE, 'HEAD')
     account = ordinary(root, APPLICATION_ACCOUNT_FIXTURE_PATH)
     inbox = ordinary(root, APPLICATION_INBOX_FIXTURE_PATH)
     require(account == git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE
                            + ':' + APPLICATION_ACCOUNT_FIXTURE_PATH)
-            and inbox == git(root, 'cat-file', 'blob', APPLICATION_INBOX_FIXTURE_SOURCE
+            and inbox == git(root, 'cat-file', 'blob', APPLICATION_MESSAGE_FIXTURE_SOURCE
                              + ':' + APPLICATION_INBOX_FIXTURE_PATH)
             and project_application_fixture_successors(
                 root, APPLICATION_ACCOUNT_FIXTURE_PATH, account)
@@ -5452,6 +5460,8 @@ def validate_application_fixture_successors(root):
             and account.count(b"schema_statements('maci_')") == 1
             and inbox.count(b"'action':'mail_inbox_read','account_id':account['id'],'revision':account['revision'],'folder':'INBOX'") == 1
             and inbox.count(b"'public server hostname' in r.text and records('inbox')=={'requests':[],'results':[]}") == 1
+            and inbox.count(b"route={'account_id':account['id'],'revision':str(account['revision']),'folder':'INBOX','uidvalidity':'1234','uid':'82'}") == 1
+            and inbox.count(b"'public incoming server' in r.text and records('messages')=={'requests':[],'results':[]}") == 1
             and controller.count(b"if(posted('folder',64)!==$folder)") == 1
             and view.count(b'name="folder" value="<?=esc($folder)?>"') == 1,
             'Application fixture dependency exclusion, route identity or no-network assertion changed')
@@ -5472,6 +5482,10 @@ def project_application_fixture_successors(root, path, current):
         require(current == final,
                 'Current Application account fixture changed before predecessor projection')
     if path == APPLICATION_INBOX_FIXTURE_PATH:
+        final = git(root, 'cat-file', 'blob', APPLICATION_MESSAGE_FIXTURE_SOURCE + ':' + path)
+        middle = git(root, 'cat-file', 'blob', APPLICATION_MESSAGE_FIXTURE_BASE + ':' + path)
+        if current == final:
+            current = middle
         source = git(root, 'cat-file', 'blob', APPLICATION_INBOX_FIXTURE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE + ':' + path)
         if current == source:
