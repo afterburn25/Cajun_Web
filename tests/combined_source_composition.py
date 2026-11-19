@@ -910,6 +910,14 @@ APPLICATION_NOTICES_FIXTURE_BASE = '1744bd1208ecc51137961ed7cada8e709ed2753b'
 APPLICATION_NOTICES_FIXTURE_BASE_TREE = '3d0467bf32f667f511dd224f0280ffecbd779a25'
 APPLICATION_NOTICES_FIXTURE_SOURCE = 'c3050a35f7bfd30c33321b71c18fbaf28328b85c'
 APPLICATION_NOTICES_FIXTURE_SOURCE_TREE = 'd4a38f96f39a67fbfbc52bef91c82008545ad1e7'
+APPLICATION_FRESH_DRAFT_READINESS_BASE = '9ebc6433a8bd17e7186dbfab3860feb1cdd214d3'
+APPLICATION_FRESH_DRAFT_READINESS_BASE_TREE = 'e00e69f2a6df181f5bb7bede96eacb70f2cc5764'
+APPLICATION_FRESH_DRAFT_READINESS_SOURCE = 'ac3766454ecf0bd8e3886c9a548ae33061bccb16'
+APPLICATION_FRESH_DRAFT_READINESS_SOURCE_TREE = '57cbbbb0b2e609d6a74e26d0ee0c64d9a600a674'
+APPLICATION_FRESH_DRAFT_READINESS_PATHS = frozenset((
+    'site/install/actions/deploy.php',
+    'site/install/inventory.generated.php',
+))
 APPLICATION_BROWSER_FIXTURE_BASE = 'f51840f68114ec70f3c5821529054d121f803d4b'
 APPLICATION_BROWSER_FIXTURE_BASE_TREE = 'd368a6c60d0f956cfa4a1b4442c1eb1f34b3742e'
 APPLICATION_BROWSER_FIXTURE_SOURCE = 'b8d347fd5ab3e529ee09c9671403b1bcddb5521a'
@@ -5123,7 +5131,8 @@ def validate_mail_acceptance_portability_source(root):
     base_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_BASE)
     source_entries = entries(root, MAIL_ACCEPTANCE_PORTABILITY_SOURCE)
     for path in sorted(MAIL_ACCEPTANCE_PORTABILITY_PATHS):
-        current = project_application_fixture_successors(root, path, ordinary(root, path))
+        current = project_application_fresh_draft_readiness_source(root, path, ordinary(root, path))
+        current = project_application_fixture_successors(root, path, current)
         current = project_mail_admission_evidence(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_ACCEPTANCE_PORTABILITY_BASE + ':' + path)
@@ -5189,6 +5198,7 @@ def validate_mail_acceptance_portability_source(root):
 
 def project_mail_acceptance_portability(root, path, current):
     """Restore the reviewed proof head before first-attempt mail corrections."""
+    current = project_application_fresh_draft_readiness_source(root, path, current)
     current = project_application_fixture_successors(root, path, current)
     current = project_mail_admission_evidence(root, path, current)
     if path not in MAIL_ACCEPTANCE_PORTABILITY_PATHS:
@@ -5586,6 +5596,63 @@ def project_application_notices_fixture_source(root, path, current):
         return current
     require(current == source,
             'Current Application notices fixture changed before predecessor projection')
+    return base
+
+
+def validate_application_fresh_draft_readiness_source(root):
+    """Bind the fresh-install readiness correction exposed by preserved run 44502124163."""
+    require(git(root, 'rev-parse', APPLICATION_FRESH_DRAFT_READINESS_BASE + '^{tree}').decode().strip()
+            == APPLICATION_FRESH_DRAFT_READINESS_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_FRESH_DRAFT_READINESS_SOURCE + '^{tree}').decode().strip()
+            == APPLICATION_FRESH_DRAFT_READINESS_SOURCE_TREE,
+            'Application fresh-draft readiness source identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                APPLICATION_FRESH_DRAFT_READINESS_SOURCE).decode().strip().split()
+            == [APPLICATION_FRESH_DRAFT_READINESS_BASE],
+            'Application fresh-draft readiness source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_FRESH_DRAFT_READINESS_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_FRESH_DRAFT_READINESS_BASE,
+                APPLICATION_FRESH_DRAFT_READINESS_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(APPLICATION_FRESH_DRAFT_READINESS_PATHS)],
+            'Application fresh-draft readiness source changed another path or status')
+    base_entries = entries(root, APPLICATION_FRESH_DRAFT_READINESS_BASE)
+    source_entries = entries(root, APPLICATION_FRESH_DRAFT_READINESS_SOURCE)
+    for path in sorted(APPLICATION_FRESH_DRAFT_READINESS_PATHS):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_application_fresh_draft_readiness_source(root, path, current) == base
+                and project_application_fresh_draft_readiness_source(root, path, base) == base,
+                'Application fresh-draft readiness identity or projection changed: ' + path)
+    deploy = ordinary(root, 'site/install/actions/deploy.php')
+    predecessor = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_BASE
+                      + ':site/install/actions/deploy.php')
+    browser = ordinary(root, 'tests/mail_drafts_cases.py')
+    require(deploy.count(b"save_setting('mail_drafts_schema_version','1')") == 1
+            and deploy.count(b"save_setting('mail_drafts_html_ready','1')") == 1
+            and deploy.index(b"save_setting('mail_drafts_schema_version','1')")
+            < deploy.index(b"save_setting('mail_drafts_html_ready','1')")
+            and predecessor.count(b"save_setting('mail_drafts_html_ready','1')") == 0
+            and browser.count(b'Fresh installation prepares empty private draft storage') == 1
+            and ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Application fresh-draft readiness marker, assertion or inventory boundary changed')
+
+
+def project_application_fresh_draft_readiness_source(root, path, current):
+    """Restore the reviewed proof head before the fresh-install readiness correction."""
+    if path not in APPLICATION_FRESH_DRAFT_READINESS_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application fresh-draft readiness source changed before predecessor projection: ' + path)
     return base
 
 
@@ -7727,6 +7794,7 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_ACCEPTANCE_PORTABILITY_PATHS
                 | {APPLICATION_ACCOUNT_FIXTURE_PATH, APPLICATION_INBOX_FIXTURE_PATH,
                    APPLICATION_BROWSER_FIXTURE_PATH}
+                | APPLICATION_FRESH_DRAFT_READINESS_PATHS
                 | {FORCE_SSL_RUNNER_PORT_PATH}
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
@@ -8974,6 +9042,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_fresh_draft_readiness_source(root)
     validate_application_browser_fixture_source(root)
     validate_application_notices_fixture_source(root)
     validate_mail_list_identity(root)
@@ -9433,6 +9502,7 @@ def verify_current(root):
         {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
         {'name': 'Exact Application browser successor binds the current bounded attachment capability copy after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact Application notices successor restores the retained-v1.18 owner migration order without changing application behavior', 'passed': True},
+        {'name': 'Exact Application fresh-install successor binds formatted-draft readiness and the canonical installer inventory after the preserved browser failure', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
