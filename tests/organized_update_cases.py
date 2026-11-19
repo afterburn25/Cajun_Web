@@ -211,7 +211,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
         check(label+' upgraded inbox waits for explicit owner preparation','must prepare inbox reading' in session.get(inbox).text)
         r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_inbox_setup','current_password':password})
         check(label+' owner prepares empty inbox request history','Inbox request history is ready' in r.text and records('inbox')=={'requests':[],'results':[]})
-        r=session.post(inbox,data={'csrf':token(session.get(inbox)),'action':'mail_inbox_read','account_id':account['id'],'revision':account['revision']})
+        r=session.post(inbox,data={'csrf':token(session.get(inbox)),'action':'mail_inbox_read','account_id':account['id'],'revision':account['revision'],'folder':'INBOX'})
         check(label+' upgraded inbox refuses fixture-only host without network','public server hostname' in r.text and records('inbox')=={'requests':[],'results':[]})
         records('inbox-seed');saved_inbox=records('inbox')
         check(label+' synthetic failed inbox history never claims an empty successful mailbox',len(saved_inbox['requests'])==1 and saved_inbox['results'][0]['outcome']=='failed' and 'Request failed' in session.get(inbox).text and 'server reported an empty inbox' not in session.get(inbox).text)
