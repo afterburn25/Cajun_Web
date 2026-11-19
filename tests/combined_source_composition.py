@@ -525,6 +525,14 @@ RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE = '410edaa0c97ad2c322ade7b35191a0fa8a4f0a6a'
+RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE_TREE = '53331d93e10c1d44dd79b99faa2046bd4377b1f0'
+RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE = '7087026561ce4c90121c2ac24f17d186b55bbff2'
+RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE_TREE = '71e60fedc5de54794d1cce9f5109130dde9e4c72'
+RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 RUNNER_APPLICATION_BUILD_BUDGET_BASE = '0382da0e1b8d55ae1edc921b985cb569ea53823d'
 RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE = 'acb09bb392c96cd83c40561c966f46f4dedc81df'
 RUNNER_APPLICATION_BUILD_BUDGET_SOURCE = '7e108b483e0ebeb39a42f670c42f20d9f54a04f8'
@@ -3408,6 +3416,61 @@ def project_runner_aws_full_mirror(root, path, current):
     return base
 
 
+def validate_runner_account_source_second_budget(root):
+    """Bind the bounded account source successor after preserved run 44457889547."""
+    require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE_TREE,
+            'Runner second account source budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE],
+            'Runner second account source budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE,
+                  RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED)],
+            'Runner second account source budget changed another path or status')
+    base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE)
+    for path in sorted(RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_account_source_second_budget(root, path, current) == base
+                and project_runner_account_source_second_budget(root, path, base) == base,
+                'Runner second account source budget identity or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/account-notifications-acceptance.yml')
+    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    require(workflow.count(b'run 44457889547') == 1
+            and workflow.count(b'    timeout-minutes: 180\n') == 1
+            and workflow.count(b'    timeout-minutes: 90\n') == 0
+            and workflow.count(b'    timeout-minutes: 35\n') == 1
+            and contract.count(b'SOURCE_TIMEOUT_SUCCESSOR =') == 1
+            and contract.count(b'source.count(SOURCE_TIMEOUT_SUCCESSOR) == 1') == 1
+            and contract.count(b"SOURCE_TIMEOUT_SUCCESSOR.replace('timeout-minutes: 180', 'timeout-minutes: 90')") == 1,
+            'Runner second account source timeout or mutation guard changed')
+
+
+def project_runner_account_source_second_budget(root, path, current):
+    """Restore the reviewed Application fixture source before the 180-minute account budget."""
+    if path not in RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner second account source budget changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_account_source_final_budget(root):
     """Bind the bounded account source budget after preserved run 44423175458."""
     require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE + '^{tree}').decode().strip()
@@ -3428,7 +3491,7 @@ def validate_runner_account_source_final_budget(root):
     base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE)
     source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE)
     for path in sorted(RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_account_source_second_budget(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_BASE + ':' + path)
         require(current == source
@@ -3436,8 +3499,12 @@ def validate_runner_account_source_final_budget(root):
                 and project_runner_account_source_final_budget(root, path, current) == base
                 and project_runner_account_source_final_budget(root, path, base) == base,
                 'Runner final account source budget identity or projection changed: ' + path)
-    workflow = ordinary(root, '.github/workflows/account-notifications-acceptance.yml')
-    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    workflow = project_runner_account_source_second_budget(
+        root, '.github/workflows/account-notifications-acceptance.yml',
+        ordinary(root, '.github/workflows/account-notifications-acceptance.yml'))
+    contract = project_runner_account_source_second_budget(
+        root, 'tests/account_notification_workflow_contract.py',
+        ordinary(root, 'tests/account_notification_workflow_contract.py'))
     require(workflow.count(b'run 44423175458') == 1
             and workflow.count(b'    timeout-minutes: 90\n') == 1
             and workflow.count(b'    timeout-minutes: 50\n') == 0
@@ -3450,6 +3517,7 @@ def validate_runner_account_source_final_budget(root):
 
 def project_runner_account_source_final_budget(root, path, current):
     """Restore the reviewed flag-count head before the 90-minute account budget."""
+    current = project_runner_account_source_second_budget(root, path, current)
     if path not in RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_FINAL_BUDGET_SOURCE + ':' + path)
@@ -8734,6 +8802,7 @@ def verify_current(root):
     validate_mail_backup_projection_fix(root)
     validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
+    validate_runner_account_source_second_budget(root)
     validate_runner_account_source_final_budget(root)
     validate_runner_aws_full_mirror_source(root)
     validate_runner_application_build_completion(root)
