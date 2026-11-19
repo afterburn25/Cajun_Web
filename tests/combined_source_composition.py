@@ -898,8 +898,13 @@ APPLICATION_MESSAGE_FIXTURE_BASE = 'f4b073c351bd2255646c4a3b3f24119cc9e70116'
 APPLICATION_MESSAGE_FIXTURE_BASE_TREE = '49fd3e0e3b892ac65393087ca412ccabd60b5661'
 APPLICATION_MESSAGE_FIXTURE_SOURCE = '134465633c16551b38d5e63879edbd241abc289b'
 APPLICATION_MESSAGE_FIXTURE_SOURCE_TREE = '13a51f7f1445c0f68cb7af808ba9227f30138223'
+APPLICATION_BROWSER_FIXTURE_BASE = 'f51840f68114ec70f3c5821529054d121f803d4b'
+APPLICATION_BROWSER_FIXTURE_BASE_TREE = 'd368a6c60d0f956cfa4a1b4442c1eb1f34b3742e'
+APPLICATION_BROWSER_FIXTURE_SOURCE = 'b8d347fd5ab3e529ee09c9671403b1bcddb5521a'
+APPLICATION_BROWSER_FIXTURE_SOURCE_TREE = 'e4a4e2878bee0dd973591199750494ff3fa268fb'
 APPLICATION_ACCOUNT_FIXTURE_PATH = 'tests/mail_accounts_native.php'
 APPLICATION_INBOX_FIXTURE_PATH = 'tests/organized_update_cases.py'
+APPLICATION_BROWSER_FIXTURE_PATH = 'tests/mail_accounts_cases.py'
 MAIL_REPLY_ALL_REPLAY_BASE = '12a05205b47809b679584c763090cdedb66589f8'
 MAIL_REPLY_ALL_REPLAY_BASE_TREE = '223a2f02f6f634b9c66991915b32f90680f6fb3b'
 MAIL_REPLY_ALL_REPLAY_SOURCE = 'fa537502037517d6019bca46ee4cc44d3005fe6a'
@@ -5403,6 +5408,60 @@ def project_mail_flags_report_count(root, path, current):
     return base
 
 
+def validate_application_browser_fixture_source(root):
+    """Bind the exact browser assertion correction from preserved Application run 44457889533."""
+    require(git(root, 'rev-parse', APPLICATION_BROWSER_FIXTURE_BASE + '^{tree}').decode().strip()
+            == APPLICATION_BROWSER_FIXTURE_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_BROWSER_FIXTURE_SOURCE + '^{tree}').decode().strip()
+            == APPLICATION_BROWSER_FIXTURE_SOURCE_TREE,
+            'Application browser fixture successor tree changed')
+    require(git(root, 'rev-list', '--parents', '-n', '1', APPLICATION_BROWSER_FIXTURE_SOURCE)
+            .decode().split() == [APPLICATION_BROWSER_FIXTURE_SOURCE,
+                                  APPLICATION_BROWSER_FIXTURE_BASE],
+            'Application browser fixture source is not the direct reviewed successor')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_BROWSER_FIXTURE_SOURCE, 'HEAD')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_BROWSER_FIXTURE_BASE, APPLICATION_BROWSER_FIXTURE_SOURCE)
+            .decode().splitlines() == ['M\t' + APPLICATION_BROWSER_FIXTURE_PATH],
+            'Application browser fixture successor changed another path or status')
+    base_entries = entries(root, APPLICATION_BROWSER_FIXTURE_BASE)
+    source_entries = entries(root, APPLICATION_BROWSER_FIXTURE_SOURCE)
+    current = ordinary(root, APPLICATION_BROWSER_FIXTURE_PATH)
+    source = git(root, 'cat-file', 'blob', APPLICATION_BROWSER_FIXTURE_SOURCE
+                 + ':' + APPLICATION_BROWSER_FIXTURE_PATH)
+    base = git(root, 'cat-file', 'blob', APPLICATION_BROWSER_FIXTURE_BASE
+               + ':' + APPLICATION_BROWSER_FIXTURE_PATH)
+    view = ordinary(root, 'site/admin/views/mail_accounts.php')
+    capability = b'Bounded message attachments download only through an explicit authorized request'
+    require(current == source
+            and mode(root, APPLICATION_BROWSER_FIXTURE_PATH)
+            == base_entries[APPLICATION_BROWSER_FIXTURE_PATH][0]
+            == source_entries[APPLICATION_BROWSER_FIXTURE_PATH][0] == '100644'
+            and project_application_browser_fixture_source(
+                root, APPLICATION_BROWSER_FIXTURE_PATH, current) == base
+            and project_application_browser_fixture_source(
+                root, APPLICATION_BROWSER_FIXTURE_PATH, base) == base
+            and source.count(capability) == 1
+            and source.count(b'Attachments remain unavailable') == 0
+            and view.count(capability) == 1,
+            'Application browser fixture identity, projection or capability assertion changed')
+
+
+def project_application_browser_fixture_source(root, path, current):
+    """Restore the accepted pre-browser-correction proof head for older source receipts."""
+    if path != APPLICATION_BROWSER_FIXTURE_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_BROWSER_FIXTURE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_BROWSER_FIXTURE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application browser fixture changed before predecessor projection')
+    return base
+
+
 def validate_application_fixture_successors(root):
     """Bind exact fixture corrections discovered by preserved Application run 44423175477."""
     identities = (
@@ -5469,6 +5528,7 @@ def validate_application_fixture_successors(root):
 
 def project_application_fixture_successors(root, path, current):
     """Restore the accepted 6d576 source before exact Application fixture corrections."""
+    current = project_application_browser_fixture_source(root, path, current)
     if path == APPLICATION_ACCOUNT_FIXTURE_PATH:
         final = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FILES_SOURCE + ':' + path)
         middle = git(root, 'cat-file', 'blob', APPLICATION_ACCOUNT_FLAGS_SOURCE + ':' + path)
@@ -7535,7 +7595,8 @@ def validate_pr391_recovery_successor(root):
                 | MAIL_ATTACHMENT_SUBMISSION_FIX_PATHS
                 | {MAIL_ATTACHMENT_CLAIM_FIX_PATH}
                 | MAIL_ACCEPTANCE_PORTABILITY_PATHS
-                | {APPLICATION_ACCOUNT_FIXTURE_PATH, APPLICATION_INBOX_FIXTURE_PATH}
+                | {APPLICATION_ACCOUNT_FIXTURE_PATH, APPLICATION_INBOX_FIXTURE_PATH,
+                   APPLICATION_BROWSER_FIXTURE_PATH}
                 | {FORCE_SSL_RUNNER_PORT_PATH}
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
@@ -8783,6 +8844,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_browser_fixture_source(root)
     validate_mail_list_identity(root)
     validate_mail_flags_report_count(root)
     validate_application_fixture_successors(root)
@@ -9237,6 +9299,7 @@ def verify_current(root):
         {'name': 'Exact Sent-copy review successor restores copied-origin Read authority before attempt and transport', 'passed': True},
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
         {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
+        {'name': 'Exact Application browser successor binds the current bounded attachment capability copy after the preserved first-attempt failure', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
         {'name': 'Exact Reply All replay successor binds native SQL and HTTP controller no-network no-write acceptance', 'passed': True},
