@@ -533,6 +533,14 @@ RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE = 'bfed1d429ed31714c6e38673208f5bf27edfba4c'
+RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE_TREE = '18fb08497b8eb1505558a54c89d8f071544d410c'
+RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE = 'a6dfcbbee6ece30e65f4d40f7be761eefaf4ccae'
+RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE_TREE = '554f545ff8382dbae1624338c8279802164e27d2'
+RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 RUNNER_APPLICATION_BUILD_BUDGET_BASE = '0382da0e1b8d55ae1edc921b985cb569ea53823d'
 RUNNER_APPLICATION_BUILD_BUDGET_BASE_TREE = 'acb09bb392c96cd83c40561c966f46f4dedc81df'
 RUNNER_APPLICATION_BUILD_BUDGET_SOURCE = '7e108b483e0ebeb39a42f670c42f20d9f54a04f8'
@@ -3425,6 +3433,61 @@ def project_runner_aws_full_mirror(root, path, current):
     return base
 
 
+def validate_runner_account_source_third_budget(root):
+    """Bind the bounded account source successor after preserved run 44502124267."""
+    require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE_TREE,
+            'Runner third account source budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE],
+            'Runner third account source budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE,
+                  RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_MODIFIED)],
+            'Runner third account source budget changed another path or status')
+    base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE)
+    for path in sorted(RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_account_source_third_budget(root, path, current) == base
+                and project_runner_account_source_third_budget(root, path, base) == base,
+                'Runner third account source budget identity or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/account-notifications-acceptance.yml')
+    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    require(workflow.count(b'run 44502124267') == 1
+            and workflow.count(b'    timeout-minutes: 360\n') == 1
+            and workflow.count(b'    timeout-minutes: 180\n') == 0
+            and workflow.count(b'    timeout-minutes: 35\n') == 1
+            and contract.count(b'SOURCE_TIMEOUT_SUCCESSOR =') == 1
+            and contract.count(b'source.count(SOURCE_TIMEOUT_SUCCESSOR) == 1') == 1
+            and contract.count(b"SOURCE_TIMEOUT_SUCCESSOR.replace('timeout-minutes: 360', 'timeout-minutes: 180')") == 1,
+            'Runner third account source timeout or mutation guard changed')
+
+
+def project_runner_account_source_third_budget(root, path, current):
+    """Restore the reviewed browser proof head before the 360-minute account budget."""
+    if path not in RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner third account source budget changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_account_source_second_budget(root):
     """Bind the bounded account source successor after preserved run 44457889547."""
     require(git(root, 'rev-parse', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE + '^{tree}').decode().strip()
@@ -3445,7 +3508,7 @@ def validate_runner_account_source_second_budget(root):
     base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE)
     source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE)
     for path in sorted(RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_account_source_third_budget(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_BASE + ':' + path)
         require(current == source
@@ -3453,8 +3516,12 @@ def validate_runner_account_source_second_budget(root):
                 and project_runner_account_source_second_budget(root, path, current) == base
                 and project_runner_account_source_second_budget(root, path, base) == base,
                 'Runner second account source budget identity or projection changed: ' + path)
-    workflow = ordinary(root, '.github/workflows/account-notifications-acceptance.yml')
-    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    workflow = project_runner_account_source_third_budget(
+        root, '.github/workflows/account-notifications-acceptance.yml',
+        ordinary(root, '.github/workflows/account-notifications-acceptance.yml'))
+    contract = project_runner_account_source_third_budget(
+        root, 'tests/account_notification_workflow_contract.py',
+        ordinary(root, 'tests/account_notification_workflow_contract.py'))
     require(workflow.count(b'run 44457889547') == 1
             and workflow.count(b'    timeout-minutes: 180\n') == 1
             and workflow.count(b'    timeout-minutes: 90\n') == 0
@@ -3467,6 +3534,7 @@ def validate_runner_account_source_second_budget(root):
 
 def project_runner_account_source_second_budget(root, path, current):
     """Restore the reviewed Application fixture source before the 180-minute account budget."""
+    current = project_runner_account_source_third_budget(root, path, current)
     if path not in RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_SECOND_BUDGET_SOURCE + ':' + path)
@@ -8878,6 +8946,7 @@ def verify_current(root):
     validate_mail_backup_projection_fix(root)
     validate_mail_reply_forward_workflow_fix(root)
     validate_mail_reply_forward_source(root)
+    validate_runner_account_source_third_budget(root)
     validate_runner_account_source_second_budget(root)
     validate_runner_account_source_final_budget(root)
     validate_runner_aws_full_mirror_source(root)
@@ -9300,6 +9369,7 @@ def verify_current(root):
         {'name': 'Exact outgoing-attachment successors bind portable formats 1..8, private storage, current authority, supported migration and fail-closed protected submission', 'passed': True},
         {'name': 'Exact first-attempt mail successor binds signed runner admission, portable HTML, exact schemas, no-INI dependencies and corrected fixtures', 'passed': True},
         {'name': 'Exact Application browser successor binds the current bounded attachment capability copy after the preserved first-attempt failure', 'passed': True},
+        {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
         {'name': 'Exact Reply All replay successor binds native SQL and HTTP controller no-network no-write acceptance', 'passed': True},
