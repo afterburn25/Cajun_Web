@@ -25,6 +25,10 @@ APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
 APT_PREPARATION_SHA256 = '37f6a8f12196a7a991dc2d3ed8ec346dd6d51257c39f58c16bc2409af6ad297a'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44423175458 completed the fixture-combination proof but reached the\n'
+                            '    # exact 50m source ceiling during the unchanged core-navigation provenance check.\n'
+                            '    # Keep every source-proof command and allow one bounded complete admission pass.\n'
+                            '    timeout-minutes: 90\n')
 PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
                                        '    runs-on: ubuntu-24.04\n'
                                        '    timeout-minutes: 45\n')
@@ -579,6 +583,8 @@ def validate(workflow, legacy, protected, apt_script):
     check('Main retains each immutable acceptance run',
           "\n  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}\njobs:\n" in workflow)
     source = actual['source']
+    check('Current source admission has one bounded evidence-derived timeout',
+          source.count(SOURCE_TIMEOUT_SUCCESSOR) == 1)
     check('Current source admission cannot silently skip or soften failure',
           '    if:' not in source.split('    steps:\n', 1)[0]
           and 'continue-on-error' not in source and 'set +e' not in source and '|| true' not in source)
@@ -648,6 +654,8 @@ def self_test(root=ROOT):
         ('unbounded push branches', 'branches: [main, chatgpt/account-notifications-acceptance-20261101]', "branches: ['**']"),
         ('per-commit cancellation group', 'group: account-notifications-acceptance-${{ github.event.pull_request.number || github.ref }}', 'group: account-notifications-acceptance-${{ github.sha }}'),
         ('cancelled main evidence', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", 'cancel-in-progress: true'),
+        ('lost bounded current-source timeout', SOURCE_TIMEOUT_SUCCESSOR,
+         SOURCE_TIMEOUT_SUCCESSOR.replace('timeout-minutes: 90', 'timeout-minutes: 50')),
         ('unbound source output', '          test "$actual" = "$CWP_SOURCE_SHA"\n', ''),
         ('dirty source admission', '          test -z "$(git status --porcelain)"\n', ''),
         ('lost failure evidence', '      - name: Retain exact source and failure evidence\n        if: always()', '      - name: Retain exact source and failure evidence\n        if: success()'),
