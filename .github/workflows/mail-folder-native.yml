@@ -249,7 +249,7 @@ jobs:
               'inbox': (cell / 'inbox-results.json', 72),
               'message': (cell / 'message-results.json', 94),
               'notices': (cell / 'notices-results.json', 81),
-              'copied': (cell / 'copied-results.json', 21),
+              'copied': (cell / 'copied-results.json', 23),
           }
           loaded = {}
           for name, (path, count) in reports.items():
