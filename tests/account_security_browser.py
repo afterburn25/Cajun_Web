@@ -88,9 +88,15 @@ try:
   page.set_viewport_size({'width':390,'height':844});page.wait_for_timeout(200);check('Account page fits mobile viewport and retains footer',page.evaluate('document.documentElement.scrollWidth<=innerWidth+2') and page.locator('footer').count()>0);page.screenshot(path=str(QA/'Client-Account-Mobile.png'),full_page=True,animations='disabled')
   check('No external browser request or JavaScript error',not outside and not errors);ctx.close();browser.close()
  valid=sign_in('alice@example.invalid',final);check('New password works on a separate fresh session',soup(valid.get(account)).select_one('[data-client-account]') is not None)
+ # The shipping limiter uses documented 15-minute fixed buckets. Keep this
+ # burst inside one bucket so an exact quarter-hour rollover cannot turn a
+ # security assertion into a timing-dependent result.
+ rate_window=900;rate_remaining=rate_window-(int(time.time())%rate_window)
+ if rate_remaining<=30:time.sleep(rate_remaining+1)
+ rate_bucket=int(time.time())//rate_window
  before=state();r=None
  for _ in range(6):r=submit(bob,account,'account_password',{'current_password':'Wrong limited synthetic value','password':new,'confirm_password':new})
- check('Repeated incorrect attempts are rate limited without credential changes','Too many password-change attempts' in r.text and state()['studio_clients']==before['studio_clients'])
+ check('Repeated incorrect attempts are rate limited without credential changes',int(time.time())//rate_window==rate_bucket and 'Too many password-change attempts' in r.text and state()['studio_clients']==before['studio_clients'])
  audit=json.dumps(db("SELECT user_id,action,detail FROM ci_audit WHERE action='client.password_change'"));check('Credential audit excludes raw passwords, hashes and recovery tokens',len(db("SELECT id FROM ci_audit WHERE action='client.password_change'"))==2 and all(secret not in audit for secret in [old,new,final,'@example.invalid','e'*64]))
 except Exception as exc:
  checks.append({'name':type(exc).__name__+': '+str(exc),'passed':False});print(type(exc).__name__+': '+str(exc),flush=True)
