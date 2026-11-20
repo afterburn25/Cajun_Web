@@ -7,6 +7,34 @@ operations.
 """
 import sys
 
+APT_RELEASE_IDENTITY_FIELDS = ('origin', 'label', 'suite', 'codename', 'components')
+PHP_PPA_RELEASE_LABELS = ('PPA for PHP', 'PPA for PHP (deprecated)')
+
+
+def release_identity_allowed(records, php_version):
+    """Admit only the exact signed Ubuntu/PPA release identities we reviewed."""
+    if php_version not in ('8.2', '8.3', '8.4') or not isinstance(records, list):
+        return False
+    if any(not isinstance(row, dict) or set(row) != set(APT_RELEASE_IDENTITY_FIELDS)
+           or any(not isinstance(row[name], str) for name in APT_RELEASE_IDENTITY_FIELDS)
+           for row in records):
+        return False
+    ubuntu_components = 'main restricted universe multiverse'
+    ubuntu = [
+        {'origin': 'Ubuntu', 'label': 'Ubuntu', 'suite': suite,
+         'codename': 'noble', 'components': ubuntu_components}
+        for suite in ('noble', 'noble-updates', 'noble-backports', 'noble-security')
+    ]
+    choices = [ubuntu]
+    if php_version != '8.3':
+        choices = [ubuntu + [{
+            'origin': 'LP-PPA-ondrej-php', 'label': label, 'suite': 'noble',
+            'codename': 'noble', 'components': 'main',
+        }] for label in PHP_PPA_RELEASE_LABELS]
+    order = lambda row: tuple(row[name] for name in APT_RELEASE_IDENTITY_FIELDS)
+    actual = sorted(records, key=order)
+    return any(actual == sorted(expected, key=order) for expected in choices)
+
 def prepare_ubuntu():
     from pathlib import Path
     import hashlib, json, os, re, secrets, stat, subprocess, sys
@@ -635,22 +663,20 @@ def verify_releases():
         if any(value is None for value in record.values()):
             raise SystemExit('Incomplete APT InRelease identity')
         records.append(record)
-    ubuntu_components = 'main restricted universe multiverse'
-    expected = [
-        {'origin': 'Ubuntu', 'label': 'Ubuntu', 'suite': suite,
-         'codename': 'noble', 'components': ubuntu_components}
-        for suite in ('noble', 'noble-updates', 'noble-backports', 'noble-security')
-    ]
-    ppa = {'origin': 'LP-PPA-ondrej-php', 'label': 'PPA for PHP', 'suite': 'noble',
-           'codename': 'noble', 'components': 'main'}
-    if os.environ['CWP_PHP_VERSION'] != '8.3':
-        expected.append(ppa)
-    order = lambda row: tuple(row[name] for name in ('origin', 'label', 'suite', 'codename', 'components'))
-    if sorted(records, key=order) != sorted(expected, key=order):
+    evidence = {
+        'schema': 2,
+        'passed': False,
+        'records': records,
+        'php': os.environ['CWP_PHP_VERSION'],
+        'allowed_ppa_labels': list(PHP_PPA_RELEASE_LABELS),
+        'scope': 'APT-verified InRelease identity before package installation.',
+    }
+    path = Path('qa/ubuntu-apt-release-metadata.json')
+    path.write_text(json.dumps(evidence, indent=2) + '\n')
+    if not release_identity_allowed(records, os.environ['CWP_PHP_VERSION']):
         raise SystemExit('Signed APT InRelease identity set mismatch')
-    Path('qa/ubuntu-apt-release-metadata.json').write_text(json.dumps(
-        {'schema': 1, 'records': records, 'php': os.environ['CWP_PHP_VERSION'],
-         'scope': 'APT-verified InRelease identity before package installation.'}, indent=2) + '\n')
+    evidence['passed'] = True
+    path.write_text(json.dumps(evidence, indent=2) + '\n')
 
 COMMANDS = {
     'prepare-ubuntu': prepare_ubuntu,

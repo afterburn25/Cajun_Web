@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import runpy
 import shlex
 import shutil
 import subprocess
@@ -22,7 +23,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = '37f6a8f12196a7a991dc2d3ed8ec346dd6d51257c39f58c16bc2409af6ad297a'
+APT_PREPARATION_SHA256 = '1de78d6a6104380d39b9977a4285e18490defea7fc4a60ff1b5227a30945b562'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
@@ -192,6 +193,46 @@ def digest(value):
 def require(passed, message):
     if not passed:
         raise AssertionError(message)
+
+
+def signed_release_identity_cases():
+    """Exercise the actual pure signed-release allowlist on every supported label."""
+    scope = runpy.run_path(str(ROOT / APT_PREPARATION_SCRIPT))
+    allowed = scope['release_identity_allowed']
+    fields = ('origin', 'label', 'suite', 'codename', 'components')
+    ubuntu = [dict(zip(fields, ('Ubuntu', 'Ubuntu', suite, 'noble',
+                                'main restricted universe multiverse')))
+              for suite in ('noble', 'noble-updates', 'noble-backports', 'noble-security')]
+    def ppa(label):
+        return dict(zip(fields, ('LP-PPA-ondrej-php', label, 'noble', 'noble', 'main')))
+    checks = []
+    def check(name, value):
+        require(value, name)
+        checks.append({'name': name, 'passed': True})
+    check('Signed release allowlist accepts the retained PHP PPA label',
+          allowed(ubuntu + [ppa('PPA for PHP')], '8.2'))
+    check('Signed release allowlist accepts the exact deprecated PHP PPA label',
+          allowed(ubuntu + [ppa('PPA for PHP (deprecated)')], '8.4'))
+    reordered = {name: ppa('PPA for PHP (deprecated)')[name] for name in reversed(fields)}
+    check('Signed release allowlist does not depend on release field order',
+          allowed(ubuntu + [reordered], '8.2'))
+    check('Signed release allowlist retains distro PHP without a PPA',
+          allowed(ubuntu, '8.3'))
+    check('Signed release allowlist refuses an unknown PPA label',
+          not allowed(ubuntu + [ppa('PPA for PHP replacement')], '8.2'))
+    check('Signed release allowlist refuses simultaneous old and new PPA identities',
+          not allowed(ubuntu + [ppa('PPA for PHP'), ppa('PPA for PHP (deprecated)')], '8.4'))
+    changed = ppa('PPA for PHP (deprecated)'); changed['origin'] = 'Unknown publisher'
+    check('Signed release allowlist refuses a changed publisher origin',
+          not allowed(ubuntu + [changed], '8.2'))
+    check('Signed release allowlist refuses a missing Ubuntu suite',
+          not allowed(ubuntu[:-1] + [ppa('PPA for PHP (deprecated)')], '8.4'))
+    check('Signed release allowlist refuses an unsupported PHP lane',
+          not allowed(ubuntu + [ppa('PPA for PHP (deprecated)')], '8.5'))
+    changed = ppa('PPA for PHP (deprecated)'); changed['unexpected'] = 'field'
+    check('Signed release allowlist refuses additional identity fields',
+          not allowed(ubuntu + [changed], '8.2'))
+    return checks
 
 
 def executable_ubuntu_source_guard_fixtures():
@@ -639,6 +680,7 @@ def self_test(root=ROOT):
     protected = (root / PROTECTED).read_text()
     apt_script = (root / APT_PREPARATION_SCRIPT).read_text()
     checks = validate(workflow, legacy, protected, apt_script)
+    checks.extend(signed_release_identity_cases())
     checks.extend(executable_ubuntu_source_guard_fixtures())
     changes = (
         ('lost SQL command', '          php tests/account_security_native.php >', '          true # tests/account_security_native.php >'),
