@@ -578,6 +578,18 @@ APPLICATION_MAIL_COPIES_SETUP_BASE_TREE = '6e73ec0f20fb20f9b955750ea38147ca6d535
 APPLICATION_MAIL_COPIES_SETUP_SOURCE = '13c9d7d1255ca72bc62e53c87e4087bac7515b78'
 APPLICATION_MAIL_COPIES_SETUP_SOURCE_TREE = 'abd329530e1ed394b925863cef7bf3dde6ebae9c'
 APPLICATION_MAIL_COPIES_SETUP_PATH = 'tests/mail_submissions_cases.py'
+APPLICATION_MAIL_COPIES_ROUTING_BASE = '03fea7c3c4897bfda480d4c7d062c436a5250a21'
+APPLICATION_MAIL_COPIES_ROUTING_BASE_TREE = 'c6853b1e1bde35b7e26f51a6bd93b9478a3545cf'
+APPLICATION_MAIL_COPIES_ROUTING_SOURCE = 'f146383883d4ff218d54dd31e3dffe3a4ee677f7'
+APPLICATION_MAIL_COPIES_ROUTING_SOURCE_TREE = 'ec8aa5261a0a18d9d53c8a5053adf0ab4a3bd4af'
+APPLICATION_MAIL_COPIES_ROUTING_MODIFIED = frozenset((
+    'site/admin/controllers/actions.php',
+    'site/admin/controllers/mail_accounts.php',
+    'site/app/staff/accounts.php',
+    'site/install/inventory.generated.php',
+    'tests/mail_submission_forms.php',
+    'tests/mail_submissions_cases.py',
+))
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -2434,7 +2446,7 @@ def validate_ux09_ci_source(root):
             'UX-09 CI successor changed a different path or status set')
     base_entries = entries(root, UX09_CI_BASE);source_entries = entries(root, UX09_CI_SOURCE)
     for path in sorted(UX09_CI_MODIFIED):
-        current = ordinary(root, path)
+        current = project_application_mail_copies_routing_source(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob', UX09_CI_SOURCE + ':' + path)
                 and digest(current) == UX09_CI_SHA256[path]
                 and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
@@ -5762,7 +5774,7 @@ def validate_application_fresh_draft_readiness_source(root):
     base_entries = entries(root, APPLICATION_FRESH_DRAFT_READINESS_BASE)
     source_entries = entries(root, APPLICATION_FRESH_DRAFT_READINESS_SOURCE)
     for path in sorted(APPLICATION_FRESH_DRAFT_READINESS_PATHS):
-        current = ordinary(root, path)
+        current = project_application_mail_copies_routing_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_BASE + ':' + path)
         require(current == source
@@ -5786,6 +5798,7 @@ def validate_application_fresh_draft_readiness_source(root):
 
 def project_application_fresh_draft_readiness_source(root, path, current):
     """Restore the reviewed proof head before the fresh-install readiness correction."""
+    current = project_application_mail_copies_routing_source(root, path, current)
     if path not in APPLICATION_FRESH_DRAFT_READINESS_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', APPLICATION_FRESH_DRAFT_READINESS_SOURCE + ':' + path)
@@ -5796,6 +5809,67 @@ def project_application_fresh_draft_readiness_source(root, path, current):
         return current
     require(current == source,
             'Current Application fresh-draft readiness source changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_application_mail_copies_routing_source(root):
+    """Bind the owner-routed successor exposed by review of run 44676679112."""
+    require(git(root, 'rev-parse', APPLICATION_MAIL_COPIES_ROUTING_BASE + '^{tree}').decode().strip()
+            == APPLICATION_MAIL_COPIES_ROUTING_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_MAIL_COPIES_ROUTING_SOURCE + '^{tree}').decode().strip()
+            == APPLICATION_MAIL_COPIES_ROUTING_SOURCE_TREE,
+            'Application Sent-copy routing source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', APPLICATION_MAIL_COPIES_ROUTING_SOURCE)
+            .decode().strip().split() == [APPLICATION_MAIL_COPIES_ROUTING_BASE],
+            'Application Sent-copy routing source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_MAIL_COPIES_ROUTING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  APPLICATION_MAIL_COPIES_ROUTING_BASE,
+                  APPLICATION_MAIL_COPIES_ROUTING_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(APPLICATION_MAIL_COPIES_ROUTING_MODIFIED)],
+            'Application Sent-copy routing source changed another path or status set')
+    base_entries = entries(root, APPLICATION_MAIL_COPIES_ROUTING_BASE)
+    source_entries = entries(root, APPLICATION_MAIL_COPIES_ROUTING_SOURCE)
+    for path in sorted(APPLICATION_MAIL_COPIES_ROUTING_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_application_mail_copies_routing_source(root, path, current) == base
+                and project_application_mail_copies_routing_source(root, path, base) == base,
+                'Application Sent-copy routing identity or projection changed: ' + path)
+    actions = ordinary(root, 'site/admin/controllers/actions.php')
+    controller = ordinary(root, 'site/admin/controllers/mail_accounts.php')
+    staff = ordinary(root, 'site/app/staff/accounts.php')
+    forms = ordinary(root, 'tests/mail_submission_forms.php')
+    browser = ordinary(root, 'tests/mail_submissions_cases.py')
+    require(actions.count(b"in_array($action,['mail_copies_setup','mail_sent_folder_save'],true)") == 1
+            and controller.count(b"if ($action==='mail_copies_setup') {\n        mail_accounts_manager();mail_copies_migrate();") == 1
+            and controller.count(b"if ($action==='mail_sent_folder_save')") == 1
+            and controller.count(b"mail_accounts_manager();mail_accounts_load($id);") >= 1
+            and staff.count(b"if(in_array($action,['mail_copies_setup','mail_sent_folder_save'],true))return 'staff.manage';") == 1
+            and forms.count(b'Sent-copy setup and folder actions have explicit owner routing') == 1
+            and browser.count(b'Sent-copy setup rejects forged CSRF without storage or server contact') == 1
+            and browser.count(b'Non-owner cannot prepare Sent-copy storage or contact the server') == 1
+            and browser.count(b'Owner prepares additive Sent-copy storage without a server connection') == 1
+            and browser.count(b"r = submit(owner, root + '?view=mail-accounts', 'mail_copies_setup', {})") == 1
+            and ordinary(root, INVENTORY) == canonical_inventory(root),
+            'Application Sent-copy routing, owner boundary, refusal evidence or inventory changed')
+
+
+def project_application_mail_copies_routing_source(root, path, current):
+    """Restore the reviewed test-route proof head before older projections."""
+    if path not in APPLICATION_MAIL_COPIES_ROUTING_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application Sent-copy routing source changed before predecessor projection: ' + path)
     return base
 
 
@@ -5818,7 +5892,7 @@ def validate_application_mail_copies_setup_source(root):
     path = APPLICATION_MAIL_COPIES_SETUP_PATH
     base_entries = entries(root, APPLICATION_MAIL_COPIES_SETUP_BASE)
     source_entries = entries(root, APPLICATION_MAIL_COPIES_SETUP_SOURCE)
-    current = ordinary(root, path)
+    current = project_application_mail_copies_routing_source(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_SETUP_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_SETUP_BASE + ':' + path)
     old_call = b"r = submit(owner, accounts, 'mail_copies_setup', {})"
@@ -5840,6 +5914,7 @@ def validate_application_mail_copies_setup_source(root):
 
 def project_application_mail_copies_setup_source(root, path, current):
     """Restore the reviewed rate-boundary proof head before older mail projections."""
+    current = project_application_mail_copies_routing_source(root, path, current)
     if path != APPLICATION_MAIL_COPIES_SETUP_PATH:
         return current
     source = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_SETUP_SOURCE + ':' + path)
@@ -8051,6 +8126,7 @@ def validate_pr391_recovery_successor(root):
                 | APPLICATION_FRESH_DRAFT_READINESS_PATHS
                 | {FORCE_SSL_RUNNER_PORT_PATH}
                 | ACCOUNT_RATE_BOUNDARY_MODIFIED
+                | APPLICATION_MAIL_COPIES_ROUTING_MODIFIED
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -9297,6 +9373,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_mail_copies_routing_source(root)
     validate_application_mail_copies_setup_source(root)
     validate_account_rate_boundary_source(root)
     validate_application_sent_copy_absence_source(root)
@@ -9631,7 +9708,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_mail_copies_setup_source(root, path, ordinary(root, path))
+        value = project_application_mail_copies_routing_source(root, path, ordinary(root, path))
+        value = project_application_mail_copies_setup_source(root, path, value)
         value = project_account_rate_boundary_source(root, path, value)
         value = project_runner_application_seal_budget(root, path, value)
         value = project_application_sent_copy_absence_source(root, path, value)
@@ -9768,6 +9846,7 @@ def verify_current(root):
         {'name': 'Exact Application fresh-install successor binds formatted-draft readiness and the canonical installer inventory after the preserved browser failure', 'passed': True},
         {'name': 'Exact Application Sent-copy evidence successor proves absent pre-migration storage without querying an absent table', 'passed': True},
         {'name': 'Exact Application Sent-copy setup successor uses the owner listing route while retaining the singular account editor and every copy-safety assertion', 'passed': True},
+        {'name': 'Exact Application Sent-copy routing successor dispatches setup and folder actions through explicit staff-manage plus owner controls with CSRF and non-owner refusal evidence', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
