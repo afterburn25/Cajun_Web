@@ -604,6 +604,14 @@ SIGNED_PPA_LABEL_MODIFIED = frozenset((
     'tests/account_notification_workflow_contract.py',
 ))
 SIGNED_PPA_LABEL_SCRIPT_SHA256 = '1de78d6a6104380d39b9977a4285e18490defea7fc4a60ff1b5227a30945b562'
+MAIL_FOLDER_DYNAMIC_PORT_BASE = 'f779ba5ec7e983367041f3323472ee9f3c08f095'
+MAIL_FOLDER_DYNAMIC_PORT_BASE_TREE = 'e95239d6fa15603ec5b955f131969af25c9b1203'
+MAIL_FOLDER_DYNAMIC_PORT_SOURCE = 'c87c0499a95cf3d58504d203517299b77b9ab317'
+MAIL_FOLDER_DYNAMIC_PORT_SOURCE_TREE = '9e26aee0094d0a2ebdb217241efab56f4fb8e021'
+MAIL_FOLDER_DYNAMIC_PORT_MODIFIED = frozenset((
+    '.github/workflows/mail-folder-native.yml',
+    'tests/mail_folder_native_workflow_contract.py',
+))
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -5571,7 +5579,7 @@ def validate_mail_list_identity(root):
     base_entries = entries(root, MAIL_LIST_IDENTITY_BASE)
     source_entries = entries(root, MAIL_LIST_IDENTITY_SOURCE)
     for path in sorted(MAIL_LIST_IDENTITY_PATHS):
-        current = ordinary(root, path)
+        current = project_mail_folder_dynamic_port_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_BASE + ':' + path)
         require(current == source
@@ -5594,6 +5602,7 @@ def validate_mail_list_identity(root):
 
 def project_mail_list_identity(root, path, current):
     """Restore the preserved 7e375 head before exact-list/count fixture correction."""
+    current = project_mail_folder_dynamic_port_source(root, path, current)
     if path not in MAIL_LIST_IDENTITY_PATHS:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_LIST_IDENTITY_SOURCE + ':' + path)
@@ -9434,6 +9443,60 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_mail_folder_dynamic_port_source(root):
+    """Bind the assigned-port correction after preserved runner failure 136522311121."""
+    require(git(root, 'rev-parse', MAIL_FOLDER_DYNAMIC_PORT_BASE + '^{tree}').decode().strip()
+            == MAIL_FOLDER_DYNAMIC_PORT_BASE_TREE
+            and git(root, 'rev-parse', MAIL_FOLDER_DYNAMIC_PORT_SOURCE + '^{tree}').decode().strip()
+            == MAIL_FOLDER_DYNAMIC_PORT_SOURCE_TREE,
+            'Mail-folder dynamic-port source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', MAIL_FOLDER_DYNAMIC_PORT_SOURCE)
+            .decode().strip().split() == [MAIL_FOLDER_DYNAMIC_PORT_BASE],
+            'Mail-folder dynamic-port source parent changed')
+    git(root, 'merge-base', '--is-ancestor', MAIL_FOLDER_DYNAMIC_PORT_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  MAIL_FOLDER_DYNAMIC_PORT_BASE, MAIL_FOLDER_DYNAMIC_PORT_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(MAIL_FOLDER_DYNAMIC_PORT_MODIFIED)],
+            'Mail-folder dynamic-port correction changed another path or status')
+    base_entries = entries(root, MAIL_FOLDER_DYNAMIC_PORT_BASE)
+    source_entries = entries(root, MAIL_FOLDER_DYNAMIC_PORT_SOURCE)
+    for path in sorted(MAIL_FOLDER_DYNAMIC_PORT_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', MAIL_FOLDER_DYNAMIC_PORT_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', MAIL_FOLDER_DYNAMIC_PORT_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_mail_folder_dynamic_port_source(root, path, current) == base
+                and project_mail_folder_dynamic_port_source(root, path, base) == base,
+                'Mail-folder dynamic-port source identity or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/mail-folder-native.yml')
+    contract = ordinary(root, 'tests/mail_folder_native_workflow_contract.py')
+    require(workflow.count(b"ports: ['3306']") == 1
+            and b"ports: ['33306:3306']" not in workflow
+            and b"CWP_TEST_PORT: '33306'" not in workflow
+            and workflow.count(b'CWP_TEST_PORT: ${{ job.services.database.ports[3306] }}') == 2
+            and workflow.count(b"php: ['8.2', '8.4']") == 1
+            and workflow.count(b'database: [mariadb, mysql]') == 1
+            and contract.count(b'Every database cell uses its assigned collision-free service port') == 1
+            and contract.count(b"'fixed database host port'") == 1,
+            'Mail-folder assigned-port scope, matrix or executable refusal changed')
+
+
+def project_mail_folder_dynamic_port_source(root, path, current):
+    """Restore the reviewed f779 proof head before the collision-free port correction."""
+    if path not in MAIL_FOLDER_DYNAMIC_PORT_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', MAIL_FOLDER_DYNAMIC_PORT_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_FOLDER_DYNAMIC_PORT_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail-folder dynamic-port source changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_signed_ppa_label_source(root):
     """Bind the exact signed-label correction after preserved run 44792670112."""
     require(git(root, 'rev-parse', SIGNED_PPA_LABEL_BASE + '^{tree}').decode().strip()
@@ -9452,7 +9515,7 @@ def validate_signed_ppa_label_source(root):
     base_entries = entries(root, SIGNED_PPA_LABEL_BASE)
     source_entries = entries(root, SIGNED_PPA_LABEL_SOURCE)
     for path in sorted(SIGNED_PPA_LABEL_MODIFIED):
-        current = ordinary(root, path)
+        current = project_mail_folder_dynamic_port_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_BASE + ':' + path)
         require(current == source
@@ -9482,6 +9545,7 @@ def validate_signed_ppa_label_source(root):
 
 def project_signed_ppa_label_source(root, path, current):
     """Restore the preserved 975a proof head before the exact signed-label correction."""
+    current = project_mail_folder_dynamic_port_source(root, path, current)
     if path not in SIGNED_PPA_LABEL_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_SOURCE + ':' + path)
@@ -9501,6 +9565,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_mail_folder_dynamic_port_source(root)
     validate_signed_ppa_label_source(root)
     validate_application_http_expiry_fix_source(root)
     validate_application_mail_copies_routing_source(root)
@@ -9838,7 +9903,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_signed_ppa_label_source(root, path, ordinary(root, path))
+        value = project_mail_folder_dynamic_port_source(root, path, ordinary(root, path))
+        value = project_signed_ppa_label_source(root, path, value)
         value = project_application_mail_copies_routing_source(root, path, value)
         value = project_application_mail_copies_setup_source(root, path, value)
         value = project_account_rate_boundary_source(root, path, value)
@@ -9980,6 +10046,7 @@ def verify_current(root):
         {'name': 'Exact Application Sent-copy routing successor dispatches setup and folder actions through explicit staff-manage plus owner controls with CSRF and non-owner refusal evidence', 'passed': True},
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
+        {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
