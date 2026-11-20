@@ -557,6 +557,14 @@ RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED = frozenset((
     '.github/workflows/application-tests.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_APPLICATION_SEAL_BUDGET_BASE = 'f95bd524b2793a7faa253a0a5c8fc87796df1f45'
+RUNNER_APPLICATION_SEAL_BUDGET_BASE_TREE = '42a88f5bbae9fef6b01b1fe1b59427c97c86e84e'
+RUNNER_APPLICATION_SEAL_BUDGET_SOURCE = '7baab8574ecd671bfae3fb1924e812a095a63f1b'
+RUNNER_APPLICATION_SEAL_BUDGET_SOURCE_TREE = '5941b9734caa1f1a09a92fc4143e456693558dc5'
+RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -3470,7 +3478,7 @@ def validate_runner_account_source_third_budget(root):
     base_entries = entries(root, RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE)
     source_entries = entries(root, RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE)
     for path in sorted(RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_application_seal_budget(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_BASE + ':' + path)
         require(current == source
@@ -3492,6 +3500,7 @@ def validate_runner_account_source_third_budget(root):
 
 def project_runner_account_source_third_budget(root, path, current):
     """Restore the reviewed browser proof head before the 360-minute account budget."""
+    current = project_runner_application_seal_budget(root, path, current)
     if path not in RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_ACCOUNT_SOURCE_THIRD_BUDGET_SOURCE + ':' + path)
@@ -3625,6 +3634,68 @@ def project_runner_account_source_final_budget(root, path, current):
     return base
 
 
+def validate_runner_application_seal_budget(root):
+    """Bind the evidence-seal budget discovered by preserved run 44639431573."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_SEAL_BUDGET_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_SEAL_BUDGET_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_SEAL_BUDGET_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_SEAL_BUDGET_SOURCE_TREE,
+            'Runner Application seal budget identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_APPLICATION_SEAL_BUDGET_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_SEAL_BUDGET_BASE],
+            'Runner Application seal budget parent changed')
+    git(root, 'merge-base', '--is-ancestor', RUNNER_APPLICATION_SEAL_BUDGET_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_SEAL_BUDGET_BASE,
+                  RUNNER_APPLICATION_SEAL_BUDGET_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED)],
+            'Runner Application seal budget changed another path or status set')
+    base_entries = entries(root, RUNNER_APPLICATION_SEAL_BUDGET_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_SEAL_BUDGET_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_seal_budget(root, path, current) == base
+                and project_runner_application_seal_budget(root, path, base) == base,
+                'Runner Application seal budget identity or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/application-tests.yml')
+    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    workflow_base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE
+                        + ':.github/workflows/application-tests.yml')
+    contract_base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE
+                        + ':tests/account_notification_workflow_contract.py')
+    require(workflow.count(b'Run 44639431573 completed provenance, source, inventory, package, guards') == 1
+            and workflow.count(b'cancelled the evidence seal. Keep every assertion and allow bounded seal.') == 1
+            and workflow.count(b'    timeout-minutes: 300\n') == 1
+            and workflow.count(b'    timeout-minutes: 240\n') == 1
+            and contract.count(b'Run 44639431573 completed provenance, source, inventory, package, guards') == 1
+            and contract.count(b"'    timeout-minutes: 300\\n')") == 1
+            and workflow_base.count(b'    timeout-minutes: 300\n') == 0
+            and workflow_base.count(b'    timeout-minutes: 240\n') == 2
+            and contract_base.count(b"'    timeout-minutes: 300\\n')") == 0
+            and contract_base.count(b"'    timeout-minutes: 240\\n')") == 1,
+            'Runner Application seal budget or mutation guard changed')
+
+
+def project_runner_application_seal_budget(root, path, current):
+    """Restore the preserved 240-minute exact head before older projections."""
+    if path not in RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application seal budget changed before predecessor projection: ' + path)
+    return base
+
+
 def validate_runner_application_build_completion(root):
     """Bind the bounded completion budget discovered by preserved run 44385954180."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + '^{tree}').decode().strip()
@@ -3644,7 +3715,8 @@ def validate_runner_application_build_completion(root):
     base_entries = entries(root, RUNNER_APPLICATION_BUILD_COMPLETION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED):
-        current = project_runner_account_source_final_budget(root, path, ordinary(root, path))
+        current = project_runner_application_seal_budget(root, path, ordinary(root, path))
+        current = project_runner_account_source_final_budget(root, path, current)
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_BUILD_COMPLETION_BASE + ':' + path)
         require(current == source
@@ -3656,6 +3728,7 @@ def validate_runner_application_build_completion(root):
 
 def project_runner_application_build_completion(root, path, current):
     """Restore c45 only for the exact 240-minute Application completion paths."""
+    current = project_runner_application_seal_budget(root, path, current)
     current = project_runner_account_source_final_budget(root, path, current)
     if path not in RUNNER_APPLICATION_BUILD_COMPLETION_MODIFIED:
         return current
@@ -9143,6 +9216,7 @@ def verify_current(root):
     validate_runner_account_source_third_budget(root)
     validate_runner_account_source_second_budget(root)
     validate_runner_account_source_final_budget(root)
+    validate_runner_application_seal_budget(root)
     validate_runner_aws_full_mirror_source(root)
     validate_runner_application_build_completion(root)
     validate_runner_application_build_budget(root)
@@ -9434,7 +9508,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_sent_copy_absence_source(root, path, ordinary(root, path))
+        value = project_runner_application_seal_budget(root, path, ordinary(root, path))
+        value = project_application_sent_copy_absence_source(root, path, value)
         value = project_application_fixture_successors(root, path, value)
         value = project_latest_acceptance_successors(root, path, value)
         value = project_mail_acceptance_repair_source(root, path, value)
@@ -9567,6 +9642,7 @@ def verify_current(root):
         {'name': 'Exact Application notices successor restores the retained-v1.18 owner migration order without changing application behavior', 'passed': True},
         {'name': 'Exact Application fresh-install successor binds formatted-draft readiness and the canonical installer inventory after the preserved browser failure', 'passed': True},
         {'name': 'Exact Application Sent-copy evidence successor proves absent pre-migration storage without querying an absent table', 'passed': True},
+        {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
