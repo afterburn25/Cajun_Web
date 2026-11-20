@@ -215,7 +215,7 @@ def run_browser(env, browser):
     r = copy_post()
     copy_tables = db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('ci_mail_sent_folders','ci_mail_copy_attempts','ci_mail_copy_results')")
     check('Copy refuses before an owner prepares storage and a folder', 'sent-copy storage' in r.text.lower() and inbox_server.connections == inbox_connections and not db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") and not copy_tables)
-    r = submit(owner, accounts, 'mail_copies_setup', {})
+    r = submit(owner, root + '?view=mail-accounts', 'mail_copies_setup', {})
     check('Owner prepares additive Sent-copy storage without a server connection', 'Sent-copy storage is ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") == [{'value': '1'}] and inbox_server.connections == inbox_connections)
     for bad in ['Sent*', 'Sent"Folder', 'INBOX\\Sent']:
         r = submit(owner, sent_detail, 'mail_sent_folder_save', {'account_id': sent_aid, 'sent_folder': bad})
