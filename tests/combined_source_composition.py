@@ -590,6 +590,11 @@ APPLICATION_MAIL_COPIES_ROUTING_MODIFIED = frozenset((
     'tests/mail_submission_forms.php',
     'tests/mail_submissions_cases.py',
 ))
+APPLICATION_HTTP_EXPIRY_FIX_BASE = 'e09d9473787a6d9b6f6462aed4d46cd45b292686'
+APPLICATION_HTTP_EXPIRY_FIX_BASE_TREE = 'd7e7c544c5c367a918bcc209e15ce86ccccd9ddb'
+APPLICATION_HTTP_EXPIRY_FIX_SOURCE = 'ae5ae3339e7e6baf21208194989589da70988823'
+APPLICATION_HTTP_EXPIRY_FIX_SOURCE_TREE = 'ca8db018400d962a4fa591e8739019adc4b9ca8a'
+APPLICATION_HTTP_EXPIRY_FIX_PATH = 'tests/mail_submissions_cases.py'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -5812,6 +5817,57 @@ def project_application_fresh_draft_readiness_source(root, path, current):
     return base
 
 
+def validate_application_http_expiry_fix_source(root):
+    """Bind the strict-database HTTP expiry fixture exposed by run 44729363443."""
+    require(git(root, 'rev-parse', APPLICATION_HTTP_EXPIRY_FIX_BASE + '^{tree}').decode().strip()
+            == APPLICATION_HTTP_EXPIRY_FIX_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_HTTP_EXPIRY_FIX_SOURCE + '^{tree}').decode().strip()
+            == APPLICATION_HTTP_EXPIRY_FIX_SOURCE_TREE,
+            'Application HTTP expiry-fixture source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', APPLICATION_HTTP_EXPIRY_FIX_SOURCE)
+            .decode().strip().split() == [APPLICATION_HTTP_EXPIRY_FIX_BASE],
+            'Application HTTP expiry-fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_HTTP_EXPIRY_FIX_SOURCE, 'HEAD')
+    path = APPLICATION_HTTP_EXPIRY_FIX_PATH
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_HTTP_EXPIRY_FIX_BASE,
+                APPLICATION_HTTP_EXPIRY_FIX_SOURCE).decode().splitlines()
+            == ['M\t' + path],
+            'Application HTTP expiry fixture changed another path or status')
+    base_entries = entries(root, APPLICATION_HTTP_EXPIRY_FIX_BASE)
+    source_entries = entries(root, APPLICATION_HTTP_EXPIRY_FIX_SOURCE)
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_BASE + ':' + path)
+    require(current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_application_http_expiry_fix_source(root, path, current) == base
+            and project_application_http_expiry_fix_source(root, path, base) == base,
+            'Application HTTP expiry-fixture identity, mode or projection changed')
+    replacement = b"'UPDATE ci_mail_account_grants SET expires_at=1 WHERE account_id=? AND user_id=?'"
+    legacy = b'"UPDATE ci_mail_account_grants SET expires_at=\'2000-01-01 00:00:00\' WHERE account_id=? AND user_id=?"'
+    schema = ordinary(root, 'site/database/schema/mail_accounts_schema.php')
+    require(current.count(replacement) == 1
+            and legacy not in current
+            and schema.count(b'expires_at BIGINT UNSIGNED NULL') >= 1,
+            'Application HTTP expiry fixture or canonical epoch-schema boundary changed')
+
+
+def project_application_http_expiry_fix_source(root, path, current):
+    """Restore the accepted PR head before the strict-database fixture correction."""
+    if path != APPLICATION_HTTP_EXPIRY_FIX_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application HTTP expiry fixture changed before predecessor projection')
+    return base
+
+
 def validate_application_mail_copies_routing_source(root):
     """Bind the owner-routed successor exposed by review of run 44676679112."""
     require(git(root, 'rev-parse', APPLICATION_MAIL_COPIES_ROUTING_BASE + '^{tree}').decode().strip()
@@ -5831,7 +5887,7 @@ def validate_application_mail_copies_routing_source(root):
     base_entries = entries(root, APPLICATION_MAIL_COPIES_ROUTING_BASE)
     source_entries = entries(root, APPLICATION_MAIL_COPIES_ROUTING_SOURCE)
     for path in sorted(APPLICATION_MAIL_COPIES_ROUTING_MODIFIED):
-        current = ordinary(root, path)
+        current = project_application_http_expiry_fix_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_BASE + ':' + path)
         require(current == source
@@ -5860,6 +5916,7 @@ def validate_application_mail_copies_routing_source(root):
 
 def project_application_mail_copies_routing_source(root, path, current):
     """Restore the reviewed test-route proof head before older projections."""
+    current = project_application_http_expiry_fix_source(root, path, current)
     if path not in APPLICATION_MAIL_COPIES_ROUTING_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', APPLICATION_MAIL_COPIES_ROUTING_SOURCE + ':' + path)
@@ -9373,6 +9430,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_http_expiry_fix_source(root)
     validate_application_mail_copies_routing_source(root)
     validate_application_mail_copies_setup_source(root)
     validate_account_rate_boundary_source(root)
@@ -9847,6 +9905,7 @@ def verify_current(root):
         {'name': 'Exact Application Sent-copy evidence successor proves absent pre-migration storage without querying an absent table', 'passed': True},
         {'name': 'Exact Application Sent-copy setup successor uses the owner listing route while retaining the singular account editor and every copy-safety assertion', 'passed': True},
         {'name': 'Exact Application Sent-copy routing successor dispatches setup and folder actions through explicit staff-manage plus owner controls with CSRF and non-owner refusal evidence', 'passed': True},
+        {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
