@@ -75,6 +75,11 @@ def validate(text):
     check('Acceptance retains PHP and database support matrix',
           "php: ['8.2', '8.4']" in text and 'database: [mariadb, mysql]' in text
           and "image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11' || 'mysql:8.4' }}" in text)
+    check('Every database cell uses its assigned collision-free service port',
+          text.count("ports: ['3306']") == 1
+          and "ports: ['33306:3306']" not in text
+          and "CWP_TEST_PORT: '33306'" not in text
+          and text.count('CWP_TEST_PORT: ${{ job.services.database.ports[3306] }}') == 2)
     check('Disposable PHP retains PDO MySQL mbstring and DOM',
           'apt-get install -y --no-install-recommends libonig-dev libxml2-dev' in text
           and 'docker-php-ext-install pdo_mysql mbstring dom' in text
@@ -181,6 +186,7 @@ def self_test(text):
     mutations = (
         ('reduced PHP matrix', "php: ['8.2', '8.4']", "php: ['8.4']"),
         ('reduced database matrix', 'database: [mariadb, mysql]', 'database: [mariadb]'),
+        ('fixed database host port', "ports: ['3306']", "ports: ['33306:3306']"),
         ('moving source checkout', 'ref: ${{ github.event.pull_request.head.sha || github.sha }}', 'ref: main'),
         ('write permission', 'contents: read', 'contents: write'),
         ('cancelled main evidence', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", 'cancel-in-progress: true'),

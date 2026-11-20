@@ -102,14 +102,13 @@ jobs:
           MYSQL_PASSWORD: local-ci-only
           MYSQL_ROOT_PASSWORD: synthetic-root-only
           MYSQL_ROOT_HOST: '%'
-        ports: ['33306:3306']
+        ports: ['3306']
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
-      CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
       CWP_SOURCE_SHA: ${{ needs.source.outputs.sha }}
@@ -153,6 +152,8 @@ jobs:
           ' > "$cell/noini-capabilities.stdout.log" 2> "$cell/noini-capabilities.stderr.log" || status=$?
           test "$status" -eq 0
       - name: Prove the synthetic database is ready for the assigned user
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports[3306] }}
         run: |
           cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
           if [ '${{ matrix.database }}' = 'mysql' ]; then
@@ -176,6 +177,8 @@ jobs:
             ' > "$cell/readiness.stdout.log" 2> "$cell/readiness.stderr.log" || status=$?
           test "$status" -eq 0
       - name: Run isolated folder receiving and SQL acceptance
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports[3306] }}
         run: |
           cell=qa/mail-folder-native/${{ matrix.php }}-${{ matrix.database }}
           status=0
