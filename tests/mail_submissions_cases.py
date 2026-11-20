@@ -277,7 +277,7 @@ def run_browser(env, browser):
     authority_cases = [
         ('sender Send grant', 'UPDATE ci_mail_account_grants SET can_send=0 WHERE account_id=? AND user_id=?', 'UPDATE ci_mail_account_grants SET can_send=1 WHERE account_id=? AND user_id=?', [sent_aid, uid]),
         ('sender grant enablement', 'UPDATE ci_mail_account_grants SET enabled=0 WHERE account_id=? AND user_id=?', 'UPDATE ci_mail_account_grants SET enabled=1 WHERE account_id=? AND user_id=?', [sent_aid, uid]),
-        ('sender grant expiry', "UPDATE ci_mail_account_grants SET expires_at='2000-01-01 00:00:00' WHERE account_id=? AND user_id=?", 'UPDATE ci_mail_account_grants SET expires_at=NULL WHERE account_id=? AND user_id=?', [sent_aid, uid]),
+        ('sender grant expiry', 'UPDATE ci_mail_account_grants SET expires_at=1 WHERE account_id=? AND user_id=?', 'UPDATE ci_mail_account_grants SET expires_at=NULL WHERE account_id=? AND user_id=?', [sent_aid, uid]),
         ('sending account enablement', 'UPDATE ci_mail_accounts SET enabled=0 WHERE id=?', 'UPDATE ci_mail_accounts SET enabled=1 WHERE id=?', [sent_aid]),
     ]
     for label, revoke, restore, params in authority_cases:
