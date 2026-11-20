@@ -213,10 +213,16 @@ def run_browser(env, browser):
         return member.post(copy_page, data=data)
 
     r = copy_post()
-    copy_tables = db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('ci_mail_sent_folders','ci_mail_copy_attempts','ci_mail_copy_results')")
-    check('Copy refuses before an owner prepares storage and a folder', 'sent-copy storage' in r.text.lower() and inbox_server.connections == inbox_connections and not db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") and not copy_tables)
+    def copy_storage_absent():
+        return not db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") and not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('ci_mail_sent_folders','ci_mail_copy_attempts','ci_mail_copy_results')")
+
+    check('Copy refuses before an owner prepares storage and a folder', 'sent-copy storage' in r.text.lower() and inbox_server.connections == inbox_connections and copy_storage_absent())
+    r = owner.post(root + '?view=mail-accounts', data={'csrf': 'invalid', 'action': 'mail_copies_setup'})
+    check('Sent-copy setup rejects forged CSRF without storage or server contact', 'session expired' in r.text.lower() and inbox_server.connections == inbox_connections and copy_storage_absent())
+    r = member.post(root + '?view=mail-accounts', data={'csrf': token(member.get(library)), 'action': 'mail_copies_setup'})
+    check('Non-owner cannot prepare Sent-copy storage or contact the server', 'Sent-copy storage is ready' not in r.text and inbox_server.connections == inbox_connections and copy_storage_absent())
     r = submit(owner, root + '?view=mail-accounts', 'mail_copies_setup', {})
-    check('Owner prepares additive Sent-copy storage without a server connection', 'Sent-copy storage is ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") == [{'value': '1'}] and inbox_server.connections == inbox_connections)
+    check('Owner prepares additive Sent-copy storage without a server connection', 'Sent-copy storage is ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") == [{'value': '1'}] and all(not db('SELECT * FROM ci_' + table) for table in ['mail_sent_folders','mail_copy_attempts','mail_copy_results']) and inbox_server.connections == inbox_connections)
     for bad in ['Sent*', 'Sent"Folder', 'INBOX\\Sent']:
         r = submit(owner, sent_detail, 'mail_sent_folder_save', {'account_id': sent_aid, 'sent_folder': bad})
         check('Wire-unsafe Sent folder refused over HTTP ' + bad, not db('SELECT * FROM ci_mail_sent_folders WHERE id=?', [sent_aid]) and 'plain server folder' in r.text)

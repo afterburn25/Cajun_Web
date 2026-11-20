@@ -20,7 +20,7 @@ function mail_accounts_admin_action(string $action): void {
         mail_connections_migrate($password);flash('Connection-check history is ready. No server was contacted.');redirect(admin_url('mail-account',['account_id'=>$id]));
     }
     if ($action==='mail_copies_setup') {
-        mail_copies_migrate();flash('Sent-copy storage is ready. No server was contacted and no message was copied.');redirect(admin_url('mail-accounts'));
+        mail_accounts_manager();mail_copies_migrate();flash('Sent-copy storage is ready. No server was contacted and no message was copied.');redirect(admin_url('mail-accounts'));
     }
     if ($action==='mail_sent_folder_save') {
         $id=posted('account_id',32);mail_accounts_manager();mail_accounts_load($id);

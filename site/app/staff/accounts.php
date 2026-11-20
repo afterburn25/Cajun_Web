@@ -167,6 +167,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
     if(str_starts_with($action,'recurring_'))return 'payments.manage';
     if(str_starts_with($action,'service_plans_'))return 'staff.manage';
+    if(in_array($action,['mail_copies_setup','mail_sent_folder_save'],true))return 'staff.manage';
     if($action==='mail_submissions_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_submissions_'))return null; // Current author/Send/mailbox/review checks in submission controller.
     if($action==='mail_drafts_setup')return 'staff.manage';
