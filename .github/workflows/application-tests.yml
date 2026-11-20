@@ -39,8 +39,10 @@ jobs:
     # exceeded 83m on 20261111.370.1 after the package and all build guards
     # had passed. Run 44385954180 then reached the exact 180m job ceiling after
     # 2,937 helper checks, the package build and all 94 build guards passed.
-    # Keep every assertion and match the existing bounded native/browser limit.
-    timeout-minutes: 240
+    # Run 44639431573 completed provenance, source, inventory, package, guards
+    # and public fixture preparation at 239m42s, then the exact 240m ceiling
+    # cancelled the evidence seal. Keep every assertion and allow bounded seal.
+    timeout-minutes: 300
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}
