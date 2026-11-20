@@ -595,6 +595,15 @@ APPLICATION_HTTP_EXPIRY_FIX_BASE_TREE = 'd7e7c544c5c367a918bcc209e15ce86ccccd9dd
 APPLICATION_HTTP_EXPIRY_FIX_SOURCE = 'ae5ae3339e7e6baf21208194989589da70988823'
 APPLICATION_HTTP_EXPIRY_FIX_SOURCE_TREE = 'ca8db018400d962a4fa591e8739019adc4b9ca8a'
 APPLICATION_HTTP_EXPIRY_FIX_PATH = 'tests/mail_submissions_cases.py'
+SIGNED_PPA_LABEL_BASE = '975a19001ffd4fa2ef2c0e5976f3c2e5986e9338'
+SIGNED_PPA_LABEL_BASE_TREE = '154720dcd38df56a8114c30ff2a10ed42df1f926'
+SIGNED_PPA_LABEL_SOURCE = '4ebe7755a9f27a2ba9b83cf4f50d9f474fd97844'
+SIGNED_PPA_LABEL_SOURCE_TREE = '2cc31e448b1907a0df5cb10b92551fd3abd6205a'
+SIGNED_PPA_LABEL_MODIFIED = frozenset((
+    '.github/scripts/prepare_ubuntu_apt.py',
+    'tests/account_notification_workflow_contract.py',
+))
+SIGNED_PPA_LABEL_SCRIPT_SHA256 = '1de78d6a6104380d39b9977a4285e18490defea7fc4a60ff1b5227a30945b562'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -3736,7 +3745,7 @@ def validate_runner_application_seal_budget(root):
     base_entries = entries(root, RUNNER_APPLICATION_SEAL_BUDGET_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_SEAL_BUDGET_SOURCE)
     for path in sorted(RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED):
-        current = ordinary(root, path)
+        current = project_signed_ppa_label_source(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE + ':' + path)
         require(current == source
@@ -3765,6 +3774,7 @@ def validate_runner_application_seal_budget(root):
 
 def project_runner_application_seal_budget(root, path, current):
     """Restore the preserved 240-minute exact head before older projections."""
+    current = project_signed_ppa_label_source(root, path, current)
     if path not in RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_SOURCE + ':' + path)
@@ -9424,12 +9434,74 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_signed_ppa_label_source(root):
+    """Bind the exact signed-label correction after preserved run 44792670112."""
+    require(git(root, 'rev-parse', SIGNED_PPA_LABEL_BASE + '^{tree}').decode().strip()
+            == SIGNED_PPA_LABEL_BASE_TREE
+            and git(root, 'rev-parse', SIGNED_PPA_LABEL_SOURCE + '^{tree}').decode().strip()
+            == SIGNED_PPA_LABEL_SOURCE_TREE,
+            'Signed PHP PPA label source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', SIGNED_PPA_LABEL_SOURCE)
+            .decode().strip().split() == [SIGNED_PPA_LABEL_BASE],
+            'Signed PHP PPA label source parent changed')
+    git(root, 'merge-base', '--is-ancestor', SIGNED_PPA_LABEL_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  SIGNED_PPA_LABEL_BASE, SIGNED_PPA_LABEL_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(SIGNED_PPA_LABEL_MODIFIED)],
+            'Signed PHP PPA label correction changed another path or status')
+    base_entries = entries(root, SIGNED_PPA_LABEL_BASE)
+    source_entries = entries(root, SIGNED_PPA_LABEL_SOURCE)
+    for path in sorted(SIGNED_PPA_LABEL_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_signed_ppa_label_source(root, path, current) == base
+                and project_signed_ppa_label_source(root, path, base) == base,
+                'Signed PHP PPA label source identity or projection changed: ' + path)
+    for path in ('.github/workflows/application-tests.yml',
+                 '.github/workflows/account-notifications-acceptance.yml'):
+        require(git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_BASE + ':' + path)
+                == git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_SOURCE + ':' + path),
+                'Signed PHP PPA label correction changed hosted workflow bytes: ' + path)
+    script = ordinary(root, '.github/scripts/prepare_ubuntu_apt.py')
+    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    require(digest(script) == SIGNED_PPA_LABEL_SCRIPT_SHA256
+            and script.count(b"PHP_PPA_RELEASE_LABELS = ('PPA for PHP', 'PPA for PHP (deprecated)')") == 1
+            and script.count(b"fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'") == 1
+            and script.count(b"'origin': 'LP-PPA-ondrej-php'") == 1
+            and script.count(b"if not release_identity_allowed(records, os.environ['CWP_PHP_VERSION']):") == 1
+            and contract.count(SIGNED_PPA_LABEL_SCRIPT_SHA256.encode()) == 1
+            and contract.count(b'Signed release allowlist accepts the exact deprecated PHP PPA label') == 1
+            and contract.count(b'Signed release allowlist refuses an unknown PPA label') == 1
+            and contract.count(b'Signed release allowlist refuses a changed publisher origin') == 1
+            and contract.count(b'Signed release allowlist refuses additional identity fields') == 1,
+            'Signed label allowlist, publisher identity or executable negative cases changed')
+
+
+def project_signed_ppa_label_source(root, path, current):
+    """Restore the preserved 975a proof head before the exact signed-label correction."""
+    if path not in SIGNED_PPA_LABEL_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current signed PHP PPA label source changed before predecessor projection: ' + path)
+    return base
+
+
 def verify_current(root):
     root = Path(root)
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_signed_ppa_label_source(root)
     validate_application_http_expiry_fix_source(root)
     validate_application_mail_copies_routing_source(root)
     validate_application_mail_copies_setup_source(root)
@@ -9766,7 +9838,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_mail_copies_routing_source(root, path, ordinary(root, path))
+        value = project_signed_ppa_label_source(root, path, ordinary(root, path))
+        value = project_application_mail_copies_routing_source(root, path, value)
         value = project_application_mail_copies_setup_source(root, path, value)
         value = project_account_rate_boundary_source(root, path, value)
         value = project_runner_application_seal_budget(root, path, value)
@@ -9906,6 +9979,7 @@ def verify_current(root):
         {'name': 'Exact Application Sent-copy setup successor uses the owner listing route while retaining the singular account editor and every copy-safety assertion', 'passed': True},
         {'name': 'Exact Application Sent-copy routing successor dispatches setup and folder actions through explicit staff-manage plus owner controls with CSRF and non-owner refusal evidence', 'passed': True},
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
+        {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
