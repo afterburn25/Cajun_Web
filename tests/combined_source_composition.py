@@ -565,6 +565,14 @@ RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED = frozenset((
     '.github/workflows/application-tests.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
+ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
+ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
+ACCOUNT_RATE_BOUNDARY_SOURCE_TREE = '348c6764efb3b626edc6369d3391ee204e683d95'
+ACCOUNT_RATE_BOUNDARY_MODIFIED = frozenset((
+    'tests/account_notification_browser.py',
+    'tests/account_security_browser.py',
+))
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE = '56c658594ba6f757a0f21ddcd83aff1518d78cb2'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_BASE_TREE = 'b996cfcaa9b293d0ba669eadfcaeb944afc77a8b'
 RESULTING_MAIN_INBOX_NAVIGATION_BUDGET_SOURCE = '6e067dfd7419913d5a2c0f89aa84bf4ecb3a9825'
@@ -3631,6 +3639,58 @@ def project_runner_account_source_final_budget(root, path, current):
         return current
     require(current == source,
             'Current runner final account source budget changed before predecessor projection: ' + path)
+    return base
+
+
+def validate_account_rate_boundary_source(root):
+    """Bind the exact fixture-only correction after preserved run 44676679254."""
+    require(git(root, 'rev-parse', ACCOUNT_RATE_BOUNDARY_BASE + '^{tree}').decode().strip()
+            == ACCOUNT_RATE_BOUNDARY_BASE_TREE
+            and git(root, 'rev-parse', ACCOUNT_RATE_BOUNDARY_SOURCE + '^{tree}').decode().strip()
+            == ACCOUNT_RATE_BOUNDARY_SOURCE_TREE,
+            'Account rate-boundary source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', ACCOUNT_RATE_BOUNDARY_SOURCE)
+            .decode().strip().split() == [ACCOUNT_RATE_BOUNDARY_BASE],
+            'Account rate-boundary source parent changed')
+    git(root, 'merge-base', '--is-ancestor', ACCOUNT_RATE_BOUNDARY_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  ACCOUNT_RATE_BOUNDARY_BASE, ACCOUNT_RATE_BOUNDARY_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path for path in sorted(ACCOUNT_RATE_BOUNDARY_MODIFIED)],
+            'Account rate-boundary source changed another path or status set')
+    base_entries = entries(root, ACCOUNT_RATE_BOUNDARY_BASE)
+    source_entries = entries(root, ACCOUNT_RATE_BOUNDARY_SOURCE)
+    for path in sorted(ACCOUNT_RATE_BOUNDARY_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob', ACCOUNT_RATE_BOUNDARY_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob', ACCOUNT_RATE_BOUNDARY_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_account_rate_boundary_source(root, path, current) == base
+                and project_account_rate_boundary_source(root, path, base) == base,
+                'Account rate-boundary identity or projection changed: ' + path)
+        require(source.count(b'rate_window=900;rate_remaining=rate_window-(int(time.time())%rate_window)') == 1
+                and source.count(b'if rate_remaining<=30:time.sleep(rate_remaining+1)') == 1
+                and source.count(b'rate_bucket=int(time.time())//rate_window') == 1
+                and source.count(b'int(time.time())//rate_window==rate_bucket and ') == 1
+                and source.count(b'for _ in range(6):') == 1
+                and source.count(b"'Too many password-change attempts' in r.text") == 1
+                and source.count(b"int(time.time())//rate_window==rate_bucket and 'Too many password-change attempts' in r.text and state()['studio_clients']==before['studio_clients']") == 1
+                and b'rate_window=900' not in base,
+                'Account rate-boundary guard or retained security assertion changed: ' + path)
+
+
+def project_account_rate_boundary_source(root, path, current):
+    """Restore the f8 exact head before older account fixture projections."""
+    if path not in ACCOUNT_RATE_BOUNDARY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', ACCOUNT_RATE_BOUNDARY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', ACCOUNT_RATE_BOUNDARY_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current account rate-boundary source changed before predecessor projection: ' + path)
     return base
 
 
@@ -7930,6 +7990,7 @@ def validate_pr391_recovery_successor(root):
                    APPLICATION_BROWSER_FIXTURE_PATH}
                 | APPLICATION_FRESH_DRAFT_READINESS_PATHS
                 | {FORCE_SSL_RUNNER_PORT_PATH}
+                | ACCOUNT_RATE_BOUNDARY_MODIFIED
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -9176,6 +9237,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_account_rate_boundary_source(root)
     validate_application_sent_copy_absence_source(root)
     validate_application_fresh_draft_readiness_source(root)
     validate_application_browser_fixture_source(root)
@@ -9508,7 +9570,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_runner_application_seal_budget(root, path, ordinary(root, path))
+        value = project_account_rate_boundary_source(root, path, ordinary(root, path))
+        value = project_runner_application_seal_budget(root, path, value)
         value = project_application_sent_copy_absence_source(root, path, value)
         value = project_application_fixture_successors(root, path, value)
         value = project_latest_acceptance_successors(root, path, value)
@@ -9643,6 +9706,7 @@ def verify_current(root):
         {'name': 'Exact Application fresh-install successor binds formatted-draft readiness and the canonical installer inventory after the preserved browser failure', 'passed': True},
         {'name': 'Exact Application Sent-copy evidence successor proves absent pre-migration storage without querying an absent table', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
+        {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
         {'name': 'Exact admission-evidence successor retains structured signed-source diagnostics on both success and failure', 'passed': True},
         {'name': 'Exact runner compatibility successor admits only the source-qualified fully converted GitHub AWS mirror list', 'passed': True},
