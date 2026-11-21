@@ -565,6 +565,14 @@ RUNNER_APPLICATION_SEAL_BUDGET_MODIFIED = frozenset((
     '.github/workflows/application-tests.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE = '6efedfc1cc81db2f95146c69dab1b809b317c2f9'
+RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE_TREE = 'ab246aed3a741057243c0b787de22a8660a841b1'
+RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE = 'cd40a6c6d004ff0fdb70767029afbc5dd227bf8d'
+RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE_TREE = '4b3f15481149e07043ab5cddc94ba23575f91ad7'
+RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/account_notification_workflow_contract.py',
+))
 ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
 ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
 ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
@@ -3761,8 +3769,12 @@ def validate_runner_application_seal_budget(root):
                 and project_runner_application_seal_budget(root, path, current) == base
                 and project_runner_application_seal_budget(root, path, base) == base,
                 'Runner Application seal budget identity or projection changed: ' + path)
-    workflow = ordinary(root, '.github/workflows/application-tests.yml')
-    contract = ordinary(root, 'tests/account_notification_workflow_contract.py')
+    workflow = project_runner_application_composition_completion(
+        root, '.github/workflows/application-tests.yml',
+        ordinary(root, '.github/workflows/application-tests.yml'))
+    contract = project_runner_application_composition_completion(
+        root, 'tests/account_notification_workflow_contract.py',
+        ordinary(root, 'tests/account_notification_workflow_contract.py'))
     workflow_base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE
                         + ':.github/workflows/application-tests.yml')
     contract_base = git(root, 'cat-file', 'blob', RUNNER_APPLICATION_SEAL_BUDGET_BASE
@@ -9443,6 +9455,95 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_runner_application_composition_completion(root):
+    """Bind the hosted maximum after two preserved 300-minute proof ceilings."""
+    require(git(root, 'rev-parse',
+                RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse',
+                    RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE_TREE,
+            'Runner Application composition-completion identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE],
+            'Runner Application composition-completion parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE,
+                  RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path
+                        for path in sorted(RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED)],
+            'Runner Application composition-completion changed another path or status')
+    base_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob',
+                     RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob',
+                   RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_composition_completion(root, path, current) == base
+                and project_runner_application_composition_completion(root, path, base) == base,
+                'Runner Application composition-completion identity or projection changed: ' + path)
+    workflow_path = '.github/workflows/application-tests.yml'
+    contract_path = 'tests/account_notification_workflow_contract.py'
+    workflow = ordinary(root, workflow_path)
+    contract = ordinary(root, contract_path)
+    workflow_base = git(root, 'cat-file', 'blob',
+                        RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE + ':' + workflow_path)
+    contract_base = git(root, 'cat-file', 'blob',
+                        RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE + ':' + contract_path)
+    workflow_predecessor = (
+        b'    # cancelled the evidence seal. Keep every assertion and allow bounded seal.\n'
+        b'    timeout-minutes: 300\n')
+    workflow_successor = (
+        b'    # cancelled the evidence seal. Runs 44792670039 and 44803351271 then passed\n'
+        b'    # setup, provenance, package and all 94 build guards before the unchanged\n'
+        b'    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+        b'    # Keep every assertion and use the hosted-runner maximum as the finite bound.\n'
+        b'    timeout-minutes: 360\n')
+    contract_predecessor = (
+        b"                                     '    # cancelled the evidence seal. Keep every assertion and allow bounded seal.\\n'\n"
+        b"                                     '    timeout-minutes: 300\\n')\n")
+    contract_successor = (
+        b"                                     '    # cancelled the evidence seal. Runs 44792670039 and 44803351271 then passed\\n'\n"
+        b"                                     '    # setup, provenance, package and all 94 build guards before the unchanged\\n'\n"
+        b"                                     '    # composition suite reached the exact 300m job ceiling on slower allocations.\\n'\n"
+        b"                                     '    # Keep every assertion and use the hosted-runner maximum as the finite bound.\\n'\n"
+        b"                                     '    timeout-minutes: 360\\n')\n")
+    require(workflow.count(workflow_successor) == 1
+            and workflow.replace(workflow_successor, workflow_predecessor, 1) == workflow_base
+            and contract.count(contract_successor) == 1
+            and contract.replace(contract_successor, contract_predecessor, 1) == contract_base
+            and workflow.count(b'python3 -B tests/combined_source_composition_test.py') == 1
+            and workflow.count(b'    timeout-minutes: 360\n') == 1
+            and workflow.count(b'    timeout-minutes: 300\n') == 0
+            and contract.count(b"'    timeout-minutes: 360\\n')") == 2,
+            'Runner Application composition-completion bound or retained proof changed')
+
+
+def project_runner_application_composition_completion(root, path, current):
+    """Restore the reviewed dynamic-port proof before the 360-minute correction."""
+    if path not in RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application composition-completion changed before predecessor projection: '
+            + path)
+    return base
+
+
 def validate_mail_folder_dynamic_port_source(root):
     """Bind the assigned-port correction after preserved runner failure 136522311121."""
     require(git(root, 'rev-parse', MAIL_FOLDER_DYNAMIC_PORT_BASE + '^{tree}').decode().strip()
@@ -9515,7 +9616,8 @@ def validate_signed_ppa_label_source(root):
     base_entries = entries(root, SIGNED_PPA_LABEL_BASE)
     source_entries = entries(root, SIGNED_PPA_LABEL_SOURCE)
     for path in sorted(SIGNED_PPA_LABEL_MODIFIED):
-        current = project_mail_folder_dynamic_port_source(root, path, ordinary(root, path))
+        current = project_runner_application_composition_completion(root, path, ordinary(root, path))
+        current = project_mail_folder_dynamic_port_source(root, path, current)
         source = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', SIGNED_PPA_LABEL_BASE + ':' + path)
         require(current == source
@@ -9545,6 +9647,7 @@ def validate_signed_ppa_label_source(root):
 
 def project_signed_ppa_label_source(root, path, current):
     """Restore the preserved 975a proof head before the exact signed-label correction."""
+    current = project_runner_application_composition_completion(root, path, current)
     current = project_mail_folder_dynamic_port_source(root, path, current)
     if path not in SIGNED_PPA_LABEL_MODIFIED:
         return current
@@ -9565,6 +9668,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_runner_application_composition_completion(root)
     validate_mail_folder_dynamic_port_source(root)
     validate_signed_ppa_label_source(root)
     validate_application_http_expiry_fix_source(root)
@@ -9903,7 +10007,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_mail_folder_dynamic_port_source(root, path, ordinary(root, path))
+        value = project_runner_application_composition_completion(root, path, ordinary(root, path))
+        value = project_mail_folder_dynamic_port_source(root, path, value)
         value = project_signed_ppa_label_source(root, path, value)
         value = project_application_mail_copies_routing_source(root, path, value)
         value = project_application_mail_copies_setup_source(root, path, value)
@@ -10047,6 +10152,7 @@ def verify_current(root):
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
+        {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
         {'name': 'Exact account source-budget successor retains every proof command after the preserved 180-minute ceiling', 'passed': True},
