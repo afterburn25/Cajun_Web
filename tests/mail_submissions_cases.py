@@ -299,7 +299,9 @@ def run_browser(env, browser):
     check('HTTP sends attachment MIME byte-exactly', wire['data'] == stored_mime and decoded == [attach_bytes] and submission_server.connections == count + 1)
     check('Submission history shows only attachment metadata', 'report.pdf' in member.get(root + '?view=mail-submission&submission_id=' + attach_sid).text)
     db('UPDATE ci_mail_copy_attempts SET started_epoch=0'); attach_copy_page = root + '?view=mail-submission&submission_id=' + attach_sid
+    inbox_server.mode = 'append'
     r = member.post(attach_copy_page, data={'csrf': token(member.get(attach_copy_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': attach_sid, 'confirm_copy': '1'}); copy_connections += 1
+    inbox_server.mode = 'ok'
     check('Sent copy appends the exact larger attachment MIME', inbox_server.appended == wire['data'] and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [attach_sid]) == [{'result_code': 'appended'}])
     r = file_post('mail_drafts_detach', 2, file_id=file_id)
     check('Author removes the saved attachment as a new draft revision', 'Attachment removed' in r.text and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
