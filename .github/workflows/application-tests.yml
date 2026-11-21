@@ -41,8 +41,11 @@ jobs:
     # 2,937 helper checks, the package build and all 94 build guards passed.
     # Run 44639431573 completed provenance, source, inventory, package, guards
     # and public fixture preparation at 239m42s, then the exact 240m ceiling
-    # cancelled the evidence seal. Keep every assertion and allow bounded seal.
-    timeout-minutes: 300
+    # cancelled the evidence seal. Runs 44792670039 and 44803351271 then passed
+    # setup, provenance, package and all 94 build guards before the unchanged
+    # composition suite reached the exact 300m job ceiling on slower allocations.
+    # Keep every assertion and use the hosted-runner maximum as the finite bound.
+    timeout-minutes: 360
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}

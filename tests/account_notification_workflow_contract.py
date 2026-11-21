@@ -41,8 +41,11 @@ PROTECTED_BUILD_TIMEOUT_SUCCESSOR = ('  build:\n'
                                      '    # 2,937 helper checks, the package build and all 94 build guards passed.\n'
                                      '    # Run 44639431573 completed provenance, source, inventory, package, guards\n'
                                      '    # and public fixture preparation at 239m42s, then the exact 240m ceiling\n'
-                                     '    # cancelled the evidence seal. Keep every assertion and allow bounded seal.\n'
-                                     '    timeout-minutes: 300\n')
+                                     '    # cancelled the evidence seal. Runs 44792670039 and 44803351271 then passed\n'
+                                     '    # setup, provenance, package and all 94 build guards before the unchanged\n'
+                                     '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+                                     '    # Keep every assertion and use the hosted-runner maximum as the finite bound.\n'
+                                     '    timeout-minutes: 360\n')
 PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
