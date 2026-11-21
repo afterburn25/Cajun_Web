@@ -600,6 +600,13 @@ APPLICATION_SMTP_FIXTURE_BOUND_SOURCE_TREE = 'd3112ffeba4c9b0cfe7bf604c78092795d
 APPLICATION_SMTP_FIXTURE_BOUND_PATH = 'tests/mail_submission_server.py'
 APPLICATION_SMTP_FIXTURE_BOUND_BASE_SHA256 = 'fb7b6d970aaf1c3bd40f3a071d795ca54b3ef76a2468902dbe6abc99e117cdab'
 APPLICATION_SMTP_FIXTURE_BOUND_SOURCE_SHA256 = 'fd2d691efd71b79e5e60628d9c6d913ff211682fbf58c7445ff002495bbb1e61'
+APPLICATION_SENT_COPY_FIXTURE_MODE_BASE = 'a84595a2be9550b03a86132fc05e5607553468b9'
+APPLICATION_SENT_COPY_FIXTURE_MODE_BASE_TREE = '2055621726acce690e4c4b0d6581130cd80abac1'
+APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE = 'b18c493d98a1197363546c3cafecb07504766c4c'
+APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE_TREE = '2e9a35206ee6a88560745f1c7ba4a1347512cfcc'
+APPLICATION_SENT_COPY_FIXTURE_MODE_PATH = 'tests/mail_submissions_cases.py'
+APPLICATION_SENT_COPY_FIXTURE_MODE_BASE_SHA256 = '6306bdaf60ba85ba239952e2839a84c2338c1de9d6978c8ed9c325e518c88261'
+APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE_SHA256 = 'ad53caa0a838312f18844d72192a04cbd75e6f35276ded20bb1f34a8fa73d21e'
 ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
 ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
 ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
@@ -1901,7 +1908,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '8166033648d78dca38247c2b30dac8bcee85f293be4f00342b79a3bd72fd2fa5'
+REGRESSION_SHA256 = '1d887c83fc32e79b0744ffc2a57f89f523c0c310f06cc816abbf210a69eb71cc'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -5894,7 +5901,7 @@ def validate_application_http_expiry_fix_source(root):
             'Application HTTP expiry fixture changed another path or status')
     base_entries = entries(root, APPLICATION_HTTP_EXPIRY_FIX_BASE)
     source_entries = entries(root, APPLICATION_HTTP_EXPIRY_FIX_SOURCE)
-    current = ordinary(root, path)
+    current = project_application_sent_copy_fixture_mode(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_BASE + ':' + path)
     require(current == source
@@ -5913,6 +5920,7 @@ def validate_application_http_expiry_fix_source(root):
 
 def project_application_http_expiry_fix_source(root, path, current):
     """Restore the accepted PR head before the strict-database fixture correction."""
+    current = project_application_sent_copy_fixture_mode(root, path, current)
     if path != APPLICATION_HTTP_EXPIRY_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', APPLICATION_HTTP_EXPIRY_FIX_SOURCE + ':' + path)
@@ -9487,6 +9495,60 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_application_sent_copy_fixture_mode(root):
+    """Bind the finite IMAP fixture correction after preserved run 44913252537."""
+    require(git(root, 'rev-parse', APPLICATION_SENT_COPY_FIXTURE_MODE_BASE + '^{tree}')
+            .decode().strip() == APPLICATION_SENT_COPY_FIXTURE_MODE_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE + '^{tree}')
+            .decode().strip() == APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE_TREE,
+            'Application Sent-copy fixture source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE)
+            .decode().strip().split() == [APPLICATION_SENT_COPY_FIXTURE_MODE_BASE],
+            'Application Sent-copy fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE, 'HEAD')
+    path = APPLICATION_SENT_COPY_FIXTURE_MODE_PATH
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_SENT_COPY_FIXTURE_MODE_BASE,
+                APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE).decode().splitlines()
+            == ['M\t' + path],
+            'Application Sent-copy fixture source changed another path or status')
+    base_entries = entries(root, APPLICATION_SENT_COPY_FIXTURE_MODE_BASE)
+    source_entries = entries(root, APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE)
+    base = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_FIXTURE_MODE_BASE + ':' + path)
+    source = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE + ':' + path)
+    current = ordinary(root, path)
+    require(digest(base) == APPLICATION_SENT_COPY_FIXTURE_MODE_BASE_SHA256
+            and digest(source) == APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE_SHA256
+            and current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_application_sent_copy_fixture_mode(root, path, current) == base
+            and project_application_sent_copy_fixture_mode(root, path, base) == base,
+            'Application Sent-copy fixture identity or projection changed')
+    post = b"r = member.post(attach_copy_page, data={'csrf': token(member.get(attach_copy_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': attach_sid, 'confirm_copy': '1'}); copy_connections += 1"
+    lines = source.splitlines()
+    index = lines.index(b'    ' + post)
+    require(lines[index - 1] == b"    inbox_server.mode = 'append'"
+            and lines[index + 1] == b"    inbox_server.mode = 'ok'"
+            and lines.count(b"    inbox_server.mode = 'append'") == 2
+            and lines.count(b"    inbox_server.mode = 'ok'") == 2,
+            'Application Sent-copy fixture lost the bounded append-mode transition')
+
+
+def project_application_sent_copy_fixture_mode(root, path, current):
+    """Restore the accepted a845 source before the IMAP fixture correction."""
+    if path != APPLICATION_SENT_COPY_FIXTURE_MODE_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_SENT_COPY_FIXTURE_MODE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application Sent-copy fixture changed before predecessor projection')
+    return base
+
+
 def validate_application_smtp_fixture_bound(root):
     """Bind the finite SMTP fixture correction after preserved run 44890368753."""
     require(git(root, 'rev-parse', APPLICATION_SMTP_FIXTURE_BOUND_BASE + '^{tree}')
@@ -9881,6 +9943,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_sent_copy_fixture_mode(root)
     validate_application_smtp_fixture_bound(root)
     validate_runner_application_current_artifact_binding(root)
     validate_runner_application_composition_partition(root)
@@ -10223,7 +10286,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_smtp_fixture_bound(root, path, ordinary(root, path))
+        value = project_application_sent_copy_fixture_mode(root, path, ordinary(root, path))
+        value = project_application_smtp_fixture_bound(root, path, value)
         value = project_runner_application_current_artifact_binding(root, path, value)
         value = project_runner_application_composition_partition(root, path, value)
         value = project_runner_application_composition_completion(root, path, value)
@@ -10371,6 +10435,7 @@ def verify_current(root):
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
+        {'name': 'Exact Application Sent-copy fixture successor restores the APPEND protocol around the larger MIME assertion after preserved run 44913252537', 'passed': True},
         {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},

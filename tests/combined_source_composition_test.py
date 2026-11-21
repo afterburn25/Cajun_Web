@@ -110,6 +110,7 @@ def run(root=ROOT):
             ('protected complete application workflow', '.github/workflows/application-tests.yml'),
             ('current artifact source binding contract', 'tools/acceptance-contract.json'),
             ('bounded buffered SMTP acceptance fixture', 'tests/mail_submission_server.py'),
+            ('bounded Sent-copy acceptance fixture', 'tests/mail_submissions_cases.py'),
             ('current canonical installer inventory', proof.INVENTORY),
             ('finite comparison adapter', 'tests/provider_browser_fixture_provenance.py'),
             ('composition verifier', proof.VERIFIER),
@@ -125,6 +126,13 @@ def run(root=ROOT):
                 lambda: modified(smtp_fixture, lambda target: target.write_bytes(
                     target.read_bytes().replace(b"len(attempt['data'])<=1048576",
                                                 b"len(attempt['data'])<=65536", 1))))
+
+        sent_copy_fixture = 'tests/mail_submissions_cases.py'
+        refuses('Refuses removal of the large Sent-copy APPEND fixture mode',
+                lambda: modified(sent_copy_fixture, lambda target: target.write_bytes(
+                    target.read_bytes().replace(
+                        b"    inbox_server.mode = 'append'\n    r = member.post(attach_copy_page,",
+                        b"    r = member.post(attach_copy_page,", 1))))
 
         path = 'site/app/billing/software_client.php'
         refuses('Refuses removal of an actual current application file',
