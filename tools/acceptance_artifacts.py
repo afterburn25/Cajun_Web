@@ -357,13 +357,59 @@ def reports(root):
     return result
 
 
+def verify_composition_evidence(incoming, binding, context):
+    """Verify the separate unchanged full proof as required same-attempt evidence."""
+    require(binding.get('result') == 'success', 'job ' + str(binding.get('result', 'missing')))
+    require(re.fullmatch('[1-9][0-9]*', binding.get('artifact_id', '')), 'Missing artifact identity')
+    require(re.fullmatch('[0-9a-f]{64}', binding.get('artifact_digest', '')),
+            'Missing or invalid artifact digest')
+    expected_names = {'combined-source-composition-results.json', 'composition-source.json'}
+    require(incoming.is_dir() and not incoming.is_symlink(), 'Missing composition evidence directory')
+    entries = list(incoming.iterdir())
+    require({entry.name for entry in entries} == expected_names
+            and all(entry.is_file() and not entry.is_symlink() for entry in entries),
+            'Composition evidence has missing, extra or non-regular files')
+    result_path = incoming / 'combined-source-composition-results.json'
+    receipt_path = incoming / 'composition-source.json'
+    result = load(result_path)
+    checks = result.get('checks')
+    require(result.get('passed') is True and type(result.get('count')) is int and result['count'] > 0,
+            'Full source-composition proof did not pass')
+    require(isinstance(checks, list) and len(checks) == result['count']
+            and all(isinstance(row, dict) and row.get('passed') is True
+                    and isinstance(row.get('name'), str) and row['name'] for row in checks)
+            and len({row['name'] for row in checks}) == len(checks),
+            'Full source-composition check set is incomplete or ambiguous')
+    require(not any(result.get(key) for key in ('failed', 'failure', 'failures', 'error', 'errors', 'exception')),
+            'Full source-composition evidence contains failure detail')
+    receipt = load(receipt_path)
+    expected_receipt = {
+        'ci_sha': context['ci_sha'], 'source_sha': context['source_sha'], 'source_tree': context['tree'],
+        'run_id': context['run_id'], 'run_attempt': context['attempt'],
+        'command': 'python3 -B tests/combined_source_composition_test.py',
+        'result_sha256': digest(result_path),
+    }
+    require(receipt == expected_receipt, 'Full source-composition receipt identity changed')
+    return {'artifact_id': binding['artifact_id'], 'artifact_digest': binding['artifact_digest'],
+            'result_sha256': digest(result_path), 'receipt_sha256': digest(receipt_path),
+            'count': result['count']}
+
+
 def aggregate(root, context, incoming, bindings, expected, checkpoint_only=False):
     """Always preserve trustworthy partial partitions; no invented passing results."""
     errors = []; accepted = {}; owners = {}; folded_owners = {}; input_sha = bindings.get('build', {}).get('input_sha256', '')
     required = {'build', 'native-browser'} if checkpoint_only else set(LANES)
     ids = [bindings.get(n, {}).get('artifact_id') for n in required if bindings.get(n, {}).get('artifact_id')]
+    if bindings.get('composition', {}).get('artifact_id'):
+        ids.append(bindings['composition']['artifact_id'])
     if len(ids) != len(set(ids)): errors.append('Duplicate partition artifact IDs')
     (root / 'qa').mkdir(parents=True, exist_ok=True)
+    composition = {}
+    try:
+        composition = verify_composition_evidence(incoming / 'composition',
+                                                  bindings.get('composition', {}), context)
+    except Exception as exc:
+        errors.append('composition: ' + str(exc))
     for lane in LANES:
         b = bindings.get(lane, {})
         if lane not in required:
@@ -410,7 +456,8 @@ def aggregate(root, context, incoming, bindings, expected, checkpoint_only=False
         errors.append('Report/package validation: ' + str(exc))
     result = {'identity': context, 'mode': 'checkpoint' if checkpoint_only else 'full', 'complete': not errors,
               'full_partition_checks_passed': not errors and not checkpoint_only, 'errors': errors,
-              'job_bindings': bindings, 'partitions': accepted, 'reports': named,
+              'job_bindings': bindings, 'composition_evidence': composition,
+              'partitions': accepted, 'reports': named,
               'scope': 'Exact same-attempt partition assembly. Browser visual/diagnostic review and independent package comparison remain required. Missing/cancelled aggregate is incomplete.'}
     write(root / 'qa/parallel-acceptance.json', result)
     return result

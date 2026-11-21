@@ -259,6 +259,21 @@ def context():
             'workflow_sha256': 'd' * 64, 'helper_sha256': 'e' * 64, 'reports_sha256': 'f' * 64, 'contract_sha256': '1' * 64}
 
 
+def composition_evidence(root, ctx, artifact_id='91'):
+    root.mkdir(parents=True, exist_ok=True)
+    result = {'passed': True, 'count': 1,
+              'checks': [{'name': 'Synthetic unchanged full composition', 'passed': True}]}
+    a.write(root / 'combined-source-composition-results.json', result)
+    a.write(root / 'composition-source.json', {
+        'ci_sha': ctx['ci_sha'], 'source_sha': ctx['source_sha'], 'source_tree': ctx['tree'],
+        'run_id': ctx['run_id'], 'run_attempt': ctx['attempt'],
+        'command': 'python3 -B tests/combined_source_composition_test.py',
+        'result_sha256': a.digest(root / 'combined-source-composition-results.json'),
+    })
+    return {'result': 'success', 'artifact_id': artifact_id,
+            'artifact_digest': '7' * 64}
+
+
 def packages(root, ctx):
     dist = root / 'dist'; dist.mkdir(parents=True)
     for kind in ['FULL-PROJECT', 'COMPLETE-UPLOAD', 'UPDATE']:
@@ -498,6 +513,7 @@ def software_authority_report_checks(tmp):
     input_sha = '7' * 64
     for scenario in ('complete', 'missing', 'failed assertion', 'failed summary', 'renamed', 'extra', 'malformed assertion', 'browser failure'):
         case = tmp / scenario.replace(' ', '-'); incoming = case / 'incoming'; bindings = {}
+        bindings['composition'] = composition_evidence(incoming / 'composition', ctx)
         data = copy.deepcopy(report)
         if scenario == 'failed assertion': data['checks'][0]['passed'] = False
         if scenario == 'failed summary': data['passed'] = False
@@ -634,6 +650,7 @@ def run(tmp):
         deny('ZIP refuses ' + title + ' independently of envelope hash', lambda p=p,f=files: a.inspect_archive(p, f))
     # A complete four-partition synthetic run exercises the real seal and aggregate paths.
     incoming = tmp / 'partitions'; bindings = {}; lane_roots = {}
+    bindings['composition'] = composition_evidence(incoming / 'composition', ctx)
     for i,lane in enumerate(a.LANES):
         root = tmp / ('job-' + lane); root.mkdir(); lane_roots[lane] = root
         if lane == 'build': shutil.copytree(source / 'dist', root / 'dist'); shutil.copytree(source / 'qa', root / 'qa')
@@ -653,6 +670,9 @@ def run(tmp):
         return result, root
     result, target = combined()
     check('Complete exact four-partition run assembles all named reports', result['complete'] and result['full_partition_checks_passed'] and set(result['reports']) == set(expected['final']))
+    check('Final requires and records exact same-attempt full-composition evidence',
+          result['composition_evidence']['artifact_id'] == bindings['composition']['artifact_id']
+          and result['composition_evidence']['count'] == 1)
     check('Final carries exact browser screenshot bytes', (target/'qa/actual-view.png').read_bytes()==b'exact image bytes')
     check('Final retains distinct package-source receipts from every acceptance lane',
           all(a.load(target/'qa'/(lane+'-'+receipt))['lane_fixture']==lane
@@ -663,7 +683,7 @@ def run(tmp):
     b=copy.deepcopy(bindings)
     for lane in ['recovery','apache']:b[lane]={'result':'skipped','artifact_id':'','sha256':''}
     result,_=combined(b,cp=True)
-    check('Deliberate checkpoint has complete limited evidence, never full acceptance', result['complete'] and not result['full_partition_checks_passed'] and result['mode']=='checkpoint')
+    check('Deliberate checkpoint has complete limited evidence, never full acceptance', result['complete'] and not result['full_partition_checks_passed'] and result['mode']=='checkpoint' and result['composition_evidence'])
     b['apache']['result']='cancelled';result,_=combined(b,cp=True)
     check('Checkpoint does not disguise cancellation as intentional skip', not result['complete'])
     for lane in a.LANES:
@@ -672,12 +692,31 @@ def run(tmp):
             check('Non-successful '+lane+' '+state+' remains incomplete with partial evidence', not result['complete'] and (root/'qa/http-results.json').exists())
         b=copy.deepcopy(bindings);b[lane]['artifact_id']='';result,root=combined(b)
         check('Missing '+lane+' artifact cannot become success', not result['complete'] and lane not in result['partitions'])
+    for state in ['failure', 'cancelled', 'skipped']:
+        b=copy.deepcopy(bindings);b['composition']['result']=state;result,_=combined(b)
+        check('Non-successful composition '+state+' remains incomplete',
+              not result['complete'] and not result['composition_evidence'])
+    b=copy.deepcopy(bindings);b['composition']['artifact_id']='';result,_=combined(b)
+    check('Missing composition artifact cannot become success', not result['complete'] and not result['composition_evidence'])
+    b=copy.deepcopy(bindings);b['composition']['artifact_digest']='sha256:'+'7'*64;result,_=combined(b)
+    check('Malformed composition artifact digest cannot become success', not result['complete'] and not result['composition_evidence'])
+    bad_composition=tmp/'bad-composition';shutil.copytree(incoming,bad_composition)
+    receipt=a.load(bad_composition/'composition/composition-source.json');receipt['source_sha']='0'*40
+    a.write(bad_composition/'composition/composition-source.json',receipt)
+    result,_=combined(bindings,bad_composition)
+    check('Wrong composition source receipt cannot become success', not result['complete'] and not result['composition_evidence'])
+    extra_composition=tmp/'extra-composition';shutil.copytree(incoming,extra_composition)
+    blob(extra_composition/'composition/unreviewed.txt')
+    result,_=combined(bindings,extra_composition)
+    check('Extra composition evidence file cannot become success', not result['complete'] and not result['composition_evidence'])
     b=copy.deepcopy(bindings);b['native-browser']['sha256']='0'*64;result,root=combined(b)
     check('Corrupt partition digest is refused while other evidence survives', not result['complete'] and 'native-browser' not in result['partitions'] and (root/'qa/structure-results.json').exists())
     b=copy.deepcopy(bindings);b['build']['input_sha256']='0'*64;result,_=combined(b)
     check('Different input generation cannot mix into final', not result['complete'] and set(result['partitions'])=={'build'})
     b=copy.deepcopy(bindings);b['apache']['artifact_id']=b['recovery']['artifact_id'];result,_=combined(b)
     check('Duplicate artifact IDs never masquerade as independent jobs', not result['complete'])
+    b=copy.deepcopy(bindings);b['composition']['artifact_id']=b['build']['artifact_id'];result,_=combined(b)
+    check('Composition artifact ID cannot duplicate a partition artifact', not result['complete'])
     b=copy.deepcopy(bindings);b['native-browser']['checkpoint_id']='';result,_=combined(b)
     check('Missing checkpoint upload cannot pass final acceptance', not result['complete'] and 'native-browser' in result['partitions'])
     for title, change in [('cross-attempt',lambda o:o['identity'].update(attempt='2')),('missing steps',lambda o:o.update(steps={})),('wrong lane',lambda o:o.update(lane='build'))]:

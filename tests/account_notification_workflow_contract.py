@@ -46,6 +46,15 @@ PROTECTED_BUILD_TIMEOUT_SUCCESSOR = ('  build:\n'
                                      '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
                                      '    # Keep every assertion and use the hosted-runner maximum as the finite bound.\n'
                                      '    timeout-minutes: 360\n')
+PROTECTED_COMPOSITION_SPLIT_OLD_COMMENT = (
+    '    # setup, provenance, package and all 94 build guards before the unchanged\n'
+    '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+    '    # Keep every assertion and use the hosted-runner maximum as the finite bound.\n')
+PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT = (
+    '    # setup, provenance, package and all 94 build guards before the unchanged\n'
+    '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+    "    # Run 44847291464 then reached GitHub-hosted's 360m maximum in the same\n"
+    '    # unchanged proof. The full proof now runs as a separate required job.\n')
 PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
@@ -516,6 +525,41 @@ def proof_commands(source):
     return commands
 
 
+def project_protected_composition_split(source):
+    """Restore the monolithic reviewed Application workflow deterministically."""
+    projected, job_count = re.subn(r'  composition:\n.*?(?=  build:\n)', '', source, count=1, flags=re.S)
+    require(job_count == 1, 'Application full-composition job boundary changed')
+    require(projected.count(PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT) == 1,
+            'Application split disposition changed')
+    projected = projected.replace(PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT,
+                                  PROTECTED_COMPOSITION_SPLIT_OLD_COMMENT, 1)
+    current_build = ('          python3 tests/build_guards.py\n'
+                     '          python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt\n')
+    previous_build = ('          python3 tests/build_guards.py\n'
+                      '          python3 -B tests/combined_source_composition_test.py | tee -a qa/build-results.txt\n'
+                      '          python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt\n')
+    require(projected.count(current_build) == 1, 'Application split build boundary changed')
+    projected = projected.replace(current_build, previous_build, 1)
+    require(projected.count('    needs: [composition, build]\n') == 3,
+            'Application split downstream dependency count changed')
+    projected = projected.replace('    needs: [composition, build]\n', '    needs: build\n')
+    current_acceptance = '    needs: [composition, build, native-and-browser, recovery, apache]\n'
+    previous_acceptance = '    needs: [build, native-and-browser, recovery, apache]\n'
+    require(projected.count(current_acceptance) == 1,
+            'Application split acceptance dependency changed')
+    projected = projected.replace(current_acceptance, previous_acceptance, 1)
+    projected, evidence_count = re.subn(
+        r'      - name: Download exact full-composition evidence\n.*?(?=      - name: Download exact native-browser evidence\n)',
+        '', projected, count=1, flags=re.S)
+    require(evidence_count == 1, 'Application composition evidence boundary changed')
+    binding = ('{"composition": {"result": "${{ needs.composition.result }}", '
+               '"artifact_id": "${{ needs.composition.outputs.artifact_id }}", '
+               '"artifact_digest": "${{ needs.composition.outputs.artifact_digest }}"}, ')
+    require(projected.count(binding) == 1, 'Application composition aggregate binding changed')
+    projected = projected.replace(binding, '{', 1)
+    return projected
+
+
 def validate(workflow, legacy, protected, apt_script):
     checks = []
 
@@ -536,7 +580,20 @@ def validate(workflow, legacy, protected, apt_script):
     check('APT preparation script retains ordinary Git mode', len(indexed) >= 4 and indexed[0] == '100644')
     check('Reviewed APT preparation script remains byte-identical',
           digest(apt_script) == APT_PREPARATION_SHA256)
-    protected_predecessor = protected
+    check('Protected Application runs one unchanged full composition proof in a separate required exact-source job',
+          protected.count('  composition:\n') == 1
+          and protected.count('    timeout-minutes: 360\n') == 2
+          and protected.count('          python3 -B tests/combined_source_composition_test.py | tee qa/combined-source-composition-results.json\n') == 1
+          and '--shallow' not in protected
+          and protected.count('    needs: [composition, build]\n') == 3
+          and protected.count('    needs: [composition, build, native-and-browser, recovery, apache]\n') == 1
+          and protected.count('"composition": {"result": "${{ needs.composition.result }}", "artifact_id": "${{ needs.composition.outputs.artifact_id }}", "artifact_digest": "${{ needs.composition.outputs.artifact_digest }}"}') == 1
+          and protected.count('          merge-multiple: true\n          path: .acceptance/incoming/composition\n') == 1
+          and protected.count("              'ci_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),\n") == 1
+          and protected.count("              'source_sha': os.environ['CWP_SOURCE_SHA'],\n") == 1
+          and protected.count("              'result_sha256': __import__('hashlib').sha256(result_path.read_bytes()).hexdigest(),\n") == 1
+          and 'continue-on-error' not in protected)
+    protected_predecessor = project_protected_composition_split(protected)
     check('Protected application build has one bounded timeout successor',
           protected_predecessor.count(PROTECTED_BUILD_TIMEOUT_SUCCESSOR) == 1
           and PROTECTED_BUILD_TIMEOUT_PREDECESSOR not in protected_predecessor)
@@ -745,7 +802,8 @@ def self_test(root=ROOT):
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),
         ('lost bounded application build timeout', protected.replace(
-            PROTECTED_BUILD_TIMEOUT_SUCCESSOR, PROTECTED_BUILD_TIMEOUT_PREDECESSOR, 1)),
+            PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT + '    timeout-minutes: 360\n',
+            PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT + '    timeout-minutes: 180\n', 1)),
         ('lost canonical application mirror selection', protected.replace(PROTECTED_APT_MIRRORS, '', 1)),
         ('lost APT preparation trigger', protected.replace(PROTECTED_APT_TRIGGER_ADDITION, '', 1)),
         ('lost bounded application reconnect wrapper', protected.replace(PROTECTED_APT_WRAPPER, '', 1)),
