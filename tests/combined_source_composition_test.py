@@ -109,12 +109,22 @@ def run(root=ROOT):
             ('original notification receipt', 'docs/NOTIFICATION_SETTINGS_FRESHNESS_CORRECTION.json'),
             ('protected complete application workflow', '.github/workflows/application-tests.yml'),
             ('current artifact source binding contract', 'tools/acceptance-contract.json'),
+            ('bounded buffered SMTP acceptance fixture', 'tests/mail_submission_server.py'),
             ('current canonical installer inventory', proof.INVENTORY),
             ('finite comparison adapter', 'tests/provider_browser_fixture_provenance.py'),
             ('composition verifier', proof.VERIFIER),
             ('actual-filesystem regression suite', proof.REGRESSION),
         ):
             refuses('Refuses altered ' + name, lambda path=path: modified(path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed source\n')))
+
+        smtp_fixture = 'tests/mail_submission_server.py'
+        refuses('Refuses byte-at-a-time SMTP fixture regression',
+                lambda: modified(smtp_fixture, lambda target: target.write_bytes(
+                    target.read_bytes().replace(b's.recv(65536)', b's.recv(1)', 1))))
+        refuses('Refuses reduced SMTP fixture DATA ceiling',
+                lambda: modified(smtp_fixture, lambda target: target.write_bytes(
+                    target.read_bytes().replace(b"len(attempt['data'])<=1048576",
+                                                b"len(attempt['data'])<=65536", 1))))
 
         path = 'site/app/billing/software_client.php'
         refuses('Refuses removal of an actual current application file',

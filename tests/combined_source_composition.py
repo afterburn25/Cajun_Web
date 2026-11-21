@@ -593,6 +593,13 @@ RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE_SHA256 = 'c19d6fe13fc3b48d04459
 RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE_SHA256 = 'be671f70ce28a413e39b85beaf1297803e8d919e1c78149ca6cc1dcb33c7c165'
 RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_OLD_SHA256 = 'c4885f25bf27faa9be827dadba04de38ec6ae68d2529213a780d2cad87a428d0'
 RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_NEW_SHA256 = '5e43a8242244918200e2aee75175bd68f895d3a054239a17c9f85ae0b03b56c9'
+APPLICATION_SMTP_FIXTURE_BOUND_BASE = 'efa50cd92d82bf62dcaea68fe45604eb4fe032a8'
+APPLICATION_SMTP_FIXTURE_BOUND_BASE_TREE = '51a8d7d4a1eae6afead1dd9ede95ff8d3ce39aa9'
+APPLICATION_SMTP_FIXTURE_BOUND_SOURCE = '21af41f2a258beafa4d11f8f91f7cabd198fc554'
+APPLICATION_SMTP_FIXTURE_BOUND_SOURCE_TREE = 'd3112ffeba4c9b0cfe7bf604c78092795def79ec'
+APPLICATION_SMTP_FIXTURE_BOUND_PATH = 'tests/mail_submission_server.py'
+APPLICATION_SMTP_FIXTURE_BOUND_BASE_SHA256 = 'fb7b6d970aaf1c3bd40f3a071d795ca54b3ef76a2468902dbe6abc99e117cdab'
+APPLICATION_SMTP_FIXTURE_BOUND_SOURCE_SHA256 = 'fd2d691efd71b79e5e60628d9c6d913ff211682fbf58c7445ff002495bbb1e61'
 ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
 ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
 ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
@@ -1894,7 +1901,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '435dc9da0b6901e18e4e6cdfe5388c74fabfd9eef6ec38a1e9fc1492e809ea67'
+REGRESSION_SHA256 = '8166033648d78dca38247c2b30dac8bcee85f293be4f00342b79a3bd72fd2fa5'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -6952,7 +6959,8 @@ def validate_mail_reply_forward_source(root):
             and MAIL_REPLY_FORWARD_ADDITIONS <= set(source_entries),
             'Mail Reply/Forward additions did not originate in the source range')
     for path in sorted(MAIL_REPLY_FORWARD_MODIFIED):
-        current = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        current = project_application_smtp_fixture_bound(root, path, ordinary(root, path))
+        current = project_mail_copy_controls_fix(root, path, current)
         current = project_mail_thread_header_fix(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_REPLY_FORWARD_BASE + ':' + path)
@@ -6995,6 +7003,7 @@ def validate_mail_reply_forward_source(root):
 
 def project_mail_reply_forward_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
+    current = project_application_smtp_fixture_bound(root, path, current)
     current = project_mail_copy_controls_fix(root, path, current)
     current = project_mail_reply_session_fix(root, path, current)
     current = project_mail_thread_header_fix(root, path, current)
@@ -9478,6 +9487,60 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_application_smtp_fixture_bound(root):
+    """Bind the finite SMTP fixture correction after preserved run 44890368753."""
+    require(git(root, 'rev-parse', APPLICATION_SMTP_FIXTURE_BOUND_BASE + '^{tree}')
+            .decode().strip() == APPLICATION_SMTP_FIXTURE_BOUND_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_SMTP_FIXTURE_BOUND_SOURCE + '^{tree}')
+            .decode().strip() == APPLICATION_SMTP_FIXTURE_BOUND_SOURCE_TREE,
+            'Application SMTP fixture source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', APPLICATION_SMTP_FIXTURE_BOUND_SOURCE)
+            .decode().strip().split() == [APPLICATION_SMTP_FIXTURE_BOUND_BASE],
+            'Application SMTP fixture source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_SMTP_FIXTURE_BOUND_SOURCE, 'HEAD')
+    path = APPLICATION_SMTP_FIXTURE_BOUND_PATH
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_SMTP_FIXTURE_BOUND_BASE,
+                APPLICATION_SMTP_FIXTURE_BOUND_SOURCE).decode().splitlines()
+            == ['M\t' + path],
+            'Application SMTP fixture source changed another path or status')
+    base_entries = entries(root, APPLICATION_SMTP_FIXTURE_BOUND_BASE)
+    source_entries = entries(root, APPLICATION_SMTP_FIXTURE_BOUND_SOURCE)
+    base = git(root, 'cat-file', 'blob', APPLICATION_SMTP_FIXTURE_BOUND_BASE + ':' + path)
+    source = git(root, 'cat-file', 'blob', APPLICATION_SMTP_FIXTURE_BOUND_SOURCE + ':' + path)
+    current = ordinary(root, path)
+    require(digest(base) == APPLICATION_SMTP_FIXTURE_BOUND_BASE_SHA256
+            and digest(source) == APPLICATION_SMTP_FIXTURE_BOUND_SOURCE_SHA256
+            and current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_application_smtp_fixture_bound(root, path, current) == base
+            and project_application_smtp_fixture_bound(root, path, base) == base,
+            'Application SMTP fixture identity or projection changed')
+    require(source.count(b"pending=[b'']") == 1
+            and source.count(b's.recv(65536)') == 1
+            and source.count(b"assert len(line)<=2048,'Synthetic SMTP line overflow'") == 1
+            and source.count(b"assert (len(pending[0]) if first_nl<0 else first_nl)<=2048,'Synthetic SMTP line overflow'") == 1
+            and source.count(b"assert len(attempt['data'])<=1048576,'Synthetic SMTP DATA overflow'") == 1
+            and b's.recv(1)' not in source
+            and b"assert len(attempt['data'])<=65536" not in source,
+            'Application SMTP fixture lost its buffered read, line bound or one-MiB DATA bound')
+
+
+def project_application_smtp_fixture_bound(root, path, current):
+    """Restore the accepted efa50 source before the bounded fixture correction."""
+    if path != APPLICATION_SMTP_FIXTURE_BOUND_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_SMTP_FIXTURE_BOUND_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_SMTP_FIXTURE_BOUND_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application SMTP fixture changed before predecessor projection')
+    return base
+
+
 def validate_runner_application_current_artifact_binding(root):
     """Bind the exact current artifact helper after the preserved hosted assertion failure."""
     require(git(root, 'rev-parse',
@@ -9818,6 +9881,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_smtp_fixture_bound(root)
     validate_runner_application_current_artifact_binding(root)
     validate_runner_application_composition_partition(root)
     validate_runner_application_composition_completion(root)
@@ -10159,7 +10223,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_runner_application_current_artifact_binding(root, path, ordinary(root, path))
+        value = project_application_smtp_fixture_bound(root, path, ordinary(root, path))
+        value = project_runner_application_current_artifact_binding(root, path, value)
         value = project_runner_application_composition_partition(root, path, value)
         value = project_runner_application_composition_completion(root, path, value)
         value = project_mail_folder_dynamic_port_source(root, path, value)
@@ -10306,6 +10371,7 @@ def verify_current(root):
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
+        {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
