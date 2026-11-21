@@ -573,6 +573,17 @@ RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED = frozenset((
     '.github/workflows/application-tests.yml',
     'tests/account_notification_workflow_contract.py',
 ))
+RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE = '592e79d55935c0fd01d5e05c1663ea6077faac6e'
+RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE_TREE = '6e616c7ac9c9faafe638cf415c2daacedf159ee1'
+RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE = '990320c6a17fa504554df7e3033df5a5fbfcfc81'
+RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE_TREE = 'e7b4a6b1a5e671f585c4adcbcc44db1d7b62d217'
+RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED = frozenset((
+    '.github/workflows/application-tests.yml',
+    'tests/acceptance_artifacts_test.py',
+    'tests/account_notification_workflow_contract.py',
+    'tests/delivery_evidence_cases.py',
+    'tools/acceptance_artifacts.py',
+))
 ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
 ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
 ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
@@ -3142,7 +3153,7 @@ def validate_resulting_main_client_inbox_budget_source(root):
     base_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE)
     source_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE)
     path = RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH
-    current = ordinary(root, path)
+    current = project_runner_application_composition_partition(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
     require(current == source
@@ -7171,7 +7182,7 @@ def validate_mail_artifact_overlap_fix(root):
     base_entries = entries(root, MAIL_ARTIFACT_OVERLAP_FIX_BASE)
     source_entries = entries(root, MAIL_ARTIFACT_OVERLAP_FIX_SOURCE)
     path = MAIL_ARTIFACT_OVERLAP_FIX_PATH
-    current = ordinary(root, path)
+    current = project_runner_application_composition_partition(root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_BASE + ':' + path)
     require(current == source
@@ -7198,6 +7209,7 @@ def validate_mail_artifact_overlap_fix(root):
 
 def project_mail_artifact_overlap_fix(root, path, current):
     """Restore the exact failed Application-head artifact proof for predecessor checks."""
+    current = project_runner_application_composition_partition(root, path, current)
     if path != MAIL_ARTIFACT_OVERLAP_FIX_PATH:
         return current
     source = git(root, 'cat-file', 'blob', MAIL_ARTIFACT_OVERLAP_FIX_SOURCE + ':' + path)
@@ -9455,6 +9467,65 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_runner_application_composition_partition(root):
+    """Bind the unchanged full proof to a required same-attempt partition."""
+    require(git(root, 'rev-parse', RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE_TREE
+            and git(root, 'rev-parse', RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE_TREE,
+            'Runner Application composition-partition identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE],
+            'Runner Application composition-partition parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE,
+                  RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE).decode().splitlines()
+    require(changed == ['M\t' + path
+                        for path in sorted(RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED)],
+            'Runner Application composition-partition changed another path or status')
+    base_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE)
+    for path in sorted(RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED):
+        current = ordinary(root, path)
+        source = git(root, 'cat-file', 'blob',
+                     RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE + ':' + path)
+        base = git(root, 'cat-file', 'blob',
+                   RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE + ':' + path)
+        require(current == source
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+                and project_runner_application_composition_partition(root, path, current) == base
+                and project_runner_application_composition_partition(root, path, base) == base,
+                'Runner Application composition-partition identity or projection changed: ' + path)
+    workflow = ordinary(root, '.github/workflows/application-tests.yml')
+    require(workflow.count(b'python3 -B tests/combined_source_composition_test.py | tee qa/combined-source-composition-results.json') == 1
+            and b'--shallow' not in workflow
+            and workflow.count(b'needs: [composition, build]') == 3
+            and workflow.count(b'needs: [composition, build, native-and-browser, recovery, apache]') == 1
+            and workflow.count(b'"composition": {"result": "${{ needs.composition.result }}"') == 1,
+            'Runner Application composition partition command or fail-closed dependency changed')
+
+
+def project_runner_application_composition_partition(root, path, current):
+    """Restore the reviewed 592e head before the isolated full-proof successor."""
+    if path not in RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application composition partition changed before predecessor projection: '
+            + path)
+    return base
+
+
 def validate_runner_application_composition_completion(root):
     """Bind the hosted maximum after two preserved 300-minute proof ceilings."""
     require(git(root, 'rev-parse',
@@ -9479,7 +9550,7 @@ def validate_runner_application_composition_completion(root):
     base_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_runner_application_composition_partition(root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob',
                      RUNNER_APPLICATION_COMPOSITION_COMPLETION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob',
@@ -9491,8 +9562,10 @@ def validate_runner_application_composition_completion(root):
                 'Runner Application composition-completion identity or projection changed: ' + path)
     workflow_path = '.github/workflows/application-tests.yml'
     contract_path = 'tests/account_notification_workflow_contract.py'
-    workflow = ordinary(root, workflow_path)
-    contract = ordinary(root, contract_path)
+    workflow = project_runner_application_composition_partition(
+        root, workflow_path, ordinary(root, workflow_path))
+    contract = project_runner_application_composition_partition(
+        root, contract_path, ordinary(root, contract_path))
     workflow_base = git(root, 'cat-file', 'blob',
                         RUNNER_APPLICATION_COMPOSITION_COMPLETION_BASE + ':' + workflow_path)
     contract_base = git(root, 'cat-file', 'blob',
@@ -9528,6 +9601,7 @@ def validate_runner_application_composition_completion(root):
 
 def project_runner_application_composition_completion(root, path, current):
     """Restore the reviewed dynamic-port proof before the 360-minute correction."""
+    current = project_runner_application_composition_partition(root, path, current)
     if path not in RUNNER_APPLICATION_COMPOSITION_COMPLETION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -9668,6 +9742,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_runner_application_composition_partition(root)
     validate_runner_application_composition_completion(root)
     validate_mail_folder_dynamic_port_source(root)
     validate_signed_ppa_label_source(root)
@@ -10007,7 +10082,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_runner_application_composition_completion(root, path, ordinary(root, path))
+        value = project_runner_application_composition_partition(root, path, ordinary(root, path))
+        value = project_runner_application_composition_completion(root, path, value)
         value = project_mail_folder_dynamic_port_source(root, path, value)
         value = project_signed_ppa_label_source(root, path, value)
         value = project_application_mail_copies_routing_source(root, path, value)
@@ -10152,6 +10228,7 @@ def verify_current(root):
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
+        {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
         {'name': 'Exact account rate-boundary successor keeps both six-request security bursts inside one fixed window after preserved run 44676679254', 'passed': True},
