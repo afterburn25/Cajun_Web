@@ -584,6 +584,15 @@ RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED = frozenset((
     'tests/delivery_evidence_cases.py',
     'tools/acceptance_artifacts.py',
 ))
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE = 'dc216cbcab71d3e2b74c7086c9c21647bdd54e12'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE_TREE = '439c323d42978eefad8f854e22fd462456984e5e'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE = '4c41661b839e02a884abc40cf83c8acc04b373d9'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE_TREE = 'f1044b109d67845384150f566cacf9a87fac2692'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_PATH = 'tools/acceptance-contract.json'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE_SHA256 = 'c19d6fe13fc3b48d04459e60fc2d43f6ad87570a8fd2b9e54a73d8f397a8abc8'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE_SHA256 = 'be671f70ce28a413e39b85beaf1297803e8d919e1c78149ca6cc1dcb33c7c165'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_OLD_SHA256 = 'c4885f25bf27faa9be827dadba04de38ec6ae68d2529213a780d2cad87a428d0'
+RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_NEW_SHA256 = '5e43a8242244918200e2aee75175bd68f895d3a054239a17c9f85ae0b03b56c9'
 ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
 ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
 ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
@@ -1885,7 +1894,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'b3b528baad30a95ac809661013ac437284289c1584220394af6ee070f3a74c87'
+REGRESSION_SHA256 = '435dc9da0b6901e18e4e6cdfe5388c74fabfd9eef6ec38a1e9fc1492e809ea67'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -7869,7 +7878,8 @@ def validate_project_private_notes_stale_fixture_source(root):
     base_entries = entries(root, PROJECT_PRIVATE_NOTES_STALE_FIXTURE_BASE)
     source_entries = entries(root, PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE)
     for path in sorted(PROJECT_PRIVATE_NOTES_STALE_FIXTURE_PATHS):
-        current = ordinary(root, path)
+        current = project_runner_application_current_artifact_binding(
+            root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob',
                      PROJECT_PRIVATE_NOTES_STALE_FIXTURE_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob',
@@ -7902,6 +7912,7 @@ def validate_project_private_notes_stale_fixture_source(root):
 
 def project_project_private_notes_stale_fixture_source(root, path, current):
     """Restore the accepted notification fixture proof head for older source receipts."""
+    current = project_runner_application_current_artifact_binding(root, path, current)
     if path not in PROJECT_PRIVATE_NOTES_STALE_FIXTURE_PATHS:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -9467,6 +9478,71 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_runner_application_current_artifact_binding(root):
+    """Bind the exact current artifact helper after the preserved hosted assertion failure."""
+    require(git(root, 'rev-parse',
+                RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE_TREE
+            and git(root, 'rev-parse',
+                    RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE + '^{tree}').decode().strip()
+            == RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE_TREE,
+            'Runner Application current-artifact binding identity changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE).decode().strip().split()
+            == [RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE],
+            'Runner Application current-artifact binding parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE, 'HEAD')
+    changed = git(root, 'diff', '--name-status', '--no-renames',
+                  RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE,
+                  RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE).decode().splitlines()
+    path = RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_PATH
+    require(changed == ['M\t' + path],
+            'Runner Application current-artifact binding changed another path or status')
+    base_entries = entries(root, RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE)
+    source_entries = entries(root, RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE)
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob',
+                 RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE + ':' + path)
+    old = RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_OLD_SHA256.encode()
+    new = RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_NEW_SHA256.encode()
+    require(current == source
+            and digest(base) == RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE_SHA256
+            and digest(source) == RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE_SHA256
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and source.count(new) == 1 and old not in source
+            and base.count(old) == 1 and new not in base
+            and source.replace(new, old, 1) == base
+            and project_runner_application_current_artifact_binding(root, path, current) == base
+            and project_runner_application_current_artifact_binding(root, path, base) == base,
+            'Runner Application current-artifact binding identity or projection changed')
+    contract = json.loads(current)
+    expected = digest(ordinary(root, 'tools/acceptance_artifacts.py').replace(b'\r\n', b'\n'))
+    require(expected == RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_NEW_SHA256
+            and contract['cloud_site_requests']['published_baseline']['current_source_sha256']
+            ['tools/acceptance_artifacts.py'] == expected,
+            'Runner Application current artifact helper is not bound to its exact source')
+
+
+def project_runner_application_current_artifact_binding(root, path, current):
+    """Restore the exact failed Application candidate before its source-binding correction."""
+    if path != RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               RUNNER_APPLICATION_CURRENT_ARTIFACT_BINDING_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current runner Application artifact binding changed before predecessor projection')
+    return base
+
+
 def validate_runner_application_composition_partition(root):
     """Bind the unchanged full proof to a required same-attempt partition."""
     require(git(root, 'rev-parse', RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE + '^{tree}').decode().strip()
@@ -9742,6 +9818,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_runner_application_current_artifact_binding(root)
     validate_runner_application_composition_partition(root)
     validate_runner_application_composition_completion(root)
     validate_mail_folder_dynamic_port_source(root)
@@ -10082,7 +10159,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_runner_application_composition_partition(root, path, ordinary(root, path))
+        value = project_runner_application_current_artifact_binding(root, path, ordinary(root, path))
+        value = project_runner_application_composition_partition(root, path, value)
         value = project_runner_application_composition_completion(root, path, value)
         value = project_mail_folder_dynamic_port_source(root, path, value)
         value = project_signed_ppa_label_source(root, path, value)
@@ -10228,6 +10306,7 @@ def verify_current(root):
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
+        {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},

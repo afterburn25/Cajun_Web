@@ -108,6 +108,7 @@ def run(root=ROOT):
             ('standalone finance source proof', 'tests/finance_recovery_provenance.py'),
             ('original notification receipt', 'docs/NOTIFICATION_SETTINGS_FRESHNESS_CORRECTION.json'),
             ('protected complete application workflow', '.github/workflows/application-tests.yml'),
+            ('current artifact source binding contract', 'tools/acceptance-contract.json'),
             ('current canonical installer inventory', proof.INVENTORY),
             ('finite comparison adapter', 'tests/provider_browser_fixture_provenance.py'),
             ('composition verifier', proof.VERIFIER),
