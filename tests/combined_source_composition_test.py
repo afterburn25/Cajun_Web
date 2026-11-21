@@ -108,6 +108,7 @@ def run(root=ROOT):
             ('standalone finance source proof', 'tests/finance_recovery_provenance.py'),
             ('original notification receipt', 'docs/NOTIFICATION_SETTINGS_FRESHNESS_CORRECTION.json'),
             ('protected complete application workflow', '.github/workflows/application-tests.yml'),
+            ('current artifact source binding contract', 'tools/acceptance-contract.json'),
             ('current canonical installer inventory', proof.INVENTORY),
             ('finite comparison adapter', 'tests/provider_browser_fixture_provenance.py'),
             ('composition verifier', proof.VERIFIER),
@@ -338,6 +339,114 @@ def run(root=ROOT):
                 lambda: modified('tests/mail_copied_draft_create_adapter.php',
                                  lambda target: target.write_bytes(
                                      target.read_bytes() + b'\n// unreviewed copy contract\n')))
+
+        def altered_mail_consolidated_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof._MAIL_CONSOLIDATED_CHANGES.clear()
+                proof.validate_mail_consolidated_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+                proof._MAIL_CONSOLIDATED_CHANGES.clear()
+
+        refuses('Refuses a substituted consolidated mail source tree',
+                lambda: altered_mail_consolidated_identity(
+                    'MAIL_CONSOLIDATED_SOURCE_TREE'))
+        refuses('Refuses a substituted consolidated mail base tree',
+                lambda: altered_mail_consolidated_identity(
+                    'MAIL_CONSOLIDATED_BASE_TREE'))
+        refuses('Refuses a substituted consolidated mail path/status digest',
+                lambda: altered_mail_consolidated_identity(
+                    'MAIL_CONSOLIDATED_DIFF_SHA256'))
+        refuses('Refuses altered consolidated formatted-document source',
+                lambda: modified('site/app/mail/document.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed formatted document\n')))
+        refuses('Refuses altered consolidated draft migration source',
+                lambda: modified('site/database/migrations/mail_drafts_migrate.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes() + b'\n// unreviewed migration\n')))
+
+        def altered_mail_consolidated_review_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_consolidated_review_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted consolidated mail review source tree',
+                lambda: altered_mail_consolidated_review_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted consolidated mail review direct parent',
+                lambda: altered_mail_consolidated_review_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_FIX_BASE'))
+        refuses('Refuses altered consolidated mail review storage bound',
+                lambda: modified('foundation/mail-compose/DraftOrigin.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(b'65535', b'65536', 1))))
+        refuses('Refuses altered consolidated mail review readiness marker',
+                lambda: modified('site/app/mail/drafts.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(b"['mail_drafts_html_ready']", b"['mail_drafts_schema_version']", 1))))
+
+        def altered_mail_review_recovery_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_consolidated_review_recovery(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted consolidated mail review-recovery source tree',
+                lambda: altered_mail_review_recovery_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_RECOVERY_SOURCE_TREE'))
+        refuses('Refuses a substituted consolidated mail review-recovery direct parent',
+                lambda: altered_mail_review_recovery_identity(
+                    'MAIL_CONSOLIDATED_REVIEW_RECOVERY_BASE'))
+        refuses('Refuses altered formatted-mail stale-marker invalidation',
+                lambda: modified('site/database/migrations/mail_drafts_migrate.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(b"'html_repair_pending'", b"'setup'", 1))))
+
+        def altered_mail_sent_copy_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_sent_copy_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Sent-copy source tree',
+                lambda: altered_mail_sent_copy_identity('MAIL_SENT_COPY_SOURCE_TREE'))
+        refuses('Refuses a substituted Sent-copy direct parent',
+                lambda: altered_mail_sent_copy_identity('MAIL_SENT_COPY_BASE'))
+        refuses('Refuses weakened Sent-copy uncertainty replay protection',
+                lambda: modified('tests/mail_submissions_native.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(
+                                         b'Uncertain Sent copy can never be replayed',
+                                         b'Uncertain Sent copy may be replayed', 1))))
+
+        def altered_mail_sent_copy_origin_fix_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * len(original))
+                proof.validate_mail_sent_copy_origin_fix(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        refuses('Refuses a substituted Sent-copy copied-origin fix tree',
+                lambda: altered_mail_sent_copy_origin_fix_identity('MAIL_SENT_COPY_ORIGIN_FIX_SOURCE_TREE'))
+        refuses('Refuses a substituted Sent-copy copied-origin fix parent',
+                lambda: altered_mail_sent_copy_origin_fix_identity('MAIL_SENT_COPY_ORIGIN_FIX_BASE'))
+        refuses('Refuses a removed Sent-copy copied-origin transport recheck',
+                lambda: modified('site/app/mail/copies.php',
+                                 lambda target: target.write_bytes(
+                                     target.read_bytes().replace(
+                                         b'mail_submissions_origin($saved,$prepared,$actor);',
+                                         b'/* copied-origin check removed */', 1))))
 
         def altered_mail_reply_session_identity(attribute):
             original = getattr(proof, attribute)

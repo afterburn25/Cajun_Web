@@ -20,6 +20,7 @@ function mail_drafts_schema(string $prefix):array {
             bcc_json TEXT CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
             subject VARCHAR(200) NOT NULL,
             body TEXT NOT NULL,
+            body_html MEDIUMTEXT NULL,
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             INDEX owner_drafts(owner_id,account_id,status,updated_at,id),

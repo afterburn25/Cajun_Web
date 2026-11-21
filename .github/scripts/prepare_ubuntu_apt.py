@@ -7,6 +7,34 @@ operations.
 """
 import sys
 
+APT_RELEASE_IDENTITY_FIELDS = ('origin', 'label', 'suite', 'codename', 'components')
+PHP_PPA_RELEASE_LABELS = ('PPA for PHP', 'PPA for PHP (deprecated)')
+
+
+def release_identity_allowed(records, php_version):
+    """Admit only the exact signed Ubuntu/PPA release identities we reviewed."""
+    if php_version not in ('8.2', '8.3', '8.4') or not isinstance(records, list):
+        return False
+    if any(not isinstance(row, dict) or set(row) != set(APT_RELEASE_IDENTITY_FIELDS)
+           or any(not isinstance(row[name], str) for name in APT_RELEASE_IDENTITY_FIELDS)
+           for row in records):
+        return False
+    ubuntu_components = 'main restricted universe multiverse'
+    ubuntu = [
+        {'origin': 'Ubuntu', 'label': 'Ubuntu', 'suite': suite,
+         'codename': 'noble', 'components': ubuntu_components}
+        for suite in ('noble', 'noble-updates', 'noble-backports', 'noble-security')
+    ]
+    choices = [ubuntu]
+    if php_version != '8.3':
+        choices = [ubuntu + [{
+            'origin': 'LP-PPA-ondrej-php', 'label': label, 'suite': 'noble',
+            'codename': 'noble', 'components': 'main',
+        }] for label in PHP_PPA_RELEASE_LABELS]
+    order = lambda row: tuple(row[name] for name in APT_RELEASE_IDENTITY_FIELDS)
+    actual = sorted(records, key=order)
+    return any(actual == sorted(expected, key=order) for expected in choices)
+
 def prepare_ubuntu():
     from pathlib import Path
     import hashlib, json, os, re, secrets, stat, subprocess, sys
@@ -331,13 +359,27 @@ def prepare_ubuntu():
         (archive_record, uri),
         (security_record, 'http://security.ubuntu.com/ubuntu/'),
     } for uri in aws_archives]
+    fallback_mirrors = (
+        b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+        b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
+    )
+    expected = b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n' + fallback_mirrors
+    expected_aws_mirrors = {
+        uri.encode('ascii') + b'\tpriority:1\n' + fallback_mirrors
+        for uri in aws_archives
+    }
     record_set = set(records)
     if len(records) != 2 or len(record_set) != 2 or seen_suites != archive_suites | security_suites:
         fail('Ubuntu source must contain the exact archive and security stanzas')
     if record_set == mirror_records:
-        profile = 'github-mirror-list'
         if references != [ubuntu]:
             fail('unexpected active APT mirror-list reference')
+        if mirror_data == expected:
+            profile = 'github-mirror-list'
+        elif mirror_data in expected_aws_mirrors:
+            profile = 'aws-mirror-list'
+        else:
+            fail('unknown or untrusted active Ubuntu mirror list')
     elif record_set == aws_mirror_records:
         profile = 'aws-mirror-list'
         if references != [ubuntu]:
@@ -349,28 +391,12 @@ def prepare_ubuntu():
     else:
         fail('unknown or untrusted Ubuntu source URI or suite grouping')
 
-    expected = (
-        b'http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-        b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-        b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-    )
-    if profile == 'github-mirror-list' and mirror_data != expected:
-        fail('unknown or untrusted active Ubuntu mirror list')
     if profile == 'aws-mirror-list':
-        expected_aws_mirror = (
-            b'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
-            b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-            b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-        )
-        if mirror_data != expected_aws_mirror:
+        if mirror_data not in expected_aws_mirrors:
             fail('unknown or untrusted AWS Ubuntu mirror list')
     if profile == 'aws-direct':
         archive_uri = next(uri for suites, uri in records if suites == archive_record)
-        expected_aws = (
-            archive_uri.encode('ascii') + b'\tpriority:1\n'
-            b'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
-            b'https://security.ubuntu.com/ubuntu/\tpriority:3\n'
-        )
+        expected_aws = archive_uri.encode('ascii') + b'\tpriority:1\n' + fallback_mirrors
         if mirror_data != expected_aws:
             fail('unknown or untrusted AWS Ubuntu mirror list')
     diagnostic['profile'] = profile
@@ -637,22 +663,20 @@ def verify_releases():
         if any(value is None for value in record.values()):
             raise SystemExit('Incomplete APT InRelease identity')
         records.append(record)
-    ubuntu_components = 'main restricted universe multiverse'
-    expected = [
-        {'origin': 'Ubuntu', 'label': 'Ubuntu', 'suite': suite,
-         'codename': 'noble', 'components': ubuntu_components}
-        for suite in ('noble', 'noble-updates', 'noble-backports', 'noble-security')
-    ]
-    ppa = {'origin': 'LP-PPA-ondrej-php', 'label': 'PPA for PHP', 'suite': 'noble',
-           'codename': 'noble', 'components': 'main'}
-    if os.environ['CWP_PHP_VERSION'] != '8.3':
-        expected.append(ppa)
-    order = lambda row: tuple(row[name] for name in ('origin', 'label', 'suite', 'codename', 'components'))
-    if sorted(records, key=order) != sorted(expected, key=order):
+    evidence = {
+        'schema': 2,
+        'passed': False,
+        'records': records,
+        'php': os.environ['CWP_PHP_VERSION'],
+        'allowed_ppa_labels': list(PHP_PPA_RELEASE_LABELS),
+        'scope': 'APT-verified InRelease identity before package installation.',
+    }
+    path = Path('qa/ubuntu-apt-release-metadata.json')
+    path.write_text(json.dumps(evidence, indent=2) + '\n')
+    if not release_identity_allowed(records, os.environ['CWP_PHP_VERSION']):
         raise SystemExit('Signed APT InRelease identity set mismatch')
-    Path('qa/ubuntu-apt-release-metadata.json').write_text(json.dumps(
-        {'schema': 1, 'records': records, 'php': os.environ['CWP_PHP_VERSION'],
-         'scope': 'APT-verified InRelease identity before package installation.'}, indent=2) + '\n')
+    evidence['passed'] = True
+    path.write_text(json.dumps(evidence, indent=2) + '\n')
 
 COMMANDS = {
     'prepare-ubuntu': prepare_ubuntu,

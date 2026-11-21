@@ -57,6 +57,30 @@ origin_check('content JSON preserves Unicode without escaped slashes',function()
     $json=DraftOrigin::contentJson($content);
     return !str_contains($json,'\\/') && DraftOrigin::contentFromJson($json)->body===$content->body;
 });
+origin_check('content JSON round trips a canonical formatted alternative',function(){
+    if(!extension_loaded('dom'))return true;
+    $content=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Formatted','Plain','<p>Formatted <b>copy</b></p>');
+    $json=DraftOrigin::contentJson($content);$copy=DraftOrigin::contentFromJson($json);
+    return $copy->html===$content->html&&str_contains($json,'"body_html"');
+});
+origin_check('combined plain and formatted copied content is bounded before storage',function(){
+    if(!extension_loaded('dom'))return true;
+    $content=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded',str_repeat('p',20000),'<p>'.str_repeat('h',50000).'</p>');
+    $error=origin_failure(fn()=>DraftOrigin::contentJson($content));
+    return $error instanceof InvalidArgumentException&&$error->getMessage()==='Copied draft content exceeds its limit.';
+});
+origin_check('copied content accepts the exact TEXT byte ceiling and refuses one byte more',function(){
+    if(!extension_loaded('dom'))return true;
+    $html='<p>'.str_repeat('h',59000).'</p>';
+    $empty=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded','',$html);
+    $remaining=DraftOrigin::MAX_CONTENT_JSON_BYTES-strlen(DraftOrigin::contentJson($empty));
+    if($remaining<1||$remaining>=\CajunWebPro\Foundation\MailCompose\DraftContent::MAX_BODY_BYTES)return false;
+    $exact=new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded',str_repeat('b',$remaining),$html);
+    $json=DraftOrigin::contentJson($exact);
+    $error=origin_failure(fn()=>DraftOrigin::contentJson(new \CajunWebPro\Foundation\MailCompose\DraftContent([],[],[],'Bounded',str_repeat('b',$remaining+1),$html)));
+    return strlen($json)===65535&&DraftOrigin::contentFromJson($json)->body===$exact->body
+        &&$error instanceof InvalidArgumentException&&$error->getMessage()==='Copied draft content exceeds its limit.';
+});
 foreach([
     'float format'=>fn($json)=>str_replace('"format":1','"format":1.0',$json),
     'duplicate key'=>fn($json)=>str_replace('"format":1','"format":1,"format":1',$json),

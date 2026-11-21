@@ -25,8 +25,8 @@ if (($argv[1]??'')==='save-worker') {
 }
 try {
     // This fixture intentionally starts before account setup, so its dependent
-    // inbox/message/notice tables must remain absent until their own setup tests.
-    foreach (schema_statements('maci_') as $name=>$sql) if (!array_key_exists($name,mail_accounts_schema('maci_')) && !array_key_exists($name,mail_connections_schema('maci_')) && !array_key_exists($name,mail_inbox_schema('maci_')) && !array_key_exists($name,mail_messages_schema('maci_')) && !array_key_exists($name,mail_notices_schema('maci_')) && !array_key_exists($name,mail_drafts_schema('maci_')) && !array_key_exists($name,mail_submissions_schema('maci_'))) db()->exec($sql);
+    // inbox/message/notice/flag/file tables must remain absent until their own setup tests.
+    foreach (schema_statements('maci_') as $name=>$sql) if (!array_key_exists($name,mail_accounts_schema('maci_')) && !array_key_exists($name,mail_connections_schema('maci_')) && !array_key_exists($name,mail_inbox_schema('maci_')) && !array_key_exists($name,mail_messages_schema('maci_')) && !array_key_exists($name,mail_notices_schema('maci_')) && !array_key_exists($name,mail_flags_schema('maci_')) && !array_key_exists($name,mail_drafts_schema('maci_')) && !array_key_exists($name,mail_submissions_schema('maci_')) && !array_key_exists($name,mail_copies_schema('maci_')) && !array_key_exists($name,mail_files_schema('maci_'))) db()->exec($sql);
     foreach (default_settings() as $key=>$value) save_setting($key,$value);
     $now=gmdate('Y-m-d H:i:s');
     for ($id=1;$id<=5;$id++) query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Mail staff '.$id,'mail'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);
@@ -97,7 +97,7 @@ try {
     $_SESSION['auth_version']='stale';ma_ok('Revoked session cannot use old mailbox grant',!mail_accounts_can('mail.read',$id));ma_actor(2);
     $_GET['support']='fixture';ma_ok('Support context cannot use staff mailbox access',!mail_accounts_can('mail.read',$id));unset($_GET['support']);
     $_SESSION=['client_id'=>1,'client_auth'=>'fixture'];ma_ok('Client identity cannot use staff mail grants',!mail_accounts_can('mail.read',$id));ma_actor();
-    mail_accounts_grant($id,2,2,true,false,false,0,$password);ma_actor(2);ma_ok('Revoked mailbox assignment applies immediately',!mail_accounts_can('mail.read',$id));ma_actor();
+    mail_accounts_grant($id,2,2,false,false,false,0,$password);ma_actor(2);ma_ok('Revoked mailbox assignment applies immediately',!mail_accounts_can('mail.read',$id));ma_actor();
     ma_deny('Stale assignment form cannot resurrect prior access',fn()=>mail_accounts_grant($id,2,2,true,true,true,0,$password));
     $grants=mail_accounts_grants($id);$history=mail_accounts_grant_history($id);
     ma_ok('Assignment audit failure rolls back current and retained state',ma_audit_failure(fn()=>mail_accounts_grant($id,2,3,true,true,true,0,$password))&&mail_accounts_grants($id)===$grants&&mail_accounts_grant_history($id)===$history);

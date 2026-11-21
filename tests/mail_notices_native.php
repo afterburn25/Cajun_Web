@@ -13,11 +13,11 @@ function nt_deny(string $name,callable $fn):void {try{$fn();}catch(InvalidArgume
 function nt_actor(int $id=1):void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function nt_account():string {global $password;return mail_accounts_save('',0,['label'=>'Synthetic notice inbox','address'=>'notice@example.net','imap_host'=>'imap.example.net','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'synthetic','smtp_host'=>'smtp.example.net','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'synthetic'],true,['imap_password'=>'synthetic notice private password','smtp_password'=>'synthetic outgoing password'],$password);}
 function nt_grant(string $id,int $user=1):void {global $password;$g=one('SELECT revision FROM '.table('mail_account_grants').' WHERE account_id=? AND user_id=?',[$id,$user]);mail_accounts_grant($id,$user,(int)($g['revision']??0),true,false,true,0,$password);}
-function nt_batch(array $uids=['1','2'],string $epoch='55',bool $seen=false):array {return ['folder'=>'INBOX','uidvalidity'=>$epoch,'total'=>count($uids),'messages'=>array_map(fn($uid)=>['uid'=>$uid,'seen'=>$seen,'bytes'=>'200','headers_truncated'=>false,'subject'=>'SYNTHETIC_PRIVATE_SUBJECT','from'=>'SYNTHETIC_PRIVATE_SENDER','date'=>'Synthetic message date'],$uids)];}
+function nt_batch(array $uids=['1','2'],string $epoch='55',bool $seen=false,string $folder='INBOX'):array {return ['folder'=>$folder,'uidvalidity'=>$epoch,'total'=>count($uids),'messages'=>array_map(fn($uid)=>['uid'=>$uid,'seen'=>$seen,'bytes'=>'200','headers_truncated'=>false,'subject'=>'SYNTHETIC_PRIVATE_SUBJECT','from'=>'SYNTHETIC_PRIVATE_SENDER','date'=>'Synthetic message date'],$uids)];}
 function nt_observe(string $id,array $batch,?callable $handle=null,int $revision=1):void {
     staff_locked(fn()=>staff_transaction(function()use($id,$batch,$handle,$revision):void {
-        $actor=mail_notices_actor();$started=['id'=>bin2hex(random_bytes(16)),'account_id'=>$id,'account_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
-        query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+        $actor=mail_notices_actor();$started=['id'=>bin2hex(random_bytes(16)),'account_id'=>$id,'account_revision'=>$revision,'actor_id'=>(int)$actor['id'],'folder'=>'INBOX','started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+        query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,folder,started_at,started_epoch) VALUES (?,?,?,?,?,?,?)',array_values($started));
         query('INSERT INTO '.table('mail_inbox_results')." (id,outcome,result_code,finished_at,elapsed_ms,message_count,mailbox_total,uidvalidity) VALUES (?,'success','ok',?,1,?,?,?)",[$started['id'],$started['started_at'],count($batch['messages']),$batch['total'],$batch['uidvalidity']]);
         mail_notices_observe($started,$batch,$handle);mail_accounts_audit((int)$actor['id'],'inbox_finished','Synthetic result '.$started['id']);
     }));
@@ -42,16 +42,16 @@ function nt_resolve(string $host):array {
     if(db()->inTransaction())throw new LogicException('Notice DNS must be outside a transaction');
     return ['8.8.8.8'];
 }
-function nt_headers(array $row,#[SensitiveParameter] array $secrets,string $address,callable $authorize):array {
+function nt_headers(array $row,#[SensitiveParameter] array $secrets,string $address,callable $authorize,string $folder='INBOX'):array {
     if(db()->inTransaction()||$address!=='8.8.8.8'||$secrets['imap_password']!=='synthetic notice private password')throw new LogicException('Notice header boundary');
-    $authorize();return nt_batch(['81','82']);
+    $authorize();return nt_batch(['81','82'],'1234',false,$folder);
 }
 $bodyCalls=0;
-function nt_body(array $row,#[SensitiveParameter] array $secrets,string $address,string $epoch,string $uid,callable $authorize):array {
+function nt_body(array $row,#[SensitiveParameter] array $secrets,string $address,string $epoch,string $uid,callable $authorize,string $folder='INBOX'):array {
     global $bodyCalls;$bodyCalls++;
     if(db()->inTransaction()||$address!=='8.8.8.8'||$secrets['imap_password']!=='synthetic notice private password')throw new LogicException('Notice message boundary');
     $authorize();$raw="Subject: SYNTHETIC_PRIVATE_SUBJECT\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSYNTHETIC_PRIVATE_BODY";
-    return ['folder'=>'INBOX','uidvalidity'=>$epoch,'uid'=>$uid,'seen'=>false,'bytes'=>(string)strlen($raw),'raw'=>$raw];
+    return ['folder'=>$folder,'uidvalidity'=>$epoch,'uid'=>$uid,'seen'=>false,'bytes'=>(string)strlen($raw),'raw'=>$raw];
 }
 function nt_read(array $item,?callable $resolver=null):array {
     return mail_message_read($item['account_id'],(int)$item['account_revision'],$item['uidvalidity'],$item['uid'],$resolver??'nt_resolve','nt_body',$item['handle']);
@@ -82,7 +82,7 @@ try {
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Notice staff '.$i,'notice'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>['mail.read'],3=>['mail.send'],4=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,$user===4?'owner':'administrator',json_encode($permissions)]);
-    save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
+    save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','2');save_setting('mail_messages_schema_version','2');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
     nt_deny('Setup refuses revoked owner authority without changing stored state',fn()=>cwp_test_owner_revoked(fn()=>mail_notices_migrate('')));
     nt_actor(2);nt_deny('Mail reader cannot prepare storage',fn()=>mail_notices_migrate($password));nt_actor();
     nt_deny('Count refuses unprepared storage',fn()=>mail_notices_count());

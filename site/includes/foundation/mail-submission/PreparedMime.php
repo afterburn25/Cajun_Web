@@ -8,7 +8,7 @@ require_once __DIR__.'/PreparationFailure.php';
 /** Private exact MIME bytes and immutable envelope; no persistence or dispatch. */
 final readonly class PreparedMime
 {
-    public const MAX_BYTES=65536;
+    public const MAX_BYTES=1048576;
     private function __construct(public SubmissionSnapshot $snapshot,public string $bytes,public string $sha256) {}
 
     public static function fromSnapshot(SubmissionSnapshot $snapshot):self
@@ -20,6 +20,7 @@ final readonly class PreparedMime
         if(OfflineMailer::VERSION!=='7.1.1')throw new PreparationFailure('unsupported_runtime');
         try {
             $mail=new OfflineMailer();
+            $mail->useBoundarySeed(hash('sha256',"cwp-mime-boundary\0".$snapshot->messageId));
             $mail->setFrom($snapshot->from,'',false);
             $mail->Sender=$snapshot->from;
             $mail->MessageID=$snapshot->messageId;
@@ -35,9 +36,20 @@ final readonly class PreparedMime
                 if(array_column($mail->$method(),0)!==$snapshot->content->$field)throw new PreparationFailure('recipient_mismatch');
             }
             $mail->Subject=$mail->literalSubject($snapshot->content->subject);
-            $mail->Body=str_replace("\n","\r\n",$snapshot->content->body);
-            $mail->isHTML(false);
-            // RFC 5322 reply threading from the saved, exact snapshot context.
+            if($snapshot->content->html!==null){
+                $mail->isHTML(true);
+                $mail->Body=str_replace("\n","\r\n",$snapshot->content->html);
+                $mail->AltBody=str_replace("\n","\r\n",$snapshot->content->body);
+                $mail->requireAlternative();
+            }else{
+                $mail->Body=str_replace("\n","\r\n",$snapshot->content->body);
+                $mail->isHTML(false);
+            }
+            foreach($snapshot->attachments as $attachment){
+                if(!$mail->addStringAttachment($attachment->bytes(),$attachment->name,$mail::ENCODING_BASE64,$attachment->mime))throw new PreparationFailure('encoding_failed');
+            }
+            // Retain identifiers as structured tokens; never route them through
+            // generic RFC 2047 custom-header encoding.
             if($snapshot->thread!==null) {
                 $expected=0;
                 if($snapshot->thread->inReplyTo!==null){$expected++;if(!$mail->addIdentifierHeader('In-Reply-To',[$snapshot->thread->inReplyTo]))throw new PreparationFailure('encoding_failed');}
@@ -46,7 +58,7 @@ final readonly class PreparedMime
             }
             if(!$mail->preSend() || $mail->getLastMessageID()!==$snapshot->messageId)throw new PreparationFailure('encoding_failed');
             $bytes=$mail->getSentMIMEMessage();
-            if(strlen($bytes)>self::MAX_BYTES || !str_contains($bytes,"\r\n\r\n")
+            if(strlen($bytes)>self::MAX_BYTES || !str_contains($bytes,"\r\n\r\n") || !str_ends_with($bytes,"\r\n")
                 || preg_match('/(?<!\r)\n|\r(?!\n)|[^\x09\x0A\x0D\x20-\x7E]/',$bytes))throw new PreparationFailure('message_bounds');
             foreach(explode("\r\n",$bytes) as $line)if(strlen($line)>998)throw new PreparationFailure('message_bounds');
             $headers=explode("\r\n\r\n",$bytes,2)[0];

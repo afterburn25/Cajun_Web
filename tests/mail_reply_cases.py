@@ -1,5 +1,5 @@
 """Actual packaged HTTP/Chromium Reply/Forward flow against isolated MariaDB, IMAP and SMTP/TLS."""
-import json, time, uuid
+import hashlib, json, time, uuid
 from email import policy
 from email.parser import BytesParser
 from urllib.parse import parse_qs, urlparse, urlencode, urljoin
@@ -51,11 +51,11 @@ def run_browser(env, browser):
     owner.post(detail, data={'csrf': token(owner.get(detail)), 'action': 'mail_accounts_grant', 'account_id': sender, 'revision': '0', 'user_id': oid, 'can_read': '0', 'can_send': '1', 'enabled': '1', 'days': '0', 'current_password': OWNER})
     sender_ref = sender + ':1'
 
-    inbox_server.mode = 'message'
+    inbox_server.mode = 'message-reply-all'
     db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
     before = inbox_server.connections
     r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_read', **route}, timeout=30)
-    check('Loaded message retains Reply and Forward controls to the author', 'data-mail-copy-controls' in r.text and 'value="mail_message_reply"' in r.text and 'value="mail_message_forward"' in r.text and 'Nothing is submitted or sent' in r.text and inbox_server.connections == before + 1)
+    check('Loaded message retains Reply Reply all and Forward controls to the author', 'data-mail-copy-controls' in r.text and 'value="mail_message_reply"' in r.text and 'value="mail_message_reply_all"' in r.text and 'value="mail_message_forward"' in r.text and 'Nothing is submitted or sent' in r.text and inbox_server.connections == before + 1)
     cooldown = uuid.uuid4().hex
     cooldown_data = {'csrf': token(owner.get(message)), 'action': 'mail_message_reply', **route, 'draft_id': cooldown, 'sender': sender_ref}
     r = owner.post(message, data=cooldown_data, timeout=30)
@@ -93,6 +93,34 @@ def run_browser(env, browser):
     r = reply_post('mail_message_forward')
     check('Reusing a reply draft identity for forward is refused', 'different message or sender' in r.text and len(db('SELECT * FROM ci_mail_reply_drafts')) == 1 and inbox_server.connections == before + 1)
 
+    reply_all = uuid.uuid4().hex
+    db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
+    r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_reply_all', **route, 'draft_id': reply_all, 'sender': sender_ref}, timeout=30)
+    check('Reply all performs one fresh authorized read and opens a protected draft', inbox_server.connections == before + 2 and 'draft_id=' + reply_all in r.url)
+    all_row = db('SELECT origin_json,content_json FROM ci_mail_reply_drafts WHERE id=?', [reply_all])[0]
+    all_origin = json.loads(all_row['origin_json']); all_content = json.loads(all_row['content_json'])
+    check('Reply all excludes the chosen sender and hidden recipients while retaining visible To and Cc',
+          all_origin['mode'] == 'reply-all' and all_content['to'] == ['synthetic@example.net', 'visible@example.invalid']
+          and all_content['cc'] == ['cc@example.invalid'] and all_content['bcc'] == []
+          and 'reply-sender@example.invalid' not in json.dumps(all_content) and 'hidden@example.invalid' not in json.dumps(all_content))
+    reply_all_state = [db('SELECT * FROM ci_mail_message_reads ORDER BY id'), db('SELECT * FROM ci_mail_message_results ORDER BY id'),
+                       db('SELECT * FROM ci_mail_drafts ORDER BY id'), db('SELECT * FROM ci_mail_reply_drafts ORDER BY id'),
+                       db('SELECT * FROM ci_mail_draft_revisions ORDER BY draft_id,revision'), db('SELECT * FROM ci_audit ORDER BY id')]
+    r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_reply_all', **route, 'draft_id': reply_all, 'sender': sender_ref}, timeout=30)
+    check('Exact reply all replay reopens the existing draft without another fetch or write',
+          inbox_server.connections == before + 2 and 'draft_id=' + reply_all in r.url
+          and 'existing copied-message draft' in r.text.lower()
+          and reply_all_state == [db('SELECT * FROM ci_mail_message_reads ORDER BY id'), db('SELECT * FROM ci_mail_message_results ORDER BY id'),
+                                  db('SELECT * FROM ci_mail_drafts ORDER BY id'), db('SELECT * FROM ci_mail_reply_drafts ORDER BY id'),
+                                  db('SELECT * FROM ci_mail_draft_revisions ORDER BY draft_id,revision'), db('SELECT * FROM ci_audit ORDER BY id')])
+    copied_file = uuid.uuid4().hex
+    copied_file_bytes = b'PRIVATE_COPIED_ATTACHMENT_BYTES'
+    db('INSERT INTO ci_mail_draft_files (id,slot,name,mime,bytes,sha256,data,created_at,draft_id) VALUES (?,1,?,?,?,?,UNHEX(?),UTC_TIMESTAMP(),?)', [copied_file, 'copied.txt', 'text/plain', len(copied_file_bytes), hashlib.sha256(copied_file_bytes).hexdigest(), copied_file_bytes.hex(), reply_all])
+    copied_file_page = draft_url + '&draft_id=' + reply_all
+    copied_file_csrf = token(owner.get(copied_file_page))
+    r = owner.post(copied_file_page, data={'csrf': copied_file_csrf, 'action': 'mail_drafts_file', 'draft_id': reply_all, 'revision': '1', 'file_id': copied_file})
+    check('Copied known-id attachment download succeeds under current source and sender authority', r.content == copied_file_bytes)
+
     page_text = owner.get(draft_url + '&draft_id=' + draft).text
     check('Copied draft editor shows content, origin and omissions panel', 'SYNTHETIC PRIVATE BODY' in page_text and 'data-mail-draft-origin' in page_text and 'replying to' in page_text and 'rechecked whenever this draft opens' in page_text)
     check('Copied draft keeps the quoted message out of the ordinary columns', base['body'] == '' and db('SELECT body FROM ci_mail_drafts WHERE id=?', [draft])[0]['body'] == '')
@@ -101,7 +129,7 @@ def run_browser(env, browser):
     data = {'csrf': token(owner.get(message)), 'action': 'mail_message_forward', **route, 'draft_id': forward, 'sender': sender_ref}
     db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
     r = owner.post(message, data=data, timeout=30)
-    check('Forward performs one fresh authorized read and opens a recipientless draft', inbox_server.connections == before + 2 and 'draft_id=' + forward in r.url)
+    check('Forward performs one fresh authorized read and opens a recipientless draft', inbox_server.connections == before + 3 and 'draft_id=' + forward in r.url)
     forigin = json.loads(db('SELECT origin_json FROM ci_mail_reply_drafts WHERE id=?', [forward])[0]['origin_json'])
     fcontent = json.loads(db('SELECT content_json FROM ci_mail_reply_drafts WHERE id=?', [forward])[0]['content_json'])
     check('Forward starts without recipients or reply thread', forigin['mode'] == 'forward' and forigin['thread'] == {'in_reply_to': None, 'references': []} and fcontent['to'] == [] and fcontent['cc'] == [] and fcontent['bcc'] == [] and 'SYNTHETIC PRIVATE BODY' in fcontent['body'])
@@ -123,6 +151,9 @@ def run_browser(env, browser):
     r = owner.post(target, data={**data, 'confirm_send': '1'}, timeout=30)
     check('Reviewed reply send records server acceptance', 'Server accepted' in r.text and submission_server.connections == smtp_before + 1)
     sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
+    copy_page = root + '?view=mail-submission&submission_id=' + sid
+    copy_csrf = token(owner.get(copy_page))
+    owner.post(detail, data={'csrf': token(owner.get(detail)), 'action': 'mail_sent_folder_save', 'account_id': sender, 'sent_folder': 'Sent'})
     saved = db('SELECT * FROM ci_mail_submissions WHERE id=?', [sid])[0]
     mime = saved['mime_bytes'].encode('ascii')
     parsed = BytesParser(policy=policy.default).parsebytes(mime)
@@ -146,6 +177,8 @@ def run_browser(env, browser):
     check('Forward wire carries no In-Reply-To or References', parsed['In-Reply-To'] is None and parsed['References'] is None and 'SYNTHETIC PRIVATE BODY' in parsed.get_content())
 
     db('UPDATE ci_mail_account_grants SET can_read=0 WHERE account_id=? AND user_id=?', [aid, oid])
+    r = owner.post(copied_file_page, data={'csrf': copied_file_csrf, 'action': 'mail_drafts_file', 'draft_id': reply_all, 'revision': '1', 'file_id': copied_file})
+    check('Revoking copied source Read blocks known-id attachment bytes', copied_file_bytes not in r.content and 'Content-Disposition' not in r.headers and r.headers.get('Content-Type') != 'application/octet-stream' and 'inbox is unavailable' in r.text)
     r = owner.get(draft_url + '&draft_id=' + forward)
     check('Revoking source Read hides copied content on open', 'SYNTHETIC PRIVATE BODY' not in r.text and 'inbox is unavailable' in r.text)
     send_page = root + '?view=mail-send&draft_id=' + forward
@@ -156,6 +189,9 @@ def run_browser(env, browser):
     check('Revoked source Read blocks copied send before SMTP', submission_server.connections == smtp_before and 'inbox is unavailable' in r.text and len(db('SELECT * FROM ci_mail_submissions WHERE draft_id=?', [forward])) == 1)
     r = owner.get(root + '?view=mail-submission&submission_id=' + sid)
     check('Revoked source Read hides saved copied submission detail', 'inbox is unavailable' in r.text and 'SYNTHETIC PRIVATE' not in r.text)
+    copy_before = inbox_server.connections
+    r = owner.post(copy_page, data={'csrf': copy_csrf, 'action': 'mail_submissions_copy_sent', 'submission_id': sid, 'confirm_copy': '1'}, timeout=30)
+    check('Revoked source Read blocks known-id direct Sent copy before attempt or IMAP', 'inbox is unavailable' in r.text and inbox_server.connections == copy_before and not db('SELECT * FROM ci_mail_copy_attempts WHERE submission_id=?', [sid]))
     r = owner.get(root + '?view=mail-submissions&account_id=' + sender)
     check('Revoked source Read masks copied subjects in submission history', 'Copied message unavailable' in r.text and 'SYNTHETIC PRIVATE' not in r.text)
     r = owner.post(root + '?view=mail-send&draft_id=' + draft, data={'csrf': token(owner.get(draft_url + '&draft_id=' + draft)), 'action': 'mail_submissions_send', 'submission_id': sid, 'draft_id': draft, 'draft_revision': '1', 'account_revision': '1', 'confirm_send': '1'}, timeout=30)

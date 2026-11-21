@@ -33,12 +33,83 @@ env:
   CWP_DATABASE: ${{ inputs.database || 'mariadb-10.11' }}
   CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
+  composition:
+    runs-on: ubuntu-24.04
+    # Runs 44792670039, 44803351271 and 44847291464 preserved the full
+    # composition command but exhausted the monolithic build job at 300m,
+    # 300m and GitHub-hosted's 360m maximum. Keep the default proof unchanged
+    # in its own required exact-source job so no assertion is removed.
+    timeout-minutes: 360
+    outputs:
+      artifact_id: ${{ steps.composition_upload.outputs.artifact-id }}
+      artifact_digest: ${{ steps.composition_upload.outputs.artifact-digest }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run the unchanged full source-composition proof
+        id: composition
+        run: |
+          set -o pipefail
+          mkdir -p qa
+          python3 -B tests/combined_source_composition_test.py | tee qa/combined-source-composition-results.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('qa/combined-source-composition-results.json').read_text(encoding='utf-8'))
+          if result.get('passed') is not True or not isinstance(result.get('count'), int) or result['count'] < 1:
+              raise SystemExit('Full source-composition proof did not report a positive passed count')
+          PY
+      - name: Bind the proof to the immutable checked-out source
+        id: source
+        env:
+          CWP_RUN_ID: ${{ github.run_id }}
+          CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+          result_path = Path('qa/combined-source-composition-results.json')
+          Path('qa/composition-source.json').write_text(json.dumps({
+              'ci_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'source_sha': os.environ['CWP_SOURCE_SHA'],
+              'source_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'run_id': os.environ['CWP_RUN_ID'],
+              'run_attempt': os.environ['CWP_RUN_ATTEMPT'],
+              'command': 'python3 -B tests/combined_source_composition_test.py',
+              'result_sha256': __import__('hashlib').sha256(result_path.read_bytes()).hexdigest(),
+          }, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+      - name: Preserve exact full-composition evidence
+        id: composition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-composition-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/combined-source-composition-results.json
+            qa/composition-source.json
+          retention-days: 14
+          if-no-files-found: error
   build:
     runs-on: ubuntu-24.04
     # Exact-source composition completed in 51m on image 20261111.127.1 but
     # exceeded 83m on 20261111.370.1 after the package and all build guards
-    # had passed. Keep every assertion and allow bounded hosted-runner margin.
-    timeout-minutes: 180
+    # had passed. Run 44385954180 then reached the exact 180m job ceiling after
+    # 2,937 helper checks, the package build and all 94 build guards passed.
+    # Run 44639431573 completed provenance, source, inventory, package, guards
+    # and public fixture preparation at 239m42s, then the exact 240m ceiling
+    # cancelled the evidence seal. Runs 44792670039 and 44803351271 then passed
+    # setup, provenance, package and all 94 build guards before the unchanged
+    # composition suite reached the exact 300m job ceiling on slower allocations.
+    # Run 44847291464 then reached GitHub-hosted's 360m maximum in the same
+    # unchanged proof. The full proof now runs as a separate required job.
+    timeout-minutes: 360
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}
@@ -102,7 +173,6 @@ jobs:
           set -o pipefail
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
           python3 tests/build_guards.py
-          python3 -B tests/combined_source_composition_test.py | tee -a qa/build-results.txt
           python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt
       - name: Prepare only pristine public historical fixtures
         id: fixtures
@@ -159,7 +229,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
   native-and-browser:
-    needs: build
+    needs: [composition, build]
     runs-on: ubuntu-24.04
     # Original run38909577278 exhausted105m; run39024070818 later exhausted180m
     # during the final scheduler flow, with requests completing until the job cap.
@@ -500,7 +570,7 @@ jobs:
           retention-days: 3
           if-no-files-found: warn
   recovery:
-    needs: build
+    needs: [composition, build]
     if: ${{ !inputs.checkpoint_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
@@ -598,7 +668,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
   apache:
-    needs: build
+    needs: [composition, build]
     if: ${{ !inputs.checkpoint_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 105
@@ -731,7 +801,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
   acceptance:
-    needs: [build, native-and-browser, recovery, apache]
+    needs: [composition, build, native-and-browser, recovery, apache]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -747,6 +817,13 @@ jobs:
           artifact-ids: ${{ needs.build.outputs.artifact_id }}
           merge-multiple: true
           path: .acceptance/incoming/build
+      - name: Download exact full-composition evidence
+        if: always() && needs.composition.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.composition.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/composition
       - name: Download exact native-browser evidence
         if: always() && needs.native-and-browser.outputs.artifact_id != ''
         uses: actions/download-artifact@v4
@@ -773,7 +850,7 @@ jobs:
         env:
           CWP_CHECKPOINT_ONLY: ${{ inputs.checkpoint_only && 'true' || 'false' }}
           CWP_JOB_BINDINGS: >-
-            {"build": {"result": "${{ needs.build.result }}", "artifact_id": "${{ needs.build.outputs.artifact_id }}", "sha256": "${{ needs.build.outputs.sha256 }}", "input_sha256": "${{ needs.build.outputs.input_sha256 }}"}, "native-browser": {"result": "${{ needs.native-and-browser.result }}", "artifact_id": "${{ needs.native-and-browser.outputs.artifact_id }}", "sha256": "${{ needs.native-and-browser.outputs.sha256 }}", "checkpoint_id": "${{ needs.native-and-browser.outputs.checkpoint_id }}", "checkpoint_digest": "${{ needs.native-and-browser.outputs.checkpoint_digest }}"}, "recovery": {"result": "${{ needs.recovery.result }}", "artifact_id": "${{ needs.recovery.outputs.artifact_id }}", "sha256": "${{ needs.recovery.outputs.sha256 }}"}, "apache": {"result": "${{ needs.apache.result }}", "artifact_id": "${{ needs.apache.outputs.artifact_id }}", "sha256": "${{ needs.apache.outputs.sha256 }}"}}
+            {"composition": {"result": "${{ needs.composition.result }}", "artifact_id": "${{ needs.composition.outputs.artifact_id }}", "artifact_digest": "${{ needs.composition.outputs.artifact_digest }}"}, "build": {"result": "${{ needs.build.result }}", "artifact_id": "${{ needs.build.outputs.artifact_id }}", "sha256": "${{ needs.build.outputs.sha256 }}", "input_sha256": "${{ needs.build.outputs.input_sha256 }}"}, "native-browser": {"result": "${{ needs.native-and-browser.result }}", "artifact_id": "${{ needs.native-and-browser.outputs.artifact_id }}", "sha256": "${{ needs.native-and-browser.outputs.sha256 }}", "checkpoint_id": "${{ needs.native-and-browser.outputs.checkpoint_id }}", "checkpoint_digest": "${{ needs.native-and-browser.outputs.checkpoint_digest }}"}, "recovery": {"result": "${{ needs.recovery.result }}", "artifact_id": "${{ needs.recovery.outputs.artifact_id }}", "sha256": "${{ needs.recovery.outputs.sha256 }}"}, "apache": {"result": "${{ needs.apache.result }}", "artifact_id": "${{ needs.apache.outputs.artifact_id }}", "sha256": "${{ needs.apache.outputs.sha256 }}"}}
         run: |
           mkdir -p qa
           python3 tools/acceptance_artifacts.py aggregate

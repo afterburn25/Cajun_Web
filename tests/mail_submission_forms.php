@@ -21,6 +21,8 @@ sf_ok('Caller content endpoint and driver fields cannot enter send arguments',ma
 $_SERVER['REQUEST_METHOD']='GET';sf_deny('GET cannot invoke submission action',fn()=>mail_submissions_admin_action('mail_submissions_send'));
 $_SERVER['REQUEST_METHOD']='POST';$_POST=$input;sf_deny('Missing CSRF fails before any authority database work',fn()=>mail_submissions_admin_action('mail_submissions_send'));
 $_POST['csrf']=$_SESSION['csrf'];sf_deny('Unknown action cannot fall through to sending',fn()=>mail_submissions_admin_action('mail_submissions_other'));
+$actions=file_get_contents(__DIR__.'/../site/admin/controllers/actions.php');$accountsController=file_get_contents(__DIR__.'/../site/admin/controllers/mail_accounts.php');
+sf_ok('Sent-copy setup and folder actions have explicit owner routing',staff_action_permission('mail_copies_setup')==='staff.manage'&&staff_action_permission('mail_sent_folder_save')==='staff.manage'&&str_contains($actions,"in_array(\$action,['mail_copies_setup','mail_sent_folder_save'],true)")&&str_contains($accountsController,"if (\$action==='mail_copies_setup') {\n        mail_accounts_manager();mail_copies_migrate();"));
 foreach(['accepted'=>'Server accepted','rejected'=>'Server rejected','unknown'=>'Confirmation missing','not_submitted'=>'Not submitted','bad'=>'Confirmation missing'] as $status=>$label)sf_ok('Finite status label '.$status,mail_submissions_status(['status'=>$status,'reason'=>'RAW_SECRET_SERVER_TEXT'],null)['title']===$label&&!str_contains(json_encode(mail_submissions_status(['status'=>$status,'reason'=>'RAW_SECRET_SERVER_TEXT'],null)),'RAW_SECRET_SERVER_TEXT'));
 sf_ok('Interrupted preparation has its own state',mail_submissions_status(null,null)['title']==='Preparation incomplete');
 sf_ok('Dispatched interruption warns against resend',str_contains(mail_submissions_status(null,['started_at'=>'now'])['text'],'Do not resend'));
@@ -39,6 +41,12 @@ $row=['id'=>$id,'draft_id'=>$draft,'draft_revision'=>2,'created_at'=>'2026-10-14
 $html=sf_render('mail-submission',['row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch'])]);
 sf_ok('Recorded message is escaped and read only',!str_contains($html,'<script>')&&str_contains($html,'SYNTHETIC_BODY')&&!str_contains($html,'mail_submissions_send'));
 sf_ok('Uncertain detail warns against resend',str_contains($html,'Do not resend'));
+$GLOBALS['cwp_nonce']=base64_encode(str_repeat('n',18));
+$rich=$row;$rich['content']=$content+['body_html'=>'<p>Formatted <b>alternative</b></p>'];
+$html=sf_render('mail-submission',['row'=>$rich,'status'=>mail_submissions_status($rich['result'],$rich['dispatch'])]);
+sf_ok('Recorded formatted alternative renders inside the sandboxed frame',str_contains($html,'data-mail-submission-formatted')&&str_contains($html,'sandbox="allow-popups allow-popups-to-escape-sandbox"')&&str_contains($html,esc('Formatted <b>alternative</b>'))&&!preg_match('/<script>/',$html));
+$html=sf_render('mail-submission',['row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch'])]);
+sf_ok('Plain recorded message has no formatted frame',!str_contains($html,'data-mail-submission-formatted'));
 $html=sf_render('mail-send',['existing'=>$row]);sf_ok('Existing intent review offers history instead of another send',str_contains($html,'View the existing submission')&&!str_contains($html,'mail_submissions_send'));
 $html=sf_render('mail-submissions',['accounts'=>[$account=>['label'=>'Selected','address'=>'sender@example.invalid']],'account'=>$account,'accountPage'=>1,'moreAccounts'=>false,'page'=>1,'rows'=>[['id'=>$id,'subject'=>$content['subject'],'draft_revision'=>2,'created_at'=>$row['created_at'],'status'=>mail_submissions_status($row['result'],$row['dispatch'])]]]);
 sf_ok('History renders escaped subject without body or recipients',!str_contains($html,'<script>')&&str_contains($html,'SYNTHETIC_SUBJECT')&&!str_contains($html,'SYNTHETIC_BODY')&&!str_contains($html,'private@example.invalid'));

@@ -31,7 +31,7 @@ copied_admin_check('copied saved draft can enter the same explicit submission re
 copied_admin_check('discarded and missing drafts cannot enter submission review',fn()=>!mail_drafts_admin_can_review_send(['status'=>'discarded'])&&!mail_drafts_admin_can_review_send(null));
 
 copied_admin_check('reply origin label is finite and generic',fn()=>mail_drafts_admin_origin_action('reply')==='replying to');
-copied_admin_check('reply-all origin mode remains outside Reply and Forward scope',fn()=>copied_admin_denied(fn()=>mail_drafts_admin_origin_action('reply-all')));
+copied_admin_check('reply-all origin label is finite and generic',fn()=>mail_drafts_admin_origin_action('reply-all')==='replying to all recipients of');
 copied_admin_check('forward origin label is finite and generic',fn()=>mail_drafts_admin_origin_action('forward')==='forwarding');
 copied_admin_check('unknown origin mode fails closed',fn()=>copied_admin_denied(fn()=>mail_drafts_admin_origin_action('reply-later')));
 
@@ -51,7 +51,7 @@ copied_admin_check('controller selects protected get save discard history and co
 });
 copied_admin_check('owner setup uses the additive protected migration without direct schema execution',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php');
-    return str_contains($source,"mail_replies_migrate(posted('current_password',200))")&&!str_contains($source,'db()->exec');
+    return str_contains($source,"mail_replies_migrate('')")&&!str_contains($source,'db()->exec')&&!str_contains($source,"admin_action('mail_drafts_replies_setup');admin_input('current_password'");
 });
 copied_admin_check('copied origin presentation exposes no account read or fingerprint identifiers',function(){
     $source=file_get_contents(CWP_CODE_ROOT.'/admin/views/mail_drafts.php');

@@ -1,5 +1,6 @@
 """Actual 1.21 Apache upgrade/recovery; synthetic submission results, no SMTP network."""
 from bs4 import BeautifulSoup
+from installed_owner_authority import revoked_owner
 
 
 def run(env):
@@ -7,20 +8,30 @@ def run(env):
     check(label + ' original 1.21 edited and discarded drafts survive update and recovery', records('drafts') == prior_drafts and len(prior_drafts['drafts']) == 2 and len(prior_drafts['history']) == 4 and sorted(x['status'] for x in prior_drafts['drafts']) == ['discarded', 'draft'] and prior_retained())
     draft = next(x for x in prior_drafts['drafts'] if x['status'] == 'draft')
     detail = url + '/admin/index.php?view=mail-draft&draft_id=' + draft['id']
+    drafts_library = url + '/admin/index.php?view=mail-drafts'
     library = url + '/admin/index.php?view=mail-submissions'
+    r = session.get(detail)
+    check(label + ' 1.21 draft storage requires owner preparation for the formatted column', 'Prepare formatted drafts' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is None)
+    fields = {'csrf': token(session.get(drafts_library)), 'action': 'mail_drafts_setup'}
+    with revoked_owner(env['root'], env['php']):
+        refused = session.post(drafts_library, data=fields)
+        check(label + ' formatted draft setup refuses the same owner after permission is revoked', refused.status_code == 403 or 'Your account does not have access to this action.' in refused.text)
+    check(label + ' denied draft upgrade retains all prior private records and keys', records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)
+    r = session.post(drafts_library, data={'csrf': token(session.get(drafts_library)), 'action': 'mail_drafts_setup'})
+    expected = [{**row, 'body_html': None} for row in prior_drafts['drafts']]
+    check(label + ' additive draft upgrade preserves every prior draft and revision row', 'Local email drafts are ready' in r.text and records('drafts')['drafts'] == expected and records('drafts')['history'] == prior_drafts['history'] and prior_retained())
     r = session.get(detail)
     check(label + ' original draft remains editable before submission setup', 'Original 1.21 edited text' in r.text and BeautifulSoup(r.text, 'html.parser').select_one('[data-mail-draft-editor]') is not None)
     r = session.get(library)
     check(label + ' 1.21 owner explicitly prepares additive submission storage', 'Prepare email submissions' in r.text)
-    from installed_owner_authority import revoked_owner
     check(label + ' submission setup does not request the signed-in owner password again', BeautifulSoup(r.text, 'html.parser').select_one('input[type=password]') is None)
     fields = {'csrf': token(r), 'action': 'mail_submissions_setup'}
     with revoked_owner(env['root'], env['php']):
         refused = session.post(library, data=fields)
         check(label + ' submission setup refuses the same owner after permission is revoked', refused.status_code == 403 or 'Your account does not have access to this action.' in refused.text)
-    check(label + ' denied setup retains all database records private files and owner authority', records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)
+    check(label + ' denied setup retains all database records private files and owner authority', records('drafts')['drafts'] == expected and records('drafts')['history'] == prior_drafts['history'] and prior_retained() and records('provider') == restored)
     r = session.post(library, data={'csrf': token(session.get(library)), 'action': 'mail_submissions_setup'})
-    check(label + ' submission setup is empty additive and keeps prior private records', 'Email submission storage is ready' in r.text and records('submissions') == {'intents': [], 'dispatches': [], 'results': []} and records('drafts') == prior_drafts and prior_retained() and records('provider') == restored)
+    check(label + ' submission setup is empty additive and keeps prior private records', 'Email submission storage is ready' in r.text and records('submissions') == {'intents': [], 'dispatches': [], 'results': []} and records('drafts')['drafts'] == expected and records('drafts')['history'] == prior_drafts['history'] and prior_retained() and records('provider') == restored)
     records('submissions-seed')
     saved = records('submissions'); drafts = records('drafts')
     check(label + ' synthetic accepted uncertain unresolved and abandoned records exist', len(saved['intents']) == 4 and len(saved['dispatches']) == 3 and sorted(x['status'] for x in saved['results']) == ['accepted', 'unknown'])
