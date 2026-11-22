@@ -819,12 +819,16 @@ def run(tmp):
     from acceptance_environment_test import run as environment_checks
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
-    from provider_browser_fixture_provenance import validate as validate_provider_fixtures, projected_validation, source as fixture_predecessor_source
-    for outcome in validate_provider_fixtures(ROOT):check(outcome['name'],outcome['passed'])
+    from provider_browser_fixture_provenance import source as fixture_predecessor_source
     from standalone_repair_provenance import validate as validate_standalone_repairs
-    for outcome in projected_validation(ROOT,validate_standalone_repairs,('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)):check(outcome['name'],outcome['passed'])
     from combined_repair_provenance import validate as validate_repairs
-    for outcome in projected_validation(ROOT,validate_repairs,('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json','docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')):check(outcome['name'],outcome['passed'])
+    provider_validations = (
+        (validate_standalone_repairs, ('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)),
+        (validate_repairs, ('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json',
+                            'docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')),
+    )
+    for outcome in composition.provider_browser_artifact_validations(ROOT, provider_validations):
+        check(outcome['name'], outcome['passed'])
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     recurring_path='tests/recurring_billing_cases.py'
     check('Recurring browser correction retains its original live source binding',

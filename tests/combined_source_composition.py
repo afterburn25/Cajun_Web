@@ -10712,6 +10712,53 @@ def validate(root):
     return checks
 
 
+def provider_browser_artifact_validations(root, validations):
+    """Verify current source once, then run the exact historical artifact comparisons.
+
+    The historical calls below execute only in the disposable, detached account
+    component checkout created by ``original_call``.  They cannot read current
+    worktree bytes, so repeating the complete current-source proof before every
+    call adds no coverage.  Keep the request finite and ordered so this batching
+    boundary cannot become a general verification bypass.
+    """
+    expected = (
+        ('standalone_repair_provenance',
+         ('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)),
+        ('combined_repair_provenance',
+         ('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json',
+          'docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')),
+    )
+    require(isinstance(validations, tuple) and len(validations) == len(expected),
+            'Incomplete provider artifact validation batch')
+    requests = []
+    for request in validations:
+        require(isinstance(request, tuple) and len(request) == 2,
+                'Malformed provider artifact validation request')
+        validator, receipt_paths = request
+        require(callable(validator) and validator.__name__ == 'validate'
+                and isinstance(receipt_paths, tuple),
+                'Unreviewed provider artifact validator')
+        requests.append((validator.__module__, receipt_paths))
+    require(tuple(requests) == expected,
+            'Unreviewed provider artifact validation batch')
+
+    checks = validate(root)
+    batches = [original_call(root, 'account',
+                             'provider_browser_fixture_provenance', 'validate')]
+    batches.extend(
+        original_call(root, 'account', 'provider_browser_fixture_provenance',
+                      'projected_validation', callback=module, paths=list(paths))
+        for module, paths in requests
+    )
+    for rows in batches:
+        require(isinstance(rows, list) and rows
+                and all(isinstance(row, dict) and row.get('passed') is True
+                        for row in rows),
+                'Incomplete provider artifact historical validation')
+        checks.extend(rows)
+    return checks
+
+
 if __name__ == '__main__':
     checks = validate(Path(__file__).resolve().parents[1])
     print(json.dumps({'passed': True, 'count': len(checks), 'components': COMPONENTS, 'checks': checks,
