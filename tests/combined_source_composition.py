@@ -1319,6 +1319,18 @@ DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SHA256 = {
 }
 DIAGNOSTIC_BLOB_BATCH_BASE = '0f193123770cb6fd12c65b247ea65595f1cd012b'
 DIAGNOSTIC_BLOB_BATCH_BASE_TREE = '8d80b68da404743fbdd8e31a9fbfbd071d69d252'
+DIAGNOSTIC_BLOB_BATCH_SOURCE = 'e1db46670b098a65ddf8dbceef07cc4f4c912ba4'
+DIAGNOSTIC_BLOB_BATCH_SOURCE_TREE = 'a9e4786827d5d2cfc3fc789d9961dd846c8d505f'
+DIAGNOSTIC_BLOB_BATCH_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/combined_source_composition.py',
+    'tests/combined_source_composition_test.py',
+))
+DIAGNOSTIC_BLOB_BATCH_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': '4136fb2c026de36fdd5ffc753f5b262feaa85c7b6ef4291497270a3b0b86015f',
+    'tests/combined_source_composition.py': '0b5c8ad8c27f082d9039011fd3cedc9e060a52e2a5e208c290588d0499d7b11e',
+    'tests/combined_source_composition_test.py': 'b09cfde6e024e5cdbb1768bf1384a61c870680333dd41d0e858eae4230514533',
+}
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -1964,7 +1976,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'b09cfde6e024e5cdbb1768bf1384a61c870680333dd41d0e858eae4230514533'
+REGRESSION_SHA256 = '266349456d9e235c1da89e035841b7dbb71370bb09a0eddb4db4cbbaab9e110f'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8422,16 +8434,70 @@ def project_diagnostic_blob_batch_source(root, path, current):
     """Restore the accepted proof before the immutable blob-batch successor."""
     if path != REGRESSION:
         return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob',
                DIAGNOSTIC_BLOB_BATCH_BASE + ':' + path)
     if (current == ordinary(root, path)
             and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
         return base
     if current == base or current != ordinary(root, path):
         return current
-    require(current == base,
+    require(current == source,
             'Current diagnostic blob-batch regression changed')
     return base
+
+
+def validate_diagnostic_blob_batch_source(root):
+    """Bind the bounded immutable reader and terminal projection source."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_BLOB_BATCH_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_BATCH_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_BLOB_BATCH_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_BATCH_SOURCE_TREE,
+            'Diagnostic blob-batch source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_BLOB_BATCH_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_BLOB_BATCH_BASE],
+            'Diagnostic blob-batch source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_BLOB_BATCH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_BLOB_BATCH_BASE,
+                  DIAGNOSTIC_BLOB_BATCH_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path
+                        for path in sorted(DIAGNOSTIC_BLOB_BATCH_MODIFIED)],
+            'Diagnostic blob-batch source changed another path or status')
+    source_entries = entries(root, DIAGNOSTIC_BLOB_BATCH_SOURCE)
+    for path in sorted(DIAGNOSTIC_BLOB_BATCH_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_BLOB_BATCH_SHA256[path],
+                'Diagnostic blob-batch source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b"['git', '--no-replace-objects', 'cat-file', '--batch']") == 1
+            and b'TREE_ENTRY_CACHE_LIMIT = 16' in source_verifier
+            and source_verifier.count(
+                b'def project_component_union_source(') == 1
+            and b'Immutable blob batch verifies exact binary bytes and request framing'
+                in source_regression
+            and b'Immutable parsed-tree cache remains bounded after the complete proof'
+                in source_regression
+            and b'Component union applies each terminal projection chain once in exact order'
+                in source_regression,
+            'Diagnostic blob-batch implementation or source receipt changed')
 
 
 def validate_notification_metric_label_source(root):
@@ -10424,6 +10490,7 @@ def _verify_current(root):
     validate_proof_cache_hardening_source(root)
     validate_diagnostic_artifact_batch_source(root)
     validate_diagnostic_artifact_failure_evidence_source(root)
+    validate_diagnostic_blob_batch_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
@@ -10812,7 +10879,7 @@ def _verify_current(root):
         {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
         {'name': 'Exact Diagnostic artifact batch retains one full current-source proof before the finite isolated historical comparisons', 'passed': True},
-        {'name': 'Exact Diagnostic artifact review successor preserves structured named historical failures for the outer evidence recorder', 'passed': True},
+        {'name': 'Exact Diagnostic artifact review successor preserves named failures; the immutable blob-batch successor retains complete source reconstruction with bounded tree state', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},

@@ -67,6 +67,16 @@ def run(root=ROOT):
                 lambda raw=raw: proof._read_immutable_blob(batch_process(raw), expression))
     refuses('Immutable blob batch refuses request framing injection',
             lambda: proof._read_immutable_blob(batch_process(packet), expression + '\ncontents deadbeef'))
+    caller_refused = False
+    try:
+        with proof.immutable_blob_batch(root):
+            refuses('Immutable blob batch refuses a nested reader',
+                    lambda: proof.immutable_blob_batch(root).__enter__())
+            raise RuntimeError('Synthetic caller refusal')
+    except RuntimeError:
+        caller_refused = True
+    assert caller_refused and not proof._BLOB_BATCHES
+    passed('Immutable blob batch reaps its child after a failing caller')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
     assert len(proof._TREE_ENTRIES) <= proof.TREE_ENTRY_CACHE_LIMIT == 16
