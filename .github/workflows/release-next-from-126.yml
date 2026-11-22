@@ -1,0 +1,47 @@
+name: Published v1.26.1 to next candidate diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: published-126-to-candidate-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  CWP_TEST_DATABASE: cwp_test
+jobs:
+  upgrade-extraction-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the published-baseline checks reject unsafe input
+        run: python3 tests/release_next_from_126_test.py
+      - name: Verify candidate version is newer than v1.26.1
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, 'tests')
+          from release_next_from_126 import candidate_version
+          print('Candidate:', candidate_version())
+          PY
+      - name: Install diagnostic PHP ZIP runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-zip php8.3-curl php8.3-mbstring
+      - name: Build and inspect original v1.26.1 to candidate extraction
+        run: python3 tests/release_next_from_126.py
+      - name: Confirm tracked source was not modified
+        if: always()
+        run: git diff --exit-code HEAD
+      - name: Preserve bounded diagnostic result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-126-to-candidate-${{ github.run_id }}-${{ github.sha }}
+          path: qa/release-next-from-126-results.json
+          retention-days: 14
+          if-no-files-found: warn
