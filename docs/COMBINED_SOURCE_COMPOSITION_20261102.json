@@ -20,8 +20,8 @@
       "tree": "5afec38a662307d073e2c54730af36971e177adb"
     }
   },
-  "verifier_sha256": "f17b983095ba48dec676b82ed1682b1f66e8d65a5311c60af211c8b4dc1f85d8",
-  "regression_sha256": "6abc0de1e18151eacafebd1b3d67fcd76b004411b8dbece6a0fdb18a18a5a92d",
+  "verifier_sha256": "88a7e7d28ea47cce578cc7ecde16718d41a7fc0768b7516ed2ee10cf4dec234b",
+  "regression_sha256": "84c5139bcd6c00754ad279e211ba95a51eb840d9c0f6712558de69a6593dc98e",
   "adapters": {
     "tests/tickets_integration_contract.py": {
       "component": "account",
@@ -2463,8 +2463,8 @@
     },
     "docs/DIAGNOSTIC_ACCEPTANCE.md": {
       "source_sha256": "2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593",
-      "current_sha256": "ec2dead5ccebd3b2b5f619c7a17391e8d53df75211e3d223aeac008c35c53ca0",
-      "delta_sha256": "29a61e5977b9911adf244faedbf8b4e74379a55c460b3336177bc9881a02ec8a",
+      "current_sha256": "3b8780eb819816e55d729642bdcd4ea11b06e78d9879307151115af631134a04",
+      "delta_sha256": "f8d85adc615ec23963083f2250aa234d7910d1a32dbee92baffa302fb647069a",
       "mode": "100644"
     },
     "tests/diagnostic_acceptance.py": {
@@ -2475,14 +2475,14 @@
     },
     "tests/diagnostic_acceptance_test.py": {
       "source_sha256": "ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655",
-      "current_sha256": "1558fbe6e463794743ecb3722b9bb49dcdaeae96f54f4132cb7b37c219647bc2",
-      "delta_sha256": "6b10fbb5ddfad45b31439be09a97ef5af00c03cde66fc2cd89ca60ca3708060d",
+      "current_sha256": "2c95149c78aff9dbdf9a7fc15bc1505cdbefda9364e19592190bb253c12f50c2",
+      "delta_sha256": "3fb2893048ae7a4be8dfb2b83ad7b6143df8c795ea98546d4e4d84582d5ac0f3",
       "mode": "100644"
     },
     "tests/diagnostic_registry.py": {
       "source_sha256": "1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34",
-      "current_sha256": "19c911bd6fcd4aa4150910bc6b2ce8a57bbbb174582f5f133bce6cd33c7d6f2d",
-      "delta_sha256": "6f34e940d3e60c774d4da3ce41cfbd5754d5987114a9c119d6402139dc0de749",
+      "current_sha256": "8a1626fb36db0d051bab5d5de98329a306cdf2c01edd4d339efa4a4bf4ee5592",
+      "delta_sha256": "0a38133b55b7b3040042aba333787530867aa6c855aa1844425f6b752152e955",
       "mode": "100644"
     },
     "tests/diagnostic_report.py": {

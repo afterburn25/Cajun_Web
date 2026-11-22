@@ -1391,20 +1391,36 @@ DIAGNOSTIC_ADDITIONS = frozenset((
 ))
 DIAGNOSTIC_ADDITION_SHA256 = {
     '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '6685b5ad314bb41e47fbc3d133b6b2c83a07c0e1d3de6b1db02a0c0ad47051be', 'delta': '8c1b9fc1761c713c536db7ca22072b14680ff2a5866d3c73db37adb5dd26b8c8'},
-    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'ec2dead5ccebd3b2b5f619c7a17391e8d53df75211e3d223aeac008c35c53ca0', 'delta': '29a61e5977b9911adf244faedbf8b4e74379a55c460b3336177bc9881a02ec8a'},
+    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': '3b8780eb819816e55d729642bdcd4ea11b06e78d9879307151115af631134a04', 'delta': 'f8d85adc615ec23963083f2250aa234d7910d1a32dbee92baffa302fb647069a'},
     'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': '4b9505faafe06a4e822999dd2d04e15bd482e3daa673135a5bdc25a1c1e6aed4', 'delta': '1f433b177ab5e6fa78f90aa2212acabb1246fb8ed112f607a110095a4866a4c2'},
     'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'd0dae0bc115daf3d8cdfcf8d39cd8199d4f97bcc11bcbbc2fa4ef7801929203b', 'delta': 'f47a2578e25ea89fdd61d07542cd6478c9b1072edba9f6aa22325205b11c0e83'},
     'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '823d13a81b24d1c39f0e53a58a26ba727520dcd7b677baa5825a00ded4fce8d6', 'delta': 'f39cb50543cd25907091c8bae4a80db8c174472be372e30e21594275a1907a34'},
     'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'e1b06b07dfd74b862e6ccdba78f208982377e5805d9ac43b6b0e736fa86b5181', 'delta': '3e2dd2ca6211956be8b454c73dd9f4c7ac1870a6be15120f6b1214d6b5278863'},
 }
 # BEGIN GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '1558fbe6e463794743ecb3722b9bb49dcdaeae96f54f4132cb7b37c219647bc2'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = '6b10fbb5ddfad45b31439be09a97ef5af00c03cde66fc2cd89ca60ca3708060d'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '19c911bd6fcd4aa4150910bc6b2ce8a57bbbb174582f5f133bce6cd33c7d6f2d'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = '6f34e940d3e60c774d4da3ce41cfbd5754d5987114a9c119d6402139dc0de749'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '2c95149c78aff9dbdf9a7fc15bc1505cdbefda9364e19592190bb253c12f50c2'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = '3fb2893048ae7a4be8dfb2b83ad7b6143df8c795ea98546d4e4d84582d5ac0f3'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '8a1626fb36db0d051bab5d5de98329a306cdf2c01edd4d339efa4a4bf4ee5592'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = '0a38133b55b7b3040042aba333787530867aa6c855aa1844425f6b752152e955'
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
 DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['current'] = '26243783910e73df36b0efe90137b56d37d8832f2df7191796ee9fb21c21248c'
 DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['delta'] = '334c53286ccf214c8c9ddd210bd53e5105e2508e4b1311bfffe6890ffd3d2fbd'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE = '59da2c9a0d4e6fd1be6ba854163e16db279c628b'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE_TREE = '3d47557c772b3c4b3f7f5b00d323d172528a16bb'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE = 'd2d6ca2be90974e0afc2c9efcba4c5ed2a8e069f'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE_TREE = 'e24ee600212384653392f69f95c63715db7b49e6'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED = frozenset((
+    'docs/DIAGNOSTIC_ACCEPTANCE.md',
+    'tests/combined_source_composition_test.py',
+    'tests/diagnostic_acceptance_test.py',
+    'tests/diagnostic_registry.py',
+))
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256 = {
+    'docs/DIAGNOSTIC_ACCEPTANCE.md': '3b8780eb819816e55d729642bdcd4ea11b06e78d9879307151115af631134a04',
+    'tests/combined_source_composition_test.py': '84c5139bcd6c00754ad279e211ba95a51eb840d9c0f6712558de69a6593dc98e',
+    'tests/diagnostic_acceptance_test.py': '2c95149c78aff9dbdf9a7fc15bc1505cdbefda9364e19592190bb253c12f50c2',
+    'tests/diagnostic_registry.py': '8a1626fb36db0d051bab5d5de98329a306cdf2c01edd4d339efa4a4bf4ee5592',
+}
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
 DATABASE_WORKFLOW_SOURCE = 'aeeea87e4d0d31dcfc187daed1a29cb9946d907c'
@@ -1915,7 +1931,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '6abc0de1e18151eacafebd1b3d67fcd76b004411b8dbece6a0fdb18a18a5a92d'
+REGRESSION_SHA256 = '84c5139bcd6c00754ad279e211ba95a51eb840d9c0f6712558de69a6593dc98e'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2655,7 +2671,7 @@ def validate_ux09_diagnostic_registry_source(root):
     base_entries = entries(root, UX09_DIAGNOSTIC_REGISTRY_BASE)
     source_entries = entries(root, UX09_DIAGNOSTIC_REGISTRY_SOURCE)
     for path in sorted(UX09_DIAGNOSTIC_REGISTRY_MODIFIED):
-        current = ordinary(root, path)
+        current = project_resulting_main_diagnostic_mail_reply_source(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob',
                                UX09_DIAGNOSTIC_REGISTRY_SOURCE + ':' + path)
                 and digest(current) == UX09_DIAGNOSTIC_REGISTRY_SHA256[path]
@@ -2672,6 +2688,43 @@ def project_ux09_diagnostic_registry(root, path, current):
             'Current UX-09 diagnostic-registry successor changed before predecessor projection: '
             + path)
     return git(root, 'cat-file', 'blob', UX09_DIAGNOSTIC_REGISTRY_BASE + ':' + path)
+
+
+def validate_resulting_main_diagnostic_mail_reply_source(root):
+    """Bind the exact fail-closed registry repair exposed by PR #398 resulting main."""
+    require(git(root, 'rev-parse', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE_TREE
+            and git(root, 'rev-parse', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE_TREE,
+            'Resulting-main diagnostic mail-reply source tree changed')
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE,
+        RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE,
+                  RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED)],
+            'Resulting-main diagnostic mail-reply source changed a different path or status set')
+    base_entries = entries(root, RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE)
+    source_entries = entries(root, RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE)
+    for path in sorted(RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED):
+        current = ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob',
+                               RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + ':' + path)
+                and digest(current) == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'Resulting-main diagnostic mail-reply source identity changed: ' + path)
+
+
+def project_resulting_main_diagnostic_mail_reply_source(root, path, current):
+    """Restore PR #398 resulting-main bytes before replaying older source receipts."""
+    if path not in RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + ':' + path)
+    require(current == source and digest(current) == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256[path],
+            'Current resulting-main diagnostic mail-reply source changed before predecessor projection: '
+            + path)
+    return git(root, 'cat-file', 'blob', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE + ':' + path)
 
 
 def validate_ux09_migration_preservation_source(root):
@@ -8264,6 +8317,7 @@ def validate_pr391_recovery_successor(root):
                 | {FORCE_SSL_RUNNER_PORT_PATH}
                 | ACCOUNT_RATE_BOUNDARY_MODIFIED
                 | APPLICATION_MAIL_COPIES_ROUTING_MODIFIED
+                 | RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -10127,6 +10181,7 @@ def verify_current(root):
     validate_ux08_review_source(root)
     validate_ux08_storefront_source(root)
     validate_ux08_inventory_source(root)
+    validate_resulting_main_diagnostic_mail_reply_source(root)
     validate_ux09_diagnostic_registry_source(root)
     validate_ux09_migration_preservation_source(root)
     validate_ux09_bounded_token_refusal_source(root)
@@ -10294,7 +10349,8 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = project_ux09_diagnostic_registry(root, path, ordinary(root, path))
+        value = project_resulting_main_diagnostic_mail_reply_source(root, path, ordinary(root, path))
+        value = project_ux09_diagnostic_registry(root, path, value)
         value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
