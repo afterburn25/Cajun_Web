@@ -141,6 +141,19 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_artifact_batch_identity(attribute))
 
+        artifact_helper = fixture / proof.DIAGNOSTIC_ARTIFACT_BATCH_PATH
+        artifact_helper_current = artifact_helper.read_bytes()
+        artifact_helper_predecessor = proof.git(
+            root, 'cat-file', 'blob',
+            proof.DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':'
+            + proof.DIAGNOSTIC_ARTIFACT_BATCH_PATH)
+        try:
+            artifact_helper.write_bytes(artifact_helper_predecessor)
+            refuses('Refuses exact predecessor diagnostic artifact helper rollback',
+                    lambda: proof.validate_diagnostic_artifact_batch_source(fixture))
+        finally:
+            artifact_helper.write_bytes(artifact_helper_current)
+
         fixture_head = proof.git(fixture, 'rev-parse', 'HEAD').decode().strip()
         fixture_parent = proof.git(fixture, 'rev-parse', fixture_head + '^').decode().strip()
         root_key = str(fixture.resolve())

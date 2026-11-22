@@ -1976,7 +1976,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '266349456d9e235c1da89e035841b7dbb71370bb09a0eddb4db4cbbaab9e110f'
+REGRESSION_SHA256 = 'd46294728b7a67c629ef40b57845bc53d1ac94cbe718fec44805aa8bb52924a3'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8324,6 +8324,7 @@ def validate_diagnostic_artifact_batch_source(root):
                            DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':'
                            + DIAGNOSTIC_ARTIFACT_BATCH_PATH)
     require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and ordinary(root, DIAGNOSTIC_ARTIFACT_BATCH_PATH) == source_artifacts
             and source_verifier.count(b'def provider_browser_artifact_validations(') == 1
             and source_verifier.count(b'    checks = validate(root)\n') == 1
             and source_verifier.count(b"'projected_validation', callback=module") == 1
