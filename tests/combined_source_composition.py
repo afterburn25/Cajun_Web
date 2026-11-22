@@ -1946,7 +1946,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '31ac03b214e28f15ed5926831129b9ac5e66d0ea0b2bb605735c6b8cd6d40ab0'
+REGRESSION_SHA256 = '6847c56cca6ad1f611637d055c7fa12038d011df6f4ffa009fdcc6815e7bb207'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -10804,6 +10804,21 @@ def validate(root):
     return checks
 
 
+def _extend_provider_artifact_rows(checks, batches):
+    """Retain structured historical outcomes, including their exact failures."""
+    require(isinstance(checks, list) and isinstance(batches, list),
+            'Malformed provider artifact outcome collection')
+    for rows in batches:
+        require(isinstance(rows, list) and rows,
+                'Incomplete provider artifact historical validation')
+        for row in rows:
+            require(isinstance(row, dict) and set(row) == {'name', 'passed'}
+                    and isinstance(row['name'], str) and bool(row['name'])
+                    and type(row['passed']) is bool,
+                    'Malformed provider artifact historical outcome')
+        checks.extend(rows)
+
+
 def provider_browser_artifact_validations(root, validations):
     """Verify current source once, then run the exact historical artifact comparisons.
 
@@ -10842,12 +10857,7 @@ def provider_browser_artifact_validations(root, validations):
                       'projected_validation', callback=module, paths=list(paths))
         for module, paths in requests
     )
-    for rows in batches:
-        require(isinstance(rows, list) and rows
-                and all(isinstance(row, dict) and row.get('passed') is True
-                        for row in rows),
-                'Incomplete provider artifact historical validation')
-        checks.extend(rows)
+    _extend_provider_artifact_rows(checks, batches)
     return checks
 
 

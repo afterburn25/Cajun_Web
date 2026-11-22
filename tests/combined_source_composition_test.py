@@ -31,6 +31,13 @@ def run(root=ROOT):
 
     refuses('Refuses an incomplete provider artifact validation batch',
             lambda: proof.provider_browser_artifact_validations(root, ()))
+    retained_failure = []
+    proof._extend_provider_artifact_rows(
+        retained_failure,
+        [[{'name': 'Synthetic exact historical failure', 'passed': False}]])
+    assert retained_failure == [
+        {'name': 'Synthetic exact historical failure', 'passed': False}]
+    passed('Provider artifact batching retains exact named historical failures')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
     with tempfile.TemporaryDirectory(prefix='cwp-composition-negative-') as folder:
