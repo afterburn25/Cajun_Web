@@ -20,7 +20,7 @@ def run_browser(env, browser):
     submit(owner, root + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
     oid = db("SELECT id FROM ci_users WHERE email='owner@example.invalid'")[0]['id']
     aid = db("SELECT id FROM ci_mail_accounts WHERE label='Staff inbox fixture'")[0]['id']
-    route = {'account_id': aid, 'revision': '1', 'uidvalidity': '1234', 'uid': '82'}
+    route = {'account_id': aid, 'revision': '1', 'uidvalidity': '1234', 'uid': '82', 'folder': 'INBOX'}
     message = root + '?view=mail-message&' + urlencode(route)
 
     check('Fresh install leaves protected reply storage owner-prepared only', not db("SELECT value FROM fresh_settings WHERE name='mail_replies_schema_version'"))
