@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import stat
 import zipfile
 
-from release_next_from_126 import archive_facts, baseline_version, candidate_version
+from release_next_from_126 import archive_facts, baseline_version, candidate_version, ensure_update_stage
 
 
 def refuses(label, fn):
@@ -60,6 +60,12 @@ def main():
         symlink.external_attr = (stat.S_IFLNK | 0o777) << 16
         make_zip(archive, [('symbolic', symlink)])
         refuses('refuse symlink archive member', lambda: archive_facts(archive))
+        correct = {'cwp-update-1.27.0/owner-update.php', 'cwp-update-1.27.0/site/index.php'}
+        ensure_update_stage(correct, '1.27.0')
+        print('PASS: staged UPDATE archive permits only the scoped candidate directory')
+        refuses('refuse staging-less UPDATE archive', lambda: ensure_update_stage({'index.php'}, '1.27.0'))
+        refuses('refuse unversioned root overwrite', lambda: ensure_update_stage(correct | {'config/config.php'}, '1.27.0'))
+        refuses('refuse updater missing its entry point', lambda: ensure_update_stage({'cwp-update-1.27.0/site/index.php'}, '1.27.0'))
 
     print('PASS: offline 1.26.1 release diagnostic guards')
 
