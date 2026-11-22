@@ -3,12 +3,15 @@ from pathlib import Path
 import argparse
 import ast
 import copy
+import hashlib
 import importlib.util
+import io
 import json
 import py_compile
 import subprocess
 import sys
 import tempfile
+import types
 
 import combined_source_composition as proof
 
@@ -38,8 +41,57 @@ def run(root=ROOT):
     assert retained_failure == [
         {'name': 'Synthetic exact historical failure', 'passed': False}]
     passed('Provider artifact batching retains exact named historical failures')
+    body = b'exact immutable batch bytes\x00\n'
+    object_id = hashlib.sha1(
+        b'blob ' + str(len(body)).encode('ascii') + b'\0' + body).hexdigest().encode('ascii')
+    expression = '1' * 40 + ':tests/example.bin'
+
+    def batch_process(raw):
+        return types.SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(raw))
+
+    packet = object_id + b' blob ' + str(len(body)).encode('ascii') + b'\n' + body + b'\n'
+    process = batch_process(packet)
+    assert proof._read_immutable_blob(process, expression) == body
+    assert process.stdin.getvalue() == expression.encode('ascii') + b'\n'
+    passed('Immutable blob batch verifies exact binary bytes and request framing')
+    for label, raw in (
+        ('missing object', object_id + b' missing\n'),
+        ('non-blob object', object_id + b' tree 1\nx\n'),
+        ('noncanonical size', object_id + b' blob 01\nx\n'),
+        ('truncated body', object_id + b' blob 3\nab'),
+        ('wrong delimiter', object_id + b' blob 3\nabc!'),
+        ('corrupt identity', object_id + b' blob 3\nabc\n'),
+        ('overlong header', b'a' * 200 + b'\n'),
+    ):
+        refuses('Immutable blob batch refuses ' + label,
+                lambda raw=raw: proof._read_immutable_blob(batch_process(raw), expression))
+    refuses('Immutable blob batch refuses request framing injection',
+            lambda: proof._read_immutable_blob(batch_process(packet), expression + '\ncontents deadbeef'))
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert len(proof._TREE_ENTRIES) <= proof.TREE_ENTRY_CACHE_LIMIT == 16
+    passed('Immutable parsed-tree cache remains bounded after the complete proof')
+    verifier_ast = ast.parse((root / proof.VERIFIER).read_text(encoding='utf-8'))
+    terminal = next(node for node in verifier_ast.body
+                    if isinstance(node, ast.FunctionDef)
+                    and node.name == 'project_component_union_source')
+    terminal_calls = [node.func.id for node in terminal.body
+                      if isinstance(node, (ast.Assign, ast.Return))
+                      for call in ([node.value] if isinstance(node, (ast.Assign, ast.Return)) else [])
+                      if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                      for node in [call]]
+    assert terminal_calls == [
+        'project_account_rate_boundary_source',
+        'project_ux09_fixture_receipt',
+        'project_ux09_identity_snapshot',
+        'project_ux09_smtp_rejection',
+        'project_ux09_mail_review',
+        'project_ux09_cloud_proof',
+        'project_ux09_security',
+        'project_ux09_ci',
+        'project_ux09',
+    ]
+    passed('Component union applies each terminal projection chain once in exact order')
     with tempfile.TemporaryDirectory(prefix='cwp-composition-negative-') as folder:
         fixture = Path(folder) / 'source'
         subprocess.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', '--local', str(root), str(fixture)], check=True)

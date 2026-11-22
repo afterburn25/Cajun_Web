@@ -10,6 +10,8 @@ PHP, browser, migration and packaging commands continue to use the live checkout
 from pathlib import Path, PurePosixPath
 import base64
 import copy
+from collections import OrderedDict
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -1315,6 +1317,8 @@ DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SHA256 = {
     'tests/combined_source_composition.py': '0fe00c64bc9574b3d131fc8f261e5119deba30cae9d5ecd7ddad56df997a41e8',
     'tests/combined_source_composition_test.py': '6847c56cca6ad1f611637d055c7fa12038d011df6f4ffa009fdcc6815e7bb207',
 }
+DIAGNOSTIC_BLOB_BATCH_BASE = '0f193123770cb6fd12c65b247ea65595f1cd012b'
+DIAGNOSTIC_BLOB_BATCH_BASE_TREE = '8d80b68da404743fbdd8e31a9fbfbd071d69d252'
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -1960,7 +1964,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '6847c56cca6ad1f611637d055c7fa12038d011df6f4ffa009fdcc6815e7bb207'
+REGRESSION_SHA256 = 'b09cfde6e024e5cdbb1768bf1384a61c870680333dd41d0e858eae4230514533'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2054,9 +2058,11 @@ REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '2c348e84a881
 
 _PROJECTIONS = {}
 _HISTORICAL_RESULTS = {}
-_TREE_ENTRIES = {}
+_TREE_ENTRIES = OrderedDict()
+TREE_ENTRY_CACHE_LIMIT = 16
 _IMMUTABLE_GIT_RESULTS = {}
 _PINNED_HEADS = {}
+_BLOB_BATCHES = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -2085,7 +2091,7 @@ def immutable_git_query(args):
     """
     oid = r'[0-9a-f]{40}'
     if len(args) == 3 and args[:2] == ('cat-file', 'blob'):
-        return re.fullmatch(oid + r':[^\x00]+', args[2]) is not None
+        return re.fullmatch(oid + r':[^\x00\r\n]+', args[2]) is not None
     if len(args) == 2 and args[0] == 'rev-parse':
         return re.fullmatch(oid + r'(?:\^|\^\{tree\})?', args[1]) is not None
     if (len(args) == 4 and args[:3] == ('show', '-s', '--format=%P')
@@ -2099,6 +2105,61 @@ def immutable_git_query(args):
         revisions = [value for value in args[1:boundary] if not value.startswith('-')]
         return len(revisions) == 2 and all(re.fullmatch(oid, value) for value in revisions)
     return False
+
+
+def _read_immutable_blob(process, expression):
+    """Read one exact Git blob from the framed binary batch protocol."""
+    require(re.fullmatch(r'[0-9a-f]{40}:[^\x00\r\n]+', expression) is not None,
+            'Unsafe immutable blob expression')
+    process.stdin.write(expression.encode('utf-8') + b'\n')
+    process.stdin.flush()
+    header = process.stdout.readline(160)
+    match = re.fullmatch(
+        rb'([0-9a-f]{40}|[0-9a-f]{64}) blob (0|[1-9][0-9]*)\n', header)
+    require(match is not None, 'Invalid composition batch blob header')
+    size = int(match[2])
+    data = process.stdout.read(size)
+    require(len(data) == size and process.stdout.read(1) == b'\n',
+            'Truncated composition batch blob')
+    object_digest = (hashlib.sha1 if len(match[1]) == 40 else hashlib.sha256)()
+    object_digest.update(b'blob ' + str(size).encode('ascii') + b'\0')
+    object_digest.update(data)
+    require(object_digest.hexdigest().encode('ascii') == match[1],
+            'Composition batch blob identity differs')
+    return data
+
+
+@contextmanager
+def immutable_blob_batch(root):
+    """Use one verified child for immutable blob reads in one full proof."""
+    root_key = str(Path(root).resolve())
+    require(root_key not in _BLOB_BATCHES,
+            'Nested composition blob batch is forbidden')
+    with tempfile.TemporaryFile() as errors:
+        process = subprocess.Popen(
+            ['git', '--no-replace-objects', 'cat-file', '--batch'],
+            cwd=root, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=errors)
+        _BLOB_BATCHES[root_key] = process
+        try:
+            yield
+            process.stdin.close()
+            require(not process.stdout.read(1),
+                    'Unexpected trailing composition batch output')
+            code = process.wait()
+            if code:
+                errors.seek(0)
+                raise AssertionError('Composition batch blob reader failed: '
+                                     + errors.read(8192).decode('utf-8', 'replace'))
+        finally:
+            _BLOB_BATCHES.pop(root_key, None)
+            if process.poll() is None:
+                process.kill()
+            process.wait()
+            try:
+                process.stdin.close()
+            finally:
+                process.stdout.close()
 
 
 def git(root, *args):
@@ -2115,14 +2176,20 @@ def git(root, *args):
         return _IMMUTABLE_GIT_RESULTS[cache_key]
     # Execute the same full-object-ID command used as the cache key. A mutable
     # HEAD spelling must never be evaluated and stored under its earlier pin.
-    result = subprocess.run(
-        ['git', '--no-replace-objects', *(cache_args if immutable else args)],
-        cwd=root, capture_output=True)
-    require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
-            + result.stderr.decode(errors='replace')[-1500:])
+    active_batch = _BLOB_BATCHES.get(root_key)
+    if (immutable and active_batch is not None and len(cache_args) == 3
+            and cache_args[:2] == ('cat-file', 'blob')):
+        output = _read_immutable_blob(active_batch, cache_args[2])
+    else:
+        result = subprocess.run(
+            ['git', '--no-replace-objects', *(cache_args if immutable else args)],
+            cwd=root, capture_output=True)
+        require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
+                + result.stderr.decode(errors='replace')[-1500:])
+        output = result.stdout
     if immutable:
-        _IMMUTABLE_GIT_RESULTS[cache_key] = result.stdout
-    return result.stdout
+        _IMMUTABLE_GIT_RESULTS[cache_key] = output
+    return output
 
 
 def pin_head(root):
@@ -2165,7 +2232,9 @@ def entries(root, ref):
     # metadata is cached; every actual working file is re-read for every gate.
     key = (str(Path(root).resolve()), ref)
     if key in _TREE_ENTRIES:
-        return _TREE_ENTRIES[key]
+        result = _TREE_ENTRIES.pop(key)
+        _TREE_ENTRIES[key] = result
+        return result
     result = {}
     for row in git(root, 'ls-tree', '-r', '-z', ref).split(b'\0'):
         if row:
@@ -2175,6 +2244,8 @@ def entries(root, ref):
                     'Nonregular component tree entry: ' + path.decode())
             result[path.decode()] = (permission, oid)
     _TREE_ENTRIES[key] = result
+    while len(_TREE_ENTRIES) > TREE_ENTRY_CACHE_LIMIT:
+        _TREE_ENTRIES.popitem(last=False)
     return result
 
 
@@ -8331,6 +8402,7 @@ def validate_diagnostic_artifact_failure_evidence_source(root):
 
 def project_diagnostic_artifact_failure_evidence_source(root, path, current):
     """Restore the reviewed batch proof before its failure-evidence correction."""
+    current = project_diagnostic_blob_batch_source(root, path, current)
     if path != REGRESSION:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -8343,6 +8415,22 @@ def project_diagnostic_artifact_failure_evidence_source(root, path, current):
         return current
     require(current == source,
             'Current diagnostic artifact failure-evidence source changed')
+    return base
+
+
+def project_diagnostic_blob_batch_source(root, path, current):
+    """Restore the accepted proof before the immutable blob-batch successor."""
+    if path != REGRESSION:
+        return current
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_BLOB_BATCH_BASE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == base,
+            'Current diagnostic blob-batch regression changed')
     return base
 
 
@@ -10228,7 +10316,20 @@ def project_signed_ppa_label_source(root, path, current):
     return base
 
 
-def verify_current(root):
+def project_component_union_source(root, ux09, path, current):
+    """Apply each terminal successor chain once for the component-union check."""
+    current = project_account_rate_boundary_source(root, path, current)
+    current = project_ux09_fixture_receipt(root, path, current)
+    current = project_ux09_identity_snapshot(root, path, current)
+    current = project_ux09_smtp_rejection(root, path, current)
+    current = project_ux09_mail_review(root, path, current)
+    current = project_ux09_cloud_proof(root, path, current)
+    current = project_ux09_security(root, path, current)
+    current = project_ux09_ci(root, path, current)
+    return project_ux09(root, ux09, path, current)
+
+
+def _verify_current(root):
     root = Path(root)
     verifier = ordinary(root, VERIFIER)
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
@@ -10582,34 +10683,7 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_reply_folder_route(root, path, ordinary(root, path))
-        value = project_application_sent_copy_fixture_mode(root, path, value)
-        value = project_application_smtp_fixture_bound(root, path, value)
-        value = project_runner_application_current_artifact_binding(root, path, value)
-        value = project_runner_application_composition_partition(root, path, value)
-        value = project_runner_application_composition_completion(root, path, value)
-        value = project_mail_folder_dynamic_port_source(root, path, value)
-        value = project_signed_ppa_label_source(root, path, value)
-        value = project_application_mail_copies_routing_source(root, path, value)
-        value = project_application_mail_copies_setup_source(root, path, value)
-        value = project_account_rate_boundary_source(root, path, value)
-        value = project_runner_application_seal_budget(root, path, value)
-        value = project_application_sent_copy_absence_source(root, path, value)
-        value = project_application_fixture_successors(root, path, value)
-        value = project_latest_acceptance_successors(root, path, value)
-        value = project_mail_acceptance_repair_source(root, path, value)
-        value = project_mail_submission_expiry_fix(root, path, value)
-        value = project_mail_copy_controls_fix(root, path, value)
-        value = project_runner_mirror_compat(root, path, value)
-        value = project_ux08_agreement_link_fix(root, path, value)
-        value = project_ux09_fixture_receipt(root, path, value)
-        value = project_ux09_identity_snapshot(root, path, value)
-        value = project_ux09_smtp_rejection(root, path, value)
-        value = project_ux09_mail_review(root, path, value)
-        value = project_ux09_cloud_proof(root, path, value)
-        value = project_ux09_security(root, path, value)
-        value = project_ux09_ci(root, path, value)
-        value = project_ux09(root, ux09, path, value)
+        value = project_component_union_source(root, ux09, path, ordinary(root, path))
         if path in ONBOARDING_MODIFIED:
             row = onboarding['modified'][path]
             before = git(root, 'cat-file', 'blob', ONBOARDING_BASE + ':' + path)
@@ -10754,6 +10828,11 @@ def verify_current(root):
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
     ]
+
+
+def verify_current(root):
+    with immutable_blob_batch(root):
+        return _verify_current(root)
 
 
 def projection(root, component):
