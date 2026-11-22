@@ -22,7 +22,12 @@ def make_zip(path, entries):
             if isinstance(data, zipfile.ZipInfo):
                 archive.writestr(data, b'x')
             else:
-                archive.writestr(name, data)
+                # ZipInfo normalizes the host separator in its constructor.
+                # Assign after construction so a literal backslash remains an
+                # unsafe archive member on Windows as well as POSIX hosts.
+                entry = zipfile.ZipInfo()
+                entry.filename = name
+                archive.writestr(entry, data)
 
 
 def main():

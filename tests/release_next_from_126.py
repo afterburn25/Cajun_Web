@@ -54,15 +54,16 @@ def archive_facts(path):
             raise RuntimeError('Release archive exceeds the bounded expanded size.')
         seen = set()
         for entry in archive.infolist():
+            raw_name = entry.orig_filename
             name = entry.filename
             trimmed = name.rstrip('/')
             member = PurePosixPath(trimmed)
             if (
-                not trimmed or '\\' in name or ':' in name
+                raw_name != name or not trimmed or '\\' in raw_name or ':' in raw_name
                 or member.is_absolute() or '..' in member.parts
                 or member.as_posix() != trimmed
                 or any(part in ('', '.', '..') for part in member.parts)
-                or any(ord(char) < 32 for char in name)
+                or any(ord(char) < 32 for char in raw_name)
             ):
                 raise RuntimeError('Unsafe release archive member.')
             folded = trimmed.casefold()
