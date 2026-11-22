@@ -1,5 +1,10 @@
 name: Published v1.26.1 to next candidate diagnostic
 on:
+  pull_request:
+    paths:
+      - 'tests/release_next_from_126.py'
+      - 'tests/release_next_from_126_test.py'
+      - '.github/workflows/release-next-from-126.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -9,7 +14,18 @@ concurrency:
 env:
   CWP_TEST_DATABASE: cwp_test
 jobs:
+  offline-policy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify bounded published-release policy and unsafe ZIP refusal
+        run: python3 tests/release_next_from_126_test.py
   upgrade-extraction-diagnostic:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
