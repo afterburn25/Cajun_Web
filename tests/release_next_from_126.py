@@ -23,6 +23,7 @@ BASELINE_URL = (
 BASELINE_SHA256 = '7d7117a25fab556cb3f8dfce7f0b859d072cfc992b98fc91026d96b490e1dad3'
 BASELINE_BYTES = 17429306
 MAX_BASELINE_BYTES = 128 * 1024 * 1024
+MAX_EXPANDED_BYTES = 512 * 1024 * 1024
 SEMVER = re.compile(r'\A(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\Z')
 
 
@@ -49,6 +50,8 @@ def archive_facts(path):
         names = archive.namelist()
         if not names or len(names) > 20000:
             raise RuntimeError('Unexpected release archive size.')
+        if sum(entry.file_size for entry in archive.infolist()) > MAX_EXPANDED_BYTES:
+            raise RuntimeError('Release archive exceeds the bounded expanded size.')
         seen = set()
         for entry in archive.infolist():
             name = entry.filename
@@ -75,7 +78,7 @@ def archive_facts(path):
         return {'members': len(names), 'names': seen}
 
 
-def baseline_version(path):
+def package_version(path):
     with zipfile.ZipFile(path) as archive:
         defaults = archive.read('config/defaults.php').decode('utf-8')
     found = re.findall(
@@ -83,7 +86,13 @@ def baseline_version(path):
         defaults,
         re.M,
     )
-    if found != [BASELINE_VERSION]:
+    if len(found) != 1:
+        raise RuntimeError('Package must declare one valid application version.')
+    return found[0]
+
+
+def baseline_version(path):
+    if package_version(path) != BASELINE_VERSION:
         raise RuntimeError('Downloaded baseline does not declare v1.26.1.')
 
 
@@ -133,6 +142,8 @@ def main():
         raise RuntimeError('Complete and UPDATE candidate archives are required.')
     update_members = archive_facts(update)
     complete_members = archive_facts(complete)
+    if package_version(complete) != version:
+        raise RuntimeError('Candidate COMPLETE-UPLOAD does not declare its exact version.')
 
     # A staging-only dry extraction never applies migration code or modifies live files.
     stage = 'cwp-update-' + version
