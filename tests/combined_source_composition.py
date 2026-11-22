@@ -1331,6 +1331,16 @@ DIAGNOSTIC_BLOB_BATCH_SHA256 = {
     'tests/combined_source_composition.py': '0b5c8ad8c27f082d9039011fd3cedc9e060a52e2a5e208c290588d0499d7b11e',
     'tests/combined_source_composition_test.py': 'b09cfde6e024e5cdbb1768bf1384a61c870680333dd41d0e858eae4230514533',
 }
+DIAGNOSTIC_BLOB_LIVE_BINDING_BASE = '2b7155cf22ad4fef40ecb8bceb1c46e431419175'
+DIAGNOSTIC_BLOB_LIVE_BINDING_BASE_TREE = '122696487628c8b0a210fe84c190f9fabe521058'
+DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE = 'ecbb38f958a6a6f393160e766ff72ce250ca8bb8'
+DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE_TREE = '0e5e447369268f52668c04d0599fbecc460c9949'
+DIAGNOSTIC_BLOB_LIVE_BINDING_MODIFIED = DIAGNOSTIC_BLOB_BATCH_MODIFIED
+DIAGNOSTIC_BLOB_LIVE_BINDING_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': '7837778c4c6b516c97cce9710f2488cd5aee5c73794bedcc282a158abf4dea6e',
+    'tests/combined_source_composition.py': '0c1722cb738e59bdef453e79843ee16ba447f0fcfda98542e1cba3a8a43594ff',
+    'tests/combined_source_composition_test.py': 'd46294728b7a67c629ef40b57845bc53d1ac94cbe718fec44805aa8bb52924a3',
+}
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -1976,7 +1986,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'd46294728b7a67c629ef40b57845bc53d1ac94cbe718fec44805aa8bb52924a3'
+REGRESSION_SHA256 = '70338a161e7a15d1f26139f352ed7cfa3b7db1845a4ccd412ad5bb741e576075'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8433,14 +8443,19 @@ def project_diagnostic_artifact_failure_evidence_source(root, path, current):
 
 def project_diagnostic_blob_batch_source(root, path, current):
     """Restore the accepted proof before the immutable blob-batch successor."""
+    current = project_diagnostic_blob_live_binding_source(root, path, current)
     if path != REGRESSION:
         return current
     source = git(root, 'cat-file', 'blob',
                  DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob',
                DIAGNOSTIC_BLOB_BATCH_BASE + ':' + path)
+    proof_base = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_BLOB_LIVE_BINDING_BASE + ':' + path)
     if (current == ordinary(root, path)
             and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == proof_base:
         current = source
     if current == source:
         return base
@@ -8499,6 +8514,69 @@ def validate_diagnostic_blob_batch_source(root):
             and b'Component union applies each terminal projection chain once in exact order'
                 in source_regression,
             'Diagnostic blob-batch implementation or source receipt changed')
+
+
+def project_diagnostic_blob_live_binding_source(root, path, current):
+    """Restore the performance proof before the live-helper binding correction."""
+    if path != REGRESSION:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_BLOB_LIVE_BINDING_BASE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic live-binding regression changed')
+    return base
+
+
+def validate_diagnostic_blob_live_binding_source(root):
+    """Bind the review correction that refuses a live helper rollback."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_BLOB_LIVE_BINDING_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_LIVE_BINDING_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE_TREE,
+            'Diagnostic blob live-binding source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_BLOB_LIVE_BINDING_BASE],
+            'Diagnostic blob live-binding source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_BLOB_LIVE_BINDING_BASE,
+                  DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_BLOB_LIVE_BINDING_MODIFIED)],
+            'Diagnostic blob live-binding source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE)
+    for path in sorted(DIAGNOSTIC_BLOB_LIVE_BINDING_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_BLOB_LIVE_BINDING_SHA256[path],
+                'Diagnostic blob live-binding source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'ordinary(root, DIAGNOSTIC_ARTIFACT_BATCH_PATH) == source_artifacts'
+                in source_verifier
+            and b'Refuses exact predecessor diagnostic artifact helper rollback'
+                in source_regression,
+            'Diagnostic blob live-binding implementation or receipt changed')
 
 
 def validate_notification_metric_label_source(root):
@@ -10492,6 +10570,7 @@ def _verify_current(root):
     validate_diagnostic_artifact_batch_source(root)
     validate_diagnostic_artifact_failure_evidence_source(root)
     validate_diagnostic_blob_batch_source(root)
+    validate_diagnostic_blob_live_binding_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)

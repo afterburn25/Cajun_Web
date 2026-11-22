@@ -141,6 +141,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_artifact_batch_identity(attribute))
 
+        def altered_diagnostic_blob_live_binding_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_blob_live_binding_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_BASE', 'base'),
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE', 'source'),
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic blob live-binding ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_blob_live_binding_identity(attribute))
+
         artifact_helper = fixture / proof.DIAGNOSTIC_ARTIFACT_BATCH_PATH
         artifact_helper_current = artifact_helper.read_bytes()
         artifact_helper_predecessor = proof.git(
