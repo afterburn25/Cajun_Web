@@ -1301,6 +1301,20 @@ DIAGNOSTIC_ARTIFACT_BATCH_SHA256 = {
     'tests/acceptance_artifacts_test.py': 'cc8047f464cea7450df788bf94f7d1a8843d9422f87e344c3b062727768eca4d',
     'tests/combined_source_composition.py': 'fb4a3ba190013802a72b36b18cfb10d669631c0ed78a3de95299d5d44c0e8bf1',
 }
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE = 'a55e4a5fee0874b23ec862db034791117cf73c9c'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE_TREE = '3ee5b14c95b841c99477d9d4be910a0553d84329'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE = '8a6056b4d13158a629a3f24aa6da21c6a081e106'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE_TREE = '02f0ce7c3b15bf4a5e35f03ea1137dec6a16fa3e'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/combined_source_composition.py',
+    'tests/combined_source_composition_test.py',
+))
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': 'b8e82b37ab901f0398fe36d23f54c2eb40f1648598dfa176a448c6dfff6252a4',
+    'tests/combined_source_composition.py': '0fe00c64bc9574b3d131fc8f261e5119deba30cae9d5ecd7ddad56df997a41e8',
+    'tests/combined_source_composition_test.py': '6847c56cca6ad1f611637d055c7fa12038d011df6f4ffa009fdcc6815e7bb207',
+}
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -8239,8 +8253,14 @@ def validate_diagnostic_artifact_batch_source(root):
 
 def project_diagnostic_artifact_batch_source(root, path, current):
     """Restore the accepted PR #401 proof head before older source projections."""
-    if (path == REGRESSION and current == ordinary(root, path)
-            and digest(current) == REGRESSION_SHA256):
+    current = project_diagnostic_artifact_failure_evidence_source(
+        root, path, current)
+    if (path == REGRESSION
+            and ((current == ordinary(root, path)
+                  and digest(current) == REGRESSION_SHA256)
+                 or current == git(root, 'cat-file', 'blob',
+                                   DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE
+                                   + ':' + path))):
         return git(root, 'cat-file', 'blob',
                    DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path)
     if path != DIAGNOSTIC_ARTIFACT_BATCH_PATH:
@@ -8255,6 +8275,74 @@ def project_diagnostic_artifact_batch_source(root, path, current):
         return current
     require(current == source,
             'Current diagnostic artifact batch changed before predecessor projection')
+    return base
+
+
+def validate_diagnostic_artifact_failure_evidence_source(root):
+    """Bind exact named-failure preservation after the independent review blocker."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE_TREE,
+            'Diagnostic artifact failure-evidence source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE],
+            'Diagnostic artifact failure-evidence source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE,
+                  DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_MODIFIED)],
+            'Diagnostic artifact failure-evidence source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE)
+    for path in sorted(DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SHA256[path],
+                'Diagnostic artifact failure-evidence source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                          + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b'def _extend_provider_artifact_rows(') == 1
+            and b"type(row['passed']) is bool" in source_verifier
+            and b"row.get('passed') is True" not in source_verifier
+            and b'Provider artifact batching retains exact named historical failures'
+                in source_regression,
+            'Diagnostic artifact named-failure preservation changed')
+
+
+def project_diagnostic_artifact_failure_evidence_source(root, path, current):
+    """Restore the reviewed batch proof before its failure-evidence correction."""
+    if path != REGRESSION:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic artifact failure-evidence source changed')
     return base
 
 
@@ -10234,6 +10322,7 @@ def verify_current(root):
     validate_proof_runtime_source(root)
     validate_proof_cache_hardening_source(root)
     validate_diagnostic_artifact_batch_source(root)
+    validate_diagnostic_artifact_failure_evidence_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
@@ -10649,6 +10738,7 @@ def verify_current(root):
         {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
         {'name': 'Exact Diagnostic artifact batch retains one full current-source proof before the finite isolated historical comparisons', 'passed': True},
+        {'name': 'Exact Diagnostic artifact review successor preserves structured named historical failures for the outer evidence recorder', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
