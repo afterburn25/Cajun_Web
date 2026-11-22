@@ -919,6 +919,23 @@ def run(root=ROOT):
         refuses('Refuses simultaneous diagnostic source and current-hash substitution',
                 forged_diagnostic_and_receipt)
 
+        def altered_resulting_main_diagnostic_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_resulting_main_diagnostic_mail_reply_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE', 'base'),
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE_TREE', 'base tree'),
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE', 'source'),
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted resulting-main diagnostic ' + label,
+                    lambda attribute=attribute: altered_resulting_main_diagnostic_identity(attribute))
+
         database_addition = 'tests/database_schema_registry_policy.php'
         for path in sorted(proof.DATABASE_WORKFLOW_ADDITIONS):
             refuses('Refuses changed exact database workflow addition ' + path,

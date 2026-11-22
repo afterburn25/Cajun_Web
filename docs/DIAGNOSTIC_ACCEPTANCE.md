@@ -18,7 +18,7 @@ release evidence; a red one is never reportable as success.
   `public` routes/guards/estimator, `admin-flow` HTTP flows/uploads/invoices,
   `installer` (native fresh install), `release` (upgrade + fixture seeding via
   `release_cases.run_http`), `browser` (Chromium session, captures, motion).
-- **58 feature modules** — every `*_cases.run_browser` call in the strict
+- **61 feature modules** — every `*_cases.run_browser` call in the strict
   runner's actual non-focused branch, in the same order. The registry parses
   that branch with Python's AST and attaches finite metadata; a missing,
   duplicated, stale, or newly unclassified module fails the contract test.
@@ -51,17 +51,17 @@ mutable database or browser session:
 | group | modules | contents |
 |---|---|---|
 | website | 2 | portfolio, reviews (+ public/browser stages) |
-| installer | 1 | release-browser (+ installer/release stages) |
-| portal | 3 | staff, appointments, contacts (+ admin-flow stage) |
+| installer | 2 | release-browser, database-updates (+ installer/release stages) |
+| portal | 4 | staff, appointments, contacts, client-identity (+ admin-flow stage) |
 | billing | 9 | catalog, payments, attempts, ledger, delivery, recurring-billing, license-release, software-commerce, license-financing |
-| mail | 9 | notifications, mail-templates, mail-accounts, mail-connections, mail-inbox, mail-message, mail-notices, mail-drafts, mail-submissions |
+| mail | 10 | notifications, mail-templates, mail-accounts, mail-connections, mail-inbox, mail-message, mail-notices, mail-drafts, mail-submissions, mail-reply |
 | twentyi-inventory | 9 | catalog-import, provider-settings/operations, service-observations, service-plan, cloud-providers, reset-template, cloud-assignment, provider-schedule |
 | twentyi-domains | 9 | domain-search, registrar, domain-renewals, domain-contracts, registration-periods, domain-expiry, renewal-agreements, renewal-dispatch, registration-drafts |
 | twentyi-packages | 10 | provider-mailbox, provider-forwarding, cloud-sites, package-php, document-roots, package-force-ssl, directory-listing, force-ssl-controls, wordpress-installed, directory-controls |
 | stackcp | 2 | stackcp-prerequisites, stackcp-access (in-group dependency) |
 | security | 4 | support, backups, activity, client-authority (+ server-log) |
 
-All 58 modules can execute behind the shared bootstrap. Verified module→module
+All 61 modules can execute behind the shared bootstrap. Verified module→module
 edges (from controllers and `*_ready()` gates): `staff` roots the
 admin-readiness chain (`catalog`, `payments`, `support`, `portfolio`);
 `payments` also creates the shared `request-staff` account consumed by 34
@@ -70,7 +70,8 @@ modules (billing, mail, portal, security, provider and StackCP modules);
 `?view=provider-settings` feature module needs, and `provider-operations`
 gates `cloud-sites`; the mail chain runs
 `mail-accounts` → `mail-inbox`/`mail-connections`/`mail-drafts` →
-`mail-message` → `mail-notices`/`mail-submissions`; `stackcp-access` →
+`mail-message` → `mail-notices`/`mail-reply`; `mail-submissions` →
+`mail-reply`; `stackcp-access` →
 `stackcp-prerequisites`; `backups` requires `staff`; `license-financing`
 requires `software-commerce`; and `contacts` requires the current recurring,
 registration-draft, software-commerce, and financing preparation chains. Each
