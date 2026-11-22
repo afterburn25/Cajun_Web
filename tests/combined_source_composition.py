@@ -1286,6 +1286,21 @@ PROOF_CACHE_HARDENING_MODIFIED = frozenset((
 PROOF_CACHE_HARDENING_PROJECTED = frozenset((
     'tests/combined_source_composition_test.py',
 ))
+DIAGNOSTIC_ARTIFACT_BATCH_BASE = '4d3db9c923581063eba99e47e59a037efc9027b5'
+DIAGNOSTIC_ARTIFACT_BATCH_BASE_TREE = '8f1b89ea6519ae0fedad8f6408646323555273c3'
+DIAGNOSTIC_ARTIFACT_BATCH_SOURCE = '7f590a53154e86a225de02c6519640cac2cd9bae'
+DIAGNOSTIC_ARTIFACT_BATCH_SOURCE_TREE = '2c6ee0b29fb4c03a68cbdfac92ba436457a4e92c'
+DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/acceptance_artifacts_test.py',
+    'tests/combined_source_composition.py',
+))
+DIAGNOSTIC_ARTIFACT_BATCH_PATH = 'tests/acceptance_artifacts_test.py'
+DIAGNOSTIC_ARTIFACT_BATCH_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': 'b1213d6135a624d808e7869102203af7fa0e22a0bf7b7b438e7fd60c89c04fca',
+    'tests/acceptance_artifacts_test.py': 'cc8047f464cea7450df788bf94f7d1a8843d9422f87e344c3b062727768eca4d',
+    'tests/combined_source_composition.py': 'fb4a3ba190013802a72b36b18cfb10d669631c0ed78a3de95299d5d44c0e8bf1',
+}
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -1931,7 +1946,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '84c5139bcd6c00754ad279e211ba95a51eb840d9c0f6712558de69a6593dc98e'
+REGRESSION_SHA256 = '31ac03b214e28f15ed5926831129b9ac5e66d0ea0b2bb605735c6b8cd6d40ab0'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2708,7 +2723,8 @@ def validate_resulting_main_diagnostic_mail_reply_source(root):
     base_entries = entries(root, RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE)
     source_entries = entries(root, RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE)
     for path in sorted(RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED):
-        current = ordinary(root, path)
+        current = project_diagnostic_artifact_batch_source(
+            root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob',
                                RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + ':' + path)
                 and digest(current) == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256[path]
@@ -8158,8 +8174,11 @@ def project_proof_cache_hardening_source(root, path, current):
         return current
     source = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_BASE + ':' + path)
-    if (path == REGRESSION and current == ordinary(root, path)
-            and digest(current) == REGRESSION_SHA256):
+    if (path == REGRESSION
+            and ((current == ordinary(root, path)
+                  and digest(current) == REGRESSION_SHA256)
+                 or current == git(root, 'cat-file', 'blob',
+                                   DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path))):
         current = source
     if current == source:
         return base
@@ -8167,6 +8186,75 @@ def project_proof_cache_hardening_source(root, path, current):
         return current
     require(current == source,
             'Current proof-cache regression changed before predecessor projection')
+    return base
+
+
+def validate_diagnostic_artifact_batch_source(root):
+    """Bind the finite one-proof artifact-validation batch to its exact source."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_ARTIFACT_BATCH_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_BATCH_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_BATCH_SOURCE_TREE,
+            'Diagnostic artifact batch source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_ARTIFACT_BATCH_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_ARTIFACT_BATCH_BASE],
+            'Diagnostic artifact batch source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_ARTIFACT_BATCH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_ARTIFACT_BATCH_BASE,
+                  DIAGNOSTIC_ARTIFACT_BATCH_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path
+                        for path in sorted(DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED)],
+            'Diagnostic artifact batch source changed another path or status')
+    source_entries = entries(root, DIAGNOSTIC_ARTIFACT_BATCH_SOURCE)
+    require(all(source_entries[path][0] == '100644'
+                for path in DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED),
+            'Diagnostic artifact batch changed a protected source mode')
+    for path in sorted(DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + path)
+        require(digest(source) == DIAGNOSTIC_ARTIFACT_BATCH_SHA256[path],
+                'Diagnostic artifact batch source bytes changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + VERIFIER)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + RECEIPT))
+    source_artifacts = git(root, 'cat-file', 'blob',
+                           DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':'
+                           + DIAGNOSTIC_ARTIFACT_BATCH_PATH)
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_verifier.count(b'def provider_browser_artifact_validations(') == 1
+            and source_verifier.count(b'    checks = validate(root)\n') == 1
+            and source_verifier.count(b"'projected_validation', callback=module") == 1
+            and source_artifacts.count(
+                b'composition.provider_browser_artifact_validations(') == 1
+            and b'validate_provider_fixtures(ROOT)' not in source_artifacts
+            and b'projected_validation(ROOT' not in source_artifacts,
+            'Diagnostic artifact batch implementation or source receipt changed')
+
+
+def project_diagnostic_artifact_batch_source(root, path, current):
+    """Restore the accepted PR #401 proof head before older source projections."""
+    if (path == REGRESSION and current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        return git(root, 'cat-file', 'blob',
+                   DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path)
+    if path != DIAGNOSTIC_ARTIFACT_BATCH_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic artifact batch changed before predecessor projection')
     return base
 
 
@@ -9803,7 +9891,8 @@ def validate_runner_application_composition_partition(root):
     base_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_diagnostic_artifact_batch_source(
+            root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob',
                      RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob',
@@ -9824,6 +9913,7 @@ def validate_runner_application_composition_partition(root):
 
 def project_runner_application_composition_partition(root, path, current):
     """Restore the reviewed 592e head before the isolated full-proof successor."""
+    current = project_diagnostic_artifact_batch_source(root, path, current)
     if path not in RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -10143,6 +10233,7 @@ def verify_current(root):
     validate_domain_expiry_port_source(root)
     validate_proof_runtime_source(root)
     validate_proof_cache_hardening_source(root)
+    validate_diagnostic_artifact_batch_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
@@ -10557,6 +10648,7 @@ def verify_current(root):
         {'name': 'Exact Application Sent-copy fixture successor restores the APPEND protocol around the larger MIME assertion after preserved run 44913252537', 'passed': True},
         {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
+        {'name': 'Exact Diagnostic artifact batch retains one full current-source proof before the finite isolated historical comparisons', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},

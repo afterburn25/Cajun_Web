@@ -29,6 +29,8 @@ def run(root=ROOT):
         else:
             raise AssertionError('Accepted unreviewed composition: ' + name)
 
+    refuses('Refuses an incomplete provider artifact validation batch',
+            lambda: proof.provider_browser_artifact_validations(root, ()))
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
     with tempfile.TemporaryDirectory(prefix='cwp-composition-negative-') as folder:
@@ -51,6 +53,24 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
+
+        def altered_diagnostic_artifact_batch_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_artifact_batch_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_ARTIFACT_BATCH_BASE', 'base'),
+            ('DIAGNOSTIC_ARTIFACT_BATCH_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_ARTIFACT_BATCH_SOURCE', 'source'),
+            ('DIAGNOSTIC_ARTIFACT_BATCH_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic artifact batch ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_artifact_batch_identity(attribute))
 
         fixture_head = proof.git(fixture, 'rev-parse', 'HEAD').decode().strip()
         fixture_parent = proof.git(fixture, 'rev-parse', fixture_head + '^').decode().strip()
