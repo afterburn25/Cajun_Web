@@ -607,6 +607,13 @@ APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE_TREE = '2e9a35206ee6a88560745f1c7ba4a1
 APPLICATION_SENT_COPY_FIXTURE_MODE_PATH = 'tests/mail_submissions_cases.py'
 APPLICATION_SENT_COPY_FIXTURE_MODE_BASE_SHA256 = '6306bdaf60ba85ba239952e2839a84c2338c1de9d6978c8ed9c325e518c88261'
 APPLICATION_SENT_COPY_FIXTURE_MODE_SOURCE_SHA256 = 'ad53caa0a838312f18844d72192a04cbd75e6f35276ded20bb1f34a8fa73d21e'
+APPLICATION_REPLY_FOLDER_ROUTE_BASE = 'e83180bf22b3ee3f1586f524f77ed89e443c216e'
+APPLICATION_REPLY_FOLDER_ROUTE_BASE_TREE = 'f6b86fac4b5c9be5b900d829d50eea2dd1c27350'
+APPLICATION_REPLY_FOLDER_ROUTE_SOURCE = '2758b70e84ed3bd75e7fdc9a42eddb9e220ac3ad'
+APPLICATION_REPLY_FOLDER_ROUTE_SOURCE_TREE = '121b75b7abf168692433032b5cddeeebddca0d95'
+APPLICATION_REPLY_FOLDER_ROUTE_PATH = 'tests/mail_reply_cases.py'
+APPLICATION_REPLY_FOLDER_ROUTE_BASE_SHA256 = '8acac68723100447290889511af4e0c072bb2730e17f28fba0fb2d53e558846c'
+APPLICATION_REPLY_FOLDER_ROUTE_SOURCE_SHA256 = '0f4a388121e410769993b76afc14214aab709552e3291e41810af8b23bc2ad72'
 ACCOUNT_RATE_BOUNDARY_BASE = 'f8e85fd886b1a011c092a22948812fe1c6b8a563'
 ACCOUNT_RATE_BOUNDARY_BASE_TREE = '51a63ca1932ec5029584c53b18e89f65f47fe760'
 ACCOUNT_RATE_BOUNDARY_SOURCE = '1225f25c70668b43edf5fbc43e3455196eee7091'
@@ -1908,7 +1915,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '1d887c83fc32e79b0744ffc2a57f89f523c0c310f06cc816abbf210a69eb71cc'
+REGRESSION_SHA256 = '6abc0de1e18151eacafebd1b3d67fcd76b004411b8dbece6a0fdb18a18a5a92d'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -5291,7 +5298,8 @@ def validate_mail_reply_all_replay_source(root):
     base_entries = entries(root, MAIL_REPLY_ALL_REPLAY_BASE)
     source_entries = entries(root, MAIL_REPLY_ALL_REPLAY_SOURCE)
     for path in sorted(MAIL_REPLY_ALL_REPLAY_PATHS):
-        current = project_latest_acceptance_successors(root, path, ordinary(root, path))
+        current = project_application_reply_folder_route(root, path, ordinary(root, path))
+        current = project_latest_acceptance_successors(root, path, current)
         current = project_mail_acceptance_repair_source(root, path, current)
         source = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob', MAIL_REPLY_ALL_REPLAY_BASE + ':' + path)
@@ -5321,6 +5329,7 @@ def validate_mail_reply_all_replay_source(root):
 
 def project_mail_reply_all_replay(root, path, current):
     """Restore the first consolidated-mail proof head before replay coverage."""
+    current = project_application_reply_folder_route(root, path, current)
     current = project_mail_acceptance_portability(root, path, current)
     if path not in MAIL_REPLY_ALL_REPLAY_PATHS:
         return current
@@ -9495,6 +9504,56 @@ def actual_paths(root, source_paths):
     return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
+def validate_application_reply_folder_route(root):
+    """Bind the retained folder-scoped Reply fixture after preserved run 44943541659."""
+    require(git(root, 'rev-parse', APPLICATION_REPLY_FOLDER_ROUTE_BASE + '^{tree}')
+            .decode().strip() == APPLICATION_REPLY_FOLDER_ROUTE_BASE_TREE
+            and git(root, 'rev-parse', APPLICATION_REPLY_FOLDER_ROUTE_SOURCE + '^{tree}')
+            .decode().strip() == APPLICATION_REPLY_FOLDER_ROUTE_SOURCE_TREE,
+            'Application Reply folder-route source identity changed')
+    require(git(root, 'show', '-s', '--format=%P', APPLICATION_REPLY_FOLDER_ROUTE_SOURCE)
+            .decode().strip().split() == [APPLICATION_REPLY_FOLDER_ROUTE_BASE],
+            'Application Reply folder-route source parent changed')
+    git(root, 'merge-base', '--is-ancestor', APPLICATION_REPLY_FOLDER_ROUTE_SOURCE, 'HEAD')
+    path = APPLICATION_REPLY_FOLDER_ROUTE_PATH
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                APPLICATION_REPLY_FOLDER_ROUTE_BASE,
+                APPLICATION_REPLY_FOLDER_ROUTE_SOURCE).decode().splitlines()
+            == ['M\t' + path],
+            'Application Reply folder-route source changed another path or status')
+    base_entries = entries(root, APPLICATION_REPLY_FOLDER_ROUTE_BASE)
+    source_entries = entries(root, APPLICATION_REPLY_FOLDER_ROUTE_SOURCE)
+    base = git(root, 'cat-file', 'blob', APPLICATION_REPLY_FOLDER_ROUTE_BASE + ':' + path)
+    source = git(root, 'cat-file', 'blob', APPLICATION_REPLY_FOLDER_ROUTE_SOURCE + ':' + path)
+    current = ordinary(root, path)
+    old_route = b"    route = {'account_id': aid, 'revision': '1', 'uidvalidity': '1234', 'uid': '82'}"
+    new_route = b"    route = {'account_id': aid, 'revision': '1', 'uidvalidity': '1234', 'uid': '82', 'folder': 'INBOX'}"
+    require(digest(base) == APPLICATION_REPLY_FOLDER_ROUTE_BASE_SHA256
+            and digest(source) == APPLICATION_REPLY_FOLDER_ROUTE_SOURCE_SHA256
+            and current == source
+            and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644'
+            and base.count(old_route) == 1 and source.count(new_route) == 1
+            and old_route not in source
+            and project_application_reply_folder_route(root, path, current) == base
+            and project_application_reply_folder_route(root, path, base) == base,
+            'Application Reply folder-route identity or projection changed')
+
+
+def project_application_reply_folder_route(root, path, current):
+    """Restore the accepted e831 source before the folder-route fixture correction."""
+    if path != APPLICATION_REPLY_FOLDER_ROUTE_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob', APPLICATION_REPLY_FOLDER_ROUTE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', APPLICATION_REPLY_FOLDER_ROUTE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current Application Reply folder-route fixture changed before predecessor projection')
+    return base
+
+
 def validate_application_sent_copy_fixture_mode(root):
     """Bind the finite IMAP fixture correction after preserved run 44913252537."""
     require(git(root, 'rev-parse', APPLICATION_SENT_COPY_FIXTURE_MODE_BASE + '^{tree}')
@@ -9943,6 +10002,7 @@ def verify_current(root):
     data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
     ensure_history(root)
     pin_head(root)
+    validate_application_reply_folder_route(root)
     validate_application_sent_copy_fixture_mode(root)
     validate_application_smtp_fixture_bound(root)
     validate_runner_application_current_artifact_binding(root)
@@ -10286,7 +10346,8 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_sent_copy_fixture_mode(root, path, ordinary(root, path))
+        value = project_application_reply_folder_route(root, path, ordinary(root, path))
+        value = project_application_sent_copy_fixture_mode(root, path, value)
         value = project_application_smtp_fixture_bound(root, path, value)
         value = project_runner_application_current_artifact_binding(root, path, value)
         value = project_runner_application_composition_partition(root, path, value)
@@ -10344,7 +10405,8 @@ def verify_current(root):
                 and mode(root, path) == '100644',
                 'UX-08 payment addition no longer matches its exact source: ' + path)
     for path in sorted(MAIL_REPLY_FORWARD_ADDITIONS):
-        current = project_mail_copy_controls_fix(root, path, ordinary(root, path))
+        current = project_application_reply_folder_route(root, path, ordinary(root, path))
+        current = project_mail_copy_controls_fix(root, path, current)
         current = project_mail_reply_session_fix(root, path, current)
         current = project_mail_native_fixture_policy_fix(root, path, current)
         current = project_mail_reply_forward_workflow_fix(root, path, current)
@@ -10435,6 +10497,7 @@ def verify_current(root):
         {'name': 'Exact Application HTTP expiry-fixture successor uses the canonical numeric epoch under the strict BIGINT grant schema after preserved run 44729363443', 'passed': True},
         {'name': 'Exact signed-label successor admits only the two reviewed PPA labels under the retained publisher fingerprint after preserved run 44792670112', 'passed': True},
         {'name': 'Exact mail-folder runner successor uses only assigned service ports after preserved fixed-port failure 136522311121', 'passed': True},
+        {'name': 'Exact Application Reply successor posts the retained INBOX route identity after preserved run 44943541659', 'passed': True},
         {'name': 'Exact Application Sent-copy fixture successor restores the APPEND protocol around the larger MIME assertion after preserved run 44913252537', 'passed': True},
         {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},

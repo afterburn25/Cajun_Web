@@ -134,6 +134,11 @@ def run(root=ROOT):
                         b"    inbox_server.mode = 'append'\n    r = member.post(attach_copy_page,",
                         b"    r = member.post(attach_copy_page,", 1))))
 
+        reply_fixture = 'tests/mail_reply_cases.py'
+        refuses('Refuses removal of the Reply fixture folder identity',
+                lambda: modified(reply_fixture, lambda target: target.write_bytes(
+                    target.read_bytes().replace(b", 'folder': 'INBOX'}\n", b"}\n", 1))))
+
         path = 'site/app/billing/software_client.php'
         refuses('Refuses removal of an actual current application file',
                 lambda: modified(path, lambda target: target.unlink()))
