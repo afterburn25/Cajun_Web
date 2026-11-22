@@ -107,6 +107,15 @@ def obtain_baseline(target):
     return {'url': BASELINE_URL, 'bytes': len(raw), 'sha256': BASELINE_SHA256}
 
 
+def ensure_update_stage(members, version):
+    """Never allow an UPDATE extraction to overwrite the installed site root."""
+    prefix = ('cwp-update-' + version + '/').casefold()
+    if not members or any(not name.startswith(prefix) for name in members):
+        raise RuntimeError('UPDATE package must contain only its versioned staging tree.')
+    if prefix + 'owner-update.php' not in members:
+        raise RuntimeError('UPDATE archive lacks its versioned owner update entry point.')
+
+
 def main():
     if os.environ.get('CWP_TEST_DATABASE') != 'cwp_test':
         raise RuntimeError('Only the disposable cwp_test release diagnostic is permitted.')
@@ -147,8 +156,7 @@ def main():
 
     # A staging-only dry extraction never applies migration code or modifies live files.
     stage = 'cwp-update-' + version
-    if stage + '/owner-update.php' not in update_members['names']:
-        raise RuntimeError('UPDATE archive lacks its versioned owner update entry point.')
+    ensure_update_stage(update_members['names'], version)
     destination = ROOT / 'test-runtime/released-1.26.1'
     if destination.exists():
         raise RuntimeError('Use a fresh destination for release extraction diagnostics.')
