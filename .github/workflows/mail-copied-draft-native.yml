@@ -114,7 +114,7 @@ jobs:
           docker build --build-arg PHP_VERSION="$PHP_VERSION" -t cwp-copied-draft-native - <<'DOCKER' > "$cell/build.stdout.log" 2> "$cell/build.stderr.log" || status=$?
           ARG PHP_VERSION
           FROM php:${PHP_VERSION}-cli
-          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev && docker-php-ext-install pdo_mysql mbstring && rm -rf /var/lib/apt/lists/*
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libonig-dev libxml2-dev && docker-php-ext-install pdo_mysql mbstring dom && php -r 'exit(extension_loaded("dom") ? 0 : 1);' && rm -rf /var/lib/apt/lists/*
           DOCKER
           test "$status" -eq 0
       - name: Prove the synthetic database is ready for the assigned user
@@ -153,12 +153,17 @@ jobs:
                 if [ "$mode" = noini ]; then php_flags="-n"; fi
                 php $php_flags tests/mail-compose/origin.php > "$cell/portable-$mode-origin.json"
                 php $php_flags tests/mail-compose/reply.php > "$cell/portable-$mode-reply.json"
+                php $php_flags tests/mail-compose/reply_all.php > "$cell/portable-$mode-reply-all.json"
                 php $php_flags tests/mail-compose/thread.php > "$cell/portable-$mode-thread.json"
                 php $php_flags tests/mail-compose/copied_source.php > "$cell/portable-$mode-copied-source.json"
+                php $php_flags tests/mail-compose/html.php "$cell/portable-$mode-compose-html.json" > "$cell/portable-$mode-compose-html.stdout.log"
+                php $php_flags tests/mail-compose/attachment.php > "$cell/portable-$mode-compose-attachment.json"
                 php $php_flags tests/mail_copied_draft_storage.php > "$cell/portable-$mode-storage.json"
                 php $php_flags tests/mail_copied_draft_admin_policy.php > "$cell/portable-$mode-admin-policy.json"
                 php $php_flags tests/mail_copied_draft_create_adapter.php > "$cell/portable-$mode-adapter.json"
                 php $php_flags tests/database_schema_registry_policy.php > "$cell/portable-$mode-schema-registry.json"
+                php $php_flags tests/mail-receiving/attachment_test.php > "$cell/portable-$mode-attachment.json"
+                php $php_flags tests/mail-receiving/attachment_security_test.php > "$cell/portable-$mode-attachment-security.json"
                 php $php_flags tests/mail-submission/run.php "$cell/portable-$mode-submission-snapshot.json" > "$cell/portable-$mode-submission-snapshot.stdout.log"
                 php $php_flags tests/mail-submission/mime.php "$cell/portable-$mode-submission-mime.json" > "$cell/portable-$mode-submission-mime.stdout.log"
               done
@@ -183,10 +188,12 @@ jobs:
           from pathlib import Path
           cell = Path('qa/mail-copied-draft-native/${{ matrix.php }}-${{ matrix.database }}')
           expected = {
-              'origin': 17, 'reply': 60, 'thread': 45,
-              'copied-source': 18, 'storage': 20, 'admin-policy': 23,
-              'adapter': 18, 'schema-registry': 385,
-              'submission-snapshot': 54, 'submission-mime': 34,
+              'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45,
+              'copied-source': 19, 'compose-html': 39, 'compose-attachment': 55,
+              'storage': 21, 'admin-policy': 23,
+              'adapter': 19, 'schema-registry': 401, 'attachment': 14,
+              'attachment-security': 27,
+              'submission-snapshot': 78, 'submission-mime': 55,
           }
           for mode in ('normal', 'noini'):
               for name, count in expected.items():

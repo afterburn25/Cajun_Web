@@ -211,7 +211,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
         check(label+' upgraded inbox waits for explicit owner preparation','must prepare inbox reading' in session.get(inbox).text)
         r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_inbox_setup','current_password':password})
         check(label+' owner prepares empty inbox request history','Inbox request history is ready' in r.text and records('inbox')=={'requests':[],'results':[]})
-        r=session.post(inbox,data={'csrf':token(session.get(inbox)),'action':'mail_inbox_read','account_id':account['id'],'revision':account['revision']})
+        r=session.post(inbox,data={'csrf':token(session.get(inbox)),'action':'mail_inbox_read','account_id':account['id'],'revision':account['revision'],'folder':'INBOX'})
         check(label+' upgraded inbox refuses fixture-only host without network','public server hostname' in r.text and records('inbox')=={'requests':[],'results':[]})
         records('inbox-seed');saved_inbox=records('inbox')
         check(label+' synthetic failed inbox history never claims an empty successful mailbox',len(saved_inbox['requests'])==1 and saved_inbox['results'][0]['outcome']=='failed' and 'Request failed' in session.get(inbox).text and 'server reported an empty inbox' not in session.get(inbox).text)
@@ -225,7 +225,7 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
     if version=='1.17.0':
         check(label+' update retains nonempty inbox and earlier private history',records('inbox')==prior_inbox and len(prior_inbox['requests'])==1 and records('mail-checks')==prior_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key)
         account=prior_accounts['accounts'][0];library=url+'/admin/index.php?view=mail-accounts'
-        route={'account_id':account['id'],'revision':str(account['revision']),'uidvalidity':'1234','uid':'82'}
+        route={'account_id':account['id'],'revision':str(account['revision']),'folder':'INBOX','uidvalidity':'1234','uid':'82'}
         from urllib.parse import urlencode
         message=url+'/admin/index.php?view=mail-message&'+urlencode(route)
         check(label+' upgraded messages wait for explicit owner preparation','must prepare message reading' in session.get(message).text)
@@ -248,6 +248,12 @@ def run(web,base,check,qa,php,label,prefix,version,*,at_root=False):
         check(label+' update preserves nonempty message and prior history',len(prior_messages['requests'])==1 and records('inbox')==prior_inbox and prior_retained())
         library=url+'/admin/index.php?view=mail-accounts';center=url+'/admin/index.php?view=mail-notices';endpoint=url+'/api/mail-notices.php'
         check(label+' updated notices wait for owner preparation','must prepare' in session.get(center).text and session.get(endpoint).status_code==204)
+        r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_inbox_setup','current_password':password})
+        migrated_inbox=records('inbox')
+        check(label+' owner migrates retained inbox history to scoped reads','Inbox request history is ready' in r.text and migrated_inbox['results']==prior_inbox['results'] and len(migrated_inbox['requests'])==len(prior_inbox['requests']) and all(q['folder']=='INBOX' for q in migrated_inbox['requests']) and [{k:v for k,v in q.items() if k!='folder'} for q in migrated_inbox['requests']]==prior_inbox['requests'])
+        prior_inbox=migrated_inbox
+        r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_message_setup','current_password':password})
+        check(label+' owner migrates retained message history to scoped reads','Message request history is ready' in r.text and records('messages')==prior_messages)
         r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_notices_setup','current_password':password})
         check(label+' owner enables empty additive notice storage','Email notice storage is ready' in r.text and records('notices')=={'windows':[],'items':[],'states':[]})
         records('notices-seed');saved_notices=records('notices');saved_inbox=records('inbox')

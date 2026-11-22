@@ -50,6 +50,18 @@ def run(a, root, tmp, check, deny, context, fixtures, outcomes, package_source_r
     ctx = context(); source = tmp/'source'; fixtures(source, ctx)
     input_dir = tmp/'inputs'; input_sha = a.create_inputs(source, ctx, input_dir)
     incoming = tmp/'partitions'; bindings = {}; roots = {}
+    composition = incoming/'composition'; composition.mkdir(parents=True)
+    result = {'passed': True, 'count': 1,
+              'checks': [{'name': 'Synthetic delivery full composition', 'passed': True}]}
+    a.write(composition/'combined-source-composition-results.json', result)
+    a.write(composition/'composition-source.json', {
+        'ci_sha': ctx['ci_sha'], 'source_sha': ctx['source_sha'], 'source_tree': ctx['tree'],
+        'run_id': ctx['run_id'], 'run_attempt': ctx['attempt'],
+        'command': 'python3 -B tests/combined_source_composition_test.py',
+        'result_sha256': a.digest(composition/'combined-source-composition-results.json'),
+    })
+    bindings['composition'] = {'result': 'success', 'artifact_id': '91',
+                               'artifact_digest': '7'*64}
     for i, lane in enumerate(a.LANES):
         target = source if lane == 'build' else tmp/lane
         roots[lane] = target

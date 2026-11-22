@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import re
+import runpy
 import shlex
 import shutil
 import subprocess
@@ -22,9 +23,13 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = 'cfec890a493d931f24c20621bc002736a536889ee2d5f213b90fb879aca2dc49'
+APT_PREPARATION_SHA256 = '1de78d6a6104380d39b9977a4285e18490defea7fc4a60ff1b5227a30945b562'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
+                            '    # policy proofs, then reached the exact 180m ceiling before helper verification.\n'
+                            '    # Keep every source-proof command and allow one bounded complete admission pass.\n'
+                            '    timeout-minutes: 360\n')
 PROTECTED_BUILD_TIMEOUT_PREDECESSOR = ('  build:\n'
                                        '    runs-on: ubuntu-24.04\n'
                                        '    timeout-minutes: 45\n')
@@ -32,8 +37,24 @@ PROTECTED_BUILD_TIMEOUT_SUCCESSOR = ('  build:\n'
                                      '    runs-on: ubuntu-24.04\n'
                                      '    # Exact-source composition completed in 51m on image 20261111.127.1 but\n'
                                      '    # exceeded 83m on 20261111.370.1 after the package and all build guards\n'
-                                     '    # had passed. Keep every assertion and allow bounded hosted-runner margin.\n'
-                                     '    timeout-minutes: 180\n')
+                                     '    # had passed. Run 44385954180 then reached the exact 180m job ceiling after\n'
+                                     '    # 2,937 helper checks, the package build and all 94 build guards passed.\n'
+                                     '    # Run 44639431573 completed provenance, source, inventory, package, guards\n'
+                                     '    # and public fixture preparation at 239m42s, then the exact 240m ceiling\n'
+                                     '    # cancelled the evidence seal. Runs 44792670039 and 44803351271 then passed\n'
+                                     '    # setup, provenance, package and all 94 build guards before the unchanged\n'
+                                     '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+                                     '    # Keep every assertion and use the hosted-runner maximum as the finite bound.\n'
+                                     '    timeout-minutes: 360\n')
+PROTECTED_COMPOSITION_SPLIT_OLD_COMMENT = (
+    '    # setup, provenance, package and all 94 build guards before the unchanged\n'
+    '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+    '    # Keep every assertion and use the hosted-runner maximum as the finite bound.\n')
+PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT = (
+    '    # setup, provenance, package and all 94 build guards before the unchanged\n'
+    '    # composition suite reached the exact 300m job ceiling on slower allocations.\n'
+    "    # Run 44847291464 then reached GitHub-hosted's 360m maximum in the same\n"
+    '    # unchanged proof. The full proof now runs as a separate required job.\n')
 PROTECTED_ADDITIONS = (
     '          "$PHP_BINARY" tests/client_identity_policy.php > qa/client-identity-policy-results.json\n',
     '          "$PHP_BINARY" tests/client_identity_native.php\n',
@@ -184,6 +205,46 @@ def digest(value):
 def require(passed, message):
     if not passed:
         raise AssertionError(message)
+
+
+def signed_release_identity_cases():
+    """Exercise the actual pure signed-release allowlist on every supported label."""
+    scope = runpy.run_path(str(ROOT / APT_PREPARATION_SCRIPT))
+    allowed = scope['release_identity_allowed']
+    fields = ('origin', 'label', 'suite', 'codename', 'components')
+    ubuntu = [dict(zip(fields, ('Ubuntu', 'Ubuntu', suite, 'noble',
+                                'main restricted universe multiverse')))
+              for suite in ('noble', 'noble-updates', 'noble-backports', 'noble-security')]
+    def ppa(label):
+        return dict(zip(fields, ('LP-PPA-ondrej-php', label, 'noble', 'noble', 'main')))
+    checks = []
+    def check(name, value):
+        require(value, name)
+        checks.append({'name': name, 'passed': True})
+    check('Signed release allowlist accepts the retained PHP PPA label',
+          allowed(ubuntu + [ppa('PPA for PHP')], '8.2'))
+    check('Signed release allowlist accepts the exact deprecated PHP PPA label',
+          allowed(ubuntu + [ppa('PPA for PHP (deprecated)')], '8.4'))
+    reordered = {name: ppa('PPA for PHP (deprecated)')[name] for name in reversed(fields)}
+    check('Signed release allowlist does not depend on release field order',
+          allowed(ubuntu + [reordered], '8.2'))
+    check('Signed release allowlist retains distro PHP without a PPA',
+          allowed(ubuntu, '8.3'))
+    check('Signed release allowlist refuses an unknown PPA label',
+          not allowed(ubuntu + [ppa('PPA for PHP replacement')], '8.2'))
+    check('Signed release allowlist refuses simultaneous old and new PPA identities',
+          not allowed(ubuntu + [ppa('PPA for PHP'), ppa('PPA for PHP (deprecated)')], '8.4'))
+    changed = ppa('PPA for PHP (deprecated)'); changed['origin'] = 'Unknown publisher'
+    check('Signed release allowlist refuses a changed publisher origin',
+          not allowed(ubuntu + [changed], '8.2'))
+    check('Signed release allowlist refuses a missing Ubuntu suite',
+          not allowed(ubuntu[:-1] + [ppa('PPA for PHP (deprecated)')], '8.4'))
+    check('Signed release allowlist refuses an unsupported PHP lane',
+          not allowed(ubuntu + [ppa('PPA for PHP (deprecated)')], '8.5'))
+    changed = ppa('PPA for PHP (deprecated)'); changed['unexpected'] = 'field'
+    check('Signed release allowlist refuses additional identity fields',
+          not allowed(ubuntu + [changed], '8.2'))
+    return checks
 
 
 def executable_ubuntu_source_guard_fixtures():
@@ -376,9 +437,21 @@ def executable_ubuntu_source_guard_fixtures():
              'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
              'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
              'https://security.ubuntu.com/ubuntu/\tpriority:3\n', 'aws-mirror-list')
+    run_case('Executable guard accepts exact fully converted AWS mirror-list profile',
+             source('mirror+file:/etc/apt/apt-mirrors.txt',
+                    'mirror+file:/etc/apt/apt-mirrors.txt'),
+             'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+             'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+             'https://security.ubuntu.com/ubuntu/\tpriority:3\n', 'aws-mirror-list')
     run_case('Executable guard rejects an unknown AWS mirror-list archive host',
              source('mirror+file:/etc/apt/apt-mirrors.txt',
                     'http://security.ubuntu.com/ubuntu'),
+             'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
+             'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
+             'https://security.ubuntu.com/ubuntu/\tpriority:3\n')
+    run_case('Executable guard rejects an unknown fully converted AWS mirror-list archive host',
+             source('mirror+file:/etc/apt/apt-mirrors.txt',
+                    'mirror+file:/etc/apt/apt-mirrors.txt'),
              'http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/\tpriority:1\n'
              'https://archive.ubuntu.com/ubuntu/\tpriority:2\n'
              'https://security.ubuntu.com/ubuntu/\tpriority:3\n')
@@ -452,6 +525,41 @@ def proof_commands(source):
     return commands
 
 
+def project_protected_composition_split(source):
+    """Restore the monolithic reviewed Application workflow deterministically."""
+    projected, job_count = re.subn(r'  composition:\n.*?(?=  build:\n)', '', source, count=1, flags=re.S)
+    require(job_count == 1, 'Application full-composition job boundary changed')
+    require(projected.count(PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT) == 1,
+            'Application split disposition changed')
+    projected = projected.replace(PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT,
+                                  PROTECTED_COMPOSITION_SPLIT_OLD_COMMENT, 1)
+    current_build = ('          python3 tests/build_guards.py\n'
+                     '          python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt\n')
+    previous_build = ('          python3 tests/build_guards.py\n'
+                      '          python3 -B tests/combined_source_composition_test.py | tee -a qa/build-results.txt\n'
+                      '          python3 -B tests/browser_suite_orchestration_contract.py | tee -a qa/build-results.txt\n')
+    require(projected.count(current_build) == 1, 'Application split build boundary changed')
+    projected = projected.replace(current_build, previous_build, 1)
+    require(projected.count('    needs: [composition, build]\n') == 3,
+            'Application split downstream dependency count changed')
+    projected = projected.replace('    needs: [composition, build]\n', '    needs: build\n')
+    current_acceptance = '    needs: [composition, build, native-and-browser, recovery, apache]\n'
+    previous_acceptance = '    needs: [build, native-and-browser, recovery, apache]\n'
+    require(projected.count(current_acceptance) == 1,
+            'Application split acceptance dependency changed')
+    projected = projected.replace(current_acceptance, previous_acceptance, 1)
+    projected, evidence_count = re.subn(
+        r'      - name: Download exact full-composition evidence\n.*?(?=      - name: Download exact native-browser evidence\n)',
+        '', projected, count=1, flags=re.S)
+    require(evidence_count == 1, 'Application composition evidence boundary changed')
+    binding = ('{"composition": {"result": "${{ needs.composition.result }}", '
+               '"artifact_id": "${{ needs.composition.outputs.artifact_id }}", '
+               '"artifact_digest": "${{ needs.composition.outputs.artifact_digest }}"}, ')
+    require(projected.count(binding) == 1, 'Application composition aggregate binding changed')
+    projected = projected.replace(binding, '{', 1)
+    return projected
+
+
 def validate(workflow, legacy, protected, apt_script):
     checks = []
 
@@ -472,7 +580,20 @@ def validate(workflow, legacy, protected, apt_script):
     check('APT preparation script retains ordinary Git mode', len(indexed) >= 4 and indexed[0] == '100644')
     check('Reviewed APT preparation script remains byte-identical',
           digest(apt_script) == APT_PREPARATION_SHA256)
-    protected_predecessor = protected
+    check('Protected Application runs one unchanged full composition proof in a separate required exact-source job',
+          protected.count('  composition:\n') == 1
+          and protected.count('    timeout-minutes: 360\n') == 2
+          and protected.count('          python3 -B tests/combined_source_composition_test.py | tee qa/combined-source-composition-results.json\n') == 1
+          and '--shallow' not in protected
+          and protected.count('    needs: [composition, build]\n') == 3
+          and protected.count('    needs: [composition, build, native-and-browser, recovery, apache]\n') == 1
+          and protected.count('"composition": {"result": "${{ needs.composition.result }}", "artifact_id": "${{ needs.composition.outputs.artifact_id }}", "artifact_digest": "${{ needs.composition.outputs.artifact_digest }}"}') == 1
+          and protected.count('          merge-multiple: true\n          path: .acceptance/incoming/composition\n') == 1
+          and protected.count("              'ci_sha': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),\n") == 1
+          and protected.count("              'source_sha': os.environ['CWP_SOURCE_SHA'],\n") == 1
+          and protected.count("              'result_sha256': __import__('hashlib').sha256(result_path.read_bytes()).hexdigest(),\n") == 1
+          and 'continue-on-error' not in protected)
+    protected_predecessor = project_protected_composition_split(protected)
     check('Protected application build has one bounded timeout successor',
           protected_predecessor.count(PROTECTED_BUILD_TIMEOUT_SUCCESSOR) == 1
           and PROTECTED_BUILD_TIMEOUT_PREDECESSOR not in protected_predecessor)
@@ -565,6 +686,8 @@ def validate(workflow, legacy, protected, apt_script):
     check('Main retains each immutable acceptance run',
           "\n  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}\njobs:\n" in workflow)
     source = actual['source']
+    check('Current source admission has one bounded evidence-derived timeout',
+          source.count(SOURCE_TIMEOUT_SUCCESSOR) == 1)
     check('Current source admission cannot silently skip or soften failure',
           '    if:' not in source.split('    steps:\n', 1)[0]
           and 'continue-on-error' not in source and 'set +e' not in source and '|| true' not in source)
@@ -617,6 +740,7 @@ def self_test(root=ROOT):
     protected = (root / PROTECTED).read_text()
     apt_script = (root / APT_PREPARATION_SCRIPT).read_text()
     checks = validate(workflow, legacy, protected, apt_script)
+    checks.extend(signed_release_identity_cases())
     checks.extend(executable_ubuntu_source_guard_fixtures())
     changes = (
         ('lost SQL command', '          php tests/account_security_native.php >', '          true # tests/account_security_native.php >'),
@@ -634,6 +758,8 @@ def self_test(root=ROOT):
         ('unbounded push branches', 'branches: [main, chatgpt/account-notifications-acceptance-20261101]', "branches: ['**']"),
         ('per-commit cancellation group', 'group: account-notifications-acceptance-${{ github.event.pull_request.number || github.ref }}', 'group: account-notifications-acceptance-${{ github.sha }}'),
         ('cancelled main evidence', "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", 'cancel-in-progress: true'),
+        ('lost bounded current-source timeout', SOURCE_TIMEOUT_SUCCESSOR,
+         SOURCE_TIMEOUT_SUCCESSOR.replace('timeout-minutes: 360', 'timeout-minutes: 180')),
         ('unbound source output', '          test "$actual" = "$CWP_SOURCE_SHA"\n', ''),
         ('dirty source admission', '          test -z "$(git status --porcelain)"\n', ''),
         ('lost failure evidence', '      - name: Retain exact source and failure evidence\n        if: always()', '      - name: Retain exact source and failure evidence\n        if: success()'),
@@ -676,7 +802,8 @@ def self_test(root=ROOT):
             'tests/hosting_checkout_http_browser.py --full-suite',
             'tests/hosting_checkout_http_browser.py', 1)),
         ('lost bounded application build timeout', protected.replace(
-            PROTECTED_BUILD_TIMEOUT_SUCCESSOR, PROTECTED_BUILD_TIMEOUT_PREDECESSOR, 1)),
+            PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT + '    timeout-minutes: 360\n',
+            PROTECTED_COMPOSITION_SPLIT_NEW_COMMENT + '    timeout-minutes: 180\n', 1)),
         ('lost canonical application mirror selection', protected.replace(PROTECTED_APT_MIRRORS, '', 1)),
         ('lost APT preparation trigger', protected.replace(PROTECTED_APT_TRIGGER_ADDITION, '', 1)),
         ('lost bounded application reconnect wrapper', protected.replace(PROTECTED_APT_WRAPPER, '', 1)),

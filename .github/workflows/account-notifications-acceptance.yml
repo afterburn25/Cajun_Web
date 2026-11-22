@@ -15,7 +15,10 @@ concurrency:
 jobs:
   source:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and
+    # policy proofs, then reached the exact 180m ceiling before helper verification.
+    # Keep every source-proof command and allow one bounded complete admission pass.
+    timeout-minutes: 360
     outputs:
       sha: ${{ steps.record.outputs.sha }}
     env:

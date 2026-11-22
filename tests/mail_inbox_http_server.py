@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 class InboxServer:
     def __init__(self,root):
         self.root=Path(root)/'test-runtime/mail-inbox-http';self.root.mkdir(parents=True,exist_ok=True)
-        self.mode='ok';self.commands=[];self.errors=[];self.connections=0;self.stopped=threading.Event()
+        self.mode='ok';self.commands=[];self.errors=[];self.connections=0;self.appended=None;self.stopped=threading.Event()
         key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
         name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,'inbox-fixture.example.net')]);now=datetime.datetime.now(datetime.timezone.utc)
         certificate=x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(x509.random_serial_number()).not_valid_before(now-datetime.timedelta(days=1)).not_valid_after(now+datetime.timedelta(days=1)).add_extension(x509.SubjectAlternativeName([x509.DNSName('inbox-fixture.example.net')]),critical=False).add_extension(x509.BasicConstraints(ca=True,path_length=None),critical=True).sign(key,hashes.SHA256())
@@ -34,13 +34,50 @@ class InboxServer:
                         if not part:raise EOFError()
                         data+=part
                         assert len(data)<4096
-                    value=data[:-2].decode();assert value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value)
-                send('* OK Synthetic HTTP inbox fixture');expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
+                    value=data[:-2].decode();assert value in expected if isinstance(expected,tuple) else value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value);return value
+                send('* OK Synthetic HTTP inbox fixture')
+                if mode.startswith('append'):
+                    expect('CWA001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWA001 OK done')
+                    expect('CWA002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWA002 OK authenticated')
+                    data=b''
+                    while not data.endswith(b'\r\n'):
+                        part=s.recv(1)
+                        if not part:raise EOFError()
+                        data+=part
+                        assert len(data)<4096
+                    line=data[:-2].decode();assert line.startswith('CWA003 APPEND "Sent" (\\Seen) {'),'Unexpected synthetic IMAP command';self.commands.append('APPEND Sent')
+                    count=int(line.rsplit('{',1)[1].rstrip('}'));send('+ ');payload=b''
+                    while len(payload)<count+2:
+                        part=s.recv(count+2-len(payload))
+                        if not part:raise EOFError()
+                        payload+=part
+                    assert payload[count:]==b'\r\n','Missing synthetic APPEND terminator';self.appended=payload[:count]
+                    send('CWA003 NO folder unavailable' if mode=='append-refused' else 'CWA003 OK appended')
+                    if mode=='append':expect('CWA004 LOGOUT')
+                    continue
+                if mode.startswith('flag'):
+                    expect('CWF001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWF001 OK done')
+                    expect('CWF002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWF002 OK authenticated')
+                    expect(('CWF003 SELECT "INBOX"','CWF003 SELECT "Sent"'));send('* 2 EXISTS');send('* FLAGS (\\Seen \\Answered)');send('* OK [UIDVALIDITY 1234] stable');send('CWF003 OK [READ-ONLY] selected' if mode=='flag-readonly' else 'CWF003 OK [READ-WRITE] selected')
+                    if mode=='flag-readonly':continue
+                    expect('CWF004 UID FETCH 82 (UID FLAGS)')
+                    if mode=='flag-gone':send('CWF004 OK flags');continue
+                    before_seen=mode=='flag-unseen'
+                    send('* 2 FETCH (UID 82 FLAGS (\\Seen))' if before_seen else '* 2 FETCH (UID 82 FLAGS ())');send('CWF004 OK flags')
+                    command=expect(('CWF005 UID STORE 82 +FLAGS.SILENT (\\Seen)','CWF005 UID STORE 82 -FLAGS.SILENT (\\Seen)','CWF005 LOGOUT'))
+                    if command.endswith('LOGOUT'):continue
+                    if mode=='flag-refused':send('CWF005 NO refused');continue
+                    send('CWF005 OK stored');expect('CWF006 UID FETCH 82 (UID FLAGS)')
+                    after_seen='+FLAGS.SILENT' in command
+                    send('* 2 FETCH (UID 82 FLAGS (\\Seen))' if after_seen else '* 2 FETCH (UID 82 FLAGS ())');send('CWF006 OK flags');expect('CWF007 LOGOUT')
+                    continue
+                expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
-                expect('CWR003 EXAMINE "INBOX"');send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
+                expect(('CWR003 EXAMINE "INBOX"','CWR003 EXAMINE "Sent"'));send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
                 if mode.startswith('message'):
                     if mode=='message-epoch':continue
                     head='From: Synthetic sender <synthetic@example.net>\r\nSubject: SYNTHETIC PRIVATE MESSAGE <img src="https://untrusted.example.invalid/header">\r\nDate: Tue, 13 Oct 2026 12:00:00 +0000\r\nMessage-ID: <synthetic-82@example.invalid>\r\nMIME-Version: 1.0\r\n'
+                    if mode=='message-reply-all':head+='To: reply-sender@example.invalid, visible@example.invalid\r\nCc: cc@example.invalid\r\nBcc: hidden@example.invalid\r\n'
                     formatted='<html><head><title>Hidden title</title><style>@import "https://untrusted.example.invalid/style";</style></head><body onload="window.mailInjected=1"><p>Formatted Café 👩‍💻</p><a href="https://external.example.invalid/reference">Referenced website</a><script>parent.mailInjected=1</script><img src="https://untrusted.example.invalid/pixel"><img src="/admin/index.php?view=settings"><form action="https://untrusted.example.invalid/form"><input name=x></form><svg onload="alert(1)"><text>hidden</text></svg></body></html>'
                     raw=(head+'Content-Type: multipart/alternative; boundary=m\r\n\r\n--m\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSYNTHETIC PRIVATE BODY\r\nSecond line 👩‍💻 <script>inert text</script>\r\n--m\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n'+formatted+'\r\n--m--\r\n').encode()
                     if mode=='message-attachment':raw=(head+'Content-Type: text/plain\r\nContent-Disposition: attachment; filename=secret.txt\r\n\r\nSYNTHETIC ATTACHMENT SECRET').encode()

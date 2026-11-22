@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/submission_views.php';
 require_once CWP_CODE_ROOT.'/app/mail/submission_dispatch.php';
+require_once CWP_CODE_ROOT.'/app/mail/copies.php';
 
 function mail_submissions_form(array $input,bool $confirmation=true):array {
     $id=mail_drafts_form_text($input,'submission_id',32);mail_drafts_id($id);
@@ -18,7 +19,12 @@ function mail_submissions_admin_action(string $action):void {
     if($_SERVER['REQUEST_METHOD']!=='POST')throw new InvalidArgumentException('Sending requires an explicit form submission.');
     check_csrf();
     if($action==='mail_submissions_setup') {
-        mail_submissions_migrate(mail_drafts_form_text($_POST,'current_password',200));flash('Email submission storage is ready.');redirect(admin_url('mail-submissions'));
+        mail_submissions_migrate('');flash('Email submission storage is ready.');redirect(admin_url('mail-submissions'));
+    }
+    if($action==='mail_submissions_copy_sent') {
+        if(($_POST['confirm_copy']??null)!=='1')throw new InvalidArgumentException('Confirm that you want one explicit server Sent-folder copy.');
+        $id=mail_drafts_form_text($_POST,'submission_id',32);$result=mail_submission_copy($id);
+        flash(mail_copy_outcome($result['code']),$result['code']==='appended'?'success':'error');redirect(admin_url('mail-submission',['submission_id'=>$id]));
     }
     if($action!=='mail_submissions_send')throw new InvalidArgumentException('Unknown email submission action.');
     $form=mail_submissions_form($_POST);
@@ -31,7 +37,8 @@ function mail_submissions_admin_data(string $view):array {
         $actor=mail_submissions_actor();
         if($view==='mail-submission') {
             $id=mail_drafts_form_text($_GET,'submission_id',32);$row=mail_submissions_get($id);
-            return ['actor'=>$actor,'row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch'])];
+            return ['actor'=>$actor,'row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch']),
+                'copy'=>mail_copy_status($id),'sent_folder'=>mail_sent_folder($row['account_id'])];
         }
         if($view==='mail-send') {
             $draft=mail_drafts_form_text($_GET,'draft_id',32);mail_drafts_id($draft);$form=null;
@@ -61,7 +68,7 @@ function mail_submissions_admin_render(string $view,string $error):void {
     if(!mail_accounts_ready()||!mail_drafts_ready())echo '<p class="notice">An owner must prepare email accounts and local drafts first.</p>';
     elseif(!mail_submissions_ready()) {
         echo '<section class="workspace-card"><h2>Prepare email submissions</h2><p>Keep a private record of each explicitly reviewed sending attempt. This setup does not send an email.</p>';
-        if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_submissions_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare submissions</button></form>';}
+        if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_submissions_setup');echo '<button class="btn gold">Prepare submissions</button></form>';}
         else echo '<p>An owner must prepare submissions before you can send email.</p>';
         echo '</section>';
     }else {

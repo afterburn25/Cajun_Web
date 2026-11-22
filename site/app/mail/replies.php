@@ -29,8 +29,9 @@ function mail_reply_drafts_fingerprint(array $base,DraftOrigin $origin,string $s
 }
 /** Internal locked projection; copied content is decoded only after current Read and Send. */
 function mail_reply_drafts_load(string $id,array $actor,bool $lock=false):array{
+    if(!mail_replies_ready())throw new RuntimeException('Protected draft storage is unavailable. Existing data was preserved.');
     $base=mail_drafts_row($id,(int)$actor['id'],$lock);
-    if($base['status']!=='source'||$base['subject']!=='Copied message draft'||$base['body']!==''||$base['to_json']!=='[]'||$base['cc_json']!=='[]'||$base['bcc_json']!=='[]')throw new RuntimeException('Protected draft placeholder is damaged. Existing data was preserved.');
+    if($base['status']!=='source'||$base['subject']!=='Copied message draft'||$base['body']!==''||($base['body_html']??null)!==null||$base['to_json']!=='[]'||$base['cc_json']!=='[]'||$base['bcc_json']!=='[]')throw new RuntimeException('Protected draft placeholder is damaged. Existing data was preserved.');
     $row=one('SELECT * FROM '.table('mail_reply_drafts').' WHERE id=?'.($lock?' FOR UPDATE':''),[$id]);
     if(!$row)throw new RuntimeException('Protected draft content is unavailable. Existing data was preserved.');
     try{$origin=DraftOrigin::fromJson($row['origin_json']);}
@@ -59,7 +60,7 @@ function mail_reply_drafts_match(DraftOrigin $origin,string $source,int $revisio
 function mail_reply_drafts_existing(string $id,string $source,int $revision,string $validity,string $uid,string $mode,string $sender,int $senderRevision):?string{
     return staff_locked(function()use($id,$source,$revision,$validity,$uid,$mode,$sender,$senderRevision):?string{
         $actor=mail_reply_drafts_actor();mail_drafts_id($id);mail_message_identity($validity,$uid);
-        if(!in_array($mode,['reply','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
+        if(!in_array($mode,['reply','reply-all','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
         mail_reply_drafts_source((int)$actor['id'],$source,$revision);mail_drafts_account($sender,$senderRevision);
         if(!one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$id]))return null;
         $loaded=mail_reply_drafts_load($id,$actor);mail_reply_drafts_match($loaded['origin'],$source,$revision,$validity,$uid,$mode,$sender,$senderRevision);return $id;

@@ -47,15 +47,20 @@ class SubmissionServer:
             try:
                 s.settimeout(5)
                 if encryption=='ssl':s=self.context.wrap_socket(s,server_side=True)
+                pending=[b'']
                 def send(line):s.sendall((line+'\r\n').encode('ascii'))
                 def read():
-                    buf=b''
-                    while not buf.endswith(b'\r\n'):
-                        part=s.recv(1)
+                    while True:
+                        nl=pending[0].find(b'\r\n')
+                        if nl>=0:
+                            line=pending[0][:nl];pending[0]=pending[0][nl+2:]
+                            assert len(line)<=2048,'Synthetic SMTP line overflow'
+                            return line.decode('ascii')
+                        part=s.recv(65536)
                         if not part:raise EOFError()
-                        buf+=part
-                        assert len(buf)<=2048,'Synthetic SMTP line overflow'
-                    return buf[:-2].decode('ascii')
+                        pending[0]+=part
+                        first_nl=pending[0].find(b'\r\n')
+                        assert (len(pending[0]) if first_nl<0 else first_nl)<=2048,'Synthetic SMTP line overflow'
                 def expect(value,label=None):
                     actual=read();attempt['commands'].append(label or actual)
                     assert actual==value,'Unexpected synthetic SMTP command'
@@ -86,7 +91,7 @@ class SubmissionServer:
                     line=read()
                     if line=='.':attempt['terminator']=True;break
                     attempt['data']+=(line[1:] if line.startswith('..') else line).encode()+b'\r\n'
-                    assert len(attempt['data'])<=65536,'Synthetic SMTP DATA overflow'
+                    assert len(attempt['data'])<=1048576,'Synthetic SMTP DATA overflow'
                 if mode=='disconnect_final':continue
                 send({'final450':'450 Temporary rejection','final550':'550 Permanent rejection','malformed_final':'Invalid final reply'}.get(mode,'250 Accepted responsibility'))
             except (EOFError,ConnectionError,socket.timeout,ssl.SSLError):pass

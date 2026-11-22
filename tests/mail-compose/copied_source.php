@@ -23,9 +23,9 @@ function copied_raw(string $extra='',string $body='Synthetic copied body.'):stri
         "Message-ID: <copied@example.invalid>\r\n".$extra.
         "Content-Type: text/plain; charset=UTF-8\r\n\r\n".$body;
 }
-function copied_source(string $mode='reply',string $raw=''):CopiedDraftSource {
+function copied_source(string $mode='reply',string $raw='',?string $self=null):CopiedDraftSource {
     $raw=$raw===''?copied_raw():$raw;
-    return CopiedDraftSource::fromRead(7,str_repeat('a',32),3,'9','44',str_repeat('b',32),$mode,$raw);
+    return CopiedDraftSource::fromRead(7,str_repeat('a',32),3,'9','44',str_repeat('b',32),$mode,$raw,$self);
 }
 
 copied_check('one transient factory binds exact actor account revision UID and read identity',function(){
@@ -43,6 +43,12 @@ copied_check('reply derives bounded ordinary content and threading without expos
 copied_check('forward is recipientless and carries no inherited reply thread',function(){
     $source=copied_source('forward');
     return $source->draft->content->to===[]&&$source->draft->thread->toArray()===['in_reply_to'=>null,'references'=>[]];
+});
+copied_check('reply all excludes the chosen sender and never exposes hidden recipients',function(){
+    $source=copied_source('reply-all','', 'sender@example.invalid');
+    return $source->draft->content->to===['author@example.invalid','me@example.invalid','other@example.invalid']
+        &&$source->draft->content->cc===[]&&$source->draft->content->bcc===[]
+        &&!str_contains(json_encode($source->draft,JSON_THROW_ON_ERROR),'NEVER_PERSIST_RAW_MARKER');
 });
 copied_check('raw MIME is not a property or JSON second channel',function(){
     $source=copied_source();$properties=array_map(fn(ReflectionProperty $p)=>$p->getName(),(new ReflectionClass($source))->getProperties());
@@ -72,7 +78,7 @@ foreach([
     'overflow UID'=>[7,str_repeat('a',32),3,'9','4294967296',str_repeat('b',32),'reply',copied_raw()],
     'empty raw source'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',''],
     'oversized raw source'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply',str_repeat('x',262145)],
-    'reply all'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply-all',copied_raw()],
+    'reply all without chosen sender'=>[7,str_repeat('a',32),3,'9','44',str_repeat('b',32),'reply-all',copied_raw()],
 ] as $label=>$arguments)copied_check('factory refuses '.$label,fn()=>copied_denied(fn()=>CopiedDraftSource::fromRead(...$arguments)));
 
 copied_check('all canonical compose models have byte-exact deployed mirrors',function(){

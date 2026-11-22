@@ -35,13 +35,14 @@ final readonly class CopiedDraftSource
         string $readId,
         string $mode,
         #[\SensitiveParameter] string $raw,
+        ?string $self=null,
     ): self {
         foreach([$accountId,$readId] as $id)if(!preg_match('/\A[a-f0-9]{32}\z/D',$id))throw new InvalidArgumentException('Invalid copied source identity.');
         foreach([$actorId,$accountRevision] as $number)if($number<1||$number>2147483647)throw new InvalidArgumentException('Invalid copied source revision.');
         foreach([$uidvalidity,$uid] as $number)if(!preg_match('/\A[1-9][0-9]{0,9}\z/D',$number)||(strlen($number)===10&&strcmp($number,'4294967295')>0))throw new InvalidArgumentException('Invalid copied message identity.');
         if($raw===''||strlen($raw)>262144)throw new InvalidArgumentException('Copied message source exceeds its limit.');
-        if(!in_array($mode,['reply','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
-        $draft=ReplyDraft::prepare($mode,$raw);
+        if(!in_array($mode,['reply','reply-all','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
+        $draft=ReplyDraft::prepare($mode,$raw,$self);
         return new self($actorId,$accountId,$accountRevision,$uidvalidity,$uid,$readId,(string)strlen($raw),$draft);
     }
 

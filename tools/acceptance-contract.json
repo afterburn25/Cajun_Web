@@ -669,7 +669,7 @@
         "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6"
       },
       "current_source_sha256": {
-        "tools/acceptance_artifacts.py": "c4885f25bf27faa9be827dadba04de38ec6ae68d2529213a780d2cad87a428d0",
+        "tools/acceptance_artifacts.py": "5e43a8242244918200e2aee75175bd68f895d3a054239a17c9f85ae0b03b56c9",
         "tests/prepare_legacy.py": "66e1620ce25ea6f7bfc5c6a0c8a66690d26df2cda15bae9f430da8bcd716bb60"
       },
       "unchanged_historical_versions": 27,

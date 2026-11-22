@@ -6,7 +6,7 @@ if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit;
 use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
 use DirectoryTree\ImapEngine\Connection\Streams\StreamInterface;
 
-/** A bounded read-only receiving stream with two fixed literal profiles. No proxy, CA override or DNS at connect time. */
+/** A bounded receiving stream with fixed read profiles and one APPEND literal. No proxy, CA override or DNS at connect time. */
 final class ReceivingStream implements StreamInterface
 {
     private $socket = null;
@@ -17,6 +17,7 @@ final class ReceivingStream implements StreamInterface
     private int $sent = 0;
     private int $lines = 0;
     private int $writes = 0;
+    private bool $literalUsed = false;
 
     public function __construct(private string $host, private int $port, private string $encryption, private string $address, private ReadProfile $profile=ReadProfile::Headers)
     {
@@ -121,6 +122,25 @@ final class ReceivingStream implements StreamInterface
         $this->tls = true;
         $this->remaining();
         return true;
+    }
+
+    /** One opaque literal per connection, only for the fixed APPEND profile. */
+    public function fwriteLiteral(#[\SensitiveParameter] string $data, int $max): int|false
+    {
+        if ($this->profile !== ReadProfile::Append || $this->literalUsed || $max < 32 || $max > 1048576) throw new ReceivingFailure('protocol');
+        $length = strlen($data);
+        if ($length < 32 || $length > $max) throw new ReceivingFailure('limit');
+        $this->literalUsed = true;
+        $at = 0;
+        while ($at < $length) {
+            $this->remaining();
+            try { $written = @fwrite($this->socket, substr($data, $at, 8192)); }
+            catch (\Throwable) { throw new ReceivingFailure('connection'); }
+            if ($written === false || $written === 0) throw new ReceivingFailure(($this->meta()['timed_out'] ?? false) ? 'timeout' : 'connection');
+            $at += $written;
+        }
+        $this->remaining();
+        return $length;
     }
 
     public function meta(): array { return $this->opened() ? stream_get_meta_data($this->socket) : ['eof'=>true]; }

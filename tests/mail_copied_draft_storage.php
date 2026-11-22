@@ -130,6 +130,7 @@ $GLOBALS['copiedState']['accounts']=[
 $GLOBALS['copiedState']['reads'][$readId]=['id'=>$readId,'outcome'=>'success','result_code'=>'ok','message_bytes'=>strlen(storage_raw()),'actor_id'=>7,'account_id'=>$sourceAccount,'account_revision'=>1,'folder'=>'INBOX','uidvalidity'=>'7','uid'=>'44'];
 
 storage_check('fresh identity resolves no copied draft without writing',function()use($draftId,$sourceAccount,$senderAccount){$before=storage_snapshot();return mail_reply_drafts_existing($draftId,$sourceAccount,1,'7','44','reply',$senderAccount,1)===null&&storage_snapshot()===$before;});
+storage_check('fresh reply-all identity reaches the production replay lookup without writing',function()use($sourceAccount,$senderAccount){$before=storage_snapshot();return mail_reply_drafts_existing(str_repeat('8',32),$sourceAccount,1,'7','44','reply-all',$senderAccount,1)===null&&storage_snapshot()===$before;});
 storage_check('creation stores a content-free legacy placeholder and one canonical protected row',function()use($draftId,$senderAccount){
     mail_reply_drafts_create($draftId,$senderAccount,1,storage_source());$state=$GLOBALS['copiedState'];$base=$state['drafts'][$draftId];$reply=$state['replies'][$draftId];
     $content=DraftOrigin::contentFromJson($reply['content_json']);

@@ -27,6 +27,10 @@ function dr_audit_failure(callable $fn):bool {
     db()->exec('CREATE TRIGGER drci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic draft audit failure'");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER drci_fail');}return $failed;
 }
+function dr_setup_audit_failure(callable $fn):bool {
+    db()->exec('CREATE TRIGGER drci_setup_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='mail_drafts.setup' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic draft setup audit failure'; END IF; END");
+    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER drci_setup_fail');}return $failed;
+}
 function dr_worker(string $id,string $revision,string $account,string $subject,int $actor=2):array {
     $p=proc_open([PHP_BINARY,__FILE__,'worker',$id,$revision,$account,$subject,(string)$actor],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
     if(!is_resource($p))throw new RuntimeException('Cannot start draft fixture worker');foreach([1,2] as $stream)stream_set_timeout($pipes[$stream],15);return [$p,$pipes];
@@ -41,7 +45,7 @@ if(($argv[1]??'')==='worker') {
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo str_contains($e->getMessage(),'changed')?'stale':'denied';}exit;
 }
 try {
-    foreach(schema_statements('drci_') as $name=>$sql)if(!in_array($name,['mail_drafts','mail_draft_revisions'],true)&&!str_starts_with($name,'mail_submission'))db()->exec($sql);
+    foreach(schema_statements('drci_') as $name=>$sql)if(!in_array($name,['mail_drafts','mail_draft_revisions','mail_draft_files'],true)&&!str_starts_with($name,'mail_submission')&&!str_starts_with($name,'mail_sent_')&&!str_starts_with($name,'mail_copy_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=5;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Draft staff '.$i,'draft'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);
@@ -59,12 +63,13 @@ try {
     $fk=one('SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=? AND REFERENCED_TABLE_NAME IS NOT NULL',['drci_mail_drafts','owner_id'])['CONSTRAINT_NAME'];
     db()->exec('ALTER TABLE '.table('mail_drafts').' DROP FOREIGN KEY '.$fk);dr_deny('Missing draft author relationship is refused',fn()=>mail_drafts_migrate($password));db()->exec('ALTER TABLE '.table('mail_drafts').' ADD FOREIGN KEY (owner_id) REFERENCES '.table('users').' (id) ON DELETE CASCADE');dr_deny('Cascading draft author deletion is refused',fn()=>mail_drafts_migrate($password));
     $fk=one('SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=? AND REFERENCED_TABLE_NAME IS NOT NULL',['drci_mail_drafts','owner_id'])['CONSTRAINT_NAME'];db()->exec('ALTER TABLE '.table('mail_drafts').' DROP FOREIGN KEY '.$fk.', ADD FOREIGN KEY (owner_id) REFERENCES '.table('users').' (id) ON DELETE RESTRICT');
+    db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');
     $unknown=str_repeat('a',32);$now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,1,?,1,1,'draft',?,'[]','[]','[]','','',?,?)",[$unknown,$a,str_repeat('0',64),$now,$now]);
-    dr_deny('Populated unrecognized draft storage is not adopted',fn()=>mail_drafts_migrate($password));dr_ok('Failed adoption retains unknown record and disabled readiness',!mail_drafts_ready()&&one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$unknown])!==null);query('DELETE FROM '.table('mail_drafts').' WHERE id=?',[$unknown]);
+    dr_deny('Populated unrecognized draft storage is not adopted',fn()=>mail_drafts_migrate($password));dr_ok('Failed adoption retains unknown record, schema and disabled readiness',!mail_drafts_ready()&&one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$unknown])!==null&&!one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].'mail_drafts']));query('DELETE FROM '.table('mail_drafts').' WHERE id=?',[$unknown]);
     dr_ok('Strict setup audit rolls back readiness',dr_audit_failure(fn()=>mail_drafts_migrate($password))&&!mail_drafts_ready());
     mail_drafts_migrate($password);mail_drafts_migrate($password);
-    dr_ok('Repeated setup is additive and earlier settings remain exact',mail_drafts_ready()&&all('SELECT * FROM '.table('settings')." WHERE name<>'mail_drafts_schema_version' ORDER BY name")===$settings);
+    dr_ok('Repeated setup is additive and earlier settings remain exact',mail_drafts_ready()&&mail_drafts_html_ready()&&all('SELECT * FROM '.table('settings')." WHERE name NOT IN ('mail_drafts_schema_version','mail_drafts_html_ready') ORDER BY name")===$settings);
     dr_deny('Owner still requires a sending assignment',fn()=>mail_drafts_list($a));
     dr_grant($a,1,false);dr_deny('Owner Read assignment does not grant Send drafts',fn()=>mail_drafts_list($a));dr_grant($a,1);
     dr_grant($a,2);dr_grant($a,3);dr_grant($a,4);dr_grant($a,5);dr_grant($b,1);
@@ -131,6 +136,40 @@ try {
     dr_deny('Discarded draft cannot silently resume through stale save',fn()=>mail_drafts_save($id,8,$a,1,dr_content()));dr_deny('Old create replay cannot revive a discarded draft',fn()=>mail_drafts_save($id,0,$a,1,dr_content()));
     for($i=0;$i<22;$i++)mail_drafts_save(bin2hex(random_bytes(16)),0,$a,1,new DraftContent([],[],[],'Page '.$i,''));
     $first=mail_drafts_list($a);$older=mail_drafts_list($a,'draft',2);dr_ok('Draft pagination has distinct displayed pages and bounded lookahead',count($first)===21&&count($older)===3&&!array_intersect(array_column(array_slice($first,0,20),'id'),array_column($older,'id')));
+    if(extension_loaded('dom')) {
+        $sanitized=mail_drafts_html('<p>SYNTHETIC <strong>formatted</strong> <script>bad()</script></p>');
+        dr_ok('Formatted alternative sanitizes through the service wrapper',$sanitized==='<p>SYNTHETIC <strong>formatted</strong> </p>'&&mail_drafts_html('')===null&&mail_drafts_html('<script>x</script>')===null);
+        dr_deny('Oversized formatted alternative is refused before storage',fn()=>mail_drafts_html('<p>'.str_repeat('x',61440).'</p>'));
+        $canonical=mail_drafts_html('<p>'.str_repeat('y',60000).'</p>');
+        $bound=bin2hex(random_bytes(16));mail_drafts_save($bound,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Near bound','Plain body',$canonical));
+        $got=mail_drafts_get($bound);
+        dr_ok('Near-bound canonical alternative saves and reloads exactly',$got['html']===$canonical&&$canonical!==null&&strlen($canonical)>40960);
+        mail_drafts_save($bound,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Near bound edited','Plain body',$canonical));
+        dr_ok('A subject-only edit resubmits the same canonical value',(int)mail_drafts_get($bound)['revision']===2);
+        mail_drafts_discard($bound,2);
+        $rich=bin2hex(random_bytes(16));mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body',$sanitized));
+        $got=mail_drafts_get($rich);
+        dr_ok('Saved formatted alternative persists and round-trips exactly',$got['html']===$sanitized&&one('SELECT body_html FROM '.table('mail_drafts').' WHERE id=?',[$rich])['body_html']===$sanitized);
+        $before=dr_snapshot();dr_ok('Formatted create replay stays a byte-identical no-write',mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body',$sanitized))===$rich&&dr_snapshot()===$before);
+        dr_deny('Changed formatted alternative cannot replay a create token',fn()=>mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body','<p>Different</p>')));
+        dr_deny('Unsanitized markup cannot be saved as an alternative',fn()=>mail_drafts_save(bin2hex(random_bytes(16)),0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Bad','Body','<p onclick="x">m</p>')));
+        dr_ok('Removing the alternative clears the retained column',mail_drafts_save($rich,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body'))===$rich&&mail_drafts_get($rich)['html']===null&&one('SELECT body_html FROM '.table('mail_drafts').' WHERE id=?',[$rich])['body_html']===null);
+        mail_drafts_discard($rich,2);
+    } else $checks[]=['name'=>'DOM unavailable; formatted-compose checks skipped','passed'=>true];
+    // Version-1 upgrade: populated pre-alternative storage gains the additive column in place.
+    dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_html_ready','1');save_setting('mail_drafts_schema_version','1');
+    $legacy=bin2hex(random_bytes(16));query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,1,?,1,1,'draft',?,'[]','[]','[]','Legacy','Text',?,?)",[$legacy,$b,str_repeat('0',64),gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
+    dr_ok('Stale HTML marker without its column remains unready while version-1 drafts stay readable',!mail_drafts_html_ready()&&mail_drafts_get($legacy)['subject']==='Legacy'&&in_array($legacy,array_column(mail_drafts_list($b),'id'),true));
+    dr_deny('Version-1 storage refuses edits until formatted storage is prepared',fn()=>mail_drafts_save($legacy,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Changed','Text')));
+    db()->exec('ALTER TABLE '.table('mail_draft_revisions').' ADD INDEX unexpected_action(action)');
+    dr_deny('Later schema validation failure leaves a stale-marker repair unready',fn()=>mail_drafts_migrate($password));
+    dr_ok('Failed later validation cannot restore the invalidated marker after repair DDL',one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
+    db()->exec('ALTER TABLE '.table('mail_draft_revisions').' DROP INDEX unexpected_action');
+    db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_html_ready','1');
+    dr_ok('Post-ALTER setup audit failure cannot revive a stale readiness marker',dr_setup_audit_failure(fn()=>mail_drafts_migrate($password))&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&!mail_drafts_html_ready()&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_html_ready'])['value']??'')==='');
+    mail_drafts_migrate($password);
+    dr_ok('Version 1 populated storage upgrades additively and preserves records',mail_drafts_ready()&&mail_drafts_html_ready()&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&mail_drafts_get($legacy)['subject']==='Legacy'&&mail_drafts_get($legacy)['html']===null);
+    mail_drafts_discard($legacy,1);
     $metadata=json_encode([all('SELECT * FROM '.table('mail_draft_revisions')),all('SELECT * FROM '.table('audit'))]);dr_ok('Audit and draft history exclude subject body and recipients',!str_contains($metadata,'SYNTHETIC_PRIVATE_DRAFT')&&!str_contains($metadata,'private@example.invalid')&&!str_contains($metadata,'client@example.invalid'));
     dr_ok('Draft workflows preserve the original mailbox encryption key',file_get_contents($private.'/mail-master.key')===$key);
     dr_ok('System mail remains disabled and unconfigured',setting('email_mode')==='disabled'&&setting('smtp_host')===''&&setting('smtp_password')==='');

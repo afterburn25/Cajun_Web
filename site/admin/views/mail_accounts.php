@@ -3,7 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $page=max(1,min((int)($_GET['p']??1),100000));
 ?>
-<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Open individual messages after message reading is prepared. Send saved plaintext drafts after submission storage is prepared. Attachments remain unavailable.</p>
+<p class="notice">Manage email settings, check saved connections, and load recent folder headers. Open individual messages after message reading is prepared. Send saved plaintext drafts after submission storage is prepared. Bounded message attachments download only through an explicit authorized request.</p>
 <?php if ($view==='mailboxes'):
     $rows=mail_accounts_assigned($page);
 ?>
@@ -26,10 +26,18 @@ $page=max(1,min((int)($_GET['p']??1),100000));
 <section class="workspace-card" data-message-setup><h2>Prepare message reading</h2><p>Prepare private request history before assigned staff open individual messages. This step connects to no email server.</p>
 <form method="post"><?php admin_action('mail_message_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare message reading</button></form></section>
 <?php else: ?><p>Message reading is ready. Use Open message after loading recent inbox headers.</p><?php endif; ?>
+<?php if(mail_messages_ready()&&!mail_flags_ready()): ?>
+<section class="workspace-card" data-flag-setup><h2>Prepare message flags</h2><p>Prepare private request history before assigned staff mark messages read or unread on the server. This step connects to no email server.</p>
+<form method="post"><?php admin_action('mail_message_flags_setup'); ?><button class="btn outline">Prepare message flags</button></form></section>
+<?php elseif(mail_flags_ready()): ?><p>Message flags are ready. Loaded messages offer Mark read or Mark unread on server.</p><?php endif; ?>
 <?php if(!mail_notices_ready()): ?>
 <section class="workspace-card" data-mail-notices-setup><h2>Prepare email notices</h2><p>After inbox and message reading are prepared, enable recent email notices for assigned administrators. The bell uses the newest checked message window; this step contacts no server.</p>
 <form method="post"><?php admin_action('mail_notices_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare email notices</button></form></section>
 <?php else: ?><p>Email notices are ready. Load recent headers to update the checked message window.</p><?php endif; ?>
+<?php if(mail_submissions_ready()&&!mail_copies_ready()): ?>
+<section class="workspace-card" data-mail-copies-setup><h2>Prepare server Sent copies</h2><p>Prepare private attempt history before an administrator explicitly copies an accepted submission to a configured server Sent folder. Setup contacts no server and copies no message.</p>
+<form method="post"><?php admin_action('mail_copies_setup'); ?><button class="btn outline">Prepare Sent-copy storage</button></form></section>
+<?php elseif(mail_copies_ready()): ?><p>Sent-copy storage is ready. Configure an exact server folder on an account, then explicitly copy an accepted submission from its recorded detail page.</p><?php endif; ?>
 <p class="hint">Only owners manage account settings and assignments. Owning a profile does not grant mailbox access.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
 <article class="workspace-card"><h2><a href="<?=esc(admin_url('mail-account',['account_id'=>$row['id']]))?>"><?=esc($row['label'])?></a></h2><p><?=esc($row['address'])?></p><p><?=badge((int)$row['enabled']===1?'saved':'disabled')?> · Open settings for connection checks · Version <?=(int)$row['revision']?></p></article>
@@ -71,6 +79,12 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 </form>
 <?php if ($record): ?>
 <?php require CWP_CODE_ROOT.'/admin/views/mail_connections.php'; ?>
+<?php if(mail_copies_ready()): $sentFolder=mail_sent_folder($accountId); ?>
+<section class="workspace-card" data-mail-sent-folder><h2>Server Sent folder</h2><p>Set the exact IMAP folder used only when an administrator explicitly copies an accepted website submission. Saving this setting contacts no server and never copies automatically.</p>
+<form method="post"><?php admin_action('mail_sent_folder_save'); ?><input type="hidden" name="account_id" value="<?=esc($accountId)?>">
+<?php admin_input('sent_folder','Server folder name',$sentFolder,'text','maxlength="64" placeholder="Sent"'); ?>
+<button class="btn outline">Save Sent folder</button></form><p class="hint">Clear the field to disable server copies for this account. Use a plain provider folder name such as Sent or INBOX.Sent.</p></section>
+<?php endif; ?>
 <section class="workspace-card"><h2>Account availability</h2><form method="post">
 <?=csrf_field()?><input type="hidden" name="account_id" value="<?=esc($accountId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>">
 <?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?>
