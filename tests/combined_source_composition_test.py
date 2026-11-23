@@ -170,6 +170,11 @@ def run(root=ROOT):
             proof.project_cache_leaf(root, path, b'b')
             return current
 
+        def project_cache_full_interleaved(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            proof.project_cache_leaf(root, path, b'x')
+            return current
+
         def project_cache_raise(root, path, current):
             raise AssertionError('synthetic nested refusal')
 
@@ -177,6 +182,14 @@ def run(root=ROOT):
             proof.project_cache_leaf(root, path, b'a')
             try:
                 proof.project_cache_raise(root, path, b'raise')
+            except AssertionError:
+                pass
+            return current
+
+        def project_cache_cross_root_open(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            try:
+                proof.project_cache_leaf(second_root, 'missing.txt', b'missing')
             except AssertionError:
                 pass
             return current
@@ -200,8 +213,10 @@ def run(root=ROOT):
         proof.project_cache_touch = project_cache_touch
         proof.project_cache_refuse = project_cache_refuse
         proof.project_cache_interleaved = project_cache_interleaved
+        proof.project_cache_full_interleaved = project_cache_full_interleaved
         proof.project_cache_raise = project_cache_raise
         proof.project_cache_caught_touch = project_cache_caught_touch
+        proof.project_cache_cross_root_open = project_cache_cross_root_open
         proof.project_cache_nested_pending_refuse = project_cache_nested_pending_refuse
         proof.project_cache_caught_pending = project_cache_caught_pending
         proof._PROJECTION_CACHE_LIMIT = 2
@@ -260,18 +275,45 @@ def run(root=ROOT):
 
             leaf_calls.clear()
             with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_cross_root_open(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+            assert leaf_calls == [b'a', b'b', b'a']
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
                 assert proof.project_cache_caught_pending(
                     fixture_root, 'exact.txt', b'outer') == b'outer'
                 assert proof.project_cache_leaf(
                     fixture_root, 'exact.txt', b'b') == b'b'
             assert leaf_calls == [b'a', b'b', b'c', b'd', b'b']
             assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            proof._PROJECTION_CACHE_LIMIT = 3
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                for value in (b'x', b'y', b'z'):
+                    assert proof.project_cache_leaf(
+                        fixture_root, 'exact.txt', value) == value
+                assert proof.project_cache_full_interleaved(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'x') == b'x'
+            assert leaf_calls == [b'x', b'y', b'z', b'a']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 3
         finally:
             proof._PROJECTION_CACHE_LIMIT = original_limit
             del proof.project_cache_caught_pending
             del proof.project_cache_nested_pending_refuse
+            del proof.project_cache_cross_root_open
             del proof.project_cache_caught_touch
             del proof.project_cache_raise
+            del proof.project_cache_full_interleaved
             del proof.project_cache_interleaved
             del proof.project_cache_refuse
             del proof.project_cache_touch

@@ -2134,7 +2134,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '837578b77f437e90a56c6f629d1d86917208ed38765caebe797f09a9bd508640'
+REGRESSION_SHA256 = 'e84e13745d608b8a0e11e9fb9824db9297084f62b0628782731a7b7f95b4faea'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12265,24 +12265,24 @@ def verification_projection_cache(root):
         @functools.wraps(function)
         def retained(root_value, path, current):
             nonlocal maximum
-            call_root = root_key(root_value)
-            require(isinstance(path, str) and isinstance(current, bytes),
-                    'Malformed cached composition projection')
             parent = active[-1] if active else None
             outermost = parent is None
-            nested = (parent is not None
-                      and parent[0] == call_root and parent[1] == path)
             transaction = ({'overlay': OrderedDict()}
                            if outermost else parent[3])
             overlay = transaction['overlay']
-            # The outer call reads mutable checkout bytes afresh and brackets
-            # the complete nested pure-projection chain. Nested calls reuse
-            # only those exact already-bracketed bytes; a different root/path
-            # establishes an independent fresh-read bracket.
-            live = parent[2] if nested else ordinary(Path(root_value), path)
-            key = (call_root, name, path, len(current), digest(current),
-                   len(live), digest(live))
             try:
+                call_root = root_key(root_value)
+                require(isinstance(path, str) and isinstance(current, bytes),
+                        'Malformed cached composition projection')
+                nested = (parent is not None
+                          and parent[0] == call_root and parent[1] == path)
+                # The outer call reads mutable checkout bytes afresh and brackets
+                # the complete nested pure-projection chain. Nested calls reuse
+                # only those exact already-bracketed bytes; a different root/path
+                # establishes an independent fresh-read bracket.
+                live = parent[2] if nested else ordinary(Path(root_value), path)
+                key = (call_root, name, path, len(current), digest(current),
+                       len(live), digest(live))
                 if key in overlay:
                     kind, result = overlay.pop(key)
                     overlay[key] = (kind, result)
@@ -12312,10 +12312,9 @@ def verification_projection_cache(root):
                 # discards every result staged since its entry checkpoint.
                 if outermost:
                     for overlay_key, (kind, overlay_result) in overlay.items():
-                        if kind == 'pending':
-                            cached[overlay_key] = overlay_result
-                        elif overlay_key not in cached:
-                            continue
+                        require(kind in {'pending', 'cached'},
+                                'Unknown projection transaction entry')
+                        cached[overlay_key] = overlay_result
                         cached.move_to_end(overlay_key)
                         while len(cached) > _PROJECTION_CACHE_LIMIT:
                             cached.popitem(last=False)
