@@ -541,6 +541,35 @@ def run(root=ROOT):
             proof.validate_application_reply_folder_route = original_validator
         passed('Canonical receipt content is bound before historical validation')
 
+        def replace_receipt_once(target, before, after):
+            value = target.read_bytes()
+            assert value.count(before) == 1
+            target.write_bytes(value.replace(before, after, 1))
+
+        duplicate_cases = (
+            ('top-level duplicate name',
+             b'{\n  "format": 6,',
+             b'{\n  "format": 999,\n  "format": 6,'),
+            ('nested duplicate name',
+             b'    "account": {\n      "commit": ',
+             b'    "account": {\n      "commit": "' + b'0' * 40
+             + b'",\n      "commit": '),
+            ('non-finite constant', b'"format": 6', b'"format": NaN'),
+        )
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            for label, before, after in duplicate_cases:
+                refuses('Refuses composition receipt ' + label,
+                        lambda before=before, after=after: modified(
+                            proof.RECEIPT,
+                            lambda target: replace_receipt_once(
+                                target, before, after)))
+                assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Strict receipt parsing precedes historical validation')
+
         for name, path in (
             ('current software authority application', 'site/app/billing/software_client.php'),
             ('current finance application', 'site/app/billing/finance_subscription.php'),

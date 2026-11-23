@@ -2074,7 +2074,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '4fddab0d699d03460b812631f865c4c7ff7b4fac4eb5e55d4def5669db8325f1'
+REGRESSION_SHA256 = 'bbd2b8694dbe3a97ca0ec3aa8e55a9b8297d8e289cb86d29d547b72618d9f3a9'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2187,6 +2187,29 @@ def require(condition, message):
 
 def digest(value):
     return hashlib.sha256(value).hexdigest()
+
+
+def strict_json_object(pairs):
+    """Reject duplicate JSON names at every object depth."""
+    result = {}
+    for key, value in pairs:
+        require(isinstance(key, str) and key not in result,
+                'Duplicate or malformed composition receipt name: ' + repr(key))
+        result[key] = value
+    return result
+
+
+def reject_json_constant(value):
+    raise AssertionError('Non-finite composition receipt value: ' + value)
+
+
+def strict_json_loads(value):
+    try:
+        return json.loads(
+            value, object_pairs_hook=strict_json_object,
+            parse_constant=reject_json_constant)
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise AssertionError('Malformed composition receipt JSON') from error
 
 
 def receipt_content_digest(data):
@@ -11278,7 +11301,7 @@ def _verify_current(root):
     receipt = ordinary(root, RECEIPT)
     regression = ordinary(root, REGRESSION)
     proof_files = {VERIFIER: verifier, RECEIPT: receipt, REGRESSION: regression}
-    receipt_data = json.loads(receipt)
+    receipt_data = strict_json_loads(receipt)
     data = validate_receipt(receipt_data, verifier)
     require(receipt_content_digest(receipt_data) == RECEIPT_CONTENT_SHA256,
             'Composition receipt content changed')
