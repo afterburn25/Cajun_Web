@@ -400,6 +400,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_strict_receipt_identity(attribute))
 
+        def altered_diagnostic_current_receipt_consumer_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_current_receipt_consumer_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE', 'base'),
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE', 'source'),
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic current receipt consumer ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_current_receipt_consumer_identity(attribute))
+
         def altered_hosting_inbox_reload_budget_identity(attribute):
             original = getattr(proof, attribute)
             try:
