@@ -1377,6 +1377,16 @@ DIAGNOSTIC_TRACKED_PREFLIGHT_SHA256 = {
     VERIFIER: 'cabd41eae6f7bd46e35ee5c89381327167579290a9bea626dc917446757383e8',
     REGRESSION: '19a83d9cb75937f5fcb42cf182c9f320c05d7df9ab00f5d466d57fe4c4ef7cf3',
 }
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE = '81d9876a414c1f3444db167e0bf2b4f9200cba80'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE_TREE = 'e47f6364b6f449ec33bbc259ea65cc09ebe0c1df'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE = '250720f96c5ad3cf6528f99ae34a4a20fae4c816'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE_TREE = 'b5d48256799df01bed6e3aa99a8d2c55f0ca7548'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SHA256 = {
+    RECEIPT: 'dea2191541a41f17b3b68009e654d57947f769c95c84bc93a6ff9bdbfdc2f2c1',
+    VERIFIER: 'ad8837e253875fdc300ef37b5abea43d99a2c6c3715df3a8ea4a2bfb360da5c7',
+    REGRESSION: 'ba167d78d0fc2ca2464954b7cec00c02d6b9f7c09481f493e9e6d9d99fae2232',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2034,7 +2044,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'ba167d78d0fc2ca2464954b7cec00c02d6b9f7c09481f493e9e6d9d99fae2232'
+REGRESSION_SHA256 = '2dc8f1cc6284276a0ce694135656ee5c49a69992523d0f14b7884343625d7b69'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8941,6 +8951,74 @@ def validate_diagnostic_tracked_preflight_source(root):
             'Diagnostic tracked-source preflight implementation or receipt changed')
 
 
+def validate_diagnostic_tracked_preflight_cancellation_source(root):
+    """Bind independent index/worktree checks and the exact proof index."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE_TREE,
+            'Diagnostic tracked-source cancellation correction tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE
+                ).decode().strip().split()
+            == [DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE],
+            'Diagnostic tracked-source cancellation correction parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE,
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE
+                  ).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_MODIFIED)],
+            'Diagnostic tracked-source cancellation correction changed another path')
+    source_entries = entries(
+        root, DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE)
+    for path in sorted(DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_MODIFIED):
+        source = git(
+            root, 'cat-file', 'blob',
+            DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SHA256[path],
+                'Diagnostic tracked-source cancellation correction changed: '
+                + path)
+    source_verifier = git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + VERIFIER)
+    source_regression = git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"('staged', ('diff', '--cached', '--no-ext-diff', '--no-renames',"
+                in source_verifier
+            and b"('unstaged', ('diff', '--no-ext-diff', '--no-renames',"
+                in source_verifier
+            and b"['git', '--no-replace-objects', *arguments]" in source_verifier
+            and b"['git', '--no-replace-objects', 'ls-files', '--stage', '-z', '--', path]"
+                in source_verifier
+            and b"git(root, 'cat-file', 'blob', oid) == proof_files[path]"
+                in source_verifier
+            and source_verifier.count(
+                b"mode(root, path) == '100644' and ordinary(root, path) == value") == 2
+            and b'tracked_source_preflight(root, proof_files)' in source_verifier
+            and b'Refuses offsetting staged and unstaged tracked drift'
+                in source_regression
+            and b'Refuses staged proof bytes that differ from validated worktree bytes'
+                in source_regression
+            and b'Refuses a staged executable mode for a proof file'
+                in source_regression,
+            'Diagnostic tracked-source cancellation correction or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11087,6 +11165,7 @@ def _verify_current(root):
     validate_diagnostic_projection_cache_source(root)
     validate_diagnostic_projection_cache_race_source(root)
     validate_diagnostic_tracked_preflight_source(root)
+    validate_diagnostic_tracked_preflight_cancellation_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -11479,6 +11558,7 @@ def _verify_current(root):
         {'name': 'Exact Diagnostic artifact batch retains one full current-source proof before the finite isolated historical comparisons', 'passed': True},
         {'name': 'Exact Diagnostic artifact review successor preserves named failures; the immutable blob-batch successor retains complete source reconstruction with bounded tree state', 'passed': True},
         {'name': 'Exact Diagnostic tracked-source preflight refuses staged and unstaged non-proof drift before historical projection', 'passed': True},
+        {'name': 'Exact tracked-source correction refuses offsetting index/worktree drift and binds staged proof bytes and modes', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
