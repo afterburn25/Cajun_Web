@@ -1437,6 +1437,16 @@ DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SHA256 = {
     VERIFIER: 'dce754d1130b59451f82b012286143ca7549e83c16777fb79ead81fe42c7e2cf',
     REGRESSION: '8826ecf4db319aaf395c9fbecfb0a5ae950233d93399d3517f4b9bfb9415393d',
 }
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE = '708241caa679a6135080260d7306023ba399a761'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE_TREE = '254ad1b10f90e752a6ef917a594c9ba7039c7821'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE = '4236b87e427da66c86b6a29bcc6157ef9a88b3ed'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE_TREE = '82057eba239b05b0d8f2a3189901f077129f0d01'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SHA256 = {
+    RECEIPT: '1af98d739e48b45569944d4c647f4a95c1f1ef56e3c1f6a328945ac0b147508f',
+    VERIFIER: '8de995fb70677b4bbcca167d3e626feecb63c027c2116318cd3f6cc7276c5f6e',
+    REGRESSION: '6197a6cb8865a5bcc41188456240381b7872bddfe65ca7288d87b21198115dba',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2094,7 +2104,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '6197a6cb8865a5bcc41188456240381b7872bddfe65ca7288d87b21198115dba'
+REGRESSION_SHA256 = '54485730efd49e6d2399cf3d2d0b22501bf9c4a00279ac836e968e8312eaa249'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -9381,6 +9391,61 @@ def validate_diagnostic_current_receipt_consumer_source(root):
             'Diagnostic current-receipt consumer implementation or receipt changed')
 
 
+def validate_diagnostic_projection_chain_bracket_source(root):
+    """Bind the exact outer-chain fresh-read performance correction."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE_TREE,
+            'Diagnostic projection-chain bracket source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE],
+            'Diagnostic projection-chain bracket source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE,
+                  DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_MODIFIED)],
+            'Diagnostic projection-chain bracket source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SHA256[path],
+                'Diagnostic projection-chain bracket source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'active = []' in source_verifier
+            and b'parent = active[-1] if active else None' in source_verifier
+            and b'live = parent[2] if nested else ordinary(Path(root_value), path)'
+                in source_verifier
+            and source_verifier.count(b'if not nested:') == 2
+            and b'active.append((call_root, path, live))' in source_verifier
+            and b'require(active.pop() == (call_root, path, live),' in source_verifier
+            and b'def project_cache_nested_probe(root, path, current):'
+                in source_regression
+            and b"assert reads == ['exact.txt'] * 3" in source_regression
+            and b'Bound projection cache refuses a mutable-source race'
+                in source_regression,
+            'Diagnostic projection-chain bracket implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11549,6 +11614,7 @@ def _verify_current(root):
     validate_diagnostic_receipt_content_source(root)
     validate_diagnostic_strict_receipt_source(root)
     validate_diagnostic_current_receipt_consumer_source(root)
+    validate_diagnostic_projection_chain_bracket_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -11947,6 +12013,7 @@ def _verify_current(root):
         {'name': 'Exact canonical receipt digest rejects all non-self-binding content drift before historical projection', 'passed': True},
         {'name': 'Exact strict receipt parser refuses duplicate names and non-finite constants before validation', 'passed': True},
         {'name': 'Exact current receipt consumers share one strict loader and bracket proof bytes before and after use', 'passed': True},
+        {'name': 'Exact projection-chain successor brackets mutable source at each outer chain while nested pure calls reuse those bytes', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
