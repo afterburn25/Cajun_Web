@@ -90,22 +90,27 @@ def run(root=ROOT):
             calls.append((str(Path(root).resolve()), path, current))
             return proof.ordinary(root, path)
 
+        def project_cache_nested_probe(root, path, current):
+            return proof.project_cache_probe(root, path, current)
+
         proof.project_cache_probe = project_cache_probe
+        proof.project_cache_nested_probe = project_cache_nested_probe
         try:
             with proof.verification_projection_cache(fixture_root):
-                assert proof.project_cache_probe(
+                assert proof.project_cache_nested_probe(
                     fixture_root, 'exact.txt', b'input') == b'initial exact bytes'
-                assert proof.project_cache_probe(
+                assert proof.project_cache_nested_probe(
                     fixture_root, 'exact.txt', b'input') == b'initial exact bytes'
                 assert len(calls) == 1
                 fixture_path.write_bytes(b'changed during proof')
-                assert proof.project_cache_probe(
+                assert proof.project_cache_nested_probe(
                     fixture_root, 'exact.txt', b'input') == b'changed during proof'
                 assert len(calls) == 2
-                assert proof.project_cache_probe(
+                assert proof.project_cache_nested_probe(
                     second_root, 'exact.txt', b'input') == b'initial exact bytes'
                 assert len(calls) == 3
         finally:
+            del proof.project_cache_nested_probe
             del proof.project_cache_probe
         original_ordinary = proof.ordinary
         reads = []
@@ -118,15 +123,18 @@ def run(root=ROOT):
             return original_ordinary(root, path)
 
         proof.project_cache_probe = project_cache_probe
+        proof.project_cache_nested_probe = project_cache_nested_probe
         proof.ordinary = racing_ordinary
         try:
             with proof.verification_projection_cache(fixture_root):
                 refuses('Bound projection cache refuses a mutable-source race',
-                        lambda: proof.project_cache_probe(
+                        lambda: proof.project_cache_nested_probe(
                             fixture_root, 'exact.txt', b'raced input'))
         finally:
             proof.ordinary = original_ordinary
+            del proof.project_cache_nested_probe
             del proof.project_cache_probe
+        assert reads == ['exact.txt'] * 3
         assert not proof._ACTIVE_ROOT_KEYS
     passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
     proof_drift = (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)
