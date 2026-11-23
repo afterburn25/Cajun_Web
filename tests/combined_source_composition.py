@@ -2104,7 +2104,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '54485730efd49e6d2399cf3d2d0b22501bf9c4a00279ac836e968e8312eaa249'
+REGRESSION_SHA256 = '7936b5de04466372b507b309af369c633a6159e5be9838ba8089a2d958905586'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12063,8 +12063,12 @@ def verification_projection_cache(root):
             require(isinstance(path, str) and isinstance(current, bytes),
                     'Malformed cached composition projection')
             parent = active[-1] if active else None
+            outermost = parent is None
             nested = (parent is not None
                       and parent[0] == call_root and parent[1] == path)
+            pending = OrderedDict() if outermost else parent[3]
+            journal = [] if outermost else parent[4]
+            checkpoint = len(journal)
             # The outer call reads mutable checkout bytes afresh and brackets
             # the complete nested pure-projection chain. Nested calls reuse
             # only those exact already-bracketed bytes; a different root/path
@@ -12072,30 +12076,44 @@ def verification_projection_cache(root):
             live = parent[2] if nested else ordinary(Path(root_value), path)
             key = (call_root, name, path, len(current), digest(current),
                    len(live), digest(live))
-            if key in cached:
-                result = cached[key]
+            try:
+                if key in pending:
+                    result = pending[key]
+                elif key in cached:
+                    result = cached[key]
+                else:
+                    frame = (call_root, path, live, pending, journal)
+                    active.append(frame)
+                    try:
+                        result = function(root_value, path, current)
+                    finally:
+                        require(active.pop() is frame,
+                                'Composition projection bracket changed')
+                    require(isinstance(result, bytes),
+                            'Composition projection did not return exact bytes: ' + name)
+                    pending[key] = result
+                    journal.append(key)
                 if not nested:
                     require(ordinary(Path(root_value), path) == live,
                             'Composition source changed during cached projection: '
                             + path)
-                cached.move_to_end(key)
+                # No nested result becomes reusable outside this chain until
+                # the outer fresh-read bracket has succeeded. A refused chain
+                # discards every result staged since its entry checkpoint.
+                if outermost:
+                    for pending_key in journal:
+                        cached[pending_key] = pending[pending_key]
+                        cached.move_to_end(pending_key)
+                        while len(cached) > _PROJECTION_CACHE_LIMIT:
+                            cached.popitem(last=False)
+                    if key in cached:
+                        cached.move_to_end(key)
+                    maximum = max(maximum, len(cached))
                 return result
-            active.append((call_root, path, live))
-            try:
-                result = function(root_value, path, current)
-            finally:
-                require(active.pop() == (call_root, path, live),
-                        'Composition projection bracket changed')
-            require(isinstance(result, bytes),
-                    'Composition projection did not return exact bytes: ' + name)
-            if not nested:
-                require(ordinary(Path(root_value), path) == live,
-                        'Composition source changed during projection: ' + path)
-            cached[key] = result
-            while len(cached) > _PROJECTION_CACHE_LIMIT:
-                cached.popitem(last=False)
-            maximum = max(maximum, len(cached))
-            return result
+            except BaseException:
+                while len(journal) > checkpoint:
+                    pending.pop(journal.pop(), None)
+                raise
         return retained
 
     for name, function in list(globals().items()):

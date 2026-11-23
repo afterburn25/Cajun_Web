@@ -114,10 +114,13 @@ def run(root=ROOT):
             del proof.project_cache_probe
         original_ordinary = proof.ordinary
         reads = []
+        stable = []
 
         def racing_ordinary(root, path):
             if Path(root) == fixture_root and path == 'exact.txt':
                 reads.append(path)
+                if stable:
+                    return b'changed during proof'
                 return (b'changed during proof' if len(reads) == 1
                         else b'raced projection bytes')
             return original_ordinary(root, path)
@@ -130,11 +133,15 @@ def run(root=ROOT):
                 refuses('Bound projection cache refuses a mutable-source race',
                         lambda: proof.project_cache_nested_probe(
                             fixture_root, 'exact.txt', b'raced input'))
+                stable.append(True)
+                assert proof.project_cache_nested_probe(
+                    fixture_root, 'exact.txt', b'raced input') == b'changed during proof'
+                assert len(calls) == 5
         finally:
             proof.ordinary = original_ordinary
             del proof.project_cache_nested_probe
             del proof.project_cache_probe
-        assert reads == ['exact.txt'] * 3
+        assert reads == ['exact.txt'] * 6
         assert not proof._ACTIVE_ROOT_KEYS
     passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
     proof_drift = (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)
