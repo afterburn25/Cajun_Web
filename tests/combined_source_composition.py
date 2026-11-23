@@ -2084,7 +2084,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '2f1c79687da2d095748552752bb513f496c79be90dd897b3b4af7dc4ebc4dde8'
+REGRESSION_SHA256 = '8826ecf4db319aaf395c9fbecfb0a5ae950233d93399d3517f4b9bfb9415393d'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -11356,20 +11356,30 @@ def project_component_union_source(root, ux09, path, current):
     return project_ux09(root, ux09, path, current)
 
 
-def _verify_current(root):
+def current_proof_receipt(root):
+    """Strictly load and bracket the three mutable proof files."""
     root = Path(root)
-    verifier = ordinary(root, VERIFIER)
-    receipt = ordinary(root, RECEIPT)
-    regression = ordinary(root, REGRESSION)
-    proof_files = {VERIFIER: verifier, RECEIPT: receipt, REGRESSION: regression}
-    receipt_data = strict_json_loads(receipt)
-    data = validate_receipt(receipt_data, verifier)
+    proof_files = {
+        VERIFIER: ordinary(root, VERIFIER),
+        RECEIPT: ordinary(root, RECEIPT),
+        REGRESSION: ordinary(root, REGRESSION),
+    }
+    receipt_data = strict_json_loads(proof_files[RECEIPT])
+    data = validate_receipt(receipt_data, proof_files[VERIFIER])
     require(receipt_content_digest(receipt_data) == RECEIPT_CONTENT_SHA256,
             'Composition receipt content changed')
-    require(mode(root, VERIFIER) == mode(root, RECEIPT) == mode(root, REGRESSION) == '100644',
-            'Composition proof file mode changed')
-    require(digest(regression) == REGRESSION_SHA256,
+    require(digest(proof_files[REGRESSION]) == REGRESSION_SHA256,
             'Composition regression changed')
+    require(all(mode(root, path) == '100644'
+                and ordinary(root, path) == value
+                for path, value in proof_files.items()),
+            'Composition proof file changed during receipt validation')
+    return data, proof_files
+
+
+def _verify_current(root):
+    root = Path(root)
+    data, proof_files = current_proof_receipt(root)
     ensure_history(root)
     pin_head(root)
     tracked_source_preflight(root, proof_files)
@@ -12058,10 +12068,14 @@ def account_call(root, module, method, *, path=None, value=None, side=None):
             # still expects its exact pre-repair bytes. Project only through
             # that already-validated finite receipt; runtime keeps current bytes.
             require(value == ordinary(root, path), 'Unreviewed current core comparison input: ' + path)
-            data = validate_receipt(json.loads(ordinary(root, RECEIPT)), ordinary(root, VERIFIER))
+            data, proof_files = current_proof_receipt(root)
             value = reconstruct_repair(data, path, value)
             require(value == git(root, 'cat-file', 'blob', COMPONENTS['account']['commit'] + ':' + path),
                     'Core comparison repair does not retain the exact account component: ' + path)
+            require(all(mode(root, proof_path) == '100644'
+                        and ordinary(root, proof_path) == proof_value
+                        for proof_path, proof_value in proof_files.items()),
+                    'Composition proof file changed during account projection')
         if method in {'project', 'predecessor'}:
             # Callers must supply actual current bytes, never arbitrary restored
             # code. Equality to the reviewed union was established just above.

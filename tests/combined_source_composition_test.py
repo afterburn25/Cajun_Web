@@ -200,6 +200,26 @@ def run(root=ROOT):
             proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
         passed('Tracked-source preflight permits only already-validated proof-file drift')
 
+        original_ordinary = proof.ordinary
+        receipt_reads = []
+
+        def racing_receipt(root, path):
+            value = original_ordinary(root, path)
+            if Path(root) == fixture and path == proof.RECEIPT:
+                receipt_reads.append(path)
+                if len(receipt_reads) > 1:
+                    return value + b'\n'
+            return value
+
+        proof.ordinary = racing_receipt
+        try:
+            refuses('Strict receipt loader refuses proof-file change during validation',
+                    lambda: proof.current_proof_receipt(fixture))
+        finally:
+            proof.ordinary = original_ordinary
+        assert len(receipt_reads) > 1
+        passed('Every current receipt consumer brackets exact proof bytes')
+
         def altered_diagnostic_artifact_batch_identity(attribute):
             original = getattr(proof, attribute)
             try:
