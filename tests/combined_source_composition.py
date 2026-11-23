@@ -1397,6 +1397,16 @@ DIAGNOSTIC_UNTRACKED_PREFLIGHT_SHA256 = {
     VERIFIER: '69d06aada7a567151a9adbcc81b6844d9336a75c55e89663186c0c1f47cfe71a',
     REGRESSION: 'a1a7e3dda485a60ccec2edb8547f284255ec48b0aac027d5e63adedda20b7191',
 }
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE = '95a7c416f97d26155153f0e052ec5579919d6859'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE_TREE = '3184ca79076c70988d4c61206bd971c894a9f3ca'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE = '4362d0ebe552e8d9955f42d65be0032da143b739'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE_TREE = '301656c040d74dc7951648fc0421811f53e4fedd'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SHA256 = {
+    RECEIPT: '6da40eeca1ae03a165c675f21b6c6a1a4793f522f0f02b3fde02616d9cca3844',
+    VERIFIER: 'edd5afb67012b3826e1840998865bbe097a6da49021ef4dfd9f47081797585d2',
+    REGRESSION: 'e5eed6956ae1c0d49ec7abcd4830b600f9284a7c985d52c4e4404eb26332e921',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2054,7 +2064,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'e5eed6956ae1c0d49ec7abcd4830b600f9284a7c985d52c4e4404eb26332e921'
+REGRESSION_SHA256 = 'f2e227b9f55ec01b89c7a8b473ea82ae79f1347a2c40405cf20b44d0d6d9fe3b'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -9095,6 +9105,61 @@ def validate_diagnostic_untracked_preflight_source(root):
             'Diagnostic untracked-source preflight implementation or receipt changed')
 
 
+def validate_diagnostic_protected_tree_preflight_source(root):
+    """Bind ignored-file inventory across every tracked top-level tree."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE_TREE,
+            'Diagnostic protected-tree preflight tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE],
+            'Diagnostic protected-tree preflight parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE,
+                  DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_MODIFIED)],
+            'Diagnostic protected-tree preflight changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SHA256[path],
+                'Diagnostic protected-tree preflight changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'unexpected_filesystem = actual_paths(root, tracked) - tracked'
+                in source_verifier
+            and b"areas = {PurePosixPath(path).parts[0] for path in tracked if '/' in path}"
+                in source_verifier
+            and b'for area in sorted(areas):' in source_verifier
+            and b'Refuses ignored source under a tracked operations tree'
+                in source_regression
+            and b'Ignored operations source is inventoried before historical validation'
+                in source_regression
+            and b'Ordinary generated test cache does not become a Git/source/package input'
+                in source_regression,
+            'Diagnostic protected-tree preflight implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11246,6 +11311,7 @@ def _verify_current(root):
     validate_diagnostic_tracked_preflight_source(root)
     validate_diagnostic_tracked_preflight_cancellation_source(root)
     validate_diagnostic_untracked_preflight_source(root)
+    validate_diagnostic_protected_tree_preflight_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -11640,6 +11706,7 @@ def _verify_current(root):
         {'name': 'Exact Diagnostic tracked-source preflight refuses staged and unstaged non-proof drift before historical projection', 'passed': True},
         {'name': 'Exact tracked-source correction refuses offsetting index/worktree drift and binds staged proof bytes and modes', 'passed': True},
         {'name': 'Exact untracked-source preflight refuses non-ignored additions before projection while retaining generated-cache compatibility', 'passed': True},
+        {'name': 'Exact protected-tree preflight inventories ignored inputs under every tracked top-level directory', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
