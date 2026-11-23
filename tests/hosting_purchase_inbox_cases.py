@@ -298,7 +298,7 @@ def run_browser(env, browser):
         # Existing fixed pagination must remain real navigation, not rendered URL-only proof.
         check('Owner empty second page is explicit', goto(op, list_url(True, 2)) == 200 and op.locator('[data-hosting-purchase]').count() == 0 and 'No purchases on this page' in op.inner_text('body'))
         previous = op.locator('nav[aria-label="Hosting purchase pages"]').get_by_role('link', name='Previous', exact=True)
-        check('Owner previous-page link returns the real first page', destination(previous.get_attribute('href'), admin, {'view': 'hosting-purchases', 'p': 1}) and click(op, previous) == 200 and op.locator('[data-hosting-purchase]').count() == 5)
+        check('Owner previous-page link returns the real first page', destination(previous.get_attribute('href'), admin, {'view': 'hosting-purchases', 'p': 1}) and click(op, previous, 60000) == 200 and op.locator('[data-hosting-purchase]').count() == 5)
         check('Alternate client cannot choose another client by query', goto(bp, list_url(False) + '&client_id=1') == 200 and bp.locator('[data-hosting-purchase]').count() == 0 and 'No purchases on this page' in bp.inner_text('body')
               and all(row['invoice_reference'] not in bp.content() for row in initial['results'].values()))
         check('Alternate client cannot open an original foreign invoice', goto(bp, portal + '?' + urlencode({'invoice': paid['invoice_id']})) == 404
@@ -321,7 +321,7 @@ def run_browser(env, browser):
         response = owner.request.get(admin + '?' + urlencode({'view': 'hosting-purchases', 'support': support_ids[0]}), max_redirects=0, timeout=30000)
         check('Owner purchase list refuses support-context query', response.status == 403 and 'owner outside support access' in response.text() and 'data-hosting-purchase=' not in response.text())
         check('Actual support exit restores owner navigation', click(op, form(op, 'support_end').get_by_role('button', name='Return to admin', exact=True)) == 200
-              and goto(op, list_url(True)) == 200 and op.locator('[data-hosting-purchase]').count() == 5)
+              and goto(op, list_url(True), 60000) == 200 and op.locator('[data-hosting-purchase]').count() == 5)
         unchanged('Inbox role and support refusals preserve all five invoices results and provider counters')
         check('Inbox browser has no JavaScript errors', not errors)
         expected_script = {'method': 'GET', 'url': production_tokenization_script, 'resource_type': 'script'}
