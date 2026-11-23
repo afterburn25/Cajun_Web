@@ -1467,6 +1467,16 @@ DIAGNOSTIC_PROJECTION_LRU_BOUND_SHA256 = {
     VERIFIER: 'f84729782cb23677483bcbbc3af33ab32c17f4175b1430520ac125f77f3b8db7',
     REGRESSION: 'b966a1e80ea3292131b83476a595a9a6d6e9fa0744e6e261ff8f2dd9c4dd6e69',
 }
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE = 'a1e0bd515842f2fb80cffb5b72f78a5656fd2324'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE_TREE = '7130a3e4fea9c50118856d783227bd27dd25d970'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE = '8371f074d7b22a9391a2669a66c7457002518404'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE_TREE = '6e17358adcc4eb609419c07a4c7514c96e6bd907'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SHA256 = {
+    RECEIPT: '9950a2bcaa413e52bb51ba179e7be8ff62323c63c3ecbbe3330cfe75500d28fb',
+    VERIFIER: 'e1d5d665a269b6389f6e4d76fcf356ad6f50edcfa30543d4b9d406da3438e602',
+    REGRESSION: '5e541c541e85658fec71dda2a63afbaad42e4abd9000a97726347b0258448991',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2124,7 +2134,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '5e541c541e85658fec71dda2a63afbaad42e4abd9000a97726347b0258448991'
+REGRESSION_SHA256 = '837578b77f437e90a56c6f629d1d86917208ed38765caebe797f09a9bd508640'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -9576,6 +9586,66 @@ def validate_diagnostic_projection_lru_bound_source(root):
             'Diagnostic projection LRU-bound implementation or receipt changed')
 
 
+def validate_diagnostic_projection_transaction_order_source(root):
+    """Bind unified bounded access order and full refusal reset."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE_TREE,
+            'Diagnostic projection transaction-order source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE],
+            'Diagnostic projection transaction-order source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE,
+                  DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_MODIFIED)],
+            'Diagnostic projection transaction-order source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SHA256[path],
+                'Diagnostic projection transaction-order source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"transaction = ({'overlay': OrderedDict()}" in source_verifier
+            and b'if key in overlay:' in source_verifier
+            and b"overlay[key] = ('cached', result)" in source_verifier
+            and b"overlay[key] = ('pending', result)" in source_verifier
+            and b'while len(overlay) > _PROJECTION_CACHE_LIMIT:'
+                in source_verifier
+            and b'for overlay_key, (kind, overlay_result) in overlay.items():'
+                in source_verifier
+            and b'overlay.clear()' in source_verifier
+            and b'def project_cache_interleaved(root, path, current):'
+                in source_regression
+            and b"assert leaf_calls == [b'b', b'a']" in source_regression
+            and b'def project_cache_caught_touch(root, path, current):'
+                in source_regression
+            and b"assert leaf_calls == [b'a', b'b', b'a']" in source_regression
+            and b'Caught nested refusal resets the bounded transaction overlay'
+                in source_regression,
+            'Diagnostic projection transaction-order implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11747,6 +11817,7 @@ def _verify_current(root):
     validate_diagnostic_projection_chain_bracket_source(root)
     validate_diagnostic_projection_chain_transaction_source(root)
     validate_diagnostic_projection_lru_bound_source(root)
+    validate_diagnostic_projection_transaction_order_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -12148,6 +12219,7 @@ def _verify_current(root):
         {'name': 'Exact projection-chain successor brackets mutable source at each outer chain while nested pure calls reuse those bytes', 'passed': True},
         {'name': 'Exact projection-chain transaction successor publishes nested cache entries only after the outer bracket succeeds', 'passed': True},
         {'name': 'Exact projection-cache bound successor constrains transaction staging and defers committed LRU recency until outer success', 'passed': True},
+        {'name': 'Exact projection transaction-order successor atomically publishes one bounded chronological overlay and resets it on refusal', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
