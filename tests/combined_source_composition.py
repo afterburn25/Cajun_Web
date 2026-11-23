@@ -2054,7 +2054,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '38294c49664fb40f4a19a8600d1bb1ef811008fbca02151da36bd0411fdd7190'
+REGRESSION_SHA256 = 'e5eed6956ae1c0d49ec7abcd4830b600f9284a7c985d52c4e4404eb26332e921'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2389,6 +2389,11 @@ def tracked_source_preflight(root, proof_files):
     require(not untracked - NARRATIVES,
             'Untracked source present before composition proof: '
             + repr(sorted(untracked - NARRATIVES)))
+    tracked = set(parse_tracked_source_drift(git(root, 'ls-files', '-z')))
+    unexpected_filesystem = actual_paths(root, tracked) - tracked
+    require(not unexpected_filesystem,
+            'Ignored or untracked source present before composition proof: '
+            + repr(sorted(unexpected_filesystem)))
     for path in set(staged_paths) & allowed:
         result = subprocess.run(
             ['git', '--no-replace-objects', 'ls-files', '--stage', '-z', '--', path],
@@ -10607,8 +10612,11 @@ def actual_paths(root, source_paths):
     tracked = set(git(root, 'ls-files', '-z').decode().split('\0')) - {''}
     paths = set(tracked)
     paths.update(set(git(root, 'ls-files', '--others', '--exclude-standard', '-z').decode().split('\0')) - {''})
-    # Include ignored files too within protected source/evidence directories.
-    for area in ('site', 'foundation', 'tests', 'tools', '.github', 'docs'):
+    # Include ignored files beneath every tracked top-level source/evidence
+    # directory. This prevents a global ignore such as __pycache__/ from
+    # hiding executable inputs under ops/, brand/ or future tracked trees.
+    areas = {PurePosixPath(path).parts[0] for path in tracked if '/' in path}
+    for area in sorted(areas):
         directory = root / area
         require(not directory.is_symlink(), 'Symlink protected source directory: ' + area)
         if directory.exists():

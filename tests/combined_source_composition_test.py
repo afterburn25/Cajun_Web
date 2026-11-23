@@ -561,6 +561,26 @@ def run(root=ROOT):
         passed('Untracked-source preflight precedes expensive historical validation')
         refuses('Refuses a hidden additional shipping file', lambda: addition('site/.unreviewed-composition.php'))
 
+        ignored_ops = fixture / 'ops/twentyi-cloud-root/__pycache__/unreviewed_source.py'
+        ignored_parent_existed = ignored_ops.parent.exists()
+        ignored_ops.parent.mkdir(parents=True, exist_ok=True)
+        ignored_ops.write_bytes(b'raise RuntimeError("unreviewed ignored source")\n')
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            assert subprocess.run(
+                ['git', 'check-ignore', '--quiet', '--',
+                 ignored_ops.relative_to(fixture).as_posix()], cwd=fixture).returncode == 0
+            refuses('Refuses ignored source under a tracked operations tree',
+                    lambda: proof.verify_current(fixture))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+            ignored_ops.unlink()
+            if not ignored_parent_existed:
+                ignored_ops.parent.rmdir()
+        passed('Ignored operations source is inventoried before historical validation')
+
         for path in sorted(proof.UX09_ADDITIONS):
             refuses('Refuses altered exact UX-09 addition ' + path,
                     lambda path=path: modified(
