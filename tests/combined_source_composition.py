@@ -1357,6 +1357,16 @@ DIAGNOSTIC_PROJECTION_CACHE_SHA256 = {
     VERIFIER: 'cdc5e18ea8b98c05b09f881c3bfd7970561e3b2f909c740e760c59fb5c659957',
     REGRESSION: '31123ebaad7bcc8e52e8f0ddbd8d6ace0265bbb6f2c6dd44d6225c180854fb01',
 }
+DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE = '6d3a661d3753fc043dee7287226200d65721e85e'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE_TREE = 'db83b1ce9e4c180824600a9f9d9b4136176c4c10'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE = '713e37f7ba1ab33d9eb00917f9244a41323b1afa'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE_TREE = '31385df47e96c816e66a7a81028cb34c54f2b7dd'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_CACHE_RACE_SHA256 = {
+    RECEIPT: '0fa3894a9a7f0353566d89948d230a3f3ad66d7550e3d0d4a1a7a96bfab4b9e5',
+    VERIFIER: '57a4cc4834038aa7fa2bc3e91d379e4baabb017ff457a706969e34604f821e15',
+    REGRESSION: 'f81ff547d94569e0cc9ca12d69d662765db6399d749500322546b0d75f046a90',
+}
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -2002,7 +2012,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'f81ff547d94569e0cc9ca12d69d662765db6399d749500322546b0d75f046a90'
+REGRESSION_SHA256 = 'abfc49c4beada221d94e0f841344712aeafcc0d2ddf5a5ce0fe41755bc3f6d15'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8475,7 +8485,7 @@ def project_diagnostic_artifact_failure_evidence_source(root, path, current):
 
 def project_diagnostic_blob_batch_source(root, path, current):
     """Restore the accepted proof before the immutable blob-batch successor."""
-    current = project_diagnostic_projection_cache_source(root, path, current)
+    current = project_diagnostic_projection_cache_race_source(root, path, current)
     if path != REGRESSION:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -8681,6 +8691,81 @@ def validate_diagnostic_projection_cache_source(root):
             and b'Exact projection memoization is bounded and cleared'
                 in source_regression,
             'Diagnostic projection-cache implementation or receipt changed')
+
+
+def project_diagnostic_projection_cache_race_source(root, path, current):
+    """Restore the first cache proof before its mutable-source race correction."""
+    if path != REGRESSION:
+        return project_diagnostic_projection_cache_source(root, path, current)
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE + ':' + path)
+    prior_source = git(root, 'cat-file', 'blob',
+                       DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
+        current = base
+    if current == base:
+        current = prior_source
+    return project_diagnostic_projection_cache_source(root, path, current)
+
+
+def validate_diagnostic_projection_cache_race_source(root):
+    """Bind the exact correction that brackets cached projections with reads."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE_TREE,
+            'Diagnostic projection-cache race source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE],
+            'Diagnostic projection-cache race source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE,
+                  DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CACHE_RACE_MODIFIED)],
+            'Diagnostic projection-cache race source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CACHE_RACE_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_CACHE_RACE_SHA256[path],
+                'Diagnostic projection-cache race source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b"require(ordinary(Path(root_value), path) == live,") == 2
+            and b'cached.move_to_end(key)' in source_verifier
+            and b'Composition source changed during cached projection'
+                in source_verifier
+            and b'Composition source changed during projection'
+                in source_verifier
+            and b'Bound projection cache refuses a mutable-source race'
+                in source_regression
+            and b'assert len(calls) == 3' in source_regression
+            and source_verifier.count(b'_ACTIVE_ORDINARY') == 1,
+            'Diagnostic projection-cache race correction or receipt changed')
 
 
 def validate_notification_metric_label_source(root):
@@ -10676,6 +10761,7 @@ def _verify_current(root):
     validate_diagnostic_blob_batch_source(root)
     validate_diagnostic_blob_live_binding_source(root)
     validate_diagnostic_projection_cache_source(root)
+    validate_diagnostic_projection_cache_race_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)

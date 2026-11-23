@@ -233,6 +233,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_projection_cache_identity(attribute))
 
+        def altered_diagnostic_projection_cache_race_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_cache_race_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic cache-race ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_cache_race_identity(attribute))
+
         artifact_helper = fixture / proof.DIAGNOSTIC_ARTIFACT_BATCH_PATH
         artifact_helper_current = artifact_helper.read_bytes()
         artifact_helper_predecessor = proof.git(
