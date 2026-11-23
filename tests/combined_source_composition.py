@@ -1367,6 +1367,12 @@ DIAGNOSTIC_PROJECTION_CACHE_RACE_SHA256 = {
     VERIFIER: '57a4cc4834038aa7fa2bc3e91d379e4baabb017ff457a706969e34604f821e15',
     REGRESSION: 'f81ff547d94569e0cc9ca12d69d662765db6399d749500322546b0d75f046a90',
 }
+HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
+HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
+HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
+HOSTING_INBOX_RELOAD_BUDGET_SOURCE_TREE = '2736764ce8d0bd56598651c39218aabee78852f0'
+HOSTING_INBOX_RELOAD_BUDGET_PATH = 'tests/hosting_purchase_inbox_cases.py'
+HOSTING_INBOX_RELOAD_BUDGET_SHA256 = 'f6a3a5e91813df7a3ceb49cefc3192ce727e6b468939206c6d05caf880a1b11a'
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -2012,7 +2018,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'abfc49c4beada221d94e0f841344712aeafcc0d2ddf5a5ce0fe41755bc3f6d15'
+REGRESSION_SHA256 = '34bd2a5fd78da6a5b6d58357bf96cc26bb474d3a48ddf6ecd4aae0fc2344dc9b'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -3402,6 +3408,7 @@ def validate_resulting_main_client_inbox_budget_source(root):
     source_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE)
     path = RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH
     current = project_runner_application_composition_partition(root, path, ordinary(root, path))
+    current = project_hosting_inbox_reload_budget_source(root, path, current)
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
     require(current == source
@@ -3419,6 +3426,7 @@ def validate_resulting_main_client_inbox_budget_source(root):
 
 def project_resulting_main_client_inbox_budget(root, path, current):
     """Restore the exact reviewed notification successor for older proofs."""
+    current = project_hosting_inbox_reload_budget_source(root, path, current)
     if path != RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH:
         return current
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
@@ -8768,6 +8776,73 @@ def validate_diagnostic_projection_cache_race_source(root):
             'Diagnostic projection-cache race correction or receipt changed')
 
 
+def project_hosting_inbox_reload_budget_source(root, path, current):
+    """Restore the reviewed cache proof before the bounded inbox reload fix."""
+    if path != HOSTING_INBOX_RELOAD_BUDGET_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current hosted inbox reload budget changed before predecessor projection')
+    return base
+
+
+def validate_hosting_inbox_reload_budget_source(root):
+    """Bind one finite hosted budget to retained five-card inbox reloads."""
+    require(git(root, 'rev-parse',
+                HOSTING_INBOX_RELOAD_BUDGET_BASE
+                + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE
+            and git(root, 'rev-parse',
+                    HOSTING_INBOX_RELOAD_BUDGET_SOURCE
+                    + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_BUDGET_SOURCE_TREE,
+            'Hosted inbox reload budget source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                HOSTING_INBOX_RELOAD_BUDGET_SOURCE).decode().strip().split()
+            == [HOSTING_INBOX_RELOAD_BUDGET_BASE],
+            'Hosted inbox reload budget source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        HOSTING_INBOX_RELOAD_BUDGET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  HOSTING_INBOX_RELOAD_BUDGET_BASE,
+                  HOSTING_INBOX_RELOAD_BUDGET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + HOSTING_INBOX_RELOAD_BUDGET_PATH],
+            'Hosted inbox reload budget source changed another path')
+    base_entries = entries(root, HOSTING_INBOX_RELOAD_BUDGET_BASE)
+    source_entries = entries(root, HOSTING_INBOX_RELOAD_BUDGET_SOURCE)
+    path = HOSTING_INBOX_RELOAD_BUDGET_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_BUDGET_BASE + ':' + path)
+    require(current == source
+            and digest(source) == HOSTING_INBOX_RELOAD_BUDGET_SHA256
+            and mode(root, path)
+            == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_hosting_inbox_reload_budget_source(
+                root, path, current) == base
+            and project_hosting_inbox_reload_budget_source(
+                root, path, base) == base,
+            'Hosted inbox reload budget identity or projection changed')
+    require(source.count(b'def goto(page, url, timeout=30000):') == 1
+            and source.count(
+                b"page.goto(url, wait_until='load', timeout=timeout)") == 1
+            and source.count(
+                b'goto(page, list_url(is_owner), 60000) == 200') == 1
+            and b'goto(page, list_url(is_owner)) == 200' not in source
+            and source.count(b"check('Inbox reloads ' + actor") == 1
+            and source.count(b"click(page, link) == 200") == 1,
+            'Hosted inbox reload correction weakened one-attempt destination assertions')
+
+
 def validate_notification_metric_label_source(root):
     """Bind the review correction that labels retained delivery rows truthfully."""
     require(git(root, 'rev-parse', NOTIFICATION_METRIC_LABEL_BASE + '^{tree}').decode().strip()
@@ -9214,6 +9289,7 @@ def validate_ux08_inbox_payment_readiness_fix_source(root):
 
 def project_ux08_inbox_payment_readiness_fix(root, path, current):
     """Restore the exact pre-readiness-fix head for older source receipts."""
+    current = project_hosting_inbox_reload_budget_source(root, path, current)
     current = project_notification_health_source(root, path, current)
     if path not in UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED:
         return current
@@ -9967,6 +10043,8 @@ def project_ux08_storefront_repair_input(root, path, current):
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_hosting_inbox_reload_budget_source(
+        Path(__file__).resolve().parents[1], path, current)
     current = project_application_fixture_successors(
         Path(__file__).resolve().parents[1], path, current)
     current = project_mail_artifact_projection_fix(
@@ -10762,6 +10840,7 @@ def _verify_current(root):
     validate_diagnostic_blob_live_binding_source(root)
     validate_diagnostic_projection_cache_source(root)
     validate_diagnostic_projection_cache_race_source(root)
+    validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
