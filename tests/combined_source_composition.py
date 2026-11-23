@@ -1373,6 +1373,12 @@ HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE_TREE = '2736764ce8d0bd56598651c39218aabee78852f0'
 HOSTING_INBOX_RELOAD_BUDGET_PATH = 'tests/hosting_purchase_inbox_cases.py'
 HOSTING_INBOX_RELOAD_BUDGET_SHA256 = 'f6a3a5e91813df7a3ceb49cefc3192ce727e6b468939206c6d05caf880a1b11a'
+HOSTING_INBOX_RELOAD_COMPLETION_BASE = 'cfe07732654a340ea9f00b111e473f5588afe9a0'
+HOSTING_INBOX_RELOAD_COMPLETION_BASE_TREE = '4006618189d5f2236e12e85a4f314290265f49ef'
+HOSTING_INBOX_RELOAD_COMPLETION_SOURCE = '3f9520ca24fa6a5af100952629b7ca8e09099fd8'
+HOSTING_INBOX_RELOAD_COMPLETION_SOURCE_TREE = '2c8092fb4af7f377b8b2218d7d3223cc81c97c19'
+HOSTING_INBOX_RELOAD_COMPLETION_PATH = HOSTING_INBOX_RELOAD_BUDGET_PATH
+HOSTING_INBOX_RELOAD_COMPLETION_SHA256 = 'c97d2ceee1a2106ad8a51585e63503193dd1a4b0183e71c415883dbf7335f6e0'
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -2018,7 +2024,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '34bd2a5fd78da6a5b6d58357bf96cc26bb474d3a48ddf6ecd4aae0fc2344dc9b'
+REGRESSION_SHA256 = '6c036e3658f50431b13731320ae914bde03553d039f4b7fb89dea1f4e227845d'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8776,8 +8782,77 @@ def validate_diagnostic_projection_cache_race_source(root):
             'Diagnostic projection-cache race correction or receipt changed')
 
 
+def project_hosting_inbox_reload_completion_source(root, path, current):
+    """Restore the first bounded-reload proof before its reviewed completion."""
+    if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current hosted inbox reload completion changed before predecessor projection')
+    return base
+
+
+def validate_hosting_inbox_reload_completion_source(root):
+    """Bind the two equivalent five-card owner loads found during review."""
+    require(git(root, 'rev-parse',
+                HOSTING_INBOX_RELOAD_COMPLETION_BASE
+                + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse',
+                    HOSTING_INBOX_RELOAD_COMPLETION_SOURCE
+                    + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_COMPLETION_SOURCE_TREE,
+            'Hosted inbox reload completion source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                HOSTING_INBOX_RELOAD_COMPLETION_SOURCE).decode().strip().split()
+            == [HOSTING_INBOX_RELOAD_COMPLETION_BASE],
+            'Hosted inbox reload completion source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        HOSTING_INBOX_RELOAD_COMPLETION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  HOSTING_INBOX_RELOAD_COMPLETION_BASE,
+                  HOSTING_INBOX_RELOAD_COMPLETION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + HOSTING_INBOX_RELOAD_COMPLETION_PATH],
+            'Hosted inbox reload completion changed another path')
+    base_entries = entries(root, HOSTING_INBOX_RELOAD_COMPLETION_BASE)
+    source_entries = entries(root, HOSTING_INBOX_RELOAD_COMPLETION_SOURCE)
+    path = HOSTING_INBOX_RELOAD_COMPLETION_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_COMPLETION_BASE + ':' + path)
+    require(current == source
+            and digest(source) == HOSTING_INBOX_RELOAD_COMPLETION_SHA256
+            and mode(root, path)
+            == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_hosting_inbox_reload_completion_source(
+                root, path, current) == base
+            and project_hosting_inbox_reload_completion_source(
+                root, path, base) == base,
+            'Hosted inbox reload completion identity or projection changed')
+    require(source.count(b'def goto(page, url, timeout=30000):') == 1
+            and source.count(b'def click(page, link, timeout=30000):') == 1
+            and source.count(
+                b'goto(page, list_url(is_owner), 60000) == 200') == 1
+            and source.count(b'click(op, previous, 60000) == 200') == 1
+            and source.count(
+                b'goto(op, list_url(True), 60000) == 200') == 1
+            and b'click(op, previous) == 200' not in source
+            and b'goto(op, list_url(True)) == 200' not in source,
+            'Hosted inbox reload completion broadened defaults or omitted a five-card load')
+
+
 def project_hosting_inbox_reload_budget_source(root, path, current):
     """Restore the reviewed cache proof before the bounded inbox reload fix."""
+    current = project_hosting_inbox_reload_completion_source(root, path, current)
     if path != HOSTING_INBOX_RELOAD_BUDGET_PATH:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -8818,7 +8893,8 @@ def validate_hosting_inbox_reload_budget_source(root):
     base_entries = entries(root, HOSTING_INBOX_RELOAD_BUDGET_BASE)
     source_entries = entries(root, HOSTING_INBOX_RELOAD_BUDGET_SOURCE)
     path = HOSTING_INBOX_RELOAD_BUDGET_PATH
-    current = ordinary(root, path)
+    current = project_hosting_inbox_reload_completion_source(
+        root, path, ordinary(root, path))
     source = git(root, 'cat-file', 'blob',
                  HOSTING_INBOX_RELOAD_BUDGET_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob',
@@ -10840,6 +10916,7 @@ def _verify_current(root):
     validate_diagnostic_blob_live_binding_source(root)
     validate_diagnostic_projection_cache_source(root)
     validate_diagnostic_projection_cache_race_source(root)
+    validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
