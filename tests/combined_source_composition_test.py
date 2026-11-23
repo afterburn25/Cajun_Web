@@ -143,6 +143,53 @@ def run(root=ROOT):
             del proof.project_cache_probe
         assert reads == ['exact.txt'] * 6
         assert not proof._ACTIVE_ROOT_KEYS
+
+        original_limit = proof._PROJECTION_CACHE_LIMIT
+        leaf_calls = []
+
+        def project_cache_leaf(root, path, current):
+            leaf_calls.append(current)
+            return current
+
+        def project_cache_many(root, path, current):
+            for value in (b'a', b'b', b'c', b'a'):
+                proof.project_cache_leaf(root, path, value)
+            return current
+
+        def project_cache_touch(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            return current
+
+        proof.project_cache_leaf = project_cache_leaf
+        proof.project_cache_many = project_cache_many
+        proof.project_cache_touch = project_cache_touch
+        proof._PROJECTION_CACHE_LIMIT = 2
+        try:
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_many(
+                    fixture_root, 'exact.txt', b'outer') == b'outer'
+            assert leaf_calls == [b'a', b'b', b'c', b'a']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_touch(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+            assert leaf_calls == [b'a', b'b']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+        finally:
+            proof._PROJECTION_CACHE_LIMIT = original_limit
+            del proof.project_cache_touch
+            del proof.project_cache_many
+            del proof.project_cache_leaf
+        assert not proof._ACTIVE_ROOT_KEYS
+        passed('Transactional projection staging and committed recency retain the strict LRU bound')
     passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
     proof_drift = (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)
     assert proof.parse_tracked_source_drift(

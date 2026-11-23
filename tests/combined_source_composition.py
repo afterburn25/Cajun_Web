@@ -2114,7 +2114,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'e77c0faa83d033ba157545f0ac007955c37e0d7f26e19383283295c82424cda2'
+REGRESSION_SHA256 = 'b966a1e80ea3292131b83476a595a9a6d6e9fa0744e6e261ff8f2dd9c4dd6e69'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12132,9 +12132,11 @@ def verification_projection_cache(root):
             outermost = parent is None
             nested = (parent is not None
                       and parent[0] == call_root and parent[1] == path)
-            pending = OrderedDict() if outermost else parent[3]
-            journal = [] if outermost else parent[4]
-            checkpoint = len(journal)
+            transaction = ({'pending': OrderedDict(), 'touches': OrderedDict(),
+                            'sequence': 0} if outermost else parent[3])
+            pending = transaction['pending']
+            touches = transaction['touches']
+            checkpoint = transaction['sequence']
             # The outer call reads mutable checkout bytes afresh and brackets
             # the complete nested pure-projection chain. Nested calls reuse
             # only those exact already-bracketed bytes; a different root/path
@@ -12144,11 +12146,14 @@ def verification_projection_cache(root):
                    len(live), digest(live))
             try:
                 if key in pending:
-                    result = pending[key]
+                    result, generation = pending.pop(key)
+                    pending[key] = (result, generation)
                 elif key in cached:
                     result = cached[key]
+                    touches.pop(key, None)
+                    touches[key] = None
                 else:
-                    frame = (call_root, path, live, pending, journal)
+                    frame = (call_root, path, live, transaction)
                     active.append(frame)
                     try:
                         result = function(root_value, path, current)
@@ -12157,8 +12162,11 @@ def verification_projection_cache(root):
                                 'Composition projection bracket changed')
                     require(isinstance(result, bytes),
                             'Composition projection did not return exact bytes: ' + name)
-                    pending[key] = result
-                    journal.append(key)
+                    transaction['sequence'] += 1
+                    pending[key] = (result, transaction['sequence'])
+                    while len(pending) > _PROJECTION_CACHE_LIMIT:
+                        pending.popitem(last=False)
+                    maximum = max(maximum, len(pending))
                 if not nested:
                     require(ordinary(Path(root_value), path) == live,
                             'Composition source changed during cached projection: '
@@ -12167,8 +12175,11 @@ def verification_projection_cache(root):
                 # the outer fresh-read bracket has succeeded. A refused chain
                 # discards every result staged since its entry checkpoint.
                 if outermost:
-                    for pending_key in journal:
-                        cached[pending_key] = pending[pending_key]
+                    for touched_key in touches:
+                        if touched_key in cached:
+                            cached.move_to_end(touched_key)
+                    for pending_key, (pending_result, _generation) in pending.items():
+                        cached[pending_key] = pending_result
                         cached.move_to_end(pending_key)
                         while len(cached) > _PROJECTION_CACHE_LIMIT:
                             cached.popitem(last=False)
@@ -12177,8 +12188,10 @@ def verification_projection_cache(root):
                     maximum = max(maximum, len(cached))
                 return result
             except BaseException:
-                while len(journal) > checkpoint:
-                    pending.pop(journal.pop(), None)
+                for pending_key, (_pending_result, generation) in list(pending.items()):
+                    if generation > checkpoint:
+                        pending.pop(pending_key)
+                transaction['sequence'] = checkpoint
                 raise
         return retained
 
