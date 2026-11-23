@@ -1457,6 +1457,16 @@ DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SHA256 = {
     VERIFIER: '767673a27a36500ffca44af64bcf023e502c7f117d90cb056fec3f7e61748305',
     REGRESSION: '7936b5de04466372b507b309af369c633a6159e5be9838ba8089a2d958905586',
 }
+DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE = 'b62beabe1c0fbbfd0c59e62024eacbf892f41e28'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE_TREE = '0ce34ba5063a39326e95814f39298d5079c4526c'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE = '75a8ebb857647905de44c9d60e3f46a74d1709e5'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE_TREE = 'f44098b9294fc51cb9596e5021c7fa5985330b14'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_LRU_BOUND_SHA256 = {
+    RECEIPT: 'cfbbe2508bcb8aa4fd9e232881532f633f689e75dcc77a0551b4f8dac654ff21',
+    VERIFIER: 'f84729782cb23677483bcbbc3af33ab32c17f4175b1430520ac125f77f3b8db7',
+    REGRESSION: 'b966a1e80ea3292131b83476a595a9a6d6e9fa0744e6e261ff8f2dd9c4dd6e69',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2114,7 +2124,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'b966a1e80ea3292131b83476a595a9a6d6e9fa0744e6e261ff8f2dd9c4dd6e69'
+REGRESSION_SHA256 = 'ad0a1caf620540e3d731a6bde7626e0546179919b4d52affa37fef1b9abafea5'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -9510,6 +9520,62 @@ def validate_diagnostic_projection_chain_transaction_source(root):
             'Diagnostic projection-chain transaction implementation or receipt changed')
 
 
+def validate_diagnostic_projection_lru_bound_source(root):
+    """Bind strict bounds and deferred recency for both cache layers."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE_TREE,
+            'Diagnostic projection LRU-bound source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE],
+            'Diagnostic projection LRU-bound source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE,
+                  DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_LRU_BOUND_MODIFIED)],
+            'Diagnostic projection LRU-bound source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_LRU_BOUND_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_PROJECTION_LRU_BOUND_SHA256[path],
+                'Diagnostic projection LRU-bound source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"'pending': OrderedDict(), 'touches': OrderedDict()"
+                in source_verifier
+            and b'while len(pending) > _PROJECTION_CACHE_LIMIT:'
+                in source_verifier
+            and b'pending.popitem(last=False)' in source_verifier
+            and b'maximum = max(maximum, len(pending))' in source_verifier
+            and b'touches.pop(key, None)' in source_verifier
+            and b'for touched_key in touches:' in source_verifier
+            and b'proof._PROJECTION_CACHE_LIMIT = 2' in source_regression
+            and b"assert leaf_calls == [b'a', b'b', b'c', b'a']"
+                in source_regression
+            and b"assert leaf_calls == [b'a', b'b']" in source_regression
+            and b'Transactional projection staging and committed recency retain the strict LRU bound'
+                in source_regression,
+            'Diagnostic projection LRU-bound implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11680,6 +11746,7 @@ def _verify_current(root):
     validate_diagnostic_current_receipt_consumer_source(root)
     validate_diagnostic_projection_chain_bracket_source(root)
     validate_diagnostic_projection_chain_transaction_source(root)
+    validate_diagnostic_projection_lru_bound_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -12080,6 +12147,7 @@ def _verify_current(root):
         {'name': 'Exact current receipt consumers share one strict loader and bracket proof bytes before and after use', 'passed': True},
         {'name': 'Exact projection-chain successor brackets mutable source at each outer chain while nested pure calls reuse those bytes', 'passed': True},
         {'name': 'Exact projection-chain transaction successor publishes nested cache entries only after the outer bracket succeeds', 'passed': True},
+        {'name': 'Exact projection-cache bound successor constrains transaction staging and defers committed LRU recency until outer success', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},

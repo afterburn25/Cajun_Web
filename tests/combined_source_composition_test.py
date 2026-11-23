@@ -160,9 +160,15 @@ def run(root=ROOT):
             proof.project_cache_leaf(root, path, b'a')
             return current
 
+        def project_cache_refuse(root, path, current):
+            for value in (b'a', b'b', b'c'):
+                proof.project_cache_leaf(root, path, value)
+            raise AssertionError('synthetic bounded transaction refusal')
+
         proof.project_cache_leaf = project_cache_leaf
         proof.project_cache_many = project_cache_many
         proof.project_cache_touch = project_cache_touch
+        proof.project_cache_refuse = project_cache_refuse
         proof._PROJECTION_CACHE_LIMIT = 2
         try:
             with proof.verification_projection_cache(fixture_root):
@@ -183,8 +189,19 @@ def run(root=ROOT):
                     fixture_root, 'exact.txt', b'a') == b'a'
             assert leaf_calls == [b'a', b'b']
             assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                refuses('Bounded transaction never publishes a refused outer chain',
+                        lambda: proof.project_cache_refuse(
+                            fixture_root, 'exact.txt', b'refuse'))
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+            assert leaf_calls == [b'a', b'b', b'c', b'c']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
         finally:
             proof._PROJECTION_CACHE_LIMIT = original_limit
+            del proof.project_cache_refuse
             del proof.project_cache_touch
             del proof.project_cache_many
             del proof.project_cache_leaf
@@ -515,6 +532,24 @@ def run(root=ROOT):
             refuses('Refuses a substituted diagnostic projection chain transaction ' + label,
                     lambda attribute=attribute:
                     altered_diagnostic_projection_chain_transaction_identity(attribute))
+
+        def altered_diagnostic_projection_lru_bound_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_lru_bound_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection LRU bound ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_lru_bound_identity(attribute))
 
         def altered_hosting_inbox_reload_budget_identity(attribute):
             original = getattr(proof, attribute)
