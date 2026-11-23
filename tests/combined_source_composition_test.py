@@ -77,8 +77,22 @@ def run(root=ROOT):
         caller_refused = True
     assert caller_refused and not proof._BLOB_BATCHES
     passed('Immutable blob batch reaps its child after a failing caller')
+    with tempfile.TemporaryDirectory(prefix='cwp-projection-cache-negative-') as folder:
+        fixture_root = Path(folder)
+        fixture_path = fixture_root / 'exact.txt'
+        fixture_path.write_bytes(b'initial exact bytes')
+        with proof.verification_projection_cache(fixture_root):
+            assert proof.ordinary(fixture_root, 'exact.txt') == b'initial exact bytes'
+            fixture_path.write_bytes(b'changed during proof')
+            assert proof.ordinary(fixture_root, 'exact.txt') == b'changed during proof'
+        assert not proof._ACTIVE_ROOT_KEYS
+    passed('Bound projection cache preserves fresh mutable-worktree reads')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (0 < proof._LAST_PROJECTION_CACHE_MAX
+            <= proof._PROJECTION_CACHE_LIMIT == 32768
+            and not proof._ACTIVE_ROOT_KEYS)
+    passed('Exact projection memoization is bounded and cleared after each full proof')
     assert len(proof._TREE_ENTRIES) <= proof.TREE_ENTRY_CACHE_LIMIT == 16
     passed('Immutable parsed-tree cache remains bounded after the complete proof')
     verifier_ast = ast.parse((root / proof.VERIFIER).read_text(encoding='utf-8'))

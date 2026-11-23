@@ -12,7 +12,9 @@ import base64
 import copy
 from collections import OrderedDict
 from contextlib import contextmanager
+import functools
 import hashlib
+import inspect
 import json
 import os
 import re
@@ -1986,7 +1988,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '70338a161e7a15d1f26139f352ed7cfa3b7db1845a4ccd412ad5bb741e576075'
+REGRESSION_SHA256 = '31123ebaad7bcc8e52e8f0ddbd8d6ace0265bbb6f2c6dd44d6225c180854fb01'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2085,6 +2087,9 @@ TREE_ENTRY_CACHE_LIMIT = 16
 _IMMUTABLE_GIT_RESULTS = {}
 _PINNED_HEADS = {}
 _BLOB_BATCHES = {}
+_ACTIVE_ROOT_KEYS = {}
+_PROJECTION_CACHE_LIMIT = 32768
+_LAST_PROJECTION_CACHE_MAX = 0
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -2100,6 +2105,19 @@ def digest(value):
 def present(root):
     path = root / RECEIPT
     return path.exists() or path.is_symlink()
+
+
+def root_key(root):
+    """Reuse one verified root identity only during a complete proof.
+
+    Resolving the same directory hundreds of thousands of times adds no source
+    coverage.  Outside the bounded verification context every caller still
+    resolves the supplied path afresh.
+    """
+    literal = os.fspath(root)
+    if literal in _ACTIVE_ROOT_KEYS:
+        return _ACTIVE_ROOT_KEYS[literal]
+    return str(Path(root).resolve())
 
 
 def immutable_git_query(args):
@@ -2154,15 +2172,15 @@ def _read_immutable_blob(process, expression):
 @contextmanager
 def immutable_blob_batch(root):
     """Use one verified child for immutable blob reads in one full proof."""
-    root_key = str(Path(root).resolve())
-    require(root_key not in _BLOB_BATCHES,
+    resolved_root = root_key(root)
+    require(resolved_root not in _BLOB_BATCHES,
             'Nested composition blob batch is forbidden')
     with tempfile.TemporaryFile() as errors:
         process = subprocess.Popen(
             ['git', '--no-replace-objects', 'cat-file', '--batch'],
             cwd=root, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=errors)
-        _BLOB_BATCHES[root_key] = process
+        _BLOB_BATCHES[resolved_root] = process
         try:
             yield
             process.stdin.close()
@@ -2174,7 +2192,7 @@ def immutable_blob_batch(root):
                 raise AssertionError('Composition batch blob reader failed: '
                                      + errors.read(8192).decode('utf-8', 'replace'))
         finally:
-            _BLOB_BATCHES.pop(root_key, None)
+            _BLOB_BATCHES.pop(resolved_root, None)
             if process.poll() is None:
                 process.kill()
             process.wait()
@@ -2185,20 +2203,20 @@ def immutable_blob_batch(root):
 
 
 def git(root, *args):
-    root_key = str(Path(root).resolve())
-    pinned = _PINNED_HEADS.get(root_key)
+    resolved_root = root_key(root)
+    pinned = _PINNED_HEADS.get(resolved_root)
     pin_revisions = bool(args and args[0] in {'merge-base', 'diff', 'diff-tree'})
     cache_args = tuple(
         pinned + value[4:] if pin_revisions and pinned and value in {'HEAD', 'HEAD^{tree}'} else value
         for value in args
     )
-    cache_key = (root_key, cache_args)
+    cache_key = (resolved_root, cache_args)
     immutable = immutable_git_query(cache_args)
     if immutable and cache_key in _IMMUTABLE_GIT_RESULTS:
         return _IMMUTABLE_GIT_RESULTS[cache_key]
     # Execute the same full-object-ID command used as the cache key. A mutable
     # HEAD spelling must never be evaluated and stored under its earlier pin.
-    active_batch = _BLOB_BATCHES.get(root_key)
+    active_batch = _BLOB_BATCHES.get(resolved_root)
     if (immutable and active_batch is not None and len(cache_args) == 3
             and cache_args[:2] == ('cat-file', 'blob')):
         output = _read_immutable_blob(active_batch, cache_args[2])
@@ -2216,7 +2234,7 @@ def git(root, *args):
 
 def pin_head(root):
     """Bind HEAD once per verification root and refuse any later movement."""
-    root_key = str(Path(root).resolve())
+    resolved_root = root_key(root)
     replacements = subprocess.run(
         ['git', '--no-replace-objects', 'for-each-ref', '--format=%(refname)', 'refs/replace'],
         cwd=root, capture_output=True)
@@ -2227,9 +2245,9 @@ def pin_head(root):
     require(result.returncode == 0, 'Composition cannot resolve current HEAD')
     head = result.stdout.decode().strip()
     require(re.fullmatch(r'[0-9a-f]{40}', head) is not None, 'Invalid current HEAD identity')
-    require(root_key not in _PINNED_HEADS or _PINNED_HEADS[root_key] == head,
+    require(resolved_root not in _PINNED_HEADS or _PINNED_HEADS[resolved_root] == head,
             'Composition HEAD changed during verification')
-    _PINNED_HEADS[root_key] = head
+    _PINNED_HEADS[resolved_root] = head
 
 
 def ordinary(root, path):
@@ -2252,7 +2270,7 @@ def mode(root, path):
 def entries(root, ref):
     # Git objects named by the pinned commit IDs are immutable. Only this
     # metadata is cached; every actual working file is re-read for every gate.
-    key = (str(Path(root).resolve()), ref)
+    key = (root_key(root), ref)
     if key in _TREE_ENTRIES:
         result = _TREE_ENTRIES.pop(key)
         _TREE_ENTRIES[key] = result
@@ -5273,7 +5291,7 @@ def project_mail_reply_form_helper_fix(root, path, current):
 
 def mail_consolidated_changes(root):
     """Return the exact status/path map for the pinned consolidated mail source."""
-    key=str(Path(root).resolve())
+    key=root_key(root)
     if key in _MAIL_CONSOLIDATED_CHANGES:
         return _MAIL_CONSOLIDATED_CHANGES[key]
     raw=git(root, 'diff', '--name-status', '--no-renames',
@@ -10977,9 +10995,77 @@ def _verify_current(root):
     ]
 
 
+@contextmanager
+def verification_projection_cache(root):
+    """Bound repeated pure projections to one immutable verification pass.
+
+    Projection functions receive exact bytes and return exact predecessor bytes.
+    The full proof invokes the same functions hundreds of thousands of times for
+    identical path/byte pairs. Cache only those exact calls for this one proof,
+    retain a strict LRU bound, and include a fresh worktree read in every cache
+    key so a mutable-source change can never reuse a predecessor result.
+    """
+    global _LAST_PROJECTION_CACHE_MAX
+    root = Path(root)
+    literal = os.fspath(root)
+    resolved = str(root.resolve())
+    require(literal not in _ACTIVE_ROOT_KEYS,
+            'Nested composition projection cache is forbidden')
+    _ACTIVE_ROOT_KEYS[literal] = resolved
+    cached = OrderedDict()
+    originals = {}
+    maximum = 0
+
+    def bind(name, function):
+        @functools.wraps(function)
+        def retained(root_value, path, current):
+            nonlocal maximum
+            call_root = root_key(root_value)
+            require(isinstance(path, str) and isinstance(current, bytes),
+                    'Malformed cached composition projection')
+            # Mutable checkout bytes are deliberately read afresh on every
+            # request. They are part of the exact key, so a changed file can
+            # never receive a result calculated for its predecessor bytes.
+            live = ordinary(Path(root_value), path)
+            key = (call_root, name, path, len(current), digest(current),
+                   len(live), digest(live))
+            if key in cached:
+                result = cached.pop(key)
+                cached[key] = result
+                return result
+            result = function(root_value, path, current)
+            require(isinstance(result, bytes),
+                    'Composition projection did not return exact bytes: ' + name)
+            cached[key] = result
+            while len(cached) > _PROJECTION_CACHE_LIMIT:
+                cached.popitem(last=False)
+            maximum = max(maximum, len(cached))
+            return result
+        return retained
+
+    for name, function in list(globals().items()):
+        if (name.startswith('project_') and inspect.isfunction(function)
+                and tuple(inspect.signature(function).parameters) ==
+                    ('root', 'path', 'current')):
+            originals[name] = function
+            globals()[name] = bind(name, function)
+    try:
+        yield
+    finally:
+        for name, function in originals.items():
+            globals()[name] = function
+        try:
+            require(str(root.resolve()) == resolved,
+                    'Composition root changed during verification')
+        finally:
+            _ACTIVE_ROOT_KEYS.pop(literal, None)
+            _LAST_PROJECTION_CACHE_MAX = maximum
+
+
 def verify_current(root):
-    with immutable_blob_batch(root):
-        return _verify_current(root)
+    with verification_projection_cache(root):
+        with immutable_blob_batch(root):
+            return _verify_current(root)
 
 
 def projection(root, component):
