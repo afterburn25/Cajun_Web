@@ -451,6 +451,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_projection_chain_bracket_identity(attribute))
 
+        def altered_diagnostic_projection_chain_transaction_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_chain_transaction_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection chain transaction ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_chain_transaction_identity(attribute))
+
         def altered_hosting_inbox_reload_budget_identity(attribute):
             original = getattr(proof, attribute)
             try:
