@@ -1343,6 +1343,20 @@ DIAGNOSTIC_BLOB_LIVE_BINDING_SHA256 = {
     'tests/combined_source_composition.py': '0c1722cb738e59bdef453e79843ee16ba447f0fcfda98542e1cba3a8a43594ff',
     'tests/combined_source_composition_test.py': 'd46294728b7a67c629ef40b57845bc53d1ac94cbe718fec44805aa8bb52924a3',
 }
+DIAGNOSTIC_PROJECTION_CACHE_BASE = '5fd3db7865582a399450bb46d4de79d944bda1a8'
+DIAGNOSTIC_PROJECTION_CACHE_BASE_TREE = '77b3b8d9cef787dbe9ea0cf3ed1f5149b8b0f2a7'
+DIAGNOSTIC_PROJECTION_CACHE_SOURCE = 'adb88d042d084069f3f90cc13bc5ddf5911a006d'
+DIAGNOSTIC_PROJECTION_CACHE_SOURCE_TREE = 'a0f907a2f3d3dcd81a861e85c80789de387c847a'
+DIAGNOSTIC_PROJECTION_CACHE_MODIFIED = frozenset((
+    RECEIPT,
+    VERIFIER,
+    REGRESSION,
+))
+DIAGNOSTIC_PROJECTION_CACHE_SHA256 = {
+    RECEIPT: '456cf434f8b444d6f034752c472e53f6715e8e8fde0f45fad7214b9c63da5c36',
+    VERIFIER: 'cdc5e18ea8b98c05b09f881c3bfd7970561e3b2f909c740e760c59fb5c659957',
+    REGRESSION: '31123ebaad7bcc8e52e8f0ddbd8d6ace0265bbb6f2c6dd44d6225c180854fb01',
+}
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -1988,7 +2002,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '31123ebaad7bcc8e52e8f0ddbd8d6ace0265bbb6f2c6dd44d6225c180854fb01'
+REGRESSION_SHA256 = 'd9f3933bcd55269b785cd9c8b797664c70a277d18313c9cbdfc727b16f53f34d'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8461,7 +8475,7 @@ def project_diagnostic_artifact_failure_evidence_source(root, path, current):
 
 def project_diagnostic_blob_batch_source(root, path, current):
     """Restore the accepted proof before the immutable blob-batch successor."""
-    current = project_diagnostic_blob_live_binding_source(root, path, current)
+    current = project_diagnostic_projection_cache_source(root, path, current)
     if path != REGRESSION:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -8595,6 +8609,78 @@ def validate_diagnostic_blob_live_binding_source(root):
             and b'Refuses exact predecessor diagnostic artifact helper rollback'
                 in source_regression,
             'Diagnostic blob live-binding implementation or receipt changed')
+
+
+def project_diagnostic_projection_cache_source(root, path, current):
+    """Restore the accepted PR head before the bounded projection-cache source."""
+    if path != REGRESSION:
+        return project_diagnostic_blob_live_binding_source(root, path, current)
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_PROJECTION_CACHE_BASE + ':' + path)
+    live_binding_source = git(root, 'cat-file', 'blob',
+                              DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
+        current = base
+    if current == base:
+        current = live_binding_source
+    return project_diagnostic_blob_live_binding_source(root, path, current)
+
+
+def validate_diagnostic_projection_cache_source(root):
+    """Bind the exact bounded cache implementation to its accepted PR parent."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CACHE_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CACHE_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_SOURCE_TREE,
+            'Diagnostic projection-cache source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CACHE_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CACHE_BASE],
+            'Diagnostic projection-cache source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CACHE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CACHE_BASE,
+                  DIAGNOSTIC_PROJECTION_CACHE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CACHE_MODIFIED)],
+            'Diagnostic projection-cache source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CACHE_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CACHE_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_PROJECTION_CACHE_SHA256[path],
+                'Diagnostic projection-cache source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_PROJECTION_CACHE_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b'def verification_projection_cache(') == 1
+            and b'_PROJECTION_CACHE_LIMIT = 32768' in source_verifier
+            and b'live = ordinary(Path(root_value), path)' in source_verifier
+            and b'key = (call_root, name, path, len(current), digest(current),'
+                in source_verifier
+            and b'_ACTIVE_ORDINARY' not in source_verifier
+            and b'Bound projection cache preserves fresh mutable-worktree reads'
+                in source_regression
+            and b'Exact projection memoization is bounded and cleared'
+                in source_regression,
+            'Diagnostic projection-cache implementation or receipt changed')
 
 
 def validate_notification_metric_label_source(root):
@@ -10589,6 +10675,7 @@ def _verify_current(root):
     validate_diagnostic_artifact_failure_evidence_source(root)
     validate_diagnostic_blob_batch_source(root)
     validate_diagnostic_blob_live_binding_source(root)
+    validate_diagnostic_projection_cache_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
