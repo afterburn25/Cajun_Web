@@ -308,6 +308,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_tracked_preflight_cancellation_identity(attribute))
 
+        def altered_diagnostic_untracked_preflight_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_untracked_preflight_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE', 'base'),
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE', 'source'),
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic untracked preflight ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_untracked_preflight_identity(attribute))
+
         def altered_hosting_inbox_reload_budget_identity(attribute):
             original = getattr(proof, attribute)
             try:
