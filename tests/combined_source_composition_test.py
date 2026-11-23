@@ -3,12 +3,15 @@ from pathlib import Path
 import argparse
 import ast
 import copy
+import hashlib
 import importlib.util
+import io
 import json
 import py_compile
 import subprocess
 import sys
 import tempfile
+import types
 
 import combined_source_composition as proof
 
@@ -29,8 +32,341 @@ def run(root=ROOT):
         else:
             raise AssertionError('Accepted unreviewed composition: ' + name)
 
+    refuses('Refuses an incomplete provider artifact validation batch',
+            lambda: proof.provider_browser_artifact_validations(root, ()))
+    retained_failure = []
+    proof._extend_provider_artifact_rows(
+        retained_failure,
+        [[{'name': 'Synthetic exact historical failure', 'passed': False}]])
+    assert retained_failure == [
+        {'name': 'Synthetic exact historical failure', 'passed': False}]
+    passed('Provider artifact batching retains exact named historical failures')
+    body = b'exact immutable batch bytes\x00\n'
+    object_id = hashlib.sha1(
+        b'blob ' + str(len(body)).encode('ascii') + b'\0' + body).hexdigest().encode('ascii')
+    expression = '1' * 40 + ':tests/example.bin'
+
+    def batch_process(raw):
+        return types.SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(raw))
+
+    packet = object_id + b' blob ' + str(len(body)).encode('ascii') + b'\n' + body + b'\n'
+    process = batch_process(packet)
+    assert proof._read_immutable_blob(process, expression) == body
+    assert process.stdin.getvalue() == expression.encode('ascii') + b'\n'
+    passed('Immutable blob batch verifies exact binary bytes and request framing')
+    for label, raw in (
+        ('missing object', object_id + b' missing\n'),
+        ('non-blob object', object_id + b' tree 1\nx\n'),
+        ('noncanonical size', object_id + b' blob 01\nx\n'),
+        ('truncated body', object_id + b' blob 3\nab'),
+        ('wrong delimiter', object_id + b' blob 3\nabc!'),
+        ('corrupt identity', object_id + b' blob 3\nabc\n'),
+        ('overlong header', b'a' * 200 + b'\n'),
+    ):
+        refuses('Immutable blob batch refuses ' + label,
+                lambda raw=raw: proof._read_immutable_blob(batch_process(raw), expression))
+    refuses('Immutable blob batch refuses request framing injection',
+            lambda: proof._read_immutable_blob(batch_process(packet), expression + '\ncontents deadbeef'))
+    caller_refused = False
+    try:
+        with proof.immutable_blob_batch(root):
+            refuses('Immutable blob batch refuses a nested reader',
+                    lambda: proof.immutable_blob_batch(root).__enter__())
+            raise RuntimeError('Synthetic caller refusal')
+    except RuntimeError:
+        caller_refused = True
+    assert caller_refused and not proof._BLOB_BATCHES
+    passed('Immutable blob batch reaps its child after a failing caller')
+    with tempfile.TemporaryDirectory(prefix='cwp-projection-cache-negative-') as folder:
+        fixture_root = Path(folder)
+        fixture_path = fixture_root / 'exact.txt'
+        fixture_path.write_bytes(b'initial exact bytes')
+        second_root = fixture_root / 'second'
+        second_root.mkdir()
+        (second_root / 'exact.txt').write_bytes(b'initial exact bytes')
+        calls = []
+
+        def project_cache_probe(root, path, current):
+            calls.append((str(Path(root).resolve()), path, current))
+            return proof.ordinary(root, path)
+
+        def project_cache_nested_probe(root, path, current):
+            return proof.project_cache_probe(root, path, current)
+
+        proof.project_cache_probe = project_cache_probe
+        proof.project_cache_nested_probe = project_cache_nested_probe
+        try:
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_nested_probe(
+                    fixture_root, 'exact.txt', b'input') == b'initial exact bytes'
+                assert proof.project_cache_nested_probe(
+                    fixture_root, 'exact.txt', b'input') == b'initial exact bytes'
+                assert len(calls) == 1
+                fixture_path.write_bytes(b'changed during proof')
+                assert proof.project_cache_nested_probe(
+                    fixture_root, 'exact.txt', b'input') == b'changed during proof'
+                assert len(calls) == 2
+                assert proof.project_cache_nested_probe(
+                    second_root, 'exact.txt', b'input') == b'initial exact bytes'
+                assert len(calls) == 3
+        finally:
+            del proof.project_cache_nested_probe
+            del proof.project_cache_probe
+        original_ordinary = proof.ordinary
+        reads = []
+        stable = []
+
+        def racing_ordinary(root, path):
+            if Path(root) == fixture_root and path == 'exact.txt':
+                reads.append(path)
+                if stable:
+                    return b'changed during proof'
+                return (b'changed during proof' if len(reads) == 1
+                        else b'raced projection bytes')
+            return original_ordinary(root, path)
+
+        proof.project_cache_probe = project_cache_probe
+        proof.project_cache_nested_probe = project_cache_nested_probe
+        proof.ordinary = racing_ordinary
+        try:
+            with proof.verification_projection_cache(fixture_root):
+                refuses('Bound projection cache refuses a mutable-source race',
+                        lambda: proof.project_cache_nested_probe(
+                            fixture_root, 'exact.txt', b'raced input'))
+                stable.append(True)
+                assert proof.project_cache_nested_probe(
+                    fixture_root, 'exact.txt', b'raced input') == b'changed during proof'
+                assert len(calls) == 5
+        finally:
+            proof.ordinary = original_ordinary
+            del proof.project_cache_nested_probe
+            del proof.project_cache_probe
+        assert reads == ['exact.txt'] * 6
+        assert not proof._ACTIVE_ROOT_KEYS
+
+        original_limit = proof._PROJECTION_CACHE_LIMIT
+        leaf_calls = []
+
+        def project_cache_leaf(root, path, current):
+            leaf_calls.append(current)
+            return current
+
+        def project_cache_many(root, path, current):
+            for value in (b'a', b'b', b'c', b'a'):
+                proof.project_cache_leaf(root, path, value)
+            return current
+
+        def project_cache_touch(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            return current
+
+        def project_cache_refuse(root, path, current):
+            for value in (b'a', b'b', b'c'):
+                proof.project_cache_leaf(root, path, value)
+            raise AssertionError('synthetic bounded transaction refusal')
+
+        def project_cache_interleaved(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            proof.project_cache_leaf(root, path, b'b')
+            return current
+
+        def project_cache_full_interleaved(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            proof.project_cache_leaf(root, path, b'x')
+            return current
+
+        def project_cache_raise(root, path, current):
+            raise AssertionError('synthetic nested refusal')
+
+        def project_cache_caught_touch(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            try:
+                proof.project_cache_raise(root, path, b'raise')
+            except AssertionError:
+                pass
+            return current
+
+        def project_cache_cross_root_open(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            try:
+                proof.project_cache_leaf(second_root, 'missing.txt', b'missing')
+            except AssertionError:
+                pass
+            return current
+
+        def project_cache_nested_pending_refuse(root, path, current):
+            proof.project_cache_leaf(root, path, b'c')
+            proof.project_cache_leaf(root, path, b'd')
+            raise AssertionError('synthetic nested pending refusal')
+
+        def project_cache_caught_pending(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            proof.project_cache_leaf(root, path, b'b')
+            try:
+                proof.project_cache_nested_pending_refuse(root, path, b'raise')
+            except AssertionError:
+                pass
+            return current
+
+        proof.project_cache_leaf = project_cache_leaf
+        proof.project_cache_many = project_cache_many
+        proof.project_cache_touch = project_cache_touch
+        proof.project_cache_refuse = project_cache_refuse
+        proof.project_cache_interleaved = project_cache_interleaved
+        proof.project_cache_full_interleaved = project_cache_full_interleaved
+        proof.project_cache_raise = project_cache_raise
+        proof.project_cache_caught_touch = project_cache_caught_touch
+        proof.project_cache_cross_root_open = project_cache_cross_root_open
+        proof.project_cache_nested_pending_refuse = project_cache_nested_pending_refuse
+        proof.project_cache_caught_pending = project_cache_caught_pending
+        proof._PROJECTION_CACHE_LIMIT = 2
+        try:
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_many(
+                    fixture_root, 'exact.txt', b'outer') == b'outer'
+            assert leaf_calls == [b'a', b'b', b'c', b'a']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_touch(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+            assert leaf_calls == [b'a', b'b']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                refuses('Bounded transaction never publishes a refused outer chain',
+                        lambda: proof.project_cache_refuse(
+                            fixture_root, 'exact.txt', b'refuse'))
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+            assert leaf_calls == [b'a', b'b', b'c', b'c']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_interleaved(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+            assert leaf_calls == [b'b', b'a']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_caught_touch(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+            assert leaf_calls == [b'a', b'b', b'a']
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_cross_root_open(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+            assert leaf_calls == [b'a', b'b', b'a']
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_caught_pending(
+                    fixture_root, 'exact.txt', b'outer') == b'outer'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+            assert leaf_calls == [b'a', b'b', b'c', b'd', b'b']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            proof._PROJECTION_CACHE_LIMIT = 3
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                for value in (b'x', b'y', b'z'):
+                    assert proof.project_cache_leaf(
+                        fixture_root, 'exact.txt', value) == value
+                assert proof.project_cache_full_interleaved(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'x') == b'x'
+            assert leaf_calls == [b'x', b'y', b'z', b'a']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 3
+        finally:
+            proof._PROJECTION_CACHE_LIMIT = original_limit
+            del proof.project_cache_caught_pending
+            del proof.project_cache_nested_pending_refuse
+            del proof.project_cache_cross_root_open
+            del proof.project_cache_caught_touch
+            del proof.project_cache_raise
+            del proof.project_cache_full_interleaved
+            del proof.project_cache_interleaved
+            del proof.project_cache_refuse
+            del proof.project_cache_touch
+            del proof.project_cache_many
+            del proof.project_cache_leaf
+        assert not proof._ACTIVE_ROOT_KEYS
+        passed('Caught nested refusal resets the bounded transaction overlay')
+        passed('Transactional projection staging and committed recency retain the strict LRU bound')
+    passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
+    proof_drift = (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)
+    assert proof.parse_tracked_source_drift(
+        b'\0'.join(path.encode('utf-8') for path in proof_drift) + b'\0') == proof_drift
+    for label, raw in (
+        ('missing NUL terminator', proof.VERIFIER.encode('utf-8')),
+        ('empty path', b'\0'),
+        ('duplicate path', proof.VERIFIER.encode('utf-8') + b'\0'
+         + proof.VERIFIER.encode('utf-8') + b'\0'),
+        ('noncanonical path', b'tests//combined_source_composition.py\0'),
+        ('parent traversal', b'../combined_source_composition.py\0'),
+        ('non-UTF-8 path', b'tests/\xff.py\0'),
+    ):
+        refuses('Tracked-source preflight refuses ' + label,
+                lambda raw=raw: proof.parse_tracked_source_drift(raw))
+    passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (0 < proof._LAST_PROJECTION_CACHE_MAX
+            <= proof._PROJECTION_CACHE_LIMIT == 32768
+            and not proof._ACTIVE_ROOT_KEYS)
+    passed('Exact projection memoization is bounded and cleared after each full proof')
+    assert len(proof._TREE_ENTRIES) <= proof.TREE_ENTRY_CACHE_LIMIT == 16
+    passed('Immutable parsed-tree cache remains bounded after the complete proof')
+    verifier_ast = ast.parse((root / proof.VERIFIER).read_text(encoding='utf-8'))
+    terminal = next(node for node in verifier_ast.body
+                    if isinstance(node, ast.FunctionDef)
+                    and node.name == 'project_component_union_source')
+    terminal_calls = [node.func.id for node in terminal.body
+                      if isinstance(node, (ast.Assign, ast.Return))
+                      for call in ([node.value] if isinstance(node, (ast.Assign, ast.Return)) else [])
+                      if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                      for node in [call]]
+    assert terminal_calls == [
+        'project_account_rate_boundary_source',
+        'project_ux09_fixture_receipt',
+        'project_ux09_identity_snapshot',
+        'project_ux09_smtp_rejection',
+        'project_ux09_mail_review',
+        'project_ux09_cloud_proof',
+        'project_ux09_security',
+        'project_ux09_ci',
+        'project_ux09',
+    ]
+    passed('Component union applies each terminal projection chain once in exact order')
     with tempfile.TemporaryDirectory(prefix='cwp-composition-negative-') as folder:
         fixture = Path(folder) / 'source'
         subprocess.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', '--local', str(root), str(fixture)], check=True)
@@ -51,6 +387,369 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
+        fixture_proof_files = {
+            path: proof.ordinary(fixture, path)
+            for path in (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)}
+        assert set(proof.tracked_source_preflight(fixture, fixture_proof_files)) <= {
+            proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
+        passed('Tracked-source preflight permits only already-validated proof-file drift')
+
+        original_ordinary = proof.ordinary
+        receipt_reads = []
+
+        def racing_receipt(root, path):
+            value = original_ordinary(root, path)
+            if Path(root) == fixture and path == proof.RECEIPT:
+                receipt_reads.append(path)
+                if len(receipt_reads) > 1:
+                    return value + b'\n'
+            return value
+
+        proof.ordinary = racing_receipt
+        try:
+            refuses('Strict receipt loader refuses proof-file change during validation',
+                    lambda: proof.current_proof_receipt(fixture))
+        finally:
+            proof.ordinary = original_ordinary
+        assert len(receipt_reads) > 1
+        passed('Every current receipt consumer brackets exact proof bytes')
+
+        def altered_diagnostic_artifact_batch_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_artifact_batch_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_ARTIFACT_BATCH_BASE', 'base'),
+            ('DIAGNOSTIC_ARTIFACT_BATCH_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_ARTIFACT_BATCH_SOURCE', 'source'),
+            ('DIAGNOSTIC_ARTIFACT_BATCH_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic artifact batch ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_artifact_batch_identity(attribute))
+
+        def altered_diagnostic_blob_live_binding_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_blob_live_binding_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_BASE', 'base'),
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE', 'source'),
+            ('DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic blob live-binding ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_blob_live_binding_identity(attribute))
+
+        def altered_diagnostic_projection_cache_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_cache_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_CACHE_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection-cache ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_cache_identity(attribute))
+
+        def altered_diagnostic_projection_cache_race_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_cache_race_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic cache-race ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_cache_race_identity(attribute))
+
+        def altered_diagnostic_tracked_preflight_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_tracked_preflight_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_BASE', 'base'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE', 'source'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic tracked preflight ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_tracked_preflight_identity(attribute))
+
+        def altered_diagnostic_tracked_preflight_cancellation_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_tracked_preflight_cancellation_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE', 'base'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE', 'source'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic tracked cancellation ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_tracked_preflight_cancellation_identity(attribute))
+
+        def altered_diagnostic_untracked_preflight_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_untracked_preflight_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE', 'base'),
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE', 'source'),
+            ('DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic untracked preflight ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_untracked_preflight_identity(attribute))
+
+        def altered_diagnostic_protected_tree_preflight_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_protected_tree_preflight_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE', 'base'),
+            ('DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic protected-tree preflight ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_protected_tree_preflight_identity(attribute))
+
+        def altered_diagnostic_receipt_content_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_receipt_content_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_RECEIPT_CONTENT_BASE', 'base'),
+            ('DIAGNOSTIC_RECEIPT_CONTENT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_RECEIPT_CONTENT_SOURCE', 'source'),
+            ('DIAGNOSTIC_RECEIPT_CONTENT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic receipt content ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_receipt_content_identity(attribute))
+
+        def altered_diagnostic_strict_receipt_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_strict_receipt_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_STRICT_RECEIPT_BASE', 'base'),
+            ('DIAGNOSTIC_STRICT_RECEIPT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_STRICT_RECEIPT_SOURCE', 'source'),
+            ('DIAGNOSTIC_STRICT_RECEIPT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic strict receipt ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_strict_receipt_identity(attribute))
+
+        def altered_diagnostic_current_receipt_consumer_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_current_receipt_consumer_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE', 'base'),
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE', 'source'),
+            ('DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic current receipt consumer ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_current_receipt_consumer_identity(attribute))
+
+        def altered_diagnostic_projection_chain_bracket_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_chain_bracket_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection chain bracket ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_chain_bracket_identity(attribute))
+
+        def altered_diagnostic_projection_chain_transaction_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_chain_transaction_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection chain transaction ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_chain_transaction_identity(attribute))
+
+        def altered_diagnostic_projection_lru_bound_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_lru_bound_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection LRU bound ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_lru_bound_identity(attribute))
+
+        def altered_diagnostic_projection_transaction_order_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_transaction_order_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection transaction order ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_transaction_order_identity(attribute))
+
+        def altered_diagnostic_projection_refusal_reset_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_projection_refusal_reset_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE', 'base'),
+            ('DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE', 'source'),
+            ('DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic projection refusal reset ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_projection_refusal_reset_identity(attribute))
+
+        def altered_hosting_inbox_reload_budget_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_hosting_inbox_reload_budget_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('HOSTING_INBOX_RELOAD_BUDGET_BASE', 'base'),
+            ('HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE', 'base tree'),
+            ('HOSTING_INBOX_RELOAD_BUDGET_SOURCE', 'source'),
+            ('HOSTING_INBOX_RELOAD_BUDGET_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted hosted inbox reload budget ' + label,
+                    lambda attribute=attribute:
+                    altered_hosting_inbox_reload_budget_identity(attribute))
+
+        def altered_hosting_inbox_reload_completion_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_hosting_inbox_reload_completion_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('HOSTING_INBOX_RELOAD_COMPLETION_BASE', 'base'),
+            ('HOSTING_INBOX_RELOAD_COMPLETION_BASE_TREE', 'base tree'),
+            ('HOSTING_INBOX_RELOAD_COMPLETION_SOURCE', 'source'),
+            ('HOSTING_INBOX_RELOAD_COMPLETION_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted hosted inbox reload completion ' + label,
+                    lambda attribute=attribute:
+                    altered_hosting_inbox_reload_completion_identity(attribute))
+
+        artifact_helper = fixture / proof.DIAGNOSTIC_ARTIFACT_BATCH_PATH
+        artifact_helper_current = artifact_helper.read_bytes()
+        artifact_helper_predecessor = proof.git(
+            root, 'cat-file', 'blob',
+            proof.DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':'
+            + proof.DIAGNOSTIC_ARTIFACT_BATCH_PATH)
+        try:
+            artifact_helper.write_bytes(artifact_helper_predecessor)
+            refuses('Refuses exact predecessor diagnostic artifact helper rollback',
+                    lambda: proof.validate_diagnostic_artifact_batch_source(fixture))
+        finally:
+            artifact_helper.write_bytes(artifact_helper_current)
 
         fixture_head = proof.git(fixture, 'rev-parse', 'HEAD').decode().strip()
         fixture_parent = proof.git(fixture, 'rev-parse', fixture_head + '^').decode().strip()
@@ -98,6 +797,118 @@ def run(root=ROOT):
                     target.unlink()
                 target.write_bytes(original)
                 target.chmod(permission)
+
+        early_path = 'site/app/billing/software_client.php'
+        original_validator = proof.validate_application_reply_folder_route
+        reached_historical_validation = []
+
+        def unexpected_historical_validation(root):
+            reached_historical_validation.append(root)
+            raise AssertionError('Historical validation ran before tracked-source refusal')
+
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            refuses('Refuses unstaged tracked drift before historical validation',
+                    lambda: modified(
+                        early_path,
+                        lambda target: target.write_bytes(
+                            target.read_bytes() + b'\n# preflight mutation\n')))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Tracked-source preflight precedes expensive historical validation')
+
+        target = fixture / early_path
+        original = target.read_bytes()
+        permission = target.stat().st_mode & 0o777
+        try:
+            target.write_bytes(original + b'\n# staged preflight mutation\n')
+            subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
+            refuses('Refuses staged tracked drift before historical projection',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', early_path],
+                           cwd=fixture, check=True)
+            target.write_bytes(original)
+            target.chmod(permission)
+
+        try:
+            target.write_bytes(original + b'\n# staged cancellation mutation\n')
+            subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
+            target.write_bytes(original)
+            refuses('Refuses offsetting staged and unstaged tracked drift',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', early_path],
+                           cwd=fixture, check=True)
+            target.write_bytes(original)
+            target.chmod(permission)
+
+        proof_target = fixture / proof.RECEIPT
+        proof_original = proof_target.read_bytes()
+        try:
+            proof_target.write_bytes(proof_original + b'\n')
+            subprocess.run(['git', 'add', '--', proof.RECEIPT], cwd=fixture, check=True)
+            proof_target.write_bytes(proof_original)
+            refuses('Refuses staged proof bytes that differ from validated worktree bytes',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', proof.RECEIPT],
+                           cwd=fixture, check=True)
+            proof_target.write_bytes(proof_original)
+
+        try:
+            subprocess.run(['git', 'update-index', '--chmod=+x', '--', proof.REGRESSION],
+                           cwd=fixture, check=True)
+            refuses('Refuses a staged executable mode for a proof file',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', proof.REGRESSION],
+                           cwd=fixture, check=True)
+
+        def remove_receipt_inverse(target):
+            data = json.loads(target.read_bytes())
+            data['adapters']['tests/tickets_integration_contract.py']['edits'].pop()
+            target.write_text(json.dumps(data))
+
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            refuses('Refuses changed canonical receipt content before historical validation',
+                    lambda: modified(proof.RECEIPT, remove_receipt_inverse))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Canonical receipt content is bound before historical validation')
+
+        def replace_receipt_once(target, before, after):
+            value = target.read_bytes()
+            assert value.count(before) == 1
+            target.write_bytes(value.replace(before, after, 1))
+
+        duplicate_cases = (
+            ('top-level duplicate name',
+             b'{\n  "format": 6,',
+             b'{\n  "format": 999,\n  "format": 6,'),
+            ('nested duplicate name',
+             b'    "account": {\n      "commit": ',
+             b'    "account": {\n      "commit": "' + b'0' * 40
+             + b'",\n      "commit": '),
+            ('non-finite constant', b'"format": 6', b'"format": NaN'),
+        )
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            for label, before, after in duplicate_cases:
+                refuses('Refuses composition receipt ' + label,
+                        lambda before=before, after=after: modified(
+                            proof.RECEIPT,
+                            lambda target: replace_receipt_once(
+                                target, before, after)))
+                assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Strict receipt parsing precedes historical validation')
 
         for name, path in (
             ('current software authority application', 'site/app/billing/software_client.php'),
@@ -159,8 +970,36 @@ def run(root=ROOT):
             finally:
                 target.unlink()
 
-        refuses('Refuses an untracked additional source file', lambda: addition('tests/unreviewed_composition.py'))
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            refuses('Refuses an untracked additional source file',
+                    lambda: addition('tests/unreviewed_composition.py'))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Untracked-source preflight precedes expensive historical validation')
         refuses('Refuses a hidden additional shipping file', lambda: addition('site/.unreviewed-composition.php'))
+
+        ignored_ops = fixture / 'ops/twentyi-cloud-root/__pycache__/unreviewed_source.py'
+        ignored_parent_existed = ignored_ops.parent.exists()
+        ignored_ops.parent.mkdir(parents=True, exist_ok=True)
+        ignored_ops.write_bytes(b'raise RuntimeError("unreviewed ignored source")\n')
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            assert subprocess.run(
+                ['git', 'check-ignore', '--quiet', '--',
+                 ignored_ops.relative_to(fixture).as_posix()], cwd=fixture).returncode == 0
+            refuses('Refuses ignored source under a tracked operations tree',
+                    lambda: proof.verify_current(fixture))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+            ignored_ops.unlink()
+            if not ignored_parent_existed:
+                ignored_ops.parent.rmdir()
+        passed('Ignored operations source is inventoried before historical validation')
 
         for path in sorted(proof.UX09_ADDITIONS):
             refuses('Refuses altered exact UX-09 addition ' + path,
@@ -918,6 +1757,23 @@ def run(root=ROOT):
                 receipt.write_bytes(old_receipt)
         refuses('Refuses simultaneous diagnostic source and current-hash substitution',
                 forged_diagnostic_and_receipt)
+
+        def altered_resulting_main_diagnostic_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_resulting_main_diagnostic_mail_reply_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE', 'base'),
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE_TREE', 'base tree'),
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE', 'source'),
+            ('RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted resulting-main diagnostic ' + label,
+                    lambda attribute=attribute: altered_resulting_main_diagnostic_identity(attribute))
 
         database_addition = 'tests/database_schema_registry_policy.php'
         for path in sorted(proof.DATABASE_WORKFLOW_ADDITIONS):

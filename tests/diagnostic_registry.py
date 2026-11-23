@@ -122,6 +122,7 @@ MODULE_SPECS = {
     'service_observations_cases': ('service-observations', 'twentyi-inventory', ['provider-settings', 'registrar']),
     'mail_drafts_cases': ('mail-drafts', 'mail', ['mail-accounts']),
     'mail_submissions_cases': ('mail-submissions', 'mail', ['mail-accounts', 'mail-drafts']),
+    'mail_reply_cases': ('mail-reply', 'mail', ['mail-message', 'mail-submissions']),
     'client_authority_cases': ('client-authority', 'security', ['payments']),
     'service_plan_cases': ('service-plan', 'twentyi-inventory', ['payments', 'support', 'database-updates']),
     'recurring_billing_cases': ('recurring-billing', 'billing', ['payments', 'service-plan', 'ledger', 'provider-operations']),

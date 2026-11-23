@@ -10,7 +10,11 @@ PHP, browser, migration and packaging commands continue to use the live checkout
 from pathlib import Path, PurePosixPath
 import base64
 import copy
+from collections import OrderedDict
+from contextlib import contextmanager
+import functools
 import hashlib
+import inspect
 import json
 import os
 import re
@@ -1286,6 +1290,215 @@ PROOF_CACHE_HARDENING_MODIFIED = frozenset((
 PROOF_CACHE_HARDENING_PROJECTED = frozenset((
     'tests/combined_source_composition_test.py',
 ))
+DIAGNOSTIC_ARTIFACT_BATCH_BASE = '4d3db9c923581063eba99e47e59a037efc9027b5'
+DIAGNOSTIC_ARTIFACT_BATCH_BASE_TREE = '8f1b89ea6519ae0fedad8f6408646323555273c3'
+DIAGNOSTIC_ARTIFACT_BATCH_SOURCE = '7f590a53154e86a225de02c6519640cac2cd9bae'
+DIAGNOSTIC_ARTIFACT_BATCH_SOURCE_TREE = '2c6ee0b29fb4c03a68cbdfac92ba436457a4e92c'
+DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/acceptance_artifacts_test.py',
+    'tests/combined_source_composition.py',
+))
+DIAGNOSTIC_ARTIFACT_BATCH_PATH = 'tests/acceptance_artifacts_test.py'
+DIAGNOSTIC_ARTIFACT_BATCH_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': 'b1213d6135a624d808e7869102203af7fa0e22a0bf7b7b438e7fd60c89c04fca',
+    'tests/acceptance_artifacts_test.py': 'cc8047f464cea7450df788bf94f7d1a8843d9422f87e344c3b062727768eca4d',
+    'tests/combined_source_composition.py': 'fb4a3ba190013802a72b36b18cfb10d669631c0ed78a3de95299d5d44c0e8bf1',
+}
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE = 'a55e4a5fee0874b23ec862db034791117cf73c9c'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE_TREE = '3ee5b14c95b841c99477d9d4be910a0553d84329'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE = '8a6056b4d13158a629a3f24aa6da21c6a081e106'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE_TREE = '02f0ce7c3b15bf4a5e35f03ea1137dec6a16fa3e'
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/combined_source_composition.py',
+    'tests/combined_source_composition_test.py',
+))
+DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': 'b8e82b37ab901f0398fe36d23f54c2eb40f1648598dfa176a448c6dfff6252a4',
+    'tests/combined_source_composition.py': '0fe00c64bc9574b3d131fc8f261e5119deba30cae9d5ecd7ddad56df997a41e8',
+    'tests/combined_source_composition_test.py': '6847c56cca6ad1f611637d055c7fa12038d011df6f4ffa009fdcc6815e7bb207',
+}
+DIAGNOSTIC_BLOB_BATCH_BASE = '0f193123770cb6fd12c65b247ea65595f1cd012b'
+DIAGNOSTIC_BLOB_BATCH_BASE_TREE = '8d80b68da404743fbdd8e31a9fbfbd071d69d252'
+DIAGNOSTIC_BLOB_BATCH_SOURCE = 'e1db46670b098a65ddf8dbceef07cc4f4c912ba4'
+DIAGNOSTIC_BLOB_BATCH_SOURCE_TREE = 'a9e4786827d5d2cfc3fc789d9961dd846c8d505f'
+DIAGNOSTIC_BLOB_BATCH_MODIFIED = frozenset((
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json',
+    'tests/combined_source_composition.py',
+    'tests/combined_source_composition_test.py',
+))
+DIAGNOSTIC_BLOB_BATCH_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': '4136fb2c026de36fdd5ffc753f5b262feaa85c7b6ef4291497270a3b0b86015f',
+    'tests/combined_source_composition.py': '0b5c8ad8c27f082d9039011fd3cedc9e060a52e2a5e208c290588d0499d7b11e',
+    'tests/combined_source_composition_test.py': 'b09cfde6e024e5cdbb1768bf1384a61c870680333dd41d0e858eae4230514533',
+}
+DIAGNOSTIC_BLOB_LIVE_BINDING_BASE = '2b7155cf22ad4fef40ecb8bceb1c46e431419175'
+DIAGNOSTIC_BLOB_LIVE_BINDING_BASE_TREE = '122696487628c8b0a210fe84c190f9fabe521058'
+DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE = 'ecbb38f958a6a6f393160e766ff72ce250ca8bb8'
+DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE_TREE = '0e5e447369268f52668c04d0599fbecc460c9949'
+DIAGNOSTIC_BLOB_LIVE_BINDING_MODIFIED = DIAGNOSTIC_BLOB_BATCH_MODIFIED
+DIAGNOSTIC_BLOB_LIVE_BINDING_SHA256 = {
+    'docs/COMBINED_SOURCE_COMPOSITION_20261102.json': '7837778c4c6b516c97cce9710f2488cd5aee5c73794bedcc282a158abf4dea6e',
+    'tests/combined_source_composition.py': '0c1722cb738e59bdef453e79843ee16ba447f0fcfda98542e1cba3a8a43594ff',
+    'tests/combined_source_composition_test.py': 'd46294728b7a67c629ef40b57845bc53d1ac94cbe718fec44805aa8bb52924a3',
+}
+DIAGNOSTIC_PROJECTION_CACHE_BASE = '5fd3db7865582a399450bb46d4de79d944bda1a8'
+DIAGNOSTIC_PROJECTION_CACHE_BASE_TREE = '77b3b8d9cef787dbe9ea0cf3ed1f5149b8b0f2a7'
+DIAGNOSTIC_PROJECTION_CACHE_SOURCE = 'adb88d042d084069f3f90cc13bc5ddf5911a006d'
+DIAGNOSTIC_PROJECTION_CACHE_SOURCE_TREE = 'a0f907a2f3d3dcd81a861e85c80789de387c847a'
+DIAGNOSTIC_PROJECTION_CACHE_MODIFIED = frozenset((
+    RECEIPT,
+    VERIFIER,
+    REGRESSION,
+))
+DIAGNOSTIC_PROJECTION_CACHE_SHA256 = {
+    RECEIPT: '456cf434f8b444d6f034752c472e53f6715e8e8fde0f45fad7214b9c63da5c36',
+    VERIFIER: 'cdc5e18ea8b98c05b09f881c3bfd7970561e3b2f909c740e760c59fb5c659957',
+    REGRESSION: '31123ebaad7bcc8e52e8f0ddbd8d6ace0265bbb6f2c6dd44d6225c180854fb01',
+}
+DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE = '6d3a661d3753fc043dee7287226200d65721e85e'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE_TREE = 'db83b1ce9e4c180824600a9f9d9b4136176c4c10'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE = '713e37f7ba1ab33d9eb00917f9244a41323b1afa'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE_TREE = '31385df47e96c816e66a7a81028cb34c54f2b7dd'
+DIAGNOSTIC_PROJECTION_CACHE_RACE_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_CACHE_RACE_SHA256 = {
+    RECEIPT: '0fa3894a9a7f0353566d89948d230a3f3ad66d7550e3d0d4a1a7a96bfab4b9e5',
+    VERIFIER: '57a4cc4834038aa7fa2bc3e91d379e4baabb017ff457a706969e34604f821e15',
+    REGRESSION: 'f81ff547d94569e0cc9ca12d69d662765db6399d749500322546b0d75f046a90',
+}
+DIAGNOSTIC_TRACKED_PREFLIGHT_BASE = 'd8c564ac3dfa9d85e8a58711c70b276369a4e117'
+DIAGNOSTIC_TRACKED_PREFLIGHT_BASE_TREE = '770117d64f609c7a0602e3a65debfc70c839199d'
+DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE = 'ed8b0159a98613a0e67058fdb536da37b331d22f'
+DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE_TREE = 'e166422bf58e5a06da174ac9d52ec4e0e03430da'
+DIAGNOSTIC_TRACKED_PREFLIGHT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_TRACKED_PREFLIGHT_SHA256 = {
+    RECEIPT: 'e02c68e3cb7f1472dcb04dc554f0b14d4d4c976d25fbd5f2d5d68ea8d6d3ec5a',
+    VERIFIER: 'cabd41eae6f7bd46e35ee5c89381327167579290a9bea626dc917446757383e8',
+    REGRESSION: '19a83d9cb75937f5fcb42cf182c9f320c05d7df9ab00f5d466d57fe4c4ef7cf3',
+}
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE = '81d9876a414c1f3444db167e0bf2b4f9200cba80'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE_TREE = 'e47f6364b6f449ec33bbc259ea65cc09ebe0c1df'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE = '250720f96c5ad3cf6528f99ae34a4a20fae4c816'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE_TREE = 'b5d48256799df01bed6e3aa99a8d2c55f0ca7548'
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SHA256 = {
+    RECEIPT: 'dea2191541a41f17b3b68009e654d57947f769c95c84bc93a6ff9bdbfdc2f2c1',
+    VERIFIER: 'ad8837e253875fdc300ef37b5abea43d99a2c6c3715df3a8ea4a2bfb360da5c7',
+    REGRESSION: 'ba167d78d0fc2ca2464954b7cec00c02d6b9f7c09481f493e9e6d9d99fae2232',
+}
+DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE = '9f6ad78985f1b42ad2e083bc0fe8efb6d69d3459'
+DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE_TREE = '97670b591fae5b3121b0653ccc9a66625dd45d67'
+DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE = '722adc580e70204e33161c721f6fc396b59819b0'
+DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE_TREE = '7d7381ebfa283f005cdebceb40dd37cdf39642d5'
+DIAGNOSTIC_UNTRACKED_PREFLIGHT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_UNTRACKED_PREFLIGHT_SHA256 = {
+    RECEIPT: '3e3ba61b94473fea21e8b90fdf84640fe7e237758973c62b6e47f479532cd784',
+    VERIFIER: '69d06aada7a567151a9adbcc81b6844d9336a75c55e89663186c0c1f47cfe71a',
+    REGRESSION: 'a1a7e3dda485a60ccec2edb8547f284255ec48b0aac027d5e63adedda20b7191',
+}
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE = '95a7c416f97d26155153f0e052ec5579919d6859'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE_TREE = '3184ca79076c70988d4c61206bd971c894a9f3ca'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE = '4362d0ebe552e8d9955f42d65be0032da143b739'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE_TREE = '301656c040d74dc7951648fc0421811f53e4fedd'
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SHA256 = {
+    RECEIPT: '6da40eeca1ae03a165c675f21b6c6a1a4793f522f0f02b3fde02616d9cca3844',
+    VERIFIER: 'edd5afb67012b3826e1840998865bbe097a6da49021ef4dfd9f47081797585d2',
+    REGRESSION: 'e5eed6956ae1c0d49ec7abcd4830b600f9284a7c985d52c4e4404eb26332e921',
+}
+DIAGNOSTIC_RECEIPT_CONTENT_BASE = 'd0dd991fbcaa122a4ea87764230c2b09ffe3d1f6'
+DIAGNOSTIC_RECEIPT_CONTENT_BASE_TREE = '96b147eb1b8fa45929db9a04a6cb462ab88b0f5c'
+DIAGNOSTIC_RECEIPT_CONTENT_SOURCE = '8871796cf325ec66a24c5bb53378c68c2373dab1'
+DIAGNOSTIC_RECEIPT_CONTENT_SOURCE_TREE = '39730fac6e9a4f3fafd3f52167c8b1bbc6ec5236'
+DIAGNOSTIC_RECEIPT_CONTENT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_RECEIPT_CONTENT_SHA256 = {
+    RECEIPT: '6be920b92e8d88a13b91f6c3b839003c39dd808559bf97a71dfc0481df16288f',
+    VERIFIER: 'b9ab3df850afadccf32b86086ace5375d72b2c43ed558d58002e49ac48742792',
+    REGRESSION: '30fa8987f8535ed837e54631156b2794e6bf2bd565cbaf2c8095d4dfcbe98d78',
+}
+DIAGNOSTIC_STRICT_RECEIPT_BASE = '761164ac54ad731d9aecb926e81ec57ff880f4f4'
+DIAGNOSTIC_STRICT_RECEIPT_BASE_TREE = 'abb8714b0fa93a9fbae7eed063b15662aa73665d'
+DIAGNOSTIC_STRICT_RECEIPT_SOURCE = '8c5ae13066a21b6b39b5c42ea03086266e7a2f2e'
+DIAGNOSTIC_STRICT_RECEIPT_SOURCE_TREE = 'a56ea559f5e91413b330606eb129fab3b5d2e192'
+DIAGNOSTIC_STRICT_RECEIPT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_STRICT_RECEIPT_SHA256 = {
+    RECEIPT: 'd04e4d42224193c898bff083bc847ca54263edbf5d0842903f2f55aea16f3da6',
+    VERIFIER: '75f368aab373e7d9fa95ac04b17cf2e8ce469d95dcf058658d4e59ee6a7f4710',
+    REGRESSION: 'bbd2b8694dbe3a97ca0ec3aa8e55a9b8297d8e289cb86d29d547b72618d9f3a9',
+}
+DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE = 'df850823434b00b3bcf8626ea3759ec2cadf3fb4'
+DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE_TREE = 'a0226dc8357c15e78d10f83a8f23a2eb90bb56a9'
+DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE = '3ea4f590dae069ca732a1227dd2ae779989a4da9'
+DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE_TREE = '2fd869632c856c53a84c12d896184c766201cc67'
+DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SHA256 = {
+    RECEIPT: '7271ce3b20462ba1159e3c4281b57bf6e7f3c0e805a6b25c9c93495af26cf313',
+    VERIFIER: 'dce754d1130b59451f82b012286143ca7549e83c16777fb79ead81fe42c7e2cf',
+    REGRESSION: '8826ecf4db319aaf395c9fbecfb0a5ae950233d93399d3517f4b9bfb9415393d',
+}
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE = '708241caa679a6135080260d7306023ba399a761'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE_TREE = '254ad1b10f90e752a6ef917a594c9ba7039c7821'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE = '4236b87e427da66c86b6a29bcc6157ef9a88b3ed'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE_TREE = '82057eba239b05b0d8f2a3189901f077129f0d01'
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SHA256 = {
+    RECEIPT: '1af98d739e48b45569944d4c647f4a95c1f1ef56e3c1f6a328945ac0b147508f',
+    VERIFIER: '8de995fb70677b4bbcca167d3e626feecb63c027c2116318cd3f6cc7276c5f6e',
+    REGRESSION: '6197a6cb8865a5bcc41188456240381b7872bddfe65ca7288d87b21198115dba',
+}
+DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE = 'c9972a5acd26daa2e7f8a76f7d2a73e56fa0fdb3'
+DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE_TREE = '8f4c754f31fb0856136f14c2042e471d595f6de1'
+DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE = 'a391f82fccde9d97d1fde6bc52f7b00867262e12'
+DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE_TREE = 'f24acbba2ac12e3252877aea4c4e8052ad21d6ba'
+DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SHA256 = {
+    RECEIPT: '34298765a24610603269628f174f56a8f4deedf9f6f188e338f8202933d3ad7e',
+    VERIFIER: '767673a27a36500ffca44af64bcf023e502c7f117d90cb056fec3f7e61748305',
+    REGRESSION: '7936b5de04466372b507b309af369c633a6159e5be9838ba8089a2d958905586',
+}
+DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE = 'b62beabe1c0fbbfd0c59e62024eacbf892f41e28'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE_TREE = '0ce34ba5063a39326e95814f39298d5079c4526c'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE = '75a8ebb857647905de44c9d60e3f46a74d1709e5'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE_TREE = 'f44098b9294fc51cb9596e5021c7fa5985330b14'
+DIAGNOSTIC_PROJECTION_LRU_BOUND_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_LRU_BOUND_SHA256 = {
+    RECEIPT: 'cfbbe2508bcb8aa4fd9e232881532f633f689e75dcc77a0551b4f8dac654ff21',
+    VERIFIER: 'f84729782cb23677483bcbbc3af33ab32c17f4175b1430520ac125f77f3b8db7',
+    REGRESSION: 'b966a1e80ea3292131b83476a595a9a6d6e9fa0744e6e261ff8f2dd9c4dd6e69',
+}
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE = 'a1e0bd515842f2fb80cffb5b72f78a5656fd2324'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE_TREE = '7130a3e4fea9c50118856d783227bd27dd25d970'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE = '8371f074d7b22a9391a2669a66c7457002518404'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE_TREE = '6e17358adcc4eb609419c07a4c7514c96e6bd907'
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SHA256 = {
+    RECEIPT: '9950a2bcaa413e52bb51ba179e7be8ff62323c63c3ecbbe3330cfe75500d28fb',
+    VERIFIER: 'e1d5d665a269b6389f6e4d76fcf356ad6f50edcfa30543d4b9d406da3438e602',
+    REGRESSION: '5e541c541e85658fec71dda2a63afbaad42e4abd9000a97726347b0258448991',
+}
+DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE = '940f8af32f5c766a86cc2114d6197d6e87b0e4fb'
+DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE_TREE = '63d36430d2ecd40f03a677de0e83cfc832b0e351'
+DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE = '605e837b63fa8fdb54339fe1877f78038b98ce5e'
+DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE_TREE = '0056169bed561436a9d423dadb9b2a8a3bbe7001'
+DIAGNOSTIC_PROJECTION_REFUSAL_RESET_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SHA256 = {
+    RECEIPT: 'a3eb41265f748e09ce641f8c9d698f2a6f9491f61c1325d4a0315ebaf70f0528',
+    VERIFIER: '9d4be4066cda23e673eae258331f52562f4c40df12bb630b6474dbb953385ae7',
+    REGRESSION: 'e84e13745d608b8a0e11e9fb9824db9297084f62b0628782731a7b7f95b4faea',
+}
+HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
+HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
+HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
+HOSTING_INBOX_RELOAD_BUDGET_SOURCE_TREE = '2736764ce8d0bd56598651c39218aabee78852f0'
+HOSTING_INBOX_RELOAD_BUDGET_PATH = 'tests/hosting_purchase_inbox_cases.py'
+HOSTING_INBOX_RELOAD_BUDGET_SHA256 = 'f6a3a5e91813df7a3ceb49cefc3192ce727e6b468939206c6d05caf880a1b11a'
+HOSTING_INBOX_RELOAD_COMPLETION_BASE = 'cfe07732654a340ea9f00b111e473f5588afe9a0'
+HOSTING_INBOX_RELOAD_COMPLETION_BASE_TREE = '4006618189d5f2236e12e85a4f314290265f49ef'
+HOSTING_INBOX_RELOAD_COMPLETION_SOURCE = '3f9520ca24fa6a5af100952629b7ca8e09099fd8'
+HOSTING_INBOX_RELOAD_COMPLETION_SOURCE_TREE = '2c8092fb4af7f377b8b2218d7d3223cc81c97c19'
+HOSTING_INBOX_RELOAD_COMPLETION_PATH = HOSTING_INBOX_RELOAD_BUDGET_PATH
+HOSTING_INBOX_RELOAD_COMPLETION_SHA256 = 'c97d2ceee1a2106ad8a51585e63503193dd1a4b0183e71c415883dbf7335f6e0'
 NOTIFICATION_METRIC_LABEL_BASE = '535c533d6c5b111d7ea25bf45a435433e0a1b012'
 NOTIFICATION_METRIC_LABEL_BASE_TREE = '50abf10bd92c5e4683a8004cfc62bdbf1d0fb5f8'
 NOTIFICATION_METRIC_LABEL_SOURCE = '053a3ad1939030c2a4a0bf1607390cbbd1616044'
@@ -1391,20 +1604,36 @@ DIAGNOSTIC_ADDITIONS = frozenset((
 ))
 DIAGNOSTIC_ADDITION_SHA256 = {
     '.github/workflows/diagnostic-tests.yml': {'source': '4a2aa7e221a93a55f8b8ecd9fe5af4545f23736722485e9f0e0085b7c37d5b9c', 'current': '6685b5ad314bb41e47fbc3d133b6b2c83a07c0e1d3de6b1db02a0c0ad47051be', 'delta': '8c1b9fc1761c713c536db7ca22072b14680ff2a5866d3c73db37adb5dd26b8c8'},
-    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': 'ec2dead5ccebd3b2b5f619c7a17391e8d53df75211e3d223aeac008c35c53ca0', 'delta': '29a61e5977b9911adf244faedbf8b4e74379a55c460b3336177bc9881a02ec8a'},
+    'docs/DIAGNOSTIC_ACCEPTANCE.md': {'source': '2a456813d05799febff04c3adcaf8c4d1b8ab38a3ff6647d91aaebcf8d7c3593', 'current': '3b8780eb819816e55d729642bdcd4ea11b06e78d9879307151115af631134a04', 'delta': 'f8d85adc615ec23963083f2250aa234d7910d1a32dbee92baffa302fb647069a'},
     'tests/diagnostic_acceptance.py': {'source': 'aa17ed6946f2660a39d2e652ab869cb600c93d2dcd699c98c7a1963ae890bcad', 'current': '4b9505faafe06a4e822999dd2d04e15bd482e3daa673135a5bdc25a1c1e6aed4', 'delta': '1f433b177ab5e6fa78f90aa2212acabb1246fb8ed112f607a110095a4866a4c2'},
     'tests/diagnostic_acceptance_test.py': {'source': 'ce14b1ac0e172b163cb20ba192bb3f302ec063f4c134151360eebf420f738655', 'current': 'd0dae0bc115daf3d8cdfcf8d39cd8199d4f97bcc11bcbbc2fa4ef7801929203b', 'delta': 'f47a2578e25ea89fdd61d07542cd6478c9b1072edba9f6aa22325205b11c0e83'},
     'tests/diagnostic_registry.py': {'source': '1188ef031448d3a56e100ed18f3d357d8f75380b6b6087848c97032e2e93be34', 'current': '823d13a81b24d1c39f0e53a58a26ba727520dcd7b677baa5825a00ded4fce8d6', 'delta': 'f39cb50543cd25907091c8bae4a80db8c174472be372e30e21594275a1907a34'},
     'tests/diagnostic_report.py': {'source': 'cf43434d0a81b35b2103f341a1c6d7e4a59e175d3d7642ae2cce860cd783bc33', 'current': 'e1b06b07dfd74b862e6ccdba78f208982377e5805d9ac43b6b0e736fa86b5181', 'delta': '3e2dd2ca6211956be8b454c73dd9f4c7ac1870a6be15120f6b1214d6b5278863'},
 }
 # BEGIN GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '1558fbe6e463794743ecb3722b9bb49dcdaeae96f54f4132cb7b37c219647bc2'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = '6b10fbb5ddfad45b31439be09a97ef5af00c03cde66fc2cd89ca60ca3708060d'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '19c911bd6fcd4aa4150910bc6b2ce8a57bbbb174582f5f133bce6cd33c7d6f2d'
-DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = '6f34e940d3e60c774d4da3ce41cfbd5754d5987114a9c119d6402139dc0de749'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['current'] = '2c95149c78aff9dbdf9a7fc15bc1505cdbefda9364e19592190bb253c12f50c2'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_acceptance_test.py']['delta'] = '3fb2893048ae7a4be8dfb2b83ad7b6143df8c795ea98546d4e4d84582d5ac0f3'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['current'] = '8a1626fb36db0d051bab5d5de98329a306cdf2c01edd4d339efa4a4bf4ee5592'
+DIAGNOSTIC_ADDITION_SHA256['tests/diagnostic_registry.py']['delta'] = '0a38133b55b7b3040042aba333787530867aa6c855aa1844425f6b752152e955'
 # END GENERATED DATABASE WORKFLOW DIAGNOSTIC IDENTITIES
 DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['current'] = '26243783910e73df36b0efe90137b56d37d8832f2df7191796ee9fb21c21248c'
 DIAGNOSTIC_ADDITION_SHA256['.github/workflows/diagnostic-tests.yml']['delta'] = '334c53286ccf214c8c9ddd210bd53e5105e2508e4b1311bfffe6890ffd3d2fbd'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE = '59da2c9a0d4e6fd1be6ba854163e16db279c628b'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE_TREE = '3d47557c772b3c4b3f7f5b00d323d172528a16bb'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE = 'd2d6ca2be90974e0afc2c9efcba4c5ed2a8e069f'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE_TREE = 'e24ee600212384653392f69f95c63715db7b49e6'
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED = frozenset((
+    'docs/DIAGNOSTIC_ACCEPTANCE.md',
+    'tests/combined_source_composition_test.py',
+    'tests/diagnostic_acceptance_test.py',
+    'tests/diagnostic_registry.py',
+))
+RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256 = {
+    'docs/DIAGNOSTIC_ACCEPTANCE.md': '3b8780eb819816e55d729642bdcd4ea11b06e78d9879307151115af631134a04',
+    'tests/combined_source_composition_test.py': '84c5139bcd6c00754ad279e211ba95a51eb840d9c0f6712558de69a6593dc98e',
+    'tests/diagnostic_acceptance_test.py': '2c95149c78aff9dbdf9a7fc15bc1505cdbefda9364e19592190bb253c12f50c2',
+    'tests/diagnostic_registry.py': '8a1626fb36db0d051bab5d5de98329a306cdf2c01edd4d339efa4a4bf4ee5592',
+}
 DATABASE_WORKFLOW_BASE = '8d31de5e125ece6ad999dab4bb9e483dd8b70822'
 DATABASE_WORKFLOW_BASE_TREE = 'a73a70b6bbe05fdc1e773cf078e1a642fb9a6816'
 DATABASE_WORKFLOW_SOURCE = 'aeeea87e4d0d31dcfc187daed1a29cb9946d907c'
@@ -1915,7 +2144,8 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '6abc0de1e18151eacafebd1b3d67fcd76b004411b8dbece6a0fdb18a18a5a92d'
+REGRESSION_SHA256 = '4c8a74d4bc47355236b20550379165ed52c6039368fcc63b9285966fbf599f9a'
+RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2009,9 +2239,14 @@ REPAIR_SHA256['tests/account_notification_workflow_contract.py'] = '2c348e84a881
 
 _PROJECTIONS = {}
 _HISTORICAL_RESULTS = {}
-_TREE_ENTRIES = {}
+_TREE_ENTRIES = OrderedDict()
+TREE_ENTRY_CACHE_LIMIT = 16
 _IMMUTABLE_GIT_RESULTS = {}
 _PINNED_HEADS = {}
+_BLOB_BATCHES = {}
+_ACTIVE_ROOT_KEYS = {}
+_PROJECTION_CACHE_LIMIT = 32768
+_LAST_PROJECTION_CACHE_MAX = 0
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -2024,9 +2259,58 @@ def digest(value):
     return hashlib.sha256(value).hexdigest()
 
 
+def strict_json_object(pairs):
+    """Reject duplicate JSON names at every object depth."""
+    result = {}
+    for key, value in pairs:
+        require(isinstance(key, str) and key not in result,
+                'Duplicate or malformed composition receipt name: ' + repr(key))
+        result[key] = value
+    return result
+
+
+def reject_json_constant(value):
+    raise AssertionError('Non-finite composition receipt value: ' + value)
+
+
+def strict_json_loads(value):
+    try:
+        return json.loads(
+            value, object_pairs_hook=strict_json_object,
+            parse_constant=reject_json_constant)
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise AssertionError('Malformed composition receipt JSON') from error
+
+
+def receipt_content_digest(data):
+    """Bind receipt content without its two deliberately self-binding hashes."""
+    require(isinstance(data, dict), 'Malformed composition receipt content')
+    canonical = {
+        **data,
+        'verifier_sha256': '',
+        'regression_sha256': '',
+    }
+    return digest(json.dumps(
+        canonical, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=True).encode('utf-8'))
+
+
 def present(root):
     path = root / RECEIPT
     return path.exists() or path.is_symlink()
+
+
+def root_key(root):
+    """Reuse one verified root identity only during a complete proof.
+
+    Resolving the same directory hundreds of thousands of times adds no source
+    coverage.  Outside the bounded verification context every caller still
+    resolves the supplied path afresh.
+    """
+    literal = os.fspath(root)
+    if literal in _ACTIVE_ROOT_KEYS:
+        return _ACTIVE_ROOT_KEYS[literal]
+    return str(Path(root).resolve())
 
 
 def immutable_git_query(args):
@@ -2040,7 +2324,7 @@ def immutable_git_query(args):
     """
     oid = r'[0-9a-f]{40}'
     if len(args) == 3 and args[:2] == ('cat-file', 'blob'):
-        return re.fullmatch(oid + r':[^\x00]+', args[2]) is not None
+        return re.fullmatch(oid + r':[^\x00\r\n]+', args[2]) is not None
     if len(args) == 2 and args[0] == 'rev-parse':
         return re.fullmatch(oid + r'(?:\^|\^\{tree\})?', args[1]) is not None
     if (len(args) == 4 and args[:3] == ('show', '-s', '--format=%P')
@@ -2056,33 +2340,94 @@ def immutable_git_query(args):
     return False
 
 
+def _read_immutable_blob(process, expression):
+    """Read one exact Git blob from the framed binary batch protocol."""
+    require(re.fullmatch(r'[0-9a-f]{40}:[^\x00\r\n]+', expression) is not None,
+            'Unsafe immutable blob expression')
+    process.stdin.write(expression.encode('utf-8') + b'\n')
+    process.stdin.flush()
+    header = process.stdout.readline(160)
+    match = re.fullmatch(
+        rb'([0-9a-f]{40}|[0-9a-f]{64}) blob (0|[1-9][0-9]*)\n', header)
+    require(match is not None, 'Invalid composition batch blob header')
+    size = int(match[2])
+    data = process.stdout.read(size)
+    require(len(data) == size and process.stdout.read(1) == b'\n',
+            'Truncated composition batch blob')
+    object_digest = (hashlib.sha1 if len(match[1]) == 40 else hashlib.sha256)()
+    object_digest.update(b'blob ' + str(size).encode('ascii') + b'\0')
+    object_digest.update(data)
+    require(object_digest.hexdigest().encode('ascii') == match[1],
+            'Composition batch blob identity differs')
+    return data
+
+
+@contextmanager
+def immutable_blob_batch(root):
+    """Use one verified child for immutable blob reads in one full proof."""
+    resolved_root = root_key(root)
+    require(resolved_root not in _BLOB_BATCHES,
+            'Nested composition blob batch is forbidden')
+    with tempfile.TemporaryFile() as errors:
+        process = subprocess.Popen(
+            ['git', '--no-replace-objects', 'cat-file', '--batch'],
+            cwd=root, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=errors)
+        _BLOB_BATCHES[resolved_root] = process
+        try:
+            yield
+            process.stdin.close()
+            require(not process.stdout.read(1),
+                    'Unexpected trailing composition batch output')
+            code = process.wait()
+            if code:
+                errors.seek(0)
+                raise AssertionError('Composition batch blob reader failed: '
+                                     + errors.read(8192).decode('utf-8', 'replace'))
+        finally:
+            _BLOB_BATCHES.pop(resolved_root, None)
+            if process.poll() is None:
+                process.kill()
+            process.wait()
+            try:
+                process.stdin.close()
+            finally:
+                process.stdout.close()
+
+
 def git(root, *args):
-    root_key = str(Path(root).resolve())
-    pinned = _PINNED_HEADS.get(root_key)
+    resolved_root = root_key(root)
+    pinned = _PINNED_HEADS.get(resolved_root)
     pin_revisions = bool(args and args[0] in {'merge-base', 'diff', 'diff-tree'})
     cache_args = tuple(
         pinned + value[4:] if pin_revisions and pinned and value in {'HEAD', 'HEAD^{tree}'} else value
         for value in args
     )
-    cache_key = (root_key, cache_args)
+    cache_key = (resolved_root, cache_args)
     immutable = immutable_git_query(cache_args)
     if immutable and cache_key in _IMMUTABLE_GIT_RESULTS:
         return _IMMUTABLE_GIT_RESULTS[cache_key]
     # Execute the same full-object-ID command used as the cache key. A mutable
     # HEAD spelling must never be evaluated and stored under its earlier pin.
-    result = subprocess.run(
-        ['git', '--no-replace-objects', *(cache_args if immutable else args)],
-        cwd=root, capture_output=True)
-    require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
-            + result.stderr.decode(errors='replace')[-1500:])
+    active_batch = _BLOB_BATCHES.get(resolved_root)
+    if (immutable and active_batch is not None and len(cache_args) == 3
+            and cache_args[:2] == ('cat-file', 'blob')):
+        output = _read_immutable_blob(active_batch, cache_args[2])
+    else:
+        result = subprocess.run(
+            ['git', '--no-replace-objects', *(cache_args if immutable else args)],
+            cwd=root, capture_output=True)
+        require(result.returncode == 0, 'Composition needs the existing full-history checkout and component objects: '
+                + result.stderr.decode(errors='replace')[-1500:])
+        output = result.stdout
     if immutable:
-        _IMMUTABLE_GIT_RESULTS[cache_key] = result.stdout
-    return result.stdout
+        _IMMUTABLE_GIT_RESULTS[cache_key] = output
+    return output
 
 
 def pin_head(root):
     """Bind HEAD once per verification root and refuse any later movement."""
-    root_key = str(Path(root).resolve())
+    resolved_root = root_key(root)
     replacements = subprocess.run(
         ['git', '--no-replace-objects', 'for-each-ref', '--format=%(refname)', 'refs/replace'],
         cwd=root, capture_output=True)
@@ -2093,9 +2438,111 @@ def pin_head(root):
     require(result.returncode == 0, 'Composition cannot resolve current HEAD')
     head = result.stdout.decode().strip()
     require(re.fullmatch(r'[0-9a-f]{40}', head) is not None, 'Invalid current HEAD identity')
-    require(root_key not in _PINNED_HEADS or _PINNED_HEADS[root_key] == head,
+    require(resolved_root not in _PINNED_HEADS or _PINNED_HEADS[resolved_root] == head,
             'Composition HEAD changed during verification')
-    _PINNED_HEADS[root_key] = head
+    _PINNED_HEADS[resolved_root] = head
+
+
+def parse_tracked_source_drift(raw):
+    """Decode one NUL-delimited Git path list without path normalization."""
+    require(isinstance(raw, bytes), 'Malformed tracked-source preflight output')
+    require(not raw or raw.endswith(b'\0'),
+            'Tracked-source preflight output is not NUL terminated')
+    encoded = raw[:-1].split(b'\0') if raw else []
+    if encoded:
+        require(all(encoded) and len(encoded) == len(set(encoded)),
+                'Tracked-source preflight output has an empty or duplicate path')
+    paths = []
+    for value in encoded:
+        try:
+            path = value.decode('utf-8')
+        except UnicodeDecodeError as error:
+            raise AssertionError('Tracked-source preflight path is not UTF-8') from error
+        relative = PurePosixPath(path)
+        require(path and not relative.is_absolute() and '..' not in relative.parts
+                and relative.as_posix() == path,
+                'Unsafe tracked-source preflight path: ' + repr(path))
+        paths.append(path)
+    return tuple(paths)
+
+
+def tracked_source_preflight(root, proof_files):
+    """Reject non-proof tracked drift before expensive historical projection.
+
+    The receipt, verifier and regression suite are deliberately allowed to be
+    uncommitted while a new proof commit binds its direct implementation
+    parent. Their exact bytes and ordinary modes are validated before this
+    function runs. No other tracked path may differ from the pinned commit.
+    """
+    resolved_root = root_key(root)
+    head = _PINNED_HEADS.get(resolved_root)
+    require(head is not None and re.fullmatch(r'[0-9a-f]{40}', head) is not None,
+            'Tracked-source preflight requires a pinned HEAD')
+    require(isinstance(proof_files, dict)
+            and set(proof_files) == {RECEIPT, VERIFIER, REGRESSION}
+            and all(isinstance(value, bytes) for value in proof_files.values()),
+            'Tracked-source preflight requires exact proof bytes')
+    paths = []
+    staged_paths = ()
+    for label, arguments in (
+        ('staged', ('diff', '--cached', '--no-ext-diff', '--no-renames',
+                    '--name-only', '-z', head, '--')),
+        ('unstaged', ('diff', '--no-ext-diff', '--no-renames',
+                      '--name-only', '-z', '--')),
+    ):
+        result = subprocess.run(
+            ['git', '--no-replace-objects', *arguments],
+            cwd=root, capture_output=True)
+        require(result.returncode == 0 and not result.stderr,
+                'Tracked-source ' + label + ' preflight failed: '
+                + result.stderr.decode(errors='replace')[-1500:])
+        parsed = parse_tracked_source_drift(result.stdout)
+        paths.extend(parsed)
+        if label == 'staged':
+            staged_paths = parsed
+    paths = tuple(sorted(set(paths)))
+    allowed = {RECEIPT, VERIFIER, REGRESSION}
+    unexpected = set(paths) - allowed
+    require(not unexpected,
+            'Tracked source changed before composition proof: '
+            + repr(sorted(unexpected)))
+    result = subprocess.run([
+        'git', '--no-replace-objects', 'ls-files', '--others',
+        '--exclude-standard', '-z', '--'], cwd=root, capture_output=True)
+    require(result.returncode == 0 and not result.stderr,
+            'Untracked-source preflight failed: '
+            + result.stderr.decode(errors='replace')[-1500:])
+    untracked = set(parse_tracked_source_drift(result.stdout))
+    require(not untracked - NARRATIVES,
+            'Untracked source present before composition proof: '
+            + repr(sorted(untracked - NARRATIVES)))
+    tracked = set(parse_tracked_source_drift(git(root, 'ls-files', '-z')))
+    unexpected_filesystem = actual_paths(root, tracked) - tracked
+    require(not unexpected_filesystem,
+            'Ignored or untracked source present before composition proof: '
+            + repr(sorted(unexpected_filesystem)))
+    for path in set(staged_paths) & allowed:
+        result = subprocess.run(
+            ['git', '--no-replace-objects', 'ls-files', '--stage', '-z', '--', path],
+            cwd=root, capture_output=True)
+        require(result.returncode == 0 and not result.stderr
+                and result.stdout.endswith(b'\0')
+                and result.stdout.count(b'\0') == 1,
+                'Tracked-source preflight found a malformed staged proof entry: ' + path)
+        try:
+            metadata, encoded_path = result.stdout[:-1].split(b'\t', 1)
+            permission, oid, stage = metadata.decode('ascii').split(' ')
+        except (UnicodeDecodeError, ValueError) as error:
+            raise AssertionError(
+                'Tracked-source preflight found a malformed staged proof entry: '
+                + path) from error
+        require(encoded_path == path.encode('utf-8') and permission == '100644'
+                and stage == '0' and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
+                and git(root, 'cat-file', 'blob', oid) == proof_files[path],
+                'Staged proof entry differs from validated bytes or mode: ' + path)
+    # Refuse a ref move that raced the pinned-object diff.
+    pin_head(root)
+    return paths
 
 
 def ordinary(root, path):
@@ -2118,9 +2565,11 @@ def mode(root, path):
 def entries(root, ref):
     # Git objects named by the pinned commit IDs are immutable. Only this
     # metadata is cached; every actual working file is re-read for every gate.
-    key = (str(Path(root).resolve()), ref)
+    key = (root_key(root), ref)
     if key in _TREE_ENTRIES:
-        return _TREE_ENTRIES[key]
+        result = _TREE_ENTRIES.pop(key)
+        _TREE_ENTRIES[key] = result
+        return result
     result = {}
     for row in git(root, 'ls-tree', '-r', '-z', ref).split(b'\0'):
         if row:
@@ -2130,6 +2579,8 @@ def entries(root, ref):
                     'Nonregular component tree entry: ' + path.decode())
             result[path.decode()] = (permission, oid)
     _TREE_ENTRIES[key] = result
+    while len(_TREE_ENTRIES) > TREE_ENTRY_CACHE_LIMIT:
+        _TREE_ENTRIES.popitem(last=False)
     return result
 
 
@@ -2655,7 +3106,7 @@ def validate_ux09_diagnostic_registry_source(root):
     base_entries = entries(root, UX09_DIAGNOSTIC_REGISTRY_BASE)
     source_entries = entries(root, UX09_DIAGNOSTIC_REGISTRY_SOURCE)
     for path in sorted(UX09_DIAGNOSTIC_REGISTRY_MODIFIED):
-        current = ordinary(root, path)
+        current = project_resulting_main_diagnostic_mail_reply_source(root, path, ordinary(root, path))
         require(current == git(root, 'cat-file', 'blob',
                                UX09_DIAGNOSTIC_REGISTRY_SOURCE + ':' + path)
                 and digest(current) == UX09_DIAGNOSTIC_REGISTRY_SHA256[path]
@@ -2672,6 +3123,44 @@ def project_ux09_diagnostic_registry(root, path, current):
             'Current UX-09 diagnostic-registry successor changed before predecessor projection: '
             + path)
     return git(root, 'cat-file', 'blob', UX09_DIAGNOSTIC_REGISTRY_BASE + ':' + path)
+
+
+def validate_resulting_main_diagnostic_mail_reply_source(root):
+    """Bind the exact fail-closed registry repair exposed by PR #398 resulting main."""
+    require(git(root, 'rev-parse', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE_TREE
+            and git(root, 'rev-parse', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + '^{tree}').decode().strip()
+            == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE_TREE,
+            'Resulting-main diagnostic mail-reply source tree changed')
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE,
+        RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE)
+    git(root, 'merge-base', '--is-ancestor', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE,
+                  RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED)],
+            'Resulting-main diagnostic mail-reply source changed a different path or status set')
+    base_entries = entries(root, RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE)
+    source_entries = entries(root, RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE)
+    for path in sorted(RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED):
+        current = project_diagnostic_artifact_batch_source(
+            root, path, ordinary(root, path))
+        require(current == git(root, 'cat-file', 'blob',
+                               RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + ':' + path)
+                and digest(current) == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256[path]
+                and mode(root, path) == base_entries[path][0] == source_entries[path][0] == '100644',
+                'Resulting-main diagnostic mail-reply source identity changed: ' + path)
+
+
+def project_resulting_main_diagnostic_mail_reply_source(root, path, current):
+    """Restore PR #398 resulting-main bytes before replaying older source receipts."""
+    if path not in RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SOURCE + ':' + path)
+    require(current == source and digest(current) == RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_SHA256[path],
+            'Current resulting-main diagnostic mail-reply source changed before predecessor projection: '
+            + path)
+    return git(root, 'cat-file', 'blob', RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_BASE + ':' + path)
 
 
 def validate_ux09_migration_preservation_source(root):
@@ -3184,6 +3673,7 @@ def validate_resulting_main_client_inbox_budget_source(root):
     source_entries = entries(root, RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE)
     path = RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH
     current = project_runner_application_composition_partition(root, path, ordinary(root, path))
+    current = project_hosting_inbox_reload_budget_source(root, path, current)
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_BASE + ':' + path)
     require(current == source
@@ -3201,6 +3691,7 @@ def validate_resulting_main_client_inbox_budget_source(root):
 
 def project_resulting_main_client_inbox_budget(root, path, current):
     """Restore the exact reviewed notification successor for older proofs."""
+    current = project_hosting_inbox_reload_budget_source(root, path, current)
     if path != RESULTING_MAIN_CLIENT_INBOX_BUDGET_PATH:
         return current
     source = git(root, 'cat-file', 'blob', RESULTING_MAIN_CLIENT_INBOX_BUDGET_SOURCE + ':' + path)
@@ -5097,7 +5588,7 @@ def project_mail_reply_form_helper_fix(root, path, current):
 
 def mail_consolidated_changes(root):
     """Return the exact status/path map for the pinned consolidated mail source."""
-    key=str(Path(root).resolve())
+    key=root_key(root)
     if key in _MAIL_CONSOLIDATED_CHANGES:
         return _MAIL_CONSOLIDATED_CHANGES[key]
     raw=git(root, 'diff', '--name-status', '--no-renames',
@@ -8105,8 +8596,11 @@ def project_proof_cache_hardening_source(root, path, current):
         return current
     source = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', PROOF_CACHE_HARDENING_BASE + ':' + path)
-    if (path == REGRESSION and current == ordinary(root, path)
-            and digest(current) == REGRESSION_SHA256):
+    if (path == REGRESSION
+            and ((current == ordinary(root, path)
+                  and digest(current) == REGRESSION_SHA256)
+                 or current == git(root, 'cat-file', 'blob',
+                                   DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path))):
         current = source
     if current == source:
         return base
@@ -8115,6 +8609,1244 @@ def project_proof_cache_hardening_source(root, path, current):
     require(current == source,
             'Current proof-cache regression changed before predecessor projection')
     return base
+
+
+def validate_diagnostic_artifact_batch_source(root):
+    """Bind the finite one-proof artifact-validation batch to its exact source."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_ARTIFACT_BATCH_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_BATCH_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_BATCH_SOURCE_TREE,
+            'Diagnostic artifact batch source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_ARTIFACT_BATCH_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_ARTIFACT_BATCH_BASE],
+            'Diagnostic artifact batch source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_ARTIFACT_BATCH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_ARTIFACT_BATCH_BASE,
+                  DIAGNOSTIC_ARTIFACT_BATCH_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path
+                        for path in sorted(DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED)],
+            'Diagnostic artifact batch source changed another path or status')
+    source_entries = entries(root, DIAGNOSTIC_ARTIFACT_BATCH_SOURCE)
+    require(all(source_entries[path][0] == '100644'
+                for path in DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED),
+            'Diagnostic artifact batch changed a protected source mode')
+    for path in sorted(DIAGNOSTIC_ARTIFACT_BATCH_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + path)
+        require(digest(source) == DIAGNOSTIC_ARTIFACT_BATCH_SHA256[path],
+                'Diagnostic artifact batch source bytes changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + VERIFIER)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + RECEIPT))
+    source_artifacts = git(root, 'cat-file', 'blob',
+                           DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':'
+                           + DIAGNOSTIC_ARTIFACT_BATCH_PATH)
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and ordinary(root, DIAGNOSTIC_ARTIFACT_BATCH_PATH) == source_artifacts
+            and source_verifier.count(b'def provider_browser_artifact_validations(') == 1
+            and source_verifier.count(b'    checks = validate(root)\n') == 1
+            and source_verifier.count(b"'projected_validation', callback=module") == 1
+            and source_artifacts.count(
+                b'composition.provider_browser_artifact_validations(') == 1
+            and b'validate_provider_fixtures(ROOT)' not in source_artifacts
+            and b'projected_validation(ROOT' not in source_artifacts,
+            'Diagnostic artifact batch implementation or source receipt changed')
+
+
+def project_diagnostic_artifact_batch_source(root, path, current):
+    """Restore the accepted PR #401 proof head before older source projections."""
+    current = project_diagnostic_artifact_failure_evidence_source(
+        root, path, current)
+    if (path == REGRESSION
+            and ((current == ordinary(root, path)
+                  and digest(current) == REGRESSION_SHA256)
+                 or current == git(root, 'cat-file', 'blob',
+                                   DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE
+                                   + ':' + path))):
+        return git(root, 'cat-file', 'blob',
+                   DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path)
+    if path != DIAGNOSTIC_ARTIFACT_BATCH_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_ARTIFACT_BATCH_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_ARTIFACT_BATCH_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic artifact batch changed before predecessor projection')
+    return base
+
+
+def validate_diagnostic_artifact_failure_evidence_source(root):
+    """Bind exact named-failure preservation after the independent review blocker."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE_TREE,
+            'Diagnostic artifact failure-evidence source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE],
+            'Diagnostic artifact failure-evidence source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE,
+                  DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_MODIFIED)],
+            'Diagnostic artifact failure-evidence source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE)
+    for path in sorted(DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SHA256[path],
+                'Diagnostic artifact failure-evidence source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                          + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b'def _extend_provider_artifact_rows(') == 1
+            and b"type(row['passed']) is bool" in source_verifier
+            and b"row.get('passed') is True" not in source_verifier
+            and b'Provider artifact batching retains exact named historical failures'
+                in source_regression,
+            'Diagnostic artifact named-failure preservation changed')
+
+
+def project_diagnostic_artifact_failure_evidence_source(root, path, current):
+    """Restore the reviewed batch proof before its failure-evidence correction."""
+    current = project_diagnostic_blob_batch_source(root, path, current)
+    if path != REGRESSION:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_ARTIFACT_FAILURE_EVIDENCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic artifact failure-evidence source changed')
+    return base
+
+
+def project_diagnostic_blob_batch_source(root, path, current):
+    """Restore the accepted proof before the immutable blob-batch successor."""
+    current = project_diagnostic_projection_cache_race_source(root, path, current)
+    if path != REGRESSION:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_BLOB_BATCH_BASE + ':' + path)
+    proof_base = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_BLOB_LIVE_BINDING_BASE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == proof_base:
+        current = source
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic blob-batch regression changed')
+    return base
+
+
+def validate_diagnostic_blob_batch_source(root):
+    """Bind the bounded immutable reader and terminal projection source."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_BLOB_BATCH_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_BATCH_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_BLOB_BATCH_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_BATCH_SOURCE_TREE,
+            'Diagnostic blob-batch source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_BLOB_BATCH_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_BLOB_BATCH_BASE],
+            'Diagnostic blob-batch source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_BLOB_BATCH_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_BLOB_BATCH_BASE,
+                  DIAGNOSTIC_BLOB_BATCH_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path
+                        for path in sorted(DIAGNOSTIC_BLOB_BATCH_MODIFIED)],
+            'Diagnostic blob-batch source changed another path or status')
+    source_entries = entries(root, DIAGNOSTIC_BLOB_BATCH_SOURCE)
+    for path in sorted(DIAGNOSTIC_BLOB_BATCH_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_BLOB_BATCH_SHA256[path],
+                'Diagnostic blob-batch source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_BLOB_BATCH_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b"['git', '--no-replace-objects', 'cat-file', '--batch']") == 1
+            and b'TREE_ENTRY_CACHE_LIMIT = 16' in source_verifier
+            and source_verifier.count(
+                b'def project_component_union_source(') == 1
+            and b'Immutable blob batch verifies exact binary bytes and request framing'
+                in source_regression
+            and b'Immutable parsed-tree cache remains bounded after the complete proof'
+                in source_regression
+            and b'Component union applies each terminal projection chain once in exact order'
+                in source_regression,
+            'Diagnostic blob-batch implementation or source receipt changed')
+
+
+def project_diagnostic_blob_live_binding_source(root, path, current):
+    """Restore the performance proof before the live-helper binding correction."""
+    if path != REGRESSION:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_BLOB_LIVE_BINDING_BASE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current diagnostic live-binding regression changed')
+    return base
+
+
+def validate_diagnostic_blob_live_binding_source(root):
+    """Bind the review correction that refuses a live helper rollback."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_BLOB_LIVE_BINDING_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_LIVE_BINDING_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE_TREE,
+            'Diagnostic blob live-binding source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_BLOB_LIVE_BINDING_BASE],
+            'Diagnostic blob live-binding source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_BLOB_LIVE_BINDING_BASE,
+                  DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_BLOB_LIVE_BINDING_MODIFIED)],
+            'Diagnostic blob live-binding source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE)
+    for path in sorted(DIAGNOSTIC_BLOB_LIVE_BINDING_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_BLOB_LIVE_BINDING_SHA256[path],
+                'Diagnostic blob live-binding source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'ordinary(root, DIAGNOSTIC_ARTIFACT_BATCH_PATH) == source_artifacts'
+                in source_verifier
+            and b'Refuses exact predecessor diagnostic artifact helper rollback'
+                in source_regression,
+            'Diagnostic blob live-binding implementation or receipt changed')
+
+
+def project_diagnostic_projection_cache_source(root, path, current):
+    """Restore the accepted PR head before the bounded projection-cache source."""
+    if path != REGRESSION:
+        return project_diagnostic_blob_live_binding_source(root, path, current)
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_PROJECTION_CACHE_BASE + ':' + path)
+    live_binding_source = git(root, 'cat-file', 'blob',
+                              DIAGNOSTIC_BLOB_LIVE_BINDING_SOURCE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
+        current = base
+    if current == base:
+        current = live_binding_source
+    return project_diagnostic_blob_live_binding_source(root, path, current)
+
+
+def validate_diagnostic_projection_cache_source(root):
+    """Bind the exact bounded cache implementation to its accepted PR parent."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CACHE_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CACHE_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_SOURCE_TREE,
+            'Diagnostic projection-cache source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CACHE_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CACHE_BASE],
+            'Diagnostic projection-cache source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CACHE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CACHE_BASE,
+                  DIAGNOSTIC_PROJECTION_CACHE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CACHE_MODIFIED)],
+            'Diagnostic projection-cache source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CACHE_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CACHE_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_PROJECTION_CACHE_SHA256[path],
+                'Diagnostic projection-cache source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_PROJECTION_CACHE_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b'def verification_projection_cache(') == 1
+            and b'_PROJECTION_CACHE_LIMIT = 32768' in source_verifier
+            and b'live = ordinary(Path(root_value), path)' in source_verifier
+            and b'key = (call_root, name, path, len(current), digest(current),'
+                in source_verifier
+            and b'_ACTIVE_ORDINARY' not in source_verifier
+            and b'Bound projection cache preserves fresh mutable-worktree reads'
+                in source_regression
+            and b'Exact projection memoization is bounded and cleared'
+                in source_regression,
+            'Diagnostic projection-cache implementation or receipt changed')
+
+
+def project_diagnostic_projection_cache_race_source(root, path, current):
+    """Restore the first cache proof before its mutable-source race correction."""
+    if path != REGRESSION:
+        return project_diagnostic_projection_cache_source(root, path, current)
+    source = git(root, 'cat-file', 'blob',
+                 DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE + ':' + path)
+    prior_source = git(root, 'cat-file', 'blob',
+                       DIAGNOSTIC_PROJECTION_CACHE_SOURCE + ':' + path)
+    if (current == ordinary(root, path)
+            and digest(current) == REGRESSION_SHA256):
+        current = source
+    if current == source:
+        current = base
+    if current == base:
+        current = prior_source
+    return project_diagnostic_projection_cache_source(root, path, current)
+
+
+def validate_diagnostic_projection_cache_race_source(root):
+    """Bind the exact correction that brackets cached projections with reads."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE_TREE,
+            'Diagnostic projection-cache race source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE],
+            'Diagnostic projection-cache race source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CACHE_RACE_BASE,
+                  DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CACHE_RACE_MODIFIED)],
+            'Diagnostic projection-cache race source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CACHE_RACE_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_CACHE_RACE_SHA256[path],
+                'Diagnostic projection-cache race source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_PROJECTION_CACHE_RACE_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(
+                b"require(ordinary(Path(root_value), path) == live,") == 2
+            and b'cached.move_to_end(key)' in source_verifier
+            and b'Composition source changed during cached projection'
+                in source_verifier
+            and b'Composition source changed during projection'
+                in source_verifier
+            and b'Bound projection cache refuses a mutable-source race'
+                in source_regression
+            and b'assert len(calls) == 3' in source_regression
+            and source_verifier.count(b'_ACTIVE_ORDINARY') == 1,
+            'Diagnostic projection-cache race correction or receipt changed')
+
+
+def validate_diagnostic_tracked_preflight_source(root):
+    """Bind the fail-closed tracked-drift preflight to its timed-out parent."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE_TREE,
+            'Diagnostic tracked-source preflight tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_TRACKED_PREFLIGHT_BASE],
+            'Diagnostic tracked-source preflight parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_BASE,
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_TRACKED_PREFLIGHT_MODIFIED)],
+            'Diagnostic tracked-source preflight changed another path')
+    source_entries = entries(root, DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE)
+    for path in sorted(DIAGNOSTIC_TRACKED_PREFLIGHT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_TRACKED_PREFLIGHT_SHA256[path],
+                'Diagnostic tracked-source preflight changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(b'def parse_tracked_source_drift(') == 1
+            and source_verifier.count(b'def tracked_source_preflight(') == 1
+            and b"'git', '--no-replace-objects', 'diff', '--no-ext-diff', '--no-renames',"
+                in source_verifier
+            and b"'--name-only', '-z', head, '--'" in source_verifier
+            and b'allowed = {RECEIPT, VERIFIER, REGRESSION}' in source_verifier
+            and b"require(result.returncode == 0 and not result.stderr,"
+                in source_verifier
+            and b'    ensure_history(root)\n    pin_head(root)\n    tracked_source_preflight(root)\n'
+                in source_verifier
+            and source_verifier.count(
+                b"'Composition proof file changed during") == 2
+            and b'Tracked-source preflight parses only canonical NUL-delimited paths'
+                in source_regression
+            and b'Refuses unstaged tracked drift before historical validation'
+                in source_regression
+            and b'Refuses staged tracked drift before historical projection'
+                in source_regression
+            and b'assert not reached_historical_validation' in source_regression,
+            'Diagnostic tracked-source preflight implementation or receipt changed')
+
+
+def validate_diagnostic_tracked_preflight_cancellation_source(root):
+    """Bind independent index/worktree checks and the exact proof index."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE_TREE,
+            'Diagnostic tracked-source cancellation correction tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE
+                ).decode().strip().split()
+            == [DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE],
+            'Diagnostic tracked-source cancellation correction parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_BASE,
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE
+                  ).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_MODIFIED)],
+            'Diagnostic tracked-source cancellation correction changed another path')
+    source_entries = entries(
+        root, DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE)
+    for path in sorted(DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_MODIFIED):
+        source = git(
+            root, 'cat-file', 'blob',
+            DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SHA256[path],
+                'Diagnostic tracked-source cancellation correction changed: '
+                + path)
+    source_verifier = git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + VERIFIER)
+    source_regression = git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_CANCELLATION_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"('staged', ('diff', '--cached', '--no-ext-diff', '--no-renames',"
+                in source_verifier
+            and b"('unstaged', ('diff', '--no-ext-diff', '--no-renames',"
+                in source_verifier
+            and b"['git', '--no-replace-objects', *arguments]" in source_verifier
+            and b"['git', '--no-replace-objects', 'ls-files', '--stage', '-z', '--', path]"
+                in source_verifier
+            and b"git(root, 'cat-file', 'blob', oid) == proof_files[path]"
+                in source_verifier
+            and source_verifier.count(
+                b"mode(root, path) == '100644' and ordinary(root, path) == value") == 2
+            and b'tracked_source_preflight(root, proof_files)' in source_verifier
+            and b'Refuses offsetting staged and unstaged tracked drift'
+                in source_regression
+            and b'Refuses staged proof bytes that differ from validated worktree bytes'
+                in source_regression
+            and b'Refuses a staged executable mode for a proof file'
+                in source_regression,
+            'Diagnostic tracked-source cancellation correction or receipt changed')
+
+
+def validate_diagnostic_untracked_preflight_source(root):
+    """Bind the early non-ignored untracked-source refusal."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE_TREE,
+            'Diagnostic untracked-source preflight tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE],
+            'Diagnostic untracked-source preflight parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_UNTRACKED_PREFLIGHT_BASE,
+                  DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_UNTRACKED_PREFLIGHT_MODIFIED)],
+            'Diagnostic untracked-source preflight changed another path')
+    source_entries = entries(root, DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE)
+    for path in sorted(DIAGNOSTIC_UNTRACKED_PREFLIGHT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_UNTRACKED_PREFLIGHT_SHA256[path],
+                'Diagnostic untracked-source preflight changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_UNTRACKED_PREFLIGHT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"'ls-files', '--others',\n        '--exclude-standard', '-z', '--'"
+                in source_verifier
+            and b'untracked = set(parse_tracked_source_drift(result.stdout))'
+                in source_verifier
+            and b'require(not untracked - NARRATIVES,' in source_verifier
+            and b'Untracked-source preflight precedes expensive historical validation'
+                in source_regression
+            and b'Ordinary generated test cache does not become a Git/source/package input'
+                in source_regression,
+            'Diagnostic untracked-source preflight implementation or receipt changed')
+
+
+def validate_diagnostic_protected_tree_preflight_source(root):
+    """Bind ignored-file inventory across every tracked top-level tree."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE_TREE,
+            'Diagnostic protected-tree preflight tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE],
+            'Diagnostic protected-tree preflight parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_BASE,
+                  DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_MODIFIED)],
+            'Diagnostic protected-tree preflight changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SHA256[path],
+                'Diagnostic protected-tree preflight changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'unexpected_filesystem = actual_paths(root, tracked) - tracked'
+                in source_verifier
+            and b"areas = {PurePosixPath(path).parts[0] for path in tracked if '/' in path}"
+                in source_verifier
+            and b'for area in sorted(areas):' in source_verifier
+            and b'Refuses ignored source under a tracked operations tree'
+                in source_regression
+            and b'Ignored operations source is inventoried before historical validation'
+                in source_regression
+            and b'Ordinary generated test cache does not become a Git/source/package input'
+                in source_regression,
+            'Diagnostic protected-tree preflight implementation or receipt changed')
+
+
+def validate_diagnostic_receipt_content_source(root):
+    """Bind canonical receipt content before historical reconstruction."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_RECEIPT_CONTENT_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_RECEIPT_CONTENT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_RECEIPT_CONTENT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_RECEIPT_CONTENT_SOURCE_TREE,
+            'Diagnostic receipt-content source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_RECEIPT_CONTENT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_RECEIPT_CONTENT_BASE],
+            'Diagnostic receipt-content source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_RECEIPT_CONTENT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_RECEIPT_CONTENT_BASE,
+                  DIAGNOSTIC_RECEIPT_CONTENT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_RECEIPT_CONTENT_MODIFIED)],
+            'Diagnostic receipt-content source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_RECEIPT_CONTENT_SOURCE)
+    for path in sorted(DIAGNOSTIC_RECEIPT_CONTENT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_RECEIPT_CONTENT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_RECEIPT_CONTENT_SHA256[path],
+                'Diagnostic receipt-content source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_RECEIPT_CONTENT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_RECEIPT_CONTENT_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_RECEIPT_CONTENT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'def receipt_content_digest(data):' in source_verifier
+            and b"'verifier_sha256': '',\n        'regression_sha256': '',"
+                in source_verifier
+            and b'receipt_content_digest(receipt_data) == RECEIPT_CONTENT_SHA256'
+                in source_verifier
+            and b'Refuses changed canonical receipt content before historical validation'
+                in source_regression
+            and b'Canonical receipt content is bound before historical validation'
+                in source_regression,
+            'Diagnostic receipt-content implementation or receipt changed')
+
+
+def validate_diagnostic_strict_receipt_source(root):
+    """Bind duplicate-name and non-finite receipt refusal."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_STRICT_RECEIPT_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_STRICT_RECEIPT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_STRICT_RECEIPT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_STRICT_RECEIPT_SOURCE_TREE,
+            'Diagnostic strict-receipt source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_STRICT_RECEIPT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_STRICT_RECEIPT_BASE],
+            'Diagnostic strict-receipt source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_STRICT_RECEIPT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_STRICT_RECEIPT_BASE,
+                  DIAGNOSTIC_STRICT_RECEIPT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_STRICT_RECEIPT_MODIFIED)],
+            'Diagnostic strict-receipt source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_STRICT_RECEIPT_SOURCE)
+    for path in sorted(DIAGNOSTIC_STRICT_RECEIPT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_STRICT_RECEIPT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_STRICT_RECEIPT_SHA256[path],
+                'Diagnostic strict-receipt source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_STRICT_RECEIPT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_STRICT_RECEIPT_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(root, 'cat-file', 'blob',
+                                           DIAGNOSTIC_STRICT_RECEIPT_SOURCE
+                                           + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'def strict_json_object(pairs):' in source_verifier
+            and b'object_pairs_hook=strict_json_object' in source_verifier
+            and b'parse_constant=reject_json_constant' in source_verifier
+            and b'receipt_data = strict_json_loads(receipt)' in source_verifier
+            and b"refuses('Refuses composition receipt ' + label," in source_regression
+            and b"('top-level duplicate name'," in source_regression
+            and b"('nested duplicate name'," in source_regression
+            and b"('non-finite constant'," in source_regression
+            and b'Strict receipt parsing precedes historical validation'
+                in source_regression,
+            'Diagnostic strict-receipt implementation or receipt changed')
+
+
+def validate_diagnostic_current_receipt_consumer_source(root):
+    """Bind every current receipt consumer to one strict byte bracket."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE_TREE,
+            'Diagnostic current-receipt consumer source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE],
+            'Diagnostic current-receipt consumer source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_BASE,
+                  DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_MODIFIED)],
+            'Diagnostic current-receipt consumer source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE)
+    for path in sorted(DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SHA256[path],
+                'Diagnostic current-receipt consumer source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_CURRENT_RECEIPT_CONSUMER_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'def current_proof_receipt(root):' in source_verifier
+            and source_verifier.count(
+                b'data, proof_files = current_proof_receipt(root)') == 2
+            and b'json.loads(ordinary(root, RECEIPT))' not in source_verifier
+            and b'Composition proof file changed during account projection'
+                in source_verifier
+            and b'Strict receipt loader refuses proof-file change during validation'
+                in source_regression
+            and b'Every current receipt consumer brackets exact proof bytes'
+                in source_regression,
+            'Diagnostic current-receipt consumer implementation or receipt changed')
+
+
+def validate_diagnostic_projection_chain_bracket_source(root):
+    """Bind the exact outer-chain fresh-read performance correction."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE_TREE,
+            'Diagnostic projection-chain bracket source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE],
+            'Diagnostic projection-chain bracket source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_BASE,
+                  DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_MODIFIED)],
+            'Diagnostic projection-chain bracket source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SHA256[path],
+                'Diagnostic projection-chain bracket source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_CHAIN_BRACKET_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'active = []' in source_verifier
+            and b'parent = active[-1] if active else None' in source_verifier
+            and b'live = parent[2] if nested else ordinary(Path(root_value), path)'
+                in source_verifier
+            and source_verifier.count(b'if not nested:') == 2
+            and b'active.append((call_root, path, live))' in source_verifier
+            and b'require(active.pop() == (call_root, path, live),' in source_verifier
+            and b'def project_cache_nested_probe(root, path, current):'
+                in source_regression
+            and b"assert reads == ['exact.txt'] * 3" in source_regression
+            and b'Bound projection cache refuses a mutable-source race'
+                in source_regression,
+            'Diagnostic projection-chain bracket implementation or receipt changed')
+
+
+def validate_diagnostic_projection_chain_transaction_source(root):
+    """Bind rollback of every nested result from a refused outer bracket."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE_TREE,
+            'Diagnostic projection-chain transaction source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE],
+            'Diagnostic projection-chain transaction source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_BASE,
+                  DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_MODIFIED)],
+            'Diagnostic projection-chain transaction source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SHA256[path],
+                'Diagnostic projection-chain transaction source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_CHAIN_TRANSACTION_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'pending = OrderedDict() if outermost else parent[3]'
+                in source_verifier
+            and b'journal = [] if outermost else parent[4]' in source_verifier
+            and b'checkpoint = len(journal)' in source_verifier
+            and b'if key in pending:' in source_verifier
+            and b'for pending_key in journal:' in source_verifier
+            and b'except BaseException:' in source_verifier
+            and b'pending.pop(journal.pop(), None)' in source_verifier
+            and b'stable.append(True)' in source_regression
+            and b"assert reads == ['exact.txt'] * 6" in source_regression
+            and b"assert len(calls) == 5" in source_regression,
+            'Diagnostic projection-chain transaction implementation or receipt changed')
+
+
+def validate_diagnostic_projection_lru_bound_source(root):
+    """Bind strict bounds and deferred recency for both cache layers."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE_TREE,
+            'Diagnostic projection LRU-bound source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE],
+            'Diagnostic projection LRU-bound source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_LRU_BOUND_BASE,
+                  DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_LRU_BOUND_MODIFIED)],
+            'Diagnostic projection LRU-bound source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_LRU_BOUND_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_PROJECTION_LRU_BOUND_SHA256[path],
+                'Diagnostic projection LRU-bound source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_LRU_BOUND_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"'pending': OrderedDict(), 'touches': OrderedDict()"
+                in source_verifier
+            and b'while len(pending) > _PROJECTION_CACHE_LIMIT:'
+                in source_verifier
+            and b'pending.popitem(last=False)' in source_verifier
+            and b'maximum = max(maximum, len(pending))' in source_verifier
+            and b'touches.pop(key, None)' in source_verifier
+            and b'for touched_key in touches:' in source_verifier
+            and b'proof._PROJECTION_CACHE_LIMIT = 2' in source_regression
+            and b"assert leaf_calls == [b'a', b'b', b'c', b'a']"
+                in source_regression
+            and b"assert leaf_calls == [b'a', b'b']" in source_regression
+            and b'Transactional projection staging and committed recency retain the strict LRU bound'
+                in source_regression,
+            'Diagnostic projection LRU-bound implementation or receipt changed')
+
+
+def validate_diagnostic_projection_transaction_order_source(root):
+    """Bind unified bounded access order and full refusal reset."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE_TREE,
+            'Diagnostic projection transaction-order source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE],
+            'Diagnostic projection transaction-order source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_BASE,
+                  DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_MODIFIED)],
+            'Diagnostic projection transaction-order source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SHA256[path],
+                'Diagnostic projection transaction-order source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_TRANSACTION_ORDER_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b"transaction = ({'overlay': OrderedDict()}" in source_verifier
+            and b'if key in overlay:' in source_verifier
+            and b"overlay[key] = ('cached', result)" in source_verifier
+            and b"overlay[key] = ('pending', result)" in source_verifier
+            and b'while len(overlay) > _PROJECTION_CACHE_LIMIT:'
+                in source_verifier
+            and b'for overlay_key, (kind, overlay_result) in overlay.items():'
+                in source_verifier
+            and b'overlay.clear()' in source_verifier
+            and b'def project_cache_interleaved(root, path, current):'
+                in source_regression
+            and b"assert leaf_calls == [b'b', b'a']" in source_regression
+            and b'def project_cache_caught_touch(root, path, current):'
+                in source_regression
+            and b"assert leaf_calls == [b'a', b'b', b'a']" in source_regression
+            and b'Caught nested refusal resets the bounded transaction overlay'
+                in source_regression,
+            'Diagnostic projection transaction-order implementation or receipt changed')
+
+
+def validate_diagnostic_projection_refusal_reset_source(root):
+    """Bind full-cache publication and every nested opening refusal reset."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE
+                + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE_TREE,
+            'Diagnostic projection refusal-reset source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE],
+            'Diagnostic projection refusal-reset source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_PROJECTION_REFUSAL_RESET_BASE,
+                  DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_PROJECTION_REFUSAL_RESET_MODIFIED)],
+            'Diagnostic projection refusal-reset source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE)
+    for path in sorted(DIAGNOSTIC_PROJECTION_REFUSAL_RESET_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SHA256[path],
+                'Diagnostic projection refusal-reset source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(
+        root, 'cat-file', 'blob',
+        DIAGNOSTIC_PROJECTION_REFUSAL_RESET_SOURCE + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'parent = active[-1] if active else None' in source_verifier
+            and b"overlay = transaction['overlay']" in source_verifier
+            and b'try:\n                call_root = root_key(root_value)'
+                in source_verifier
+            and b'cached[overlay_key] = overlay_result' in source_verifier
+            and b"require(kind in {'pending', 'cached'}," in source_verifier
+            and b'overlay.clear()' in source_verifier
+            and b'def project_cache_full_interleaved(root, path, current):'
+                in source_regression
+            and b"assert leaf_calls == [b'x', b'y', b'z', b'a']"
+                in source_regression
+            and b'def project_cache_cross_root_open(root, path, current):'
+                in source_regression
+            and source_regression.count(b"assert leaf_calls == [b'a', b'b', b'a']") == 2,
+            'Diagnostic projection refusal-reset implementation or receipt changed')
+
+
+def project_hosting_inbox_reload_completion_source(root, path, current):
+    """Restore the first bounded-reload proof before its reviewed completion."""
+    if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_COMPLETION_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current hosted inbox reload completion changed before predecessor projection')
+    return base
+
+
+def validate_hosting_inbox_reload_completion_source(root):
+    """Bind the two equivalent five-card owner loads found during review."""
+    require(git(root, 'rev-parse',
+                HOSTING_INBOX_RELOAD_COMPLETION_BASE
+                + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_COMPLETION_BASE_TREE
+            and git(root, 'rev-parse',
+                    HOSTING_INBOX_RELOAD_COMPLETION_SOURCE
+                    + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_COMPLETION_SOURCE_TREE,
+            'Hosted inbox reload completion source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                HOSTING_INBOX_RELOAD_COMPLETION_SOURCE).decode().strip().split()
+            == [HOSTING_INBOX_RELOAD_COMPLETION_BASE],
+            'Hosted inbox reload completion source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        HOSTING_INBOX_RELOAD_COMPLETION_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  HOSTING_INBOX_RELOAD_COMPLETION_BASE,
+                  HOSTING_INBOX_RELOAD_COMPLETION_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + HOSTING_INBOX_RELOAD_COMPLETION_PATH],
+            'Hosted inbox reload completion changed another path')
+    base_entries = entries(root, HOSTING_INBOX_RELOAD_COMPLETION_BASE)
+    source_entries = entries(root, HOSTING_INBOX_RELOAD_COMPLETION_SOURCE)
+    path = HOSTING_INBOX_RELOAD_COMPLETION_PATH
+    current = ordinary(root, path)
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_COMPLETION_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_COMPLETION_BASE + ':' + path)
+    require(current == source
+            and digest(source) == HOSTING_INBOX_RELOAD_COMPLETION_SHA256
+            and mode(root, path)
+            == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_hosting_inbox_reload_completion_source(
+                root, path, current) == base
+            and project_hosting_inbox_reload_completion_source(
+                root, path, base) == base,
+            'Hosted inbox reload completion identity or projection changed')
+    require(source.count(b'def goto(page, url, timeout=30000):') == 1
+            and source.count(b'def click(page, link, timeout=30000):') == 1
+            and source.count(
+                b'goto(page, list_url(is_owner), 60000) == 200') == 1
+            and source.count(b'click(op, previous, 60000) == 200') == 1
+            and source.count(
+                b'goto(op, list_url(True), 60000) == 200') == 1
+            and b'click(op, previous) == 200' not in source
+            and b'goto(op, list_url(True)) == 200' not in source,
+            'Hosted inbox reload completion broadened defaults or omitted a five-card load')
+
+
+def project_hosting_inbox_reload_budget_source(root, path, current):
+    """Restore the reviewed cache proof before the bounded inbox reload fix."""
+    current = project_hosting_inbox_reload_completion_source(root, path, current)
+    if path != HOSTING_INBOX_RELOAD_BUDGET_PATH:
+        return current
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_BUDGET_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current hosted inbox reload budget changed before predecessor projection')
+    return base
+
+
+def validate_hosting_inbox_reload_budget_source(root):
+    """Bind one finite hosted budget to retained five-card inbox reloads."""
+    require(git(root, 'rev-parse',
+                HOSTING_INBOX_RELOAD_BUDGET_BASE
+                + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE
+            and git(root, 'rev-parse',
+                    HOSTING_INBOX_RELOAD_BUDGET_SOURCE
+                    + '^{tree}').decode().strip()
+            == HOSTING_INBOX_RELOAD_BUDGET_SOURCE_TREE,
+            'Hosted inbox reload budget source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                HOSTING_INBOX_RELOAD_BUDGET_SOURCE).decode().strip().split()
+            == [HOSTING_INBOX_RELOAD_BUDGET_BASE],
+            'Hosted inbox reload budget source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        HOSTING_INBOX_RELOAD_BUDGET_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  HOSTING_INBOX_RELOAD_BUDGET_BASE,
+                  HOSTING_INBOX_RELOAD_BUDGET_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + HOSTING_INBOX_RELOAD_BUDGET_PATH],
+            'Hosted inbox reload budget source changed another path')
+    base_entries = entries(root, HOSTING_INBOX_RELOAD_BUDGET_BASE)
+    source_entries = entries(root, HOSTING_INBOX_RELOAD_BUDGET_SOURCE)
+    path = HOSTING_INBOX_RELOAD_BUDGET_PATH
+    current = project_hosting_inbox_reload_completion_source(
+        root, path, ordinary(root, path))
+    source = git(root, 'cat-file', 'blob',
+                 HOSTING_INBOX_RELOAD_BUDGET_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob',
+               HOSTING_INBOX_RELOAD_BUDGET_BASE + ':' + path)
+    require(current == source
+            and digest(source) == HOSTING_INBOX_RELOAD_BUDGET_SHA256
+            and mode(root, path)
+            == base_entries[path][0] == source_entries[path][0] == '100644'
+            and project_hosting_inbox_reload_budget_source(
+                root, path, current) == base
+            and project_hosting_inbox_reload_budget_source(
+                root, path, base) == base,
+            'Hosted inbox reload budget identity or projection changed')
+    require(source.count(b'def goto(page, url, timeout=30000):') == 1
+            and source.count(
+                b"page.goto(url, wait_until='load', timeout=timeout)") == 1
+            and source.count(
+                b'goto(page, list_url(is_owner), 60000) == 200') == 1
+            and b'goto(page, list_url(is_owner)) == 200' not in source
+            and source.count(b"check('Inbox reloads ' + actor") == 1
+            and source.count(b"click(page, link) == 200") == 1,
+            'Hosted inbox reload correction weakened one-attempt destination assertions')
 
 
 def validate_notification_metric_label_source(root):
@@ -8264,6 +9996,7 @@ def validate_pr391_recovery_successor(root):
                 | {FORCE_SSL_RUNNER_PORT_PATH}
                 | ACCOUNT_RATE_BOUNDARY_MODIFIED
                 | APPLICATION_MAIL_COPIES_ROUTING_MODIFIED
+                 | RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED
                 | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
@@ -8562,6 +10295,7 @@ def validate_ux08_inbox_payment_readiness_fix_source(root):
 
 def project_ux08_inbox_payment_readiness_fix(root, path, current):
     """Restore the exact pre-readiness-fix head for older source receipts."""
+    current = project_hosting_inbox_reload_budget_source(root, path, current)
     current = project_notification_health_source(root, path, current)
     if path not in UX08_INBOX_PAYMENT_READINESS_FIX_MODIFIED:
         return current
@@ -9315,6 +11049,8 @@ def project_ux08_storefront_repair_input(root, path, current):
 def reconstruct_repair(data, path, current):
     """Admit exact current tests; restore old bytes only for source comparison."""
     require(path in REPAIRS, 'Unknown integration repair')
+    current = project_hosting_inbox_reload_budget_source(
+        Path(__file__).resolve().parents[1], path, current)
     current = project_application_fixture_successors(
         Path(__file__).resolve().parents[1], path, current)
     current = project_mail_artifact_projection_fix(
@@ -9493,8 +11229,11 @@ def actual_paths(root, source_paths):
     tracked = set(git(root, 'ls-files', '-z').decode().split('\0')) - {''}
     paths = set(tracked)
     paths.update(set(git(root, 'ls-files', '--others', '--exclude-standard', '-z').decode().split('\0')) - {''})
-    # Include ignored files too within protected source/evidence directories.
-    for area in ('site', 'foundation', 'tests', 'tools', '.github', 'docs'):
+    # Include ignored files beneath every tracked top-level source/evidence
+    # directory. This prevents a global ignore such as __pycache__/ from
+    # hiding executable inputs under ops/, brand/ or future tracked trees.
+    areas = {PurePosixPath(path).parts[0] for path in tracked if '/' in path}
+    for area in sorted(areas):
         directory = root / area
         require(not directory.is_symlink(), 'Symlink protected source directory: ' + area)
         if directory.exists():
@@ -9749,7 +11488,8 @@ def validate_runner_application_composition_partition(root):
     base_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_PARTITION_BASE)
     source_entries = entries(root, RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE)
     for path in sorted(RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED):
-        current = ordinary(root, path)
+        current = project_diagnostic_artifact_batch_source(
+            root, path, ordinary(root, path))
         source = git(root, 'cat-file', 'blob',
                      RUNNER_APPLICATION_COMPOSITION_PARTITION_SOURCE + ':' + path)
         base = git(root, 'cat-file', 'blob',
@@ -9770,6 +11510,7 @@ def validate_runner_application_composition_partition(root):
 
 def project_runner_application_composition_partition(root, path, current):
     """Restore the reviewed 592e head before the isolated full-proof successor."""
+    current = project_diagnostic_artifact_batch_source(root, path, current)
     if path not in RUNNER_APPLICATION_COMPOSITION_PARTITION_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob',
@@ -9996,12 +11737,49 @@ def project_signed_ppa_label_source(root, path, current):
     return base
 
 
-def verify_current(root):
+def project_component_union_source(root, ux09, path, current):
+    """Apply each terminal successor chain once for the component-union check."""
+    current = project_account_rate_boundary_source(root, path, current)
+    current = project_ux09_fixture_receipt(root, path, current)
+    current = project_ux09_identity_snapshot(root, path, current)
+    current = project_ux09_smtp_rejection(root, path, current)
+    current = project_ux09_mail_review(root, path, current)
+    current = project_ux09_cloud_proof(root, path, current)
+    current = project_ux09_security(root, path, current)
+    current = project_ux09_ci(root, path, current)
+    return project_ux09(root, ux09, path, current)
+
+
+def current_proof_receipt(root):
+    """Strictly load and bracket the three mutable proof files."""
     root = Path(root)
-    verifier = ordinary(root, VERIFIER)
-    data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
+    proof_files = {
+        VERIFIER: ordinary(root, VERIFIER),
+        RECEIPT: ordinary(root, RECEIPT),
+        REGRESSION: ordinary(root, REGRESSION),
+    }
+    receipt_data = strict_json_loads(proof_files[RECEIPT])
+    data = validate_receipt(receipt_data, proof_files[VERIFIER])
+    require(receipt_content_digest(receipt_data) == RECEIPT_CONTENT_SHA256,
+            'Composition receipt content changed')
+    require(digest(proof_files[REGRESSION]) == REGRESSION_SHA256,
+            'Composition regression changed')
+    require(all(mode(root, path) == '100644'
+                and ordinary(root, path) == value
+                for path, value in proof_files.items()),
+            'Composition proof file changed during receipt validation')
+    return data, proof_files
+
+
+def _verify_current(root):
+    root = Path(root)
+    data, proof_files = current_proof_receipt(root)
     ensure_history(root)
     pin_head(root)
+    tracked_source_preflight(root, proof_files)
+    require(all(mode(root, path) == '100644' and ordinary(root, path) == value
+                for path, value in proof_files.items()),
+            'Composition proof file changed during tracked-source preflight')
     validate_application_reply_folder_route(root)
     validate_application_sent_copy_fixture_mode(root)
     validate_application_smtp_fixture_bound(root)
@@ -10089,6 +11867,26 @@ def verify_current(root):
     validate_domain_expiry_port_source(root)
     validate_proof_runtime_source(root)
     validate_proof_cache_hardening_source(root)
+    validate_diagnostic_artifact_batch_source(root)
+    validate_diagnostic_artifact_failure_evidence_source(root)
+    validate_diagnostic_blob_batch_source(root)
+    validate_diagnostic_blob_live_binding_source(root)
+    validate_diagnostic_projection_cache_source(root)
+    validate_diagnostic_projection_cache_race_source(root)
+    validate_diagnostic_tracked_preflight_source(root)
+    validate_diagnostic_tracked_preflight_cancellation_source(root)
+    validate_diagnostic_untracked_preflight_source(root)
+    validate_diagnostic_protected_tree_preflight_source(root)
+    validate_diagnostic_receipt_content_source(root)
+    validate_diagnostic_strict_receipt_source(root)
+    validate_diagnostic_current_receipt_consumer_source(root)
+    validate_diagnostic_projection_chain_bracket_source(root)
+    validate_diagnostic_projection_chain_transaction_source(root)
+    validate_diagnostic_projection_lru_bound_source(root)
+    validate_diagnostic_projection_transaction_order_source(root)
+    validate_diagnostic_projection_refusal_reset_source(root)
+    validate_hosting_inbox_reload_completion_source(root)
+    validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
     validate_pr391_recovery_successor(root)
     validate_ux08_checkout_pin_fix_source(root)
@@ -10127,6 +11925,7 @@ def verify_current(root):
     validate_ux08_review_source(root)
     validate_ux08_storefront_source(root)
     validate_ux08_inventory_source(root)
+    validate_resulting_main_diagnostic_mail_reply_source(root)
     validate_ux09_diagnostic_registry_source(root)
     validate_ux09_migration_preservation_source(root)
     validate_ux09_bounded_token_refusal_source(root)
@@ -10149,9 +11948,6 @@ def verify_current(root):
             'Software onboarding source receipt path set changed')
     require(git(root, 'rev-parse', ONBOARDING_BASE + '^{tree}').decode().strip() == ONBOARDING_BASE_TREE,
             'Software onboarding base tree changed')
-    require(mode(root, VERIFIER) == mode(root, RECEIPT) == mode(root, REGRESSION) == '100644',
-            'Composition proof file mode changed')
-    require(digest(ordinary(root, REGRESSION)) == REGRESSION_SHA256, 'Composition regression changed')
     require(git(root, 'rev-parse', REPAIR_BASE + '^{tree}').decode().strip() == REPAIR_BASE_TREE,
             'Failed acceptance checkpoint tree changed')
     git(root, 'merge-base', '--is-ancestor', REPAIR_BASE, 'HEAD')
@@ -10294,7 +12090,8 @@ def verify_current(root):
             and DATABASE_WORKFLOW_ADDITIONS <= set(database_source_entries),
             'Database workflow addition did not originate in its exact source range')
     for path in sorted(DATABASE_WORKFLOW_SOURCE_PATHS):
-        value = project_ux09_diagnostic_registry(root, path, ordinary(root, path))
+        value = project_resulting_main_diagnostic_mail_reply_source(root, path, ordinary(root, path))
+        value = project_ux09_diagnostic_registry(root, path, value)
         value = project_ux09_fixture_receipt(root, path, value)
         value = project_ux09_identity_snapshot(root, path, value)
         value = project_ux09_smtp_rejection(root, path, value)
@@ -10346,34 +12143,7 @@ def verify_current(root):
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
     for path, (permission, oid) in expected.items():
-        value = project_application_reply_folder_route(root, path, ordinary(root, path))
-        value = project_application_sent_copy_fixture_mode(root, path, value)
-        value = project_application_smtp_fixture_bound(root, path, value)
-        value = project_runner_application_current_artifact_binding(root, path, value)
-        value = project_runner_application_composition_partition(root, path, value)
-        value = project_runner_application_composition_completion(root, path, value)
-        value = project_mail_folder_dynamic_port_source(root, path, value)
-        value = project_signed_ppa_label_source(root, path, value)
-        value = project_application_mail_copies_routing_source(root, path, value)
-        value = project_application_mail_copies_setup_source(root, path, value)
-        value = project_account_rate_boundary_source(root, path, value)
-        value = project_runner_application_seal_budget(root, path, value)
-        value = project_application_sent_copy_absence_source(root, path, value)
-        value = project_application_fixture_successors(root, path, value)
-        value = project_latest_acceptance_successors(root, path, value)
-        value = project_mail_acceptance_repair_source(root, path, value)
-        value = project_mail_submission_expiry_fix(root, path, value)
-        value = project_mail_copy_controls_fix(root, path, value)
-        value = project_runner_mirror_compat(root, path, value)
-        value = project_ux08_agreement_link_fix(root, path, value)
-        value = project_ux09_fixture_receipt(root, path, value)
-        value = project_ux09_identity_snapshot(root, path, value)
-        value = project_ux09_smtp_rejection(root, path, value)
-        value = project_ux09_mail_review(root, path, value)
-        value = project_ux09_cloud_proof(root, path, value)
-        value = project_ux09_security(root, path, value)
-        value = project_ux09_ci(root, path, value)
-        value = project_ux09(root, ux09, path, value)
+        value = project_component_union_source(root, ux09, path, ordinary(root, path))
         if path in ONBOARDING_MODIFIED:
             row = onboarding['modified'][path]
             before = git(root, 'cat-file', 'blob', ONBOARDING_BASE + ':' + path)
@@ -10454,6 +12224,9 @@ def verify_current(root):
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
     pin_head(root)
+    require(all(mode(root, path) == '100644' and ordinary(root, path) == value
+                for path, value in proof_files.items()),
+            'Composition proof file changed during verification')
     return [
         {'name': 'Exact common ancestor and all four component commit/tree/ancestry identities', 'passed': True},
         {'name': 'Current or exactly reconstructed bytes and executable modes match the component union for ' + str(len(expected)) + ' retained files', 'passed': True},
@@ -10501,6 +12274,20 @@ def verify_current(root):
         {'name': 'Exact Application Sent-copy fixture successor restores the APPEND protocol around the larger MIME assertion after preserved run 44913252537', 'passed': True},
         {'name': 'Exact Application SMTP-fixture successor retains byte-exact attachment acceptance after preserved run 44890368753', 'passed': True},
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
+        {'name': 'Exact Diagnostic artifact batch retains one full current-source proof before the finite isolated historical comparisons', 'passed': True},
+        {'name': 'Exact Diagnostic artifact review successor preserves named failures; the immutable blob-batch successor retains complete source reconstruction with bounded tree state', 'passed': True},
+        {'name': 'Exact Diagnostic tracked-source preflight refuses staged and unstaged non-proof drift before historical projection', 'passed': True},
+        {'name': 'Exact tracked-source correction refuses offsetting index/worktree drift and binds staged proof bytes and modes', 'passed': True},
+        {'name': 'Exact untracked-source preflight refuses non-ignored additions before projection while retaining generated-cache compatibility', 'passed': True},
+        {'name': 'Exact protected-tree preflight inventories ignored inputs under every tracked top-level directory', 'passed': True},
+        {'name': 'Exact canonical receipt digest rejects all non-self-binding content drift before historical projection', 'passed': True},
+        {'name': 'Exact strict receipt parser refuses duplicate names and non-finite constants before validation', 'passed': True},
+        {'name': 'Exact current receipt consumers share one strict loader and bracket proof bytes before and after use', 'passed': True},
+        {'name': 'Exact projection-chain successor brackets mutable source at each outer chain while nested pure calls reuse those bytes', 'passed': True},
+        {'name': 'Exact projection-chain transaction successor publishes nested cache entries only after the outer bracket succeeds', 'passed': True},
+        {'name': 'Exact projection-cache bound successor constrains transaction staging and defers committed LRU recency until outer success', 'passed': True},
+        {'name': 'Exact projection transaction-order successor atomically publishes one bounded chronological overlay and resets it on refusal', 'passed': True},
+        {'name': 'Exact projection refusal-reset successor republishes validated full-cache hits and resets on every nested opening failure', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
@@ -10516,6 +12303,124 @@ def verify_current(root):
         {'name': 'Unknown, missing, symlink and ignored source additions are refused', 'passed': True},
         {'name': 'Original standalone proofs, receipts, historical failures and workflow bodies are unchanged', 'passed': True},
     ]
+
+
+@contextmanager
+def verification_projection_cache(root):
+    """Bound repeated pure projections to one immutable verification pass.
+
+    Projection functions receive exact bytes and return exact predecessor bytes.
+    The full proof invokes the same functions hundreds of thousands of times for
+    identical path/byte pairs. Cache only those exact calls for this one proof
+    and retain a strict LRU bound. Each outer projection chain is bracketed by
+    fresh worktree reads; nested pure projections for that same root/path reuse
+    the already-bracketed exact bytes in their cache keys. A different root or
+    path starts its own bracket, so mutable-source changes cannot reuse results.
+    """
+    global _LAST_PROJECTION_CACHE_MAX
+    root = Path(root)
+    literal = os.fspath(root)
+    resolved = str(root.resolve())
+    require(literal not in _ACTIVE_ROOT_KEYS,
+            'Nested composition projection cache is forbidden')
+    _ACTIVE_ROOT_KEYS[literal] = resolved
+    cached = OrderedDict()
+    originals = {}
+    active = []
+    maximum = 0
+
+    def bind(name, function):
+        @functools.wraps(function)
+        def retained(root_value, path, current):
+            nonlocal maximum
+            parent = active[-1] if active else None
+            outermost = parent is None
+            transaction = ({'overlay': OrderedDict()}
+                           if outermost else parent[3])
+            overlay = transaction['overlay']
+            try:
+                call_root = root_key(root_value)
+                require(isinstance(path, str) and isinstance(current, bytes),
+                        'Malformed cached composition projection')
+                nested = (parent is not None
+                          and parent[0] == call_root and parent[1] == path)
+                # The outer call reads mutable checkout bytes afresh and brackets
+                # the complete nested pure-projection chain. Nested calls reuse
+                # only those exact already-bracketed bytes; a different root/path
+                # establishes an independent fresh-read bracket.
+                live = parent[2] if nested else ordinary(Path(root_value), path)
+                key = (call_root, name, path, len(current), digest(current),
+                       len(live), digest(live))
+                if key in overlay:
+                    kind, result = overlay.pop(key)
+                    overlay[key] = (kind, result)
+                elif key in cached:
+                    result = cached[key]
+                    overlay[key] = ('cached', result)
+                else:
+                    frame = (call_root, path, live, transaction)
+                    active.append(frame)
+                    try:
+                        result = function(root_value, path, current)
+                    finally:
+                        require(active.pop() is frame,
+                                'Composition projection bracket changed')
+                    require(isinstance(result, bytes),
+                            'Composition projection did not return exact bytes: ' + name)
+                    overlay[key] = ('pending', result)
+                while len(overlay) > _PROJECTION_CACHE_LIMIT:
+                    overlay.popitem(last=False)
+                maximum = max(maximum, len(overlay))
+                if not nested:
+                    require(ordinary(Path(root_value), path) == live,
+                            'Composition source changed during cached projection: '
+                            + path)
+                # No nested result becomes reusable outside this chain until
+                # the outer fresh-read bracket has succeeded. A refused chain
+                # discards every result staged since its entry checkpoint.
+                if outermost:
+                    for overlay_key, (kind, overlay_result) in overlay.items():
+                        require(kind in {'pending', 'cached'},
+                                'Unknown projection transaction entry')
+                        cached[overlay_key] = overlay_result
+                        cached.move_to_end(overlay_key)
+                        while len(cached) > _PROJECTION_CACHE_LIMIT:
+                            cached.popitem(last=False)
+                    if key in cached:
+                        cached.move_to_end(key)
+                    maximum = max(maximum, len(cached))
+                return result
+            except BaseException:
+                # A caught nested refusal cannot retain touches, values or
+                # evictions from the rejected subchain. Reset the bounded
+                # transaction view; global committed entries remain untouched.
+                overlay.clear()
+                raise
+        return retained
+
+    for name, function in list(globals().items()):
+        if (name.startswith('project_') and inspect.isfunction(function)
+                and tuple(inspect.signature(function).parameters) ==
+                    ('root', 'path', 'current')):
+            originals[name] = function
+            globals()[name] = bind(name, function)
+    try:
+        yield
+    finally:
+        for name, function in originals.items():
+            globals()[name] = function
+        try:
+            require(str(root.resolve()) == resolved,
+                    'Composition root changed during verification')
+        finally:
+            _ACTIVE_ROOT_KEYS.pop(literal, None)
+            _LAST_PROJECTION_CACHE_MAX = maximum
+
+
+def verify_current(root):
+    with verification_projection_cache(root):
+        with immutable_blob_batch(root):
+            return _verify_current(root)
 
 
 def projection(root, component):
@@ -10609,10 +12514,14 @@ def account_call(root, module, method, *, path=None, value=None, side=None):
             # still expects its exact pre-repair bytes. Project only through
             # that already-validated finite receipt; runtime keeps current bytes.
             require(value == ordinary(root, path), 'Unreviewed current core comparison input: ' + path)
-            data = validate_receipt(json.loads(ordinary(root, RECEIPT)), ordinary(root, VERIFIER))
+            data, proof_files = current_proof_receipt(root)
             value = reconstruct_repair(data, path, value)
             require(value == git(root, 'cat-file', 'blob', COMPONENTS['account']['commit'] + ':' + path),
                     'Core comparison repair does not retain the exact account component: ' + path)
+            require(all(mode(root, proof_path) == '100644'
+                        and ordinary(root, proof_path) == proof_value
+                        for proof_path, proof_value in proof_files.items()),
+                    'Composition proof file changed during account projection')
         if method in {'project', 'predecessor'}:
             # Callers must supply actual current bytes, never arbitrary restored
             # code. Equality to the reviewed union was established just above.
@@ -10653,6 +12562,63 @@ def validate(root):
         require(isinstance(original, list) and original and all(row['passed'] is True for row in original),
                 'Incomplete historical source proof: ' + module)
         checks.extend({'name': component + ' source: ' + row['name'], 'passed': True} for row in original)
+    return checks
+
+
+def _extend_provider_artifact_rows(checks, batches):
+    """Retain structured historical outcomes, including their exact failures."""
+    require(isinstance(checks, list) and isinstance(batches, list),
+            'Malformed provider artifact outcome collection')
+    for rows in batches:
+        require(isinstance(rows, list) and rows,
+                'Incomplete provider artifact historical validation')
+        for row in rows:
+            require(isinstance(row, dict) and set(row) == {'name', 'passed'}
+                    and isinstance(row['name'], str) and bool(row['name'])
+                    and type(row['passed']) is bool,
+                    'Malformed provider artifact historical outcome')
+        checks.extend(rows)
+
+
+def provider_browser_artifact_validations(root, validations):
+    """Verify current source once, then run the exact historical artifact comparisons.
+
+    The historical calls below execute only in the disposable, detached account
+    component checkout created by ``original_call``.  They cannot read current
+    worktree bytes, so repeating the complete current-source proof before every
+    call adds no coverage.  Keep the request finite and ordered so this batching
+    boundary cannot become a general verification bypass.
+    """
+    expected = (
+        ('standalone_repair_provenance',
+         ('docs/STANDALONE_ACCEPTANCE_REPAIRS.json',)),
+        ('combined_repair_provenance',
+         ('docs/COMBINED_ACCEPTANCE_REPAIR_SOURCE.json',
+          'docs/COMBINED_ACCEPTANCE_REMAINING_SOURCE.json')),
+    )
+    require(isinstance(validations, tuple) and len(validations) == len(expected),
+            'Incomplete provider artifact validation batch')
+    requests = []
+    for request in validations:
+        require(isinstance(request, tuple) and len(request) == 2,
+                'Malformed provider artifact validation request')
+        validator, receipt_paths = request
+        require(callable(validator) and validator.__name__ == 'validate'
+                and isinstance(receipt_paths, tuple),
+                'Unreviewed provider artifact validator')
+        requests.append((validator.__module__, receipt_paths))
+    require(tuple(requests) == expected,
+            'Unreviewed provider artifact validation batch')
+
+    checks = validate(root)
+    batches = [original_call(root, 'account',
+                             'provider_browser_fixture_provenance', 'validate')]
+    batches.extend(
+        original_call(root, 'account', 'provider_browser_fixture_provenance',
+                      'projected_validation', callback=module, paths=list(paths))
+        for module, paths in requests
+    )
+    _extend_provider_artifact_rows(checks, batches)
     return checks
 
 

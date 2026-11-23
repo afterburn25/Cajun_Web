@@ -29,7 +29,11 @@ def main():
     strict = reg.discover_strict_modules()
     registry = [m[1] for m in reg.MODULES]
     ok('Registry lists every strict *_cases module in order', registry == strict)
-    ok('Registry covers all 60 current strict modules', len(registry) == 60)
+    ok('Registry covers all 61 current strict modules', len(registry) == 61)
+    reply = next(m for m in reg.MODULES if m[1] == 'mail_reply_cases')
+    ok('Reply/Forward diagnostics retain the message and submission preparation chains',
+       reply == ('mail-reply', 'mail_reply_cases', 'run_browser', 'mail',
+                 ['mail-message', 'mail-submissions']))
     ok('Late finance/contact/identity modules cannot be omitted', registry[-4:] == [
         'software_commerce_cases', 'license_financing_cases', 'contacts_cases',
         'client_identity_cases'])
@@ -52,7 +56,7 @@ def main():
     ok('Every group has a repair assignment', all(g in reg.ASSIGNMENTS for g in reg.GROUPS))
     required_groups = {'website', 'installer', 'portal', 'billing', 'mail', 'stackcp', 'security'}
     ok('Required categories are covered', required_groups <= set(reg.GROUPS))
-    expected_counts = {'website': 2, 'installer': 2, 'portal': 4, 'billing': 9, 'mail': 9,
+    expected_counts = {'website': 2, 'installer': 2, 'portal': 4, 'billing': 9, 'mail': 10,
                        'twentyi-inventory': 9, 'twentyi-domains': 9,
                        'twentyi-packages': 10, 'stackcp': 2, 'security': 4}
     ok('Exact current group partition is retained',
@@ -145,6 +149,9 @@ def main():
        {'provider-settings', 'payments', 'staff'} <= diag.closure({'domain-search'}))
     ok('StackCP access pulls the whole provider chain',
        {'stackcp-prerequisites', 'provider-settings', 'payments', 'staff'} <= diag.closure({'stackcp-access'}))
+    ok('Reply/Forward pulls both exact-message and submission preparation chains',
+       {'mail-message', 'mail-inbox', 'mail-submissions', 'mail-drafts', 'mail-accounts'}
+       <= diag.closure({'mail-reply'}))
     ok('Closure excludes the selected key itself', 'catalog' not in diag.closure({'catalog'}))
     # No requirement cycles (topological check over module edges).
     req = {m[0]: list(m[4]) for m in reg.MODULES}
