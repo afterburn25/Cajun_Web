@@ -129,6 +129,21 @@ def run(root=ROOT):
             del proof.project_cache_probe
         assert not proof._ACTIVE_ROOT_KEYS
     passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
+    proof_drift = (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)
+    assert proof.parse_tracked_source_drift(
+        b'\0'.join(path.encode('utf-8') for path in proof_drift) + b'\0') == proof_drift
+    for label, raw in (
+        ('missing NUL terminator', proof.VERIFIER.encode('utf-8')),
+        ('empty path', b'\0'),
+        ('duplicate path', proof.VERIFIER.encode('utf-8') + b'\0'
+         + proof.VERIFIER.encode('utf-8') + b'\0'),
+        ('noncanonical path', b'tests//combined_source_composition.py\0'),
+        ('parent traversal', b'../combined_source_composition.py\0'),
+        ('non-UTF-8 path', b'tests/\xff.py\0'),
+    ):
+        refuses('Tracked-source preflight refuses ' + label,
+                lambda raw=raw: proof.parse_tracked_source_drift(raw))
+    passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
@@ -178,6 +193,9 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
+        assert set(proof.tracked_source_preflight(fixture)) <= {
+            proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
+        passed('Tracked-source preflight permits only already-validated proof-file drift')
 
         def altered_diagnostic_artifact_batch_identity(attribute):
             original = getattr(proof, attribute)
@@ -346,6 +364,40 @@ def run(root=ROOT):
                     target.unlink()
                 target.write_bytes(original)
                 target.chmod(permission)
+
+        early_path = 'site/app/billing/software_client.php'
+        original_validator = proof.validate_application_reply_folder_route
+        reached_historical_validation = []
+
+        def unexpected_historical_validation(root):
+            reached_historical_validation.append(root)
+            raise AssertionError('Historical validation ran before tracked-source refusal')
+
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            refuses('Refuses unstaged tracked drift before historical validation',
+                    lambda: modified(
+                        early_path,
+                        lambda target: target.write_bytes(
+                            target.read_bytes() + b'\n# preflight mutation\n')))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Tracked-source preflight precedes expensive historical validation')
+
+        target = fixture / early_path
+        original = target.read_bytes()
+        permission = target.stat().st_mode & 0o777
+        try:
+            target.write_bytes(original + b'\n# staged preflight mutation\n')
+            subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
+            refuses('Refuses staged tracked drift before historical projection',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', early_path],
+                           cwd=fixture, check=True)
+            target.write_bytes(original)
+            target.chmod(permission)
 
         for name, path in (
             ('current software authority application', 'site/app/billing/software_client.php'),

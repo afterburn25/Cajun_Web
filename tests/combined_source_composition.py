@@ -2024,7 +2024,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '6c036e3658f50431b13731320ae914bde03553d039f4b7fb89dea1f4e227845d'
+REGRESSION_SHA256 = '19a83d9cb75937f5fcb42cf182c9f320c05d7df9ab00f5d466d57fe4c4ef7cf3'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2284,6 +2284,58 @@ def pin_head(root):
     require(resolved_root not in _PINNED_HEADS or _PINNED_HEADS[resolved_root] == head,
             'Composition HEAD changed during verification')
     _PINNED_HEADS[resolved_root] = head
+
+
+def parse_tracked_source_drift(raw):
+    """Decode one NUL-delimited Git path list without path normalization."""
+    require(isinstance(raw, bytes), 'Malformed tracked-source preflight output')
+    require(not raw or raw.endswith(b'\0'),
+            'Tracked-source preflight output is not NUL terminated')
+    encoded = raw[:-1].split(b'\0') if raw else []
+    if encoded:
+        require(all(encoded) and len(encoded) == len(set(encoded)),
+                'Tracked-source preflight output has an empty or duplicate path')
+    paths = []
+    for value in encoded:
+        try:
+            path = value.decode('utf-8')
+        except UnicodeDecodeError as error:
+            raise AssertionError('Tracked-source preflight path is not UTF-8') from error
+        relative = PurePosixPath(path)
+        require(path and not relative.is_absolute() and '..' not in relative.parts
+                and relative.as_posix() == path,
+                'Unsafe tracked-source preflight path: ' + repr(path))
+        paths.append(path)
+    return tuple(paths)
+
+
+def tracked_source_preflight(root):
+    """Reject non-proof tracked drift before expensive historical projection.
+
+    The receipt, verifier and regression suite are deliberately allowed to be
+    uncommitted while a new proof commit binds its direct implementation
+    parent. Their exact bytes and ordinary modes are validated before this
+    function runs. No other tracked path may differ from the pinned commit.
+    """
+    resolved_root = root_key(root)
+    head = _PINNED_HEADS.get(resolved_root)
+    require(head is not None and re.fullmatch(r'[0-9a-f]{40}', head) is not None,
+            'Tracked-source preflight requires a pinned HEAD')
+    result = subprocess.run([
+        'git', '--no-replace-objects', 'diff', '--no-ext-diff', '--no-renames',
+        '--name-only', '-z', head, '--'], cwd=root, capture_output=True)
+    require(result.returncode == 0 and not result.stderr,
+            'Tracked-source preflight failed: '
+            + result.stderr.decode(errors='replace')[-1500:])
+    paths = parse_tracked_source_drift(result.stdout)
+    allowed = {RECEIPT, VERIFIER, REGRESSION}
+    unexpected = set(paths) - allowed
+    require(not unexpected,
+            'Tracked source changed before composition proof: '
+            + repr(sorted(unexpected)))
+    # Refuse a ref move that raced the pinned-object diff.
+    pin_head(root)
+    return paths
 
 
 def ordinary(root, path):
@@ -10820,9 +10872,19 @@ def project_component_union_source(root, ux09, path, current):
 def _verify_current(root):
     root = Path(root)
     verifier = ordinary(root, VERIFIER)
-    data = validate_receipt(json.loads(ordinary(root, RECEIPT)), verifier)
+    receipt = ordinary(root, RECEIPT)
+    regression = ordinary(root, REGRESSION)
+    proof_files = {VERIFIER: verifier, RECEIPT: receipt, REGRESSION: regression}
+    data = validate_receipt(json.loads(receipt), verifier)
+    require(mode(root, VERIFIER) == mode(root, RECEIPT) == mode(root, REGRESSION) == '100644',
+            'Composition proof file mode changed')
+    require(digest(regression) == REGRESSION_SHA256,
+            'Composition regression changed')
     ensure_history(root)
     pin_head(root)
+    tracked_source_preflight(root)
+    require(all(ordinary(root, path) == value for path, value in proof_files.items()),
+            'Composition proof file changed during tracked-source preflight')
     validate_application_reply_folder_route(root)
     validate_application_sent_copy_fixture_mode(root)
     validate_application_smtp_fixture_bound(root)
@@ -10979,9 +11041,6 @@ def _verify_current(root):
             'Software onboarding source receipt path set changed')
     require(git(root, 'rev-parse', ONBOARDING_BASE + '^{tree}').decode().strip() == ONBOARDING_BASE_TREE,
             'Software onboarding base tree changed')
-    require(mode(root, VERIFIER) == mode(root, RECEIPT) == mode(root, REGRESSION) == '100644',
-            'Composition proof file mode changed')
-    require(digest(ordinary(root, REGRESSION)) == REGRESSION_SHA256, 'Composition regression changed')
     require(git(root, 'rev-parse', REPAIR_BASE + '^{tree}').decode().strip() == REPAIR_BASE_TREE,
             'Failed acceptance checkpoint tree changed')
     git(root, 'merge-base', '--is-ancestor', REPAIR_BASE, 'HEAD')
@@ -11258,6 +11317,8 @@ def _verify_current(root):
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
     pin_head(root)
+    require(all(ordinary(root, path) == value for path, value in proof_files.items()),
+            'Composition proof file changed during verification')
     return [
         {'name': 'Exact common ancestor and all four component commit/tree/ancestry identities', 'passed': True},
         {'name': 'Current or exactly reconstructed bytes and executable modes match the component union for ' + str(len(expected)) + ' retained files', 'passed': True},
