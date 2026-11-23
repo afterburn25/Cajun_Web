@@ -165,10 +165,45 @@ def run(root=ROOT):
                 proof.project_cache_leaf(root, path, value)
             raise AssertionError('synthetic bounded transaction refusal')
 
+        def project_cache_interleaved(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            proof.project_cache_leaf(root, path, b'b')
+            return current
+
+        def project_cache_raise(root, path, current):
+            raise AssertionError('synthetic nested refusal')
+
+        def project_cache_caught_touch(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            try:
+                proof.project_cache_raise(root, path, b'raise')
+            except AssertionError:
+                pass
+            return current
+
+        def project_cache_nested_pending_refuse(root, path, current):
+            proof.project_cache_leaf(root, path, b'c')
+            proof.project_cache_leaf(root, path, b'd')
+            raise AssertionError('synthetic nested pending refusal')
+
+        def project_cache_caught_pending(root, path, current):
+            proof.project_cache_leaf(root, path, b'a')
+            proof.project_cache_leaf(root, path, b'b')
+            try:
+                proof.project_cache_nested_pending_refuse(root, path, b'raise')
+            except AssertionError:
+                pass
+            return current
+
         proof.project_cache_leaf = project_cache_leaf
         proof.project_cache_many = project_cache_many
         proof.project_cache_touch = project_cache_touch
         proof.project_cache_refuse = project_cache_refuse
+        proof.project_cache_interleaved = project_cache_interleaved
+        proof.project_cache_raise = project_cache_raise
+        proof.project_cache_caught_touch = project_cache_caught_touch
+        proof.project_cache_nested_pending_refuse = project_cache_nested_pending_refuse
+        proof.project_cache_caught_pending = project_cache_caught_pending
         proof._PROJECTION_CACHE_LIMIT = 2
         try:
             with proof.verification_projection_cache(fixture_root):
@@ -199,13 +234,51 @@ def run(root=ROOT):
                     fixture_root, 'exact.txt', b'c') == b'c'
             assert leaf_calls == [b'a', b'b', b'c', b'c']
             assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_interleaved(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+            assert leaf_calls == [b'b', b'a']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+                assert proof.project_cache_caught_touch(
+                    fixture_root, 'exact.txt', b'c') == b'c'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'a') == b'a'
+            assert leaf_calls == [b'a', b'b', b'a']
+
+            leaf_calls.clear()
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_caught_pending(
+                    fixture_root, 'exact.txt', b'outer') == b'outer'
+                assert proof.project_cache_leaf(
+                    fixture_root, 'exact.txt', b'b') == b'b'
+            assert leaf_calls == [b'a', b'b', b'c', b'd', b'b']
+            assert proof._LAST_PROJECTION_CACHE_MAX == 2
         finally:
             proof._PROJECTION_CACHE_LIMIT = original_limit
+            del proof.project_cache_caught_pending
+            del proof.project_cache_nested_pending_refuse
+            del proof.project_cache_caught_touch
+            del proof.project_cache_raise
+            del proof.project_cache_interleaved
             del proof.project_cache_refuse
             del proof.project_cache_touch
             del proof.project_cache_many
             del proof.project_cache_leaf
         assert not proof._ACTIVE_ROOT_KEYS
+        passed('Caught nested refusal resets the bounded transaction overlay')
         passed('Transactional projection staging and committed recency retain the strict LRU bound')
     passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
     proof_drift = (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)

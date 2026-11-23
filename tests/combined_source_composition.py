@@ -2124,7 +2124,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'ad0a1caf620540e3d731a6bde7626e0546179919b4d52affa37fef1b9abafea5'
+REGRESSION_SHA256 = '5e541c541e85658fec71dda2a63afbaad42e4abd9000a97726347b0258448991'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12200,11 +12200,9 @@ def verification_projection_cache(root):
             outermost = parent is None
             nested = (parent is not None
                       and parent[0] == call_root and parent[1] == path)
-            transaction = ({'pending': OrderedDict(), 'touches': OrderedDict(),
-                            'sequence': 0} if outermost else parent[3])
-            pending = transaction['pending']
-            touches = transaction['touches']
-            checkpoint = transaction['sequence']
+            transaction = ({'overlay': OrderedDict()}
+                           if outermost else parent[3])
+            overlay = transaction['overlay']
             # The outer call reads mutable checkout bytes afresh and brackets
             # the complete nested pure-projection chain. Nested calls reuse
             # only those exact already-bracketed bytes; a different root/path
@@ -12213,13 +12211,12 @@ def verification_projection_cache(root):
             key = (call_root, name, path, len(current), digest(current),
                    len(live), digest(live))
             try:
-                if key in pending:
-                    result, generation = pending.pop(key)
-                    pending[key] = (result, generation)
+                if key in overlay:
+                    kind, result = overlay.pop(key)
+                    overlay[key] = (kind, result)
                 elif key in cached:
                     result = cached[key]
-                    touches.pop(key, None)
-                    touches[key] = None
+                    overlay[key] = ('cached', result)
                 else:
                     frame = (call_root, path, live, transaction)
                     active.append(frame)
@@ -12230,11 +12227,10 @@ def verification_projection_cache(root):
                                 'Composition projection bracket changed')
                     require(isinstance(result, bytes),
                             'Composition projection did not return exact bytes: ' + name)
-                    transaction['sequence'] += 1
-                    pending[key] = (result, transaction['sequence'])
-                    while len(pending) > _PROJECTION_CACHE_LIMIT:
-                        pending.popitem(last=False)
-                    maximum = max(maximum, len(pending))
+                    overlay[key] = ('pending', result)
+                while len(overlay) > _PROJECTION_CACHE_LIMIT:
+                    overlay.popitem(last=False)
+                maximum = max(maximum, len(overlay))
                 if not nested:
                     require(ordinary(Path(root_value), path) == live,
                             'Composition source changed during cached projection: '
@@ -12243,12 +12239,12 @@ def verification_projection_cache(root):
                 # the outer fresh-read bracket has succeeded. A refused chain
                 # discards every result staged since its entry checkpoint.
                 if outermost:
-                    for touched_key in touches:
-                        if touched_key in cached:
-                            cached.move_to_end(touched_key)
-                    for pending_key, (pending_result, _generation) in pending.items():
-                        cached[pending_key] = pending_result
-                        cached.move_to_end(pending_key)
+                    for overlay_key, (kind, overlay_result) in overlay.items():
+                        if kind == 'pending':
+                            cached[overlay_key] = overlay_result
+                        elif overlay_key not in cached:
+                            continue
+                        cached.move_to_end(overlay_key)
                         while len(cached) > _PROJECTION_CACHE_LIMIT:
                             cached.popitem(last=False)
                     if key in cached:
@@ -12256,10 +12252,10 @@ def verification_projection_cache(root):
                     maximum = max(maximum, len(cached))
                 return result
             except BaseException:
-                for pending_key, (_pending_result, generation) in list(pending.items()):
-                    if generation > checkpoint:
-                        pending.pop(pending_key)
-                transaction['sequence'] = checkpoint
+                # A caught nested refusal cannot retain touches, values or
+                # evictions from the rejected subchain. Reset the bounded
+                # transaction view; global committed entries remain untouched.
+                overlay.clear()
                 raise
         return retained
 
