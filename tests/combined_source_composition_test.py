@@ -344,6 +344,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_protected_tree_preflight_identity(attribute))
 
+        def altered_diagnostic_receipt_content_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_receipt_content_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_RECEIPT_CONTENT_BASE', 'base'),
+            ('DIAGNOSTIC_RECEIPT_CONTENT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_RECEIPT_CONTENT_SOURCE', 'source'),
+            ('DIAGNOSTIC_RECEIPT_CONTENT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic receipt content ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_receipt_content_identity(attribute))
+
         def altered_hosting_inbox_reload_budget_identity(attribute):
             original = getattr(proof, attribute)
             try:

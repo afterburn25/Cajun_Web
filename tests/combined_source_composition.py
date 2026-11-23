@@ -1407,6 +1407,16 @@ DIAGNOSTIC_PROTECTED_TREE_PREFLIGHT_SHA256 = {
     VERIFIER: 'edd5afb67012b3826e1840998865bbe097a6da49021ef4dfd9f47081797585d2',
     REGRESSION: 'e5eed6956ae1c0d49ec7abcd4830b600f9284a7c985d52c4e4404eb26332e921',
 }
+DIAGNOSTIC_RECEIPT_CONTENT_BASE = 'd0dd991fbcaa122a4ea87764230c2b09ffe3d1f6'
+DIAGNOSTIC_RECEIPT_CONTENT_BASE_TREE = '96b147eb1b8fa45929db9a04a6cb462ab88b0f5c'
+DIAGNOSTIC_RECEIPT_CONTENT_SOURCE = '8871796cf325ec66a24c5bb53378c68c2373dab1'
+DIAGNOSTIC_RECEIPT_CONTENT_SOURCE_TREE = '39730fac6e9a4f3fafd3f52167c8b1bbc6ec5236'
+DIAGNOSTIC_RECEIPT_CONTENT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_RECEIPT_CONTENT_SHA256 = {
+    RECEIPT: '6be920b92e8d88a13b91f6c3b839003c39dd808559bf97a71dfc0481df16288f',
+    VERIFIER: 'b9ab3df850afadccf32b86086ace5375d72b2c43ed558d58002e49ac48742792',
+    REGRESSION: '30fa8987f8535ed837e54631156b2794e6bf2bd565cbaf2c8095d4dfcbe98d78',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2064,7 +2074,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '30fa8987f8535ed837e54631156b2794e6bf2bd565cbaf2c8095d4dfcbe98d78'
+REGRESSION_SHA256 = '4fddab0d699d03460b812631f865c4c7ff7b4fac4eb5e55d4def5669db8325f1'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -9174,6 +9184,56 @@ def validate_diagnostic_protected_tree_preflight_source(root):
             'Diagnostic protected-tree preflight implementation or receipt changed')
 
 
+def validate_diagnostic_receipt_content_source(root):
+    """Bind canonical receipt content before historical reconstruction."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_RECEIPT_CONTENT_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_RECEIPT_CONTENT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_RECEIPT_CONTENT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_RECEIPT_CONTENT_SOURCE_TREE,
+            'Diagnostic receipt-content source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_RECEIPT_CONTENT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_RECEIPT_CONTENT_BASE],
+            'Diagnostic receipt-content source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_RECEIPT_CONTENT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_RECEIPT_CONTENT_BASE,
+                  DIAGNOSTIC_RECEIPT_CONTENT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_RECEIPT_CONTENT_MODIFIED)],
+            'Diagnostic receipt-content source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_RECEIPT_CONTENT_SOURCE)
+    for path in sorted(DIAGNOSTIC_RECEIPT_CONTENT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_RECEIPT_CONTENT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_RECEIPT_CONTENT_SHA256[path],
+                'Diagnostic receipt-content source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_RECEIPT_CONTENT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_RECEIPT_CONTENT_SOURCE + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_RECEIPT_CONTENT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'def receipt_content_digest(data):' in source_verifier
+            and b"'verifier_sha256': '',\n        'regression_sha256': '',"
+                in source_verifier
+            and b'receipt_content_digest(receipt_data) == RECEIPT_CONTENT_SHA256'
+                in source_verifier
+            and b'Refuses changed canonical receipt content before historical validation'
+                in source_regression
+            and b'Canonical receipt content is bound before historical validation'
+                in source_regression,
+            'Diagnostic receipt-content implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11329,6 +11389,7 @@ def _verify_current(root):
     validate_diagnostic_tracked_preflight_cancellation_source(root)
     validate_diagnostic_untracked_preflight_source(root)
     validate_diagnostic_protected_tree_preflight_source(root)
+    validate_diagnostic_receipt_content_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -11724,6 +11785,7 @@ def _verify_current(root):
         {'name': 'Exact tracked-source correction refuses offsetting index/worktree drift and binds staged proof bytes and modes', 'passed': True},
         {'name': 'Exact untracked-source preflight refuses non-ignored additions before projection while retaining generated-cache compatibility', 'passed': True},
         {'name': 'Exact protected-tree preflight inventories ignored inputs under every tracked top-level directory', 'passed': True},
+        {'name': 'Exact canonical receipt digest rejects all non-self-binding content drift before historical projection', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
