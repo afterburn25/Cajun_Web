@@ -1417,6 +1417,16 @@ DIAGNOSTIC_RECEIPT_CONTENT_SHA256 = {
     VERIFIER: 'b9ab3df850afadccf32b86086ace5375d72b2c43ed558d58002e49ac48742792',
     REGRESSION: '30fa8987f8535ed837e54631156b2794e6bf2bd565cbaf2c8095d4dfcbe98d78',
 }
+DIAGNOSTIC_STRICT_RECEIPT_BASE = '761164ac54ad731d9aecb926e81ec57ff880f4f4'
+DIAGNOSTIC_STRICT_RECEIPT_BASE_TREE = 'abb8714b0fa93a9fbae7eed063b15662aa73665d'
+DIAGNOSTIC_STRICT_RECEIPT_SOURCE = '8c5ae13066a21b6b39b5c42ea03086266e7a2f2e'
+DIAGNOSTIC_STRICT_RECEIPT_SOURCE_TREE = 'a56ea559f5e91413b330606eb129fab3b5d2e192'
+DIAGNOSTIC_STRICT_RECEIPT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_STRICT_RECEIPT_SHA256 = {
+    RECEIPT: 'd04e4d42224193c898bff083bc847ca54263edbf5d0842903f2f55aea16f3da6',
+    VERIFIER: '75f368aab373e7d9fa95ac04b17cf2e8ce469d95dcf058658d4e59ee6a7f4710',
+    REGRESSION: 'bbd2b8694dbe3a97ca0ec3aa8e55a9b8297d8e289cb86d29d547b72618d9f3a9',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2074,7 +2084,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'bbd2b8694dbe3a97ca0ec3aa8e55a9b8297d8e289cb86d29d547b72618d9f3a9'
+REGRESSION_SHA256 = '2f1c79687da2d095748552752bb513f496c79be90dd897b3b4af7dc4ebc4dde8'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -9257,6 +9267,57 @@ def validate_diagnostic_receipt_content_source(root):
             'Diagnostic receipt-content implementation or receipt changed')
 
 
+def validate_diagnostic_strict_receipt_source(root):
+    """Bind duplicate-name and non-finite receipt refusal."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_STRICT_RECEIPT_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_STRICT_RECEIPT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_STRICT_RECEIPT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_STRICT_RECEIPT_SOURCE_TREE,
+            'Diagnostic strict-receipt source tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_STRICT_RECEIPT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_STRICT_RECEIPT_BASE],
+            'Diagnostic strict-receipt source parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_STRICT_RECEIPT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_STRICT_RECEIPT_BASE,
+                  DIAGNOSTIC_STRICT_RECEIPT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_STRICT_RECEIPT_MODIFIED)],
+            'Diagnostic strict-receipt source changed another path')
+    source_entries = entries(root, DIAGNOSTIC_STRICT_RECEIPT_SOURCE)
+    for path in sorted(DIAGNOSTIC_STRICT_RECEIPT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_STRICT_RECEIPT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source) == DIAGNOSTIC_STRICT_RECEIPT_SHA256[path],
+                'Diagnostic strict-receipt source changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_STRICT_RECEIPT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_STRICT_RECEIPT_SOURCE + ':' + REGRESSION)
+    source_receipt = strict_json_loads(git(root, 'cat-file', 'blob',
+                                           DIAGNOSTIC_STRICT_RECEIPT_SOURCE
+                                           + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and b'def strict_json_object(pairs):' in source_verifier
+            and b'object_pairs_hook=strict_json_object' in source_verifier
+            and b'parse_constant=reject_json_constant' in source_verifier
+            and b'receipt_data = strict_json_loads(receipt)' in source_verifier
+            and b"refuses('Refuses composition receipt ' + label," in source_regression
+            and b"('top-level duplicate name'," in source_regression
+            and b"('nested duplicate name'," in source_regression
+            and b"('non-finite constant'," in source_regression
+            and b'Strict receipt parsing precedes historical validation'
+                in source_regression,
+            'Diagnostic strict-receipt implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -11413,6 +11474,7 @@ def _verify_current(root):
     validate_diagnostic_untracked_preflight_source(root)
     validate_diagnostic_protected_tree_preflight_source(root)
     validate_diagnostic_receipt_content_source(root)
+    validate_diagnostic_strict_receipt_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -11809,6 +11871,7 @@ def _verify_current(root):
         {'name': 'Exact untracked-source preflight refuses non-ignored additions before projection while retaining generated-cache compatibility', 'passed': True},
         {'name': 'Exact protected-tree preflight inventories ignored inputs under every tracked top-level directory', 'passed': True},
         {'name': 'Exact canonical receipt digest rejects all non-self-binding content drift before historical projection', 'passed': True},
+        {'name': 'Exact strict receipt parser refuses duplicate names and non-finite constants before validation', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
