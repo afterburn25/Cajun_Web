@@ -2002,7 +2002,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'd9f3933bcd55269b785cd9c8b797664c70a277d18313c9cbdfc727b16f53f34d'
+REGRESSION_SHA256 = 'f81ff547d94569e0cc9ca12d69d662765db6399d749500322546b0d75f046a90'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -11117,12 +11117,17 @@ def verification_projection_cache(root):
             key = (call_root, name, path, len(current), digest(current),
                    len(live), digest(live))
             if key in cached:
-                result = cached.pop(key)
-                cached[key] = result
+                result = cached[key]
+                require(ordinary(Path(root_value), path) == live,
+                        'Composition source changed during cached projection: '
+                        + path)
+                cached.move_to_end(key)
                 return result
             result = function(root_value, path, current)
             require(isinstance(result, bytes),
                     'Composition projection did not return exact bytes: ' + name)
+            require(ordinary(Path(root_value), path) == live,
+                    'Composition source changed during projection: ' + path)
             cached[key] = result
             while len(cached) > _PROJECTION_CACHE_LIMIT:
                 cached.popitem(last=False)

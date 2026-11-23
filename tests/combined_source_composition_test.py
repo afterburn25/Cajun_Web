@@ -81,12 +81,54 @@ def run(root=ROOT):
         fixture_root = Path(folder)
         fixture_path = fixture_root / 'exact.txt'
         fixture_path.write_bytes(b'initial exact bytes')
-        with proof.verification_projection_cache(fixture_root):
-            assert proof.ordinary(fixture_root, 'exact.txt') == b'initial exact bytes'
-            fixture_path.write_bytes(b'changed during proof')
-            assert proof.ordinary(fixture_root, 'exact.txt') == b'changed during proof'
+        second_root = fixture_root / 'second'
+        second_root.mkdir()
+        (second_root / 'exact.txt').write_bytes(b'initial exact bytes')
+        calls = []
+
+        def project_cache_probe(root, path, current):
+            calls.append((str(Path(root).resolve()), path, current))
+            return proof.ordinary(root, path)
+
+        proof.project_cache_probe = project_cache_probe
+        try:
+            with proof.verification_projection_cache(fixture_root):
+                assert proof.project_cache_probe(
+                    fixture_root, 'exact.txt', b'input') == b'initial exact bytes'
+                assert proof.project_cache_probe(
+                    fixture_root, 'exact.txt', b'input') == b'initial exact bytes'
+                assert len(calls) == 1
+                fixture_path.write_bytes(b'changed during proof')
+                assert proof.project_cache_probe(
+                    fixture_root, 'exact.txt', b'input') == b'changed during proof'
+                assert len(calls) == 2
+                assert proof.project_cache_probe(
+                    second_root, 'exact.txt', b'input') == b'initial exact bytes'
+                assert len(calls) == 3
+        finally:
+            del proof.project_cache_probe
+        original_ordinary = proof.ordinary
+        reads = []
+
+        def racing_ordinary(root, path):
+            if Path(root) == fixture_root and path == 'exact.txt':
+                reads.append(path)
+                return (b'changed during proof' if len(reads) == 1
+                        else b'raced projection bytes')
+            return original_ordinary(root, path)
+
+        proof.project_cache_probe = project_cache_probe
+        proof.ordinary = racing_ordinary
+        try:
+            with proof.verification_projection_cache(fixture_root):
+                refuses('Bound projection cache refuses a mutable-source race',
+                        lambda: proof.project_cache_probe(
+                            fixture_root, 'exact.txt', b'raced input'))
+        finally:
+            proof.ordinary = original_ordinary
+            del proof.project_cache_probe
         assert not proof._ACTIVE_ROOT_KEYS
-    passed('Bound projection cache preserves fresh mutable-worktree reads')
+    passed('Bound projection cache preserves fresh reads, invalidation and root isolation')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
