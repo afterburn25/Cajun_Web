@@ -2044,7 +2044,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '2dc8f1cc6284276a0ce694135656ee5c49a69992523d0f14b7884343625d7b69'
+REGRESSION_SHA256 = 'a1a7e3dda485a60ccec2edb8547f284255ec48b0aac027d5e63adedda20b7191'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2369,6 +2369,16 @@ def tracked_source_preflight(root, proof_files):
     require(not unexpected,
             'Tracked source changed before composition proof: '
             + repr(sorted(unexpected)))
+    result = subprocess.run([
+        'git', '--no-replace-objects', 'ls-files', '--others',
+        '--exclude-standard', '-z', '--'], cwd=root, capture_output=True)
+    require(result.returncode == 0 and not result.stderr,
+            'Untracked-source preflight failed: '
+            + result.stderr.decode(errors='replace')[-1500:])
+    untracked = set(parse_tracked_source_drift(result.stdout))
+    require(not untracked - NARRATIVES,
+            'Untracked source present before composition proof: '
+            + repr(sorted(untracked - NARRATIVES)))
     for path in set(staged_paths) & allowed:
         result = subprocess.run(
             ['git', '--no-replace-objects', 'ls-files', '--stage', '-z', '--', path],

@@ -532,7 +532,15 @@ def run(root=ROOT):
             finally:
                 target.unlink()
 
-        refuses('Refuses an untracked additional source file', lambda: addition('tests/unreviewed_composition.py'))
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            refuses('Refuses an untracked additional source file',
+                    lambda: addition('tests/unreviewed_composition.py'))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Untracked-source preflight precedes expensive historical validation')
         refuses('Refuses a hidden additional shipping file', lambda: addition('site/.unreviewed-composition.php'))
 
         for path in sorted(proof.UX09_ADDITIONS):
