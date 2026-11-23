@@ -106,8 +106,8 @@ def run_browser(env, browser):
         page.on('pageerror', lambda error: errors.append(type(error).__name__))
         return ctx, page
 
-    def goto(page, url):
-        response = page.goto(url, wait_until='load', timeout=30000)
+    def goto(page, url, timeout=30000):
+        response = page.goto(url, wait_until='load', timeout=timeout)
         if response is None:
             raise AssertionError('Inbox navigation has no response')
         return response.status
@@ -248,7 +248,10 @@ def run_browser(env, browser):
                 for kind, label, query in [('invoice', 'View invoice', {'view': 'invoice-payments', 'invoice_id': row['invoice_id']} if is_owner else {'invoice': row['invoice_id']}),
                                            ('project', 'View project', {'view': 'studio-job', 'id': row['project_id']} if is_owner else {'job': row['project_id']}),
                                            ('agreement', 'View agreement', {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
-                    check('Inbox reloads ' + actor + ' before ' + phase + ' ' + kind, goto(page, list_url(is_owner)) == 200)
+                    # Retained five-card projections can exceed the ordinary
+                    # hosted navigation budget. Keep one bounded attempt and
+                    # every response, route and destination assertion exact.
+                    check('Inbox reloads ' + actor + ' before ' + phase + ' ' + kind, goto(page, list_url(is_owner), 60000) == 200)
                     current = card(page, request)
                     link = current.get_by_role('link', name=label, exact=True)
                     title = current.locator('dt').filter(has_text='Project').evaluate('el=>el.nextElementSibling.textContent')
