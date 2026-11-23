@@ -508,6 +508,21 @@ def run(root=ROOT):
             subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', proof.REGRESSION],
                            cwd=fixture, check=True)
 
+        def remove_receipt_inverse(target):
+            data = json.loads(target.read_bytes())
+            data['adapters']['tests/tickets_integration_contract.py']['edits'].pop()
+            target.write_text(json.dumps(data))
+
+        reached_historical_validation.clear()
+        proof.validate_application_reply_folder_route = unexpected_historical_validation
+        try:
+            refuses('Refuses changed canonical receipt content before historical validation',
+                    lambda: modified(proof.RECEIPT, remove_receipt_inverse))
+            assert not reached_historical_validation
+        finally:
+            proof.validate_application_reply_folder_route = original_validator
+        passed('Canonical receipt content is bound before historical validation')
+
         for name, path in (
             ('current software authority application', 'site/app/billing/software_client.php'),
             ('current finance application', 'site/app/billing/finance_subscription.php'),
