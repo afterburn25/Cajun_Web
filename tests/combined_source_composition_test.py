@@ -193,7 +193,10 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
-        assert set(proof.tracked_source_preflight(fixture)) <= {
+        fixture_proof_files = {
+            path: proof.ordinary(fixture, path)
+            for path in (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)}
+        assert set(proof.tracked_source_preflight(fixture, fixture_proof_files)) <= {
             proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
         passed('Tracked-source preflight permits only already-validated proof-file drift')
 
@@ -416,6 +419,40 @@ def run(root=ROOT):
                            cwd=fixture, check=True)
             target.write_bytes(original)
             target.chmod(permission)
+
+        try:
+            target.write_bytes(original + b'\n# staged cancellation mutation\n')
+            subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
+            target.write_bytes(original)
+            refuses('Refuses offsetting staged and unstaged tracked drift',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', early_path],
+                           cwd=fixture, check=True)
+            target.write_bytes(original)
+            target.chmod(permission)
+
+        proof_target = fixture / proof.RECEIPT
+        proof_original = proof_target.read_bytes()
+        try:
+            proof_target.write_bytes(proof_original + b'\n')
+            subprocess.run(['git', 'add', '--', proof.RECEIPT], cwd=fixture, check=True)
+            proof_target.write_bytes(proof_original)
+            refuses('Refuses staged proof bytes that differ from validated worktree bytes',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', proof.RECEIPT],
+                           cwd=fixture, check=True)
+            proof_target.write_bytes(proof_original)
+
+        try:
+            subprocess.run(['git', 'update-index', '--chmod=+x', '--', proof.REGRESSION],
+                           cwd=fixture, check=True)
+            refuses('Refuses a staged executable mode for a proof file',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', proof.REGRESSION],
+                           cwd=fixture, check=True)
 
         for name, path in (
             ('current software authority application', 'site/app/billing/software_client.php'),

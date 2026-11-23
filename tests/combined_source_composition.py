@@ -2034,7 +2034,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '507ba94ac430514b72d70abcea6448f856d9ed6724f92dd58508230a5f4b3e68'
+REGRESSION_SHA256 = 'ba167d78d0fc2ca2464954b7cec00c02d6b9f7c09481f493e9e6d9d99fae2232'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -2319,7 +2319,7 @@ def parse_tracked_source_drift(raw):
     return tuple(paths)
 
 
-def tracked_source_preflight(root):
+def tracked_source_preflight(root, proof_files):
     """Reject non-proof tracked drift before expensive historical projection.
 
     The receipt, verifier and regression suite are deliberately allowed to be
@@ -2331,18 +2331,53 @@ def tracked_source_preflight(root):
     head = _PINNED_HEADS.get(resolved_root)
     require(head is not None and re.fullmatch(r'[0-9a-f]{40}', head) is not None,
             'Tracked-source preflight requires a pinned HEAD')
-    result = subprocess.run([
-        'git', '--no-replace-objects', 'diff', '--no-ext-diff', '--no-renames',
-        '--name-only', '-z', head, '--'], cwd=root, capture_output=True)
-    require(result.returncode == 0 and not result.stderr,
-            'Tracked-source preflight failed: '
-            + result.stderr.decode(errors='replace')[-1500:])
-    paths = parse_tracked_source_drift(result.stdout)
+    require(isinstance(proof_files, dict)
+            and set(proof_files) == {RECEIPT, VERIFIER, REGRESSION}
+            and all(isinstance(value, bytes) for value in proof_files.values()),
+            'Tracked-source preflight requires exact proof bytes')
+    paths = []
+    staged_paths = ()
+    for label, arguments in (
+        ('staged', ('diff', '--cached', '--no-ext-diff', '--no-renames',
+                    '--name-only', '-z', head, '--')),
+        ('unstaged', ('diff', '--no-ext-diff', '--no-renames',
+                      '--name-only', '-z', '--')),
+    ):
+        result = subprocess.run(
+            ['git', '--no-replace-objects', *arguments],
+            cwd=root, capture_output=True)
+        require(result.returncode == 0 and not result.stderr,
+                'Tracked-source ' + label + ' preflight failed: '
+                + result.stderr.decode(errors='replace')[-1500:])
+        parsed = parse_tracked_source_drift(result.stdout)
+        paths.extend(parsed)
+        if label == 'staged':
+            staged_paths = parsed
+    paths = tuple(sorted(set(paths)))
     allowed = {RECEIPT, VERIFIER, REGRESSION}
     unexpected = set(paths) - allowed
     require(not unexpected,
             'Tracked source changed before composition proof: '
             + repr(sorted(unexpected)))
+    for path in set(staged_paths) & allowed:
+        result = subprocess.run(
+            ['git', '--no-replace-objects', 'ls-files', '--stage', '-z', '--', path],
+            cwd=root, capture_output=True)
+        require(result.returncode == 0 and not result.stderr
+                and result.stdout.endswith(b'\0')
+                and result.stdout.count(b'\0') == 1,
+                'Tracked-source preflight found a malformed staged proof entry: ' + path)
+        try:
+            metadata, encoded_path = result.stdout[:-1].split(b'\t', 1)
+            permission, oid, stage = metadata.decode('ascii').split(' ')
+        except (UnicodeDecodeError, ValueError) as error:
+            raise AssertionError(
+                'Tracked-source preflight found a malformed staged proof entry: '
+                + path) from error
+        require(encoded_path == path.encode('utf-8') and permission == '100644'
+                and stage == '0' and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
+                and git(root, 'cat-file', 'blob', oid) == proof_files[path],
+                'Staged proof entry differs from validated bytes or mode: ' + path)
     # Refuse a ref move that raced the pinned-object diff.
     pin_head(root)
     return paths
@@ -10954,8 +10989,9 @@ def _verify_current(root):
             'Composition regression changed')
     ensure_history(root)
     pin_head(root)
-    tracked_source_preflight(root)
-    require(all(ordinary(root, path) == value for path, value in proof_files.items()),
+    tracked_source_preflight(root, proof_files)
+    require(all(mode(root, path) == '100644' and ordinary(root, path) == value
+                for path, value in proof_files.items()),
             'Composition proof file changed during tracked-source preflight')
     validate_application_reply_folder_route(root)
     validate_application_sent_copy_fixture_mode(root)
@@ -11390,7 +11426,8 @@ def _verify_current(root):
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
     pin_head(root)
-    require(all(ordinary(root, path) == value for path, value in proof_files.items()),
+    require(all(mode(root, path) == '100644' and ordinary(root, path) == value
+                for path, value in proof_files.items()),
             'Composition proof file changed during verification')
     return [
         {'name': 'Exact common ancestor and all four component commit/tree/ancestry identities', 'passed': True},
