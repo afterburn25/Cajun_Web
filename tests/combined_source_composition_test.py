@@ -269,6 +269,24 @@ def run(root=ROOT):
                     lambda attribute=attribute:
                     altered_diagnostic_projection_cache_race_identity(attribute))
 
+        def altered_diagnostic_tracked_preflight_identity(attribute):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                proof.validate_diagnostic_tracked_preflight_source(fixture)
+            finally:
+                setattr(proof, attribute, original)
+
+        for attribute, label in (
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_BASE', 'base'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_BASE_TREE', 'base tree'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE', 'source'),
+            ('DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE_TREE', 'source tree'),
+        ):
+            refuses('Refuses a substituted diagnostic tracked preflight ' + label,
+                    lambda attribute=attribute:
+                    altered_diagnostic_tracked_preflight_identity(attribute))
+
         def altered_hosting_inbox_reload_budget_identity(attribute):
             original = getattr(proof, attribute)
             try:

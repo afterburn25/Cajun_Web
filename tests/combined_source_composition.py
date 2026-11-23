@@ -1367,6 +1367,16 @@ DIAGNOSTIC_PROJECTION_CACHE_RACE_SHA256 = {
     VERIFIER: '57a4cc4834038aa7fa2bc3e91d379e4baabb017ff457a706969e34604f821e15',
     REGRESSION: 'f81ff547d94569e0cc9ca12d69d662765db6399d749500322546b0d75f046a90',
 }
+DIAGNOSTIC_TRACKED_PREFLIGHT_BASE = 'd8c564ac3dfa9d85e8a58711c70b276369a4e117'
+DIAGNOSTIC_TRACKED_PREFLIGHT_BASE_TREE = '770117d64f609c7a0602e3a65debfc70c839199d'
+DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE = 'ed8b0159a98613a0e67058fdb536da37b331d22f'
+DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE_TREE = 'e166422bf58e5a06da174ac9d52ec4e0e03430da'
+DIAGNOSTIC_TRACKED_PREFLIGHT_MODIFIED = DIAGNOSTIC_PROJECTION_CACHE_MODIFIED
+DIAGNOSTIC_TRACKED_PREFLIGHT_SHA256 = {
+    RECEIPT: 'e02c68e3cb7f1472dcb04dc554f0b14d4d4c976d25fbd5f2d5d68ea8d6d3ec5a',
+    VERIFIER: 'cabd41eae6f7bd46e35ee5c89381327167579290a9bea626dc917446757383e8',
+    REGRESSION: '19a83d9cb75937f5fcb42cf182c9f320c05d7df9ab00f5d466d57fe4c4ef7cf3',
+}
 HOSTING_INBOX_RELOAD_BUDGET_BASE = '20f1cfd76245102f3163038b9401a3db036cc23f'
 HOSTING_INBOX_RELOAD_BUDGET_BASE_TREE = 'a93bd0f280d1b8e0de0dd03c94e0fd369728900f'
 HOSTING_INBOX_RELOAD_BUDGET_SOURCE = 'c90fa845dc7e87d7b26733e451aa0c477387aab0'
@@ -2024,7 +2034,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '19a83d9cb75937f5fcb42cf182c9f320c05d7df9ab00f5d466d57fe4c4ef7cf3'
+REGRESSION_SHA256 = '507ba94ac430514b72d70abcea6448f856d9ed6724f92dd58508230a5f4b3e68'
 # END GENERATED COMPOSITION IDENTITIES
 
 # BEGIN GENERATED INTEGRATION REPAIR IDENTITIES
@@ -8834,6 +8844,68 @@ def validate_diagnostic_projection_cache_race_source(root):
             'Diagnostic projection-cache race correction or receipt changed')
 
 
+def validate_diagnostic_tracked_preflight_source(root):
+    """Bind the fail-closed tracked-drift preflight to its timed-out parent."""
+    require(git(root, 'rev-parse',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_BASE + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_BASE_TREE
+            and git(root, 'rev-parse',
+                    DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE
+                    + '^{tree}').decode().strip()
+            == DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE_TREE,
+            'Diagnostic tracked-source preflight tree changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE).decode().strip().split()
+            == [DIAGNOSTIC_TRACKED_PREFLIGHT_BASE],
+            'Diagnostic tracked-source preflight parent changed')
+    git(root, 'merge-base', '--is-ancestor',
+        DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_BASE,
+                  DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE).decode().splitlines()
+    require(changes == ['M\t' + path for path in sorted(
+                DIAGNOSTIC_TRACKED_PREFLIGHT_MODIFIED)],
+            'Diagnostic tracked-source preflight changed another path')
+    source_entries = entries(root, DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE)
+    for path in sorted(DIAGNOSTIC_TRACKED_PREFLIGHT_MODIFIED):
+        source = git(root, 'cat-file', 'blob',
+                     DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE + ':' + path)
+        require(source_entries[path][0] == '100644'
+                and digest(source)
+                == DIAGNOSTIC_TRACKED_PREFLIGHT_SHA256[path],
+                'Diagnostic tracked-source preflight changed: ' + path)
+    source_verifier = git(root, 'cat-file', 'blob',
+                          DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE + ':' + VERIFIER)
+    source_regression = git(root, 'cat-file', 'blob',
+                            DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE
+                            + ':' + REGRESSION)
+    source_receipt = json.loads(git(root, 'cat-file', 'blob',
+                                    DIAGNOSTIC_TRACKED_PREFLIGHT_SOURCE
+                                    + ':' + RECEIPT))
+    require(source_receipt.get('verifier_sha256') == digest(source_verifier)
+            and source_receipt.get('regression_sha256') == digest(source_regression)
+            and source_verifier.count(b'def parse_tracked_source_drift(') == 1
+            and source_verifier.count(b'def tracked_source_preflight(') == 1
+            and b"'git', '--no-replace-objects', 'diff', '--no-ext-diff', '--no-renames',"
+                in source_verifier
+            and b"'--name-only', '-z', head, '--'" in source_verifier
+            and b'allowed = {RECEIPT, VERIFIER, REGRESSION}' in source_verifier
+            and b"require(result.returncode == 0 and not result.stderr,"
+                in source_verifier
+            and b'    ensure_history(root)\n    pin_head(root)\n    tracked_source_preflight(root)\n'
+                in source_verifier
+            and source_verifier.count(
+                b"'Composition proof file changed during") == 2
+            and b'Tracked-source preflight parses only canonical NUL-delimited paths'
+                in source_regression
+            and b'Refuses unstaged tracked drift before historical validation'
+                in source_regression
+            and b'Refuses staged tracked drift before historical projection'
+                in source_regression
+            and b'assert not reached_historical_validation' in source_regression,
+            'Diagnostic tracked-source preflight implementation or receipt changed')
+
+
 def project_hosting_inbox_reload_completion_source(root, path, current):
     """Restore the first bounded-reload proof before its reviewed completion."""
     if path != HOSTING_INBOX_RELOAD_COMPLETION_PATH:
@@ -10978,6 +11050,7 @@ def _verify_current(root):
     validate_diagnostic_blob_live_binding_source(root)
     validate_diagnostic_projection_cache_source(root)
     validate_diagnostic_projection_cache_race_source(root)
+    validate_diagnostic_tracked_preflight_source(root)
     validate_hosting_inbox_reload_completion_source(root)
     validate_hosting_inbox_reload_budget_source(root)
     validate_notification_metric_label_source(root)
@@ -11368,6 +11441,7 @@ def _verify_current(root):
         {'name': 'Exact Application current-artifact successor binds the helper source after preserved first-attempt run 44881476341', 'passed': True},
         {'name': 'Exact Diagnostic artifact batch retains one full current-source proof before the finite isolated historical comparisons', 'passed': True},
         {'name': 'Exact Diagnostic artifact review successor preserves named failures; the immutable blob-batch successor retains complete source reconstruction with bounded tree state', 'passed': True},
+        {'name': 'Exact Diagnostic tracked-source preflight refuses staged and unstaged non-proof drift before historical projection', 'passed': True},
         {'name': 'Exact Application composition-partition successor requires the unchanged full proof after preserved 360-minute run 44847291464', 'passed': True},
         {'name': 'Exact Application composition-completion successor retains the full proof after two preserved 300-minute hosted ceilings', 'passed': True},
         {'name': 'Exact Application evidence-seal successor retains every build assertion after preserved run 44639431573 reached the 240-minute ceiling', 'passed': True},
