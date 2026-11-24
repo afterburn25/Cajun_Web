@@ -104,6 +104,52 @@ def submit(session, target, action, values=None):
     return session.post(target, data=data, timeout=120)
 
 
+def repeated_form_fields_self_check():
+    """Exercise the exact array-field path after pinned test dependencies exist."""
+    response = type('RepeatedResponse', (), {
+        'status_code': 200,
+        'url': ('http://127.0.0.1/admin/index.php?view=studio-upgrade&database_review='
+                + 'a' * 64),
+        'text': ('<form><input name="action" value="studio_database_apply">'
+                 '<input name="csrf" value="csrf-token">'
+                 '<input name="review_hash" value="review-hash">'
+                 '<input name="database_updates[]" value="first">'
+                 '<input name="database_updates[]" value="second">'
+                 '<input name="database_updates[]" value="ignored" disabled></form>'),
+    })()
+    check('Reviewed PHP array fields retain their exact unique order for application',
+          repeated_form_fields(response, 'studio_database_apply')
+          == {'database_updates[]': ['first', 'second']})
+
+    class ReviewedSession:
+        def get(self, target, timeout):
+            return response
+
+        def post(self, target, data, timeout):
+            return {'target': target, 'data': data, 'timeout': timeout}
+
+    submission = submit(
+        ReviewedSession(), response.url, 'studio_database_apply', {'confirm': '1'})
+    check('Reviewed migration submission posts every bound array value without collapse',
+          submission['target'] == response.url
+          and submission['data']['csrf'] == 'csrf-token'
+          and submission['data']['review_hash'] == 'review-hash'
+          and submission['data']['database_updates[]'] == ['first', 'second']
+          and submission['data']['confirm'] == '1')
+    duplicate = type('DuplicateResponse', (), {
+        'text': ('<form><input name="action" value="studio_database_apply">'
+                 '<input name="database_updates[]" value="same">'
+                 '<input name="database_updates[]" value="same"></form>'),
+    })()
+    try:
+        repeated_form_fields(duplicate, 'studio_database_apply')
+    except ValueError:
+        refused = True
+    else:
+        refused = False
+    check('Duplicate reviewed PHP array fields are refused before submission', refused)
+
+
 def same_retained(before, after, *, allow_settings_additions=True, allow_table_additions=(),
                   allow_null_columns=None):
     allow_null_columns = allow_null_columns or {}
@@ -181,6 +227,7 @@ def main():
         update, os.environ.get('CWP_SOURCE_SHA', ''), VERSION)
     WORK.mkdir(parents=True)
     OUT.mkdir(parents=True, exist_ok=False)
+    repeated_form_fields_self_check()
     image = os.environ['CWP_TEST_IMAGE']
     docker = ['docker', 'run', '--rm', '--network', 'host', '--user', f'{os.getuid()}:{os.getgid()}',
               '-v', f'{ROOT}:/workspace', '-w', '/workspace']

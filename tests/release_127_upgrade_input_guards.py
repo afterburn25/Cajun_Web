@@ -1,6 +1,7 @@
 """Refusal tests for the immutable published-v1.26.1 release input."""
 from pathlib import Path
 import argparse
+import ast
 from copy import deepcopy
 import hashlib
 import importlib.util
@@ -25,8 +26,6 @@ def main(baseline, output):
     root = Path(__file__).resolve().parents[1]
     fetch = load_module('release127_fetch', root / 'tools/fetch_release_127_baseline.py')
     archive_guard = load_module('release127_archive', root / 'tests/release_127_archive.py')
-    acceptance = load_module(
-        'release127_upgrade_acceptance', root / 'tests/release_127_upgrade_acceptance.py')
     checks = []
 
     def check(name, condition):
@@ -91,39 +90,38 @@ def main(baseline, output):
           and fetch.MANIFEST_URL == 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/' + fetch.MANIFEST_NAME
           and 'api.github.com' not in fetch.ALLOWED_HOSTS)
 
-    repeated_response = type('RepeatedResponse', (), {
-        'text': ('<form><input name="action" value="studio_database_apply">'
-                 '<input name="database_updates[]" value="first">'
-                 '<input name="database_updates[]" value="second">'
-                 '<input name="database_updates[]" value="ignored" disabled></form>'),
-    })()
-    check('Reviewed PHP array fields retain their exact unique order for application',
-          acceptance.repeated_form_fields(
-              repeated_response, 'studio_database_apply')
-          == {'database_updates[]': ['first', 'second']})
-    repeated_response.status_code = 200
-    repeated_response.url = 'http://127.0.0.1/admin/index.php?view=studio-upgrade&database_review=' + 'a' * 64
-    class ReviewedSession:
-        def get(self, target, timeout):
-            return repeated_response
-
-        def post(self, target, data, timeout):
-            return {'target': target, 'data': data, 'timeout': timeout}
-
-    reviewed_submission = acceptance.submit(
-        ReviewedSession(), repeated_response.url, 'studio_database_apply', {'confirm': '1'})
-    check('Reviewed migration submission posts every bound array value without collapse',
-          reviewed_submission['target'] == repeated_response.url
-          and reviewed_submission['data']['database_updates[]'] == ['first', 'second']
-          and reviewed_submission['data']['confirm'] == '1')
-    duplicate_response = type('DuplicateResponse', (), {
-        'text': ('<form><input name="action" value="studio_database_apply">'
-                 '<input name="database_updates[]" value="same">'
-                 '<input name="database_updates[]" value="same"></form>'),
-    })()
-    deny('Duplicate reviewed PHP array fields are refused before submission',
-         lambda: acceptance.repeated_form_fields(
-             duplicate_response, 'studio_database_apply'))
+    acceptance_source = (root / 'tests/release_127_upgrade_acceptance.py').read_text(
+        encoding='utf-8')
+    acceptance_tree = ast.parse(acceptance_source)
+    acceptance_functions = {
+        node.name: ast.get_source_segment(acceptance_source, node)
+        for node in acceptance_tree.body if isinstance(node, ast.FunctionDef)
+    }
+    repeated_source = acceptance_functions.get('repeated_form_fields', '')
+    submit_source = acceptance_functions.get('submit', '')
+    self_check_source = acceptance_functions.get('repeated_form_fields_self_check', '')
+    check('Reviewed PHP array parser keeps exact enabled ordered fields and refuses ambiguity',
+          all(fragment in repeated_source for fragment in (
+              'Expected one exact repeated-field form',
+              'Repeated form field contains an empty value',
+              'Repeated form field contains a duplicate value',
+              'not control.has_attr(\'checked\')')))
+    check('Reviewed migration submission overlays exact arrays before explicit confirmed values',
+          submit_source.find('data.update(repeated_form_fields(response, action))')
+          < submit_source.find('data.update(values or {})')
+          < submit_source.find('session.post(target, data=data, timeout=120)')
+          and min(submit_source.find(fragment) for fragment in (
+              'data.update(repeated_form_fields(response, action))',
+              'data.update(values or {})',
+              'session.post(target, data=data, timeout=120)')) >= 0)
+    check('Installed native acceptance directly exercises ordered scalar and duplicate refusal',
+          all(fragment in self_check_source for fragment in (
+              "['database_updates[]'] == ['first', 'second']",
+              "submission['data']['csrf'] == 'csrf-token'",
+              "submission['data']['review_hash'] == 'review-hash'",
+              "submission['data']['confirm'] == '1'",
+              "except ValueError:",
+              "check('Duplicate reviewed PHP array fields are refused before submission', refused)")))
 
     deny('Unknown published asset hosts are refused before a request',
          lambda: fetch.fetch('https://untrusted.invalid/release.zip', fetch.ARCHIVE_BYTES))
