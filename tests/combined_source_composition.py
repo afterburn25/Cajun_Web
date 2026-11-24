@@ -2187,7 +2187,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '8f27e95891ff4249a172c70eee0b9da5dca7196d9836bc3cba945c33f28f6e14'
+REGRESSION_SHA256 = '349ffc0ceef03421b407da904eff7448edd7d69ab3ce4e8acbdcba2a5ed69232'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12578,6 +12578,8 @@ def release_127_projection(root):
         _REL127_WORKTREE_OIDS = validate_release_127_source(root)
         _REL127_PROJECTION_DEPTH = 1
         yield
+        require(validate_release_127_source(root) == _REL127_WORKTREE_OIDS,
+                'Current 1.27 release source changed during historical projection')
     finally:
         _REL127_PROJECTION_DEPTH = 0
         _REL127_WORKTREE_OIDS = {}

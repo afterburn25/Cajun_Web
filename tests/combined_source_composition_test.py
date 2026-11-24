@@ -430,6 +430,21 @@ def run(root=ROOT):
         refuses('REL-01 binding refuses added-file bytes that differ from the exact implementation',
                 lambda: release_source_tamper('tools/fetch_release_127_baseline.py'))
 
+        def release_projection_race(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                with proof.release_127_projection(fixture):
+                    target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
+            finally:
+                target.write_bytes(original)
+
+        refuses('REL-01 projection exit refuses a concurrent modified-file change',
+                lambda: release_projection_race('VERSION'))
+        refuses('REL-01 projection exit refuses a concurrent added-file change',
+                lambda: release_projection_race('tools/fetch_release_127_baseline.py'))
+        passed('REL-01 projection brackets every modified and added source path')
+
         original_proof_paths = proof.REL127_PROOF_PATHS
         try:
             proof.REL127_PROOF_PATHS = original_proof_paths | {'README.md'}
@@ -455,23 +470,23 @@ def run(root=ROOT):
             proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
         passed('Tracked-source preflight permits only already-validated proof-file drift')
 
-        original_ordinary = proof.ordinary
+        original_actual_ordinary = proof.actual_ordinary
         receipt_reads = []
 
         def racing_receipt(root, path):
-            value = original_ordinary(root, path)
+            value = original_actual_ordinary(root, path)
             if Path(root) == fixture and path == proof.RECEIPT:
                 receipt_reads.append(path)
                 if len(receipt_reads) > 1:
                     return value + b'\n'
             return value
 
-        proof.ordinary = racing_receipt
+        proof.actual_ordinary = racing_receipt
         try:
             refuses('Strict receipt loader refuses proof-file change during validation',
                     lambda: proof.current_proof_receipt(fixture))
         finally:
-            proof.ordinary = original_ordinary
+            proof.actual_ordinary = original_actual_ordinary
         assert len(receipt_reads) > 1
         passed('Every current receipt consumer brackets exact proof bytes')
 
