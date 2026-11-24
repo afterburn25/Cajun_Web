@@ -340,6 +340,34 @@ def run(root=ROOT):
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (proof.git(root, 'rev-parse', proof.REL127_BASE + '^{tree}').decode().strip()
+            == proof.REL127_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.REL127_SOURCE + '^{tree}').decode().strip()
+            == proof.REL127_SOURCE_TREE)
+    with proof.release_127_projection(root):
+        for path in proof.REL127_MODIFIED:
+            assert (proof.ordinary(root, path)
+                    == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
+        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+        assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
+        assert (proof.ordinary(root, proof.REGRESSION)
+                == proof.git(root, 'cat-file', 'blob', proof.REL127_SOURCE + ':' + proof.REGRESSION)
+                and proof.actual_ordinary(root, proof.REGRESSION)
+                != proof.ordinary(root, proof.REGRESSION))
+    passed('REL-01 projection binds every exact modified path, removes only its additions, and retains current proof bytes')
+
+    for attribute, label in (
+        ('REL127_BASE_TREE', 'base tree'),
+        ('REL127_SOURCE_TREE', 'implementation tree'),
+        ('REL127_SOURCE', 'implementation commit'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * 40)
+            refuses('Refuses substituted REL-01 ' + label,
+                    lambda: proof.validate_release_127_source(root))
+        finally:
+            setattr(proof, attribute, original)
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
             <= proof._PROJECTION_CACHE_LIMIT == 32768
             and not proof._ACTIVE_ROOT_KEYS)
