@@ -36,55 +36,6 @@ RECEIPT = 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
 VERIFIER = 'tests/combined_source_composition.py'
 REGRESSION = 'tests/combined_source_composition_test.py'
 INVENTORY = 'site/install/inventory.generated.php'
-REL127_BASE = 'f73515c681cafc0d46fb117f0999b597fa05eed5'
-REL127_BASE_TREE = '92c64a1c204ecda4befd8e255af271390d28f6b5'
-REL127_SOURCE = '91f700d52131afcdc401a3e7521449e79c5eca11'
-REL127_SOURCE_TREE = '22abca2975522da642484fc1b584291aee187015'
-REL127_MODIFIED = frozenset((
-    '.github/workflows/mail-copied-draft-native.yml',
-    '.github/workflows/mail-flags-native.yml',
-    '.github/workflows/mail-folder-native.yml',
-    'CHANGELOG.md',
-    'PROJECT_STATUS.md',
-    'README.md',
-    'SESSION_HANDOFF.md',
-    'START-HERE.txt',
-    'VERSION',
-    'docs/RELEASES.md',
-    'docs/SESSION_LOG.md',
-    'site/app/settings/database_schemas.php',
-    'site/config/defaults.php',
-    'site/install.php',
-    'site/install/bootstrap.generated.php',
-    'site/install/inventory.generated.php',
-    'tests/database_schema_registry_policy.php',
-    'tests/database_schema_view_policy.php',
-    'tests/mail_copied_draft_native_workflow_contract.py',
-    'tests/mail_flags_native_workflow_contract.py',
-    'tests/mail_folder_native_workflow_contract.py',
-    'tools/legacy-release-files.json',
-))
-REL127_ADDITIONS = frozenset((
-    '.github/workflows/software-release-1261-upgrade.yml',
-    'docs/MIGRATION-INSTRUCTIONS-1.27.0.md',
-    'docs/RELEASE_NOTES_1.27.0.md',
-    'docs/RELEASE_SCOPE_1.27.0.md',
-    'docs/TEST_REPORT_1.27.0.md',
-    'tests/release_127_apache_upgrade_acceptance.py',
-    'tests/release_127_archive.py',
-    'tests/release_127_loopback_session.py',
-    'tests/release_127_upgrade_acceptance.py',
-    'tests/release_127_upgrade_guards.py',
-    'tests/release_127_upgrade_input_guards.py',
-    'tests/release_127_upgrade_probe.php',
-    'tools/fetch_release_127_baseline.py',
-    'tools/record_release_1261_history.py',
-    'tools/requirements-release127.txt',
-))
-REL127_PATHS = REL127_MODIFIED | REL127_ADDITIONS
-REL127_PROOF_PROJECTED = frozenset()
-REL127_PROOF_SHA256 = {}
-REL127_PROOF_PATHS = frozenset((RECEIPT, VERIFIER, REGRESSION))
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -2193,7 +2144,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'c5718d477db1d4d5a152a326ea88020a07ea0b23d7dee14348284306ef3cb3e2'
+REGRESSION_SHA256 = '4c8a74d4bc47355236b20550379165ed52c6039368fcc63b9285966fbf599f9a'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2296,9 +2247,6 @@ _BLOB_BATCHES = {}
 _ACTIVE_ROOT_KEYS = {}
 _PROJECTION_CACHE_LIMIT = 32768
 _LAST_PROJECTION_CACHE_MAX = 0
-_REL127_PROJECTION_DEPTH = 0
-_REL127_WORKTREE_OIDS = {}
-_CURRENT_INDEX_MODES = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -2597,7 +2545,7 @@ def tracked_source_preflight(root, proof_files):
     return paths
 
 
-def actual_ordinary(root, path):
+def ordinary(root, path):
     relative = PurePosixPath(path)
     require(not relative.is_absolute() and '..' not in relative.parts
             and relative.as_posix() == path, 'Unsafe composition path: ' + path)
@@ -2610,76 +2558,8 @@ def actual_ordinary(root, path):
     return target.read_bytes()
 
 
-def worktree_blob_oids(root, paths):
-    """Batch-hash ordinary files through Git's checkout normalization."""
-    ordered = sorted(paths)
-    for path in ordered:
-        actual_ordinary(root, path)
-        require('\n' not in path and '\r' not in path,
-                'Unsafe worktree hash path: ' + repr(path))
-    result = subprocess.run(
-        ['git', '--no-replace-objects', 'hash-object', '--stdin-paths'],
-        cwd=root, input=''.join(path + '\n' for path in ordered),
-        text=True, capture_output=True)
-    oids = result.stdout.splitlines()
-    require(result.returncode == 0 and not result.stderr and len(oids) == len(ordered)
-            and all(re.fullmatch(r'[0-9a-f]{40}', oid) is not None for oid in oids),
-            'Could not obtain exact normalized worktree blob identities')
-    return dict(zip(ordered, oids))
-
-
-def ordinary(root, path):
-    current = actual_ordinary(root, path)
-    if _REL127_PROJECTION_DEPTH and path in REL127_PROOF_PROJECTED:
-        require(digest(current) == REL127_PROOF_SHA256[path],
-                'Current 1.27 proof source changed before historical projection: ' + path)
-        return git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
-    if _REL127_PROJECTION_DEPTH and path in REL127_MODIFIED:
-        require(_REL127_WORKTREE_OIDS.get(path) == entries(root, REL127_SOURCE)[path][1],
-                'Current 1.27 release source changed before historical projection: ' + path)
-        return git(root, 'cat-file', 'blob', REL127_BASE + ':' + path)
-    return current
-
-
-def filesystem_mode(root, path):
+def mode(root, path):
     return '100755' if (root / path).stat().st_mode & 0o111 else '100644'
-
-
-def mode(root, path, index_modes=None):
-    actual = filesystem_mode(root, path)
-    if actual == '100755':
-        return actual
-    modes = _CURRENT_INDEX_MODES if index_modes is None else index_modes
-    if os.name == 'nt' and modes.get(path) == '100755':
-        return '100755'
-    return actual
-
-
-def current_index_entries(root):
-    """Read exact ordinary stage-zero entries from the mutable Git index."""
-    result = subprocess.run(
-        ['git', '--no-replace-objects', 'ls-files', '--stage', '-z'],
-        cwd=root, capture_output=True)
-    require(result.returncode == 0 and not result.stderr,
-        'Could not read current Git index entries')
-    index_entries = {}
-    for row in result.stdout.split(b'\0'):
-        if not row:
-            continue
-        metadata, raw_path = row.split(b'\t', 1)
-        permission, oid, stage = metadata.decode().split(' ')
-        path = raw_path.decode('utf-8')
-        require(stage == '0' and permission in {'100644', '100755'}
-                and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
-                and path not in index_entries,
-                'Nonordinary or conflicted current Git index entry: ' + path)
-        index_entries[path] = (permission, oid)
-    return index_entries
-
-
-def current_index_modes(root):
-    """Read tracked modes for Windows filesystems without execute-bit fidelity."""
-    return {path: row[0] for path, row in current_index_entries(root).items()}
 
 
 def entries(root, ref):
@@ -2741,8 +2621,6 @@ def hydration_origin(root, head):
                 'Local history source has a different component tree')
         git(source, 'merge-base', '--is-ancestor', identity['commit'], head)
     for commit, tree, label in (
-        (REL127_BASE, REL127_BASE_TREE, '1.27 release base'),
-        (REL127_SOURCE, REL127_SOURCE_TREE, '1.27 release implementation'),
         (ADDITION_SOURCE, ADDITION_SOURCE_TREE, 'contact addition'),
         (TICKET_ADDITION_SOURCE, TICKET_ADDITION_SOURCE_TREE, 'ticket addition'),
         (DIAGNOSTIC_ADDITION_SOURCE, DIAGNOSTIC_ADDITION_SOURCE_TREE, 'diagnostic addition'),
@@ -7631,26 +7509,8 @@ def validate_mail_reply_forward_source(root):
             'Mail Reply/Forward installer inventory is not canonical')
 
 
-def project_release_127_source(root, path, current):
-    """Restore exact pre-release bytes for direct historical consumers."""
-    if path not in REL127_MODIFIED:
-        return current
-    source = git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
-    base = git(root, 'cat-file', 'blob', REL127_BASE + ':' + path)
-    if current == source:
-        require(actual_ordinary(root, path) == source,
-                'Current 1.27 release source changed before predecessor projection: ' + path)
-        return base
-    if current == base or current != actual_ordinary(root, path):
-        return current
-    require(current == source,
-            'Current 1.27 release source changed before predecessor projection: ' + path)
-    return base
-
-
 def project_mail_reply_forward_source(root, path, current):
     """Restore exact resulting-main bytes for predecessor source proofs."""
-    current = project_release_127_source(root, path, current)
     current = project_application_smtp_fixture_bound(root, path, current)
     current = project_mail_copy_controls_fix(root, path, current)
     current = project_mail_reply_session_fix(root, path, current)
@@ -10137,8 +9997,7 @@ def validate_pr391_recovery_successor(root):
                 | ACCOUNT_RATE_BOUNDARY_MODIFIED
                 | APPLICATION_MAIL_COPIES_ROUTING_MODIFIED
                  | RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED
-                | set(mail_consolidated_changes(root))
-                | REL127_PATHS),
+                | set(mail_consolidated_changes(root))),
             'Current recovery successor contains an unbound path')
 
 
@@ -11340,7 +11199,7 @@ def canonical_inventory(root):
         if target.is_file():
             path = target.relative_to(root / 'site').as_posix()
             if path != 'install/inventory.generated.php':
-                rows.append("    '" + path + "'=>'" + digest(ordinary(root, 'site/' + path)) + "',\n")
+                rows.append("    '" + path + "'=>'" + digest(target.read_bytes()) + "',\n")
     guard = "<?php\ndeclare(strict_types=1);\nif (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }\n"
     return (guard + 'function setup_expected_files(): array { return [\n' + ''.join(rows) + ']; }\n').encode()
 
@@ -11360,10 +11219,7 @@ def generated_bytecode(root, path, source_paths):
     if not match:
         return False
     source_path = PurePosixPath(*parts[:-2], match[1] + '.py').as_posix()
-    reviewed_sources = set(source_paths)
-    if _REL127_PROJECTION_DEPTH:
-        reviewed_sources.update(REL127_ADDITIONS)
-    require(source_path in reviewed_sources, 'Bytecode has no reviewed source: ' + path)
+    require(source_path in source_paths, 'Bytecode has no reviewed source: ' + path)
     ordinary(root, path)
     require(mode(root, path) == '100644', 'Executable generated cache: ' + path)
     return True
@@ -11384,9 +11240,7 @@ def actual_paths(root, source_paths):
             for target in directory.rglob('*'):
                 if target.is_symlink() or target.is_file():
                     paths.add(target.relative_to(root).as_posix())
-    admitted = {path for path in paths - NARRATIVES
-                if path in tracked or not generated_bytecode(root, path, source_paths)}
-    return admitted - REL127_ADDITIONS if _REL127_PROJECTION_DEPTH else admitted
+    return {path for path in paths - NARRATIVES if path in tracked or not generated_bytecode(root, path, source_paths)}
 
 
 def validate_application_reply_folder_route(root):
@@ -11900,9 +11754,9 @@ def current_proof_receipt(root):
     """Strictly load and bracket the three mutable proof files."""
     root = Path(root)
     proof_files = {
-        VERIFIER: actual_ordinary(root, VERIFIER),
-        RECEIPT: actual_ordinary(root, RECEIPT),
-        REGRESSION: actual_ordinary(root, REGRESSION),
+        VERIFIER: ordinary(root, VERIFIER),
+        RECEIPT: ordinary(root, RECEIPT),
+        REGRESSION: ordinary(root, REGRESSION),
     }
     receipt_data = strict_json_loads(proof_files[RECEIPT])
     data = validate_receipt(receipt_data, proof_files[VERIFIER])
@@ -11911,7 +11765,7 @@ def current_proof_receipt(root):
     require(digest(proof_files[REGRESSION]) == REGRESSION_SHA256,
             'Composition regression changed')
     require(all(mode(root, path) == '100644'
-                and actual_ordinary(root, path) == value
+                and ordinary(root, path) == value
                 for path, value in proof_files.items()),
             'Composition proof file changed during receipt validation')
     return data, proof_files
@@ -11923,7 +11777,7 @@ def _verify_current(root):
     ensure_history(root)
     pin_head(root)
     tracked_source_preflight(root, proof_files)
-    require(all(mode(root, path) == '100644' and actual_ordinary(root, path) == value
+    require(all(mode(root, path) == '100644' and ordinary(root, path) == value
                 for path, value in proof_files.items()),
             'Composition proof file changed during tracked-source preflight')
     validate_application_reply_folder_route(root)
@@ -12563,84 +12417,10 @@ def verification_projection_cache(root):
             _LAST_PROJECTION_CACHE_MAX = maximum
 
 
-def validate_release_127_source(root):
-    """Bind the exact release implementation and its proof-only successor."""
-    require(git(root, 'rev-parse', REL127_BASE + '^{tree}').decode().strip()
-            == REL127_BASE_TREE
-            and git(root, 'rev-parse', REL127_SOURCE + '^{tree}').decode().strip()
-            == REL127_SOURCE_TREE,
-            '1.27 release base or implementation tree changed')
-    git(root, 'merge-base', '--is-ancestor', REL127_BASE, REL127_SOURCE)
-    git(root, 'merge-base', '--is-ancestor', REL127_SOURCE, 'HEAD')
-    changes = git(root, 'diff', '--name-status', '--no-renames',
-                  REL127_BASE, REL127_SOURCE).decode().splitlines()
-    expected = (['A\t' + path for path in sorted(REL127_ADDITIONS)]
-                + ['M\t' + path for path in sorted(REL127_MODIFIED)])
-    require(sorted(changes) == sorted(expected),
-            '1.27 implementation changed a different path or status set')
-    proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                        REL127_SOURCE, 'HEAD').decode().splitlines()
-    require(sorted(proof_changes)
-            == ['M\t' + path for path in sorted(REL127_PROOF_PATHS)],
-            '1.27 proof successor changed application or release source')
-    base_entries = entries(root, REL127_BASE)
-    source_entries = entries(root, REL127_SOURCE)
-    worktree_oids = worktree_blob_oids(root, REL127_PATHS)
-    live_index_entries = current_index_entries(root)
-    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
-    require(not REL127_ADDITIONS & set(base_entries)
-            and REL127_ADDITIONS <= set(source_entries),
-            '1.27 additions did not originate in the exact implementation source')
-    for path in sorted(REL127_MODIFIED):
-        require(worktree_oids[path] == source_entries[path][1]
-                and live_index_entries.get(path) == source_entries[path]
-                and mode(root, path, live_index_modes) == base_entries[path][0]
-                == source_entries[path][0] == '100644',
-                'Current 1.27 modified source identity changed: ' + path)
-    for path in sorted(REL127_ADDITIONS):
-        require(worktree_oids[path] == source_entries[path][1]
-                and live_index_entries.get(path) == source_entries[path]
-                and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
-                'Current 1.27 addition identity changed: ' + path)
-    return worktree_oids
-
-
-@contextmanager
-def release_127_projection(root):
-    """Project only the exact reviewed REL-01 range for inherited validators."""
-    global _REL127_PROJECTION_DEPTH, _REL127_WORKTREE_OIDS, _CURRENT_INDEX_MODES
-    root = Path(root)
-    require(_REL127_PROJECTION_DEPTH == 0 and not _REL127_WORKTREE_OIDS,
-            'Nested 1.27 release projection refused')
-    ensure_history(root)
-    pin_head(root)
-    _CURRENT_INDEX_MODES = current_index_modes(root) if os.name == 'nt' else {}
-    try:
-        _REL127_WORKTREE_OIDS = validate_release_127_source(root)
-        _REL127_PROJECTION_DEPTH = 1
-        yield
-        require(validate_release_127_source(root) == _REL127_WORKTREE_OIDS,
-                'Current 1.27 release source changed during historical projection')
-    finally:
-        _REL127_PROJECTION_DEPTH = 0
-        _REL127_WORKTREE_OIDS = {}
-        _CURRENT_INDEX_MODES = {}
-
-
 def verify_current(root):
     with verification_projection_cache(root):
         with immutable_blob_batch(root):
-            with release_127_projection(root):
-                checks = _verify_current(root)
-    return [
-        {'name': 'Exact resulting-main-to-1.27 implementation range binds '
-                 + str(len(REL127_MODIFIED)) + ' modified paths and '
-                 + str(len(REL127_ADDITIONS)) + ' disjoint additions',
-         'passed': True},
-        {'name': 'The 1.27 proof successor changes only the exact three proof files',
-         'passed': True},
-        *checks,
-    ]
+            return _verify_current(root)
 
 
 def projection(root, component):
