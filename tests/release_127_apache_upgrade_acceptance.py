@@ -129,13 +129,21 @@ def main():
     source_sha = os.environ.get('CWP_SOURCE_SHA', '')
     if re.fullmatch(r'[0-9a-f]{40}', source_sha) is None:
         raise SystemExit('Exact candidate source identity is required')
+    run_id = os.environ.get('CWP_RUN_ID', '')
+    run_attempt = os.environ.get('CWP_RUN_ATTEMPT', '')
+    if not run_id.isdigit() or run_attempt != '1':
+        raise SystemExit('Fresh first-attempt hosted run identity is required')
+    source_tree = os.environ.get('CWP_SOURCE_TREE', '')
+    if re.fullmatch(r'[0-9a-f]{40}', source_tree) is None:
+        raise SystemExit('Exact candidate tree identity is required')
     if (ROOT / 'VERSION').read_text(encoding='utf-8').strip() != CANDIDATE_VERSION:
         raise SystemExit('Expected 1.27.0 candidate')
     baseline_bytes = published_snapshot(BASELINE, BASELINE_BYTES, BASELINE_SHA)
     updates = list((ROOT / 'dist').glob('CajunWebPro-1.27.0-UPDATE.zip'))
     if len(updates) != 1 or RUNTIME.exists() or OUT.exists():
         raise SystemExit('Exact clean update and fresh Apache evidence directories are required')
-    update_bytes = candidate_snapshot(updates[0])
+    update_bytes, candidate = candidate_snapshot(
+        updates[0], source_sha, CANDIDATE_VERSION)
     RUNTIME.mkdir(parents=True)
     OUT.mkdir(parents=True)
     probe_path = RUNTIME / 'probe.php'
@@ -269,7 +277,10 @@ def main():
         raise
     finally:
         report = {'passed': failure is None and len(scopes) == 4,
-                  'source_sha': source_sha, 'candidate_version': CANDIDATE_VERSION,
+                  'source_sha': source_sha, 'source_tree': source_tree,
+                  'candidate_version': CANDIDATE_VERSION,
+                  'candidate': candidate,
+                  'run_id': run_id, 'run_attempt': run_attempt,
                   'baseline_source': BASELINE_SOURCE, 'baseline_bytes': BASELINE_BYTES,
                   'baseline_sha256': BASELINE_SHA,
                   'selected': selected(), 'scopes': scopes, 'checks': checks, 'failure': failure,

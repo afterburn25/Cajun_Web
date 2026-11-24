@@ -81,33 +81,74 @@ def published_snapshot(path, expected_size, expected_sha256):
     return data
 
 
-def candidate_snapshot(path):
+def candidate_snapshot(path, expected_source, expected_version):
     """Bind candidate archive bytes to the builder's adjacent strict manifest."""
     path = Path(path)
     manifest_path = path.with_suffix('.manifest.json')
+    if (re.fullmatch(r'[0-9a-f]{40}', expected_source or '') is None
+            or re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', expected_version or '') is None):
+        raise RuntimeError('Expected candidate identity is invalid')
     if path.is_symlink() or manifest_path.is_symlink() or not path.is_file() or not manifest_path.is_file():
         raise RuntimeError('Candidate archive and manifest must be regular files')
-    manifest = json.loads(manifest_path.read_bytes(), object_pairs_hook=_strict_object)
+    manifest_data = manifest_path.read_bytes()
+    manifest = json.loads(manifest_data, object_pairs_hook=_strict_object)
     if not isinstance(manifest, dict) or set(manifest) != {'version', 'source_commit', 'artifact', 'sha256', 'directories', 'files'}:
         raise RuntimeError('Candidate manifest shape mismatch')
+    if manifest['source_commit'] != expected_source or manifest['version'] != expected_version:
+        raise RuntimeError('Candidate manifest source or version mismatch')
+    if (re.fullmatch(r'[0-9a-f]{64}', manifest.get('sha256', '')) is None
+            or not isinstance(manifest.get('directories'), list)
+            or not isinstance(manifest.get('files'), dict)):
+        raise RuntimeError('Candidate manifest identity is invalid')
+    expected_directories = sorted({
+        '/'.join(name.split('/')[:position]) + '/'
+        for name in manifest['files'] for position in range(1, len(name.split('/')))
+    })
+    directories = manifest['directories']
+    if (directories != expected_directories
+            or len(directories) != len(set(directories))
+            or len(directories) != len({name.casefold() for name in directories})
+            or any(not isinstance(name, str) or not name.endswith('/')
+                   for name in directories)):
+        raise RuntimeError('Candidate manifest directory inventory is invalid')
     data = path.read_bytes()
     if manifest['artifact'] != path.name or hashlib.sha256(data).hexdigest() != manifest['sha256']:
         raise RuntimeError('Candidate archive identity mismatch')
     inspect_snapshot(data, manifest['files'])
-    return data
+    return data, {
+        'artifact': path.name,
+        'bytes': len(data),
+        'sha256': manifest['sha256'],
+        'manifest': manifest_path.name,
+        'manifest_sha256': hashlib.sha256(manifest_data).hexdigest(),
+        'source_commit': manifest['source_commit'],
+        'version': manifest['version'],
+    }
 
 
 def extract_snapshot(data, destination):
     """Extract only the already-inspected bytes, refusing replacement and escapes."""
     destination = Path(destination)
-    destination.mkdir(parents=True, exist_ok=True)
+    if destination.is_symlink() or not destination.is_dir():
+        raise RuntimeError('Archive destination must be an existing ordinary directory')
     root = destination.resolve()
     names = inspect_snapshot(data)
     with zipfile.ZipFile(io.BytesIO(data)) as archive:
         for name in names:
-            target = destination / _safe_name(name)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if target.exists() or target.is_symlink() or not target.resolve().is_relative_to(root):
+            safe = _safe_name(name)
+            parent = root
+            for part in safe.parts[:-1]:
+                child = parent / part
+                if child.exists() or child.is_symlink():
+                    if child.is_symlink() or not child.is_dir() or not child.resolve().is_relative_to(root):
+                        raise RuntimeError('Archive extraction parent is unsafe: ' + name)
+                else:
+                    child.mkdir()
+                    if child.is_symlink() or not child.is_dir() or not child.resolve().is_relative_to(root):
+                        raise RuntimeError('Archive extraction parent is unsafe: ' + name)
+                parent = child.resolve()
+            target = parent / safe.name
+            if target.exists() or target.is_symlink() or not parent.is_relative_to(root):
                 raise RuntimeError('Archive extraction would replace or escape: ' + name)
             with archive.open(name) as source, target.open('xb') as output:
                 shutil.copyfileobj(source, output)

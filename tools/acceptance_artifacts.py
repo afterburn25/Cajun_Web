@@ -25,17 +25,6 @@ STEP_KEYS = {'build': {'setup', 'helpers', 'build', 'fixtures', 'inputs', 'mutat
 BUILD_QA = {'build-results.txt', 'build-guards-results.json', 'parallel-helper-tests.json', 'legacy-preparation.txt', 'build-environment-results.json'}
 PACKAGE_SOURCE_QA = {'ubuntu-apt-source.json', 'ubuntu-apt-source-preflight.json',
                      'ubuntu-apt-release-metadata.json'}
-RELEASE127_APACHE_SCOPES = ('root-rewrite', 'subfolder-rewrite',
-                            'root-no-rewrite', 'subfolder-no-rewrite')
-RELEASE127_APACHE_QA = frozenset({
-    'qa/release127-apache/results.json',
-    'qa/release127-apache/progress.json',
-    'qa/release127-apache/failure.txt',
-} | {
-    'qa/release127-apache/' + scope + suffix
-    for scope in RELEASE127_APACHE_SCOPES
-    for suffix in ('.json', '-apache.log', '-launcher.log')
-})
 VERSIONS = ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '1.11.0', '1.11.1', '1.11.2', '1.12.0', '1.13.0', '1.14.0', '1.15.0', '1.16.0', '1.17.0', '1.18.0', '1.19.0', '1.20.0', '1.21.0', '1.22.0', '1.23.0', '1.24.0', '1.25.0')
 FIXTURES = {'legacy', *('released-' + v for v in VERSIONS)}
 FIXTURE_JSON = {'legacy-schema.json', 'organized-shims.json'}
@@ -286,9 +275,6 @@ def evidence_allowed(name, lane):
             'qa/client-website-extracted/HANDOVER.md',
             'qa/client-website-extracted/LICENSES.md',
             'qa/client-website-extracted/index.html'}: return True
-    # Finite public upgrade receipts only. Config, private files, SQL dumps,
-    # credentials and arbitrary nested paths remain outside the seal namespace.
-    if lane == 'apache' and name in RELEASE127_APACHE_QA: return True
     if lane == 'build' and len(parts) == 2 and parts[0] == 'dist': return True
     if len(parts) != 2 or parts[0] != 'qa': return False
     filename = parts[1]

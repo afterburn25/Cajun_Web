@@ -152,28 +152,33 @@ def fetch(url: str, limit: int) -> bytes:
 
 
 def main(destination: Path) -> None:
-    if destination.exists() or destination.is_symlink():
-        raise RuntimeError('Refuse to replace an existing baseline')
+    manifest_destination = destination.with_suffix('.manifest.json')
+    if (destination.exists() or destination.is_symlink()
+            or manifest_destination.exists() or manifest_destination.is_symlink()):
+        raise RuntimeError('Refuse to replace an existing baseline or manifest')
     manifest_data = fetch(MANIFEST_URL, MANIFEST_BYTES)
     files = validate_manifest_bytes(manifest_data)
     archive_data = fetch(ARCHIVE_URL, ARCHIVE_BYTES)
     validate_archive_bytes(archive_data, files)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    created = False
+    created = []
     try:
+        with manifest_destination.open('xb') as output:
+            created.append(manifest_destination)
+            output.write(manifest_data)
         with destination.open('xb') as output:
-            created = True
+            created.append(destination)
             output.write(archive_data)
     except BaseException:
-        if created:
-            destination.unlink(missing_ok=True)
+        for path in created:
+            path.unlink(missing_ok=True)
         raise
     print(json.dumps({
         'verified': True, 'source': SOURCE,
         'archive_asset_id': ARCHIVE_ASSET_ID, 'archive_sha256': ARCHIVE_SHA256,
         'archive_bytes': ARCHIVE_BYTES, 'manifest_asset_id': MANIFEST_ASSET_ID,
         'manifest_sha256': MANIFEST_SHA256, 'manifest_bytes': MANIFEST_BYTES,
-        'members': MEMBERS,
+        'members': MEMBERS, 'manifest_path': str(manifest_destination),
     }))
 
 

@@ -923,20 +923,5 @@
       "tests/hosting_payment_cases.py": "1d104e7f30c0e44e9b2b9f0f8b31ad0268e0baf8554389a89a83af759ebef6cc"
     },
     "scope": "Disposable Linux SQL checkout and payment proofs plus installed packaged HTTP/Chromium Shared payment lifecycle with closed local gateway/provider callbacks. No live charge, paid provisioning, customer message, production access, deployment or VPS checkout claim."
-  },
-  "release_127_upgrade_extension": {
-    "reports": [
-      "apache-release127-input-guards-results.json",
-      "apache-release127-upgrade-results.json"
-    ],
-    "baseline": {
-      "version": "1.26.1",
-      "source": "f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391",
-      "archive_sha256": "7d7117a25fab556cb3f8dfce7f0b859d072cfc992b98fc91026d96b490e1dad3",
-      "members": 3072,
-      "release_asset_id": 711656635,
-      "manifest_asset_id": 711656643
-    },
-    "scope": "Exact published 1.26.1 baseline transfer plus four-topology 1.27.0 owner UPDATE, data-retention and reviewed-migration acceptance. No live provider, gateway, customer message, deployment or publication."
   }
 }

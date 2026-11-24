@@ -164,6 +164,9 @@ if($mode==='seed'){
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Restricted synthetic administrator','restricted@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('b',32),$now]);
     $staff=(int)db()->lastInsertId();
     query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,\'administrator\',1,?)',[$staff,'["clients.manage"]']);
+    $legacyAccount=str_repeat('f',32);$legacyDraft=str_repeat('e',32);
+    query('INSERT INTO '.table('mail_accounts').' (id,revision,label,address,owner_id,imap_host,imap_port,imap_encryption,imap_username,smtp_host,smtp_port,smtp_encryption,smtp_username,credentials,enabled,updated_by,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,1,?)',[$legacyAccount,1,'Published 1.26.1 retained mailbox','legacy-mail@example.invalid',1,'imap.example.invalid',993,'ssl','legacy-mail@example.invalid','smtp.example.invalid',465,'ssl','legacy-mail@example.invalid','',$now]);
+    query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,?,?,?,1,'draft',?,'[]','[]','[]','Published 1.26.1 retained draft','Legacy plain-text body',?,?)",[$legacyDraft,1,$legacyAccount,1,hash('sha256','release127-legacy-draft'),$now,$now]);
     $private=realpath($c['storage']);if(!$private||str_starts_with($private,$root.DIRECTORY_SEPARATOR))throw new RuntimeException('Unsafe private fixture');
     write_private_file($private.'/retained-upload.php',CWP_GUARD.'SYNTHETIC ORIGINAL CUSTOMER UPLOAD');
     save_setting('owner_upgrade_retained_setting','Original site content — unchanged');
@@ -185,7 +188,12 @@ if($mode==='capabilities'){
 }
 if($mode==='release-state'){
     $markers=['software_onboarding_version','client_identity_schema_version','hosting_storefront_version','gateway_receipts_schema_version','hosting_payments_schema_version','project_private_notes_schema_version','mail_copies_schema_version','mail_drafts_html_ready','mail_files_schema_version','mail_flags_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_replies_schema_version'];
-    $state=['markers'=>[],'side_effect_rows'=>0,'hosting_payments_enabled'=>setting('hosting_payments_enabled')==='1'];
+    $htmlColumn=one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$c['db']['prefix'].'mail_drafts','body_html']);
+    $legacyDraft=one('SELECT * FROM '.table('mail_drafts').' WHERE id=?',[str_repeat('e',32)]);
+    $state=['markers'=>[],'side_effect_rows'=>0,'hosting_payments_enabled'=>setting('hosting_payments_enabled')==='1',
+        'mail_drafts_body_html'=>$htmlColumn!==null,
+        'legacy_mail_draft'=>['present'=>$legacyDraft!==null,'subject'=>$legacyDraft['subject']??null,
+            'body'=>$legacyDraft['body']??null,'body_html'=>$legacyDraft['body_html']??null]];
     foreach($markers as $marker)$state['markers'][$marker]=setting($marker);
     foreach(['studio_client_registrations','studio_client_tokens','software_upload_requests','gateway_receipts','hosting_payment_charges','hosting_payment_attempts','hosting_payment_events','project_private_notes','mail_reply_drafts'] as $name){
         $exists=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$c['db']['prefix'].$name]);

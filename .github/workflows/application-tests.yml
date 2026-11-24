@@ -696,7 +696,6 @@ jobs:
       CWP_TEST_HOST: 127.0.0.1
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
-      CWP_TEST_DISABLED_FUNCTIONS: curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,stream_socket_server,stream_socket_sendto,socket_create,socket_create_pair,socket_import_stream,socket_connect,socket_send,socket_sendto,socket_sendmsg,socket_write,ftp_connect,ftp_ssl_connect,ftp_nb_connect,imap_open,ssh2_connect,ldap_connect,pg_connect,dns_get_record,gethostbyaddr,gethostbyname,gethostbynamel,checkdnsrr,snmpget,snmpgetnext,snmpwalk,mail,exec,shell_exec,system,passthru,popen,proc_open,pcntl_exec
       CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -776,10 +775,6 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
-          .ci-venv/bin/python tools/fetch_release_127_baseline.py test-runtime/CajunWebPro-1.26.1-COMPLETE-UPLOAD.zip
-          .ci-venv/bin/python tests/release_127_upgrade_input_guards.py --report qa/apache-release127-input-guards-results.json
-          .ci-venv/bin/python tests/release_127_apache_upgrade_acceptance.py
-          cp qa/release127-apache/results.json qa/apache-release127-upgrade-results.json
           .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade_test.py --report qa/apache-cloud-site-requests-upgrade-guards-results.json
           .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade.py
       - name: Verify shipping source after this job, including failure

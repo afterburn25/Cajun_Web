@@ -31,8 +31,10 @@ Failures, infrastructure interruptions, skipped lanes, mocks, and sandbox eviden
 ## Local evidence before the review commit
 
 - The strict baseline fetcher downloaded release asset `711656635` and manifest asset `711656643`, then verified the pinned source, byte counts, SHA-256 values, 3,072 member paths, and every member hash.
-- Published-input refusal coverage passed 23 named checks.
-- Upgrade workflow and immutable-archive refusal coverage passed 19 named checks.
+- Published-input, updater-history, candidate-identity, and extraction refusal coverage passed 29 named checks.
+- Upgrade workflow, signed-package-source, provenance, and immutable-archive refusal coverage passed 25 named checks.
+- The updater history entry was derived from the pinned published manifest and matches all 3,072 v1.26.1 members, the exact release source, asset IDs, archive hash, manifest hash, and `config/defaults.php` identity.
+- The real-baseline fixture now retains a published-v1.26.1 plain-text mail draft and requires the reviewed migration to add `body_html` as `NULL` without changing the legacy row.
 - Builder rejection coverage passed 94 named checks.
 - Database schema registry, view, and authorization policies passed 405, 12, and 14 named checks respectively.
 - A second `tools/build.py --refresh` pass reported 40 locked packages, 2,188 dependency/license files, 2,207 mail-receiving runtime files, six PHPMailer source/license/metadata files, 15 submission runtime files, and no generated drift.

@@ -6,7 +6,10 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 import stat
+import subprocess
+import sys
 import tempfile
 import zipfile
 
@@ -59,6 +62,20 @@ def main(baseline, output):
     fetch.validate_manifest_document(manifest)
     fetch.validate_archive_bytes(raw, files)
     check('Strict manifest and every published member digest agree', True)
+    history = json.loads((root / 'tools/legacy-release-files.json').read_text(encoding='utf-8'))
+    history_entry = history.get('1.26.1')
+    check('Updater history binds the exact published 1.26.1 source asset manifest and all members',
+          list(history)[-2:] == ['1.26.0', '1.26.1']
+          and history_entry == {
+              'archive_sha256': fetch.ARCHIVE_SHA256,
+              'source_kind': 'published-release',
+              'source_commit': fetch.SOURCE,
+              'release_asset_id': fetch.ARCHIVE_ASSET_ID,
+              'manifest_asset_id': fetch.MANIFEST_ASSET_ID,
+              'manifest_sha256': fetch.MANIFEST_SHA256,
+              'files': files,
+          }
+          and history_entry['files']['config/defaults.php'] == files['config/defaults.php'])
 
     check('Manifest asset identity is immutable',
           (fetch.MANIFEST_ASSET_ID, fetch.MANIFEST_BYTES, fetch.MANIFEST_SHA256)
@@ -110,6 +127,7 @@ def main(baseline, output):
     with tempfile.TemporaryDirectory(prefix='cwp-release127-guards-') as temporary:
         temporary = Path(temporary)
         destination = temporary / 'extracted'
+        destination.mkdir()
         archive_guard.extract_snapshot(snapshot, destination)
         check('The same verified bytes extract to the exact member set',
               len([path for path in destination.rglob('*') if path.is_file()]) == fetch.MEMBERS)
@@ -131,6 +149,71 @@ def main(baseline, output):
             package.writestr(entry, b'target')
         deny('Symbolic-link archive member is refused',
              lambda: archive_guard.inspect_snapshot(symbolic.getvalue()))
+
+        candidate = temporary / 'CajunWebPro-1.27.0-UPDATE.zip'
+        with zipfile.ZipFile(candidate, 'w') as package:
+            package.writestr('cwp-update-1.27.0/index.php', b'<?php // synthetic candidate\n')
+        candidate_bytes = candidate.read_bytes()
+        candidate_file = 'cwp-update-1.27.0/index.php'
+        candidate_manifest = {
+            'version': '1.27.0', 'source_commit': 'a' * 40,
+            'artifact': candidate.name,
+            'sha256': hashlib.sha256(candidate_bytes).hexdigest(),
+            'directories': ['cwp-update-1.27.0/'],
+            'files': {candidate_file: hashlib.sha256(b'<?php // synthetic candidate\n').hexdigest()},
+        }
+        candidate.with_suffix('.manifest.json').write_text(
+            json.dumps(candidate_manifest, separators=(',', ':')) + '\n', encoding='utf-8')
+        candidate_snapshot, candidate_identity = archive_guard.candidate_snapshot(
+            candidate, 'a' * 40, '1.27.0')
+        check('Candidate snapshot binds exact archive manifest source and version',
+              candidate_snapshot == candidate_bytes
+              and candidate_identity['source_commit'] == 'a' * 40
+              and candidate_identity['version'] == '1.27.0')
+        deny('Candidate snapshot refuses a different expected source',
+             lambda: archive_guard.candidate_snapshot(candidate, 'b' * 40, '1.27.0'))
+        deny('Candidate snapshot refuses a different expected version',
+             lambda: archive_guard.candidate_snapshot(candidate, 'a' * 40, '1.27.1'))
+
+        if os.name == 'posix':
+            escape = temporary / 'escape'
+            escape.mkdir()
+            symlink_root = temporary / 'symlink-root'
+            symlink_root.mkdir()
+            (symlink_root / 'link').symlink_to(escape, target_is_directory=True)
+            link_archive = io.BytesIO()
+            with zipfile.ZipFile(link_archive, 'w') as package:
+                package.writestr('link/new/file.txt', b'escape attempt')
+            deny('Pre-existing extraction-parent symlink is refused before creating outside paths',
+                 lambda: archive_guard.extract_snapshot(link_archive.getvalue(), symlink_root))
+            check('Refused extraction-parent symlink creates nothing outside the destination',
+                  not (escape / 'new').exists())
+
+        history_copy = temporary / 'legacy-release-files.json'
+        predecessor_history = deepcopy(history)
+        expected_history_entry = predecessor_history.pop('1.26.1')
+        history_copy.write_text(json.dumps(predecessor_history, indent=2) + '\n', encoding='utf-8')
+        command = [sys.executable, str(root / 'tools/record_release_1261_history.py'),
+                   str(baseline), str(baseline.with_suffix('.manifest.json')),
+                   '--history', str(history_copy)]
+        first = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=30)
+        recorded = history_copy.read_bytes()
+        appended_history = json.loads(recorded)
+        second = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=30)
+        check('Published history recorder appends only the exact entry and is idempotent',
+              first.returncode == second.returncode == 0
+              and list(appended_history)[-2:] == ['1.26.0', '1.26.1']
+              and appended_history['1.26.1'] == expected_history_entry
+              and {key: value for key, value in appended_history.items() if key != '1.26.1'} == predecessor_history
+              and history_copy.read_bytes() == recorded
+              and recorded == (root / 'tools/legacy-release-files.json').read_bytes())
+        changed_history = json.loads(history_copy.read_text(encoding='utf-8'))
+        changed_history['1.26.1']['archive_sha256'] = '0' * 64
+        history_copy.write_text(json.dumps(changed_history, indent=2) + '\n', encoding='utf-8')
+        changed_bytes = history_copy.read_bytes()
+        refused = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=30)
+        check('Published history recorder refuses a conflicting existing identity without mutation',
+              refused.returncode != 0 and history_copy.read_bytes() == changed_bytes)
 
     Path(output).parent.mkdir(parents=True, exist_ok=True)
     Path(output).write_text(json.dumps({

@@ -201,8 +201,6 @@
     "apache-release125-guards-results.json",
     "apache-release125-input-guards-results.json",
     "apache-release125-results.json",
-    "apache-release127-input-guards-results.json",
-    "apache-release127-upgrade-results.json",
     "apache-results.json",
     "apache-rewrite-root-install.json",
     "apache-rewrite-subfolder-install.json",

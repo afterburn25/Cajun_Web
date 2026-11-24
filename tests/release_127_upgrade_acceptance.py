@@ -62,7 +62,9 @@ def submit(session, target, action, values=None):
     return session.post(target, data=data, timeout=120)
 
 
-def same_retained(before, after, *, allow_settings_additions=True, allow_table_additions=()):
+def same_retained(before, after, *, allow_settings_additions=True, allow_table_additions=(),
+                  allow_null_columns=None):
+    allow_null_columns = allow_null_columns or {}
     if before['configuration_sha256'] != after['configuration_sha256'] or before['lock_sha256'] != after['lock_sha256']:
         return False
     for name, fact in before['private_files'].items():
@@ -73,7 +75,13 @@ def same_retained(before, after, *, allow_settings_additions=True, allow_table_a
         if not target:
             return False
         for key, columns in table['rows'].items():
-            if target['rows'].get(key) != columns:
+            target_columns = target['rows'].get(key)
+            allowed = set(allow_null_columns.get(name, ()))
+            if (not isinstance(target_columns, dict)
+                    or any(target_columns.get(column) != digest for column, digest in columns.items())
+                    or set(target_columns) - set(columns) != allowed
+                    or any(target_columns[column] != hashlib.sha256(b'null').hexdigest()
+                           for column in allowed)):
                 return False
         # Only migration settings and append-only audit may gain rows.
         if name not in ('audit', 'settings') and name not in allow_table_additions and target['count'] != table['count']:
@@ -116,8 +124,10 @@ def main():
         raise SystemExit('Disposable loopback database only')
     if os.environ.get('CWP_TEST_DISABLED_FUNCTIONS') != DISABLED_FUNCTIONS:
         raise SystemExit('Exact outbound PHP transport guard is required')
-    if not os.environ.get('CWP_RUN_ID', '').isdigit() or not os.environ.get('CWP_RUN_ATTEMPT', '').isdigit():
-        raise SystemExit('Hosted run identity is required')
+    if not os.environ.get('CWP_RUN_ID', '').isdigit() or os.environ.get('CWP_RUN_ATTEMPT') != '1':
+        raise SystemExit('Fresh first-attempt hosted run identity is required')
+    if re.fullmatch(r'[0-9a-f]{40}', os.environ.get('CWP_SOURCE_TREE', '')) is None:
+        raise SystemExit('Exact candidate tree identity is required')
     if VERSION != '1.27.0' or WORK.exists():
         raise SystemExit('Expected fresh 1.27.0 upgrade fixture; never overwrite evidence')
     published = ROOT / 'test-runtime/CajunWebPro-1.26.1-COMPLETE-UPLOAD.zip'
@@ -125,7 +135,8 @@ def main():
     if not update.is_file():
         raise SystemExit('Exact clean-commit 1.27.0 UPDATE package required')
     published_bytes = published_snapshot(published, BASELINE_BYTES, BASELINE_SHA)
-    update_bytes = candidate_snapshot(update)
+    update_bytes, candidate_identity = candidate_snapshot(
+        update, os.environ.get('CWP_SOURCE_SHA', ''), VERSION)
     WORK.mkdir(parents=True)
     OUT.mkdir(parents=True, exist_ok=False)
     image = os.environ['CWP_TEST_IMAGE']
@@ -223,7 +234,11 @@ def main():
                     markers_before = probe(installed, 'release-state')
                     check(label + ' new optional release schemas remain absent before owner review',
                           markers_before['markers'] == BASELINE_MARKERS
-                          and markers_before['side_effect_rows'] == 0)
+                          and markers_before['side_effect_rows'] == 0
+                          and markers_before['mail_drafts_body_html'] is False
+                          and markers_before['legacy_mail_draft'] == {
+                              'present': True, 'subject': 'Published 1.26.1 retained draft',
+                              'body': 'Legacy plain-text body', 'body_html': None})
                     candidate = probe(installed, 'candidate-data')
                     check(label + ' synthetic candidate-era SQL and private witness is created without transport',
                           candidate.get('created') is True and candidate_fixture_valid(candidate))
@@ -276,10 +291,16 @@ def main():
                         release_state = probe(installed, 'release-state')
                         check(label + ' every release marker reaches its exact current version with no commercial or messaging rows',
                               release_state['markers'] == MIGRATIONS
-                              and release_state['side_effect_rows'] == 0 and release_state['hosting_payments_enabled'] is False)
+                              and release_state['side_effect_rows'] == 0
+                              and release_state['hosting_payments_enabled'] is False
+                              and release_state['mail_drafts_body_html'] is True
+                              and release_state['legacy_mail_draft'] == {
+                                  'present': True, 'subject': 'Published 1.26.1 retained draft',
+                                  'body': 'Legacy plain-text body', 'body_html': None})
                         migrated = probe(installed, 'snapshot')
                         check(label + ' additive schema preparation retains every original and candidate-era row and key',
-                              same_retained(candidate_snapshot, migrated))
+                              same_retained(candidate_snapshot, migrated,
+                                            allow_null_columns={'mail_drafts': {'body_html'}}))
                         representative = probe(installed, 'representative-data')
                         check(label + ' representative identity payment notification note and disabled-mail rows are created without transport',
                               representative.get('created') is True and representative_fixture_valid(representative))
@@ -336,7 +357,9 @@ def main():
         raise
     finally:
         report = {'passed': complete and len(scopes) == 2 and all(c['passed'] for c in checks),
-                  'source_sha': os.environ.get('CWP_SOURCE_SHA'), 'version': VERSION, 'scopes': scopes, 'checks': checks,
+                  'source_sha': os.environ.get('CWP_SOURCE_SHA'),
+                  'source_tree': os.environ.get('CWP_SOURCE_TREE'), 'version': VERSION,
+                  'candidate': candidate_identity, 'scopes': scopes, 'checks': checks,
                   'run_id': os.environ.get('CWP_RUN_ID'), 'run_attempt': os.environ.get('CWP_RUN_ATTEMPT'),
                   'baseline_source': BASELINE_SOURCE, 'baseline_sha256': BASELINE_SHA,
                   'scope': 'Actual published 1.26.1 installers, immutable in-process archive snapshots, populated SQL retention, interrupted owner HTTP updater, recovery/reapply, and every reviewed 1.27.0 additive migration; synthetic records and loopback only.',
