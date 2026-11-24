@@ -133,9 +133,11 @@ jobs:
             qa/release127-populated/progress.json
             qa/release127-populated/failure.txt
             qa/release127-populated/1261-root-before.json
+            qa/release127-populated/1261-root-database-apply.json
             qa/release127-populated/1261-root-after.json
             qa/release127-populated/1261-root-server.log
             qa/release127-populated/1261-subfolder-before.json
+            qa/release127-populated/1261-subfolder-database-apply.json
             qa/release127-populated/1261-subfolder-after.json
             qa/release127-populated/1261-subfolder-server.log
             qa/release127-input-guards-results.json

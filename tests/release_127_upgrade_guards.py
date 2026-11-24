@@ -43,6 +43,26 @@ def main(output):
     acceptance_tree = ast.parse(acceptance)
     apache_tree = ast.parse(apache)
     archive_tree = ast.parse(archive)
+    retention_upload = workflow.partition(
+        '      - name: Preserve hashed retention evidence and failures')[2].partition(
+            '\n\n  apache-upgrade:')[0]
+    populated_uploads = [
+        line.strip() for line in retention_upload.splitlines()
+        if line.strip().startswith('qa/release127-populated/')
+    ]
+    expected_populated_uploads = {
+        'qa/release127-populated/results.json',
+        'qa/release127-populated/progress.json',
+        'qa/release127-populated/failure.txt',
+        'qa/release127-populated/1261-root-before.json',
+        'qa/release127-populated/1261-root-database-apply.json',
+        'qa/release127-populated/1261-root-after.json',
+        'qa/release127-populated/1261-root-server.log',
+        'qa/release127-populated/1261-subfolder-before.json',
+        'qa/release127-populated/1261-subfolder-database-apply.json',
+        'qa/release127-populated/1261-subfolder-after.json',
+        'qa/release127-populated/1261-subfolder-server.log',
+    }
     assigned_names = {
         node.id for node in ast.walk(acceptance_tree)
         if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
@@ -256,6 +276,13 @@ def main(output):
           ])
           and 'from release_127_loopback_session import LocalSession' in apache
           and 'LocalSession.from_origin(origin)' in apache)
+    check('Failure-always upload retains only the finite release evidence and bounded diagnostics',
+          len(populated_uploads) == len(expected_populated_uploads)
+          and set(populated_uploads) == expected_populated_uploads
+          and 'if: always()' in retention_upload
+          and 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' in retention_upload
+          and 'if-no-files-found: warn' in retention_upload
+          and 'retention-days: 14' in retention_upload)
     check('Apache artifact upload names only finite public receipts logs results and candidate proof',
           all(term in workflow for term in [
               'qa/release127-apache/results.json', 'qa/release127-apache/progress.json',
