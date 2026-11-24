@@ -1029,6 +1029,19 @@ def run(root=ROOT):
         path = 'site/app/billing/software_client.php'
         refuses('Refuses removal of an actual current application file',
                 lambda: modified(path, lambda target: target.unlink()))
+
+        original_filesystem_mode = proof.filesystem_mode
+        original_index_modes = proof._CURRENT_INDEX_MODES
+        try:
+            proof.filesystem_mode = lambda root, candidate: (
+                '100755' if candidate == path else original_filesystem_mode(root, candidate))
+            proof._CURRENT_INDEX_MODES = {path: '100644'}
+            assert proof.mode(fixture, path) == '100755'
+        finally:
+            proof.filesystem_mode = original_filesystem_mode
+            proof._CURRENT_INDEX_MODES = original_index_modes
+        passed('Windows index-mode compatibility cannot mask actual executable source')
+
         refuses('Refuses an unexpected executable mode on actual application source',
                 lambda: modified(path, lambda target: target.chmod(0o755)))
 
