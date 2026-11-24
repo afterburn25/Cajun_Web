@@ -84,11 +84,18 @@ def main(baseline, output):
     check('Archive asset source and identity are immutable',
           (fetch.ARCHIVE_ASSET_ID, fetch.SOURCE, fetch.MEMBERS)
           == (711656635, 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391', 3072))
+    check('Public release URLs retain exact immutable asset names without REST quota input',
+          fetch.ARCHIVE_URL == 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/' + fetch.ARCHIVE_NAME
+          and fetch.MANIFEST_URL == 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/' + fetch.MANIFEST_NAME
+          and 'api.github.com' not in fetch.ALLOWED_HOSTS)
 
     deny('Unknown published asset hosts are refused before a request',
          lambda: fetch.fetch('https://untrusted.invalid/release.zip', fetch.ARCHIVE_BYTES))
     deny('Insecure asset URLs are refused before a request',
          lambda: fetch.fetch('http://api.github.com/release.zip', fetch.ARCHIVE_BYTES))
+    deny('REST asset API URLs are refused before a request',
+         lambda: fetch.fetch('https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/711656635',
+                             fetch.ARCHIVE_BYTES))
     deny('Unknown redirect targets are refused before the redirected request',
          lambda: fetch.TrustedRedirectHandler().redirect_request(
              None, None, 302, 'Found', {}, 'https://untrusted.invalid/release.zip'))

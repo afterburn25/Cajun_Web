@@ -242,9 +242,9 @@ def main():
                     candidate = probe(installed, 'candidate-data')
                     check(label + ' synthetic candidate-era SQL and private witness is created without transport',
                           candidate.get('created') is True and candidate_fixture_valid(candidate))
-                    candidate_snapshot = probe(installed, 'snapshot')
+                    candidate_data_snapshot = probe(installed, 'snapshot')
                     check(label + ' candidate-era witness adds data without changing the upgraded baseline',
-                          same_retained(after, candidate_snapshot))
+                          same_retained(after, candidate_data_snapshot))
                     candidate_replay = probe(installed, 'candidate-replay')
                     check(label + ' candidate-era replay is refused without changing retained data',
                           candidate_replay.get('duplicate_refused') is True
@@ -256,7 +256,7 @@ def main():
                         check(label + ' owner-authenticated HTTP recovery restores baseline files',
                               '<h2>Rolled-back</h2>' in response.text and recovered['version'] == initial)
                         check(label + ' HTTP recovery preserves baseline and candidate-era SQL and private data',
-                              same_retained(candidate_snapshot, recovered, allow_settings_additions=False))
+                              same_retained(candidate_data_snapshot, recovered, allow_settings_additions=False))
                         extract_snapshot(update_bytes, installed)
                         updater = base + f'/cwp-update-{VERSION}/owner-update.php'
                         response = submit(owner, updater, 'inspect', {'backup_confirm': '1'})
@@ -269,7 +269,7 @@ def main():
                               assert_no_error(response) and '<h2>Complete</h2>' in response.text
                               and reapplied['version'] == VERSION)
                         check(label + ' reapplication preserves baseline and candidate-era records exactly',
-                              same_retained(candidate_snapshot, reapplied, allow_settings_additions=False))
+                              same_retained(candidate_data_snapshot, reapplied, allow_settings_additions=False))
                         candidate_replay = probe(installed, 'candidate-replay')
                         check(label + ' candidate-era replay remains idempotent after recovery and reapply',
                               candidate_replay.get('duplicate_refused') is True
@@ -299,7 +299,7 @@ def main():
                                   'body': 'Legacy plain-text body', 'body_html': None})
                         migrated = probe(installed, 'snapshot')
                         check(label + ' additive schema preparation retains every original and candidate-era row and key',
-                              same_retained(candidate_snapshot, migrated,
+                              same_retained(candidate_data_snapshot, migrated,
                                             allow_null_columns={'mail_drafts': {'body_html'}}))
                         representative = probe(installed, 'representative-data')
                         check(label + ' representative identity payment notification note and disabled-mail rows are created without transport',

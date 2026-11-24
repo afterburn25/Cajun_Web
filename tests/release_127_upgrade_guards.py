@@ -1,6 +1,7 @@
 """Portable guards for the separately named published-v1.26.1 upgrade gate."""
 from pathlib import Path
 import argparse
+import ast
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,12 +36,20 @@ def main(output):
                 'checkdnsrr,snmpget,snmpgetnext,snmpwalk,mail,exec,shell_exec,system,passthru,'
                 'popen,proc_open,pcntl_exec')
     compact = lambda source: ''.join(source.split()).replace("'", '').replace('"', '')
+    acceptance_tree = ast.parse(acceptance)
+    assigned_names = {
+        node.id for node in ast.walk(acceptance_tree)
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+    }
     check('Gate binds exact published source hash and 1.27.0 candidate',
           "BASELINE_SOURCE = 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'" in acceptance
           and "VERSION != '1.27.0'" in acceptance)
     check('Fetcher pins archive bytes hash source and both asset identities',
           all(value in fetch for value in ['17_429_306', '7d7117a25fab556cb3f8dfce7f0b859d072cfc992b98fc91026d96b490e1dad3',
                                             '711656635', '711656643', '3072']))
+    check('Fetcher uses exact public release downloads without REST quota dependency',
+          "RELEASE_BASE_URL = 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/'" in fetch
+          and "'api.github.com'" not in fetch)
     check('Updater history recognizes only the exact published 1.26.1 inventory',
           list(history)[-2:] == ['1.26.0', '1.26.1']
           and history['1.26.1']['source_commit'] == 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'
@@ -79,10 +88,12 @@ def main(output):
                                                'recovery and reapply', 'same_retained']))
     check('Candidate-era records are retained and replay-safe across recovery and reapply',
           all(term in acceptance for term in ['candidate-data', 'candidate-replay',
-                                               'candidate_snapshot', 'recovered', 'reapplied'])
+                                               'candidate_data_snapshot', 'recovered', 'reapplied'])
           and all(term in probe for term in ['release127_candidate_create',
                                               "if($mode==='candidate-data')",
                                               "if($mode==='candidate-replay')"]))
+    check('Candidate archive verifier is never shadowed by a local snapshot variable',
+          'candidate_snapshot' not in assigned_names)
     check('Representative 1.27 records cover identity payment notification notes and disabled mail',
           all(term in acceptance for term in ['representative-data', 'representative-replay',
                                                'representative_fixture_valid'])

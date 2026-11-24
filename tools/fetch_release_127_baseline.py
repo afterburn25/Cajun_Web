@@ -12,11 +12,11 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_ASSET_ID = 711656635
 MANIFEST_ASSET_ID = 711656643
-ASSET_API = 'https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/'
-ARCHIVE_URL = ASSET_API + str(ARCHIVE_ASSET_ID)
-MANIFEST_URL = ASSET_API + str(MANIFEST_ASSET_ID)
 ARCHIVE_NAME = 'CajunWebPro-1.26.1-COMPLETE-UPLOAD.zip'
 MANIFEST_NAME = 'CajunWebPro-1.26.1-COMPLETE-UPLOAD.manifest.json'
+RELEASE_BASE_URL = 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/'
+ARCHIVE_URL = RELEASE_BASE_URL + ARCHIVE_NAME
+MANIFEST_URL = RELEASE_BASE_URL + MANIFEST_NAME
 ARCHIVE_SHA256 = '7d7117a25fab556cb3f8dfce7f0b859d072cfc992b98fc91026d96b490e1dad3'
 ARCHIVE_BYTES = 17_429_306
 MANIFEST_SHA256 = 'a903b2850ab4ff25ed94ceddd1794370341865183ee515a72bd816cd5324d0ee'
@@ -24,7 +24,7 @@ MANIFEST_BYTES = 482_435
 SOURCE = 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'
 MEMBERS = 3072
 ALLOWED_HOSTS = {
-    'api.github.com', 'github.com', 'release-assets.githubusercontent.com',
+    'github.com', 'release-assets.githubusercontent.com',
     'objects.githubusercontent.com',
 }
 
@@ -139,7 +139,6 @@ def fetch(url: str, limit: int) -> bytes:
     request = urllib.request.Request(url, headers={
         'Accept': 'application/octet-stream',
         'User-Agent': 'CajunWebPro-release-127-acceptance',
-        'X-GitHub-Api-Version': '2022-11-28',
     })
     with asset_opener().open(request, timeout=90) as response:
         parsed = urlsplit(response.url)
