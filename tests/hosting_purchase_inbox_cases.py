@@ -248,15 +248,16 @@ def run_browser(env, browser):
                 for kind, label, query in [('invoice', 'View invoice', {'view': 'invoice-payments', 'invoice_id': row['invoice_id']} if is_owner else {'invoice': row['invoice_id']}),
                                            ('project', 'View project', {'view': 'studio-job', 'id': row['project_id']} if is_owner else {'job': row['project_id']}),
                                            ('agreement', 'View agreement', {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
-                    # Retained five-card projections can exceed the ordinary
-                    # hosted navigation budget. Keep one bounded attempt and
-                    # every response, route and destination assertion exact.
+                    # Retained five-card projections and their destination views
+                    # can exceed the ordinary hosted navigation budget. Keep one
+                    # bounded attempt and every response, route and destination
+                    # assertion exact.
                     check('Inbox reloads ' + actor + ' before ' + phase + ' ' + kind, goto(page, list_url(is_owner), 60000) == 200)
                     current = card(page, request)
                     link = current.get_by_role('link', name=label, exact=True)
                     title = current.locator('dt').filter(has_text='Project').evaluate('el=>el.nextElementSibling.textContent')
                     check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' binds exact route', link.count() == 1 and destination(link.get_attribute('href'), endpoint, query))
-                    check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' opens actual destination', click(page, link) == 200 and destination(page.url, endpoint, query))
+                    check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' opens actual destination', click(page, link, 60000) == 200 and destination(page.url, endpoint, query))
                     if kind == 'invoice':
                         check('Inbox ' + actor + ' ' + phase + ' selected invoice retains reference', row['invoice_reference'] in page.inner_text('body') and ('Payment history' in page.inner_text('body')))
                     elif kind == 'project':
