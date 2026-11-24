@@ -127,7 +127,8 @@ def main(baseline, output):
           all(fragment in diagnostic_source for fragment in (
               "parsed.hostname != '127.0.0.1'",
               "'.notice.error[role=\"alert\"]'",
-              "'[redacted-reference]'",
+              "[a-f0-9]{8,64}",
+              "r'\\1[redacted-reference]'",
               "'path': parsed.path",
               "'error_notices': notices[:3]",
               "message[:500]"))

@@ -154,7 +154,7 @@ def repeated_form_fields_self_check():
         'url': ('http://127.0.0.1/admin/index.php?view=studio-upgrade&database_review='
                 + 'b' * 64),
         'text': ('<div class="notice error" role="alert">Database state changed. Reference: '
-                 + 'c' * 64 + '</div><input name="csrf" value="must-not-appear">'),
+                 + 'A1B2C3D4' + '</div><input name="csrf" value="must-not-appear">'),
     })()
     check('Migration failure diagnostic excludes query form and reference secrets',
           database_apply_diagnostic(diagnostic_response) == {
@@ -208,7 +208,9 @@ def database_apply_diagnostic(response):
     notices = []
     for node in BeautifulSoup(response.text, 'html.parser').select('.notice.error[role="alert"]'):
         message = ' '.join(node.get_text(' ', strip=True).split())
-        message = re.sub(r'\b[a-f0-9]{32,64}\b', '[redacted-reference]', message, flags=re.I)
+        message = re.sub(
+            r'(?i)(\bReference:\s*)[a-f0-9]{8,64}\b',
+            r'\1[redacted-reference]', message)
         if message and message not in notices:
             notices.append(message[:500])
     return {
