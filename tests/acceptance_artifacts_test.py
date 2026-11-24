@@ -488,6 +488,7 @@ def software_authority_report_checks(tmp):
     identity_reports=set(acceptance_contract.get('client_identity_native_command_extension',{}).get('reports',[]))
     hosting_payment_reports=set(acceptance_contract.get('hosting_payment_acceptance_extension',{}).get('reports',[]))
     project_notes_reports=set(acceptance_contract.get('project_private_notes_native_command_extension',{}).get('reports',[]))
+    release127_reports=set(acceptance_contract.get('release_127_upgrade_extension',{}).get('reports',[]))
     for mode, count, digest in [
         ('browser', 172, 'fe575824e759ec6cb45237f34dbca9069da2a8dbd137b336b4c9c0e09dbbe57e'),
         ('final', 218, 'de07b604dc35878b3e337314a5559e902f9bdcf41cb43241d143451388c828f7'),
@@ -495,7 +496,7 @@ def software_authority_report_checks(tmp):
         current = registry[mode]
         check('Software authority named report is required exactly once in ' + mode,
               current.count(name) == 1 and len(current) == len(set(current)))
-        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports and item not in hosting_payment_reports and item not in project_notes_reports]
+        retained = [item for item in current if item != name and item not in database_reports and item not in cloud_intake_reports and item not in identity_reports and item not in hosting_payment_reports and item not in project_notes_reports and item not in release127_reports]
         check('Software authority inventory retains every original ordered ' + mode + ' report',
               len(retained) == count and hashlib.sha256(json.dumps(retained, separators=(',', ':')).encode()).hexdigest() == digest)
     body = (ROOT / 'docs/evidence/software-client-authority-20261102/corrected01/native.json').read_bytes()
@@ -768,6 +769,16 @@ def run(tmp):
     check('Integer aggregate with failure detail remains failed',not a.reports(root)['counts.json']['passed'])
     for lane,name in [('apache','qa/http-results.json'),('recovery','qa/apache-results.json'),('native-browser','qa/structure-results.json'),('build','test-runtime/private/key.txt')]:
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
+    check('Release 1.27 Apache evidence admits only the finite public upgrade namespace',
+          all(a.evidence_allowed(name,'apache') for name in a.RELEASE127_APACHE_QA)
+          and not a.evidence_allowed('qa/release127-apache/unreviewed.json','apache')
+          and not a.evidence_allowed('qa/release127-apache/root-rewrite.json.bak','apache')
+          and not a.evidence_allowed('qa/release127-apache/ROOT-REWRITE.json','apache')
+          and not a.evidence_allowed('qa/release127-apache/root-rewrite.json','native-browser'))
+    deny('Release 1.27 Apache evidence refuses private configuration names',
+         lambda:a.evidence_allowed('qa/release127-apache/config.php','apache'))
+    deny('Release 1.27 Apache evidence refuses SQL dump names',
+         lambda:a.evidence_allowed('qa/release127-apache/private/dump.sql','apache'))
     for lane in a.LANES:
         check('Evidence ownership admits only exact lane-namespaced package-source receipts '+lane,
               all(a.evidence_allowed('qa/'+lane+'-'+name,lane) for name in a.PACKAGE_SOURCE_QA)

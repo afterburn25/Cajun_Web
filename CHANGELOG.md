@@ -1,3 +1,12 @@
+## 2026-11-23 — 1.27.0 qualification successor
+
+- Advance the reviewed post-PR401 source from development 1.26.1 to the compatible 1.27.0 minor candidate; no tag, publication, deployment, or live operation is authorized.
+- Include the accepted public identity, Shared-hosting checkout/payment/fulfillment, catalog/licensing, notification health, private project-note, consolidated mail, and diagnostic reliability work merged since published v1.26.1.
+- Add a strict published-v1.26.1 upgrade gate across PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4, plus actual Apache root/subfolder rewrite/no-rewrite coverage.
+- Close the predecessor archive TOCTOU gap by extracting only from the same in-memory bytes whose exact size, SHA-256, ZIP structure, and manifest member hashes were verified.
+- Register the formatted-draft readiness marker in the reviewed database-update plan so a published 1.26.1 installation receives its additive HTML column without losing existing drafts.
+- Preserve signed package verification, exact source/run/attempt provenance, all earlier failures, native databases, checkout/payment assertions, browser acceptance, and separately gated publication/live-operation boundaries.
+
 ## 2026-11-06 — catalog and licensing home candidate
 
 - Group the existing Service catalog and Licenses & software routes under one permission-filtered Catalog & Licensing navigation area while preserving their accessible labels and destinations.

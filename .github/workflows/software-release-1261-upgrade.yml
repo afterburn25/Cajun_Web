@@ -1,0 +1,113 @@
+name: Published 1.26.1 to 1.27.0 upgrade acceptance
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-1261-upgrade-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database: [mariadb, mysql]
+    services:
+      database:
+        image: ${{ matrix.database == 'mariadb' && 'mariadb:10.11@sha256:e5fe75b2b9de0eb9f6f9a4d9c97272fb3a7480e389ccd487a786bab2a12cc0d7' || 'mysql:8.4@sha256:cd05748e60471137face0ba0a256c9c48669198aee1f12132f413fc91fd8948f' }}
+        env:
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+    env:
+      CWP_TEST_IMAGE: cwp-release127-php:${{ matrix.php }}
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_DISABLED_FUNCTIONS: curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,stream_socket_server,stream_socket_sendto,socket_create,socket_create_pair,socket_import_stream,socket_connect,socket_send,socket_sendto,socket_sendmsg,socket_write,ftp_connect,ftp_ssl_connect,ftp_nb_connect,imap_open,ssh2_connect,ldap_connect,pg_connect,dns_get_record,gethostbyaddr,gethostbyname,gethostbynamel,checkdnsrr,snmpget,snmpgetnext,snmpwalk,mail,exec,shell_exec,system,passthru,popen,proc_open,pcntl_exec
+      CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CWP_RUN_ID: ${{ github.run_id }}
+      CWP_RUN_ATTEMPT: ${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out exact candidate source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.CWP_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind isolated database port
+        run: echo "CWP_TEST_PORT=${{ job.services.database.ports[3306] }}" >> "$GITHUB_ENV"
+      - name: Build exact clean candidate packages
+        run: python3 tools/build.py --commit "$CWP_SOURCE_SHA"
+      - name: Fetch and verify immutable published baseline
+        run: python3 tools/fetch_release_127_baseline.py test-runtime/CajunWebPro-1.26.1-COMPLETE-UPLOAD.zip
+      - name: Verify baseline transfer and release gate contracts
+        run: |
+          mkdir -p qa
+          python3 tests/release_127_upgrade_input_guards.py --report qa/release127-input-guards-results.json
+          python3 tests/release_127_upgrade_guards.py --report qa/release127-upgrade-guards-results.json
+      - name: Build isolated PHP runtime and test dependencies
+        run: |
+          if [ "${{ matrix.php }}" = "8.2" ]; then
+            CWP_PHP_BASE='php:8.2-cli@sha256:842748bc4526d4c3c56501fd314e2d75d1005e8a45b7a40f9768ee820df0a6d6'
+          else
+            CWP_PHP_BASE='php:8.4-cli@sha256:6b13a8678b38ca38e4e3950be57b664ed8c8706131a0586111f68792aede4c58'
+          fi
+          docker build --build-arg PHP_BASE="$CWP_PHP_BASE" -t "$CWP_TEST_IMAGE" - <<'DOCKER'
+          ARG PHP_BASE
+          FROM ${PHP_BASE}
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libpng-dev && docker-php-ext-install pdo_mysql gd && rm -rf /var/lib/apt/lists/*
+          WORKDIR /workspace
+          DOCKER
+          python3 -m venv "$RUNNER_TEMP/release127-venv"
+          "$RUNNER_TEMP/release127-venv/bin/pip" install --disable-pip-version-check --only-binary=:all: --require-hashes -r tools/requirements-release127.txt
+          docker run --rm --network host -e CWP_TEST_PORT -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_USER -e CWP_TEST_PASSWORD "$CWP_TEST_IMAGE" php -d allow_url_fopen=0 -d "disable_functions=$CWP_TEST_DISABLED_FUNCTIONS" -r '
+          for($i=0;$i<90;$i++){try{new PDO("mysql:host=127.0.0.1;port=".getenv("CWP_TEST_PORT").";dbname=cwp_test","cwp_test","local-ci-only");echo "Isolated SQL ready\n";exit(0);}catch(Throwable $e){sleep(2);}}exit(1);'
+      - name: Install populate interrupt recover migrate and reapply
+        run: |
+          "$RUNNER_TEMP/release127-venv/bin/python" tests/release_127_upgrade_acceptance.py
+      - name: Require complete exact-source evidence
+        run: |
+          python3 - <<'PY'
+          import json, os
+          r=json.load(open('qa/release127-populated/results.json'))
+          assert r['source_sha']==os.environ['CWP_SOURCE_SHA']
+          assert str(r['run_id'])==os.environ['CWP_RUN_ID'] and str(r['run_attempt'])==os.environ['CWP_RUN_ATTEMPT']=='1'
+          assert r['version']=='1.27.0' and r['passed'] is True and len(r['scopes'])==2
+          assert r['baseline_source']=='f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'
+          assert r['baseline_sha256']=='7d7117a25fab556cb3f8dfce7f0b859d072cfc992b98fc91026d96b490e1dad3'
+          assert {s['scope'] for s in r['scopes']}=={'1261-root','1261-subfolder'}
+          assert all(c['passed'] is True for c in r['checks'])
+          print('Published 1.26.1 upgrade evidence verified:',len(r['checks']))
+          PY
+      - name: Verify acceptance did not mutate tracked source
+        if: always()
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Preserve hashed retention evidence and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-1261-to-127-${{ matrix.php }}-${{ matrix.database }}-${{ env.CWP_SOURCE_SHA }}-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: |
+            qa/release127-populated/
+            qa/release127-input-guards-results.json
+            qa/release127-upgrade-guards-results.json
+          if-no-files-found: warn
+          retention-days: 14

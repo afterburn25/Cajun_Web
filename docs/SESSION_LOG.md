@@ -1,3 +1,9 @@
+## 2026-11-23 — PR #401 resulting-main complete; REL-01 successor started
+
+Merged PR #401 normally as `f73515c681cafc0d46fb117f0999b597fa05eed5` after exact-head attempt-1 qualification. All 16 naturally triggered resulting-main workflows passed attempt 1, including full Application and all four checkout/payment Combined lanes. Exact evidence was recorded on PR #401, issue #157, and coordinator PR #340. No older backlog PR was integrated.
+
+Started `codex/rel-01-1.27.0-20261123` from that verified main. Confirmed v1.26.1 remains the latest immutable release and 1.27.0 the correct next minor. Preserved stale release candidates as history, ported only reviewed concepts, closed their archive TOCTOU gap with a one-read verified byte snapshot, registered the formatted-draft additive upgrade in the database review path, and began current release notes, migration instructions, package and published-baseline acceptance. Publication and all live operations remain separately unauthorized.
+
 ## 2026-11-06 12:50 UTC — exact-head review required the real media server
 
 Authenticated analysis of PR #367 at `c074d0c` resolved the earlier missing-file bug and positive-readiness flag with 0 bugs and 0 vulnerabilities, then identified one distinct applicable flag: the fixture's static SVG thumbnail bypassed managed-image HTTP serving. Preserved c074 and its natural workflows as predecessor evidence.

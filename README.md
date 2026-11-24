@@ -1,3 +1,11 @@
+## Current qualification — 2026-11-23
+
+PR #401 is merged at exact main `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`. All 16 naturally triggered resulting-main workflows passed on attempt 1. The only current integration priority is REL-01: prepare and qualify CajunWebPro 1.27.0 from that verified source. Older provider/P2 backlog remains held.
+
+The latest published release is [v1.26.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.26.1). The 1.27.0 candidate adds accepted public identity, Shared-hosting checkout/payment/fulfillment, administration, project, mail, and diagnostic work. [Release scope](docs/RELEASE_SCOPE_1.27.0.md), [notes](docs/RELEASE_NOTES_1.27.0.md), [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.27.0.md), and [qualification matrix](docs/TEST_REPORT_1.27.0.md) distinguish preparation, qualification, merge, publication, and deployment.
+
+No 1.27.0 tag, release asset, production deployment, live payment, provisioning, customer message, or SSH/support operation is authorized by this candidate.
+
 ## Verified release — 2026-10-18
 
 [CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.

@@ -1,3 +1,16 @@
+# Current status — 2026-11-23 — REL-01 / 1.27.0 qualification
+
+- Authoritative queue: issue #157. Coordinator record: PR #340. Codex is the integration lead for all 20i and non-20i work; older ownership text below is history.
+- Verified main: `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`, after normal PR #401 merge.
+- Resulting-main: all 16 natural workflows passed attempt 1, including full Application, all four checkout/payment Combined lanes, exact-source composition, package inventory, security/privacy, and diagnostic evidence.
+- Published baseline: v1.26.1 source `f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391`. No v1.27.0 tag or release exists. 1.27.0 remains the correct compatible minor successor.
+- Active branch: `codex/rel-01-1.27.0-20261123`, created from the verified main. Stale release candidates `f7be9cd2`, `c05c0a8f`, and `926929e2` remain preserved but nonqualifying.
+- Current work: coordinated version/generated refresh, current notes/migrations, immutable published-1.26.1 upgrade gates, deterministic package verification, independent implementation/security review, fresh first-attempt hosted acceptance, normal merge, and resulting-main verification.
+- Held: #344, #345, #347, #348 and other provider/P2 backlog integration.
+- Boundaries: no tag/publication, production deployment, live payment/refund, paid provisioning, customer message, provider write, SSH/support access, or destructive live operation without separate authorization.
+
+Historical status follows; its ownership, checkpoint, and pending-work claims do not supersede this prefix.
+
 ## 2026-11-09 — UX-09 public identity implementation in qualification
 
 Verified `main` is `4d10251e4f9c7ad85f42a5b49c3c23344057d66e`, the resulting-main merge of qualified PR #383. All 50 resulting-main workflow runs succeeded, including Application `42660421562`; v1.26.1 remains the immutable published release and no publication or deployment is authorized by this work.
