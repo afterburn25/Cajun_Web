@@ -100,6 +100,7 @@ def main(baseline, output):
     repeated_source = acceptance_functions.get('repeated_form_fields', '')
     submit_source = acceptance_functions.get('submit', '')
     self_check_source = acceptance_functions.get('repeated_form_fields_self_check', '')
+    diagnostic_source = acceptance_functions.get('database_apply_diagnostic', '')
     check('Reviewed PHP array parser keeps exact enabled ordered fields and refuses ambiguity',
           all(fragment in repeated_source for fragment in (
               'Expected one exact repeated-field form',
@@ -122,6 +123,23 @@ def main(baseline, output):
               "submission['data']['confirm'] == '1'",
               "except ValueError:",
               "check('Duplicate reviewed PHP array fields are refused before submission', refused)")))
+    check('Failed migration application retains only bounded redacted loopback diagnostics',
+          all(fragment in diagnostic_source for fragment in (
+              "parsed.hostname != '127.0.0.1'",
+              "'.notice.error[role=\"alert\"]'",
+              "'[redacted-reference]'",
+              "'path': parsed.path",
+              "'error_notices': notices[:3]",
+              "message[:500]"))
+          and "parsed.query" not in diagnostic_source
+          and "'html':" not in diagnostic_source
+          and "'url': response.url" not in diagnostic_source)
+    check('Installed acceptance directly proves diagnostic query and secret exclusion',
+          all(fragment in self_check_source for fragment in (
+              "'path': '/admin/index.php'",
+              "'error_notices': ['Database state changed. Reference: [redacted-reference]']",
+              "'completed': False",
+              "Migration failure diagnostic excludes query form and reference secrets")))
 
     deny('Unknown published asset hosts are refused before a request',
          lambda: fetch.fetch('https://untrusted.invalid/release.zip', fetch.ARCHIVE_BYTES))

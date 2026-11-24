@@ -12,6 +12,7 @@ import re
 import subprocess
 import time
 import traceback
+from urllib.parse import urlsplit
 import requests
 from bs4 import BeautifulSoup
 from release_126_upgrade_cases import fields, OWNER
@@ -148,6 +149,20 @@ def repeated_form_fields_self_check():
     else:
         refused = False
     check('Duplicate reviewed PHP array fields are refused before submission', refused)
+    diagnostic_response = type('DiagnosticResponse', (), {
+        'status_code': 200,
+        'url': ('http://127.0.0.1/admin/index.php?view=studio-upgrade&database_review='
+                + 'b' * 64),
+        'text': ('<div class="notice error" role="alert">Database state changed. Reference: '
+                 + 'c' * 64 + '</div><input name="csrf" value="must-not-appear">'),
+    })()
+    check('Migration failure diagnostic excludes query form and reference secrets',
+          database_apply_diagnostic(diagnostic_response) == {
+              'status_code': 200,
+              'path': '/admin/index.php',
+              'error_notices': ['Database state changed. Reference: [redacted-reference]'],
+              'completed': False,
+          })
 
 
 def same_retained(before, after, *, allow_settings_additions=True, allow_table_additions=(),
@@ -182,6 +197,26 @@ def same_retained(before, after, *, allow_settings_additions=True, allow_table_a
 def assert_no_error(response):
     return response.status_code == 200 and not re.search(
         r'PHP (?:Fatal error|Warning|Notice)|We could not complete this request', response.text)
+
+
+def database_apply_diagnostic(response):
+    """Retain only bounded public error text; never URLs, form values, or HTML."""
+    parsed = urlsplit(response.url)
+    if (parsed.scheme != 'http' or parsed.hostname != '127.0.0.1'
+            or parsed.username is not None or parsed.password is not None):
+        raise RuntimeError('Non-loopback release diagnostic refused')
+    notices = []
+    for node in BeautifulSoup(response.text, 'html.parser').select('.notice.error[role="alert"]'):
+        message = ' '.join(node.get_text(' ', strip=True).split())
+        message = re.sub(r'\b[a-f0-9]{32,64}\b', '[redacted-reference]', message, flags=re.I)
+        if message and message not in notices:
+            notices.append(message[:500])
+    return {
+        'status_code': response.status_code,
+        'path': parsed.path,
+        'error_notices': notices[:3],
+        'completed': 'Database updates completed:' in response.text,
+    }
 
 
 def candidate_fixture_valid(result):
@@ -394,6 +429,9 @@ def main():
                         check(label + ' owner receives one exact dependency-ordered migration review',
                               assert_no_error(response) and 'Review selected database updates' in response.text)
                         response = submit(owner, response.url, 'studio_database_apply', {'confirm': '1'})
+                        apply_diagnostic = database_apply_diagnostic(response)
+                        (OUT / (label + '-database-apply.json')).write_text(
+                            json.dumps(apply_diagnostic, indent=2) + '\n')
                         check(label + ' actual reviewed release migrations succeed', assert_no_error(response) and 'Database updates completed:' in response.text)
                         release_state = probe(installed, 'release-state')
                         check(label + ' every release marker reaches its exact current version with no commercial or messaging rows',
