@@ -15,7 +15,8 @@ import traceback
 import requests
 from bs4 import BeautifulSoup
 from release_126_upgrade_cases import fields, OWNER
-from release_127_archive import candidate_snapshot, extract_snapshot, published_snapshot
+from release_127_archive import (candidate_snapshot, extract_snapshot, fixture_storage_path,
+                                 interrupted_journal, ordinary_file_bytes, published_snapshot)
 from release_127_loopback_session import LocalSession
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +46,12 @@ DISABLED_FUNCTIONS = ('curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_soc
                       'checkdnsrr,snmpget,snmpgetnext,snmpwalk,mail,exec,shell_exec,system,passthru,'
                       'popen,proc_open,pcntl_exec')
 PHP_OPTIONS = ['-d', 'allow_url_fopen=0', '-d', 'disable_functions=' + DISABLED_FUNCTIONS]
+MAINTENANCE = (b'# Temporary owner-authenticated structure update. Retry or recover using the staged owner page.\n'
+               b'Options -Indexes\n'
+               b'Require all denied\n'
+               b'<Files "owner-update.php">\n'
+               b'Require all granted\n'
+               b'</Files>\n')
 checks = []
 scopes = []
 
@@ -190,6 +197,12 @@ def main():
                         'private_parent': '/workspace/' + private_parent.relative_to(ROOT).as_posix()})
                     result = response.json()
                     check(label + ' actual baseline installer succeeds', response.status_code == 200 and result.get('ok') is True)
+                    storage = fixture_storage_path(
+                        result['storage'], private_parent, web,
+                        virtual_root='/workspace', host_root=ROOT)
+                    check(label + ' installer selects the bounded external private store',
+                          storage.is_relative_to(private_parent.resolve(strict=True))
+                          and not storage.is_relative_to(web.resolve(strict=True)))
                     check(label + ' original code seeded without provider calls', probe(installed, 'seed') == {'seeded': True, 'version': initial})
                     before = probe(installed, 'snapshot')
                     check(label + ' populated original has customers invoices products and encrypted provider records',
@@ -200,6 +213,8 @@ def main():
                     response = submit(owner, admin + '?view=login', 'login', {'email': 'organized@example.invalid', 'password': OWNER})
                     check(label + ' original owner signs in via real HTTP', assert_no_error(response) and 'view=login' not in response.url and 'view=catalog' in response.text)
                     extract_snapshot(update_bytes, installed)
+                    stage = installed / f'cwp-update-{VERSION}'
+                    normal_policy = ordinary_file_bytes(stage / 'site/.htaccess', stage)
                     updater = base + f'/cwp-update-{VERSION}/owner-update.php'
                     response = owner.get(updater, timeout=120)
                     check(label + ' staged updater recognizes current owner without repeat password',
@@ -225,10 +240,20 @@ def main():
                                                  capture_output=True, text=True, timeout=120)
                     check(label + ' update interruption is retained after a durable journal',
                           interrupted.returncode != 0 and 'Synthetic interruption after durable journal' in interrupted.stderr)
-                    check(label + ' interrupted update enters maintenance protection', owner.get(admin, timeout=120).status_code == 403)
+                    journal_state = interrupted_journal(
+                        storage, installed, VERSION, os.environ['CWP_SOURCE_SHA'], normal_policy,
+                        starting_version=initial, expected_root=path,
+                        virtual_root='/workspace', host_root=ROOT)
+                    check(label + ' interrupted update commits guarded recovery evidence',
+                          journal_state['state'] == 'applying'
+                          and journal_state['operations']['.htaccess']['source'] == '.htaccess')
+                    check(label + ' interrupted update installs exact Apache maintenance policy',
+                          ordinary_file_bytes(installed / '.htaccess', installed) == MAINTENANCE)
                     response = submit(owner, updater, 'apply', {'backup_confirm': '1'})
                     after = probe(installed, 'snapshot')
                     check(label + ' authenticated owner applies actual UPDATE over HTTP', assert_no_error(response) and '<h2>Complete</h2>' in response.text and after['version'] == VERSION)
+                    check(label + ' completed update restores exact candidate server policy',
+                          ordinary_file_bytes(installed / '.htaccess', installed) == normal_policy)
                     check(label + ' all preexisting SQL column values and private bytes retained', same_retained(before, after, allow_settings_additions=False))
                     check(label + ' provider credential still decrypts after update', probe(installed, 'capabilities')['provider_secret_retained'] is True)
                     markers_before = probe(installed, 'release-state')

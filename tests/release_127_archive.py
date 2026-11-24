@@ -8,6 +8,8 @@ import shutil
 import stat
 import zipfile
 
+PRIVATE_GUARD = b'<?php http_response_code(404); exit; ?>\n'
+
 
 def _strict_object(pairs):
     result = {}
@@ -152,3 +154,104 @@ def extract_snapshot(data, destination):
                 raise RuntimeError('Archive extraction would replace or escape: ' + name)
             with archive.open(name) as source, target.open('xb') as output:
                 shutil.copyfileobj(source, output)
+
+
+def fixture_storage_path(raw, private_parent, public_root, *, virtual_root=None, host_root=None):
+    """Resolve an installer-reported synthetic store without trusting traversal or links."""
+    if (not isinstance(raw, str) or not raw.startswith('/') or '\\' in raw or '\x00' in raw
+            or any(part in ('', '.', '..') for part in raw.split('/')[1:])):
+        raise RuntimeError('Installer returned a noncanonical private-storage path')
+    reported = Path(raw)
+    if (virtual_root is None) != (host_root is None):
+        raise RuntimeError('Container private-storage mapping is incomplete')
+    if virtual_root is not None:
+        virtual_root, host_root = Path(virtual_root), Path(host_root)
+        if not reported.is_relative_to(virtual_root):
+            raise RuntimeError('Container private storage is outside the exact source mount')
+        candidate = host_root / reported.relative_to(virtual_root)
+    else:
+        candidate = reported
+    candidate = candidate.absolute()
+    parent = Path(private_parent).absolute()
+    public = Path(public_root).absolute()
+    if (not candidate.is_relative_to(parent) or candidate.is_relative_to(public)
+            or not parent.is_dir() or parent.is_symlink()
+            or parent.resolve(strict=True) != parent):
+        raise RuntimeError('Private storage is outside the bounded synthetic parent')
+    current = parent
+    for part in candidate.relative_to(parent).parts:
+        current /= part
+        info = current.lstat()
+        if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+            raise RuntimeError('Private storage has a linked or non-directory component')
+    if candidate.resolve(strict=True) != candidate:
+        raise RuntimeError('Private storage has a noncanonical ancestor')
+    return candidate
+
+
+def ordinary_file_bytes(path, root):
+    """Read a regular contained file only when its entire absolute path is canonical."""
+    path, root = Path(path).absolute(), Path(root).absolute()
+    if (not path.is_relative_to(root) or root.resolve(strict=True) != root
+            or path.resolve(strict=True) != path):
+        raise RuntimeError('Evidence file is outside its canonical root')
+    info = path.lstat()
+    if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode):
+        raise RuntimeError('Evidence path is not an ordinary file')
+    return path.read_bytes()
+
+
+def interrupted_journal(storage, installed, version, source_commit, normal_policy, *,
+                        starting_version, expected_root=None, virtual_root=None, host_root=None):
+    """Parse and bind the exact durable applying-state journal after synthetic interruption."""
+    storage, installed = Path(storage).absolute(), Path(installed).absolute()
+    structure = storage / ('structure-' + version)
+    journal = structure / 'journal.php'
+    structure_info = structure.lstat()
+    if (stat.S_ISLNK(structure_info.st_mode) or not stat.S_ISDIR(structure_info.st_mode)
+            or stat.S_IMODE(structure_info.st_mode) != 0o700
+            or structure.resolve(strict=True) != structure):
+        raise RuntimeError('Interrupted journal directory is not canonical mode 0700')
+    journal_info = journal.lstat()
+    if (stat.S_ISLNK(journal_info.st_mode) or not stat.S_ISREG(journal_info.st_mode)
+            or stat.S_IMODE(journal_info.st_mode) != 0o600):
+        raise RuntimeError('Interrupted journal is not an ordinary mode-0600 file')
+    raw = ordinary_file_bytes(journal, structure)
+    if not raw.startswith(PRIVATE_GUARD):
+        raise RuntimeError('Interrupted journal has an invalid private guard')
+    try:
+        data = json.loads(raw[len(PRIVATE_GUARD):], object_pairs_hook=_strict_object)
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RuntimeError('Interrupted journal JSON is invalid') from error
+    if not isinstance(data, dict):
+        raise RuntimeError('Interrupted journal JSON is not an object')
+    if expected_root is None:
+        if virtual_root is not None or host_root is not None:
+            raise RuntimeError('Virtual journal mapping requires an explicit recorded root')
+        expected_root = str(installed.resolve(strict=True))
+    elif (not isinstance(expected_root, str) or not expected_root.startswith('/')
+          or '\\' in expected_root or '\x00' in expected_root
+          or any(part in ('', '.', '..') for part in expected_root.split('/')[1:])):
+        raise RuntimeError('Expected journal root is not canonical')
+    if virtual_root is not None or host_root is not None:
+        if virtual_root is None or host_root is None:
+            raise RuntimeError('Virtual journal mapping is incomplete')
+        recorded, virtual, host = Path(expected_root), Path(virtual_root), Path(host_root)
+        if (not recorded.is_relative_to(virtual)
+                or (host / recorded.relative_to(virtual)).resolve(strict=True)
+                != installed.resolve(strict=True)):
+            raise RuntimeError('Expected journal root does not map to the exact host installation')
+    elif expected_root != str(installed.resolve(strict=True)):
+        raise RuntimeError('Expected journal root differs from the canonical host installation')
+    operations = data.get('operations')
+    policy = operations.get('.htaccess') if isinstance(operations, dict) else None
+    last = data.get('last_completed')
+    if (data.get('root') != expected_root or data.get('version') != starting_version
+            or data.get('target') != version or data.get('commit') != source_commit
+            or data.get('state') != 'applying' or not isinstance(last, str)
+            or not last or last == '.htaccess' or not isinstance(operations, dict)
+            or last not in operations
+            or not isinstance(policy, dict) or policy.get('source') != '.htaccess'
+            or policy.get('new') != hashlib.sha256(normal_policy).hexdigest()):
+        raise RuntimeError('Interrupted journal does not bind this exact applying update')
+    return data

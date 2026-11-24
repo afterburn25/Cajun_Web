@@ -196,6 +196,89 @@ def main(baseline, output):
             check('Refused extraction-parent symlink creates nothing outside the destination',
                   not (escape / 'new').exists())
 
+            private_parent = temporary / 'private-parent'
+            private_parent.mkdir(mode=0o700)
+            public = temporary / 'web'
+            installed = public / 'studio'
+            installed.mkdir(parents=True)
+            storage = private_parent / 'cajunwebpro-private-test'
+            storage.mkdir(mode=0o700)
+            check('Synthetic installer storage resolves only beneath its exact ordinary private parent',
+                  archive_guard.fixture_storage_path(str(storage), private_parent, public) == storage)
+            check('Container storage maps one exact virtual root to the same bounded host store',
+                  archive_guard.fixture_storage_path(
+                      '/workspace/private-parent/cajunwebpro-private-test', private_parent, public,
+                      virtual_root='/workspace', host_root=temporary) == storage)
+            deny('Installer storage traversal is refused before evidence reads',
+                 lambda: archive_guard.fixture_storage_path(
+                     str(private_parent / '..' / 'escape'), private_parent, public))
+            linked_storage = private_parent / 'linked-storage'
+            linked_storage.symlink_to(escape, target_is_directory=True)
+            deny('Installer storage with a symlink component is refused before evidence reads',
+                 lambda: archive_guard.fixture_storage_path(
+                     str(linked_storage), private_parent, public))
+
+            structure = storage / 'structure-1.27.0'
+            structure.mkdir(mode=0o700)
+            normal_policy = b'candidate server policy\n'
+            journal_data = {
+                'root': str(installed.resolve()), 'version': '1.26.1', 'target': '1.27.0',
+                'commit': 'a' * 40, 'state': 'applying', 'last_completed': 'app/example.php',
+                'operations': {
+                    'app/example.php': {'old': None, 'new': 'b' * 64, 'source': 'app/example.php'},
+                    '.htaccess': {'old': 'c' * 64,
+                                  'new': hashlib.sha256(normal_policy).hexdigest(),
+                                  'source': '.htaccess'},
+                },
+            }
+            journal = structure / 'journal.php'
+            journal.write_bytes(archive_guard.PRIVATE_GUARD
+                                + json.dumps(journal_data, separators=(',', ':')).encode())
+            journal.chmod(0o600)
+            parsed = archive_guard.interrupted_journal(
+                storage, installed, '1.27.0', 'a' * 40, normal_policy,
+                starting_version='1.26.1')
+            check('Interrupted journal binds exact root source target state operation policy and modes',
+                  parsed == journal_data)
+            journal_data['root'] = '/workspace/web/studio'
+            journal.write_bytes(archive_guard.PRIVATE_GUARD
+                                + json.dumps(journal_data, separators=(',', ':')).encode())
+            journal.chmod(0o600)
+            parsed = archive_guard.interrupted_journal(
+                storage, installed, '1.27.0', 'a' * 40, normal_policy,
+                starting_version='1.26.1',
+                expected_root='/workspace/web/studio',
+                virtual_root='/workspace', host_root=temporary)
+            check('Container journal binds its one explicit canonical virtual installation root',
+                  parsed == journal_data)
+            deny('Container journal root that maps to another host installation is refused',
+                 lambda: archive_guard.interrupted_journal(
+                     storage, installed, '1.27.0', 'a' * 40, normal_policy,
+                     starting_version='1.26.1',
+                     expected_root='/workspace/escape',
+                     virtual_root='/workspace', host_root=temporary))
+            journal_data['root'] = str(escape.resolve())
+            journal.write_bytes(archive_guard.PRIVATE_GUARD
+                                + json.dumps(journal_data, separators=(',', ':')).encode())
+            journal.chmod(0o600)
+            deny('Guarded journal for another installation is refused',
+                 lambda: archive_guard.interrupted_journal(
+                     storage, installed, '1.27.0', 'a' * 40, normal_policy,
+                     starting_version='1.26.1'))
+            journal_data['root'] = str(installed.resolve())
+            journal.write_bytes(archive_guard.PRIVATE_GUARD
+                                + json.dumps(journal_data, separators=(',', ':')).encode())
+            journal.chmod(0o644)
+            deny('Interrupted journal without private mode 0600 is refused',
+                 lambda: archive_guard.interrupted_journal(
+                     storage, installed, '1.27.0', 'a' * 40, normal_policy,
+                     starting_version='1.26.1'))
+            policy_target = temporary / 'outside-policy'
+            policy_target.write_bytes(normal_policy)
+            (installed / '.htaccess').symlink_to(policy_target)
+            deny('Policy evidence reached through a symlink is refused',
+                 lambda: archive_guard.ordinary_file_bytes(installed / '.htaccess', installed))
+
         history_copy = temporary / 'legacy-release-files.json'
         predecessor_history = deepcopy(history)
         expected_history_entry = predecessor_history.pop('1.26.1')

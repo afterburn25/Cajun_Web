@@ -2,6 +2,7 @@
 from pathlib import Path
 import argparse
 import ast
+import hashlib
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,10 +25,13 @@ def main(output):
     fetch = (ROOT / 'tools/fetch_release_127_baseline.py').read_text(encoding='utf-8')
     workflow = (ROOT / '.github/workflows/software-release-1261-upgrade.yml').read_text(encoding='utf-8')
     apache = (ROOT / 'tests/release_127_apache_upgrade_acceptance.py').read_text(encoding='utf-8')
+    structure = (ROOT / 'site/app/updates/structure.php').read_text(encoding='utf-8')
     loopback = (ROOT / 'tests/release_127_loopback_session.py').read_text(encoding='utf-8')
     history = json.loads((ROOT / 'tools/legacy-release-files.json').read_text(encoding='utf-8'))
     requirements = (ROOT / 'tools/requirements-release127.txt').read_text(encoding='utf-8')
     archive = (ROOT / 'tests/release_127_archive.py').read_text(encoding='utf-8')
+    builder = (ROOT / 'tools/build.py').read_text(encoding='utf-8')
+    defaults = (ROOT / 'site/config/defaults.php').read_text(encoding='utf-8')
     disabled = ('curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client,'
                 'stream_socket_server,stream_socket_sendto,socket_create,socket_create_pair,'
                 'socket_import_stream,socket_connect,socket_send,socket_sendto,socket_sendmsg,'
@@ -37,10 +41,22 @@ def main(output):
                 'popen,proc_open,pcntl_exec')
     compact = lambda source: ''.join(source.split()).replace("'", '').replace('"', '')
     acceptance_tree = ast.parse(acceptance)
+    apache_tree = ast.parse(apache)
+    archive_tree = ast.parse(archive)
     assigned_names = {
         node.id for node in ast.walk(acceptance_tree)
         if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
     }
+    def assigned_literal(tree, name):
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Assign)
+                    and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)):
+                return ast.literal_eval(node.value)
+        raise AssertionError('Missing literal assignment: ' + name)
+    acceptance_maintenance = assigned_literal(acceptance_tree, 'MAINTENANCE')
+    apache_maintenance = assigned_literal(apache_tree, 'MAINTENANCE')
+    staged_policy = assigned_literal(apache_tree, 'STAGED_POLICY')
+    private_guard = assigned_literal(archive_tree, 'PRIVATE_GUARD')
     check('Gate binds exact published source hash and 1.27.0 candidate',
           "BASELINE_SOURCE = 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'" in acceptance
           and "VERSION != '1.27.0'" in acceptance)
@@ -86,6 +102,46 @@ def main(output):
           all(term in acceptance for term in ['structure_worker.php', 'Synthetic interruption after durable journal',
                                                "submit(owner, updater, 'recover'", 'reapplied',
                                                'recovery and reapply', 'same_retained']))
+    check('Native interruption binds durable evidence and exact policy without claiming Apache enforcement',
+          all(term in acceptance for term in [
+              'journal_state = interrupted_journal(',
+              "ordinary_file_bytes(installed / '.htaccess', installed) == MAINTENANCE",
+              'completed update restores exact candidate server policy',
+          ])
+          and 'owner.get(admin, timeout=120).status_code == 403' not in acceptance)
+    check('Both interruption gates bind the complete production maintenance policy bytes',
+          acceptance_maintenance == apache_maintenance
+          and hashlib.sha256(acceptance_maintenance).hexdigest()
+          == '853270df2d0ba7bd8cf198eecbabe32aa4f7445fb8b2e75e3d476ed2317a6a73'
+          and 'return "# Temporary owner-authenticated structure update. Retry or recover using the staged owner page.\\nOptions -Indexes\\nRequire all denied\\n<Files \\"owner-update.php\\">\\nRequire all granted\\n</Files>\\n";' in structure)
+    check('Private journal helper binds the production guard canonical path modes and exact applying state',
+          hashlib.sha256(private_guard).hexdigest()
+          == '22ea5d668d4d1acbf63c6649bb5f9352cc735a73300e10b9c4379a97a4b408a5'
+          and 'const CWP_GUARD = "<?php http_response_code(404); exit; ?>\\n";' in defaults
+          and all(term in archive for term in [
+              "any(part in ('', '.', '..') for part in raw.split('/')[1:])",
+              'candidate.resolve(strict=True) != candidate',
+              'stat.S_ISLNK(info.st_mode)',
+              'stat.S_IMODE(structure_info.st_mode) != 0o700',
+              'stat.S_IMODE(journal_info.st_mode) != 0o600',
+              "data.get('root') != expected_root",
+              "data.get('version') != starting_version",
+              'Expected journal root does not map to the exact host installation',
+              "data.get('target') != version", "data.get('commit') != source_commit",
+              "data.get('state') != 'applying'", "policy.get('source') != '.htaccess'",
+              'policy.get(\'new\') != hashlib.sha256(normal_policy).hexdigest()',
+          ]))
+    check('Docker journal root maps one exact virtual source mount to the canonical host install',
+          all(term in acceptance for term in [
+              'starting_version=initial, expected_root=path',
+              "virtual_root='/workspace', host_root=ROOT",
+          ])
+          and all(term in archive for term in [
+              'recorded.is_relative_to(virtual)',
+              '(host / recorded.relative_to(virtual)).resolve(strict=True)',
+              '!= installed.resolve(strict=True)',
+              'Expected journal root differs from the canonical host installation',
+          ]))
     check('Candidate-era records are retained and replay-safe across recovery and reapply',
           all(term in acceptance for term in ['candidate-data', 'candidate-replay',
                                                'candidate_data_snapshot', 'recovered', 'reapplied'])
@@ -155,6 +211,28 @@ def main(output):
           and 'prepare_ubuntu_apt.py prepare-ubuntu' in workflow
           and 'prepare_ubuntu_apt.py verify-releases' in workflow
           and 'qa/release127-apache/results.json' in workflow)
+    check('Actual Apache gate interrupts and enforces exact maintenance policy in every topology',
+          all(term in apache for term in [
+              "'tests/structure_worker.php'", "'apply', '2'",
+              'Synthetic interruption after durable journal',
+              'journal_state = interrupted_journal(',
+              "ordinary_file_bytes(installed / '.htaccess', installed) == MAINTENANCE",
+              'admin_blocked.status_code == 403', 'portal_blocked.status_code == 403',
+              'staged_blocked.status_code == 403', 'staged_owner.status_code == 200',
+              "ordinary_file_bytes(installed / '.htaccess', installed) == normal_policy",
+          ])
+          and "admin_blocked = session.get(base + '/admin/index.php?view=dashboard'" in apache
+          and "staged_owner = session.get(updater" in apache)
+    check('Apache gate independently binds and enforces the staged policy before and after root maintenance',
+          hashlib.sha256(staged_policy).hexdigest()
+          == '46da8c49ab996bc1b6c0bb307b274dbc9e866726036d2e74f70e2b72e2d8322e'
+          and "update[stage+'.htaccess']=b'Options -Indexes\\nRequire all denied\\n<Files \"owner-update.php\">\\nRequire all granted\\n</Files>\\n'" in builder
+          and all(term in apache for term in [
+              "ordinary_file_bytes(staged_policy, stage) == STAGED_POLICY",
+              'staged nonowner file is denied while root policy is normal',
+              'completed update retains the exact staged deny policy',
+              'staged nonowner file remains denied after root policy restoration',
+          ]))
     check('Both HTTP gates refuse ambient explicit and cross-port proxy transport',
           all(term in loopback for term in [
               'class LocalSession(requests.Session)',

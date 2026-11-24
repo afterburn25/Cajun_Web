@@ -19,7 +19,8 @@ import requests
 
 from acceptance_environment import php_matches, selected
 from release_126_upgrade_cases import OWNER, fields
-from release_127_archive import candidate_snapshot, extract_snapshot, published_snapshot
+from release_127_archive import (candidate_snapshot, extract_snapshot, fixture_storage_path,
+                                 interrupted_journal, ordinary_file_bytes, published_snapshot)
 from release_127_loopback_session import LocalSession
 
 
@@ -39,6 +40,17 @@ DISABLED_FUNCTIONS = ('curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_soc
                       'checkdnsrr,snmpget,snmpgetnext,snmpwalk,mail,exec,shell_exec,system,passthru,'
                       'popen,proc_open,pcntl_exec')
 PHP_OPTIONS = ['-d', 'allow_url_fopen=0', '-d', 'disable_functions=' + DISABLED_FUNCTIONS]
+MAINTENANCE = (b'# Temporary owner-authenticated structure update. Retry or recover using the staged owner page.\n'
+               b'Options -Indexes\n'
+               b'Require all denied\n'
+               b'<Files "owner-update.php">\n'
+               b'Require all granted\n'
+               b'</Files>\n')
+STAGED_POLICY = (b'Options -Indexes\n'
+                 b'Require all denied\n'
+                 b'<Files "owner-update.php">\n'
+                 b'Require all granted\n'
+                 b'</Files>\n')
 
 
 PROBE = r'''<?php
@@ -215,11 +227,12 @@ def main():
                         'owner_confirm': OWNER, 'site_url': base, 'confirm_install': '1',
                         'seed': '1', 'preview': '1', 'private_parent': str(private_parent)})
                     result = response.json()
+                    storage = fixture_storage_path(result['storage'], private_parent, web)
                     check(label + ' actual published 1.26.1 installer succeeds',
                           response.status_code == 200 and result.get('ok') is True)
                     check(label + ' installer selects external private storage',
-                          Path(result['storage']).is_relative_to(private_parent)
-                          and not Path(result['storage']).is_relative_to(web))
+                          storage.is_relative_to(private_parent.resolve(strict=True))
+                          and not storage.is_relative_to(web.resolve(strict=True)))
                     seeded = probe(installed, 'seed')
                     check(label + ' retained SQL and private witness originates on 1.26.1',
                           seeded['version'] == '1.26.1' and seeded['setting'] is True
@@ -230,13 +243,51 @@ def main():
                     check(label + ' original owner signs in through Apache',
                           login.status_code == 200 and 'view=login' not in login.url)
                     extract_snapshot(update_bytes, installed)
+                    stage = installed / 'cwp-update-1.27.0'
+                    staged_policy = stage / '.htaccess'
+                    check(label + ' staged owner directory has the exact ordinary deny policy',
+                          ordinary_file_bytes(staged_policy, stage) == STAGED_POLICY)
+                    staged_manifest = base + '/cwp-update-1.27.0/manifest.php'
+                    check(label + ' staged nonowner file is denied while root policy is normal',
+                          session.get(staged_manifest, timeout=120).status_code == 403)
                     updater = base + '/cwp-update-1.27.0/owner-update.php'
                     review = submit(session, updater, 'inspect', {'backup_confirm': '1'})
                     check(label + ' updater reviews exact published starting release',
                           review.status_code == 200 and 'Starting release: 1.26.1' in review.text)
+                    normal_policy = ordinary_file_bytes(stage / 'site/.htaccess', stage)
+                    interrupted = subprocess.run(
+                        [str(php), *PHP_OPTIONS, 'tests/structure_worker.php', str(installed), 'apply', '2'],
+                        cwd=ROOT, capture_output=True, text=True, timeout=120)
+                    check(label + ' actual update interruption follows a durable journal',
+                          interrupted.returncode != 0
+                          and 'Synthetic interruption after durable journal' in interrupted.stderr)
+                    journal_state = interrupted_journal(
+                        storage, installed, CANDIDATE_VERSION, source_sha, normal_policy,
+                        starting_version='1.26.1')
+                    check(label + ' actual interrupted update retains guarded recovery evidence',
+                          journal_state['state'] == 'applying'
+                          and journal_state['operations']['.htaccess']['source'] == '.htaccess')
+                    check(label + ' actual interrupted update installs exact maintenance policy',
+                          ordinary_file_bytes(installed / '.htaccess', installed) == MAINTENANCE)
+                    admin_blocked = session.get(base + '/admin/index.php?view=dashboard', timeout=120)
+                    portal_blocked = session.get(base + '/portal/index.php', timeout=120)
+                    staged_blocked = session.get(staged_manifest, timeout=120)
+                    check(label + ' actual Apache denies ordinary installed and staged routes in maintenance',
+                          admin_blocked.status_code == 403 and portal_blocked.status_code == 403
+                          and staged_blocked.status_code == 403)
+                    staged_owner = session.get(updater, timeout=120)
+                    check(label + ' actual Apache preserves authenticated staged owner retry access',
+                          staged_owner.status_code == 200 and 'Signed in as' in staged_owner.text
+                          and 'name="owner_password"' not in staged_owner.text)
                     applied = submit(session, review.url, 'apply', {'backup_confirm': '1'})
                     check(label + ' owner applies exact candidate UPDATE through Apache',
                           applied.status_code == 200 and '<h2>Complete</h2>' in applied.text)
+                    check(label + ' completed update restores exact candidate Apache policy',
+                          ordinary_file_bytes(installed / '.htaccess', installed) == normal_policy)
+                    check(label + ' completed update retains the exact staged deny policy',
+                          ordinary_file_bytes(staged_policy, stage) == STAGED_POLICY)
+                    check(label + ' staged nonowner file remains denied after root policy restoration',
+                          session.get(staged_manifest, timeout=120).status_code == 403)
                     after = probe(installed, 'snapshot')
                     check(label + ' update reports exact 1.27.0 candidate', after['version'] == CANDIDATE_VERSION)
                     check(label + ' SQL private config and installed guard are retained', retained(before, after))
