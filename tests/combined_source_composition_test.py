@@ -1082,15 +1082,46 @@ def run(root=ROOT):
         try:
             proof.filesystem_mode = lambda root, candidate: (
                 '100755' if candidate == path else original_filesystem_mode(root, candidate))
-            proof._CURRENT_INDEX_MODES = {path: '100644'}
-            assert proof.mode(fixture, path) == '100755'
+            assert proof.windows_index_mode(path, {path: '100644'}) == '100644'
+            assert proof.windows_index_mode(path, {path: '100755'}) == '100755'
+            refuses('Windows mode authority refuses a missing tracked index entry',
+                    lambda: proof.windows_index_mode(path, {}))
+            refuses('Windows mode authority refuses an invalid tracked index mode',
+                    lambda: proof.windows_index_mode(path, {path: '100664'}))
+            if os.name == 'nt':
+                proof._CURRENT_INDEX_MODES = {path: '100644'}
+                assert proof.mode(fixture, path) == '100644'
+            else:
+                assert proof.mode(fixture, path) == '100755'
         finally:
             proof.filesystem_mode = original_filesystem_mode
             proof._CURRENT_INDEX_MODES = original_index_modes
-        passed('Windows index-mode compatibility cannot mask actual executable source')
+        passed('Tracked mode authority uses exact Windows index modes and POSIX filesystem modes')
 
-        refuses('Refuses an unexpected executable mode on actual application source',
-                lambda: modified(path, lambda target: target.chmod(0o755)))
+        if os.name == 'nt':
+            def indexed_executable():
+                row = subprocess.check_output(
+                    ['git', 'ls-files', '--stage', '--', path], cwd=fixture,
+                    text=True).rstrip('\n')
+                metadata, indexed_path = row.split('\t', 1)
+                permission, oid, stage = metadata.split(' ')
+                assert indexed_path == path and stage == '0'
+                try:
+                    subprocess.run(
+                        ['git', 'update-index', '--chmod=+x', '--', path],
+                        cwd=fixture, check=True, capture_output=True)
+                    proof.verify_current(fixture)
+                finally:
+                    subprocess.run(
+                        ['git', 'update-index', '--add', '--cacheinfo',
+                         permission + ',' + oid + ',' + indexed_path],
+                        cwd=fixture, check=True, capture_output=True)
+
+            refuses('Refuses an unexpected executable index mode on Windows source',
+                    indexed_executable)
+        else:
+            refuses('Refuses an unexpected executable mode on actual application source',
+                    lambda: modified(path, lambda target: target.chmod(0o755)))
 
         def symlink(target):
             target.unlink()
