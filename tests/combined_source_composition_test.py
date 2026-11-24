@@ -922,6 +922,34 @@ def run(root=ROOT):
                 target.write_bytes(original)
                 target.chmod(permission)
 
+        def executable_mode(path, validation=None):
+            validation = validation or (lambda: proof.verify_current(fixture))
+            target = fixture / path
+            if os.name == 'nt':
+                row = subprocess.check_output(
+                    ['git', 'ls-files', '--stage', '--', path], cwd=fixture,
+                    text=True).rstrip('\n')
+                metadata, indexed_path = row.split('\t', 1)
+                permission, oid, stage = metadata.split(' ')
+                assert indexed_path == path and stage == '0'
+                try:
+                    subprocess.run(
+                        ['git', 'update-index', '--chmod=+x', '--', path],
+                        cwd=fixture, check=True, capture_output=True)
+                    validation()
+                finally:
+                    subprocess.run(
+                        ['git', 'update-index', '--add', '--cacheinfo',
+                         permission + ',' + oid + ',' + indexed_path],
+                        cwd=fixture, check=True, capture_output=True)
+                return
+            permission = target.stat().st_mode & 0o777
+            try:
+                target.chmod(0o755)
+                validation()
+            finally:
+                target.chmod(permission)
+
         early_path = 'site/app/billing/software_client.php'
         original_validator = proof.validate_application_reply_folder_route
         reached_historical_validation = []
@@ -1099,30 +1127,8 @@ def run(root=ROOT):
             proof._CURRENT_INDEX_MODES = original_index_modes
         passed('Tracked mode authority uses exact Windows index modes and POSIX filesystem modes')
 
-        if os.name == 'nt':
-            def indexed_executable():
-                row = subprocess.check_output(
-                    ['git', 'ls-files', '--stage', '--', path], cwd=fixture,
-                    text=True).rstrip('\n')
-                metadata, indexed_path = row.split('\t', 1)
-                permission, oid, stage = metadata.split(' ')
-                assert indexed_path == path and stage == '0'
-                try:
-                    subprocess.run(
-                        ['git', 'update-index', '--chmod=+x', '--', path],
-                        cwd=fixture, check=True, capture_output=True)
-                    proof.verify_current(fixture)
-                finally:
-                    subprocess.run(
-                        ['git', 'update-index', '--add', '--cacheinfo',
-                         permission + ',' + oid + ',' + indexed_path],
-                        cwd=fixture, check=True, capture_output=True)
-
-            refuses('Refuses an unexpected executable index mode on Windows source',
-                    indexed_executable)
-        else:
-            refuses('Refuses an unexpected executable mode on actual application source',
-                    lambda: modified(path, lambda target: target.chmod(0o755)))
+        refuses('Refuses an unexpected executable mode on actual application source',
+                lambda: executable_mode(path))
 
         def symlink(target):
             target.unlink()
@@ -1217,8 +1223,7 @@ def run(root=ROOT):
         refuses('Refuses a missing Reply/Forward addition',
                 lambda: modified('site/app/mail/replies.php', lambda target: target.unlink()))
         refuses('Refuses an executable mode on a Reply/Forward addition',
-                lambda: modified('foundation/mail-compose/ReplyDraft.php',
-                                 lambda target: target.chmod(0o755)))
+                lambda: executable_mode('foundation/mail-compose/ReplyDraft.php'))
         refuses('Refuses an alternate Reply/Forward workflow trigger',
                 lambda: modified('.github/workflows/mail-copied-draft-native.yml',
                                  lambda target: target.write_bytes(
@@ -1629,7 +1634,7 @@ def run(root=ROOT):
             refuses('Refuses altered exact integration repair ' + path,
                     lambda path=path: modified(path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed repair\n')))
         refuses('Refuses a changed executable mode on an integration repair',
-                lambda: modified('tests/installed_owner_authority.php', lambda target: target.chmod(0o755)))
+                lambda: executable_mode('tests/installed_owner_authority.php'))
         for path in ('tests/provider_force_ssl_controls_cases.py', 'tests/provider_directory_listing_controls_cases.py'):
             refuses('Refuses replacing the original recovery actor with the setup owner in ' + path,
                     lambda path=path: modified(path, lambda target: target.write_bytes(
@@ -1776,7 +1781,8 @@ def run(root=ROOT):
                     lambda path=path: changed_billing_input(
                         path, lambda target: target.write_bytes(target.read_bytes() + b'\n# unreviewed billing source\n')))
         refuses('Billing comparison refuses altered predecessor executable mode',
-                lambda: changed_billing_input(next(iter(PREDECESSORS)), lambda target: target.chmod(0o755)))
+                lambda: executable_mode(next(iter(PREDECESSORS)),
+                                        lambda: predecessor_sources(fixture)))
 
         def forged_billing_receipt(target):
             data = json.loads(target.read_bytes())
@@ -1839,7 +1845,7 @@ def run(root=ROOT):
             refuses('Refuses missing exact contact addition ' + path,
                     lambda path=path: modified(path, lambda target: target.unlink()))
         refuses('Refuses an executable mode on a contact addition',
-                lambda: modified('site/app/clients/contacts.php', lambda target: target.chmod(0o755)))
+                lambda: executable_mode('site/app/clients/contacts.php'))
         refuses('Refuses a symlink replacing a contact addition',
                 lambda: modified('site/app/clients/contacts.php', symlink))
         refuses('Refuses substituting the retained contact source commit',
@@ -1878,7 +1884,7 @@ def run(root=ROOT):
         refuses('Refuses missing exact ticket screenshot addition',
                 lambda: modified(ticket_helper, lambda target: target.unlink()))
         refuses('Refuses an executable mode on the ticket screenshot addition',
-                lambda: modified(ticket_helper, lambda target: target.chmod(0o755)))
+                lambda: executable_mode(ticket_helper))
         refuses('Refuses a symlink replacing the ticket screenshot addition',
                 lambda: modified(ticket_helper, symlink))
         refuses('Refuses substituting the retained ticket source commit',
@@ -1916,7 +1922,7 @@ def run(root=ROOT):
             refuses('Refuses missing exact diagnostic addition ' + path,
                     lambda path=path: modified(path, lambda target: target.unlink()))
         refuses('Refuses an executable mode on a diagnostic addition',
-                lambda: modified(diagnostic_path, lambda target: target.chmod(0o755)))
+                lambda: executable_mode(diagnostic_path))
         refuses('Refuses a symlink replacing a diagnostic addition',
                 lambda: modified(diagnostic_path, symlink))
         refuses('Refuses substituting the retained diagnostic source commit',
@@ -1981,7 +1987,7 @@ def run(root=ROOT):
             refuses('Refuses missing exact database workflow addition ' + path,
                     lambda path=path: modified(path, lambda target: target.unlink()))
         refuses('Refuses an executable mode on a database workflow addition',
-                lambda: modified(database_addition, lambda target: target.chmod(0o755)))
+                lambda: executable_mode(database_addition))
         refuses('Refuses a symlink replacing a database workflow addition',
                 lambda: modified(database_addition, symlink))
         refuses('Refuses substituting the exact database workflow base',
@@ -2050,7 +2056,7 @@ def run(root=ROOT):
             refuses('Refuses missing exact cloud intake addition ' + path,
                     lambda path=path: modified(path, lambda target: target.unlink()))
         refuses('Refuses an executable mode on a cloud intake addition',
-                lambda: modified(cloud_addition, lambda target: target.chmod(0o755)))
+                lambda: executable_mode(cloud_addition))
         refuses('Refuses a symlink replacing a cloud intake addition',
                 lambda: modified(cloud_addition, symlink))
         refuses('Refuses substituting the exact cloud intake base',
