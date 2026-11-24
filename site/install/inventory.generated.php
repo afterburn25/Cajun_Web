@@ -406,7 +406,7 @@ function setup_expected_files(): array { return [
     'app/providers/stackcp_prerequisite_views.php'=>'f94ea36cb5eb5f85608ef71a044a754f938e2f704b759d4d574bd93ef052e62a',
     'app/providers/stackcp_read_projection.php'=>'90b1f48c659116fca544fb3612e657352a76a63723aa739cdea6851d7c3080d2',
     'app/providers/workspace.php'=>'3efc6edd2f57fad9219013acd9bafc2f094c93373a754ce5fed0972ff630dbf1',
-    'app/settings/database_schemas.php'=>'99d31634b11e7822cb0222d5cbca8cdc927ae931352d7d51cfef6f4f622347f0',
+    'app/settings/database_schemas.php'=>'7d08ed3d7ecc464e5b3535f7624e1765f2bb2b89ce8e6f58d945d4cb7b1efb23',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',
     'app/settings/store.php'=>'f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564',
     'app/staff/accounts.php'=>'62031cc5bf9642721e7ea779b3514c60d992c37e6b7863f4e2a64d4f240b23a2',

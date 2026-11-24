@@ -54,7 +54,9 @@ try{
     $currentRows['service_plans_checkout_schema_version']=database_schema_classify($registry['service_plans_checkout_schema_version'],'preparing-1');
     $currentRows['recurring_billing_checkout_schema_version']=database_schema_classify($registry['recurring_billing_checkout_schema_version'],'preparing-1');
     $checkout=database_schema_plan(['recurring_billing_checkout_schema_version'],$currentRows);
-    ds_ok('Interrupted recurring checkout closes over service checkout first',$checkout['order']===['service_plans_checkout_schema_version','recurring_billing_checkout_schema_version']);
+    $hostingRows=$currentRows;foreach(['hosting_checkout_version','service_plans_checkout_schema_version','recurring_billing_checkout_schema_version'] as $marker)$hostingRows[$marker]=database_schema_classify($registry[$marker],'');
+    $hostingCheckout=database_schema_plan(['hosting_checkout_version'],$hostingRows);
+    ds_ok('Recurring and hosting checkout close over their checkout billing dependencies first',$checkout['order']===['service_plans_checkout_schema_version','recurring_billing_checkout_schema_version']&&$hostingCheckout['order']===['service_plans_checkout_schema_version','recurring_billing_checkout_schema_version','hosting_checkout_version']);
     $dispatchRows=$currentRows;foreach(['payments_schema_version','invoice_ledger_schema_version','domain_renewal_dispatch_schema_version'] as $marker)$dispatchRows[$marker]=database_schema_classify($registry[$marker],'');
     $dispatch=database_schema_plan(['domain_renewal_dispatch_schema_version'],$dispatchRows);
     ds_ok('Domain renewal dispatch closes over payment and ledger storage first',$dispatch['order']===['payments_schema_version','invoice_ledger_schema_version','domain_renewal_dispatch_schema_version']);
