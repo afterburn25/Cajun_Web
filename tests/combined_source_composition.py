@@ -12557,17 +12557,19 @@ def validate_release_127_source(root):
     base_entries = entries(root, REL127_BASE)
     source_entries = entries(root, REL127_SOURCE)
     worktree_oids = worktree_blob_oids(root, REL127_PATHS)
-    live_index_modes = current_index_modes(root) if os.name == 'nt' else None
+    live_index_modes = current_index_modes(root)
     require(not REL127_ADDITIONS & set(base_entries)
             and REL127_ADDITIONS <= set(source_entries),
             '1.27 additions did not originate in the exact implementation source')
     for path in sorted(REL127_MODIFIED):
         require(worktree_oids[path] == source_entries[path][1]
+                and live_index_modes.get(path) == source_entries[path][0]
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
                 'Current 1.27 modified source identity changed: ' + path)
     for path in sorted(REL127_ADDITIONS):
         require(worktree_oids[path] == source_entries[path][1]
+                and live_index_modes.get(path) == source_entries[path][0]
                 and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
                 'Current 1.27 addition identity changed: ' + path)
     return worktree_oids
