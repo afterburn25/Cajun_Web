@@ -351,10 +351,10 @@ def run(root=ROOT):
         tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
         assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
         assert (proof.ordinary(root, proof.REGRESSION)
-                == proof.git(root, 'cat-file', 'blob', proof.REL127_SOURCE + ':' + proof.REGRESSION)
-                and proof.actual_ordinary(root, proof.REGRESSION)
-                != proof.ordinary(root, proof.REGRESSION))
-    passed('REL-01 projection binds every exact modified path, removes only its additions, and retains current proof bytes')
+                == proof.actual_ordinary(root, proof.REGRESSION)
+                and proof.digest(proof.ordinary(root, proof.REGRESSION))
+                == proof.REGRESSION_SHA256)
+    passed('REL-01 projection binds every exact modified path, removes only its additions, and leaves self-bound proof bytes current')
 
     for attribute, label in (
         ('REL127_BASE_TREE', 'base tree'),
@@ -415,6 +415,39 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
+
+        def release_source_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + b'\n# unreviewed REL-01 source\n')
+                proof.validate_release_127_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('REL-01 binding refuses modified implementation bytes',
+                lambda: release_source_tamper('VERSION'))
+        refuses('REL-01 binding refuses added-file bytes that differ from the exact implementation',
+                lambda: release_source_tamper('tools/fetch_release_127_baseline.py'))
+
+        original_proof_paths = proof.REL127_PROOF_PATHS
+        try:
+            proof.REL127_PROOF_PATHS = original_proof_paths | {'README.md'}
+            refuses('REL-01 binding refuses an altered proof-successor path set',
+                    lambda: proof.validate_release_127_source(fixture))
+        finally:
+            proof.REL127_PROOF_PATHS = original_proof_paths
+
+        regression = fixture / proof.REGRESSION
+        original_regression = regression.read_bytes()
+        try:
+            regression.write_bytes(original_regression + b'\n# unreviewed proof hash\n')
+            refuses('REL-01 receipt refuses an altered proof-successor hash',
+                    lambda: proof.current_proof_receipt(fixture))
+        finally:
+            regression.write_bytes(original_regression)
+        passed('REL-01 negative cases restore exact implementation and proof bytes')
+
         fixture_proof_files = {
             path: proof.ordinary(fixture, path)
             for path in (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)}

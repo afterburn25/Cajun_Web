@@ -76,10 +76,8 @@ REL127_ADDITIONS = frozenset((
     'tools/requirements-release127.txt',
 ))
 REL127_PATHS = REL127_MODIFIED | REL127_ADDITIONS
-REL127_PROOF_PROJECTED = frozenset((REGRESSION,))
-REL127_PROOF_SHA256 = {
-    REGRESSION: '42e50bf6e9b6a6147759e6a5548d90df7efc8f67279901dc70b1a5d4849688eb',
-}
+REL127_PROOF_PROJECTED = frozenset()
+REL127_PROOF_SHA256 = {}
 REL127_PROOF_PATHS = frozenset((RECEIPT, VERIFIER, REGRESSION))
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
@@ -2189,7 +2187,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '42e50bf6e9b6a6147759e6a5548d90df7efc8f67279901dc70b1a5d4849688eb'
+REGRESSION_SHA256 = '8f27e95891ff4249a172c70eee0b9da5dca7196d9836bc3cba945c33f28f6e14'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2294,6 +2292,7 @@ _PROJECTION_CACHE_LIMIT = 32768
 _LAST_PROJECTION_CACHE_MAX = 0
 _REL127_PROJECTION_DEPTH = 0
 _REL127_WORKTREE_OIDS = {}
+_CURRENT_INDEX_MODES = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
 
@@ -2637,7 +2636,31 @@ def ordinary(root, path):
 
 
 def mode(root, path):
+    if os.name == 'nt' and path in _CURRENT_INDEX_MODES:
+        return _CURRENT_INDEX_MODES[path]
     return '100755' if (root / path).stat().st_mode & 0o111 else '100644'
+
+
+def current_index_modes(root):
+    """Read exact tracked modes on Windows, where stat lacks Git execute bits."""
+    result = subprocess.run(
+        ['git', '--no-replace-objects', 'ls-files', '--stage', '-z'],
+        cwd=root, capture_output=True)
+    require(result.returncode == 0 and not result.stderr,
+            'Could not read current Git index modes')
+    modes = {}
+    for row in result.stdout.split(b'\0'):
+        if not row:
+            continue
+        metadata, raw_path = row.split(b'\t', 1)
+        permission, oid, stage = metadata.decode().split(' ')
+        path = raw_path.decode('utf-8')
+        require(stage == '0' and permission in {'100644', '100755'}
+                and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
+                and path not in modes,
+                'Nonordinary or conflicted current Git index entry: ' + path)
+        modes[path] = permission
+    return modes
 
 
 def entries(root, ref):
@@ -10077,7 +10100,8 @@ def validate_pr391_recovery_successor(root):
                 | ACCOUNT_RATE_BOUNDARY_MODIFIED
                 | APPLICATION_MAIL_COPIES_ROUTING_MODIFIED
                  | RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED
-                | set(mail_consolidated_changes(root))),
+                | set(mail_consolidated_changes(root))
+                | REL127_PATHS),
             'Current recovery successor contains an unbound path')
 
 
@@ -11279,7 +11303,7 @@ def canonical_inventory(root):
         if target.is_file():
             path = target.relative_to(root / 'site').as_posix()
             if path != 'install/inventory.generated.php':
-                rows.append("    '" + path + "'=>'" + digest(target.read_bytes()) + "',\n")
+                rows.append("    '" + path + "'=>'" + digest(ordinary(root, 'site/' + path)) + "',\n")
     guard = "<?php\ndeclare(strict_types=1);\nif (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }\n"
     return (guard + 'function setup_expected_files(): array { return [\n' + ''.join(rows) + ']; }\n').encode()
 
@@ -12543,19 +12567,21 @@ def validate_release_127_source(root):
 @contextmanager
 def release_127_projection(root):
     """Project only the exact reviewed REL-01 range for inherited validators."""
-    global _REL127_PROJECTION_DEPTH, _REL127_WORKTREE_OIDS
+    global _REL127_PROJECTION_DEPTH, _REL127_WORKTREE_OIDS, _CURRENT_INDEX_MODES
     root = Path(root)
     require(_REL127_PROJECTION_DEPTH == 0 and not _REL127_WORKTREE_OIDS,
             'Nested 1.27 release projection refused')
     ensure_history(root)
     pin_head(root)
-    _REL127_WORKTREE_OIDS = validate_release_127_source(root)
-    _REL127_PROJECTION_DEPTH = 1
+    _CURRENT_INDEX_MODES = current_index_modes(root) if os.name == 'nt' else {}
     try:
+        _REL127_WORKTREE_OIDS = validate_release_127_source(root)
+        _REL127_PROJECTION_DEPTH = 1
         yield
     finally:
         _REL127_PROJECTION_DEPTH = 0
         _REL127_WORKTREE_OIDS = {}
+        _CURRENT_INDEX_MODES = {}
 
 
 def verify_current(root):
