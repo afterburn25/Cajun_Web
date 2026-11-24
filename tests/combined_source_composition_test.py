@@ -443,7 +443,21 @@ def run(root=ROOT):
                 lambda: release_projection_race('VERSION'))
         refuses('REL-01 projection exit refuses a concurrent added-file change',
                 lambda: release_projection_race('tools/fetch_release_127_baseline.py'))
-        passed('REL-01 projection brackets every modified and added source path')
+
+        def release_projection_mode_race(path):
+            try:
+                with proof.release_127_projection(fixture):
+                    subprocess.run(
+                        ['git', 'update-index', '--chmod=+x', '--', path],
+                        cwd=fixture, check=True, capture_output=True)
+            finally:
+                subprocess.run(
+                    ['git', 'update-index', '--chmod=-x', '--', path],
+                    cwd=fixture, check=True, capture_output=True)
+
+        refuses('REL-01 projection exit refuses a concurrent index-mode change',
+                lambda: release_projection_mode_race('VERSION'))
+        passed('REL-01 projection brackets every modified and added source path and mode')
 
         original_proof_paths = proof.REL127_PROOF_PATHS
         try:

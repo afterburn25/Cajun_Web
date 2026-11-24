@@ -2187,7 +2187,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '00758f6786bd92b52b4ed159b0b6947a17dc616a6c50c613846f1f8cea2b0960'
+REGRESSION_SHA256 = '787240f6cad6ec39ef21f243b49bb36b392c6640bb3b9e58fd47ce358a40ae3b'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2639,11 +2639,12 @@ def filesystem_mode(root, path):
     return '100755' if (root / path).stat().st_mode & 0o111 else '100644'
 
 
-def mode(root, path):
+def mode(root, path, index_modes=None):
     actual = filesystem_mode(root, path)
     if actual == '100755':
         return actual
-    if os.name == 'nt' and _CURRENT_INDEX_MODES.get(path) == '100755':
+    modes = _CURRENT_INDEX_MODES if index_modes is None else index_modes
+    if os.name == 'nt' and modes.get(path) == '100755':
         return '100755'
     return actual
 
@@ -12556,17 +12557,18 @@ def validate_release_127_source(root):
     base_entries = entries(root, REL127_BASE)
     source_entries = entries(root, REL127_SOURCE)
     worktree_oids = worktree_blob_oids(root, REL127_PATHS)
+    live_index_modes = current_index_modes(root) if os.name == 'nt' else None
     require(not REL127_ADDITIONS & set(base_entries)
             and REL127_ADDITIONS <= set(source_entries),
             '1.27 additions did not originate in the exact implementation source')
     for path in sorted(REL127_MODIFIED):
         require(worktree_oids[path] == source_entries[path][1]
-                and mode(root, path) == base_entries[path][0]
+                and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
                 'Current 1.27 modified source identity changed: ' + path)
     for path in sorted(REL127_ADDITIONS):
         require(worktree_oids[path] == source_entries[path][1]
-                and mode(root, path) == source_entries[path][0] == '100644',
+                and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
                 'Current 1.27 addition identity changed: ' + path)
     return worktree_oids
 
