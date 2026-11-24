@@ -25,6 +25,8 @@ def main(baseline, output):
     root = Path(__file__).resolve().parents[1]
     fetch = load_module('release127_fetch', root / 'tools/fetch_release_127_baseline.py')
     archive_guard = load_module('release127_archive', root / 'tests/release_127_archive.py')
+    acceptance = load_module(
+        'release127_upgrade_acceptance', root / 'tests/release_127_upgrade_acceptance.py')
     checks = []
 
     def check(name, condition):
@@ -88,6 +90,40 @@ def main(baseline, output):
           fetch.ARCHIVE_URL == 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/' + fetch.ARCHIVE_NAME
           and fetch.MANIFEST_URL == 'https://github.com/afterburn25/Cajun_Web/releases/download/v1.26.1/' + fetch.MANIFEST_NAME
           and 'api.github.com' not in fetch.ALLOWED_HOSTS)
+
+    repeated_response = type('RepeatedResponse', (), {
+        'text': ('<form><input name="action" value="studio_database_apply">'
+                 '<input name="database_updates[]" value="first">'
+                 '<input name="database_updates[]" value="second">'
+                 '<input name="database_updates[]" value="ignored" disabled></form>'),
+    })()
+    check('Reviewed PHP array fields retain their exact unique order for application',
+          acceptance.repeated_form_fields(
+              repeated_response, 'studio_database_apply')
+          == {'database_updates[]': ['first', 'second']})
+    repeated_response.status_code = 200
+    repeated_response.url = 'http://127.0.0.1/admin/index.php?view=studio-upgrade&database_review=' + 'a' * 64
+    class ReviewedSession:
+        def get(self, target, timeout):
+            return repeated_response
+
+        def post(self, target, data, timeout):
+            return {'target': target, 'data': data, 'timeout': timeout}
+
+    reviewed_submission = acceptance.submit(
+        ReviewedSession(), repeated_response.url, 'studio_database_apply', {'confirm': '1'})
+    check('Reviewed migration submission posts every bound array value without collapse',
+          reviewed_submission['target'] == repeated_response.url
+          and reviewed_submission['data']['database_updates[]'] == ['first', 'second']
+          and reviewed_submission['data']['confirm'] == '1')
+    duplicate_response = type('DuplicateResponse', (), {
+        'text': ('<form><input name="action" value="studio_database_apply">'
+                 '<input name="database_updates[]" value="same">'
+                 '<input name="database_updates[]" value="same"></form>'),
+    })()
+    deny('Duplicate reviewed PHP array fields are refused before submission',
+         lambda: acceptance.repeated_form_fields(
+             duplicate_response, 'studio_database_apply'))
 
     deny('Unknown published asset hosts are refused before a request',
          lambda: fetch.fetch('https://untrusted.invalid/release.zip', fetch.ARCHIVE_BYTES))

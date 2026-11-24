@@ -63,8 +63,43 @@ def check(name, result):
         raise AssertionError(name)
 
 
+def repeated_form_fields(response, action, field='action'):
+    """Preserve ordered PHP array inputs from one exact reviewed form."""
+    matches = []
+    for form in BeautifulSoup(response.text, 'html.parser').select('form'):
+        markers = form.select(f'[name="{field}"]')
+        if not any(marker.get('value') == action and not marker.has_attr('disabled')
+                   for marker in markers):
+            continue
+        repeated = {}
+        for control in form.select('input[name$="[]"], textarea[name$="[]"], select[name$="[]"]'):
+            if control.has_attr('disabled'):
+                continue
+            if control.get('type') in ['checkbox', 'radio'] and not control.has_attr('checked'):
+                continue
+            if control.name == 'textarea':
+                value = control.get_text()
+            elif control.name == 'select':
+                option = control.select_one('option[selected]') or control.select_one('option')
+                value = option.get('value', option.get_text()) if option else ''
+            else:
+                value = control.get('value', '')
+            repeated.setdefault(control['name'], []).append(value)
+        matches.append(repeated)
+    if len(matches) != 1:
+        raise ValueError(('Expected one exact repeated-field form', action, len(matches)))
+    for name, values in matches[0].items():
+        if not values or any(not isinstance(value, str) or value == '' for value in values):
+            raise ValueError(('Repeated form field contains an empty value', name))
+        if len(values) != len(set(values)):
+            raise ValueError(('Repeated form field contains a duplicate value', name))
+    return matches[0]
+
+
 def submit(session, target, action, values=None):
-    target, data = fields(session.get(target, timeout=120), action)
+    response = session.get(target, timeout=120)
+    target, data = fields(response, action)
+    data.update(repeated_form_fields(response, action))
     data.update(values or {})
     return session.post(target, data=data, timeout=120)
 
