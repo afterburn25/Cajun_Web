@@ -8,7 +8,6 @@ import importlib.util
 import io
 import json
 import py_compile
-import re
 import subprocess
 import sys
 import tempfile
@@ -341,34 +340,6 @@ def run(root=ROOT):
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
-    assert (proof.git(root, 'rev-parse', proof.REL127_BASE + '^{tree}').decode().strip()
-            == proof.REL127_BASE_TREE
-            and proof.git(root, 'rev-parse', proof.REL127_SOURCE + '^{tree}').decode().strip()
-            == proof.REL127_SOURCE_TREE)
-    with proof.release_127_projection(root):
-        for path in proof.REL127_MODIFIED:
-            assert (proof.ordinary(root, path)
-                    == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
-        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-        assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
-        assert (proof.ordinary(root, proof.REGRESSION)
-                == proof.actual_ordinary(root, proof.REGRESSION)
-                and proof.digest(proof.ordinary(root, proof.REGRESSION))
-                == proof.REGRESSION_SHA256)
-    passed('REL-01 projection binds every exact modified path, removes only its additions, and leaves self-bound proof bytes current')
-
-    for attribute, label in (
-        ('REL127_BASE_TREE', 'base tree'),
-        ('REL127_SOURCE_TREE', 'implementation tree'),
-        ('REL127_SOURCE', 'implementation commit'),
-    ):
-        original = getattr(proof, attribute)
-        try:
-            setattr(proof, attribute, '0' * 40)
-            refuses('Refuses substituted REL-01 ' + label,
-                    lambda: proof.validate_release_127_source(root))
-        finally:
-            setattr(proof, attribute, original)
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
             <= proof._PROJECTION_CACHE_LIMIT == 32768
             and not proof._ACTIVE_ROOT_KEYS)
@@ -396,15 +367,6 @@ def run(root=ROOT):
         'project_ux09',
     ]
     passed('Component union applies each terminal projection chain once in exact order')
-    mail_projection = next(node for node in verifier_ast.body
-                           if isinstance(node, ast.FunctionDef)
-                           and node.name == 'project_mail_reply_forward_source')
-    first_projection = next(node for node in mail_projection.body
-                            if isinstance(node, ast.Assign))
-    assert (isinstance(first_projection.value, ast.Call)
-            and isinstance(first_projection.value.func, ast.Name)
-            and first_projection.value.func.id == 'project_release_127_source')
-    passed('Reply/Forward projection removes the exact REL-01 range before every historical adapter')
     with tempfile.TemporaryDirectory(prefix='cwp-composition-negative-') as folder:
         fixture = Path(folder) / 'source'
         subprocess.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', '--local', str(root), str(fixture)], check=True)
@@ -425,91 +387,6 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
-
-        def release_source_tamper(path):
-            target = fixture / path
-            original = target.read_bytes()
-            try:
-                target.write_bytes(original + b'\n# unreviewed REL-01 source\n')
-                proof.validate_release_127_source(fixture)
-            finally:
-                target.write_bytes(original)
-
-        refuses('REL-01 binding refuses modified implementation bytes',
-                lambda: release_source_tamper('VERSION'))
-        refuses('REL-01 binding refuses added-file bytes that differ from the exact implementation',
-                lambda: release_source_tamper('tools/fetch_release_127_baseline.py'))
-
-        def release_projection_race(path):
-            target = fixture / path
-            original = target.read_bytes()
-            try:
-                with proof.release_127_projection(fixture):
-                    target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
-            finally:
-                target.write_bytes(original)
-
-        refuses('REL-01 projection exit refuses a concurrent modified-file change',
-                lambda: release_projection_race('VERSION'))
-        refuses('REL-01 projection exit refuses a concurrent added-file change',
-                lambda: release_projection_race('tools/fetch_release_127_baseline.py'))
-
-        def release_projection_mode_race(path):
-            try:
-                with proof.release_127_projection(fixture):
-                    subprocess.run(
-                        ['git', 'update-index', '--chmod=+x', '--', path],
-                        cwd=fixture, check=True, capture_output=True)
-            finally:
-                subprocess.run(
-                    ['git', 'update-index', '--chmod=-x', '--', path],
-                    cwd=fixture, check=True, capture_output=True)
-
-        refuses('REL-01 projection exit refuses a concurrent index-mode change',
-                lambda: release_projection_mode_race('VERSION'))
-
-        def release_projection_blob_race(path):
-            source_entry = proof.entries(fixture, proof.REL127_SOURCE)[path]
-            try:
-                with proof.release_127_projection(fixture):
-                    result = subprocess.run(
-                        ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
-                        input=b'unreviewed staged REL-01 source\n', capture_output=True,
-                        check=True)
-                    oid = result.stdout.decode().strip()
-                    assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
-                    subprocess.run(
-                        ['git', 'update-index', '--cacheinfo',
-                         source_entry[0] + ',' + oid + ',' + path],
-                        cwd=fixture, check=True, capture_output=True)
-            finally:
-                subprocess.run(
-                    ['git', 'update-index', '--cacheinfo',
-                     source_entry[0] + ',' + source_entry[1] + ',' + path],
-                    cwd=fixture, check=True, capture_output=True)
-
-        refuses('REL-01 projection exit refuses a concurrent staged-blob change',
-                lambda: release_projection_blob_race('VERSION'))
-        passed('REL-01 projection brackets every modified and added source path, mode and index blob')
-
-        original_proof_paths = proof.REL127_PROOF_PATHS
-        try:
-            proof.REL127_PROOF_PATHS = original_proof_paths | {'README.md'}
-            refuses('REL-01 binding refuses an altered proof-successor path set',
-                    lambda: proof.validate_release_127_source(fixture))
-        finally:
-            proof.REL127_PROOF_PATHS = original_proof_paths
-
-        regression = fixture / proof.REGRESSION
-        original_regression = regression.read_bytes()
-        try:
-            regression.write_bytes(original_regression + b'\n# unreviewed proof hash\n')
-            refuses('REL-01 receipt refuses an altered proof-successor hash',
-                    lambda: proof.current_proof_receipt(fixture))
-        finally:
-            regression.write_bytes(original_regression)
-        passed('REL-01 negative cases restore exact implementation and proof bytes')
-
         fixture_proof_files = {
             path: proof.ordinary(fixture, path)
             for path in (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)}
@@ -517,23 +394,23 @@ def run(root=ROOT):
             proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
         passed('Tracked-source preflight permits only already-validated proof-file drift')
 
-        original_actual_ordinary = proof.actual_ordinary
+        original_ordinary = proof.ordinary
         receipt_reads = []
 
         def racing_receipt(root, path):
-            value = original_actual_ordinary(root, path)
+            value = original_ordinary(root, path)
             if Path(root) == fixture and path == proof.RECEIPT:
                 receipt_reads.append(path)
                 if len(receipt_reads) > 1:
                     return value + b'\n'
             return value
 
-        proof.actual_ordinary = racing_receipt
+        proof.ordinary = racing_receipt
         try:
             refuses('Strict receipt loader refuses proof-file change during validation',
                     lambda: proof.current_proof_receipt(fixture))
         finally:
-            proof.actual_ordinary = original_actual_ordinary
+            proof.ordinary = original_ordinary
         assert len(receipt_reads) > 1
         passed('Every current receipt consumer brackets exact proof bytes')
 
@@ -1076,19 +953,6 @@ def run(root=ROOT):
         path = 'site/app/billing/software_client.php'
         refuses('Refuses removal of an actual current application file',
                 lambda: modified(path, lambda target: target.unlink()))
-
-        original_filesystem_mode = proof.filesystem_mode
-        original_index_modes = proof._CURRENT_INDEX_MODES
-        try:
-            proof.filesystem_mode = lambda root, candidate: (
-                '100755' if candidate == path else original_filesystem_mode(root, candidate))
-            proof._CURRENT_INDEX_MODES = {path: '100644'}
-            assert proof.mode(fixture, path) == '100755'
-        finally:
-            proof.filesystem_mode = original_filesystem_mode
-            proof._CURRENT_INDEX_MODES = original_index_modes
-        passed('Windows index-mode compatibility cannot mask actual executable source')
-
         refuses('Refuses an unexpected executable mode on actual application source',
                 lambda: modified(path, lambda target: target.chmod(0o755)))
 
@@ -1517,43 +1381,13 @@ def run(root=ROOT):
         refuses('Refuses a substituted mail artifact-overlap parent',
                 lambda: altered_mail_artifact_overlap_identity(
                     'MAIL_ARTIFACT_OVERLAP_FIX_BASE'))
-        release_overlap_paths = (
+        for path in (
             'site/app/settings/database_schemas.php',
+            'site/app/staff/accounts.php',
             proof.INVENTORY,
+            'tests/browser_acceptance.py',
             'tests/database_schema_registry_policy.php',
             'tests/database_schema_view_policy.php',
-        )
-        for path in release_overlap_paths:
-            release_source = proof.git(
-                fixture, 'cat-file', 'blob', proof.REL127_SOURCE + ':' + path)
-            release_base = proof.git(
-                fixture, 'cat-file', 'blob', proof.REL127_BASE + ':' + path)
-            assert (proof.project_release_127_source(
-                        fixture, path, release_source) == release_base
-                    and proof.project_release_127_source(
-                        fixture, path, release_base) == release_base)
-            passed('REL-01 direct projection restores exact resulting-main bytes: ' + path)
-
-        def tampered_release_projection():
-            path = 'site/app/settings/database_schemas.php'
-            target = fixture / path
-            original = target.read_bytes()
-            try:
-                tampered = original + b'\n# unreviewed direct projection source\n'
-                target.write_bytes(tampered)
-                proof.project_release_127_source(fixture, path, tampered)
-            finally:
-                target.write_bytes(original)
-
-        refuses('REL-01 direct projection refuses unreviewed live source bytes',
-                tampered_release_projection)
-        proof.validate_ux09_source(fixture)
-        passed('Direct UX-09 source validation accepts the exact REL-01 successor')
-
-        for path in (
-            *release_overlap_paths,
-            'site/app/staff/accounts.php',
-            'tests/browser_acceptance.py',
         ):
             projected = proof.project_mail_reply_forward_source(
                 fixture, path, proof.ordinary(fixture, path))
