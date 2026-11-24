@@ -2187,7 +2187,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '787240f6cad6ec39ef21f243b49bb36b392c6640bb3b9e58fd47ce358a40ae3b'
+REGRESSION_SHA256 = 'c13bb52ca033925d24c46f6349486e0825b6154a91ffaf7311528d6cbf209c18'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2649,14 +2649,14 @@ def mode(root, path, index_modes=None):
     return actual
 
 
-def current_index_modes(root):
-    """Read exact tracked modes on Windows, where stat lacks Git execute bits."""
+def current_index_entries(root):
+    """Read exact ordinary stage-zero entries from the mutable Git index."""
     result = subprocess.run(
         ['git', '--no-replace-objects', 'ls-files', '--stage', '-z'],
         cwd=root, capture_output=True)
     require(result.returncode == 0 and not result.stderr,
-            'Could not read current Git index modes')
-    modes = {}
+        'Could not read current Git index entries')
+    index_entries = {}
     for row in result.stdout.split(b'\0'):
         if not row:
             continue
@@ -2665,10 +2665,15 @@ def current_index_modes(root):
         path = raw_path.decode('utf-8')
         require(stage == '0' and permission in {'100644', '100755'}
                 and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
-                and path not in modes,
+                and path not in index_entries,
                 'Nonordinary or conflicted current Git index entry: ' + path)
-        modes[path] = permission
-    return modes
+        index_entries[path] = (permission, oid)
+    return index_entries
+
+
+def current_index_modes(root):
+    """Read tracked modes for Windows filesystems without execute-bit fidelity."""
+    return {path: row[0] for path, row in current_index_entries(root).items()}
 
 
 def entries(root, ref):
@@ -12557,19 +12562,20 @@ def validate_release_127_source(root):
     base_entries = entries(root, REL127_BASE)
     source_entries = entries(root, REL127_SOURCE)
     worktree_oids = worktree_blob_oids(root, REL127_PATHS)
-    live_index_modes = current_index_modes(root)
+    live_index_entries = current_index_entries(root)
+    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not REL127_ADDITIONS & set(base_entries)
             and REL127_ADDITIONS <= set(source_entries),
             '1.27 additions did not originate in the exact implementation source')
     for path in sorted(REL127_MODIFIED):
         require(worktree_oids[path] == source_entries[path][1]
-                and live_index_modes.get(path) == source_entries[path][0]
+                and live_index_entries.get(path) == source_entries[path]
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
                 'Current 1.27 modified source identity changed: ' + path)
     for path in sorted(REL127_ADDITIONS):
         require(worktree_oids[path] == source_entries[path][1]
-                and live_index_modes.get(path) == source_entries[path][0]
+                and live_index_entries.get(path) == source_entries[path]
                 and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
                 'Current 1.27 addition identity changed: ' + path)
     return worktree_oids

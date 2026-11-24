@@ -8,6 +8,7 @@ import importlib.util
 import io
 import json
 import py_compile
+import re
 import subprocess
 import sys
 import tempfile
@@ -457,7 +458,30 @@ def run(root=ROOT):
 
         refuses('REL-01 projection exit refuses a concurrent index-mode change',
                 lambda: release_projection_mode_race('VERSION'))
-        passed('REL-01 projection brackets every modified and added source path and mode')
+
+        def release_projection_blob_race(path):
+            source_entry = proof.entries(fixture, proof.REL127_SOURCE)[path]
+            try:
+                with proof.release_127_projection(fixture):
+                    result = subprocess.run(
+                        ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                        input=b'unreviewed staged REL-01 source\n', capture_output=True,
+                        check=True)
+                    oid = result.stdout.decode().strip()
+                    assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                    subprocess.run(
+                        ['git', 'update-index', '--cacheinfo',
+                         source_entry[0] + ',' + oid + ',' + path],
+                        cwd=fixture, check=True, capture_output=True)
+            finally:
+                subprocess.run(
+                    ['git', 'update-index', '--cacheinfo',
+                     source_entry[0] + ',' + source_entry[1] + ',' + path],
+                    cwd=fixture, check=True, capture_output=True)
+
+        refuses('REL-01 projection exit refuses a concurrent staged-blob change',
+                lambda: release_projection_blob_race('VERSION'))
+        passed('REL-01 projection brackets every modified and added source path, mode and index blob')
 
         original_proof_paths = proof.REL127_PROOF_PATHS
         try:
