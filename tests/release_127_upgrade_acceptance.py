@@ -165,9 +165,24 @@ def repeated_form_fields_self_check():
           })
 
 
+def snapshot_digest(value):
+    return hashlib.sha256(json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
 def same_retained(before, after, *, allow_settings_additions=True, allow_table_additions=(),
-                  allow_null_columns=None):
+                  allow_null_columns=None, allow_setting_changes=None):
     allow_null_columns = allow_null_columns or {}
+    allow_setting_changes = allow_setting_changes or {}
+    if (not isinstance(allow_setting_changes, dict)
+            or any(not isinstance(marker, str) or not re.fullmatch(r'[a-z][a-z0-9_]+', marker)
+                   or not isinstance(value, str)
+                   for marker, value in allow_setting_changes.items())):
+        raise ValueError('Allowed setting transitions must be exact string markers and values.')
+    allowed_setting_rows = {
+        snapshot_digest({'name': marker}): snapshot_digest(value)
+        for marker, value in allow_setting_changes.items()
+    }
     if before['configuration_sha256'] != after['configuration_sha256'] or before['lock_sha256'] != after['lock_sha256']:
         return False
     for name, fact in before['private_files'].items():
@@ -179,6 +194,12 @@ def same_retained(before, after, *, allow_settings_additions=True, allow_table_a
             return False
         for key, columns in table['rows'].items():
             target_columns = target['rows'].get(key)
+            if name == 'settings' and key in allowed_setting_rows:
+                expected_columns = dict(columns)
+                expected_columns['value'] = allowed_setting_rows[key]
+                if target_columns != expected_columns:
+                    return False
+                continue
             allowed = set(allow_null_columns.get(name, ()))
             if (not isinstance(target_columns, dict)
                     or any(target_columns.get(column) != digest for column, digest in columns.items())
@@ -447,7 +468,11 @@ def main():
                         migrated = probe(installed, 'snapshot')
                         check(label + ' additive schema preparation retains every original and candidate-era row and key',
                               same_retained(candidate_data_snapshot, migrated,
-                                            allow_null_columns={'mail_drafts': {'body_html'}}))
+                                            allow_null_columns={'mail_drafts': {'body_html'}},
+                                            allow_setting_changes={
+                                                'mail_inbox_schema_version': '2',
+                                                'mail_messages_schema_version': '2',
+                                            }))
                         representative = probe(installed, 'representative-data')
                         check(label + ' representative identity payment notification note and disabled-mail rows are created without transport',
                               representative.get('created') is True and representative_fixture_valid(representative))

@@ -2,8 +2,10 @@
 from pathlib import Path
 import argparse
 import ast
+from copy import deepcopy
 import hashlib
 import json
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKERS = {
@@ -43,6 +45,36 @@ def main(output):
     acceptance_tree = ast.parse(acceptance)
     apache_tree = ast.parse(apache)
     archive_tree = ast.parse(archive)
+    setting_change_allowlists = [
+        ast.literal_eval(keyword.value)
+        for node in ast.walk(acceptance_tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == 'same_retained'
+        for keyword in node.keywords
+        if keyword.arg == 'allow_setting_changes'
+    ]
+    retention_functions = [
+        node for node in acceptance_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name in {'snapshot_digest', 'same_retained'}
+    ]
+    retention_namespace = {'hashlib': hashlib, 'json': json, 're': re}
+    exec(compile(ast.Module(body=retention_functions, type_ignores=[]),
+                 '<release-retention-helpers>', 'exec'), retention_namespace)
+    snapshot_digest = retention_namespace['snapshot_digest']
+    same_retained = retention_namespace['same_retained']
+    marker = 'mail_inbox_schema_version'
+    marker_key = snapshot_digest({'name': marker})
+    before_retention = {
+        'configuration_sha256': 'configuration', 'lock_sha256': 'lock',
+        'private_files': {'retained.bin': {'sha256': 'private', 'bytes': 7}},
+        'tables': {'settings': {'count': 1, 'rows': {marker_key: {
+            'name': snapshot_digest(marker), 'value': snapshot_digest('1'),
+        }}}},
+    }
+    after_retention = deepcopy(before_retention)
+    after_retention['tables']['settings']['rows'][marker_key]['value'] = snapshot_digest('2')
     retention_upload = workflow.partition(
         '      - name: Preserve hashed retention evidence and failures')[2].partition(
             '\n\n  apache-upgrade:')[0]
@@ -101,6 +133,27 @@ def main(output):
           and "allow_null_columns={'mail_drafts': {'body_html'}}" in acceptance
           and "markers_before['mail_drafts_body_html'] is False" in acceptance
           and "release_state['mail_drafts_body_html'] is True" in acceptance)
+    check('Retention comparison accepts only the exact reviewed existing setting transition',
+          same_retained(before_retention, after_retention,
+                        allow_setting_changes={marker: '2'})
+          and not same_retained(before_retention, after_retention))
+    check('Release retention call allows only the two published marker upgrades',
+          setting_change_allowlists == [{
+              'mail_inbox_schema_version': '2',
+              'mail_messages_schema_version': '2',
+          }])
+    wrong_value = deepcopy(after_retention)
+    wrong_value['tables']['settings']['rows'][marker_key]['value'] = snapshot_digest('3')
+    check('Retention comparison refuses a wrong target value or marker allowance',
+          not same_retained(before_retention, wrong_value,
+                            allow_setting_changes={marker: '2'})
+          and not same_retained(before_retention, after_retention,
+                                allow_setting_changes={'mail_messages_schema_version': '2'}))
+    extra_column = deepcopy(after_retention)
+    extra_column['tables']['settings']['rows'][marker_key]['unexpected'] = snapshot_digest(None)
+    check('Retention comparison refuses extra columns during an allowed marker transition',
+          not same_retained(before_retention, extra_column,
+                            allow_setting_changes={marker: '2'}))
     check('Verified archive bytes are snapshotted once and the same bytes are extracted',
           all(term in archive for term in ['def published_snapshot(', 'def candidate_snapshot(',
                                            'def extract_snapshot(', 'io.BytesIO(data)', "target.open('xb')"])
