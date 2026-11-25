@@ -82,7 +82,8 @@ function release127_representative_complete(array $state):bool {
 }
 function release127_representative_create():array {
     if(CWP_VERSION!=='1.27.0')throw new RuntimeException('Representative fixture requires 1.27.0 code.');
-    foreach(['client_identity_schema_version','payment_attempts_schema_version','invoice_ledger_schema_version','gateway_receipts_schema_version','notification_feed_version','project_private_notes_schema_version','mail_accounts_schema_version','mail_drafts_schema_version','mail_messages_schema_version','mail_replies_schema_version'] as $marker)if(setting($marker)!=='1')throw new RuntimeException('Required release schema is not current: '.$marker);
+    $requiredMarkers=['client_identity_schema_version'=>'1','payment_attempts_schema_version'=>'1','invoice_ledger_schema_version'=>'1','gateway_receipts_schema_version'=>'1','notification_feed_version'=>'1','project_private_notes_schema_version'=>'1','mail_accounts_schema_version'=>'1','mail_drafts_schema_version'=>'1','mail_messages_schema_version'=>'2','mail_replies_schema_version'=>'1'];
+    foreach($requiredMarkers as $marker=>$version)if(setting($marker)!==$version)throw new RuntimeException('Required release schema is not current: '.$marker);
     $before=release127_representative_state();if($before['marker']||$before['audit_rows']!==0||array_sum($before['counts'])!==0)throw new RuntimeException('Representative release fixture already exists.');
     $client=one('SELECT * FROM '.table('studio_clients').' WHERE id=1');$job=one('SELECT * FROM '.table('studio_jobs').' WHERE id=1');$invoice=one('SELECT * FROM '.table('studio_invoices').' WHERE id=1');
     if(!$client||!$job||!$invoice||(int)$job['client_id']!==1||(int)$invoice['job_id']!==1)throw new RuntimeException('Representative retained business records differ.');

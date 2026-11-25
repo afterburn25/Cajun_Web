@@ -282,9 +282,14 @@ def main(output):
                                               'mail_reply_drafts']))
     check('Representative notification storage is explicitly reviewed before fixture creation',
           "'notification_feed_version': '1'" in acceptance
-          and "setting($marker)!=='1'" in probe
+          and "'notification_feed_version'=>'1'" in probe
           and all("'" + table + "'" in release_state_section for table in [
               'notification_feed', 'notification_prefs', 'notification_deliveries']))
+    check('Representative fixture requires each exact current release marker version',
+          "'mail_messages_schema_version'=>'2'" in probe
+          and 'foreach($requiredMarkers as $marker=>$version)' in probe
+          and 'setting($marker)!==$version' in probe
+          and "setting($marker)!=='1'" not in probe)
     check('Gate records no-live-operation boundaries',
           all(term in acceptance for term in ['live provider', 'live gateway', 'customer messages', 'production deployment', 'release publication']))
     check('Hosted matrix covers both PHP and database families',
