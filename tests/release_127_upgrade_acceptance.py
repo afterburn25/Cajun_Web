@@ -17,7 +17,8 @@ import requests
 from bs4 import BeautifulSoup
 from release_126_upgrade_cases import fields, OWNER
 from release_127_archive import (candidate_snapshot, extract_snapshot, fixture_storage_path,
-                                 interrupted_journal, ordinary_file_bytes, published_snapshot)
+                                 interrupted_journal, ordinary_file_bytes, published_snapshot,
+                                 retained_snapshot)
 from release_127_loopback_session import LocalSession
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -427,7 +428,8 @@ def main():
                               '<h2>Rolled-back</h2>' in response.text and recovered['version'] == initial)
                         check(label + ' HTTP recovery preserves baseline and candidate-era SQL and private data',
                               same_retained(candidate_data_snapshot, recovered, allow_settings_additions=False))
-                        extract_snapshot(update_bytes, installed)
+                        check(label + ' recovery retains the exact staged successor for reapply',
+                              retained_snapshot(update_bytes, installed))
                         updater = base + f'/cwp-update-{VERSION}/owner-update.php'
                         response = submit(owner, updater, 'inspect', {'backup_confirm': '1'})
                         check(label + ' recovered site reviews the exact successor update again',

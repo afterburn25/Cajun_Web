@@ -4,8 +4,13 @@ import argparse
 import ast
 from copy import deepcopy
 import hashlib
+import io
 import json
 import re
+import tempfile
+import zipfile
+
+from release_127_archive import extract_snapshot, retained_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRATION_TARGETS = {
@@ -25,6 +30,13 @@ def main(output):
     def check(name, value):
         checks.append({'name': name, 'passed': bool(value)})
         assert value, name
+    def deny(name, work):
+        try:
+            work()
+        except (OSError, RuntimeError, ValueError, zipfile.BadZipFile):
+            check(name, True)
+        else:
+            check(name, False)
     acceptance = (ROOT / 'tests/release_127_upgrade_acceptance.py').read_text(encoding='utf-8')
     probe = (ROOT / 'tests/release_127_upgrade_probe.php').read_text(encoding='utf-8')
     fetch = (ROOT / 'tools/fetch_release_127_baseline.py').read_text(encoding='utf-8')
@@ -208,9 +220,32 @@ def main(output):
           all(term in archive for term in ['def published_snapshot(', 'def candidate_snapshot(',
                                            'def extract_snapshot(', 'io.BytesIO(data)', "target.open('xb')"])
           and 'extract_snapshot(published_bytes, installed)' in acceptance
-          and 'extract_snapshot(update_bytes, installed)' in acceptance
+          and acceptance.count('extract_snapshot(update_bytes, installed)') == 1
           and 'unpack(' not in acceptance and 'extractall(' not in archive
     )
+    check('Recovery reuses only the exact retained successor without replacement or deletion',
+          'def retained_snapshot(data, destination)' in archive
+          and "check(label + ' recovery retains the exact staged successor for reapply'" in acceptance
+          and 'retained_snapshot(update_bytes, installed)' in acceptance
+          and 'shutil.rmtree(stage)' not in acceptance
+          and 'extract_snapshot(update_bytes, installed)' in acceptance)
+    with tempfile.TemporaryDirectory(prefix='cwp-release127-retained-') as folder:
+        destination = Path(folder) / 'installed'; destination.mkdir()
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as fixture:
+            fixture.writestr('cwp-update-1.27.0/.htaccess', b'guarded policy\n')
+            fixture.writestr('cwp-update-1.27.0/owner-update.php', b'<?php // fixture\n')
+        snapshot = buffer.getvalue(); extract_snapshot(snapshot, destination)
+        check('Retained successor accepts one exact ordinary extracted inventory',
+              retained_snapshot(snapshot, destination) is True)
+        policy = destination / 'cwp-update-1.27.0/.htaccess'; original = policy.read_bytes()
+        policy.write_bytes(b'changed\n')
+        deny('Retained successor refuses changed candidate bytes',
+             lambda: retained_snapshot(snapshot, destination))
+        policy.write_bytes(original)
+        extra = destination / 'cwp-update-1.27.0/unreviewed.php'; extra.write_bytes(b'unreviewed\n')
+        deny('Retained successor refuses an expanded staged inventory',
+             lambda: retained_snapshot(snapshot, destination))
     check('Candidate archive and manifest evidence bind expected source and version once',
           'candidate_snapshot(path, expected_source, expected_version)' in archive
           and 'manifest_data = manifest_path.read_bytes()' in archive
@@ -414,7 +449,7 @@ def main(output):
               'dist/CajunWebPro-1.27.0-UPDATE.manifest.json', 'dist/SHA256SUMS.txt'])
           and '\n            qa/release127-apache/\n' not in workflow)
     check('Loopback probe accepts only the isolated release127 prefix', "preg_match('/^ug127[rs]_$/D'" in probe)
-    Path(output).write_text(json.dumps({'passed': True, 'scope': 'Static release-127 gate contract; no DB, HTTP, provider, payment or deployment', 'checks': checks}, indent=2) + '\n', encoding='utf-8')
+    Path(output).write_text(json.dumps({'passed': True, 'scope': 'Portable release-127 gate and retained-archive contract; no DB, HTTP, provider, payment or deployment', 'checks': checks}, indent=2) + '\n', encoding='utf-8')
     print('PASS', len(checks), 'release-127 upgrade guards')
 
 

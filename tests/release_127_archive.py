@@ -156,6 +156,62 @@ def extract_snapshot(data, destination):
                 shutil.copyfileobj(source, output)
 
 
+def retained_snapshot(data, destination):
+    """Require one retained extracted tree to equal the inspected snapshot exactly."""
+    destination = Path(destination)
+    if destination.is_symlink() or not destination.is_dir():
+        raise RuntimeError('Retained snapshot destination must be an existing ordinary directory')
+    root = destination.resolve()
+    names = inspect_snapshot(data)
+    safe_names = {name: _safe_name(name) for name in names}
+    top_levels = {path.parts[0] for path in safe_names.values()}
+    if len(top_levels) != 1:
+        raise RuntimeError('Retained snapshot must have one exact top-level directory')
+    expected_files = set(names)
+    expected_directories = {
+        PurePosixPath(*path.parts[:position]).as_posix()
+        for path in safe_names.values() for position in range(1, len(path.parts))
+    }
+    retained_root = root / next(iter(top_levels))
+    if (retained_root.is_symlink() or not retained_root.is_dir()
+            or retained_root.resolve(strict=True) != retained_root
+            or not retained_root.is_relative_to(root)):
+        raise RuntimeError('Retained snapshot root is unsafe')
+    actual_files = set()
+    actual_directories = {retained_root.relative_to(root).as_posix()}
+    for candidate in retained_root.rglob('*'):
+        relative = candidate.relative_to(root).as_posix()
+        if candidate.is_symlink() or candidate.resolve(strict=True) != candidate:
+            raise RuntimeError('Retained snapshot path is unsafe: ' + relative)
+        info = candidate.lstat()
+        if stat.S_ISREG(info.st_mode):
+            actual_files.add(relative)
+        elif stat.S_ISDIR(info.st_mode):
+            actual_directories.add(relative)
+        else:
+            raise RuntimeError('Retained snapshot path is not regular: ' + relative)
+    if actual_files != expected_files or actual_directories != expected_directories:
+        raise RuntimeError('Retained snapshot inventory differs from the candidate')
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        for name, safe in safe_names.items():
+            target = root.joinpath(*safe.parts)
+            if (target.is_symlink() or not target.is_file()
+                    or target.resolve(strict=True) != target
+                    or not target.is_relative_to(root)):
+                raise RuntimeError('Retained snapshot member is unsafe: ' + name)
+            expected = hashlib.sha256()
+            with archive.open(name) as source:
+                for block in iter(lambda: source.read(1024 * 1024), b''):
+                    expected.update(block)
+            actual = hashlib.sha256()
+            with target.open('rb') as source:
+                for block in iter(lambda: source.read(1024 * 1024), b''):
+                    actual.update(block)
+            if actual.digest() != expected.digest():
+                raise RuntimeError('Retained snapshot member differs: ' + name)
+    return True
+
+
 def fixture_storage_path(raw, private_parent, public_root, *, virtual_root=None, host_root=None):
     """Resolve an installer-reported synthetic store without trusting traversal or links."""
     if (not isinstance(raw, str) or not raw.startswith('/') or '\\' in raw or '\x00' in raw
