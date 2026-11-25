@@ -280,6 +280,10 @@ def main(output):
                                               'gateway_receipts', 'notification_feed',
                                               'project_private_notes', 'mail_accounts',
                                               'mail_reply_drafts']))
+    check('Representative pending identity distinguishes a present SQL NULL from a missing column',
+          "array_key_exists('verified_at',$rows['studio_client_registrations'])" in probe
+          and "$rows['studio_client_registrations']['verified_at']===null" in probe
+          and "['verified_at']??false" not in probe)
     check('Representative notification storage is explicitly reviewed before fixture creation',
           "'notification_feed_version': '1'" in acceptance
           and "'notification_feed_version'=>'1'" in probe

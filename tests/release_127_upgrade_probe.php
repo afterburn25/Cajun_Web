@@ -63,7 +63,7 @@ function release127_representative_state():array {
     ksort($rows);ksort($counts);
     $origin=isset($rows['mail_reply_drafts']['origin_json'])?json_decode((string)$rows['mail_reply_drafts']['origin_json'],true):null;
     $states=[
-        'identity_pending'=>(($rows['studio_client_registrations']['verified_at']??false)===null&&($rows['studio_client_tokens']['purpose']??null)==='verify'),
+        'identity_pending'=>(isset($rows['studio_client_registrations'])&&array_key_exists('verified_at',$rows['studio_client_registrations'])&&$rows['studio_client_registrations']['verified_at']===null&&($rows['studio_client_tokens']['purpose']??null)==='verify'),
         'payment_attempt_unknown'=>(($rows['payment_attempts']['environment']??null)==='sandbox'&&($rows['payment_attempts']['state']??null)==='unknown'&&($rows['payment_attempt_events']['event']??null)==='release127_retained'),
         'gateway_receipt_verified'=>(($rows['studio_invoices']['status']??null)==='paid'&&($rows['gateway_receipts']['environment']??null)==='production'&&($rows['gateway_receipts']['status']??null)==='verified'&&($rows['invoice_payments']['kind']??null)==='gateway'&&($rows['gateway_receipts']['invoice_id']??null)===($rows['studio_invoices']['id']??null)&&($rows['invoice_payments']['invoice_id']??null)===($rows['studio_invoices']['id']??null)),
         'notification_portal_only'=>((int)query('SELECT COUNT(*) FROM '.table('notification_deliveries').' WHERE notification_id=?',[str_repeat('7',32)])->fetchColumn()===1&&($rows['notification_deliveries']['channel']??null)==='portal'),
