@@ -176,13 +176,15 @@ def same_retained(before, after, *, allow_settings_additions=True, allow_table_a
     allow_setting_changes = allow_setting_changes or {}
     if (not isinstance(allow_setting_changes, dict)
             or any(not isinstance(marker, str) or not re.fullmatch(r'[a-z][a-z0-9_]+', marker)
-                   or not isinstance(value, str)
-                   for marker, value in allow_setting_changes.items())):
-        raise ValueError('Allowed setting transitions must be exact string markers and values.')
+                   or not isinstance(transition, tuple) or len(transition) != 2
+                   or any(not isinstance(value, str) for value in transition)
+                   for marker, transition in allow_setting_changes.items())):
+        raise ValueError('Allowed setting transitions must be exact string source and target values.')
     allowed_setting_rows = {
-        snapshot_digest({'name': marker}): snapshot_digest(value)
-        for marker, value in allow_setting_changes.items()
+        snapshot_digest({'name': marker}): tuple(snapshot_digest(value) for value in transition)
+        for marker, transition in allow_setting_changes.items()
     }
+    observed_setting_rows = set()
     if before['configuration_sha256'] != after['configuration_sha256'] or before['lock_sha256'] != after['lock_sha256']:
         return False
     for name, fact in before['private_files'].items():
@@ -195,10 +197,12 @@ def same_retained(before, after, *, allow_settings_additions=True, allow_table_a
         for key, columns in table['rows'].items():
             target_columns = target['rows'].get(key)
             if name == 'settings' and key in allowed_setting_rows:
+                source_value, target_value = allowed_setting_rows[key]
                 expected_columns = dict(columns)
-                expected_columns['value'] = allowed_setting_rows[key]
-                if target_columns != expected_columns:
+                expected_columns['value'] = target_value
+                if columns.get('value') != source_value or target_columns != expected_columns:
                     return False
+                observed_setting_rows.add(key)
                 continue
             allowed = set(allow_null_columns.get(name, ()))
             if (not isinstance(target_columns, dict)
@@ -212,7 +216,7 @@ def same_retained(before, after, *, allow_settings_additions=True, allow_table_a
             return False
         if name == 'settings' and not allow_settings_additions and target['count'] != table['count']:
             return False
-    return True
+    return observed_setting_rows == set(allowed_setting_rows)
 
 
 def assert_no_error(response):
@@ -470,8 +474,9 @@ def main():
                               same_retained(candidate_data_snapshot, migrated,
                                             allow_null_columns={'mail_drafts': {'body_html'}},
                                             allow_setting_changes={
-                                                'mail_inbox_schema_version': '2',
-                                                'mail_messages_schema_version': '2',
+                                                'mail_inbox_schema_version': ('1', '2'),
+                                                'mail_messages_schema_version': ('1', '2'),
+                                                'payments_schema_version': ('1', '2'),
                                             }))
                         representative = probe(installed, 'representative-data')
                         check(label + ' representative identity payment notification note and disabled-mail rows are created without transport',

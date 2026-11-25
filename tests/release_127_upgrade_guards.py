@@ -135,25 +135,46 @@ def main(output):
           and "release_state['mail_drafts_body_html'] is True" in acceptance)
     check('Retention comparison accepts only the exact reviewed existing setting transition',
           same_retained(before_retention, after_retention,
-                        allow_setting_changes={marker: '2'})
+                        allow_setting_changes={marker: ('1', '2')})
           and not same_retained(before_retention, after_retention))
-    check('Release retention call allows only the two published marker upgrades',
+    check('Release retention call allows only the three published marker upgrades',
           setting_change_allowlists == [{
-              'mail_inbox_schema_version': '2',
-              'mail_messages_schema_version': '2',
+              'mail_inbox_schema_version': ('1', '2'),
+              'mail_messages_schema_version': ('1', '2'),
+              'payments_schema_version': ('1', '2'),
           }])
+    wrong_source = deepcopy(before_retention)
+    wrong_source['tables']['settings']['rows'][marker_key]['value'] = snapshot_digest('0')
+    check('Retention comparison refuses a wrong source value',
+          not same_retained(wrong_source, after_retention,
+                            allow_setting_changes={marker: ('1', '2')}))
+    missing_source = deepcopy(before_retention)
+    missing_source['tables']['settings']['rows'].pop(marker_key)
+    missing_source['tables']['settings']['count'] = 0
+    missing_both = deepcopy(missing_source)
+    check('Retention comparison requires every declared transition row to exist',
+          not same_retained(missing_source, after_retention,
+                            allow_setting_changes={marker: ('1', '2')})
+          and not same_retained(missing_source, missing_both,
+                                allow_setting_changes={marker: ('1', '2')}))
+    check('Retention comparison refuses a partially observed transition allowlist',
+          not same_retained(before_retention, after_retention,
+                            allow_setting_changes={
+                                marker: ('1', '2'),
+                                'mail_messages_schema_version': ('1', '2'),
+                            }))
     wrong_value = deepcopy(after_retention)
     wrong_value['tables']['settings']['rows'][marker_key]['value'] = snapshot_digest('3')
     check('Retention comparison refuses a wrong target value or marker allowance',
           not same_retained(before_retention, wrong_value,
-                            allow_setting_changes={marker: '2'})
+                            allow_setting_changes={marker: ('1', '2')})
           and not same_retained(before_retention, after_retention,
-                                allow_setting_changes={'mail_messages_schema_version': '2'}))
+                                allow_setting_changes={'mail_messages_schema_version': ('1', '2')}))
     extra_column = deepcopy(after_retention)
     extra_column['tables']['settings']['rows'][marker_key]['unexpected'] = snapshot_digest(None)
     check('Retention comparison refuses extra columns during an allowed marker transition',
           not same_retained(before_retention, extra_column,
-                            allow_setting_changes={marker: '2'}))
+                            allow_setting_changes={marker: ('1', '2')}))
     check('Verified archive bytes are snapshotted once and the same bytes are extracted',
           all(term in archive for term in ['def published_snapshot(', 'def candidate_snapshot(',
                                            'def extract_snapshot(', 'io.BytesIO(data)', "target.open('xb')"])
