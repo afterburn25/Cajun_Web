@@ -100,10 +100,10 @@ def main():
     payment_fixture = source['tests/hosting_checkout_http_fixture.php']
     payment_runner = source['tests/hosting_checkout_http_browser.py']
     payment_cases = source['tests/hosting_payment_cases.py']
-    check('Only closed fulfillment receives a finite slower-runner allowance',
-          "timeout = 360 if operation == 'payment-fulfill' else 180" in payment_runner
+    check('Only closed provisioning continuations receive a finite slower-runner allowance',
+          "timeout = 360 if operation in ('payment-fulfill', 'payment-activate') else 180" in payment_runner
           and 'timeout=timeout)' in payment_runner
-          and payment_runner.count("operation == 'payment-fulfill'") == 1
+          and payment_runner.count("operation in ('payment-fulfill', 'payment-activate')") == 1
           and payment_runner.count('timeout = 360') == 1
           and payment_runner.count('else 180') == 1)
     payment_diagnostics = re.findall(r"check\(label \+ '([^']+)'", payment_cases)
