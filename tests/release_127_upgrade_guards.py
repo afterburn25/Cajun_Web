@@ -29,6 +29,7 @@ def main(output):
     probe = (ROOT / 'tests/release_127_upgrade_probe.php').read_text(encoding='utf-8')
     fetch = (ROOT / 'tools/fetch_release_127_baseline.py').read_text(encoding='utf-8')
     workflow = (ROOT / '.github/workflows/software-release-1261-upgrade.yml').read_text(encoding='utf-8')
+    service_plans = (ROOT / '.github/workflows/service-plan-records.yml').read_text(encoding='utf-8')
     apache = (ROOT / 'tests/release_127_apache_upgrade_acceptance.py').read_text(encoding='utf-8')
     structure = (ROOT / 'site/app/updates/structure.php').read_text(encoding='utf-8')
     loopback = (ROOT / 'tests/release_127_loopback_session.py').read_text(encoding='utf-8')
@@ -338,6 +339,11 @@ def main(output):
           and 'prepare_ubuntu_apt.py prepare-ubuntu' in workflow
           and 'prepare_ubuntu_apt.py verify-releases' in workflow
           and 'qa/release127-apache/results.json' in workflow)
+    check('Service-plan storage gate uses only its runner-assigned database port',
+          service_plans.count("ports: ['3306/tcp']") == 1
+          and '33306' not in service_plans
+          and service_plans.count("CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}") == 1
+          and '-e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT' in service_plans)
     check('Actual Apache gate interrupts and enforces exact maintenance policy in every topology',
           all(term in apache for term in [
               "'tests/structure_worker.php'", "'apply', '2'",
