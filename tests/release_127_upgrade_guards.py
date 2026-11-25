@@ -8,13 +8,16 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-MARKERS = {
-    'software_onboarding_version', 'client_identity_schema_version', 'hosting_storefront_version',
-    'gateway_receipts_schema_version', 'hosting_payments_schema_version',
-    'project_private_notes_schema_version', 'mail_copies_schema_version',
-    'mail_drafts_html_ready', 'mail_files_schema_version', 'mail_flags_schema_version',
-    'mail_inbox_schema_version', 'mail_messages_schema_version', 'mail_replies_schema_version',
+MIGRATION_TARGETS = {
+    'software_onboarding_version': '1', 'client_identity_schema_version': '1',
+    'hosting_storefront_version': '1', 'gateway_receipts_schema_version': '1',
+    'notification_feed_version': '1', 'hosting_payments_schema_version': '1',
+    'project_private_notes_schema_version': '1', 'mail_copies_schema_version': '1',
+    'mail_drafts_html_ready': '1', 'mail_files_schema_version': '1',
+    'mail_flags_schema_version': '1', 'mail_inbox_schema_version': '2',
+    'mail_messages_schema_version': '2', 'mail_replies_schema_version': '1',
 }
+MARKERS = set(MIGRATION_TARGETS)
 
 
 def main(output):
@@ -109,6 +112,23 @@ def main(output):
     apache_maintenance = assigned_literal(apache_tree, 'MAINTENANCE')
     staged_policy = assigned_literal(apache_tree, 'STAGED_POLICY')
     private_guard = assigned_literal(archive_tree, 'PRIVATE_GUARD')
+    marker_nodes = [
+        node for node in acceptance_tree.body
+        if (isinstance(node, ast.Assign)
+            and any(isinstance(target, ast.Name)
+                    and target.id in {'MIGRATIONS', 'BASELINE_MARKERS'}
+                    for target in node.targets))
+    ]
+    marker_namespace = {}
+    exec(compile(ast.Module(body=marker_nodes, type_ignores=[]),
+                 '<release-marker-contract>', 'exec'), {'__builtins__': {}}, marker_namespace)
+    release_migrations = marker_namespace.get('MIGRATIONS')
+    baseline_markers = marker_namespace.get('BASELINE_MARKERS')
+    release_state_section = probe.partition("if($mode==='release-state'){")[2].partition(
+        'echo json_encode($state,JSON_THROW_ON_ERROR);exit;')[0]
+    release_state_match = re.search(r'\$markers=\[([^\]]+)\];', release_state_section)
+    release_state_markers = ([] if release_state_match is None else
+                             re.findall(r"'([a-z][a-z0-9_]*)'", release_state_match.group(1)))
     check('Gate binds exact published source hash and 1.27.0 candidate',
           "BASELINE_SOURCE = 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'" in acceptance
           and "VERSION != '1.27.0'" in acceptance)
@@ -125,7 +145,15 @@ def main(output):
           and history['1.26.1']['manifest_sha256'] == 'a903b2850ab4ff25ed94ceddd1794370341865183ee515a72bd816cd5324d0ee'
           and len(history['1.26.1']['files']) == 3072
           and history['1.26.1']['files'].get('config/defaults.php') is not None)
-    check('Every release migration marker is reviewed and probed', all(marker in acceptance and marker in probe for marker in MARKERS))
+    check('Every release migration marker and target is reviewed and probed in exact order',
+          list(release_migrations.items()) == list(MIGRATION_TARGETS.items())
+          and release_state_markers == list(release_migrations)
+          and len(release_state_markers) == len(set(release_state_markers)))
+    check('Published notification baseline is absent and its reviewed target is version 1',
+          isinstance(baseline_markers, dict)
+          and set(baseline_markers) == MARKERS
+          and baseline_markers['notification_feed_version'] == ''
+          and release_migrations['notification_feed_version'] == '1')
     check('Formatted-draft migration proves the real legacy column addition and retained row',
           all(term in probe for term in ['Published 1.26.1 retained draft',
                                          "column_name=?',[$c['db']['prefix'].'mail_drafts','body_html']",
@@ -251,6 +279,11 @@ def main(output):
                                               'gateway_receipts', 'notification_feed',
                                               'project_private_notes', 'mail_accounts',
                                               'mail_reply_drafts']))
+    check('Representative notification storage is explicitly reviewed before fixture creation',
+          "'notification_feed_version': '1'" in acceptance
+          and "setting($marker)!=='1'" in probe
+          and all("'" + table + "'" in release_state_section for table in [
+              'notification_feed', 'notification_prefs', 'notification_deliveries']))
     check('Gate records no-live-operation boundaries',
           all(term in acceptance for term in ['live provider', 'live gateway', 'customer messages', 'production deployment', 'release publication']))
     check('Hosted matrix covers both PHP and database families',

@@ -187,7 +187,7 @@ if($mode==='capabilities'){
     echo json_encode($result,JSON_THROW_ON_ERROR);exit;
 }
 if($mode==='release-state'){
-    $markers=['software_onboarding_version','client_identity_schema_version','hosting_storefront_version','gateway_receipts_schema_version','hosting_payments_schema_version','project_private_notes_schema_version','mail_copies_schema_version','mail_drafts_html_ready','mail_files_schema_version','mail_flags_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_replies_schema_version'];
+    $markers=['software_onboarding_version','client_identity_schema_version','hosting_storefront_version','gateway_receipts_schema_version','notification_feed_version','hosting_payments_schema_version','project_private_notes_schema_version','mail_copies_schema_version','mail_drafts_html_ready','mail_files_schema_version','mail_flags_schema_version','mail_inbox_schema_version','mail_messages_schema_version','mail_replies_schema_version'];
     $htmlColumn=one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$c['db']['prefix'].'mail_drafts','body_html']);
     $legacyDraft=one('SELECT * FROM '.table('mail_drafts').' WHERE id=?',[str_repeat('e',32)]);
     $state=['markers'=>[],'side_effect_rows'=>0,'hosting_payments_enabled'=>setting('hosting_payments_enabled')==='1',
@@ -195,7 +195,7 @@ if($mode==='release-state'){
         'legacy_mail_draft'=>['present'=>$legacyDraft!==null,'subject'=>$legacyDraft['subject']??null,
             'body'=>$legacyDraft['body']??null,'body_html'=>$legacyDraft['body_html']??null]];
     foreach($markers as $marker)$state['markers'][$marker]=setting($marker);
-    foreach(['studio_client_registrations','studio_client_tokens','software_upload_requests','gateway_receipts','hosting_payment_charges','hosting_payment_attempts','hosting_payment_events','project_private_notes','mail_reply_drafts'] as $name){
+    foreach(['studio_client_registrations','studio_client_tokens','software_upload_requests','gateway_receipts','notification_feed','notification_prefs','notification_deliveries','hosting_payment_charges','hosting_payment_attempts','hosting_payment_events','project_private_notes','mail_reply_drafts'] as $name){
         $exists=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$c['db']['prefix'].$name]);
         if($exists)$state['side_effect_rows']+=(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();
     }

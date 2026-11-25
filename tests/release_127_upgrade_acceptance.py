@@ -31,6 +31,7 @@ BASELINE_SOURCE = 'f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391'
 MIGRATIONS = {
     'software_onboarding_version': '1', 'client_identity_schema_version': '1',
     'hosting_storefront_version': '1', 'gateway_receipts_schema_version': '1',
+    'notification_feed_version': '1',
     'hosting_payments_schema_version': '1', 'project_private_notes_schema_version': '1',
     'mail_copies_schema_version': '1', 'mail_drafts_html_ready': '1',
     'mail_files_schema_version': '1', 'mail_flags_schema_version': '1',
