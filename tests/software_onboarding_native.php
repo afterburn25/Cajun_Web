@@ -41,7 +41,31 @@ try{
     require_once CWP_CODE_ROOT.'/admin/views/software_onboarding.php';
     $jobSource=file_get_contents(CWP_CODE_ROOT.'/app/jobs/run.php');
     soon_ok(is_string($jobSource)&&str_contains($jobSource,'software_onboarding_cleanup_expired(false)'),'Shared-host CLI runner invokes bounded software staging expiry without browser authority');
+    $manualData=[
+        'sku'=>'SOFTWARE-MANUAL-POLICY','title'=>'Manual software policy',
+        'family'=>'software','status'=>'draft','term'=>'month','currency'=>'USD',
+        'amount'=>'','setup'=>'0.00','cost'=>'','provider_ref'=>'','summary'=>'',
+        'features'=>'','terms'=>'','sort_order'=>'0'
+    ];
+    soon_deny(fn()=>catalog_save(0,0,$manualData),'Manual software creation requires prepared licensing storage');
+    soon_ok(!one('SELECT id FROM '.table('catalog_products').' WHERE sku=?',['SOFTWARE-MANUAL-POLICY']),
+        'Unavailable licensing refuses an unbound software product without a catalog write');
     software_commerce_prepare($password);
+    $manualId=catalog_save(0,0,$manualData);
+    $manual=one('SELECT * FROM '.table('catalog_products').' WHERE id=?',[$manualId]);
+    $manualPolicy=software_product_policy($manualId);
+    soon_ok($manual['status']==='draft'&&$manual['term']==='month'
+        &&$manual['amount_cents']===null&&(int)$manualPolicy['revision']===1
+        &&$manualPolicy['max_installations']===2&&$manualPolicy['update_months']===0,
+        'Advanced software editor atomically creates draft product and default license policy without inventing prices');
+    soon_ok(!one('SELECT id FROM '.table('website_licenses').' WHERE product_id=?',['SOFTWARE-MANUAL-POLICY']),
+        'Preparing a software product never issues a customer key');
+    catalog_save($manualId,1,array_replace($manualData,['status'=>'retired']));
+    soon_ok(one('SELECT status FROM '.table('catalog_products').' WHERE id=?',[$manualId])['status']==='retired'
+        &&software_product_policy($manualId)['revision']===1,
+        'Retirement removes the future offer while retaining product identity and its license policy');
+    soon_ok(!one('SELECT id FROM '.table('catalog_products')." WHERE status='published' AND sku=?",['SOFTWARE-MANUAL-POLICY']),
+        'Retired software cannot be selected from the public published catalog');
     soon_ok(!software_onboarding_ready(),'Guided uploads require explicit owner preparation');
     software_onboarding_prepare();soon_ok(software_onboarding_ready(),'Owner preparation creates durable upload staging');
     software_onboarding_prepare();soon_ok(software_onboarding_ready(),'Guided upload preparation is idempotent');
