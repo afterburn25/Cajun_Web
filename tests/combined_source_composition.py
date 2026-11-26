@@ -2228,7 +2228,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'c9c8713f55385d3836252eaf983a7316d93c65ab51e2bdb5caa0695c03f5a1dd'
+REGRESSION_SHA256 = '88df5b74e9aa0c2ddce76f679917b9714294564354fcda0194fd2b07f25f04f4'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 

@@ -415,6 +415,10 @@ def run(root=ROOT):
         ('PROJECT_PROGRESS_BASE_TREE', 'base tree'),
         ('PROJECT_PROGRESS_SOURCE_TREE', 'source tree'),
         ('PROJECT_PROGRESS_SOURCE', 'source commit'),
+        ('PROJECT_PROGRESS_PREDECESSOR_PROOF', 'predecessor proof commit'),
+        ('PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE', 'predecessor proof tree'),
+        ('PROJECT_PROGRESS_CORRECTION_SOURCE', 'correction source commit'),
+        ('PROJECT_PROGRESS_CORRECTION_SOURCE_TREE', 'correction source tree'),
     ):
         original = getattr(proof, attribute)
         try:
@@ -531,6 +535,17 @@ def run(root=ROOT):
                     lambda: proof.validate_project_progress_source(fixture))
         finally:
             proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths
+        for attribute, label in (
+            ('PROJECT_PROGRESS_CORRECTION_MODIFIED', 'modified path set'),
+            ('PROJECT_PROGRESS_CORRECTION_ADDITIONS', 'addition path set'),
+        ):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, original | {'README.md'})
+                refuses('Project-progress binding refuses an altered correction ' + label,
+                        lambda: proof.validate_project_progress_source(fixture))
+            finally:
+                setattr(proof, attribute, original)
         passed('Project-progress negative cases restore exact source and proof bytes')
 
         def validate_release_fixture():
