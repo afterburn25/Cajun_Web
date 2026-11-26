@@ -2,10 +2,32 @@ name: Project progress foundation checks
 
 on:
   pull_request:
-    paths: ['foundation/projects/ProjectProgressEvent.php', 'foundation/projects/ProjectSnapshot.php', 'site/includes/foundation/projects/ProjectProgressEvent.php', 'site/includes/foundation/projects/ProjectSnapshot.php', 'site/install/inventory.generated.php', 'tests/project-progress/**', '.github/workflows/project-progress.yml']
+    paths:
+      - '.github/workflows/project-progress.yml'
+      - 'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md'
+      - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
+      - 'foundation/projects/ProjectProgressEvent.php'
+      - 'foundation/projects/ProjectSnapshot.php'
+      - 'site/includes/foundation/projects/ProjectProgressEvent.php'
+      - 'site/includes/foundation/projects/ProjectSnapshot.php'
+      - 'site/install/inventory.generated.php'
+      - 'tests/combined_source_composition.py'
+      - 'tests/combined_source_composition_test.py'
+      - 'tests/project-progress/**'
   push:
     branches: [main, 'codex/project-progress-*']
-    paths: ['foundation/projects/ProjectProgressEvent.php', 'foundation/projects/ProjectSnapshot.php', 'site/includes/foundation/projects/ProjectProgressEvent.php', 'site/includes/foundation/projects/ProjectSnapshot.php', 'site/install/inventory.generated.php', 'tests/project-progress/**', '.github/workflows/project-progress.yml']
+    paths:
+      - '.github/workflows/project-progress.yml'
+      - 'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md'
+      - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
+      - 'foundation/projects/ProjectProgressEvent.php'
+      - 'foundation/projects/ProjectSnapshot.php'
+      - 'site/includes/foundation/projects/ProjectProgressEvent.php'
+      - 'site/includes/foundation/projects/ProjectSnapshot.php'
+      - 'site/install/inventory.generated.php'
+      - 'tests/combined_source_composition.py'
+      - 'tests/combined_source_composition_test.py'
+      - 'tests/project-progress/**'
   workflow_dispatch:
 
 permissions:
