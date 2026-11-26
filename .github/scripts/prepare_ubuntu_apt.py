@@ -92,6 +92,7 @@ def cloud_init_state_allowed(returncode, state):
                 and (((status, extended) == ('done', 'done') and 'stage' in state)
                      or (status, extended) == ('disabled', 'disabled')))
     degraded = (returncode == 2 and not errors
+                and 'stage' in state
                 and recoverable == {'WARNING': [AZURE_IMDS_TRANSIENT_WARNING]}
                 and (status, extended) == ('done', 'degraded done')
                 and state.get('boot_status_code') == 'enabled-by-generator'

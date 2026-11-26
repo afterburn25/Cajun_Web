@@ -23,7 +23,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = '921cbeefc8abddc32b2637a94130ed90ac0046f6cbf57b96b97f91336e716f53'
+APT_PREPARATION_SHA256 = '561ea255e303e9c75cd7afd79fdeded77b672352b9443908bbf2a0dbf258a86b'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
@@ -276,6 +276,9 @@ def cloud_init_terminal_state_cases():
          allowed(0, {**disabled_without_stage, 'stage': 'init'}) is None),
         ('Structured cloud-init guard accepts warning-only terminal degradation',
          allowed(2, degraded) == {'WARNING': 1}),
+        ('Structured cloud-init guard requires the terminal stage field for degradation',
+         allowed(2, {name: value for name, value in degraded.items() if name != 'stage'})
+         is None),
         ('Structured cloud-init guard rejects unrelated warning degradation',
          allowed(2, {**degraded,
                      'recoverable_errors': {'WARNING': ['Failed partitioning operation']}})
