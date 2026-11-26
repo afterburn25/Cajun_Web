@@ -342,20 +342,37 @@ def run(root=ROOT):
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_BASE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_SOURCE_TREE)
+    with proof.project_progress_projection(root):
+        for path in proof.PROJECT_PROGRESS_MODIFIED:
+            assert (proof.ordinary(root, path)
+                    == proof.git(root, 'cat-file', 'blob',
+                                 proof.PROJECT_PROGRESS_BASE + ':' + path))
+        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+        assert proof.PROJECT_PROGRESS_ADDITIONS.isdisjoint(
+            proof.actual_paths(root, tracked))
+        assert (proof.canonical_inventory(root)
+                == proof.git(root, 'cat-file', 'blob',
+                             proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY))
+    passed('Project-progress projection restores the exact qualified-main inventory and removes only its additions')
     assert (proof.git(root, 'rev-parse', proof.REL127_BASE + '^{tree}').decode().strip()
             == proof.REL127_BASE_TREE
             and proof.git(root, 'rev-parse', proof.REL127_SOURCE + '^{tree}').decode().strip()
             == proof.REL127_SOURCE_TREE)
-    with proof.release_127_projection(root):
-        for path in proof.REL127_MODIFIED:
-            assert (proof.ordinary(root, path)
-                    == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
-        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-        assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
-        assert (proof.ordinary(root, proof.REGRESSION)
-                == proof.actual_ordinary(root, proof.REGRESSION)
-                and proof.digest(proof.ordinary(root, proof.REGRESSION))
-                == proof.REGRESSION_SHA256)
+    with proof.project_progress_projection(root):
+        with proof.release_127_projection(root):
+            for path in proof.REL127_MODIFIED:
+                assert (proof.ordinary(root, path)
+                        == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
+            tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+            assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
+            assert (proof.ordinary(root, proof.REGRESSION)
+                    == proof.actual_ordinary(root, proof.REGRESSION)
+                    and proof.digest(proof.ordinary(root, proof.REGRESSION))
+                    == proof.REGRESSION_SHA256)
     passed('REL-01 projection binds every exact modified path, removes only its additions, and leaves self-bound proof bytes current')
 
     for attribute, label in (
@@ -368,6 +385,18 @@ def run(root=ROOT):
             setattr(proof, attribute, '0' * 40)
             refuses('Refuses substituted REL-01 ' + label,
                     lambda: proof.validate_release_127_source(root))
+        finally:
+            setattr(proof, attribute, original)
+    for attribute, label in (
+        ('PROJECT_PROGRESS_BASE_TREE', 'base tree'),
+        ('PROJECT_PROGRESS_SOURCE_TREE', 'source tree'),
+        ('PROJECT_PROGRESS_SOURCE', 'source commit'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * 40)
+            refuses('Refuses substituted project-progress ' + label,
+                    lambda: proof.validate_project_progress_source(root))
         finally:
             setattr(proof, attribute, original)
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
@@ -427,12 +456,55 @@ def run(root=ROOT):
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
 
+        def project_progress_source_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + b'\n# unreviewed project-progress source\n')
+                proof.validate_project_progress_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress binding refuses modified inventory bytes',
+                lambda: project_progress_source_tamper(proof.INVENTORY))
+        refuses('Project-progress binding refuses changed added-file bytes',
+                lambda: project_progress_source_tamper(
+                    'foundation/projects/ProjectProgressEvent.php'))
+
+        def project_progress_projection_race(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                with proof.project_progress_projection(fixture):
+                    target.write_bytes(original + b'\n# concurrent project-progress source\n')
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress projection exit refuses a concurrent modified-file change',
+                lambda: project_progress_projection_race(proof.INVENTORY))
+        refuses('Project-progress projection exit refuses a concurrent added-file change',
+                lambda: project_progress_projection_race(
+                    'tests/project-progress/records.php'))
+
+        original_project_proof_paths = proof.PROJECT_PROGRESS_PROOF_PATHS
+        try:
+            proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths | {'README.md'}
+            refuses('Project-progress binding refuses an altered proof-successor path set',
+                    lambda: proof.validate_project_progress_source(fixture))
+        finally:
+            proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths
+        passed('Project-progress negative cases restore exact source and proof bytes')
+
+        def validate_release_fixture():
+            with proof.project_progress_projection(fixture):
+                return proof.validate_release_127_source(fixture)
+
         def release_source_tamper(path):
             target = fixture / path
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed REL-01 source\n')
-                proof.validate_release_127_source(fixture)
+                validate_release_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -447,7 +519,7 @@ def run(root=ROOT):
             assert original.count(old) == 1
             try:
                 target.write_bytes(original.replace(old, new, 1))
-                proof.validate_release_127_source(fixture)
+                validate_release_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -482,8 +554,9 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.release_127_projection(fixture):
-                    target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
+                with proof.project_progress_projection(fixture):
+                    with proof.release_127_projection(fixture):
+                        target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
             finally:
                 target.write_bytes(original)
 
@@ -494,10 +567,11 @@ def run(root=ROOT):
 
         def release_projection_mode_race(path):
             try:
-                with proof.release_127_projection(fixture):
-                    subprocess.run(
-                        ['git', 'update-index', '--chmod=+x', '--', path],
-                        cwd=fixture, check=True, capture_output=True)
+                with proof.project_progress_projection(fixture):
+                    with proof.release_127_projection(fixture):
+                        subprocess.run(
+                            ['git', 'update-index', '--chmod=+x', '--', path],
+                            cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--chmod=-x', '--', path],
@@ -509,17 +583,18 @@ def run(root=ROOT):
         def release_projection_blob_race(path):
             source_entry = proof.entries(fixture, proof.REL127_SOURCE)[path]
             try:
-                with proof.release_127_projection(fixture):
-                    result = subprocess.run(
-                        ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
-                        input=b'unreviewed staged REL-01 source\n', capture_output=True,
-                        check=True)
-                    oid = result.stdout.decode().strip()
-                    assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
-                    subprocess.run(
-                        ['git', 'update-index', '--cacheinfo',
-                         source_entry[0] + ',' + oid + ',' + path],
-                        cwd=fixture, check=True, capture_output=True)
+                with proof.project_progress_projection(fixture):
+                    with proof.release_127_projection(fixture):
+                        result = subprocess.run(
+                            ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                            input=b'unreviewed staged REL-01 source\n', capture_output=True,
+                            check=True)
+                        oid = result.stdout.decode().strip()
+                        assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                        subprocess.run(
+                            ['git', 'update-index', '--cacheinfo',
+                             source_entry[0] + ',' + oid + ',' + path],
+                            cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--cacheinfo',
@@ -534,7 +609,7 @@ def run(root=ROOT):
         try:
             proof.REL127_PROOF_PATHS = original_proof_paths | {'README.md'}
             refuses('REL-01 binding refuses an altered proof-successor path set',
-                    lambda: proof.validate_release_127_source(fixture))
+                    validate_release_fixture)
         finally:
             proof.REL127_PROOF_PATHS = original_proof_paths
 

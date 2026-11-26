@@ -40,6 +40,8 @@ REL127_BASE = 'f73515c681cafc0d46fb117f0999b597fa05eed5'
 REL127_BASE_TREE = '92c64a1c204ecda4befd8e255af271390d28f6b5'
 REL127_SOURCE = '17ce86cf5c4914621c60a72393c9b724c6fbb951'
 REL127_SOURCE_TREE = '4d84d031c04eeee2931f209ce0b2737731151b11'
+REL127_RESULTING_MAIN = '7d9c8aa7d934117a494b19a32c58c071c190d56f'
+REL127_RESULTING_MAIN_TREE = '4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b'
 REL127_MODIFIED = frozenset((
     '.github/workflows/mail-copied-draft-native.yml',
     '.github/workflows/mail-flags-native.yml',
@@ -90,6 +92,21 @@ REL127_PATHS = REL127_MODIFIED | REL127_ADDITIONS
 REL127_PROOF_PROJECTED = frozenset()
 REL127_PROOF_SHA256 = {}
 REL127_PROOF_PATHS = frozenset((RECEIPT, VERIFIER, REGRESSION))
+PROJECT_PROGRESS_BASE = REL127_RESULTING_MAIN
+PROJECT_PROGRESS_BASE_TREE = REL127_RESULTING_MAIN_TREE
+PROJECT_PROGRESS_SOURCE = '79ecb76747b000710a46ce6781b71fd9a4bf3858'
+PROJECT_PROGRESS_SOURCE_TREE = '4cb018093d878e7042728ffa31f88fc302319a43'
+PROJECT_PROGRESS_MODIFIED = frozenset((INVENTORY,))
+PROJECT_PROGRESS_ADDITIONS = frozenset((
+    '.github/workflows/project-progress.yml',
+    'foundation/projects/ProjectProgressEvent.php',
+    'foundation/projects/ProjectSnapshot.php',
+    'site/includes/foundation/projects/ProjectProgressEvent.php',
+    'site/includes/foundation/projects/ProjectSnapshot.php',
+    'tests/project-progress/records.php',
+))
+PROJECT_PROGRESS_PATHS = PROJECT_PROGRESS_MODIFIED | PROJECT_PROGRESS_ADDITIONS
+PROJECT_PROGRESS_PROOF_PATHS = REL127_PROOF_PATHS
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -2198,7 +2215,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '4b2eba594d8e1e68a2b49558053e5e06bd8aa2b3fd037ae9de27cd853fd32967'
+REGRESSION_SHA256 = '2211c8a5be0e92b80d1483bb4bba08265f8a8e66d1f0dd9de76701fecdb128c2'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2303,6 +2320,8 @@ _PROJECTION_CACHE_LIMIT = 32768
 _LAST_PROJECTION_CACHE_MAX = 0
 _REL127_PROJECTION_DEPTH = 0
 _REL127_WORKTREE_OIDS = {}
+_PROJECT_PROGRESS_PROJECTION_DEPTH = 0
+_PROJECT_PROGRESS_WORKTREE_OIDS = {}
 _CURRENT_INDEX_MODES = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
@@ -2635,6 +2654,12 @@ def worktree_blob_oids(root, paths):
 
 def ordinary(root, path):
     current = actual_ordinary(root, path)
+    if _PROJECT_PROGRESS_PROJECTION_DEPTH and path in PROJECT_PROGRESS_MODIFIED:
+        require(_PROJECT_PROGRESS_WORKTREE_OIDS.get(path)
+                == entries(root, PROJECT_PROGRESS_SOURCE)[path][1],
+                'Current project-progress source changed before predecessor projection: '
+                + path)
+        current = git(root, 'cat-file', 'blob', PROJECT_PROGRESS_BASE + ':' + path)
     if _REL127_PROJECTION_DEPTH and path in REL127_PROOF_PROJECTED:
         require(digest(current) == REL127_PROOF_SHA256[path],
                 'Current 1.27 proof source changed before historical projection: ' + path)
@@ -2753,6 +2778,9 @@ def hydration_origin(root, head):
     for commit, tree, label in (
         (REL127_BASE, REL127_BASE_TREE, '1.27 release base'),
         (REL127_SOURCE, REL127_SOURCE_TREE, '1.27 release implementation'),
+        (REL127_RESULTING_MAIN, REL127_RESULTING_MAIN_TREE, '1.27 resulting main'),
+        (PROJECT_PROGRESS_SOURCE, PROJECT_PROGRESS_SOURCE_TREE,
+         'project-progress foundation source'),
         (ADDITION_SOURCE, ADDITION_SOURCE_TREE, 'contact addition'),
         (TICKET_ADDITION_SOURCE, TICKET_ADDITION_SOURCE_TREE, 'ticket addition'),
         (DIAGNOSTIC_ADDITION_SOURCE, DIAGNOSTIC_ADDITION_SOURCE_TREE, 'diagnostic addition'),
@@ -11349,6 +11377,9 @@ def canonical_inventory(root):
         require(not target.is_symlink(), 'Symlink in current shipping tree')
         if target.is_file():
             path = target.relative_to(root / 'site').as_posix()
+            if (_PROJECT_PROGRESS_PROJECTION_DEPTH
+                    and 'site/' + path in PROJECT_PROGRESS_ADDITIONS):
+                continue
             if path != 'install/inventory.generated.php':
                 rows.append("    '" + path + "'=>'" + digest(ordinary(root, 'site/' + path)) + "',\n")
     guard = "<?php\ndeclare(strict_types=1);\nif (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }\n"
@@ -11373,6 +11404,8 @@ def generated_bytecode(root, path, source_paths):
     reviewed_sources = set(source_paths)
     if _REL127_PROJECTION_DEPTH:
         reviewed_sources.update(REL127_ADDITIONS)
+    if _PROJECT_PROGRESS_PROJECTION_DEPTH:
+        reviewed_sources.update(PROJECT_PROGRESS_ADDITIONS)
     require(source_path in reviewed_sources, 'Bytecode has no reviewed source: ' + path)
     ordinary(root, path)
     require(filesystem_mode(root, path) == '100644', 'Executable generated cache: ' + path)
@@ -11396,7 +11429,11 @@ def actual_paths(root, source_paths):
                     paths.add(target.relative_to(root).as_posix())
     admitted = {path for path in paths - NARRATIVES
                 if path in tracked or not generated_bytecode(root, path, source_paths)}
-    return admitted - REL127_ADDITIONS if _REL127_PROJECTION_DEPTH else admitted
+    if _PROJECT_PROGRESS_PROJECTION_DEPTH:
+        admitted -= PROJECT_PROGRESS_ADDITIONS
+    if _REL127_PROJECTION_DEPTH:
+        admitted -= REL127_ADDITIONS
+    return admitted
 
 
 def validate_application_reply_folder_route(root):
@@ -12578,10 +12615,13 @@ def validate_release_127_source(root):
     require(git(root, 'rev-parse', REL127_BASE + '^{tree}').decode().strip()
             == REL127_BASE_TREE
             and git(root, 'rev-parse', REL127_SOURCE + '^{tree}').decode().strip()
-            == REL127_SOURCE_TREE,
+            == REL127_SOURCE_TREE
+            and git(root, 'rev-parse', REL127_RESULTING_MAIN + '^{tree}').decode().strip()
+            == REL127_RESULTING_MAIN_TREE,
             '1.27 release base or implementation tree changed')
     git(root, 'merge-base', '--is-ancestor', REL127_BASE, REL127_SOURCE)
-    git(root, 'merge-base', '--is-ancestor', REL127_SOURCE, 'HEAD')
+    git(root, 'merge-base', '--is-ancestor', REL127_SOURCE, REL127_RESULTING_MAIN)
+    git(root, 'merge-base', '--is-ancestor', REL127_RESULTING_MAIN, 'HEAD')
     changes = git(root, 'diff', '--name-status', '--no-renames',
                   REL127_BASE, REL127_SOURCE).decode().splitlines()
     expected = (['A\t' + path for path in sorted(REL127_ADDITIONS)]
@@ -12589,30 +12629,99 @@ def validate_release_127_source(root):
     require(sorted(changes) == sorted(expected),
             '1.27 implementation changed a different path or status set')
     proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                        REL127_SOURCE, 'HEAD').decode().splitlines()
+                        REL127_SOURCE, REL127_RESULTING_MAIN).decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(REL127_PROOF_PATHS)],
             '1.27 proof successor changed application or release source')
     base_entries = entries(root, REL127_BASE)
     source_entries = entries(root, REL127_SOURCE)
-    worktree_oids = worktree_blob_oids(root, REL127_PATHS)
-    live_index_entries = current_index_entries(root)
-    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
+    worktree_oids = {}
+    live_index_modes = current_index_modes(root)
     require(not REL127_ADDITIONS & set(base_entries)
             and REL127_ADDITIONS <= set(source_entries),
             '1.27 additions did not originate in the exact implementation source')
     for path in sorted(REL127_MODIFIED):
+        require(ordinary(root, path) == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+                and mode(root, path, live_index_modes) == base_entries[path][0]
+                == source_entries[path][0] == '100644',
+                'Current 1.27 modified source identity changed: ' + path)
+        worktree_oids[path] = source_entries[path][1]
+    for path in sorted(REL127_ADDITIONS):
+        require(ordinary(root, path) == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+                and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
+                'Current 1.27 addition identity changed: ' + path)
+        worktree_oids[path] = source_entries[path][1]
+    return worktree_oids
+
+
+def validate_project_progress_source(root):
+    """Bind the exact first post-1.27 project-progress source and proof successor."""
+    require(git(root, 'rev-parse', PROJECT_PROGRESS_BASE + '^{tree}').decode().strip()
+            == PROJECT_PROGRESS_BASE_TREE
+            and git(root, 'rev-parse', PROJECT_PROGRESS_SOURCE + '^{tree}').decode().strip()
+            == PROJECT_PROGRESS_SOURCE_TREE,
+            'Project-progress base or source tree changed')
+    require(git(root, 'show', '-s', '--format=%P', PROJECT_PROGRESS_SOURCE)
+            .decode().strip().split() == [PROJECT_PROGRESS_BASE],
+            'Project-progress source parent changed')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PROGRESS_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  PROJECT_PROGRESS_BASE, PROJECT_PROGRESS_SOURCE).decode().splitlines()
+    expected = (['A\t' + path for path in sorted(PROJECT_PROGRESS_ADDITIONS)]
+                + ['M\t' + path for path in sorted(PROJECT_PROGRESS_MODIFIED)])
+    require(sorted(changes) == sorted(expected),
+            'Project-progress source changed a different path or status set')
+    proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                        PROJECT_PROGRESS_SOURCE, 'HEAD').decode().splitlines()
+    require(sorted(proof_changes)
+            == ['M\t' + path for path in sorted(PROJECT_PROGRESS_PROOF_PATHS)],
+            'Project-progress proof successor changed application source')
+    base_entries = entries(root, PROJECT_PROGRESS_BASE)
+    source_entries = entries(root, PROJECT_PROGRESS_SOURCE)
+    worktree_oids = worktree_blob_oids(root, PROJECT_PROGRESS_PATHS)
+    live_index_entries = current_index_entries(root)
+    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
+    require(not PROJECT_PROGRESS_ADDITIONS & set(base_entries)
+            and PROJECT_PROGRESS_ADDITIONS <= set(source_entries),
+            'Project-progress additions did not originate in the exact source')
+    for path in sorted(PROJECT_PROGRESS_MODIFIED):
         require(worktree_oids[path] == source_entries[path][1]
                 and live_index_entries.get(path) == source_entries[path]
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
-                'Current 1.27 modified source identity changed: ' + path)
-    for path in sorted(REL127_ADDITIONS):
+                'Current project-progress modified source identity changed: ' + path)
+    for path in sorted(PROJECT_PROGRESS_ADDITIONS):
         require(worktree_oids[path] == source_entries[path][1]
                 and live_index_entries.get(path) == source_entries[path]
                 and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
-                'Current 1.27 addition identity changed: ' + path)
+                'Current project-progress addition identity changed: ' + path)
     return worktree_oids
+
+
+@contextmanager
+def project_progress_projection(root):
+    """Remove only the exact project-progress source for inherited validators."""
+    global _PROJECT_PROGRESS_PROJECTION_DEPTH, _PROJECT_PROGRESS_WORKTREE_OIDS
+    global _CURRENT_INDEX_MODES
+    root = Path(root)
+    require(_PROJECT_PROGRESS_PROJECTION_DEPTH == 0
+            and not _PROJECT_PROGRESS_WORKTREE_OIDS,
+            'Nested project-progress projection refused')
+    ensure_history(root)
+    pin_head(root)
+    previous_modes = _CURRENT_INDEX_MODES
+    _CURRENT_INDEX_MODES = current_index_modes(root)
+    try:
+        _PROJECT_PROGRESS_WORKTREE_OIDS = validate_project_progress_source(root)
+        _PROJECT_PROGRESS_PROJECTION_DEPTH = 1
+        yield
+        require(validate_project_progress_source(root)
+                == _PROJECT_PROGRESS_WORKTREE_OIDS,
+                'Current project-progress source changed during historical projection')
+    finally:
+        _PROJECT_PROGRESS_PROJECTION_DEPTH = 0
+        _PROJECT_PROGRESS_WORKTREE_OIDS = {}
+        _CURRENT_INDEX_MODES = previous_modes
 
 
 @contextmanager
@@ -12624,6 +12733,7 @@ def release_127_projection(root):
             'Nested 1.27 release projection refused')
     ensure_history(root)
     pin_head(root)
+    previous_modes = _CURRENT_INDEX_MODES
     _CURRENT_INDEX_MODES = current_index_modes(root) if os.name == 'nt' else {}
     try:
         _REL127_WORKTREE_OIDS = validate_release_127_source(root)
@@ -12634,15 +12744,22 @@ def release_127_projection(root):
     finally:
         _REL127_PROJECTION_DEPTH = 0
         _REL127_WORKTREE_OIDS = {}
-        _CURRENT_INDEX_MODES = {}
+        _CURRENT_INDEX_MODES = previous_modes
 
 
 def verify_current(root):
     with verification_projection_cache(root):
         with immutable_blob_batch(root):
-            with release_127_projection(root):
-                checks = _verify_current(root)
+            with project_progress_projection(root):
+                with release_127_projection(root):
+                    checks = _verify_current(root)
     return [
+        {'name': 'Exact post-1.27 project-progress source binds '
+                 + str(len(PROJECT_PROGRESS_MODIFIED)) + ' modified path and '
+                 + str(len(PROJECT_PROGRESS_ADDITIONS)) + ' disjoint additions',
+         'passed': True},
+        {'name': 'Project-progress proof successor changes only the exact three proof files',
+         'passed': True},
         {'name': 'Exact resulting-main-to-1.27 implementation range binds '
                  + str(len(REL127_MODIFIED)) + ' modified paths and '
                  + str(len(REL127_ADDITIONS)) + ' disjoint additions',
