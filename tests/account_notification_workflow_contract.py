@@ -196,6 +196,12 @@ PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
 DEPENDENCIES = {'site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', '.github/scripts/**',
                 'VERSION', 'START-HERE.txt', WORKFLOW, LEGACY, PROTECTED}
+NOTIFICATION_HEALTH_VIEW_PROOF = (
+    '          php tests/notification_health_view_contract.php > '
+    'qa/account-notification-source/notification-health-view.json\n',
+    '          php -n tests/notification_health_view_contract.php > '
+    'qa/account-notification-source/notification-health-view-minimal.json\n',
+)
 
 
 def digest(value):
@@ -825,6 +831,9 @@ def validate(workflow, legacy, protected, apt_script):
                    'tickets_integration_contract.py'):
         check('Current-source proof executes ' + script,
               current_commands.count(('python3', 'tests/' + script)) == 1)
+    for command in NOTIFICATION_HEALTH_VIEW_PROOF:
+        check('Current-source proof executes exact notification-health view contract command',
+              source.count(command) == 1)
     check('Canonical source is rebuilt and must remain unchanged before admission',
           '          python3 tools/build.py --refresh > qa/account-notification-source/build.log\n' in source
           and '          git diff --exit-code\n' in source
@@ -864,6 +873,8 @@ def self_test(root=ROOT):
         ('legacy reconstruction', '          git diff --exit-code\n', '          python3 tools/integration/owner_navigation_fix.py\n          git diff --exit-code\n'),
         ('missing parent', '          git merge-base --is-ancestor ' + PARENTS[0] + ' HEAD\n', ''),
         ('missing retained policy', '          php -n tests/account_security_policy.php > qa/account-notification-source/account-policy-minimal.json\n', ''),
+        ('missing notification-health view proof', NOTIFICATION_HEALTH_VIEW_PROOF[0], ''),
+        ('missing minimal notification-health view proof', NOTIFICATION_HEALTH_VIEW_PROOF[1], ''),
         ('lost receipt dependency', "'docs/*.json', ", ''),
         ('lost protected workflow dependency', ", '.github/workflows/application-tests.yml'", ''),
         ('unbounded push branches', 'branches: [main, chatgpt/account-notifications-acceptance-20261101]', "branches: ['**']"),
