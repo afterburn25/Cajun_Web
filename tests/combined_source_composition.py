@@ -132,15 +132,21 @@ CLOUD_INIT_TERMINAL_REJECTED_PROOF = '766b6a899b5953e5dbb6ad6b913d9e249f856839'
 CLOUD_INIT_TERMINAL_REJECTED_PROOF_TREE = '71a24fd15934d3748cb3330d322e22201580b8dc'
 CLOUD_INIT_TERMINAL_CORRECTION_SOURCE = 'd8004c60242095d07468261407fec5ed3ead3ebf'
 CLOUD_INIT_TERMINAL_CORRECTION_SOURCE_TREE = 'b9cb43cb76619ceb90a13a2a38574d148f3a870d'
+CLOUD_INIT_TERMINAL_PROOF = 'f16733544ca7e6cf6950451514930e2cf8f52837'
+CLOUD_INIT_TERMINAL_PROOF_TREE = 'e92dfdd5acd915338f691ba3215fa4d7df3f1c81'
+CLOUD_INIT_DISABLED_STAGE_SOURCE = 'bf9fde79ca12f00d07bafef3ba71ca3bcea8d3f1'
+CLOUD_INIT_DISABLED_STAGE_SOURCE_TREE = 'c753b0d8bad7ed5f810633fa7eccc5192e4270df'
+CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE = '8670cb39cda48edddd65d64f290e49ce63ae922f'
+CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE_TREE = '3813f54f0f38821ef462f1c9bc8424b8430ac48f'
 CLOUD_INIT_TERMINAL_MODIFIED = frozenset((
     '.github/scripts/prepare_ubuntu_apt.py',
     'tests/account_notification_workflow_contract.py',
 ))
 CLOUD_INIT_TERMINAL_PROOF_PATHS = REL127_PROOF_PATHS
 CLOUD_INIT_TERMINAL_SCRIPT_SHA256 = (
-    'bd9c595440ca59717fc60f4c755cb24116bb26cc5e06d8480ef2e5385540bd84')
+    '561ea255e303e9c75cd7afd79fdeded77b672352b9443908bbf2a0dbf258a86b')
 CLOUD_INIT_TERMINAL_CONTRACT_SHA256 = (
-    'f05230dca9f1826ba672f97d5097dcf1654670edb98fd2f8c9c42b184f18b921')
+    'b122b75ce03d2efac2fc6842a3f72fcf2db4a7bfc9740e33be419d8bd33f6630')
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -2250,7 +2256,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'f9cc88490c6e99a2cb993f1ca3832de3c299dd80e72a163c23e77403b8bed77d'
+REGRESSION_SHA256 = '0ca0d518a7986194ebd7907acc24816e98f3d7ffe4f8dbd04fde8470c748e745'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2693,7 +2699,7 @@ def ordinary(root, path):
     current = actual_ordinary(root, path)
     if _CLOUD_INIT_TERMINAL_PROJECTION_DEPTH and path in CLOUD_INIT_TERMINAL_MODIFIED:
         require(_CLOUD_INIT_TERMINAL_WORKTREE_OIDS.get(path)
-                == entries(root, CLOUD_INIT_TERMINAL_CORRECTION_SOURCE)[path][1],
+                == entries(root, CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE)[path][1],
                 'Current cloud-init terminal source changed before predecessor projection: '
                 + path)
         current = git(root, 'cat-file', 'blob', CLOUD_INIT_TERMINAL_BASE + ':' + path)
@@ -12735,7 +12741,13 @@ def validate_cloud_init_terminal_source(root):
             and git(root, 'rev-parse', CLOUD_INIT_TERMINAL_REJECTED_PROOF + '^{tree}')
             .decode().strip() == CLOUD_INIT_TERMINAL_REJECTED_PROOF_TREE
             and git(root, 'rev-parse', CLOUD_INIT_TERMINAL_CORRECTION_SOURCE + '^{tree}')
-            .decode().strip() == CLOUD_INIT_TERMINAL_CORRECTION_SOURCE_TREE,
+            .decode().strip() == CLOUD_INIT_TERMINAL_CORRECTION_SOURCE_TREE
+            and git(root, 'rev-parse', CLOUD_INIT_TERMINAL_PROOF + '^{tree}')
+            .decode().strip() == CLOUD_INIT_TERMINAL_PROOF_TREE
+            and git(root, 'rev-parse', CLOUD_INIT_DISABLED_STAGE_SOURCE + '^{tree}')
+            .decode().strip() == CLOUD_INIT_DISABLED_STAGE_SOURCE_TREE
+            and git(root, 'rev-parse', CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE_TREE,
             'Cloud-init terminal base or source tree changed')
     require(git(root, 'show', '-s', '--format=%P', CLOUD_INIT_TERMINAL_SOURCE)
             .decode().strip().split() == [CLOUD_INIT_TERMINAL_BASE],
@@ -12743,9 +12755,18 @@ def validate_cloud_init_terminal_source(root):
     require(git(root, 'show', '-s', '--format=%P', CLOUD_INIT_TERMINAL_CORRECTION_SOURCE)
             .decode().strip().split() == [CLOUD_INIT_TERMINAL_REJECTED_PROOF],
             'Cloud-init terminal correction source parent changed')
+    require(git(root, 'show', '-s', '--format=%P', CLOUD_INIT_TERMINAL_PROOF)
+            .decode().strip().split() == [CLOUD_INIT_TERMINAL_CORRECTION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P', CLOUD_INIT_DISABLED_STAGE_SOURCE)
+            .decode().strip().split() == [CLOUD_INIT_TERMINAL_PROOF]
+            and git(root, 'show', '-s', '--format=%P',
+                    CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE)
+            .decode().strip().split() == [CLOUD_INIT_DISABLED_STAGE_SOURCE],
+            'Cloud-init disabled-stage source parent changed')
     git(root, 'merge-base', '--is-ancestor', CLOUD_INIT_TERMINAL_SOURCE,
         CLOUD_INIT_TERMINAL_REJECTED_PROOF)
-    git(root, 'merge-base', '--is-ancestor', CLOUD_INIT_TERMINAL_CORRECTION_SOURCE, 'HEAD')
+    git(root, 'merge-base', '--is-ancestor', CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE,
+        'HEAD')
     changes = git(root, 'diff', '--name-status', '--no-renames',
                   CLOUD_INIT_TERMINAL_BASE,
                   CLOUD_INIT_TERMINAL_SOURCE).decode().splitlines()
@@ -12766,27 +12787,48 @@ def validate_cloud_init_terminal_source(root):
     require(sorted(correction_changes)
             == ['M\t' + path for path in sorted(CLOUD_INIT_TERMINAL_MODIFIED)],
             'Cloud-init terminal correction changed a different path or status set')
+    terminal_proof_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        CLOUD_INIT_TERMINAL_CORRECTION_SOURCE,
+        CLOUD_INIT_TERMINAL_PROOF).decode().splitlines()
+    require(sorted(terminal_proof_changes)
+            == ['M\t' + path for path in sorted(CLOUD_INIT_TERMINAL_PROOF_PATHS)],
+            'Cloud-init terminal proof changed application source')
+    disabled_stage_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        CLOUD_INIT_TERMINAL_PROOF,
+        CLOUD_INIT_DISABLED_STAGE_SOURCE).decode().splitlines()
+    require(sorted(disabled_stage_changes)
+            == ['M\t' + path for path in sorted(CLOUD_INIT_TERMINAL_MODIFIED)],
+            'Cloud-init disabled-stage source changed a different path or status set')
+    disabled_stage_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        CLOUD_INIT_DISABLED_STAGE_SOURCE,
+        CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(disabled_stage_correction_changes)
+            == ['M\t' + path for path in sorted(CLOUD_INIT_TERMINAL_MODIFIED)],
+            'Cloud-init disabled-stage correction changed a different path or status set')
     head = git(root, 'rev-parse', 'HEAD').decode().strip()
-    if head == CLOUD_INIT_TERMINAL_CORRECTION_SOURCE:
+    if head == CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            CLOUD_INIT_TERMINAL_CORRECTION_SOURCE,
+                            CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE,
                             '--').decode().splitlines()
     else:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            CLOUD_INIT_TERMINAL_CORRECTION_SOURCE,
+                            CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE,
                             head).decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(CLOUD_INIT_TERMINAL_PROOF_PATHS)],
             'Cloud-init terminal proof changed application source')
     base_entries = entries(root, CLOUD_INIT_TERMINAL_BASE)
-    source_entries = entries(root, CLOUD_INIT_TERMINAL_CORRECTION_SOURCE)
+    source_entries = entries(root, CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     worktree_oids = {}
     for path in sorted(CLOUD_INIT_TERMINAL_MODIFIED):
         require(actual_ordinary(root, path)
                 == git(root, 'cat-file', 'blob',
-                       CLOUD_INIT_TERMINAL_CORRECTION_SOURCE + ':' + path),
+                       CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE + ':' + path),
                 'Current cloud-init terminal raw bytes changed: ' + path)
         require(live_index_entries.get(path) == source_entries[path]
                 and mode(root, path, live_index_modes) == base_entries[path][0]
@@ -12807,6 +12849,10 @@ def validate_cloud_init_terminal_source(root):
             and script.count(b"('done', 'degraded done')") == 1
             and script.count(b"'CRITICAL'") == 0
             and contract.count(b'Structured cloud-init guard accepts warning-only terminal degradation') == 1
+            and contract.count(b'Structured cloud-init guard accepts disabled completion before a stage file exists') == 1
+            and contract.count(b'Structured cloud-init guard still requires the terminal stage field for completed runs') == 1
+            and contract.count(b'Structured cloud-init guard requires the terminal stage field for degradation') == 1
+            and contract.count(b'Structured cloud-init guard rejects an active stage on disabled status') == 1
             and contract.count(b'Structured cloud-init guard rejects unrelated warning degradation') == 1
             and contract.count(b'Structured cloud-init guard rejects missing-module degradation') == 1
             and contract.count(b'Structured cloud-init guard rejects critical recoverable severity') == 1
@@ -13043,6 +13089,14 @@ def verify_current(root):
         {'name': 'Security correction restricts degraded cloud-init to one documented Azure warning and strict JSON',
          'passed': True},
         {'name': 'Corrected terminal cloud-init proof changes only the exact three proof files',
+         'passed': True},
+        {'name': 'Exact terminal cloud-init proof remains bound before disabled-stage compatibility',
+         'passed': True},
+        {'name': 'Disabled-stage compatibility changes only the exact two reviewed paths',
+         'passed': True},
+        {'name': 'Disabled-stage correction retains stage binding for done and degraded states',
+         'passed': True},
+        {'name': 'Disabled-stage proof changes only the exact three proof files',
          'passed': True},
         {'name': 'Exact post-1.27 project-progress source binds '
                  + str(len(PROJECT_PROGRESS_MODIFIED)) + ' modified path and '

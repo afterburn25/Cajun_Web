@@ -360,6 +360,12 @@ def run(root=ROOT):
         ('CLOUD_INIT_TERMINAL_REJECTED_PROOF_TREE', 'rejected proof tree'),
         ('CLOUD_INIT_TERMINAL_CORRECTION_SOURCE', 'correction source commit'),
         ('CLOUD_INIT_TERMINAL_CORRECTION_SOURCE_TREE', 'correction source tree'),
+        ('CLOUD_INIT_TERMINAL_PROOF', 'proof commit'),
+        ('CLOUD_INIT_TERMINAL_PROOF_TREE', 'proof tree'),
+        ('CLOUD_INIT_DISABLED_STAGE_SOURCE', 'disabled-stage source commit'),
+        ('CLOUD_INIT_DISABLED_STAGE_SOURCE_TREE', 'disabled-stage source tree'),
+        ('CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE', 'disabled-stage correction commit'),
+        ('CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE_TREE', 'disabled-stage correction tree'),
         ('CLOUD_INIT_TERMINAL_SCRIPT_SHA256', 'script identity'),
         ('CLOUD_INIT_TERMINAL_CONTRACT_SHA256', 'contract identity'),
     ):
