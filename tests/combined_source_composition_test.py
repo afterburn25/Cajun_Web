@@ -356,6 +356,10 @@ def run(root=ROOT):
         ('CLOUD_INIT_TERMINAL_BASE_TREE', 'base tree'),
         ('CLOUD_INIT_TERMINAL_SOURCE_TREE', 'source tree'),
         ('CLOUD_INIT_TERMINAL_SOURCE', 'source commit'),
+        ('CLOUD_INIT_TERMINAL_REJECTED_PROOF', 'rejected proof commit'),
+        ('CLOUD_INIT_TERMINAL_REJECTED_PROOF_TREE', 'rejected proof tree'),
+        ('CLOUD_INIT_TERMINAL_CORRECTION_SOURCE', 'correction source commit'),
+        ('CLOUD_INIT_TERMINAL_CORRECTION_SOURCE_TREE', 'correction source tree'),
         ('CLOUD_INIT_TERMINAL_SCRIPT_SHA256', 'script identity'),
         ('CLOUD_INIT_TERMINAL_CONTRACT_SHA256', 'contract identity'),
     ):
