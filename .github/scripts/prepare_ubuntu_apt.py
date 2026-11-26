@@ -5,10 +5,14 @@ The workflow invokes one bounded phase at a time so GitHub workflow scalar limit
 do not duplicate or truncate the reviewed source. No phase performs live product
 operations.
 """
+import json
 import sys
 
 APT_RELEASE_IDENTITY_FIELDS = ('origin', 'label', 'suite', 'codename', 'components')
 PHP_PPA_RELEASE_LABELS = ('PPA for PHP', 'PPA for PHP (deprecated)')
+AZURE_IMDS_TRANSIENT_WARNING = (
+    "Polling IMDS failed attempt 1 with exception: UrlError('404 Client Error: Not Found for url: "
+    "http://169.254.169.254/metadata/reprovisiondata?api-version=2019-06-01')")
 
 
 def release_identity_allowed(records, php_version):
@@ -36,6 +40,26 @@ def release_identity_allowed(records, php_version):
     return any(actual == sorted(expected, key=order) for expected in choices)
 
 
+def strict_cloud_init_status(value):
+    """Parse cloud-init JSON without duplicate names or non-finite constants."""
+    if not isinstance(value, str):
+        raise TypeError('cloud-init status must be text')
+
+    def unique_object(pairs):
+        result = {}
+        for name, item in pairs:
+            if name in result:
+                raise ValueError('duplicate cloud-init status name')
+            result[name] = item
+        return result
+
+    def refuse_constant(value):
+        raise ValueError('non-finite cloud-init status constant: ' + value)
+
+    return json.loads(value, object_pairs_hook=unique_object,
+                      parse_constant=refuse_constant)
+
+
 def cloud_init_state_allowed(returncode, state):
     """Return the bounded severity summary for an admitted terminal state."""
     required = {'status', 'extended_status', 'stage', 'errors', 'recoverable_errors'}
@@ -54,7 +78,7 @@ def cloud_init_state_allowed(returncode, state):
     severity_counts = {}
     message_bytes = 0
     for severity, messages in recoverable.items():
-        if (severity not in ('WARNING', 'DEPRECATED') or not isinstance(messages, list)
+        if (severity != 'WARNING' or not isinstance(messages, list)
                 or not messages or len(messages) > 64
                 or any(not isinstance(message, str) or not message or len(message) > 2048
                        for message in messages)):
@@ -66,8 +90,12 @@ def cloud_init_state_allowed(returncode, state):
         return None
     ordinary = (returncode == 0 and not errors and not recoverable
                 and (status, extended) in (('done', 'done'), ('disabled', 'disabled')))
-    degraded = (returncode == 2 and not errors and bool(recoverable)
-                and (status, extended) == ('done', 'degraded done'))
+    degraded = (returncode == 2 and not errors
+                and recoverable == {'WARNING': [AZURE_IMDS_TRANSIENT_WARNING]}
+                and (status, extended) == ('done', 'degraded done')
+                and state.get('boot_status_code') == 'enabled-by-generator'
+                and state.get('datasource') == 'azure'
+                and state.get('detail') == 'DataSourceAzure [seed=/dev/sr0]')
     return severity_counts if ordinary or degraded else None
 
 def prepare_ubuntu():
@@ -249,8 +277,9 @@ def prepare_ubuntu():
         cloud-init 23.4 and newer returns 2 after completing with recoverable
         errors.  GitHub images can expose that documented state even though the
         APT source, keyring and signed release checks below remain independent.
-        Admit only warning/deprecation-only terminal degradation; critical,
-        unrecoverable, malformed, oversized and non-terminal states fail closed.
+        Admit only the reviewed Azure IMDS first-attempt 404 after verified
+        terminal recovery; every other warning, critical, unrecoverable,
+        malformed, oversized or non-terminal state fails closed.
         """
         command = ['cloud-init', 'status']
         if wait:
@@ -272,8 +301,8 @@ def prepare_ubuntu():
         if len(stdout) > 65536 or len(stderr) > 16384:
             fail('cloud-init returned oversized diagnostics')
         try:
-            state = json.loads(completed.stdout)
-        except (json.JSONDecodeError, TypeError):
+            state = strict_cloud_init_status(completed.stdout)
+        except (json.JSONDecodeError, TypeError, ValueError):
             fail('cloud-init returned malformed structured status')
         severity_counts = cloud_init_state_allowed(completed.returncode, state)
         if severity_counts is None:

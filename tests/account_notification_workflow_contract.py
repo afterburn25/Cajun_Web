@@ -23,7 +23,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = 'f6878698a53501daec866c2b2e9b15537f16c3d72051d29c72a91669de48aade'
+APT_PREPARATION_SHA256 = 'bd9c595440ca59717fc60f4c755cb24116bb26cc5e06d8480ef2e5385540bd84'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
@@ -251,12 +251,16 @@ def cloud_init_terminal_state_cases():
     """Exercise the structured cloud-init admission without privileged fixtures."""
     scope = runpy.run_path(str(ROOT / APT_PREPARATION_SCRIPT))
     allowed = scope['cloud_init_state_allowed']
+    strict = scope['strict_cloud_init_status']
+    azure_warning = scope['AZURE_IMDS_TRANSIENT_WARNING']
     done = {'status': 'done', 'extended_status': 'done', 'stage': None,
             'errors': [], 'recoverable_errors': {}}
     disabled = {'status': 'disabled', 'extended_status': 'disabled', 'stage': None,
                 'errors': [], 'recoverable_errors': {}}
     degraded = {'status': 'done', 'extended_status': 'degraded done', 'stage': None,
-                'errors': [], 'recoverable_errors': {'WARNING': ['fixture warning']}}
+                'errors': [], 'recoverable_errors': {'WARNING': [azure_warning]},
+                'boot_status_code': 'enabled-by-generator', 'datasource': 'azure',
+                'detail': 'DataSourceAzure [seed=/dev/sr0]'}
     cases = (
         ('Structured cloud-init guard accepts ordinary terminal completion',
          allowed(0, done) == {}),
@@ -264,6 +268,25 @@ def cloud_init_terminal_state_cases():
          allowed(0, disabled) == {}),
         ('Structured cloud-init guard accepts warning-only terminal degradation',
          allowed(2, degraded) == {'WARNING': 1}),
+        ('Structured cloud-init guard rejects unrelated warning degradation',
+         allowed(2, {**degraded,
+                     'recoverable_errors': {'WARNING': ['Failed partitioning operation']}})
+         is None),
+        ('Structured cloud-init guard rejects fallback-datasource degradation',
+         allowed(2, {**degraded,
+                     'recoverable_errors': {'WARNING': ['Used fallback datasource']}})
+         is None),
+        ('Structured cloud-init guard rejects invalid-config degradation',
+         allowed(2, {**degraded,
+                     'recoverable_errors': {'WARNING': ['Invalid cloud-config provided']}})
+         is None),
+        ('Structured cloud-init guard rejects missing-module degradation',
+         allowed(2, {**degraded,
+                     'recoverable_errors': {'WARNING': [
+                         'Could not find module named cc_security_update']}})
+         is None),
+        ('Structured cloud-init guard rejects a changed Azure datasource identity',
+         allowed(2, {**degraded, 'datasource': 'unknown'}) is None),
         ('Structured cloud-init guard rejects critical recoverable severity',
          allowed(2, {**degraded, 'recoverable_errors': {'CRITICAL': ['fixture']}}) is None),
         ('Structured cloud-init guard rejects unrecoverable errors',
@@ -281,6 +304,22 @@ def cloud_init_terminal_state_cases():
     checks = []
     for name, passed in cases:
         require(passed, name)
+        checks.append({'name': name, 'passed': True})
+    strict_cases = (
+        ('Strict cloud-init parser rejects duplicate top-level names',
+         '{"status":"done","status":"running"}'),
+        ('Strict cloud-init parser rejects duplicate nested names',
+         '{"recoverable_errors":{"WARNING":[],"WARNING":["shadow"]}}'),
+        ('Strict cloud-init parser rejects non-finite constants',
+         '{"last_update":NaN}'),
+    )
+    for name, value in strict_cases:
+        refused = False
+        try:
+            strict(value)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            refused = True
+        require(refused, name)
         checks.append({'name': name, 'passed': True})
     return checks
 
@@ -469,7 +508,10 @@ def executable_ubuntu_source_guard_fixtures():
              source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror, 'github-mirror-list',
              cloud_init_returncode=2,
              cloud_init_state={'status': 'done', 'extended_status': 'degraded done', 'stage': None,
-                               'errors': [], 'recoverable_errors': {'WARNING': ['fixture warning']}})
+                               'errors': [], 'recoverable_errors': {'WARNING': [
+                                   "Polling IMDS failed attempt 1 with exception: UrlError('404 Client Error: Not Found for url: http://169.254.169.254/metadata/reprovisiondata?api-version=2019-06-01')"]},
+                               'boot_status_code': 'enabled-by-generator', 'datasource': 'azure',
+                               'detail': 'DataSourceAzure [seed=/dev/sr0]'})
     run_case('Executable guard rejects critical cloud-init degradation',
              source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
              cloud_init_returncode=2,
