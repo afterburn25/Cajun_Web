@@ -345,7 +345,31 @@ def run(root=ROOT):
     assert (proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_BASE + '^{tree}')
             .decode().strip() == proof.PROJECT_PROGRESS_BASE_TREE
             and proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_SOURCE + '^{tree}')
-            .decode().strip() == proof.PROJECT_PROGRESS_SOURCE_TREE)
+            .decode().strip() == proof.PROJECT_PROGRESS_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_PREDECESSOR_PROOF + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_CORRECTION_SOURCE_TREE)
+    progress_workflow = (root / '.github/workflows/project-progress.yml').read_text(
+        encoding='utf-8')
+    progress_inputs = (
+        '.github/workflows/project-progress.yml',
+        proof.PROJECT_PROGRESS_HANDOFF,
+        proof.RECEIPT,
+        'foundation/projects/ProjectProgressEvent.php',
+        'foundation/projects/ProjectSnapshot.php',
+        'site/includes/foundation/projects/ProjectProgressEvent.php',
+        'site/includes/foundation/projects/ProjectSnapshot.php',
+        proof.INVENTORY,
+        proof.VERIFIER,
+        proof.REGRESSION,
+        'tests/project-progress/**',
+    )
+    assert all(progress_workflow.count("      - '" + path + "'") == 2
+               for path in progress_inputs)
+    passed('Focused project-progress workflow admits every application, handoff, and proof input')
     with proof.project_progress_projection(root):
         for path in proof.PROJECT_PROGRESS_MODIFIED:
             assert (proof.ordinary(root, path)
@@ -470,6 +494,20 @@ def run(root=ROOT):
         refuses('Project-progress binding refuses changed added-file bytes',
                 lambda: project_progress_source_tamper(
                     'foundation/projects/ProjectProgressEvent.php'))
+
+        def project_progress_line_ending_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            assert b'\n' in original and b'\r\n' not in original
+            try:
+                target.write_bytes(original.replace(b'\n', b'\r\n'))
+                proof.validate_project_progress_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress binding refuses normalized mirror line-ending drift',
+                lambda: project_progress_line_ending_tamper(
+                    'site/includes/foundation/projects/ProjectProgressEvent.php'))
 
         def project_progress_projection_race(path):
             target = fixture / path
