@@ -12636,19 +12636,25 @@ def validate_release_127_source(root):
             '1.27 proof successor changed application or release source')
     base_entries = entries(root, REL127_BASE)
     source_entries = entries(root, REL127_SOURCE)
+    project_entries = entries(root, PROJECT_PROGRESS_SOURCE)
     worktree_oids = {}
-    live_index_modes = current_index_modes(root)
+    live_index_entries = current_index_entries(root)
+    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not REL127_ADDITIONS & set(base_entries)
             and REL127_ADDITIONS <= set(source_entries),
             '1.27 additions did not originate in the exact implementation source')
     for path in sorted(REL127_MODIFIED):
+        expected_index = (project_entries[path]
+                          if path in PROJECT_PROGRESS_MODIFIED else source_entries[path])
         require(ordinary(root, path) == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+                and live_index_entries.get(path) == expected_index
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
                 'Current 1.27 modified source identity changed: ' + path)
         worktree_oids[path] = source_entries[path][1]
     for path in sorted(REL127_ADDITIONS):
         require(ordinary(root, path) == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+                and live_index_entries.get(path) == source_entries[path]
                 and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
                 'Current 1.27 addition identity changed: ' + path)
         worktree_oids[path] = source_entries[path][1]
