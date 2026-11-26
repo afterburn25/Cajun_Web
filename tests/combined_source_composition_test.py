@@ -342,6 +342,30 @@ def run(root=ROOT):
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_BASE + '^{tree}')
+            .decode().strip() == proof.CLOUD_INIT_TERMINAL_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_SOURCE + '^{tree}')
+            .decode().strip() == proof.CLOUD_INIT_TERMINAL_SOURCE_TREE)
+    with proof.cloud_init_terminal_projection(root):
+        for path in proof.CLOUD_INIT_TERMINAL_MODIFIED:
+            assert (proof.ordinary(root, path)
+                    == proof.git(root, 'cat-file', 'blob',
+                                 proof.CLOUD_INIT_TERMINAL_BASE + ':' + path))
+    passed('Cloud-init terminal projection restores both exact predecessor paths')
+    for attribute, label in (
+        ('CLOUD_INIT_TERMINAL_BASE_TREE', 'base tree'),
+        ('CLOUD_INIT_TERMINAL_SOURCE_TREE', 'source tree'),
+        ('CLOUD_INIT_TERMINAL_SOURCE', 'source commit'),
+        ('CLOUD_INIT_TERMINAL_SCRIPT_SHA256', 'script identity'),
+        ('CLOUD_INIT_TERMINAL_CONTRACT_SHA256', 'contract identity'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * len(original))
+            refuses('Refuses substituted cloud-init terminal ' + label,
+                    lambda: proof.validate_cloud_init_terminal_source(root))
+        finally:
+            setattr(proof, attribute, original)
     assert (proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_BASE + '^{tree}')
             .decode().strip() == proof.PROJECT_PROGRESS_BASE_TREE
             and proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_SOURCE + '^{tree}')
@@ -484,6 +508,7 @@ def run(root=ROOT):
                      | proof.CLOUD_INTAKE_ADDITIONS | proof.UX09_MODIFIED | proof.UX09_ADDITIONS
                      | proof.UX09_CI_MODIFIED
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
+                     | proof.CLOUD_INIT_TERMINAL_MODIFIED
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, proof.UX09_SOURCE_RECEIPT,
                         'tools/acceptance-contract.json'}):
@@ -493,6 +518,29 @@ def run(root=ROOT):
             target.chmod(0o644)
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
+
+        def cloud_init_terminal_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + b'\n# unreviewed cloud-init admission\n')
+                proof.validate_cloud_init_terminal_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Cloud-init terminal binding refuses changed preparation bytes',
+                lambda: cloud_init_terminal_tamper(
+                    '.github/scripts/prepare_ubuntu_apt.py'))
+        refuses('Cloud-init terminal binding refuses changed contract bytes',
+                lambda: cloud_init_terminal_tamper(
+                    'tests/account_notification_workflow_contract.py'))
+        original_cloud_paths = proof.CLOUD_INIT_TERMINAL_MODIFIED
+        try:
+            proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths | {'README.md'}
+            refuses('Cloud-init terminal binding refuses an altered source path set',
+                    lambda: proof.validate_cloud_init_terminal_source(fixture))
+        finally:
+            proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths
 
         def project_progress_source_tamper(path):
             target = fixture / path
