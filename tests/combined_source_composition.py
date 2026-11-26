@@ -10176,7 +10176,8 @@ def validate_pr391_recovery_successor(root):
                 | APPLICATION_MAIL_COPIES_ROUTING_MODIFIED
                  | RESULTING_MAIN_DIAGNOSTIC_MAIL_REPLY_MODIFIED
                 | set(mail_consolidated_changes(root))
-                | REL127_PATHS),
+                | REL127_PATHS
+                | PROJECT_PROGRESS_PATHS),
             'Current recovery successor contains an unbound path')
 
 
