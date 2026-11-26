@@ -23,7 +23,7 @@ WORKFLOW = '.github/workflows/account-notifications-acceptance.yml'
 LEGACY = '.github/workflows/account-notifications-combined.yml'
 PROTECTED = '.github/workflows/application-tests.yml'
 APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
-APT_PREPARATION_SHA256 = '1de78d6a6104380d39b9977a4285e18490defea7fc4a60ff1b5227a30945b562'
+APT_PREPARATION_SHA256 = 'f6878698a53501daec866c2b2e9b15537f16c3d72051d29c72a91669de48aade'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
 SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
@@ -247,6 +247,44 @@ def signed_release_identity_cases():
     return checks
 
 
+def cloud_init_terminal_state_cases():
+    """Exercise the structured cloud-init admission without privileged fixtures."""
+    scope = runpy.run_path(str(ROOT / APT_PREPARATION_SCRIPT))
+    allowed = scope['cloud_init_state_allowed']
+    done = {'status': 'done', 'extended_status': 'done', 'stage': None,
+            'errors': [], 'recoverable_errors': {}}
+    disabled = {'status': 'disabled', 'extended_status': 'disabled', 'stage': None,
+                'errors': [], 'recoverable_errors': {}}
+    degraded = {'status': 'done', 'extended_status': 'degraded done', 'stage': None,
+                'errors': [], 'recoverable_errors': {'WARNING': ['fixture warning']}}
+    cases = (
+        ('Structured cloud-init guard accepts ordinary terminal completion',
+         allowed(0, done) == {}),
+        ('Structured cloud-init guard accepts disabled terminal completion',
+         allowed(0, disabled) == {}),
+        ('Structured cloud-init guard accepts warning-only terminal degradation',
+         allowed(2, degraded) == {'WARNING': 1}),
+        ('Structured cloud-init guard rejects critical recoverable severity',
+         allowed(2, {**degraded, 'recoverable_errors': {'CRITICAL': ['fixture']}}) is None),
+        ('Structured cloud-init guard rejects unrecoverable errors',
+         allowed(1, {**done, 'extended_status': 'error - done',
+                     'errors': ['fixture failure']}) is None),
+        ('Structured cloud-init guard rejects nonterminal states',
+         allowed(0, {**done, 'status': 'running', 'extended_status': 'running',
+                     'stage': 'init'}) is None),
+        ('Structured cloud-init guard rejects malformed state',
+         allowed(0, {'status': 'done'}) is None),
+        ('Structured cloud-init guard rejects oversized recoverable diagnostics',
+         allowed(2, {**degraded,
+                     'recoverable_errors': {'WARNING': ['x' * 2049]}}) is None),
+    )
+    checks = []
+    for name, passed in cases:
+        require(passed, name)
+        checks.append({'name': name, 'passed': True})
+    return checks
+
+
 def executable_ubuntu_source_guard_fixtures():
     """Execute the actual embedded guard in root-owned disposable POSIX fixtures."""
     if os.name != 'posix' or shutil.which('sudo') is None:
@@ -298,7 +336,7 @@ def executable_ubuntu_source_guard_fixtures():
 
     def run_case(name, ubuntu_source, mirror_text, expected_profile=None, extra_source=None,
                  hardlink=False, apt_extra='', keyring_directory_mode=0o777,
-                 keyring_mode=0o777):
+                 keyring_mode=0o777, cloud_init_returncode=0, cloud_init_state=None):
         with tempfile.TemporaryDirectory(prefix='cwp-ubuntu-apt-guard-') as folder:
             root = Path(folder)
             apt = root / 'etc' / 'apt'
@@ -345,10 +383,19 @@ def executable_ubuntu_source_guard_fixtures():
             for before, after in replacements.items():
                 require(before in script, 'Executable guard fixture replacement disappeared: ' + before)
                 script = script.replace(before, after)
+            if cloud_init_state is None:
+                cloud_init_state = {
+                    'status': 'done',
+                    'extended_status': 'done',
+                    'stage': None,
+                    'errors': [],
+                    'recoverable_errors': {},
+                }
             fake = textwrap.dedent('''
                 class _FixtureResult:
-                    returncode = 0
-                    stdout = 'status: done\\n'
+                    returncode = CLOUD_INIT_RETURNCODE
+                    stdout = CLOUD_INIT_STDOUT
+                    stderr = ''
                 class _FixtureSubprocess:
                     @staticmethod
                     def run(args, **kwargs):
@@ -367,6 +414,8 @@ def executable_ubuntu_source_guard_fixtures():
                         raise AssertionError('unexpected fixture command: ' + repr(args))
                 subprocess = _FixtureSubprocess()
             ''').replace('APT_EXTRA', repr(apt_extra))
+            fake = fake.replace('CLOUD_INIT_RETURNCODE', repr(cloud_init_returncode))
+            fake = fake.replace('CLOUD_INIT_STDOUT', repr(json.dumps(cloud_init_state)))
             needle = '    import hashlib, json, os, re, secrets, stat, subprocess, sys\n'
             require(script.count(needle) == 1, 'Executable guard import boundary changed')
             script = script.replace(needle, needle + textwrap.indent(fake, '    '), 1)
@@ -416,6 +465,25 @@ def executable_ubuntu_source_guard_fixtures():
 
     run_case('Executable guard accepts exact .370 mirror profile', source('mirror+file:/etc/apt/apt-mirrors.txt'),
              expected_mirror, 'github-mirror-list')
+    run_case('Executable guard accepts warning-only terminal cloud-init degradation',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror, 'github-mirror-list',
+             cloud_init_returncode=2,
+             cloud_init_state={'status': 'done', 'extended_status': 'degraded done', 'stage': None,
+                               'errors': [], 'recoverable_errors': {'WARNING': ['fixture warning']}})
+    run_case('Executable guard rejects critical cloud-init degradation',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
+             cloud_init_returncode=2,
+             cloud_init_state={'status': 'done', 'extended_status': 'degraded done', 'stage': None,
+                               'errors': [], 'recoverable_errors': {'CRITICAL': ['fixture critical']}})
+    run_case('Executable guard rejects unrecoverable cloud-init completion',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
+             cloud_init_returncode=1,
+             cloud_init_state={'status': 'done', 'extended_status': 'error - done', 'stage': None,
+                               'errors': ['fixture failure'], 'recoverable_errors': {}})
+    run_case('Executable guard rejects nonterminal cloud-init status',
+             source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror,
+             cloud_init_state={'status': 'running', 'extended_status': 'running', 'stage': 'init',
+                               'errors': [], 'recoverable_errors': {}})
     run_case('Executable guard accepts protected conventional keyring metadata',
              source('mirror+file:/etc/apt/apt-mirrors.txt'), expected_mirror, 'github-mirror-list',
              keyring_directory_mode=0o755, keyring_mode=0o644)
@@ -741,6 +809,7 @@ def self_test(root=ROOT):
     apt_script = (root / APT_PREPARATION_SCRIPT).read_text()
     checks = validate(workflow, legacy, protected, apt_script)
     checks.extend(signed_release_identity_cases())
+    checks.extend(cloud_init_terminal_state_cases())
     checks.extend(executable_ubuntu_source_guard_fixtures())
     changes = (
         ('lost SQL command', '          php tests/account_security_native.php >', '          true # tests/account_security_native.php >'),
