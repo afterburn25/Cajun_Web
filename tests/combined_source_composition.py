@@ -12740,6 +12740,7 @@ def release_127_projection(root):
         _REL127_WORKTREE_OIDS = validate_release_127_source(root)
         _REL127_PROJECTION_DEPTH = 1
         yield
+        _REL127_PROJECTION_DEPTH = 0
         require(validate_release_127_source(root) == _REL127_WORKTREE_OIDS,
                 'Current 1.27 release source changed during historical projection')
     finally:
