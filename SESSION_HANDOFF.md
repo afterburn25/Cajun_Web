@@ -1,4 +1,14 @@
-> **Current handoff:** UX-09 public customer identity is the only active implementation priority. See the detailed 2026-11-09 handoff at the end of this retained chronological record.
+# Active handoff — 2026-11-23 — REL-01 / CajunWebPro 1.27.0
+
+PR #401 and resulting-main qualification are complete. Exact main is `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`; every one of the 16 natural workflows passed attempt 1. Issue #157 remains the authoritative queue and PR #340 the coordinator record.
+
+Continue only REL-01 on `codex/rel-01-1.27.0-20261123`. Do not merge older provider/P2 work. Published v1.26.1 is immutable source `f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391`; its COMPLETE-UPLOAD is 17,429,306 bytes, SHA-256 `7d7117a25fab556cb3f8dfce7f0b859d072cfc992b98fc91026d96b490e1dad3`, with 3,072 members. Re-fetch and verify it during acceptance; planning values are not acceptance evidence.
+
+The stale release candidates `f7be9cd2`, `c05c0a8f`, and `926929e2` are history only. The successor closes their archive swap window by verifying and extracting one immutable byte snapshot and rebuilds all version, generated, package, migration, source-proof, and release-note bytes from current main. It also exposes the 1.26.1 formatted-draft upgrade through `mail_drafts_html_ready` in the database review registry.
+
+Remaining gates: local lint/refusal/package checks; independent implementation and security review; one exact candidate commit/tree; fresh attempt-1 Application, four PHP/database upgrade and checkout/payment lanes, package/provenance/security/privacy review; normal PR merge; complete resulting-main verification. Record exact run/artifact hashes. Do not tag, publish, deploy, enable live operations, or consume the banked usage reset unless its explicit 0% policy is satisfied.
+
+Historical handoffs follow and remain evidence only.
 
 ## 2026-11-06 12:50 UTC — managed-image serving proof pending publication
 

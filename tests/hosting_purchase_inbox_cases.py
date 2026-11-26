@@ -248,15 +248,16 @@ def run_browser(env, browser):
                 for kind, label, query in [('invoice', 'View invoice', {'view': 'invoice-payments', 'invoice_id': row['invoice_id']} if is_owner else {'invoice': row['invoice_id']}),
                                            ('project', 'View project', {'view': 'studio-job', 'id': row['project_id']} if is_owner else {'job': row['project_id']}),
                                            ('agreement', 'View agreement', {'view': 'service-agreement', 'record': row['agreement_id']} if is_owner else {'agreement': row['agreement_id']})]:
-                    # Retained five-card projections can exceed the ordinary
-                    # hosted navigation budget. Keep one bounded attempt and
-                    # every response, route and destination assertion exact.
+                    # Retained five-card projections and their destination views
+                    # can exceed the ordinary hosted navigation budget. Keep one
+                    # bounded attempt and every response, route and destination
+                    # assertion exact.
                     check('Inbox reloads ' + actor + ' before ' + phase + ' ' + kind, goto(page, list_url(is_owner), 60000) == 200)
                     current = card(page, request)
                     link = current.get_by_role('link', name=label, exact=True)
                     title = current.locator('dt').filter(has_text='Project').evaluate('el=>el.nextElementSibling.textContent')
                     check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' binds exact route', link.count() == 1 and destination(link.get_attribute('href'), endpoint, query))
-                    check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' opens actual destination', click(page, link) == 200 and destination(page.url, endpoint, query))
+                    check('Inbox ' + actor + ' ' + phase + ' ' + kind + ' opens actual destination', click(page, link, 60000) == 200 and destination(page.url, endpoint, query))
                     if kind == 'invoice':
                         check('Inbox ' + actor + ' ' + phase + ' selected invoice retains reference', row['invoice_reference'] in page.inner_text('body') and ('Payment history' in page.inner_text('body')))
                     elif kind == 'project':
@@ -306,9 +307,15 @@ def run_browser(env, browser):
         check('Client owner-inbox attempt reaches actual admin login instead of purchases', goto(bp, admin + '?view=hosting-purchases') == 200 and form(bp, 'login').count() == 1 and bp.locator('[data-hosting-purchase]').count() == 0)
         cookies = [cookie for cookie in contact.cookies(portal) if re.fullmatch('cwp_[a-f0-9]{12}', cookie['name'])]
         check('Inbox contact-key probe binds one actual isolated portal session', len(cookies) == 1)
+        # Stop the authenticated page before injecting the negative contact keys.
+        # Its passive activity/mail requests otherwise race the fixture and can
+        # normalize the deliberately invalid contact identity before this route
+        # proves that purchase access rejects it first.
+        cp.close()
         marked = fixture('contact-context', {'session_id': cookies[0]['value']})
-        check('Inbox contact provenance refuses before normalization without contact-login credit', marked.get('contact_context_set') is True and goto(cp, list_url(False)) == 403
-              and 'primary client outside support access' in cp.inner_text('body') and cp.locator('[data-hosting-purchase]').count() == 0)
+        response = contact.request.get(list_url(False), max_redirects=0, timeout=30000)
+        check('Inbox contact provenance refuses before normalization without contact-login credit', marked.get('contact_context_set') is True and response.status == 403
+              and 'primary client outside support access' in response.text() and 'data-hosting-purchase=' not in response.text())
         check('Inbox support test reaches actual owner support controls', goto(op, admin + '?view=support') == 200)
         support = form(op, 'support_start').filter(has=op.locator('input[name="client_id"][value="1"]'))
         check('Inbox owner opens actual support session for the purchase client', support.count() == 1 and click(op, support.get_by_role('button', name='Open client portal (owner review)', exact=True)) == 200

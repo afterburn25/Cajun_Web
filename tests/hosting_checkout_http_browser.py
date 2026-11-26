@@ -151,9 +151,17 @@ def main(full_suite=False):
         if not condition: raise AssertionError(name)
 
     def fixture(operation, payload=None):
+        # The closed provisioning continuations prepare and reconcile retained
+        # fulfillment, provider-operation and confirmation state before they
+        # return.  Identical behavior completed these phases on earlier hosted
+        # allocations, but slower allocations exceeded the ordinary bound at
+        # each continuation without returning a failed product assertion.  Keep
+        # the exception finite and operation-specific; every other bridge
+        # operation retains 180s.
+        timeout = 360 if operation in ('payment-fulfill', 'payment-activate') else 180
         child = subprocess.run([php, '-d', 'display_errors=0', '-d', 'zend.exception_ignore_args=1', '-d', 'allow_url_fopen=0', '-d', 'disable_functions=' + DISABLED,
             str(ROOT/'tests/hosting_checkout_http_fixture.php'), operation], cwd=ROOT, env=env, input=json.dumps(payload) if payload is not None else None,
-            capture_output=True, text=True, encoding='utf-8', timeout=180)
+            capture_output=True, text=True, encoding='utf-8', timeout=timeout)
         record = {'operation': operation, 'exit_code': child.returncode, 'stdout_bytes': len(child.stdout.encode()), 'stdout_sha256': sha(child.stdout.encode()), 'stderr_bytes': len(child.stderr.encode()), 'stderr_sha256': sha(child.stderr.encode())}
         if child.returncode != 0 or child.stderr: record['diagnostic'] = fixture_diagnostic(child.stderr, operation)
         commands.append(record); write(outputs['commands.json'], commands)

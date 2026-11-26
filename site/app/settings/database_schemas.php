@@ -37,6 +37,7 @@ function database_schema_versions(): array {
         'mail_connections_schema_version'=>'1',
         'mail_copies_schema_version'=>'1',
         'mail_drafts_schema_version'=>'1',
+        'mail_drafts_html_ready'=>'1',
         'mail_files_schema_version'=>'1',
         'mail_flags_schema_version'=>'1',
         'mail_inbox_schema_version'=>'2',
@@ -230,7 +231,8 @@ function database_schema_migrations(): array {
         'mail_accounts_schema_version'=>['depends'=>['staff_schema_version'],'file'=>'database/migrations/mail_accounts_migrate.php','function'=>'mail_accounts_migrate','arguments'=>'password'],
         'mail_connections_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_connections_migrate.php','function'=>'mail_connections_migrate','arguments'=>'password'],
         'mail_copies_schema_version'=>['depends'=>['mail_accounts_schema_version','mail_submissions_schema_version'],'note'=>'Creates private explicit Sent-copy attempt history only; setup contacts no server and copies no message.','file'=>'database/migrations/mail_copies_migrate.php','function'=>'mail_copies_migrate','arguments'=>'none'],
-        'mail_drafts_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_drafts_migrate.php','function'=>'mail_drafts_migrate','arguments'=>'password'],
+        'mail_drafts_schema_version'=>['depends'=>['mail_accounts_schema_version'],'effects'=>['mail_drafts_html_ready'],'file'=>'database/migrations/mail_drafts_migrate.php','function'=>'mail_drafts_migrate','arguments'=>'password'],
+        'mail_drafts_html_ready'=>['depends'=>['mail_accounts_schema_version','mail_drafts_schema_version'],'note'=>'Adds formatted draft storage to a published 1.26.1 installation while preserving every existing draft.','file'=>'database/migrations/mail_drafts_migrate.php','function'=>'mail_drafts_migrate','arguments'=>'password'],
         'mail_files_schema_version'=>['depends'=>['mail_accounts_schema_version','mail_drafts_schema_version','mail_submissions_schema_version'],'note'=>'Creates bounded private draft/submission attachment storage only; setup reads no file, contacts no server and sends no message.','file'=>'database/migrations/mail_files_migrate.php','function'=>'mail_files_migrate','arguments'=>'none'],
         'mail_flags_schema_version'=>['depends'=>['mail_accounts_schema_version','mail_messages_schema_version'],'note'=>'Creates metadata-only read/unread request history; it does not contact a mailbox.','file'=>'database/migrations/mail_flags_migrate.php','function'=>'mail_flags_migrate','arguments'=>'none'],
         'mail_inbox_schema_version'=>['depends'=>['mail_accounts_schema_version'],'file'=>'database/migrations/mail_inbox_migrate.php','function'=>'mail_inbox_migrate','arguments'=>'password'],
@@ -275,7 +277,7 @@ function database_schema_migrations(): array {
         'domain_renewal_dispatch_schema_version'=>['depends'=>['domain_renewal_agreements_schema_version','provider_operations_schema_version','payments_schema_version','invoice_ledger_schema_version'],'file'=>'app/providers/domain_renewal_dispatch_storage.php','function'=>'domain_renewal_dispatch_prepare','arguments'=>'password'],
         'hosting_catalog_version'=>['depends'=>['catalog_schema_version','provider_plan_catalog_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_catalog_migrate.php','function'=>'hosting_catalog_prepare','arguments'=>'password'],
         'hosting_storefront_version'=>['depends'=>['hosting_catalog_version','provider_catalog_import_version'],'note'=>'Seeds explicit Shared and unavailable VPS categories; it performs no payment or provider operation.','file'=>'database/migrations/hosting_storefront_migrate.php','function'=>'hosting_storefront_prepare','arguments'=>'password'],
-        'hosting_checkout_version'=>['depends'=>['hosting_catalog_version','hosting_storefront_version','service_plans_schema_version'],'file'=>'database/migrations/hosting_checkout_migrate.php','function'=>'hosting_checkout_prepare','arguments'=>'password'],
+        'hosting_checkout_version'=>['depends'=>['hosting_catalog_version','hosting_storefront_version','service_plans_schema_version','service_plans_checkout_schema_version','recurring_billing_checkout_schema_version'],'file'=>'database/migrations/hosting_checkout_migrate.php','function'=>'hosting_checkout_prepare','arguments'=>'password'],
         'hosting_payments_schema_version'=>['depends'=>['hosting_checkout_version','payments_schema_version','invoice_ledger_schema_version','gateway_receipts_schema_version'],'note'=>'Creates disabled-by-default hosting payment intent history; it performs no gateway or provider operation.','file'=>'database/migrations/hosting_payments_migrate.php','function'=>'hosting_payments_prepare','arguments'=>'password'],
     ];
 }

@@ -143,7 +143,7 @@ def validate(text):
           and "'body': 34, 'attachment': 14, 'attachment-security': 27" in text
           and "'origin': 20, 'reply': 60, 'reply-all': 37, 'thread': 45" in text
           and "'copied-source': 19, 'storage': 21, 'admin-policy': 23" in text
-          and "'adapter': 19, 'schema-registry': 401" in text
+          and "'adapter': 19, 'schema-registry': 406" in text
           and "assert len(report['checks']) == count" in text)
     check('Native report counts retain every predecessor and composed assertion',
           "'inbox': (cell / 'inbox-results.json', 72)" in text

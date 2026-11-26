@@ -1,3 +1,12 @@
+## 1.27.0 — qualification candidate (unpublished)
+
+- Starting main: `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`.
+- Upgrade baseline: immutable published v1.26.1 source `f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391`.
+- Scope: public identity; Shared storefront, checkout/payment evidence and fulfillment; catalog/licensing; notification health; private project notes; consolidated mail; diagnostic/package reliability.
+- Candidate requirements: deterministic FULL-PROJECT, COMPLETE-UPLOAD, and UPDATE archives; exact manifests/inventories/checksums; fresh-install and v1.26.1 upgrade/recovery gates; complete Application and checkout/payment matrix; independent reviews; normal merge and resulting-main verification.
+- Publication status: not authorized. No v1.27.0 tag or public asset exists.
+- Details: [scope](RELEASE_SCOPE_1.27.0.md), [notes](RELEASE_NOTES_1.27.0.md), [migration](MIGRATION-INSTRUCTIONS-1.27.0.md), [test matrix](TEST_REPORT_1.27.0.md).
+
 ## 2026-11-04 17:16 UTC — 1.26.1 remains unpublished during blocker qualification
 
 Development remains 1.26.1 at main `ce1803bb106713ef28dc260282a01105e7019118`; v1.25.0 remains the latest published release. A local successor addresses subscription webhook identity validation and makes the existing payment-link privacy behavior part of maintained native/installed/browser acceptance. It is not merged, accepted, tagged, packaged or published. Preserve the existing four exact-main runtime runs and the successful source-bound original-RC/finance/Windows evidence while retaining their distinct source/run identities. Final release scope, migration instructions, test report, immutable asset verification and fresh public-download comparison remain required.

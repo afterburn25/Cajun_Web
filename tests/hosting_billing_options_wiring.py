@@ -56,8 +56,9 @@ def predecessor_sources(root):
     for path in PREDECESSORS:
         current = source(root, path)
         if receipt is not None and path in composition.REPAIRS:
+            current = composition.project_release_127_source(root, path, current)
             current = composition.reconstruct_repair(
-                receipt, path, composition.ordinary(root, path)).replace(b'\r\n', b'\n')
+                receipt, path, current).replace(b'\r\n', b'\n')
         result[path] = current
     return result
 
