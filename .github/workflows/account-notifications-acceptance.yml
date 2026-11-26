@@ -43,8 +43,8 @@ jobs:
           php tests/account_security_policy.php > qa/account-notification-source/account-policy.json
           php -n tests/account_security_policy.php > qa/account-notification-source/account-policy-minimal.json
           php tests/admin_session_no_reentry.php > qa/account-notification-source/admin-policy.json
-          php tests/notification_health_view_contract.php > qa/account-notification-source/notification-health-view.json
-          php -n tests/notification_health_view_contract.php > qa/account-notification-source/notification-health-view-minimal.json
+          php tests/notification_health_view_contract.php > qa/account-notification-source/notification-health-view.log
+          php -n tests/notification_health_view_contract.php > qa/account-notification-source/notification-health-view-minimal.log
           python3 tests/acceptance_artifacts_test.py --report qa/account-notification-source/helpers.json
           python3 tests/account_notification_contract.py > qa/account-notification-source/account-notification-contract.log
           python3 tests/account_integration_contract.py > qa/account-notification-source/account-contract.log

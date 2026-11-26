@@ -198,9 +198,9 @@ DEPENDENCIES = {'site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json
                 'VERSION', 'START-HERE.txt', WORKFLOW, LEGACY, PROTECTED}
 NOTIFICATION_HEALTH_VIEW_PROOF = (
     '          php tests/notification_health_view_contract.php > '
-    'qa/account-notification-source/notification-health-view.json\n',
+    'qa/account-notification-source/notification-health-view.log\n',
     '          php -n tests/notification_health_view_contract.php > '
-    'qa/account-notification-source/notification-health-view-minimal.json\n',
+    'qa/account-notification-source/notification-health-view-minimal.log\n',
 )
 
 
@@ -831,8 +831,8 @@ def validate(workflow, legacy, protected, apt_script):
                    'tickets_integration_contract.py'):
         check('Current-source proof executes ' + script,
               current_commands.count(('python3', 'tests/' + script)) == 1)
-    for command in NOTIFICATION_HEALTH_VIEW_PROOF:
-        check('Current-source proof executes exact notification-health view contract command',
+    for lane, command in zip(('normal', 'minimal'), NOTIFICATION_HEALTH_VIEW_PROOF):
+        check('Current-source proof executes exact ' + lane + ' notification-health view contract command',
               source.count(command) == 1)
     check('Canonical source is rebuilt and must remain unchanged before admission',
           '          python3 tools/build.py --refresh > qa/account-notification-source/build.log\n' in source
