@@ -1666,6 +1666,30 @@ def run(root=ROOT):
         refuses('Refuses a substituted mail artifact-overlap parent',
                 lambda: altered_mail_artifact_overlap_identity(
                     'MAIL_ARTIFACT_OVERLAP_FIX_BASE'))
+        project_source = proof.git(
+            fixture, 'cat-file', 'blob',
+            proof.PROJECT_PROGRESS_SOURCE + ':' + proof.INVENTORY)
+        project_base = proof.git(
+            fixture, 'cat-file', 'blob',
+            proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY)
+        assert (proof.project_project_progress_source(
+                    fixture, proof.INVENTORY, project_source) == project_base
+                and proof.project_project_progress_source(
+                    fixture, proof.INVENTORY, project_base) == project_base)
+        passed('Project-progress direct projection restores exact qualified-main inventory bytes')
+
+        def tampered_project_progress_projection():
+            target = fixture / proof.INVENTORY
+            original = target.read_bytes()
+            try:
+                tampered = original + b'\n# unreviewed direct project-progress source\n'
+                target.write_bytes(tampered)
+                proof.project_project_progress_source(fixture, proof.INVENTORY, tampered)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress direct projection refuses unreviewed live source bytes',
+                tampered_project_progress_projection)
         release_overlap_paths = (
             'site/app/settings/database_schemas.php',
             proof.INVENTORY,

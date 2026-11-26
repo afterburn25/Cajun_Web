@@ -2215,7 +2215,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '2211c8a5be0e92b80d1483bb4bba08265f8a8e66d1f0dd9de76701fecdb128c2'
+REGRESSION_SHA256 = '9de29959a513614627765e1339adca25aa4588a85553f0ad1b36276da8d87968'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -7669,17 +7669,38 @@ def validate_mail_reply_forward_source(root):
             'Mail Reply/Forward installer inventory is not canonical')
 
 
+def project_project_progress_source(root, path, current):
+    """Restore exact qualified-main bytes for direct historical consumers."""
+    if path not in PROJECT_PROGRESS_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_PROGRESS_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_PROGRESS_BASE + ':' + path)
+    if current == source:
+        require(actual_ordinary(root, path) == source,
+                'Current project-progress source changed before predecessor projection: '
+                + path)
+        return base
+    if current == base or current != actual_ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project-progress source changed before predecessor projection: '
+            + path)
+    return base
+
+
 def project_release_127_source(root, path, current):
     """Restore exact pre-release bytes for direct historical consumers."""
+    actual = project_project_progress_source(root, path, actual_ordinary(root, path))
+    current = project_project_progress_source(root, path, current)
     if path not in REL127_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', REL127_BASE + ':' + path)
     if current == source:
-        require(actual_ordinary(root, path) == source,
+        require(actual == source,
                 'Current 1.27 release source changed before predecessor projection: ' + path)
         return base
-    if current == base or current != actual_ordinary(root, path):
+    if current == base or current != actual:
         return current
     require(current == source,
             'Current 1.27 release source changed before predecessor projection: ' + path)
