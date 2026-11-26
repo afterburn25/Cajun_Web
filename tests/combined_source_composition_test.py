@@ -351,7 +351,13 @@ def run(root=ROOT):
             .decode().strip() == proof.PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE
             and proof.git(root, 'rev-parse',
                           proof.PROJECT_PROGRESS_CORRECTION_SOURCE + '^{tree}')
-            .decode().strip() == proof.PROJECT_PROGRESS_CORRECTION_SOURCE_TREE)
+            .decode().strip() == proof.PROJECT_PROGRESS_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE_TREE)
     progress_workflow = (root / '.github/workflows/project-progress.yml').read_text(
         encoding='utf-8')
     progress_inputs = (
@@ -419,6 +425,10 @@ def run(root=ROOT):
         ('PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE', 'predecessor proof tree'),
         ('PROJECT_PROGRESS_CORRECTION_SOURCE', 'correction source commit'),
         ('PROJECT_PROGRESS_CORRECTION_SOURCE_TREE', 'correction source tree'),
+        ('PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF', 'review predecessor proof commit'),
+        ('PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF_TREE', 'review predecessor proof tree'),
+        ('PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE', 'handoff correction source commit'),
+        ('PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE_TREE', 'handoff correction source tree'),
     ):
         original = getattr(proof, attribute)
         try:
@@ -498,6 +508,9 @@ def run(root=ROOT):
         refuses('Project-progress binding refuses changed added-file bytes',
                 lambda: project_progress_source_tamper(
                     'foundation/projects/ProjectProgressEvent.php'))
+        refuses('Project-progress binding refuses changed handoff-correction bytes',
+                lambda: project_progress_source_tamper(
+                    proof.PROJECT_PROGRESS_HANDOFF))
 
         def project_progress_line_ending_tamper(path):
             target = fixture / path
@@ -538,6 +551,8 @@ def run(root=ROOT):
         for attribute, label in (
             ('PROJECT_PROGRESS_CORRECTION_MODIFIED', 'modified path set'),
             ('PROJECT_PROGRESS_CORRECTION_ADDITIONS', 'addition path set'),
+            ('PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED',
+             'handoff-correction modified path set'),
         ):
             original = getattr(proof, attribute)
             try:

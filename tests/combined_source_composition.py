@@ -111,6 +111,10 @@ PROJECT_PROGRESS_PREDECESSOR_PROOF = 'd21cefa95534cba7c01e838adaddf8c86e540991'
 PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE = 'de246fd58180b7589687dcfc2af9223715defb94'
 PROJECT_PROGRESS_CORRECTION_SOURCE = 'ea6407ec5af510be24045a4a23407ed54cb75e64'
 PROJECT_PROGRESS_CORRECTION_SOURCE_TREE = '2c1524b1f3b1abc77e2fed9c2e9b0debd54d7c67'
+PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF = 'e99757ae81c8c4c608f329c65e7612144af81d36'
+PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF_TREE = '1c9faa50cb9342e4222d9f7840e9d02359b6934c'
+PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE = '40703da0fe9512125e8996507f1d4d3cc5555f02'
+PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE_TREE = '508eca823d79717e822a4525c59e6c37b6bdc357'
 PROJECT_PROGRESS_HANDOFF = (
     'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md')
 PROJECT_PROGRESS_CORRECTION_MODIFIED = frozenset((
@@ -119,6 +123,7 @@ PROJECT_PROGRESS_CORRECTION_MODIFIED = frozenset((
 PROJECT_PROGRESS_CORRECTION_ADDITIONS = frozenset((PROJECT_PROGRESS_HANDOFF,))
 PROJECT_PROGRESS_CORRECTION_PATHS = (PROJECT_PROGRESS_CORRECTION_MODIFIED
                                      | PROJECT_PROGRESS_CORRECTION_ADDITIONS)
+PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED = frozenset((PROJECT_PROGRESS_HANDOFF,))
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -2228,7 +2233,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '88df5b74e9aa0c2ddce76f679917b9714294564354fcda0194fd2b07f25f04f4'
+REGRESSION_SHA256 = 'dac08f2ebfd876d722c29573588032cb30bc2b9db0a830f7764712d30a60b24d'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12697,7 +12702,7 @@ def validate_release_127_source(root):
 
 
 def validate_project_progress_source(root):
-    """Bind the project-progress source, correction source, and proof successors."""
+    """Bind the project-progress source, reviewed corrections, and proof successors."""
     require(git(root, 'rev-parse', PROJECT_PROGRESS_BASE + '^{tree}').decode().strip()
             == PROJECT_PROGRESS_BASE_TREE
             and git(root, 'rev-parse', PROJECT_PROGRESS_SOURCE + '^{tree}').decode().strip()
@@ -12705,17 +12710,30 @@ def validate_project_progress_source(root):
             and git(root, 'rev-parse', PROJECT_PROGRESS_PREDECESSOR_PROOF + '^{tree}')
             .decode().strip() == PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE
             and git(root, 'rev-parse', PROJECT_PROGRESS_CORRECTION_SOURCE + '^{tree}')
-            .decode().strip() == PROJECT_PROGRESS_CORRECTION_SOURCE_TREE,
-            'Project-progress base, source, predecessor proof, or correction tree changed')
+            .decode().strip() == PROJECT_PROGRESS_CORRECTION_SOURCE_TREE
+            and git(root, 'rev-parse',
+                    PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF + '^{tree}')
+            .decode().strip() == PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF_TREE
+            and git(root, 'rev-parse',
+                    PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE_TREE,
+            'Project-progress source or reviewed proof-chain identity changed')
     require(git(root, 'show', '-s', '--format=%P', PROJECT_PROGRESS_SOURCE)
             .decode().strip().split() == [PROJECT_PROGRESS_BASE],
             'Project-progress source parent changed')
     require(git(root, 'show', '-s', '--format=%P', PROJECT_PROGRESS_CORRECTION_SOURCE)
             .decode().strip().split() == [PROJECT_PROGRESS_PREDECESSOR_PROOF],
             'Project-progress correction source parent changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE)
+            .decode().strip().split() == [PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF],
+            'Project-progress handoff correction source parent changed')
     git(root, 'merge-base', '--is-ancestor', PROJECT_PROGRESS_SOURCE,
         PROJECT_PROGRESS_PREDECESSOR_PROOF)
-    git(root, 'merge-base', '--is-ancestor', PROJECT_PROGRESS_CORRECTION_SOURCE, 'HEAD')
+    git(root, 'merge-base', '--is-ancestor', PROJECT_PROGRESS_CORRECTION_SOURCE,
+        PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF)
+    git(root, 'merge-base', '--is-ancestor',
+        PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE, 'HEAD')
     changes = git(root, 'diff', '--name-status', '--no-renames',
                   PROJECT_PROGRESS_BASE, PROJECT_PROGRESS_SOURCE).decode().splitlines()
     expected = (['A\t' + path for path in sorted(PROJECT_PROGRESS_ADDITIONS)]
@@ -12736,15 +12754,33 @@ def validate_project_progress_source(root):
         + ['M\t' + path for path in sorted(PROJECT_PROGRESS_CORRECTION_MODIFIED)])
     require(sorted(correction_changes) == sorted(expected_correction),
             'Project-progress correction source changed a different path or status set')
+    review_predecessor_proof_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        PROJECT_PROGRESS_CORRECTION_SOURCE,
+        PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF).decode().splitlines()
+    require(sorted(review_predecessor_proof_changes)
+            == ['M\t' + path for path in sorted(PROJECT_PROGRESS_PROOF_PATHS)],
+            'Project-progress review predecessor proof changed application source')
+    handoff_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF,
+        PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(handoff_correction_changes)
+            == ['M\t' + path
+                for path in sorted(PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED)],
+            'Project-progress handoff correction changed a different path or status set')
     proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                        PROJECT_PROGRESS_CORRECTION_SOURCE, 'HEAD').decode().splitlines()
+                        PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE,
+                        'HEAD').decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(PROJECT_PROGRESS_PROOF_PATHS)],
-            'Project-progress correction proof changed application source')
+            'Project-progress handoff correction proof changed application source')
     base_entries = entries(root, PROJECT_PROGRESS_BASE)
     source_entries = entries(root, PROJECT_PROGRESS_SOURCE)
     predecessor_entries = entries(root, PROJECT_PROGRESS_PREDECESSOR_PROOF)
     correction_entries = entries(root, PROJECT_PROGRESS_CORRECTION_SOURCE)
+    handoff_correction_entries = entries(
+        root, PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not PROJECT_PROGRESS_ADDITIONS & set(base_entries)
@@ -12782,13 +12818,18 @@ def validate_project_progress_source(root):
                 'Current project-progress addition identity changed: ' + path)
         worktree_oids[path] = target[1]
     for path in sorted(PROJECT_PROGRESS_CORRECTION_ADDITIONS):
+        target = (handoff_correction_entries[path]
+                  if path in PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED
+                  else correction_entries[path])
+        target_commit = (PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE
+                         if path in PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED
+                         else PROJECT_PROGRESS_CORRECTION_SOURCE)
         require(actual_ordinary(root, path) == git(root, 'cat-file', 'blob',
-                                                       PROJECT_PROGRESS_CORRECTION_SOURCE
-                                                       + ':' + path),
+                                                       target_commit + ':' + path),
                 'Current project-progress correction addition raw bytes changed: ' + path)
-        require(live_index_entries.get(path) == correction_entries[path]
+        require(live_index_entries.get(path) == target
                 and mode(root, path, live_index_modes)
-                == correction_entries[path][0] == '100644',
+                == target[0] == '100644',
                 'Current project-progress correction addition identity changed: ' + path)
     return worktree_oids
 
@@ -12858,7 +12899,11 @@ def verify_current(root):
          'passed': True},
         {'name': 'Project-progress review correction binds one workflow and one handoff path',
          'passed': True},
-        {'name': 'Project-progress correction proof changes only the exact three proof files',
+        {'name': 'Project-progress review predecessor proof changes only the exact three proof files',
+         'passed': True},
+        {'name': 'Project-progress handoff review correction changes only the exact handoff path',
+         'passed': True},
+        {'name': 'Project-progress handoff correction proof changes only the exact three proof files',
          'passed': True},
         {'name': 'Exact resulting-main-to-1.27 implementation range binds '
                  + str(len(REL127_MODIFIED)) + ' modified paths and '
