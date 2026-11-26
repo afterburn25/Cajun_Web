@@ -62,7 +62,7 @@ def strict_cloud_init_status(value):
 
 def cloud_init_state_allowed(returncode, state):
     """Return the bounded severity summary for an admitted terminal state."""
-    required = {'status', 'extended_status', 'stage', 'errors', 'recoverable_errors'}
+    required = {'status', 'extended_status', 'errors', 'recoverable_errors'}
     if not isinstance(state, dict) or not required <= state.keys():
         return None
     status = state['status']
@@ -70,7 +70,7 @@ def cloud_init_state_allowed(returncode, state):
     errors = state['errors']
     recoverable = state['recoverable_errors']
     if (not isinstance(status, str) or not isinstance(extended, str)
-            or state['stage'] is not None or not isinstance(errors, list)
+            or state.get('stage') is not None or not isinstance(errors, list)
             or any(not isinstance(item, str) or not item or len(item) > 2048
                    for item in errors)
             or not isinstance(recoverable, dict)):
@@ -89,7 +89,8 @@ def cloud_init_state_allowed(returncode, state):
     if message_bytes > 32768:
         return None
     ordinary = (returncode == 0 and not errors and not recoverable
-                and (status, extended) in (('done', 'done'), ('disabled', 'disabled')))
+                and (((status, extended) == ('done', 'done') and 'stage' in state)
+                     or (status, extended) == ('disabled', 'disabled')))
     degraded = (returncode == 2 and not errors
                 and recoverable == {'WARNING': [AZURE_IMDS_TRANSIENT_WARNING]}
                 and (status, extended) == ('done', 'degraded done')
