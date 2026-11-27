@@ -147,6 +147,27 @@ CLOUD_INIT_TERMINAL_SCRIPT_SHA256 = (
     '561ea255e303e9c75cd7afd79fdeded77b672352b9443908bbf2a0dbf258a86b')
 CLOUD_INIT_TERMINAL_CONTRACT_SHA256 = (
     'b122b75ce03d2efac2fc6842a3f72fcf2db4a7bfc9740e33be419d8bd33f6630')
+NOTIFICATION_ACCEPTANCE_BASE = '2f9b630afc46aa7ea15eaa3f515265026619cbaa'
+NOTIFICATION_ACCEPTANCE_BASE_TREE = '32b8d9515b477759ad26cf4449ffdbd086f8138d'
+NOTIFICATION_ACCEPTANCE_MERGE = '5ec30f67cc601f053546f1db9ed1e0533c319c65'
+NOTIFICATION_ACCEPTANCE_MERGE_TREE = '717f32bd5640409a41353be9d1d0a984dc82d514'
+NOTIFICATION_ACCEPTANCE_BYPASS_FIX = 'ab99f649c67fb8c30d2893127be84b9dbc5d0fca'
+NOTIFICATION_ACCEPTANCE_BYPASS_FIX_TREE = 'bbec36f217b435eaa8b476b554cd328a442be39e'
+NOTIFICATION_ACCEPTANCE_STEP_BINDING = '5ddb47ff727a0d176c4ce2932360c6d2075d584a'
+NOTIFICATION_ACCEPTANCE_STEP_BINDING_TREE = '870fcaa22e99ccee5ca06fd81244dd3ea35a4a03'
+NOTIFICATION_ACCEPTANCE_SOURCE = '7c88f77670953edbc2da9fcd3efd01ba06af3434'
+NOTIFICATION_ACCEPTANCE_SOURCE_TREE = '2c28c95d4bdcb73ff5d4830803771807d4b73f03'
+NOTIFICATION_ACCEPTANCE_MODIFIED = frozenset((
+    '.github/workflows/account-notifications-acceptance.yml',
+    'tests/account_notification_workflow_contract.py',
+))
+NOTIFICATION_ACCEPTANCE_PROOF_PATHS = REL127_PROOF_PATHS
+NOTIFICATION_ACCEPTANCE_SHA256 = {
+    '.github/workflows/account-notifications-acceptance.yml':
+        '13044f327b3b5f3673ebe227b95db6befb5d151fdb5671012a8947db59d83cb2',
+    'tests/account_notification_workflow_contract.py':
+        '0e7fbe192511b6e9be3e90f28a57df260e21512cdc90c1e414f4f2c469c5f4d0',
+}
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -2256,7 +2277,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '0ca0d518a7986194ebd7907acc24816e98f3d7ffe4f8dbd04fde8470c748e745'
+REGRESSION_SHA256 = 'c118f1040f18660bcd2910e359721caab1446c63cc774fa1683e2d5fc1018940'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2365,6 +2386,8 @@ _PROJECT_PROGRESS_PROJECTION_DEPTH = 0
 _PROJECT_PROGRESS_WORKTREE_OIDS = {}
 _CLOUD_INIT_TERMINAL_PROJECTION_DEPTH = 0
 _CLOUD_INIT_TERMINAL_WORKTREE_OIDS = {}
+_NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH = 0
+_NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS = {}
 _CURRENT_INDEX_MODES = {}
 UPSTREAM = 'https://github.com/afterburn25/Cajun_Web.git'
 
@@ -2697,6 +2720,7 @@ def worktree_blob_oids(root, paths):
 
 def ordinary(root, path):
     current = actual_ordinary(root, path)
+    current = notification_acceptance_projected_bytes(root, path, current)
     if _CLOUD_INIT_TERMINAL_PROJECTION_DEPTH and path in CLOUD_INIT_TERMINAL_MODIFIED:
         require(_CLOUD_INIT_TERMINAL_WORKTREE_OIDS.get(path)
                 == entries(root, CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE)[path][1],
@@ -12732,6 +12756,100 @@ def validate_release_127_source(root):
     return worktree_oids
 
 
+def validate_notification_acceptance_source(root):
+    """Bind the reviewed notification-health acceptance successor and proof-only head."""
+    identities = (
+        (NOTIFICATION_ACCEPTANCE_BASE, NOTIFICATION_ACCEPTANCE_BASE_TREE),
+        (NOTIFICATION_ACCEPTANCE_MERGE, NOTIFICATION_ACCEPTANCE_MERGE_TREE),
+        (NOTIFICATION_ACCEPTANCE_BYPASS_FIX, NOTIFICATION_ACCEPTANCE_BYPASS_FIX_TREE),
+        (NOTIFICATION_ACCEPTANCE_STEP_BINDING,
+         NOTIFICATION_ACCEPTANCE_STEP_BINDING_TREE),
+        (NOTIFICATION_ACCEPTANCE_SOURCE, NOTIFICATION_ACCEPTANCE_SOURCE_TREE),
+    )
+    require(all(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree
+                for commit, tree in identities),
+            'Notification acceptance source or reviewed correction tree changed')
+    require(git(root, 'show', '-s', '--format=%P', NOTIFICATION_ACCEPTANCE_MERGE)
+            .decode().strip().split()
+            == [NOTIFICATION_ACCEPTANCE_BASE,
+                '669d0e4e05ce3c23fd466d28d31eb22a10089638']
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_ACCEPTANCE_BYPASS_FIX).decode().strip().split()
+            == [NOTIFICATION_ACCEPTANCE_MERGE]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_ACCEPTANCE_STEP_BINDING).decode().strip().split()
+            == [NOTIFICATION_ACCEPTANCE_BYPASS_FIX]
+            and git(root, 'show', '-s', '--format=%P', NOTIFICATION_ACCEPTANCE_SOURCE)
+            .decode().strip().split() == [NOTIFICATION_ACCEPTANCE_STEP_BINDING],
+            'Notification acceptance reviewed parent chain changed')
+    git(root, 'merge-base', '--is-ancestor', NOTIFICATION_ACCEPTANCE_SOURCE, 'HEAD')
+    changes = git(root, 'diff', '--name-status', '--no-renames',
+                  NOTIFICATION_ACCEPTANCE_BASE,
+                  NOTIFICATION_ACCEPTANCE_SOURCE).decode().splitlines()
+    require(sorted(changes)
+            == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_MODIFIED)],
+            'Notification acceptance source changed another path or status')
+    head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    if head == NOTIFICATION_ACCEPTANCE_SOURCE:
+        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                            NOTIFICATION_ACCEPTANCE_SOURCE,
+                            '--').decode().splitlines()
+    else:
+        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                            NOTIFICATION_ACCEPTANCE_SOURCE,
+                            head).decode().splitlines()
+    require(sorted(proof_changes)
+            == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
+            'Notification acceptance proof changed application source')
+    base_entries = entries(root, NOTIFICATION_ACCEPTANCE_BASE)
+    source_entries = entries(root, NOTIFICATION_ACCEPTANCE_SOURCE)
+    live_index_entries = current_index_entries(root)
+    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
+    worktree_oids = {}
+    for path in sorted(NOTIFICATION_ACCEPTANCE_MODIFIED):
+        current = actual_ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob',
+                               NOTIFICATION_ACCEPTANCE_SOURCE + ':' + path)
+                and digest(current) == NOTIFICATION_ACCEPTANCE_SHA256[path]
+                and live_index_entries.get(path) == source_entries[path]
+                and mode(root, path, live_index_modes) == base_entries[path][0]
+                == source_entries[path][0] == '100644',
+                'Current notification acceptance source identity changed: ' + path)
+        worktree_oids[path] = source_entries[path][1]
+    workflow = actual_ordinary(
+        root, '.github/workflows/account-notifications-acceptance.yml')
+    contract = actual_ordinary(root, 'tests/account_notification_workflow_contract.py')
+    require(workflow.count(b'php tests/notification_health_view_contract.php') == 1
+            and workflow.count(b'php -n tests/notification_health_view_contract.php') == 1
+            and contract.count(b'php tests/notification_health_view_contract.php') == 1
+            and contract.count(b'php -n tests/notification_health_view_contract.php') == 1
+            and contract.count(b'conditional notification-health bypass') == 1
+            and contract.count(b'job-default-shell notification-health bypass') == 1,
+            'Notification acceptance lost either exact notification-health execution lane')
+    return worktree_oids
+
+
+def notification_acceptance_projected_bytes(root, path, current):
+    """Restore verified-main bytes only while the exact successor is projected."""
+    if (not _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH
+            or path not in NOTIFICATION_ACCEPTANCE_MODIFIED):
+        return current
+    require(_NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS.get(path)
+            == entries(root, NOTIFICATION_ACCEPTANCE_SOURCE)[path][1],
+            'Current notification acceptance source changed before predecessor projection: '
+            + path)
+    source = git(root, 'cat-file', 'blob', NOTIFICATION_ACCEPTANCE_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', NOTIFICATION_ACCEPTANCE_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != actual_ordinary(root, path):
+        return current
+    require(current == source,
+            'Current notification acceptance source changed before predecessor projection: '
+            + path)
+    return base
+
+
 def validate_cloud_init_terminal_source(root):
     """Bind the fail-closed terminal cloud-init compatibility successor."""
     require(git(root, 'rev-parse', CLOUD_INIT_TERMINAL_BASE + '^{tree}').decode().strip()
@@ -12809,7 +12927,11 @@ def validate_cloud_init_terminal_source(root):
             == ['M\t' + path for path in sorted(CLOUD_INIT_TERMINAL_MODIFIED)],
             'Cloud-init disabled-stage correction changed a different path or status set')
     head = git(root, 'rev-parse', 'HEAD').decode().strip()
-    if head == CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE:
+    if _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH:
+        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                            CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE,
+                            NOTIFICATION_ACCEPTANCE_BASE).decode().splitlines()
+    elif head == CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
                             CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE,
                             '--').decode().splitlines()
@@ -12826,17 +12948,25 @@ def validate_cloud_init_terminal_source(root):
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     worktree_oids = {}
     for path in sorted(CLOUD_INIT_TERMINAL_MODIFIED):
-        require(actual_ordinary(root, path)
+        current = notification_acceptance_projected_bytes(
+            root, path, actual_ordinary(root, path))
+        expected_live = (entries(root, NOTIFICATION_ACCEPTANCE_SOURCE)[path]
+                         if (_NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH
+                             and path in NOTIFICATION_ACCEPTANCE_MODIFIED)
+                         else source_entries[path])
+        require(current
                 == git(root, 'cat-file', 'blob',
                        CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE + ':' + path),
                 'Current cloud-init terminal raw bytes changed: ' + path)
-        require(live_index_entries.get(path) == source_entries[path]
+        require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
                 'Current cloud-init terminal source identity changed: ' + path)
         worktree_oids[path] = source_entries[path][1]
     script = actual_ordinary(root, '.github/scripts/prepare_ubuntu_apt.py')
-    contract = actual_ordinary(root, 'tests/account_notification_workflow_contract.py')
+    contract = notification_acceptance_projected_bytes(
+        root, 'tests/account_notification_workflow_contract.py',
+        actual_ordinary(root, 'tests/account_notification_workflow_contract.py'))
     require(digest(script) == CLOUD_INIT_TERMINAL_SCRIPT_SHA256
             and digest(contract) == CLOUD_INIT_TERMINAL_CONTRACT_SHA256
             and script.count(b'def cloud_init_state_allowed(returncode, state):') == 1
@@ -12999,6 +13129,32 @@ def validate_project_progress_source(root):
 
 
 @contextmanager
+def notification_acceptance_projection(root):
+    """Project only the exact reviewed notification-health acceptance successor."""
+    global _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH
+    global _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS, _CURRENT_INDEX_MODES
+    root = Path(root)
+    require(_NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH == 0
+            and not _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS,
+            'Nested notification acceptance projection refused')
+    ensure_history(root)
+    pin_head(root)
+    previous_modes = _CURRENT_INDEX_MODES
+    _CURRENT_INDEX_MODES = current_index_modes(root)
+    try:
+        _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS = validate_notification_acceptance_source(root)
+        _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH = 1
+        yield
+        require(validate_notification_acceptance_source(root)
+                == _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS,
+                'Current notification acceptance source changed during projection')
+    finally:
+        _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH = 0
+        _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS = {}
+        _CURRENT_INDEX_MODES = previous_modes
+
+
+@contextmanager
 def cloud_init_terminal_projection(root):
     """Project only the exact terminal cloud-init compatibility source."""
     global _CLOUD_INIT_TERMINAL_PROJECTION_DEPTH, _CLOUD_INIT_TERMINAL_WORKTREE_OIDS
@@ -13077,11 +13233,16 @@ def release_127_projection(root):
 def verify_current(root):
     with verification_projection_cache(root):
         with immutable_blob_batch(root):
-            with cloud_init_terminal_projection(root):
-                with project_progress_projection(root):
-                    with release_127_projection(root):
-                        checks = _verify_current(root)
+            with notification_acceptance_projection(root):
+                with cloud_init_terminal_projection(root):
+                    with project_progress_projection(root):
+                        with release_127_projection(root):
+                            checks = _verify_current(root)
     return [
+        {'name': 'Exact notification-health acceptance successor projects two reviewed files',
+         'passed': True},
+        {'name': 'Notification-health acceptance proof changes only the exact three proof files',
+         'passed': True},
         {'name': 'Exact terminal cloud-init predecessor binds two verification paths',
          'passed': True},
         {'name': 'Rejected terminal cloud-init proof changes only the exact three proof files',
