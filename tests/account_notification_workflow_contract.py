@@ -26,6 +26,7 @@ APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
 APT_PREPARATION_SHA256 = '561ea255e303e9c75cd7afd79fdeded77b672352b9443908bbf2a0dbf258a86b'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+WORKFLOW_SHA256 = '13044f327b3b5f3673ebe227b95db6befb5d151fdb5671012a8947db59d83cb2'
 SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
                             '    # policy proofs, then reached the exact 180m ceiling before helper verification.\n'
                             '    # Keep every source-proof command and allow one bounded complete admission pass.\n'
@@ -196,6 +197,14 @@ PARENTS = ('84e1f4c61f5ef2b63cd4f565b0f5daf3683346fd',
            'ebcbbb56336249fee2073c8f02e9d6998740b64e')
 DEPENDENCIES = {'site/**', 'foundation/**', 'tests/**', 'tools/**', 'docs/*.json', '.github/scripts/**',
                 'VERSION', 'START-HERE.txt', WORKFLOW, LEGACY, PROTECTED}
+NOTIFICATION_HEALTH_VIEW_PROOF = (
+    '          php tests/notification_health_view_contract.php > '
+    'qa/account-notification-source/notification-health-view.log\n',
+    '          php -n tests/notification_health_view_contract.php > '
+    'qa/account-notification-source/notification-health-view-minimal.log\n',
+)
+NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK = ''.join(NOTIFICATION_HEALTH_VIEW_PROOF)
+SOURCE_PROOF_STEP_SHA256 = '5cf3ab26c7e61ded04a0d0ee56094518fc271329f4e365633b8ad1c20618e419'
 
 
 def digest(value):
@@ -692,6 +701,8 @@ def validate(workflow, legacy, protected, apt_script):
         require(passed, name)
         checks.append({'name': name, 'passed': True})
 
+    check('Current-source workflow and its execution context remain byte-identical',
+          digest(workflow) == WORKFLOW_SHA256)
     check('Legacy source builder and focused workflow remain byte-identical', digest(legacy) == LEGACY_SHA256)
     script_directory = ROOT / '.github' / 'scripts'
     script_entries = sorted(path.relative_to(ROOT).as_posix() for path in script_directory.iterdir()
@@ -840,6 +851,15 @@ def validate(workflow, legacy, protected, apt_script):
                    'tickets_integration_contract.py'):
         check('Current-source proof executes ' + script,
               current_commands.count(('python3', 'tests/' + script)) == 1)
+    for lane, command in zip(('normal', 'minimal'), NOTIFICATION_HEALTH_VIEW_PROOF):
+        check('Current-source proof executes exact ' + lane + ' notification-health view contract command',
+              source.count(command) == 1)
+    source_proof_step = source.split(
+        '      - name: Verify the exact integrated source and retained proof chains\n', 1)[1].split(
+            '      - name: Admit only the immutable checked-out commit\n', 1)[0]
+    check('Notification-health proofs are one adjacent block in the byte-identical source-proof step',
+          source_proof_step.count(NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK) == 1
+          and digest(source_proof_step) == SOURCE_PROOF_STEP_SHA256)
     check('Canonical source is rebuilt and must remain unchanged before admission',
           '          python3 tools/build.py --refresh > qa/account-notification-source/build.log\n' in source
           and '          git diff --exit-code\n' in source
@@ -879,6 +899,22 @@ def self_test(root=ROOT):
         ('legacy reconstruction', '          git diff --exit-code\n', '          python3 tools/integration/owner_navigation_fix.py\n          git diff --exit-code\n'),
         ('missing parent', '          git merge-base --is-ancestor ' + PARENTS[0] + ' HEAD\n', ''),
         ('missing retained policy', '          php -n tests/account_security_policy.php > qa/account-notification-source/account-policy-minimal.json\n', ''),
+        ('missing notification-health view proof', NOTIFICATION_HEALTH_VIEW_PROOF[0], ''),
+        ('missing minimal notification-health view proof', NOTIFICATION_HEALTH_VIEW_PROOF[1], ''),
+        ('conditional notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          if false; then\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          fi\n'),
+        ('heredoc notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         "          cat <<'CWP_IGNORED'\n" + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          CWP_IGNORED\n'),
+        ('early-exit notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          exit 0\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK),
+        ('short-circuit notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          : || {\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          }\n'),
+        ('uncalled-function notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          cwp_ignored() {\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          }\n'),
+        ('php-shadow notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          php() { :; }\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK),
+        ('job-default-shell notification-health bypass', '    steps:\n',
+         "    defaults:\n      run:\n        shell: bash --noprofile --norc -c 'grep -q notification_health_view_contract.php \\\"$1\\\" || bash --noprofile --norc -eo pipefail \\\"$1\\\"' _ {0}\n    steps:\n"),
         ('lost receipt dependency', "'docs/*.json', ", ''),
         ('lost protected workflow dependency', ", '.github/workflows/application-tests.yml'", ''),
         ('unbounded push branches', 'branches: [main, chatgpt/account-notifications-acceptance-20261101]', "branches: ['**']"),

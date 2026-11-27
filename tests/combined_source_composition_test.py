@@ -342,15 +342,89 @@ def run(root=ROOT):
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_BASE + '^{tree}')
+            .decode().strip() == proof.NOTIFICATION_ACCEPTANCE_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_SOURCE + '^{tree}')
+            .decode().strip() == proof.NOTIFICATION_ACCEPTANCE_SOURCE_TREE)
+    with proof.notification_acceptance_projection(root):
+        for path in proof.NOTIFICATION_ACCEPTANCE_MODIFIED:
+            assert (proof.ordinary(root, path)
+                    == proof.git(root, 'cat-file', 'blob',
+                                 proof.NOTIFICATION_ACCEPTANCE_BASE + ':' + path))
+    passed('Notification acceptance projection restores both exact verified-main paths')
+    for attribute, label in (
+        ('NOTIFICATION_ACCEPTANCE_BASE_TREE', 'base tree'),
+        ('NOTIFICATION_ACCEPTANCE_MERGE', 'merge commit'),
+        ('NOTIFICATION_ACCEPTANCE_MERGE_TREE', 'merge tree'),
+        ('NOTIFICATION_ACCEPTANCE_BYPASS_FIX', 'bypass-fix commit'),
+        ('NOTIFICATION_ACCEPTANCE_BYPASS_FIX_TREE', 'bypass-fix tree'),
+        ('NOTIFICATION_ACCEPTANCE_STEP_BINDING', 'step-binding commit'),
+        ('NOTIFICATION_ACCEPTANCE_STEP_BINDING_TREE', 'step-binding tree'),
+        ('NOTIFICATION_ACCEPTANCE_SOURCE', 'source commit'),
+        ('NOTIFICATION_ACCEPTANCE_SOURCE_TREE', 'source tree'),
+        ('NOTIFICATION_ACCEPTANCE_REJECTED_PROOF', 'rejected proof commit'),
+        ('NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE', 'rejected proof tree'),
+        ('NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF',
+         'hosted-rejected proof commit'),
+        ('NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF_TREE',
+         'hosted-rejected proof tree'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * len(original))
+            refuses('Refuses substituted notification acceptance ' + label,
+                    lambda: proof.validate_notification_acceptance_source(root))
+        finally:
+            setattr(proof, attribute, original)
+    direct_head = 'f' * 40
+    direct_tree = 'd' * 40
+    assert proof.validate_notification_acceptance_checkout_history(
+        direct_head, [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF],
+        direct_tree, direct_head,
+        [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree
+    ) == direct_head
+    assert proof.validate_notification_acceptance_checkout_history(
+        'c' * 40, [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head],
+        direct_tree, direct_head,
+        [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree
+    ) == direct_head
+    passed('Notification acceptance admits direct correction and exact tree-identical PR merge')
+    refuses('Notification acceptance proof refuses a non-direct parent',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                direct_head, [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF],
+                direct_tree, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF], direct_tree))
+    refuses('Notification acceptance proof refuses an extra merge parent',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40,
+                [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head, 'e' * 40],
+                direct_tree, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree))
+    refuses('Notification acceptance proof refuses a changed PR base parent',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40, ['e' * 40, direct_head], direct_tree,
+                direct_head, [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF],
+                direct_tree))
+    refuses('Notification acceptance proof refuses a non-direct PR branch head',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40, [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head],
+                direct_tree, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF], direct_tree))
+    refuses('Notification acceptance proof refuses a changed PR merge tree',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40, [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head],
+                'b' * 40, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree))
     assert (proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_BASE + '^{tree}')
             .decode().strip() == proof.CLOUD_INIT_TERMINAL_BASE_TREE
             and proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_SOURCE + '^{tree}')
             .decode().strip() == proof.CLOUD_INIT_TERMINAL_SOURCE_TREE)
-    with proof.cloud_init_terminal_projection(root):
-        for path in proof.CLOUD_INIT_TERMINAL_MODIFIED:
-            assert (proof.ordinary(root, path)
-                    == proof.git(root, 'cat-file', 'blob',
-                                 proof.CLOUD_INIT_TERMINAL_BASE + ':' + path))
+    with proof.notification_acceptance_projection(root):
+        with proof.cloud_init_terminal_projection(root):
+            for path in proof.CLOUD_INIT_TERMINAL_MODIFIED:
+                assert (proof.ordinary(root, path)
+                        == proof.git(root, 'cat-file', 'blob',
+                                     proof.CLOUD_INIT_TERMINAL_BASE + ':' + path))
     passed('Cloud-init terminal projection restores both exact predecessor paths')
     for attribute, label in (
         ('CLOUD_INIT_TERMINAL_BASE_TREE', 'base tree'),
@@ -372,8 +446,12 @@ def run(root=ROOT):
         original = getattr(proof, attribute)
         try:
             setattr(proof, attribute, '0' * len(original))
+            def validate_cloud_init_current():
+                with proof.notification_acceptance_projection(root):
+                    return proof.validate_cloud_init_terminal_source(root)
+
             refuses('Refuses substituted cloud-init terminal ' + label,
-                    lambda: proof.validate_cloud_init_terminal_source(root))
+                    validate_cloud_init_current)
         finally:
             setattr(proof, attribute, original)
     assert (proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_BASE + '^{tree}')
@@ -518,6 +596,7 @@ def run(root=ROOT):
                      | proof.CLOUD_INTAKE_ADDITIONS | proof.UX09_MODIFIED | proof.UX09_ADDITIONS
                      | proof.UX09_CI_MODIFIED
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
+                     | proof.NOTIFICATION_ACCEPTANCE_MODIFIED
                      | proof.CLOUD_INIT_TERMINAL_MODIFIED
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, proof.UX09_SOURCE_RECEIPT,
@@ -534,7 +613,8 @@ def run(root=ROOT):
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed cloud-init admission\n')
-                proof.validate_cloud_init_terminal_source(fixture)
+                with proof.notification_acceptance_projection(fixture):
+                    proof.validate_cloud_init_terminal_source(fixture)
             finally:
                 target.write_bytes(original)
 
@@ -547,10 +627,38 @@ def run(root=ROOT):
         original_cloud_paths = proof.CLOUD_INIT_TERMINAL_MODIFIED
         try:
             proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths | {'README.md'}
+            def validate_cloud_init_paths():
+                with proof.notification_acceptance_projection(fixture):
+                    return proof.validate_cloud_init_terminal_source(fixture)
+
             refuses('Cloud-init terminal binding refuses an altered source path set',
-                    lambda: proof.validate_cloud_init_terminal_source(fixture))
+                    validate_cloud_init_paths)
         finally:
             proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths
+
+        def notification_acceptance_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + b'\n# unreviewed notification acceptance\n')
+                proof.validate_notification_acceptance_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Notification acceptance binding refuses changed workflow bytes',
+                lambda: notification_acceptance_tamper(
+                    '.github/workflows/account-notifications-acceptance.yml'))
+        refuses('Notification acceptance binding refuses changed contract bytes',
+                lambda: notification_acceptance_tamper(
+                    'tests/account_notification_workflow_contract.py'))
+        original_notification_paths = proof.NOTIFICATION_ACCEPTANCE_MODIFIED
+        try:
+            proof.NOTIFICATION_ACCEPTANCE_MODIFIED = (
+                original_notification_paths | {'README.md'})
+            refuses('Notification acceptance binding refuses an altered source path set',
+                    lambda: proof.validate_notification_acceptance_source(fixture))
+        finally:
+            proof.NOTIFICATION_ACCEPTANCE_MODIFIED = original_notification_paths
 
         def project_progress_source_tamper(path):
             target = fixture / path
