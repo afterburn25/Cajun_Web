@@ -402,7 +402,13 @@ def run(root=ROOT):
             .decode().strip() == proof.COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_TREE
             and proof.git(root, 'rev-parse',
                           proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE + '^{tree}')
-            .decode().strip() == proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE)
+            .decode().strip() == proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE_TREE)
     for attribute, label in (
         ('COMPONENT_FAST_PATH_BASE', 'base commit'),
         ('COMPONENT_FAST_PATH_BASE_TREE', 'base tree'),
@@ -428,6 +434,10 @@ def run(root=ROOT):
         ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_TREE', 'inventory-rejected proof tree'),
         ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE', 'inventory correction commit'),
         ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE', 'inventory correction tree'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF', 'review-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_TREE', 'review-rejected proof tree'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE', 'final-review correction commit'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE_TREE', 'final-review correction tree'),
     ):
         original = getattr(proof, attribute)
         try:
@@ -468,6 +478,8 @@ def run(root=ROOT):
         ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_PATHS',
          'inventory-rejected proof'),
         ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_PATHS', 'inventory correction'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_PATHS', 'review-rejected proof'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_PATHS', 'final-review correction'),
         ('COMPONENT_FAST_PATH_PROOF_PATHS', 'final proof'),
     ):
         original_paths = getattr(proof, paths_attribute)
@@ -492,6 +504,8 @@ def run(root=ROOT):
         ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_SHA256',
          'inventory-rejected proof'),
         ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SHA256', 'inventory correction'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_SHA256', 'review-rejected proof'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SHA256', 'final-review correction'),
     ):
         original_hashes = getattr(proof, hashes_attribute)
         target = next(iter(original_hashes))
@@ -532,12 +546,12 @@ def run(root=ROOT):
     direct_head = 'a' * 40
     direct_tree = 'b' * 40
     assert proof.validate_component_fast_path_checkout_history(
-        direct_head, [proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE], direct_tree,
-        direct_head, [proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE], direct_tree
+        direct_head, [proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE], direct_tree,
+        direct_head, [proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE], direct_tree
     ) == direct_head
     assert proof.validate_component_fast_path_checkout_history(
         'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head], direct_tree,
-        direct_head, [proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE], direct_tree
+        direct_head, [proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE], direct_tree
     ) == direct_head
     passed('Component fast path admits direct proof and exact tree-identical merge')
     refuses('Component fast-path proof refuses a non-direct parent',
@@ -549,11 +563,11 @@ def run(root=ROOT):
                 'c' * 40,
                 [proof.COMPONENT_FAST_PATH_BASE, direct_head, 'd' * 40],
                 direct_tree, direct_head,
-                [proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE], direct_tree))
+                [proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE], direct_tree))
     refuses('Component fast-path proof refuses a changed merge base',
             lambda: proof.validate_component_fast_path_checkout_history(
                 'c' * 40, ['d' * 40, direct_head], direct_tree,
-                direct_head, [proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE], direct_tree))
+                direct_head, [proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE], direct_tree))
     refuses('Component fast-path proof refuses a non-direct branch head',
             lambda: proof.validate_component_fast_path_checkout_history(
                 'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head],
@@ -563,7 +577,7 @@ def run(root=ROOT):
             lambda: proof.validate_component_fast_path_checkout_history(
                 'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head],
                 'd' * 40, direct_head,
-                [proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE], direct_tree))
+                [proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE], direct_tree))
     original_actual_ordinary = proof.actual_ordinary
 
     def altered_component_fast_path_handoff(root_value, path):
