@@ -340,8 +340,29 @@ def run(root=ROOT):
         refuses('Tracked-source preflight refuses ' + label,
                 lambda raw=raw: proof.parse_tracked_source_drift(raw))
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
-    proof.verify_current(root)
-    passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    original_component_match = proof.current_component_source_matches
+    original_union_index_check = proof.require_component_union_index_unchanged
+    union_events = []
+
+    def observed_component_match(*args, **kwargs):
+        union_events.append('component')
+        return original_component_match(*args, **kwargs)
+
+    def observed_union_index_check(*args, **kwargs):
+        union_events.append('index')
+        return original_union_index_check(*args, **kwargs)
+
+    proof.current_component_source_matches = observed_component_match
+    proof.require_component_union_index_unchanged = observed_union_index_check
+    try:
+        proof.verify_current(root)
+    finally:
+        proof.current_component_source_matches = original_component_match
+        proof.require_component_union_index_unchanged = original_union_index_check
+    assert (union_events.count('component') > 0
+            and union_events.count('index') == 1
+            and union_events[-1] == 'index')
+    passed('Actual current combined checkout traverses components before one final whole-index bracket')
     assert (proof.notification_acceptance_checkout_head(root)
             == proof.COMPONENT_FAST_PATH_BASE)
     passed('Authenticated component proof projects notification history to exact verified main')
