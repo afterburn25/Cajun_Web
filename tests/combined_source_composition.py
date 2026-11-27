@@ -2735,9 +2735,21 @@ def tracked_source_preflight(root, proof_files):
                 and stage == '0' and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
                 and git(root, 'cat-file', 'blob', oid) == proof_files[path],
                 'Staged proof entry differs from validated bytes or mode: ' + path)
-    # Refuse a ref move that raced the pinned-object diff.
+    index_entries = current_index_entries(root)
+    head_entries = entries(root, head)
+    require(set(index_entries) == set(head_entries),
+            'Git index path set changed during tracked-source preflight')
+    for path, index_entry in index_entries.items():
+        if index_entry == head_entries[path]:
+            continue
+        permission, oid = index_entry
+        require(path in allowed and permission == '100644'
+                and git(root, 'cat-file', 'blob', oid) == proof_files[path],
+                'Git index differs from pinned HEAD outside validated proof bytes: '
+                + path)
+    # Refuse a ref move that raced the pinned-object and index checks.
     pin_head(root)
-    return paths
+    return paths, index_entries
 
 
 def actual_ordinary(root, path):
@@ -12141,7 +12153,10 @@ def _verify_current(root):
     data, proof_files = current_proof_receipt(root)
     ensure_history(root)
     pin_head(root)
-    tracked_source_preflight(root, proof_files)
+    preflight_paths, preflight_index_entries = tracked_source_preflight(
+        root, proof_files)
+    require(set(preflight_paths) <= {RECEIPT, VERIFIER, REGRESSION},
+            'Tracked-source preflight returned an unvalidated path')
     require(all(mode(root, path) == '100644' and actual_ordinary(root, path) == value
                 for path, value in proof_files.items()),
             'Composition proof file changed during tracked-source preflight')
@@ -12508,7 +12523,8 @@ def _verify_current(root):
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
-    union_index_entries = current_index_entries(root)
+    require_component_union_index_unchanged(root, preflight_index_entries)
+    union_index_entries = preflight_index_entries
     for path, (permission, oid) in expected.items():
         value = ordinary(root, path)
         if (path not in ONBOARDING_MODIFIED and path not in REPAIRS
@@ -12597,6 +12613,7 @@ def _verify_current(root):
                 'Original adapter assertions are not the exact component bytes: ' + path)
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
+    require_component_union_index_unchanged(root, preflight_index_entries)
     pin_head(root)
     require(all(mode(root, path) == '100644' and ordinary(root, path) == value
                 for path, value in proof_files.items()),
@@ -12995,9 +13012,11 @@ def validate_component_fast_path_source(root):
     handoff = actual_ordinary(root, COMPONENT_FAST_PATH_HANDOFF)
     require(verifier.count(b'def current_component_source_matches(') == 2
             and verifier.count(b'def require_component_union_index_unchanged(') == 2
-            and verifier.count(b'union_index_entries = current_index_entries(root)') == 2
+            and verifier.count(b'union_index_entries = preflight_index_entries') == 2
             and verifier.count(
                 b'require_component_union_index_unchanged(root, union_index_entries)') == 2
+            and verifier.count(
+                b'require_component_union_index_unchanged(root, preflight_index_entries)') == 3
             and verifier.count(b'index_entry != (permission, oid)') == 2
             and verifier.count(
                 b'path not in ONBOARDING_MODIFIED and path not in REPAIRS') == 2
@@ -13007,7 +13026,9 @@ def validate_component_fast_path_source(root):
                 b'Component union refuses a same-mode staged-blob race') == 1
             and regression.count(b'Component union refuses a staged-mode race') == 1
             and regression.count(
-                b'Actual current combined checkout traverses components before one final whole-index bracket') == 1
+                b'Full verification refuses a staged mutation after authenticated preflight') == 1
+            and regression.count(
+                b'Actual current combined checkout brackets component traversal with the authenticated index') == 1
             and handoff == git(root, 'cat-file', 'blob',
                                COMPONENT_FAST_PATH_HANDOFF_SOURCE + ':'
                                + COMPONENT_FAST_PATH_HANDOFF)

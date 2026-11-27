@@ -360,9 +360,10 @@ def run(root=ROOT):
         proof.current_component_source_matches = original_component_match
         proof.require_component_union_index_unchanged = original_union_index_check
     assert (union_events.count('component') > 0
-            and union_events.count('index') == 1
-            and union_events[-1] == 'index')
-    passed('Actual current combined checkout traverses components before one final whole-index bracket')
+            and union_events.count('index') == 3
+            and union_events[0] == 'index'
+            and union_events[-2:] == ['index', 'index'])
+    passed('Actual current combined checkout brackets component traversal with the authenticated index')
     assert (proof.notification_acceptance_checkout_head(root)
             == proof.COMPONENT_FAST_PATH_BASE)
     passed('Authenticated component proof projects notification history to exact verified main')
@@ -1069,8 +1070,10 @@ def run(root=ROOT):
         fixture_proof_files = {
             path: proof.ordinary(fixture, path)
             for path in (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)}
-        assert set(proof.tracked_source_preflight(fixture, fixture_proof_files)) <= {
-            proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
+        preflight_paths, preflight_index = proof.tracked_source_preflight(
+            fixture, fixture_proof_files)
+        assert (set(preflight_paths) <= {proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
+                and preflight_index == proof.current_index_entries(fixture))
         passed('Tracked-source preflight permits only already-validated proof-file drift')
 
         original_actual_ordinary = proof.actual_ordinary
@@ -1549,6 +1552,26 @@ def run(root=ROOT):
             subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', early_path],
                            cwd=fixture, check=True)
             target.write_bytes(original)
+            target.chmod(permission)
+
+        original_preflight = proof.tracked_source_preflight
+
+        def stage_after_authenticated_preflight(root_value, proof_files):
+            result = original_preflight(root_value, proof_files)
+            if Path(root_value) == fixture:
+                target.write_bytes(original + b'\n# post-preflight staged mutation\n')
+                subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
+                target.write_bytes(original)
+            return result
+
+        proof.tracked_source_preflight = stage_after_authenticated_preflight
+        try:
+            refuses('Full verification refuses a staged mutation after authenticated preflight',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            proof.tracked_source_preflight = original_preflight
+            target.write_bytes(original)
+            subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
             target.chmod(permission)
 
         proof_target = fixture / proof.RECEIPT
