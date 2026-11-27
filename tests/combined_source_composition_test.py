@@ -345,8 +345,10 @@ def run(root=ROOT):
     union_events = []
 
     def observed_component_match(*args, **kwargs):
-        union_events.append('component')
-        return original_component_match(*args, **kwargs)
+        matched = original_component_match(*args, **kwargs)
+        if matched:
+            union_events.append('component')
+        return matched
 
     def observed_union_index_check(*args, **kwargs):
         union_events.append('index')
