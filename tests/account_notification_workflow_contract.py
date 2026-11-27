@@ -26,6 +26,7 @@ APT_PREPARATION_SCRIPT = '.github/scripts/prepare_ubuntu_apt.py'
 APT_PREPARATION_SHA256 = '561ea255e303e9c75cd7afd79fdeded77b672352b9443908bbf2a0dbf258a86b'
 LEGACY_SHA256 = '978f1d4d2f6e9ef26436d0b21b5c3136440544fe179c1a890370a144d621cde8'
 PROTECTED_SHA256 = 'c3a2cf408833a8dcf5ec661a8e5e89b8201bb49019885cb97ddfeb56dc0da185'
+WORKFLOW_SHA256 = '13044f327b3b5f3673ebe227b95db6befb5d151fdb5671012a8947db59d83cb2'
 SOURCE_TIMEOUT_SUCCESSOR = ('    # Attempt-1 run 44502124267 passed workflow, fixture, provider, navigation and\n'
                             '    # policy proofs, then reached the exact 180m ceiling before helper verification.\n'
                             '    # Keep every source-proof command and allow one bounded complete admission pass.\n'
@@ -700,6 +701,8 @@ def validate(workflow, legacy, protected, apt_script):
         require(passed, name)
         checks.append({'name': name, 'passed': True})
 
+    check('Current-source workflow and its execution context remain byte-identical',
+          digest(workflow) == WORKFLOW_SHA256)
     check('Legacy source builder and focused workflow remain byte-identical', digest(legacy) == LEGACY_SHA256)
     script_directory = ROOT / '.github' / 'scripts'
     script_entries = sorted(path.relative_to(ROOT).as_posix() for path in script_directory.iterdir()
@@ -910,6 +913,8 @@ def self_test(root=ROOT):
          '          cwp_ignored() {\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          }\n'),
         ('php-shadow notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
          '          php() { :; }\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK),
+        ('job-default-shell notification-health bypass', '    steps:\n',
+         "    defaults:\n      run:\n        shell: bash --noprofile --norc -c 'grep -q notification_health_view_contract.php \\\"$1\\\" || bash --noprofile --norc -eo pipefail \\\"$1\\\"' _ {0}\n    steps:\n"),
         ('lost receipt dependency', "'docs/*.json', ", ''),
         ('lost protected workflow dependency', ", '.github/workflows/application-tests.yml'", ''),
         ('unbounded push branches', 'branches: [main, chatgpt/account-notifications-acceptance-20261101]', "branches: ['**']"),
