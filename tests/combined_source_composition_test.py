@@ -468,6 +468,17 @@ def run(root=ROOT):
                     lambda: proof.validate_component_fast_path_source(root))
         finally:
             setattr(proof, hashes_attribute, original_hashes)
+    original_recovery_paths = proof.COMPONENT_FAST_PATH_RECOVERY_PATHS
+    try:
+        proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = frozenset()
+        refuses('Recovery successor refuses missing component fast-path handoff admission',
+                lambda: proof.validate_pr391_recovery_successor(root))
+        proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = (
+            original_recovery_paths | {'unexpected.txt'})
+        refuses('Recovery successor refuses expanded component fast-path handoff admission',
+                lambda: proof.validate_pr391_recovery_successor(root))
+    finally:
+        proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = original_recovery_paths
     direct_head = 'a' * 40
     direct_tree = 'b' * 40
     assert proof.validate_component_fast_path_checkout_history(

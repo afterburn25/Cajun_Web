@@ -220,6 +220,7 @@ COMPONENT_FAST_PATH_HANDOFF_SOURCE_SHA256 = {
     COMPONENT_FAST_PATH_HANDOFF:
         '7517521205088320af5f61909ddfaa61fe88ce14f6286571ffb830adba7631ba',
 }
+COMPONENT_FAST_PATH_RECOVERY_PATHS = frozenset((COMPONENT_FAST_PATH_HANDOFF,))
 COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF = '5e9f5a01b7b874f5a20d94445897a2866c095842'
 COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_TREE = 'cb6cd2354efa68e2533244373946d21959a90b76'
 COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
@@ -10352,7 +10353,8 @@ def validate_pr391_recovery_successor(root):
                 | set(mail_consolidated_changes(root))
                 | REL127_PATHS
                 | PROJECT_PROGRESS_PATHS
-                | PROJECT_PROGRESS_CORRECTION_PATHS),
+                | PROJECT_PROGRESS_CORRECTION_PATHS
+                | COMPONENT_FAST_PATH_RECOVERY_PATHS),
             'Current recovery successor contains an unbound path')
 
 
@@ -13077,6 +13079,7 @@ def validate_component_fast_path_source(root):
                 b'require_component_union_index_unchanged(root, union_index_entries)') == 2
             and verifier.count(
                 b'require_component_union_index_unchanged(root, preflight_index_entries)') == 3
+            and verifier.count(b'| COMPONENT_FAST_PATH_RECOVERY_PATHS') == 2
             and verifier.count(b'index_entry != (permission, oid)') == 2
             and verifier.count(
                 b'path not in ONBOARDING_MODIFIED and path not in REPAIRS') == 2
@@ -13087,6 +13090,10 @@ def validate_component_fast_path_source(root):
             and regression.count(b'Component union refuses a staged-mode race') == 1
             and regression.count(
                 b'Full verification refuses a staged mutation after authenticated preflight') == 1
+            and regression.count(
+                b'Recovery successor refuses missing component fast-path handoff admission') == 1
+            and regression.count(
+                b'Recovery successor refuses expanded component fast-path handoff admission') == 1
             and regression.count(
                 b'Actual current combined checkout brackets component traversal with the authenticated index') == 1
             and handoff == git(root, 'cat-file', 'blob',
