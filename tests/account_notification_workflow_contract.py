@@ -202,6 +202,7 @@ NOTIFICATION_HEALTH_VIEW_PROOF = (
     '          php -n tests/notification_health_view_contract.php > '
     'qa/account-notification-source/notification-health-view-minimal.log\n',
 )
+NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK = ''.join(NOTIFICATION_HEALTH_VIEW_PROOF)
 
 
 def digest(value):
@@ -849,6 +850,15 @@ def validate(workflow, legacy, protected, apt_script):
     for lane, command in zip(('normal', 'minimal'), NOTIFICATION_HEALTH_VIEW_PROOF):
         check('Current-source proof executes exact ' + lane + ' notification-health view contract command',
               source.count(command) == 1)
+    source_proof_step = source.split(
+        '      - name: Verify the exact integrated source and retained proof chains\n', 1)[1].split(
+            '      - name: Admit only the immutable checked-out commit\n', 1)[0]
+    check('Notification-health proofs are one adjacent executable block without shell control bypasses',
+          source_proof_step.count(NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK) == 1
+          and not re.search(
+              r'^\s*(?:if|elif|else|fi|case|esac|for|while|until|exit|return|break|continue)\b',
+              source_proof_step, re.M)
+          and '<<' not in source_proof_step)
     check('Canonical source is rebuilt and must remain unchanged before admission',
           '          python3 tools/build.py --refresh > qa/account-notification-source/build.log\n' in source
           and '          git diff --exit-code\n' in source
@@ -890,6 +900,12 @@ def self_test(root=ROOT):
         ('missing retained policy', '          php -n tests/account_security_policy.php > qa/account-notification-source/account-policy-minimal.json\n', ''),
         ('missing notification-health view proof', NOTIFICATION_HEALTH_VIEW_PROOF[0], ''),
         ('missing minimal notification-health view proof', NOTIFICATION_HEALTH_VIEW_PROOF[1], ''),
+        ('conditional notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          if false; then\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          fi\n'),
+        ('heredoc notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         "          cat <<'CWP_IGNORED'\n" + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK + '          CWP_IGNORED\n'),
+        ('early-exit notification-health bypass', NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK,
+         '          exit 0\n' + NOTIFICATION_HEALTH_VIEW_PROOF_BLOCK),
         ('lost receipt dependency', "'docs/*.json', ", ''),
         ('lost protected workflow dependency', ", '.github/workflows/application-tests.yml'", ''),
         ('unbounded push branches', 'branches: [main, chatgpt/account-notifications-acceptance-20261101]', "branches: ['**']"),
