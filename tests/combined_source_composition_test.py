@@ -576,6 +576,57 @@ def run(root=ROOT):
         'project_ux09',
     ]
     passed('Component union applies each terminal projection chain once in exact order')
+    with tempfile.TemporaryDirectory(prefix='cwp-component-fast-path-') as folder:
+        fixture = Path(folder)
+        target = fixture / 'exact.txt'
+        target.write_bytes(b'exact component bytes\n')
+        subprocess.run(['git', 'init', '--quiet'], cwd=fixture, check=True)
+        subprocess.run(['git', 'add', '--', 'exact.txt'], cwd=fixture, check=True)
+        current = proof.ordinary(fixture, 'exact.txt')
+        oid = hashlib.sha1(
+            b'blob ' + str(len(current)).encode('ascii') + b'\0' + current).hexdigest()
+        index_entries = proof.current_index_entries(fixture)
+        assert proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', oid, index_entries['exact.txt'])
+        assert not proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', '0' * 40,
+            index_entries['exact.txt'])
+        original_ordinary = proof.ordinary
+
+        def raced_component(root_value, path):
+            if Path(root_value) == fixture and path == 'exact.txt':
+                return b'raced component bytes\n'
+            return original_ordinary(root_value, path)
+
+        proof.ordinary = raced_component
+        try:
+            refuses('Exact component-blob fast path refuses a mutable-source race',
+                    lambda: proof.current_component_source_matches(
+                        fixture, 'exact.txt', current, '100644', oid,
+                        index_entries['exact.txt']))
+        finally:
+            proof.ordinary = original_ordinary
+        target.write_bytes(b'staged unrelated bytes\n')
+        subprocess.run(['git', 'add', '--', 'exact.txt'], cwd=fixture, check=True)
+        assert not proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', oid,
+            proof.current_index_entries(fixture)['exact.txt'])
+        refuses('Component union refuses a same-mode staged-blob race',
+                lambda: proof.require_component_union_index_unchanged(
+                    fixture, index_entries))
+        target.write_bytes(current)
+        subprocess.run(['git', 'add', '--', 'exact.txt'], cwd=fixture, check=True)
+        restored_index = proof.current_index_entries(fixture)
+        assert restored_index == index_entries
+        subprocess.run(['git', 'update-index', '--chmod=+x', '--', 'exact.txt'],
+                       cwd=fixture, check=True)
+        assert not proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', oid,
+            proof.current_index_entries(fixture)['exact.txt'])
+        refuses('Component union refuses a staged-mode race',
+                lambda: proof.require_component_union_index_unchanged(
+                    fixture, restored_index))
+    passed('Exact component-blob fast path brackets unchanged bytes and modes')
     mail_projection = next(node for node in verifier_ast.body
                            if isinstance(node, ast.FunctionDef)
                            and node.name == 'project_mail_reply_forward_source')

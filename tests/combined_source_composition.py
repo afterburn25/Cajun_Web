@@ -12043,6 +12043,29 @@ def project_component_union_source(root, ux09, path, current):
     return project_ux09(root, ux09, path, current)
 
 
+def current_component_source_matches(root, path, current, permission, oid, index_entry):
+    """Accept an unchanged component only across two exact fresh reads."""
+    require(isinstance(path, str) and isinstance(current, bytes)
+            and permission in {'100644', '100755'}
+            and re.fullmatch(r'[0-9a-f]{40}', oid) is not None,
+            'Malformed current component identity')
+    blob = hashlib.sha1(
+        b'blob ' + str(len(current)).encode('ascii') + b'\0' + current).hexdigest()
+    if (blob != oid or index_entry != (permission, oid)
+            or (os.name != 'nt' and filesystem_mode(root, path) != permission)):
+        return False
+    require(ordinary(root, path) == current
+            and (os.name == 'nt' or filesystem_mode(root, path) == permission),
+            'Current component source changed during exact-blob fast path: ' + path)
+    return True
+
+
+def require_component_union_index_unchanged(root, index_entries):
+    """Refuse any staged identity or mode race across the component union."""
+    require(current_index_entries(root) == index_entries,
+            'Git index changed during component-union verification')
+
+
 def current_proof_receipt(root):
     """Strictly load and bracket the three mutable proof files."""
     root = Path(root)
@@ -12435,8 +12458,15 @@ def _verify_current(root):
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
+    union_index_entries = current_index_entries(root)
     for path, (permission, oid) in expected.items():
-        value = project_component_union_source(root, ux09, path, ordinary(root, path))
+        value = ordinary(root, path)
+        if (path not in ONBOARDING_MODIFIED and path not in REPAIRS
+                and current_component_source_matches(
+                    root, path, value, permission, oid,
+                    union_index_entries.get(path))):
+            continue
+        value = project_component_union_source(root, ux09, path, value)
         if path in ONBOARDING_MODIFIED:
             row = onboarding['modified'][path]
             before = git(root, 'cat-file', 'blob', ONBOARDING_BASE + ':' + path)
@@ -12450,6 +12480,7 @@ def _verify_current(root):
                     'Integration repair no longer retains its exact failed-checkpoint source: ' + path)
         blob = hashlib.sha1(b'blob ' + str(len(value)).encode() + b'\0' + value).hexdigest()
         require(blob == oid and mode(root, path) == permission, 'Current component source or mode differs: ' + path)
+    require_component_union_index_unchanged(root, union_index_entries)
     for path in sorted(ONBOARDING_ADDITIONS):
         value = ordinary(root, path)
         require(onboarding['added'][path] == digest(value) and mode(root, path) == '100644'
