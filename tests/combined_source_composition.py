@@ -159,6 +159,8 @@ NOTIFICATION_ACCEPTANCE_SOURCE = '7c88f77670953edbc2da9fcd3efd01ba06af3434'
 NOTIFICATION_ACCEPTANCE_SOURCE_TREE = '2c28c95d4bdcb73ff5d4830803771807d4b73f03'
 NOTIFICATION_ACCEPTANCE_REJECTED_PROOF = '7ac1092b94deb81814d4e48717ad8de9f6893062'
 NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE = '76a58c7d9b13c839f2720e0c8a16edab14e596cf'
+NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF = '009ba06a975ece5187d749694cd7f63094f6fbe2'
+NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF_TREE = 'f71168430a923dec822b7678c883e9e5745fa770'
 NOTIFICATION_ACCEPTANCE_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
     'tests/account_notification_workflow_contract.py',
@@ -2279,7 +2281,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '2a65686ebcbde313f324261ee6e7ce6ca9d73be5b428964e48dc3b1d77927fe7'
+REGRESSION_SHA256 = '30ae88435274cc771827dd05a15fbdda7a4a5c173c4e5349b94b416d0bda0448'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12758,18 +12760,35 @@ def validate_release_127_source(root):
     return worktree_oids
 
 
-def validate_notification_acceptance_proof_parent(head, parents):
-    """Require the one exact correction step after the preserved rejected proof."""
-    require(re.fullmatch(r'[0-9a-f]{40}', head) is not None
-            and isinstance(parents, list)
-            and all(re.fullmatch(r'[0-9a-f]{40}', parent) is not None
-                    for parent in parents),
-            'Malformed notification acceptance proof history')
-    expected = (NOTIFICATION_ACCEPTANCE_SOURCE
-                if head == NOTIFICATION_ACCEPTANCE_REJECTED_PROOF
-                else NOTIFICATION_ACCEPTANCE_REJECTED_PROOF)
-    require(parents == [expected],
-            'Notification acceptance proof is not the exact direct successor')
+def validate_notification_acceptance_checkout_history(
+        checkout_head, checkout_parents, checkout_tree,
+        proof_head, proof_parents, proof_tree):
+    """Admit only a direct proof head or its exact tree-identical PR merge."""
+    values = (checkout_head, checkout_tree, proof_head, proof_tree)
+    require(all(re.fullmatch(r'[0-9a-f]{40}', value) is not None for value in values)
+            and all(isinstance(parents, list)
+                    and all(re.fullmatch(r'[0-9a-f]{40}', parent) is not None
+                            for parent in parents)
+                    for parents in (checkout_parents, proof_parents)),
+            'Malformed notification acceptance checkout history')
+    if checkout_head == NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF:
+        require(checkout_parents == [NOTIFICATION_ACCEPTANCE_REJECTED_PROOF]
+                and proof_head == checkout_head
+                and proof_parents == checkout_parents
+                and proof_tree == checkout_tree,
+                'Hosted-rejected notification proof history changed')
+    elif len(checkout_parents) == 1:
+        require(checkout_parents == [NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF]
+                and proof_head == checkout_head
+                and proof_parents == checkout_parents
+                and proof_tree == checkout_tree,
+                'Notification acceptance proof is not the exact direct correction')
+    else:
+        require(checkout_parents == [NOTIFICATION_ACCEPTANCE_BASE, proof_head]
+                and proof_parents == [NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF]
+                and checkout_tree == proof_tree,
+                'Notification acceptance PR merge is not exact and tree-identical')
+    return proof_head
 
 
 def validate_notification_acceptance_source(root):
@@ -12783,6 +12802,8 @@ def validate_notification_acceptance_source(root):
         (NOTIFICATION_ACCEPTANCE_SOURCE, NOTIFICATION_ACCEPTANCE_SOURCE_TREE),
         (NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
          NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE),
+        (NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF,
+         NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF_TREE),
     )
     require(all(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree
                 for commit, tree in identities),
@@ -12798,7 +12819,13 @@ def validate_notification_acceptance_source(root):
                     NOTIFICATION_ACCEPTANCE_STEP_BINDING).decode().strip().split()
             == [NOTIFICATION_ACCEPTANCE_BYPASS_FIX]
             and git(root, 'show', '-s', '--format=%P', NOTIFICATION_ACCEPTANCE_SOURCE)
-            .decode().strip().split() == [NOTIFICATION_ACCEPTANCE_STEP_BINDING],
+            .decode().strip().split() == [NOTIFICATION_ACCEPTANCE_STEP_BINDING]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_ACCEPTANCE_REJECTED_PROOF).decode().strip().split()
+            == [NOTIFICATION_ACCEPTANCE_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF)
+            .decode().strip().split() == [NOTIFICATION_ACCEPTANCE_REJECTED_PROOF],
             'Notification acceptance reviewed parent chain changed')
     git(root, 'merge-base', '--is-ancestor', NOTIFICATION_ACCEPTANCE_SOURCE, 'HEAD')
     changes = git(root, 'diff', '--name-status', '--no-renames',
@@ -12807,9 +12834,17 @@ def validate_notification_acceptance_source(root):
     require(sorted(changes)
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_MODIFIED)],
             'Notification acceptance source changed another path or status')
-    head = git(root, 'rev-parse', 'HEAD').decode().strip()
-    parents = git(root, 'show', '-s', '--format=%P', head).decode().strip().split()
-    validate_notification_acceptance_proof_parent(head, parents)
+    checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    checkout_parents = git(root, 'show', '-s', '--format=%P',
+                           checkout_head).decode().strip().split()
+    checkout_tree = git(root, 'rev-parse', checkout_head + '^{tree}').decode().strip()
+    proof_head = (checkout_parents[1] if len(checkout_parents) == 2 else checkout_head)
+    proof_parents = git(root, 'show', '-s', '--format=%P',
+                        proof_head).decode().strip().split()
+    proof_tree = git(root, 'rev-parse', proof_head + '^{tree}').decode().strip()
+    proof_head = validate_notification_acceptance_checkout_history(
+        checkout_head, checkout_parents, checkout_tree,
+        proof_head, proof_parents, proof_tree)
     rejected_changes = git(
         root, 'diff', '--name-status', '--no-renames',
         NOTIFICATION_ACCEPTANCE_SOURCE,
@@ -12817,22 +12852,29 @@ def validate_notification_acceptance_source(root):
     require(sorted(rejected_changes)
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
             'Rejected notification acceptance proof changed application source')
-    if head == NOTIFICATION_ACCEPTANCE_REJECTED_PROOF:
+    hosted_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
+        NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF).decode().splitlines()
+    require(sorted(hosted_rejected_changes)
+            == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
+            'Hosted-rejected notification acceptance proof changed application source')
+    if proof_head == NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF:
         correction_changes = git(
             root, 'diff', '--name-status', '--no-renames',
-            NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
+            NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF,
             '--').decode().splitlines()
     else:
         correction_changes = git(
             root, 'diff', '--name-status', '--no-renames',
-            NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
-            head).decode().splitlines()
+            NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF,
+            proof_head).decode().splitlines()
     require(sorted(correction_changes)
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
             'Notification acceptance proof correction changed application source')
     proof_changes = git(root, 'diff', '--name-status', '--no-renames',
                         NOTIFICATION_ACCEPTANCE_SOURCE,
-                        head).decode().splitlines()
+                        proof_head).decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
             'Corrected notification acceptance proof changed application source')
@@ -13280,6 +13322,8 @@ def verify_current(root):
         {'name': 'Notification-health acceptance proof changes only the exact three proof files',
          'passed': True},
         {'name': 'Notification-health proof correction is one direct child of its preserved rejected proof',
+         'passed': True},
+        {'name': 'Tree-identical GitHub PR merge admits only exact base and direct corrected proof head',
          'passed': True},
         {'name': 'Exact terminal cloud-init predecessor binds two verification paths',
          'passed': True},

@@ -364,6 +364,10 @@ def run(root=ROOT):
         ('NOTIFICATION_ACCEPTANCE_SOURCE_TREE', 'source tree'),
         ('NOTIFICATION_ACCEPTANCE_REJECTED_PROOF', 'rejected proof commit'),
         ('NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE', 'rejected proof tree'),
+        ('NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF',
+         'hosted-rejected proof commit'),
+        ('NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF_TREE',
+         'hosted-rejected proof tree'),
     ):
         original = getattr(proof, attribute)
         try:
@@ -372,13 +376,45 @@ def run(root=ROOT):
                     lambda: proof.validate_notification_acceptance_source(root))
         finally:
             setattr(proof, attribute, original)
+    direct_head = 'f' * 40
+    direct_tree = 'd' * 40
+    assert proof.validate_notification_acceptance_checkout_history(
+        direct_head, [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF],
+        direct_tree, direct_head,
+        [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree
+    ) == direct_head
+    assert proof.validate_notification_acceptance_checkout_history(
+        'c' * 40, [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head],
+        direct_tree, direct_head,
+        [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree
+    ) == direct_head
+    passed('Notification acceptance admits direct correction and exact tree-identical PR merge')
     refuses('Notification acceptance proof refuses a non-direct parent',
-            lambda: proof.validate_notification_acceptance_proof_parent(
-                'f' * 40, [proof.NOTIFICATION_ACCEPTANCE_SOURCE]))
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                direct_head, [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF],
+                direct_tree, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF], direct_tree))
     refuses('Notification acceptance proof refuses an extra merge parent',
-            lambda: proof.validate_notification_acceptance_proof_parent(
-                'f' * 40,
-                [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF, 'e' * 40]))
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40,
+                [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head, 'e' * 40],
+                direct_tree, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree))
+    refuses('Notification acceptance proof refuses a changed PR base parent',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40, ['e' * 40, direct_head], direct_tree,
+                direct_head, [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF],
+                direct_tree))
+    refuses('Notification acceptance proof refuses a non-direct PR branch head',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40, [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head],
+                direct_tree, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF], direct_tree))
+    refuses('Notification acceptance proof refuses a changed PR merge tree',
+            lambda: proof.validate_notification_acceptance_checkout_history(
+                'c' * 40, [proof.NOTIFICATION_ACCEPTANCE_BASE, direct_head],
+                'b' * 40, direct_head,
+                [proof.NOTIFICATION_ACCEPTANCE_HOSTED_REJECTED_PROOF], direct_tree))
     assert (proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_BASE + '^{tree}')
             .decode().strip() == proof.CLOUD_INIT_TERMINAL_BASE_TREE
             and proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_SOURCE + '^{tree}')
