@@ -157,6 +157,8 @@ NOTIFICATION_ACCEPTANCE_STEP_BINDING = '5ddb47ff727a0d176c4ce2932360c6d2075d584a
 NOTIFICATION_ACCEPTANCE_STEP_BINDING_TREE = '870fcaa22e99ccee5ca06fd81244dd3ea35a4a03'
 NOTIFICATION_ACCEPTANCE_SOURCE = '7c88f77670953edbc2da9fcd3efd01ba06af3434'
 NOTIFICATION_ACCEPTANCE_SOURCE_TREE = '2c28c95d4bdcb73ff5d4830803771807d4b73f03'
+NOTIFICATION_ACCEPTANCE_REJECTED_PROOF = '7ac1092b94deb81814d4e48717ad8de9f6893062'
+NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE = '76a58c7d9b13c839f2720e0c8a16edab14e596cf'
 NOTIFICATION_ACCEPTANCE_MODIFIED = frozenset((
     '.github/workflows/account-notifications-acceptance.yml',
     'tests/account_notification_workflow_contract.py',
@@ -2277,7 +2279,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'c118f1040f18660bcd2910e359721caab1446c63cc774fa1683e2d5fc1018940'
+REGRESSION_SHA256 = '2a65686ebcbde313f324261ee6e7ce6ca9d73be5b428964e48dc3b1d77927fe7'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -12756,6 +12758,20 @@ def validate_release_127_source(root):
     return worktree_oids
 
 
+def validate_notification_acceptance_proof_parent(head, parents):
+    """Require the one exact correction step after the preserved rejected proof."""
+    require(re.fullmatch(r'[0-9a-f]{40}', head) is not None
+            and isinstance(parents, list)
+            and all(re.fullmatch(r'[0-9a-f]{40}', parent) is not None
+                    for parent in parents),
+            'Malformed notification acceptance proof history')
+    expected = (NOTIFICATION_ACCEPTANCE_SOURCE
+                if head == NOTIFICATION_ACCEPTANCE_REJECTED_PROOF
+                else NOTIFICATION_ACCEPTANCE_REJECTED_PROOF)
+    require(parents == [expected],
+            'Notification acceptance proof is not the exact direct successor')
+
+
 def validate_notification_acceptance_source(root):
     """Bind the reviewed notification-health acceptance successor and proof-only head."""
     identities = (
@@ -12765,6 +12781,8 @@ def validate_notification_acceptance_source(root):
         (NOTIFICATION_ACCEPTANCE_STEP_BINDING,
          NOTIFICATION_ACCEPTANCE_STEP_BINDING_TREE),
         (NOTIFICATION_ACCEPTANCE_SOURCE, NOTIFICATION_ACCEPTANCE_SOURCE_TREE),
+        (NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
+         NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE),
     )
     require(all(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree
                 for commit, tree in identities),
@@ -12790,17 +12808,34 @@ def validate_notification_acceptance_source(root):
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_MODIFIED)],
             'Notification acceptance source changed another path or status')
     head = git(root, 'rev-parse', 'HEAD').decode().strip()
-    if head == NOTIFICATION_ACCEPTANCE_SOURCE:
-        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            NOTIFICATION_ACCEPTANCE_SOURCE,
-                            '--').decode().splitlines()
+    parents = git(root, 'show', '-s', '--format=%P', head).decode().strip().split()
+    validate_notification_acceptance_proof_parent(head, parents)
+    rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        NOTIFICATION_ACCEPTANCE_SOURCE,
+        NOTIFICATION_ACCEPTANCE_REJECTED_PROOF).decode().splitlines()
+    require(sorted(rejected_changes)
+            == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
+            'Rejected notification acceptance proof changed application source')
+    if head == NOTIFICATION_ACCEPTANCE_REJECTED_PROOF:
+        correction_changes = git(
+            root, 'diff', '--name-status', '--no-renames',
+            NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
+            '--').decode().splitlines()
     else:
-        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            NOTIFICATION_ACCEPTANCE_SOURCE,
-                            head).decode().splitlines()
+        correction_changes = git(
+            root, 'diff', '--name-status', '--no-renames',
+            NOTIFICATION_ACCEPTANCE_REJECTED_PROOF,
+            head).decode().splitlines()
+    require(sorted(correction_changes)
+            == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
+            'Notification acceptance proof correction changed application source')
+    proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                        NOTIFICATION_ACCEPTANCE_SOURCE,
+                        head).decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_PROOF_PATHS)],
-            'Notification acceptance proof changed application source')
+            'Corrected notification acceptance proof changed application source')
     base_entries = entries(root, NOTIFICATION_ACCEPTANCE_BASE)
     source_entries = entries(root, NOTIFICATION_ACCEPTANCE_SOURCE)
     live_index_entries = current_index_entries(root)
@@ -13145,6 +13180,7 @@ def notification_acceptance_projection(root):
         _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS = validate_notification_acceptance_source(root)
         _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH = 1
         yield
+        pin_head(root)
         require(validate_notification_acceptance_source(root)
                 == _NOTIFICATION_ACCEPTANCE_WORKTREE_OIDS,
                 'Current notification acceptance source changed during projection')
@@ -13242,6 +13278,8 @@ def verify_current(root):
         {'name': 'Exact notification-health acceptance successor projects two reviewed files',
          'passed': True},
         {'name': 'Notification-health acceptance proof changes only the exact three proof files',
+         'passed': True},
+        {'name': 'Notification-health proof correction is one direct child of its preserved rejected proof',
          'passed': True},
         {'name': 'Exact terminal cloud-init predecessor binds two verification paths',
          'passed': True},

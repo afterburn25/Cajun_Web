@@ -362,6 +362,8 @@ def run(root=ROOT):
         ('NOTIFICATION_ACCEPTANCE_STEP_BINDING_TREE', 'step-binding tree'),
         ('NOTIFICATION_ACCEPTANCE_SOURCE', 'source commit'),
         ('NOTIFICATION_ACCEPTANCE_SOURCE_TREE', 'source tree'),
+        ('NOTIFICATION_ACCEPTANCE_REJECTED_PROOF', 'rejected proof commit'),
+        ('NOTIFICATION_ACCEPTANCE_REJECTED_PROOF_TREE', 'rejected proof tree'),
     ):
         original = getattr(proof, attribute)
         try:
@@ -370,6 +372,13 @@ def run(root=ROOT):
                     lambda: proof.validate_notification_acceptance_source(root))
         finally:
             setattr(proof, attribute, original)
+    refuses('Notification acceptance proof refuses a non-direct parent',
+            lambda: proof.validate_notification_acceptance_proof_parent(
+                'f' * 40, [proof.NOTIFICATION_ACCEPTANCE_SOURCE]))
+    refuses('Notification acceptance proof refuses an extra merge parent',
+            lambda: proof.validate_notification_acceptance_proof_parent(
+                'f' * 40,
+                [proof.NOTIFICATION_ACCEPTANCE_REJECTED_PROOF, 'e' * 40]))
     assert (proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_BASE + '^{tree}')
             .decode().strip() == proof.CLOUD_INIT_TERMINAL_BASE_TREE
             and proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_SOURCE + '^{tree}')
