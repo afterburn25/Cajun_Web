@@ -221,6 +221,7 @@ COMPONENT_FAST_PATH_HANDOFF_SOURCE_SHA256 = {
         '7517521205088320af5f61909ddfaa61fe88ce14f6286571ffb830adba7631ba',
 }
 COMPONENT_FAST_PATH_RECOVERY_PATHS = frozenset((COMPONENT_FAST_PATH_HANDOFF,))
+COMPONENT_FAST_PATH_ADDITIONS = frozenset((COMPONENT_FAST_PATH_HANDOFF,))
 COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF = '5e9f5a01b7b874f5a20d94445897a2866c095842'
 COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_TREE = 'cb6cd2354efa68e2533244373946d21959a90b76'
 COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
@@ -12159,6 +12160,26 @@ def require_component_union_index_unchanged(root, index_entries):
             'Git index changed during component-union verification')
 
 
+def component_union_allowed_paths(root, expected):
+    """Return the exhaustive current path inventory admitted by the union."""
+    require(isinstance(expected, dict)
+            and all(isinstance(path, str) for path in expected),
+            'Malformed component-union expected path inventory')
+    return (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS
+            | DIAGNOSTIC_ADDITIONS | ONBOARDING_ADDITIONS
+            | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
+            | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS
+            | UX08_PAYMENT_ADDITIONS | RUNNER_MIRROR_PHASE_ADDITIONS
+            | NOTIFICATION_HEALTH_ADDITIONS | MAIL_REPLY_FORWARD_ADDITIONS
+            | MAIL_SENT_COPY_ADDITIONS | MAIL_SENT_COPY_ORIGIN_FIX_PATHS
+            | MAIL_ATTACHMENT_PORTABLE_ADDITIONS | MAIL_ATTACHMENT_ADDITIONS
+            | PROJECT_PRIVATE_NOTES_ADDITIONS | COMPONENT_FAST_PATH_ADDITIONS
+            | {path for path, status in mail_consolidated_changes(root).items()
+               if status == 'A'}
+            | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
+               UX09_SOURCE_RECEIPT})
+
+
 def current_proof_receipt(root):
     """Strictly load and bracket the three mutable proof files."""
     root = Path(root)
@@ -12539,19 +12560,7 @@ def _verify_current(root):
         require(digest(value) == row['sha256'] == DATABASE_WORKFLOW_ADDITION_SHA256[path]
                 and row['mode'] == database_source_entries[path][0] == '100644',
                 'Database workflow addition bytes or mode changed: ' + path)
-    allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
-               | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
-               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
-               | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
-               | MAIL_REPLY_FORWARD_ADDITIONS
-               | MAIL_SENT_COPY_ADDITIONS
-               | MAIL_SENT_COPY_ORIGIN_FIX_PATHS
-               | MAIL_ATTACHMENT_PORTABLE_ADDITIONS
-               | MAIL_ATTACHMENT_ADDITIONS
-               | PROJECT_PRIVATE_NOTES_ADDITIONS
-               | {path for path,status in mail_consolidated_changes(root).items() if status == 'A'}
-               | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
-                  UX09_SOURCE_RECEIPT})
+    allowed = component_union_allowed_paths(root, expected)
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
@@ -13141,6 +13150,8 @@ def validate_component_fast_path_source(root):
             and verifier.count(
                 b'require_component_union_index_unchanged(root, preflight_index_entries)') == 3
             and verifier.count(b'| COMPONENT_FAST_PATH_RECOVERY_PATHS') == 2
+            and verifier.count(b'def component_union_allowed_paths(') == 2
+            and verifier.count(b'| COMPONENT_FAST_PATH_ADDITIONS') == 2
             and verifier.count(b'index_entry != (permission, oid)') == 2
             and verifier.count(
                 b'path not in ONBOARDING_MODIFIED and path not in REPAIRS') == 2
@@ -13155,6 +13166,10 @@ def validate_component_fast_path_source(root):
                 b'Recovery successor refuses missing component fast-path handoff admission') == 1
             and regression.count(
                 b'Recovery successor refuses expanded component fast-path handoff admission') == 1
+            and regression.count(
+                b'Composition path inventory refuses missing fast-path handoff admission') == 1
+            and regression.count(
+                b'Composition path inventory refuses expanded fast-path handoff admission') == 1
             and regression.count(
                 b'Actual current combined checkout brackets component traversal with the authenticated index') == 1
             and handoff == git(root, 'cat-file', 'blob',

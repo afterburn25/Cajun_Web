@@ -495,6 +495,22 @@ def run(root=ROOT):
                 lambda: proof.validate_pr391_recovery_successor(root))
     finally:
         proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = original_recovery_paths
+    original_additions = proof.COMPONENT_FAST_PATH_ADDITIONS
+    allowed_paths = proof.component_union_allowed_paths(root, {})
+    assert proof.COMPONENT_FAST_PATH_HANDOFF in allowed_paths
+    try:
+        proof.COMPONENT_FAST_PATH_ADDITIONS = frozenset()
+        refuses('Composition path inventory refuses missing fast-path handoff admission',
+                lambda: proof.require(
+                    proof.component_union_allowed_paths(root, {}) == allowed_paths,
+                    'Component fast-path handoff admission is missing'))
+        proof.COMPONENT_FAST_PATH_ADDITIONS = original_additions | {'unexpected.txt'}
+        refuses('Composition path inventory refuses expanded fast-path handoff admission',
+                lambda: proof.require(
+                    proof.component_union_allowed_paths(root, {}) == allowed_paths,
+                    'Component fast-path handoff admission expanded'))
+    finally:
+        proof.COMPONENT_FAST_PATH_ADDITIONS = original_additions
     direct_head = 'a' * 40
     direct_tree = 'b' * 40
     assert proof.validate_component_fast_path_checkout_history(
