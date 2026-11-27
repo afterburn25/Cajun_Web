@@ -5,10 +5,14 @@ The workflow invokes one bounded phase at a time so GitHub workflow scalar limit
 do not duplicate or truncate the reviewed source. No phase performs live product
 operations.
 """
+import json
 import sys
 
 APT_RELEASE_IDENTITY_FIELDS = ('origin', 'label', 'suite', 'codename', 'components')
 PHP_PPA_RELEASE_LABELS = ('PPA for PHP', 'PPA for PHP (deprecated)')
+AZURE_IMDS_TRANSIENT_WARNING = (
+    "Polling IMDS failed attempt 1 with exception: UrlError('404 Client Error: Not Found for url: "
+    "http://169.254.169.254/metadata/reprovisiondata?api-version=2019-06-01')")
 
 
 def release_identity_allowed(records, php_version):
@@ -34,6 +38,67 @@ def release_identity_allowed(records, php_version):
     order = lambda row: tuple(row[name] for name in APT_RELEASE_IDENTITY_FIELDS)
     actual = sorted(records, key=order)
     return any(actual == sorted(expected, key=order) for expected in choices)
+
+
+def strict_cloud_init_status(value):
+    """Parse cloud-init JSON without duplicate names or non-finite constants."""
+    if not isinstance(value, str):
+        raise TypeError('cloud-init status must be text')
+
+    def unique_object(pairs):
+        result = {}
+        for name, item in pairs:
+            if name in result:
+                raise ValueError('duplicate cloud-init status name')
+            result[name] = item
+        return result
+
+    def refuse_constant(value):
+        raise ValueError('non-finite cloud-init status constant: ' + value)
+
+    return json.loads(value, object_pairs_hook=unique_object,
+                      parse_constant=refuse_constant)
+
+
+def cloud_init_state_allowed(returncode, state):
+    """Return the bounded severity summary for an admitted terminal state."""
+    required = {'status', 'extended_status', 'errors', 'recoverable_errors'}
+    if not isinstance(state, dict) or not required <= state.keys():
+        return None
+    status = state['status']
+    extended = state['extended_status']
+    errors = state['errors']
+    recoverable = state['recoverable_errors']
+    if (not isinstance(status, str) or not isinstance(extended, str)
+            or state.get('stage') is not None or not isinstance(errors, list)
+            or any(not isinstance(item, str) or not item or len(item) > 2048
+                   for item in errors)
+            or not isinstance(recoverable, dict)):
+        return None
+    severity_counts = {}
+    message_bytes = 0
+    for severity, messages in recoverable.items():
+        if (severity != 'WARNING' or not isinstance(messages, list)
+                or not messages or len(messages) > 64
+                or any(not isinstance(message, str) or not message or len(message) > 2048
+                       for message in messages)):
+            return None
+        severity_counts[severity] = len(messages)
+        message_bytes += sum(len(message.encode('utf-8', errors='replace'))
+                             for message in messages)
+    if message_bytes > 32768:
+        return None
+    ordinary = (returncode == 0 and not errors and not recoverable
+                and (((status, extended) == ('done', 'done') and 'stage' in state)
+                     or (status, extended) == ('disabled', 'disabled')))
+    degraded = (returncode == 2 and not errors
+                and 'stage' in state
+                and recoverable == {'WARNING': [AZURE_IMDS_TRANSIENT_WARNING]}
+                and (status, extended) == ('done', 'degraded done')
+                and state.get('boot_status_code') == 'enabled-by-generator'
+                and state.get('datasource') == 'azure'
+                and state.get('detail') == 'DataSourceAzure [seed=/dev/sr0]')
+    return severity_counts if ordinary or degraded else None
 
 def prepare_ubuntu():
     from pathlib import Path
@@ -208,10 +273,52 @@ def prepare_ubuntu():
         finally:
             os.close(directory_fd)
 
-    cloud_init = subprocess.run(
-        ['cloud-init', 'status', '--wait', '--long'], text=True, capture_output=True, timeout=120)
-    if cloud_init.returncode != 0 or not re.search(r'^status: (?:done|disabled)$', cloud_init.stdout, re.M):
-        fail('cloud-init did not reach a successful terminal state')
+    def checked_cloud_init(wait, phase):
+        """Accept only structured terminal cloud-init states.
+
+        cloud-init 23.4 and newer returns 2 after completing with recoverable
+        errors.  GitHub images can expose that documented state even though the
+        APT source, keyring and signed release checks below remain independent.
+        Admit only the reviewed Azure IMDS first-attempt 404 after verified
+        terminal recovery; every other warning, critical, unrecoverable,
+        malformed, oversized or non-terminal state fails closed.
+        """
+        command = ['cloud-init', 'status']
+        if wait:
+            command.append('--wait')
+        command.append('--format=json')
+        completed = subprocess.run(
+            command, text=True, capture_output=True, timeout=120 if wait else 15)
+        stdout = completed.stdout.encode('utf-8', errors='replace')
+        stderr = completed.stderr.encode('utf-8', errors='replace')
+        summary = {
+            'phase': phase,
+            'returncode': completed.returncode,
+            'stdout_bytes': len(stdout),
+            'stdout_sha256': hashlib.sha256(stdout).hexdigest(),
+            'stderr_bytes': len(stderr),
+            'stderr_sha256': hashlib.sha256(stderr).hexdigest(),
+        }
+        diagnostic.setdefault('cloud_init_checks', []).append(summary)
+        if len(stdout) > 65536 or len(stderr) > 16384:
+            fail('cloud-init returned oversized diagnostics')
+        try:
+            state = strict_cloud_init_status(completed.stdout)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            fail('cloud-init returned malformed structured status')
+        severity_counts = cloud_init_state_allowed(completed.returncode, state)
+        if severity_counts is None:
+            fail('cloud-init did not reach an admitted terminal state')
+        status = state['status']
+        extended = state['extended_status']
+        summary.update({
+            'status': status,
+            'extended_status': extended,
+            'recoverable_severity_counts': severity_counts,
+        })
+        return (completed.returncode, status, extended, severity_counts)
+
+    cloud_init_state = checked_cloud_init(True, 'before-source-normalization')
 
     platform = dict(line.split('=', 1) for line in Path('/usr/lib/os-release').read_text().splitlines()
                     if line and not line.startswith('#') and '=' in line)
@@ -497,9 +604,8 @@ def prepare_ubuntu():
         b'Dir::State::lists "/var/lib/apt/cwp-lists";\n'
     )
     write_new(pending_config, isolation_config, 'pending APT isolation config')
-    cloud_init_after = subprocess.run(
-        ['cloud-init', 'status', '--long'], text=True, capture_output=True, timeout=15)
-    if cloud_init_after.returncode != 0 or not re.search(r'^status: (?:done|disabled)$', cloud_init_after.stdout, re.M):
+    cloud_init_after = checked_cloud_init(False, 'after-source-normalization')
+    if cloud_init_after != cloud_init_state:
         fail('cloud-init state changed after APT source replacement')
     receipt = {
         **diagnostic,
@@ -517,7 +623,7 @@ def prepare_ubuntu():
         'isolated_source_sha256': hashlib.sha256(canonical).hexdigest(),
         'isolated_lists': '/var/lib/apt/cwp-lists',
         'pending_isolation_config_sha256': hashlib.sha256(isolation_config).hexdigest(),
-        'cloud_init': 'done-or-disabled',
+        'cloud_init': diagnostic['cloud_init_checks'],
         'scope': 'Bounded source normalization only; package assertions and acceptance remain separate.',
     }
     evidence = Path.cwd() / 'qa' / 'ubuntu-apt-source.json'

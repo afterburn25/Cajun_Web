@@ -1,0 +1,80 @@
+name: Project progress foundation checks
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/project-progress.yml'
+      - 'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md'
+      - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
+      - 'foundation/projects/ProjectProgressEvent.php'
+      - 'foundation/projects/ProjectSnapshot.php'
+      - 'site/includes/foundation/projects/ProjectProgressEvent.php'
+      - 'site/includes/foundation/projects/ProjectSnapshot.php'
+      - 'site/install/inventory.generated.php'
+      - 'tests/combined_source_composition.py'
+      - 'tests/combined_source_composition_test.py'
+      - 'tests/project-progress/**'
+  push:
+    branches: [main, 'codex/project-progress-*']
+    paths:
+      - '.github/workflows/project-progress.yml'
+      - 'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md'
+      - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
+      - 'foundation/projects/ProjectProgressEvent.php'
+      - 'foundation/projects/ProjectSnapshot.php'
+      - 'site/includes/foundation/projects/ProjectProgressEvent.php'
+      - 'site/includes/foundation/projects/ProjectSnapshot.php'
+      - 'site/install/inventory.generated.php'
+      - 'tests/combined_source_composition.py'
+      - 'tests/combined_source_composition_test.py'
+      - 'tests/project-progress/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: project-progress-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  records:
+    name: Project progress records PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            image: 'php:8.2-cli@sha256:842748bc4526d4c3c56501fd314e2d75d1005e8a45b7a40f9768ee820df0a6d6'
+          - php: '8.4'
+            image: 'php:8.4-cli@sha256:6b13a8678b38ca38e4e3950be57b664ed8c8706131a0586111f68792aede4c58'
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify canonical and deployed records offline
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "${{ matrix.image }}" sh -ec '
+            for source in foundation/projects/ProjectProgressEvent.php foundation/projects/ProjectSnapshot.php site/includes/foundation/projects/ProjectProgressEvent.php site/includes/foundation/projects/ProjectSnapshot.php tests/project-progress/records.php; do php -l "$source"; done
+            cmp foundation/projects/ProjectProgressEvent.php site/includes/foundation/projects/ProjectProgressEvent.php
+            cmp foundation/projects/ProjectSnapshot.php site/includes/foundation/projects/ProjectSnapshot.php
+            php tests/project-progress/records.php > qa/project-progress-canonical-default.json
+            php -n tests/project-progress/records.php > qa/project-progress-canonical-no-ini.json
+            php tests/project-progress/records.php --deployment > qa/project-progress-deployed-default.json
+            php -n tests/project-progress/records.php --deployment > qa/project-progress-deployed-no-ini.json
+          '
+      - name: Preserve named evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: project-progress-${{ matrix.php }}-${{ github.sha }}
+          path: qa/project-progress-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record bounded scope
+        if: always()
+        run: echo 'Pure immutable project-progress records and byte-identical deployed mirrors only. No current authority, database, routing, UI, activity, payment, provider or live-operation acceptance.' >> "$GITHUB_STEP_SUMMARY"

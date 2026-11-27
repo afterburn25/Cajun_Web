@@ -2887,6 +2887,8 @@ function setup_expected_files(): array { return [
     'includes/foundation/portfolio/PortfolioMedia.php'=>'457a84bf4c5639ec9d5adaae316c1c50185f9e9248707f9e2fa1e3b89bb17f6d',
     'includes/foundation/portfolio/PortfolioQuery.php'=>'f14aa212d3b614e0f88ebc89357cc6246f0887efefa11aaf21801591dce63f11',
     'includes/foundation/projects/ProjectPrivateNote.php'=>'9591f3d944a1fb31bfb1bc8b762abac7b5c23b6a22607adb5d41a2cc22a899e2',
+    'includes/foundation/projects/ProjectProgressEvent.php'=>'03be1dd55c152edb27fc6c0fe0ad11306fce400f98308881817de01b2499cb2a',
+    'includes/foundation/projects/ProjectSnapshot.php'=>'9bb34c612e3d7d9469bb04891debf89f851a206a43e687a4bf280bb54fef775d',
     'includes/foundation/proposals/ApprovalDecision.php'=>'f10f833dfcbc8e3a34827c8ab8c53c76aea1334a3e1b49ef527395d887910a23',
     'includes/foundation/proposals/Proposal.php'=>'a082227d6345bbc12b55589edc392a4a71f0f7d5044238f2ada9fa4547e14410',
     'includes/foundation/proposals/ProposalVersion.php'=>'0b7b89917fb359fe90409d8d0ea6102ca8634be29536068b5845fad35e96b1c3',

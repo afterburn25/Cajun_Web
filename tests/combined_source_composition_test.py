@@ -342,20 +342,101 @@ def run(root=ROOT):
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
     proof.verify_current(root)
     passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    assert (proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_BASE + '^{tree}')
+            .decode().strip() == proof.CLOUD_INIT_TERMINAL_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_SOURCE + '^{tree}')
+            .decode().strip() == proof.CLOUD_INIT_TERMINAL_SOURCE_TREE)
+    with proof.cloud_init_terminal_projection(root):
+        for path in proof.CLOUD_INIT_TERMINAL_MODIFIED:
+            assert (proof.ordinary(root, path)
+                    == proof.git(root, 'cat-file', 'blob',
+                                 proof.CLOUD_INIT_TERMINAL_BASE + ':' + path))
+    passed('Cloud-init terminal projection restores both exact predecessor paths')
+    for attribute, label in (
+        ('CLOUD_INIT_TERMINAL_BASE_TREE', 'base tree'),
+        ('CLOUD_INIT_TERMINAL_SOURCE_TREE', 'source tree'),
+        ('CLOUD_INIT_TERMINAL_SOURCE', 'source commit'),
+        ('CLOUD_INIT_TERMINAL_REJECTED_PROOF', 'rejected proof commit'),
+        ('CLOUD_INIT_TERMINAL_REJECTED_PROOF_TREE', 'rejected proof tree'),
+        ('CLOUD_INIT_TERMINAL_CORRECTION_SOURCE', 'correction source commit'),
+        ('CLOUD_INIT_TERMINAL_CORRECTION_SOURCE_TREE', 'correction source tree'),
+        ('CLOUD_INIT_TERMINAL_PROOF', 'proof commit'),
+        ('CLOUD_INIT_TERMINAL_PROOF_TREE', 'proof tree'),
+        ('CLOUD_INIT_DISABLED_STAGE_SOURCE', 'disabled-stage source commit'),
+        ('CLOUD_INIT_DISABLED_STAGE_SOURCE_TREE', 'disabled-stage source tree'),
+        ('CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE', 'disabled-stage correction commit'),
+        ('CLOUD_INIT_DISABLED_STAGE_CORRECTION_SOURCE_TREE', 'disabled-stage correction tree'),
+        ('CLOUD_INIT_TERMINAL_SCRIPT_SHA256', 'script identity'),
+        ('CLOUD_INIT_TERMINAL_CONTRACT_SHA256', 'contract identity'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * len(original))
+            refuses('Refuses substituted cloud-init terminal ' + label,
+                    lambda: proof.validate_cloud_init_terminal_source(root))
+        finally:
+            setattr(proof, attribute, original)
+    assert (proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_BASE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.PROJECT_PROGRESS_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_PREDECESSOR_PROOF + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE_TREE)
+    progress_workflow = (root / '.github/workflows/project-progress.yml').read_text(
+        encoding='utf-8')
+    progress_inputs = (
+        '.github/workflows/project-progress.yml',
+        proof.PROJECT_PROGRESS_HANDOFF,
+        proof.RECEIPT,
+        'foundation/projects/ProjectProgressEvent.php',
+        'foundation/projects/ProjectSnapshot.php',
+        'site/includes/foundation/projects/ProjectProgressEvent.php',
+        'site/includes/foundation/projects/ProjectSnapshot.php',
+        proof.INVENTORY,
+        proof.VERIFIER,
+        proof.REGRESSION,
+        'tests/project-progress/**',
+    )
+    assert all(progress_workflow.count("      - '" + path + "'") == 2
+               for path in progress_inputs)
+    passed('Focused project-progress workflow admits every application, handoff, and proof input')
+    with proof.project_progress_projection(root):
+        for path in proof.PROJECT_PROGRESS_MODIFIED:
+            assert (proof.ordinary(root, path)
+                    == proof.git(root, 'cat-file', 'blob',
+                                 proof.PROJECT_PROGRESS_BASE + ':' + path))
+        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+        assert proof.PROJECT_PROGRESS_ADDITIONS.isdisjoint(
+            proof.actual_paths(root, tracked))
+        assert (proof.canonical_inventory(root)
+                == proof.git(root, 'cat-file', 'blob',
+                             proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY))
+    passed('Project-progress projection restores the exact qualified-main inventory and removes only its additions')
     assert (proof.git(root, 'rev-parse', proof.REL127_BASE + '^{tree}').decode().strip()
             == proof.REL127_BASE_TREE
             and proof.git(root, 'rev-parse', proof.REL127_SOURCE + '^{tree}').decode().strip()
             == proof.REL127_SOURCE_TREE)
-    with proof.release_127_projection(root):
-        for path in proof.REL127_MODIFIED:
-            assert (proof.ordinary(root, path)
-                    == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
-        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-        assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
-        assert (proof.ordinary(root, proof.REGRESSION)
-                == proof.actual_ordinary(root, proof.REGRESSION)
-                and proof.digest(proof.ordinary(root, proof.REGRESSION))
-                == proof.REGRESSION_SHA256)
+    with proof.project_progress_projection(root):
+        with proof.release_127_projection(root):
+            for path in proof.REL127_MODIFIED:
+                assert (proof.ordinary(root, path)
+                        == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
+            tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+            assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
+            assert (proof.ordinary(root, proof.REGRESSION)
+                    == proof.actual_ordinary(root, proof.REGRESSION)
+                    and proof.digest(proof.ordinary(root, proof.REGRESSION))
+                    == proof.REGRESSION_SHA256)
     passed('REL-01 projection binds every exact modified path, removes only its additions, and leaves self-bound proof bytes current')
 
     for attribute, label in (
@@ -368,6 +449,26 @@ def run(root=ROOT):
             setattr(proof, attribute, '0' * 40)
             refuses('Refuses substituted REL-01 ' + label,
                     lambda: proof.validate_release_127_source(root))
+        finally:
+            setattr(proof, attribute, original)
+    for attribute, label in (
+        ('PROJECT_PROGRESS_BASE_TREE', 'base tree'),
+        ('PROJECT_PROGRESS_SOURCE_TREE', 'source tree'),
+        ('PROJECT_PROGRESS_SOURCE', 'source commit'),
+        ('PROJECT_PROGRESS_PREDECESSOR_PROOF', 'predecessor proof commit'),
+        ('PROJECT_PROGRESS_PREDECESSOR_PROOF_TREE', 'predecessor proof tree'),
+        ('PROJECT_PROGRESS_CORRECTION_SOURCE', 'correction source commit'),
+        ('PROJECT_PROGRESS_CORRECTION_SOURCE_TREE', 'correction source tree'),
+        ('PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF', 'review predecessor proof commit'),
+        ('PROJECT_PROGRESS_REVIEW_PREDECESSOR_PROOF_TREE', 'review predecessor proof tree'),
+        ('PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE', 'handoff correction source commit'),
+        ('PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE_TREE', 'handoff correction source tree'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * 40)
+            refuses('Refuses substituted project-progress ' + label,
+                    lambda: proof.validate_project_progress_source(root))
         finally:
             setattr(proof, attribute, original)
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
@@ -417,6 +518,7 @@ def run(root=ROOT):
                      | proof.CLOUD_INTAKE_ADDITIONS | proof.UX09_MODIFIED | proof.UX09_ADDITIONS
                      | proof.UX09_CI_MODIFIED
                      | proof.ONBOARDING_MODIFIED | proof.ONBOARDING_ADDITIONS
+                     | proof.CLOUD_INIT_TERMINAL_MODIFIED
                      | {proof.VERIFIER, proof.RECEIPT, proof.REGRESSION, proof.INVENTORY,
                         proof.ONBOARDING_SOURCE, proof.UX09_SOURCE_RECEIPT,
                         'tools/acceptance-contract.json'}):
@@ -427,12 +529,108 @@ def run(root=ROOT):
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
 
+        def cloud_init_terminal_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + b'\n# unreviewed cloud-init admission\n')
+                proof.validate_cloud_init_terminal_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Cloud-init terminal binding refuses changed preparation bytes',
+                lambda: cloud_init_terminal_tamper(
+                    '.github/scripts/prepare_ubuntu_apt.py'))
+        refuses('Cloud-init terminal binding refuses changed contract bytes',
+                lambda: cloud_init_terminal_tamper(
+                    'tests/account_notification_workflow_contract.py'))
+        original_cloud_paths = proof.CLOUD_INIT_TERMINAL_MODIFIED
+        try:
+            proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths | {'README.md'}
+            refuses('Cloud-init terminal binding refuses an altered source path set',
+                    lambda: proof.validate_cloud_init_terminal_source(fixture))
+        finally:
+            proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths
+
+        def project_progress_source_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + b'\n# unreviewed project-progress source\n')
+                proof.validate_project_progress_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress binding refuses modified inventory bytes',
+                lambda: project_progress_source_tamper(proof.INVENTORY))
+        refuses('Project-progress binding refuses changed added-file bytes',
+                lambda: project_progress_source_tamper(
+                    'foundation/projects/ProjectProgressEvent.php'))
+        refuses('Project-progress binding refuses changed handoff-correction bytes',
+                lambda: project_progress_source_tamper(
+                    proof.PROJECT_PROGRESS_HANDOFF))
+
+        def project_progress_line_ending_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            assert b'\n' in original and b'\r\n' not in original
+            try:
+                target.write_bytes(original.replace(b'\n', b'\r\n'))
+                proof.validate_project_progress_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress binding refuses normalized mirror line-ending drift',
+                lambda: project_progress_line_ending_tamper(
+                    'site/includes/foundation/projects/ProjectProgressEvent.php'))
+
+        def project_progress_projection_race(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                with proof.project_progress_projection(fixture):
+                    target.write_bytes(original + b'\n# concurrent project-progress source\n')
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress projection exit refuses a concurrent modified-file change',
+                lambda: project_progress_projection_race(proof.INVENTORY))
+        refuses('Project-progress projection exit refuses a concurrent added-file change',
+                lambda: project_progress_projection_race(
+                    'tests/project-progress/records.php'))
+
+        original_project_proof_paths = proof.PROJECT_PROGRESS_PROOF_PATHS
+        try:
+            proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths | {'README.md'}
+            refuses('Project-progress binding refuses an altered proof-successor path set',
+                    lambda: proof.validate_project_progress_source(fixture))
+        finally:
+            proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths
+        for attribute, label in (
+            ('PROJECT_PROGRESS_CORRECTION_MODIFIED', 'modified path set'),
+            ('PROJECT_PROGRESS_CORRECTION_ADDITIONS', 'addition path set'),
+            ('PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED',
+             'handoff-correction modified path set'),
+        ):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, original | {'README.md'})
+                refuses('Project-progress binding refuses an altered correction ' + label,
+                        lambda: proof.validate_project_progress_source(fixture))
+            finally:
+                setattr(proof, attribute, original)
+        passed('Project-progress negative cases restore exact source and proof bytes')
+
+        def validate_release_fixture():
+            with proof.project_progress_projection(fixture):
+                return proof.validate_release_127_source(fixture)
+
         def release_source_tamper(path):
             target = fixture / path
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed REL-01 source\n')
-                proof.validate_release_127_source(fixture)
+                validate_release_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -447,7 +645,7 @@ def run(root=ROOT):
             assert original.count(old) == 1
             try:
                 target.write_bytes(original.replace(old, new, 1))
-                proof.validate_release_127_source(fixture)
+                validate_release_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -482,8 +680,9 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.release_127_projection(fixture):
-                    target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
+                with proof.project_progress_projection(fixture):
+                    with proof.release_127_projection(fixture):
+                        target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
             finally:
                 target.write_bytes(original)
 
@@ -494,10 +693,11 @@ def run(root=ROOT):
 
         def release_projection_mode_race(path):
             try:
-                with proof.release_127_projection(fixture):
-                    subprocess.run(
-                        ['git', 'update-index', '--chmod=+x', '--', path],
-                        cwd=fixture, check=True, capture_output=True)
+                with proof.project_progress_projection(fixture):
+                    with proof.release_127_projection(fixture):
+                        subprocess.run(
+                            ['git', 'update-index', '--chmod=+x', '--', path],
+                            cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--chmod=-x', '--', path],
@@ -509,17 +709,18 @@ def run(root=ROOT):
         def release_projection_blob_race(path):
             source_entry = proof.entries(fixture, proof.REL127_SOURCE)[path]
             try:
-                with proof.release_127_projection(fixture):
-                    result = subprocess.run(
-                        ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
-                        input=b'unreviewed staged REL-01 source\n', capture_output=True,
-                        check=True)
-                    oid = result.stdout.decode().strip()
-                    assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
-                    subprocess.run(
-                        ['git', 'update-index', '--cacheinfo',
-                         source_entry[0] + ',' + oid + ',' + path],
-                        cwd=fixture, check=True, capture_output=True)
+                with proof.project_progress_projection(fixture):
+                    with proof.release_127_projection(fixture):
+                        result = subprocess.run(
+                            ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                            input=b'unreviewed staged REL-01 source\n', capture_output=True,
+                            check=True)
+                        oid = result.stdout.decode().strip()
+                        assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                        subprocess.run(
+                            ['git', 'update-index', '--cacheinfo',
+                             source_entry[0] + ',' + oid + ',' + path],
+                            cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--cacheinfo',
@@ -534,7 +735,7 @@ def run(root=ROOT):
         try:
             proof.REL127_PROOF_PATHS = original_proof_paths | {'README.md'}
             refuses('REL-01 binding refuses an altered proof-successor path set',
-                    lambda: proof.validate_release_127_source(fixture))
+                    validate_release_fixture)
         finally:
             proof.REL127_PROOF_PATHS = original_proof_paths
 
@@ -1591,6 +1792,30 @@ def run(root=ROOT):
         refuses('Refuses a substituted mail artifact-overlap parent',
                 lambda: altered_mail_artifact_overlap_identity(
                     'MAIL_ARTIFACT_OVERLAP_FIX_BASE'))
+        project_source = proof.git(
+            fixture, 'cat-file', 'blob',
+            proof.PROJECT_PROGRESS_SOURCE + ':' + proof.INVENTORY)
+        project_base = proof.git(
+            fixture, 'cat-file', 'blob',
+            proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY)
+        assert (proof.project_project_progress_source(
+                    fixture, proof.INVENTORY, project_source) == project_base
+                and proof.project_project_progress_source(
+                    fixture, proof.INVENTORY, project_base) == project_base)
+        passed('Project-progress direct projection restores exact qualified-main inventory bytes')
+
+        def tampered_project_progress_projection():
+            target = fixture / proof.INVENTORY
+            original = target.read_bytes()
+            try:
+                tampered = original + b'\n# unreviewed direct project-progress source\n'
+                target.write_bytes(tampered)
+                proof.project_project_progress_source(fixture, proof.INVENTORY, tampered)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-progress direct projection refuses unreviewed live source bytes',
+                tampered_project_progress_projection)
         release_overlap_paths = (
             'site/app/settings/database_schemas.php',
             proof.INVENTORY,
