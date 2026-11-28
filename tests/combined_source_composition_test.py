@@ -414,7 +414,10 @@ def run(root=ROOT):
             .decode().strip() == proof.COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_TREE
             and proof.git(root, 'rev-parse',
                           proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE + '^{tree}')
-            .decode().strip() == proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE)
+            .decode().strip() == proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE)
     for attribute, label in (
         ('COMPONENT_FAST_PATH_BASE', 'base commit'),
         ('COMPONENT_FAST_PATH_BASE_TREE', 'base tree'),
@@ -448,6 +451,10 @@ def run(root=ROOT):
         ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_TREE', 'self-hash-rejected proof tree'),
         ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE', 'self-hash correction commit'),
         ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE', 'self-hash correction tree'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF',
+         'final-review-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE',
+         'final-review-rejected proof tree'),
     ):
         original = getattr(proof, attribute)
         try:
@@ -492,6 +499,8 @@ def run(root=ROOT):
         ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_PATHS', 'final-review correction'),
         ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_PATHS', 'self-hash-rejected proof'),
         ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_PATHS', 'self-hash correction'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_PATHS',
+         'final-review-rejected proof'),
         ('COMPONENT_FAST_PATH_PROOF_PATHS', 'final proof'),
     ):
         original_paths = getattr(proof, paths_attribute)
@@ -520,6 +529,8 @@ def run(root=ROOT):
         ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SHA256', 'final-review correction'),
         ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_SHA256', 'self-hash-rejected proof'),
         ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SHA256', 'self-hash correction'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_SHA256',
+         'final-review-rejected proof'),
     ):
         original_hashes = getattr(proof, hashes_attribute)
         target = next(iter(original_hashes))
@@ -560,12 +571,12 @@ def run(root=ROOT):
     direct_head = 'a' * 40
     direct_tree = 'b' * 40
     assert proof.validate_component_fast_path_checkout_history(
-        direct_head, [proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE], direct_tree,
-        direct_head, [proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE], direct_tree
+        direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree,
+        direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree
     ) == direct_head
     assert proof.validate_component_fast_path_checkout_history(
         'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head], direct_tree,
-        direct_head, [proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE], direct_tree
+        direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree
     ) == direct_head
     passed('Component fast path admits direct proof and exact tree-identical merge')
     refuses('Component fast-path proof refuses a non-direct parent',
@@ -577,11 +588,11 @@ def run(root=ROOT):
                 'c' * 40,
                 [proof.COMPONENT_FAST_PATH_BASE, direct_head, 'd' * 40],
                 direct_tree, direct_head,
-                [proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE], direct_tree))
+                [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree))
     refuses('Component fast-path proof refuses a changed merge base',
             lambda: proof.validate_component_fast_path_checkout_history(
                 'c' * 40, ['d' * 40, direct_head], direct_tree,
-                direct_head, [proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE], direct_tree))
+                direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree))
     refuses('Component fast-path proof refuses a non-direct branch head',
             lambda: proof.validate_component_fast_path_checkout_history(
                 'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head],
@@ -591,7 +602,7 @@ def run(root=ROOT):
             lambda: proof.validate_component_fast_path_checkout_history(
                 'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head],
                 'd' * 40, direct_head,
-                [proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE], direct_tree))
+                [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree))
     original_actual_ordinary = proof.actual_ordinary
 
     def altered_component_fast_path_handoff(root_value, path):
@@ -606,6 +617,13 @@ def run(root=ROOT):
                 lambda: proof.validate_component_fast_path_source(root))
     finally:
         proof.actual_ordinary = original_actual_ordinary
+    original_final_handoff_hash = proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256
+    try:
+        proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = '0' * 64
+        refuses('Refuses substituted final handoff digest',
+                lambda: proof.validate_component_fast_path_source(root))
+    finally:
+        proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = original_final_handoff_hash
     assert (proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_BASE + '^{tree}')
             .decode().strip() == proof.NOTIFICATION_ACCEPTANCE_BASE_TREE
             and proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_SOURCE + '^{tree}')
