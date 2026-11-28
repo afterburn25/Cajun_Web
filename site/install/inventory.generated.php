@@ -160,7 +160,7 @@ function setup_expected_files(): array { return [
     'api/software-webhook.php'=>'1619d2408b8fd78504f75ae2d1daa06fbf5baf9a798577c6edd85a7d0f949658',
     'api/validate.php'=>'19aaad32fc70d8c0a49f14dc454e37cb1453239ac1e5b61acfc0658978af407a',
     'app/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-    'app/activity/events.php'=>'0721b9ffff32cb0b92946503a813981c6bc91d58276a2e996cfb4304759d85b8',
+    'app/activity/events.php'=>'c9cc1e4d73f89054f5380cce72ddbfadf700218926282a3cfe288e4b11711c14',
     'app/backups/archive.php'=>'8c02e5361957f16cf4e9196ad76491ae79838c17d6f1855a47900ae0fe05cd1e',
     'app/backups/records.php'=>'fa5a8c6968688c3ef566e8f1ffdc60704ff1db729ec5c2ea443bbbcc44fe0c38',
     'app/billing/attempts.php'=>'54a83bc2bafd6b5783d246ce01d0e4bdba3524595640b0da57959f1e05aebfd6',
