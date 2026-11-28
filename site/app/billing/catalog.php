@@ -30,8 +30,27 @@ function catalog_product_input(array $input): array {
     return $data;
 }
 function catalog_save(int $id,int $expected,array $input): int {
-    catalog_product_input($input); // Preserve validation before taking the existing lock.
-    return staff_locked(fn()=>staff_transaction(fn()=>catalog_save_in_transaction($id,$expected,$input)));
+    $data=catalog_product_input($input); // Validate before the existing account lock.
+    $newSoftware=$id===0&&$data['family']==='software';
+    if($newSoftware){
+        // The advanced catalog editor must not save an unlicensed software
+        // product. The guided ZIP uploader already composes its own policy
+        // under the same transaction and does not use this wrapper.
+        require_once CWP_CODE_ROOT.'/database/migrations/software_commerce_migrate.php';
+        if(!software_commerce_ready()){
+            throw new RuntimeException('Prepare software commerce before creating a software product. No product was saved.');
+        }
+    }
+    return staff_locked(fn()=>staff_transaction(function()use($id,$expected,$input,$newSoftware):int{
+        $productId=catalog_save_in_transaction($id,$expected,$input);
+        if($newSoftware){
+            require_once CWP_CODE_ROOT.'/app/licenses/software_products.php';
+            // Reuse the canonical owner-authorized, revisioned policy writer.
+            // If policy setup fails, the product/revision/audit roll back too.
+            software_product_policy_save_in_transaction($productId,0,'','',0,2,'');
+        }
+        return $productId;
+    }));
 }
 /** Internal composition point; callers must own the current staff mutex and transaction. */
 function catalog_save_in_transaction(int $id,int $expected,array $input): int {
