@@ -172,6 +172,146 @@ NOTIFICATION_ACCEPTANCE_SHA256 = {
     'tests/account_notification_workflow_contract.py':
         '0e7fbe192511b6e9be3e90f28a57df260e21512cdc90c1e414f4f2c469c5f4d0',
 }
+COMPONENT_FAST_PATH_BASE = '30b40c2ab1f48ac78c9e5b1d981b687e515dbb23'
+COMPONENT_FAST_PATH_BASE_TREE = '0d436279e66d05563de0a286f32b5dec1a3b3d83'
+COMPONENT_FAST_PATH_SOURCE = 'cf0472a5d2ab269dff22b95f69822f98434c7991'
+COMPONENT_FAST_PATH_SOURCE_TREE = '59d4593f6845ab9cd124203c67e2ca83bfe4ae29'
+COMPONENT_FAST_PATH_SOURCE_PATHS = frozenset((VERIFIER, REGRESSION))
+COMPONENT_FAST_PATH_SOURCE_SHA256 = {
+    VERIFIER: '2b90d52adf1ac8eb398a862016b6dd9dd9210de22f2b63341e83cf4904917273',
+    REGRESSION: '55520938153be74e576536a636686d6f1f6e8fd218c2981dace0df53a63a18ed',
+}
+COMPONENT_FAST_PATH_PREDECESSOR_PROOF = '509196cdc1e89de1dec48631524308466d11bfe8'
+COMPONENT_FAST_PATH_PREDECESSOR_PROOF_TREE = '29033be5736f320b9742936e849a78d415306111'
+COMPONENT_FAST_PATH_PREDECESSOR_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_PREDECESSOR_PROOF_SHA256 = {
+    RECEIPT: 'c2bad5f44252eeb40000b8498d524225b5cbe065f007db34f961e20f031c8fe4',
+    VERIFIER: '0a008a4f09c9f771acd5a9606f3d66f7d2524e6085117ae86886038a64fe5e32',
+    REGRESSION: '15c75c04d378da0c0fb028b910f187bc87e5b223b36fe7ddf58fae501cc8c8b8',
+}
+COMPONENT_FAST_PATH_HANDOFF = (
+    'docs/agent-handoffs/2026-11-27-codex-composition-fast-path.md')
+COMPONENT_FAST_PATH_CORRECTION_SOURCE = 'fe10be1fa9c563a4b61d96c2d5893533c13b6b51'
+COMPONENT_FAST_PATH_CORRECTION_SOURCE_TREE = '09f00112a0818c25839dff9aee03d22c5e075644'
+COMPONENT_FAST_PATH_CORRECTION_PATHS = frozenset((
+    COMPONENT_FAST_PATH_HANDOFF,
+    REGRESSION,
+))
+COMPONENT_FAST_PATH_CORRECTION_SHA256 = {
+    COMPONENT_FAST_PATH_HANDOFF:
+        'c7515f2639646027901a155005c317969e63ac57b7eea763267fbe9e2333eebb',
+    REGRESSION: 'a02ecbdcc7991ed1d4f98b404d0088515c125ff3e7b9151843efb3d1dfd2f22d',
+}
+COMPONENT_FAST_PATH_REJECTED_PROOF = '0affc7560a25bd85bff1b29e0f5aab9796de3f41'
+COMPONENT_FAST_PATH_REJECTED_PROOF_TREE = '64e931c190a0e59a7fc200eb47e8598a52f09b45'
+COMPONENT_FAST_PATH_REJECTED_PROOF_PATHS = (
+    REL127_PROOF_PATHS | frozenset((COMPONENT_FAST_PATH_HANDOFF,)))
+COMPONENT_FAST_PATH_REJECTED_PROOF_SHA256 = {
+    RECEIPT: '709d1f4382c61a23c8255dc4232e5837ac1f5b76526243720ae4847854aef933',
+    COMPONENT_FAST_PATH_HANDOFF:
+        '1230dce4d538833760df93b7dcec1dcdaed7814b2d43836a9534bd318a3fe9ad',
+    VERIFIER: '291e309f3a9892bdde052b4139e1c850a47f218f15349eb1782a91beaeea9dd5',
+    REGRESSION: 'e1da5007ebf7507296ce52465bacecce9d9d3c13f8bdadda0061c831e9878c2f',
+}
+COMPONENT_FAST_PATH_HANDOFF_SOURCE = '2f355070ac9e91e4659459162b6e5fd43d28d096'
+COMPONENT_FAST_PATH_HANDOFF_SOURCE_TREE = '626ab197e37f047f82baac0bfafd0a5d5343d32c'
+COMPONENT_FAST_PATH_HANDOFF_SOURCE_PATHS = frozenset((COMPONENT_FAST_PATH_HANDOFF,))
+COMPONENT_FAST_PATH_HANDOFF_SOURCE_SHA256 = {
+    COMPONENT_FAST_PATH_HANDOFF:
+        '7517521205088320af5f61909ddfaa61fe88ce14f6286571ffb830adba7631ba',
+}
+COMPONENT_FAST_PATH_RECOVERY_PATHS = frozenset((COMPONENT_FAST_PATH_HANDOFF,))
+COMPONENT_FAST_PATH_ADDITIONS = frozenset((COMPONENT_FAST_PATH_HANDOFF,))
+COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF = '5e9f5a01b7b874f5a20d94445897a2866c095842'
+COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_TREE = 'cb6cd2354efa68e2533244373946d21959a90b76'
+COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_SHA256 = {
+    RECEIPT: 'b89b6970ea023961fec57cf4ac1b7058d0623483f6511ca5e868a20fb9f41cb7',
+    VERIFIER: 'bff631f7ec1b8ebfe16c39e7a3478a039b8d039f3c1ca630b0245d74bea4f861',
+    REGRESSION: '7273adde7be165ccaca92c5c61dc66de53f86dfac79fb1cc1cd829c2932e3c01',
+}
+COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE = 'e40fa4b99eb7fe8e6475a198ff116ec9f6394423'
+COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE_TREE = 'e3a02508e94d0dcd0f62ea4bfb78836de4819d2b'
+COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_PATHS = frozenset((VERIFIER, REGRESSION))
+COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SHA256 = {
+    VERIFIER: '239838d8217264cdb68151d70459740f39ea1ae6b8bf647ad2a69335d4070ed2',
+    REGRESSION: '60847eb00f1437bf370a6289717b343235597959de908417c32372dad1675b66',
+}
+COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF = '34a3fbab311f79dbba4f4efb2fa469bc00d29df4'
+COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_TREE = '6168a9c4ecc052ea5f43e28cfcd08c145b54729a'
+COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_SHA256 = {
+    RECEIPT: '1a01ab5576e5d78ba53a091a9db859b5ffb672fe555a635d5e8284b30fc63514',
+    VERIFIER: '6245a8784b43873f569cd80c85660c7f74bf4c555116cac5eee73038da235a7c',
+    REGRESSION: '6fa14fe2291b89607bdb4d17c9c3a61cf1b8123d1d657682db46af8e9db85dba',
+}
+COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE = 'e740671a26260eb3ebcf20849b4dc2182e14ad88'
+COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE_TREE = '31353947a951bcbaca59a8e8b15ab5b94992b9b4'
+COMPONENT_FAST_PATH_RECOVERY_CORRECTION_PATHS = frozenset((VERIFIER, REGRESSION))
+COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SHA256 = {
+    VERIFIER: 'c198ea3df4b4cddf2ad73db0cc21260ff8c1f546fbab9e8072576a201677d92e',
+    REGRESSION: '2af14c44beffd610ceb5b2dd75a615174083f6a2f568b6dee5344de297f70c5b',
+}
+COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF = '2a2076f6f00ea51166b98e5f5440edee28fd4155'
+COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_TREE = '73743e6a1b9b28f0844821e6d9dd8a69b0d28d90'
+COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_SHA256 = {
+    RECEIPT: '90dfbf8993f618687ac32ac8443b6e1176cc930d517e8e4091ff5e66698cf221',
+    VERIFIER: '8dac3d3fe6cb7afeff03c1050c5fdf71e4af69f68ce643c0e4db5569ac82d8c3',
+    REGRESSION: '6da93fe7eca53c275c0b30c1a89556b98e4c58eaba0bc1cdd4eddab6e525229d',
+}
+COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE = '0bae5aab5ad40500500eed17f425200c9689c445'
+COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE = 'aa29758fb0ff157a53270b6d2f43a7974808d0dc'
+COMPONENT_FAST_PATH_INVENTORY_CORRECTION_PATHS = frozenset((VERIFIER, REGRESSION))
+COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SHA256 = {
+    VERIFIER: '4510bf532e9555e31c62498773a7b65a30100606cadb645a1e7f77a34be4e95c',
+    REGRESSION: 'eef5f98551d52648e079634633454509eeda55aa0c0f45ae1753573a847b7f33',
+}
+COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF = '607961cd8a47d1c06c35a4c451d68420ad1eb0c1'
+COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_TREE = '2498b76e26021c59b1f9c0f27390fc5b7c8785a7'
+COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_SHA256 = {
+    RECEIPT: '47762a6fbb431031c4e868061fed6c0782af255cefbb18c40ad975a7f5ba0d0d',
+    VERIFIER: 'a89596f5a5f80426b75d32b170e4e8ef317885efc6d1ef620e4eba0724829eae',
+    REGRESSION: 'c8f51149fd55aa4e05946d8249646a54c37be7671a418b6f277048ea9a2ec7d5',
+}
+COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE = '898508bd18fce7f7978052bd075175fdbe4a4cc0'
+COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE_TREE = '452866e6247bb912051cf463598ac6e78fa1dcd6'
+COMPONENT_FAST_PATH_REVIEW_CORRECTION_PATHS = frozenset((
+    COMPONENT_FAST_PATH_HANDOFF, REGRESSION,
+))
+COMPONENT_FAST_PATH_REVIEW_CORRECTION_SHA256 = {
+    COMPONENT_FAST_PATH_HANDOFF:
+        'a73fd55a65abaf2f3270e152bdc60fc391b6f6826e98c807ab24938ea7cf0aa8',
+    REGRESSION: '811c4184f09b2247200edfc6636044b3634f8e85eb914cba483dd7ba0173c21d',
+}
+COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF = '9ce2978878a8ac52868b319c0c49c692f8527158'
+COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_TREE = '0e7d6b1821322d9e325a9dcb3d91f630f586735e'
+COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_SHA256 = {
+    RECEIPT: 'ee249f8c8865b63d1dda4debc58eb1291a7f7caaca5dead77a7710e6e1edcd1c',
+    VERIFIER: '1b8cca43ca1ffada2457df9825789e9dc6c97c8c26a9065d0e9e3b11e3e86c86',
+    REGRESSION: '35422fb21692a053f7512e78002ca2dc168384b459f8daa06390679fb96fc2aa',
+}
+COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE = 'ead797931f26e338c5e934859226f6474c574f56'
+COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE = '96c886ee57acab290fab645d3a376dff3b2c20f1'
+COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_PATHS = frozenset((RECEIPT, VERIFIER))
+COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SHA256 = {
+    RECEIPT: '5cb5b42b5f46d1789463efd20166d758922cc06b5b0927d869e6f7489a5383ee',
+    VERIFIER: 'bfdc4cc3587a391d0841f3bfcca39c1f7dc17bdcfddf45776dd305036ac56148',
+}
+COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF = '5e2e8eeecd10535ffe61e697ad4909e4b94bcb81'
+COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE = 'd6b0a341f60707bf7f219073db554f36fbccf8ff'
+COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_PATHS = REL127_PROOF_PATHS
+COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_SHA256 = {
+    RECEIPT: 'd5583e4d1e789b1de4a6e04cf33262feb781b7e5b70ad1f5304f03d9da54a2fc',
+    VERIFIER: 'bf16684a89d504c5c89aec5ea30d16748887c167744d8a96bb2063dc60494389',
+    REGRESSION: '60867947564e7ca226c1d23afc005021a9fb05758cbb3db4912a3d2f4ebdfe0c',
+}
+COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = (
+    '0d2b86b51689c6ae2d9b8d34d40612daa541bf95ef8f79963e07617a74d22ef9')
+COMPONENT_FAST_PATH_PROOF_PATHS = (
+    REL127_PROOF_PATHS | frozenset((COMPONENT_FAST_PATH_HANDOFF,)))
 UX08_STOREFRONT_BASE = '7dd3bbde203603fbda579e0cf1a1a2e24a5e6aab'
 UX08_STOREFRONT_BASE_TREE = '3f69190a028d2201e1cb7900434417db1b34ed7d'
 UX08_STOREFRONT_SOURCE = 'fa4185d42022b8f6296f358e05976cf2769b4b3c'
@@ -2281,7 +2421,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '30ae88435274cc771827dd05a15fbdda7a4a5c173c4e5349b94b416d0bda0448'
+REGRESSION_SHA256 = 'ed116cbd2ea66ba844abe259e738c36f7722f7ea3efd28540f9758f794b8fb0d'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2686,9 +2826,21 @@ def tracked_source_preflight(root, proof_files):
                 and stage == '0' and re.fullmatch(r'[0-9a-f]{40}', oid) is not None
                 and git(root, 'cat-file', 'blob', oid) == proof_files[path],
                 'Staged proof entry differs from validated bytes or mode: ' + path)
-    # Refuse a ref move that raced the pinned-object diff.
+    index_entries = current_index_entries(root)
+    head_entries = entries(root, head)
+    require(set(index_entries) == set(head_entries),
+            'Git index path set changed during tracked-source preflight')
+    for path, index_entry in index_entries.items():
+        if index_entry == head_entries[path]:
+            continue
+        permission, oid = index_entry
+        require(path in allowed and permission == '100644'
+                and git(root, 'cat-file', 'blob', oid) == proof_files[path],
+                'Git index differs from pinned HEAD outside validated proof bytes: '
+                + path)
+    # Refuse a ref move that raced the pinned-object and index checks.
     pin_head(root)
-    return paths
+    return paths, index_entries
 
 
 def actual_ordinary(root, path):
@@ -10276,7 +10428,8 @@ def validate_pr391_recovery_successor(root):
                 | set(mail_consolidated_changes(root))
                 | REL127_PATHS
                 | PROJECT_PROGRESS_PATHS
-                | PROJECT_PROGRESS_CORRECTION_PATHS),
+                | PROJECT_PROGRESS_CORRECTION_PATHS
+                | COMPONENT_FAST_PATH_RECOVERY_PATHS),
             'Current recovery successor contains an unbound path')
 
 
@@ -12043,6 +12196,49 @@ def project_component_union_source(root, ux09, path, current):
     return project_ux09(root, ux09, path, current)
 
 
+def current_component_source_matches(root, path, current, permission, oid, index_entry):
+    """Accept an unchanged component only across two exact fresh reads."""
+    require(isinstance(path, str) and isinstance(current, bytes)
+            and permission in {'100644', '100755'}
+            and re.fullmatch(r'[0-9a-f]{40}', oid) is not None,
+            'Malformed current component identity')
+    blob = hashlib.sha1(
+        b'blob ' + str(len(current)).encode('ascii') + b'\0' + current).hexdigest()
+    if (blob != oid or index_entry != (permission, oid)
+            or (os.name != 'nt' and filesystem_mode(root, path) != permission)):
+        return False
+    require(ordinary(root, path) == current
+            and (os.name == 'nt' or filesystem_mode(root, path) == permission),
+            'Current component source changed during exact-blob fast path: ' + path)
+    return True
+
+
+def require_component_union_index_unchanged(root, index_entries):
+    """Refuse any staged identity or mode race across the component union."""
+    require(current_index_entries(root) == index_entries,
+            'Git index changed during component-union verification')
+
+
+def component_union_allowed_paths(root, expected):
+    """Return the exhaustive current path inventory admitted by the union."""
+    require(isinstance(expected, dict)
+            and all(isinstance(path, str) for path in expected),
+            'Malformed component-union expected path inventory')
+    return (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS
+            | DIAGNOSTIC_ADDITIONS | ONBOARDING_ADDITIONS
+            | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
+            | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS
+            | UX08_PAYMENT_ADDITIONS | RUNNER_MIRROR_PHASE_ADDITIONS
+            | NOTIFICATION_HEALTH_ADDITIONS | MAIL_REPLY_FORWARD_ADDITIONS
+            | MAIL_SENT_COPY_ADDITIONS | MAIL_SENT_COPY_ORIGIN_FIX_PATHS
+            | MAIL_ATTACHMENT_PORTABLE_ADDITIONS | MAIL_ATTACHMENT_ADDITIONS
+            | PROJECT_PRIVATE_NOTES_ADDITIONS | COMPONENT_FAST_PATH_ADDITIONS
+            | {path for path, status in mail_consolidated_changes(root).items()
+               if status == 'A'}
+            | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
+               UX09_SOURCE_RECEIPT})
+
+
 def current_proof_receipt(root):
     """Strictly load and bracket the three mutable proof files."""
     root = Path(root)
@@ -12069,10 +12265,14 @@ def _verify_current(root):
     data, proof_files = current_proof_receipt(root)
     ensure_history(root)
     pin_head(root)
-    tracked_source_preflight(root, proof_files)
+    preflight_paths, preflight_index_entries = tracked_source_preflight(
+        root, proof_files)
+    require(set(preflight_paths) <= {RECEIPT, VERIFIER, REGRESSION},
+            'Tracked-source preflight returned an unvalidated path')
     require(all(mode(root, path) == '100644' and actual_ordinary(root, path) == value
                 for path, value in proof_files.items()),
             'Composition proof file changed during tracked-source preflight')
+    validate_component_fast_path_source(root)
     validate_application_reply_folder_route(root)
     validate_application_sent_copy_fixture_mode(root)
     validate_application_smtp_fixture_bound(root)
@@ -12419,24 +12619,20 @@ def _verify_current(root):
         require(digest(value) == row['sha256'] == DATABASE_WORKFLOW_ADDITION_SHA256[path]
                 and row['mode'] == database_source_entries[path][0] == '100644',
                 'Database workflow addition bytes or mode changed: ' + path)
-    allowed = (set(expected) | ADAPTERS | ADDITIONS | TICKET_ADDITIONS | DIAGNOSTIC_ADDITIONS
-               | ONBOARDING_ADDITIONS | DATABASE_WORKFLOW_ADDITIONS | CLOUD_INTAKE_ADDITIONS
-               | UX09_ADDITIONS | UX08_STOREFRONT_ADDITIONS | UX08_PAYMENT_ADDITIONS
-               | RUNNER_MIRROR_PHASE_ADDITIONS | NOTIFICATION_HEALTH_ADDITIONS
-               | MAIL_REPLY_FORWARD_ADDITIONS
-               | MAIL_SENT_COPY_ADDITIONS
-               | MAIL_SENT_COPY_ORIGIN_FIX_PATHS
-               | MAIL_ATTACHMENT_PORTABLE_ADDITIONS
-               | MAIL_ATTACHMENT_ADDITIONS
-               | PROJECT_PRIVATE_NOTES_ADDITIONS
-               | {path for path,status in mail_consolidated_changes(root).items() if status == 'A'}
-               | {INVENTORY, RECEIPT, VERIFIER, REGRESSION, ONBOARDING_SOURCE,
-                  UX09_SOURCE_RECEIPT})
+    allowed = component_union_allowed_paths(root, expected)
     actual = actual_paths(root, allowed)
     require(actual == allowed, 'Unknown or missing composition paths: '
             + repr(sorted(actual.symmetric_difference(allowed))))
+    require_component_union_index_unchanged(root, preflight_index_entries)
+    union_index_entries = preflight_index_entries
     for path, (permission, oid) in expected.items():
-        value = project_component_union_source(root, ux09, path, ordinary(root, path))
+        value = ordinary(root, path)
+        if (path not in ONBOARDING_MODIFIED and path not in REPAIRS
+                and current_component_source_matches(
+                    root, path, value, permission, oid,
+                    union_index_entries.get(path))):
+            continue
+        value = project_component_union_source(root, ux09, path, value)
         if path in ONBOARDING_MODIFIED:
             row = onboarding['modified'][path]
             before = git(root, 'cat-file', 'blob', ONBOARDING_BASE + ':' + path)
@@ -12450,6 +12646,7 @@ def _verify_current(root):
                     'Integration repair no longer retains its exact failed-checkpoint source: ' + path)
         blob = hashlib.sha1(b'blob ' + str(len(value)).encode() + b'\0' + value).hexdigest()
         require(blob == oid and mode(root, path) == permission, 'Current component source or mode differs: ' + path)
+    require_component_union_index_unchanged(root, union_index_entries)
     for path in sorted(ONBOARDING_ADDITIONS):
         value = ordinary(root, path)
         require(onboarding['added'][path] == digest(value) and mode(root, path) == '100644'
@@ -12516,6 +12713,7 @@ def _verify_current(root):
                 'Original adapter assertions are not the exact component bytes: ' + path)
     require(mode(root, INVENTORY) == '100644'
             and ordinary(root, INVENTORY) == canonical_inventory(root), 'Current combined inventory is not canonical')
+    require_component_union_index_unchanged(root, preflight_index_entries)
     pin_head(root)
     require(all(mode(root, path) == '100644' and ordinary(root, path) == value
                 for path, value in proof_files.items()),
@@ -12760,6 +12958,462 @@ def validate_release_127_source(root):
     return worktree_oids
 
 
+def validate_component_fast_path_checkout_history(
+        checkout_head, checkout_parents, checkout_tree,
+        proof_head, proof_parents, proof_tree):
+    """Admit only the direct proof head or its exact tree-identical merge."""
+    values = (checkout_head, checkout_tree, proof_head, proof_tree)
+    require(all(re.fullmatch(r'[0-9a-f]{40}', value) is not None for value in values)
+            and all(isinstance(parents, list)
+                    and all(re.fullmatch(r'[0-9a-f]{40}', parent) is not None
+                            for parent in parents)
+                    for parents in (checkout_parents, proof_parents)),
+            'Malformed component fast-path checkout history')
+    if len(checkout_parents) == 1:
+        require(checkout_parents == [COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF]
+                and proof_head == checkout_head
+                and proof_parents == checkout_parents
+                and proof_tree == checkout_tree,
+                'Component fast-path proof is not the exact direct successor')
+    else:
+        require(checkout_parents == [COMPONENT_FAST_PATH_BASE, proof_head]
+                and proof_parents == [COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF]
+                and checkout_tree == proof_tree,
+                'Component fast-path merge is not exact and tree-identical')
+    return proof_head
+
+
+def validate_component_fast_path_source(root):
+    """Bind the corrected exact-blob component-union performance successor."""
+    identities = (
+        (COMPONENT_FAST_PATH_BASE, COMPONENT_FAST_PATH_BASE_TREE),
+        (COMPONENT_FAST_PATH_SOURCE, COMPONENT_FAST_PATH_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_PREDECESSOR_PROOF,
+         COMPONENT_FAST_PATH_PREDECESSOR_PROOF_TREE),
+        (COMPONENT_FAST_PATH_CORRECTION_SOURCE,
+         COMPONENT_FAST_PATH_CORRECTION_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_REJECTED_PROOF_TREE),
+        (COMPONENT_FAST_PATH_HANDOFF_SOURCE,
+         COMPONENT_FAST_PATH_HANDOFF_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_TREE),
+        (COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE,
+         COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_TREE),
+        (COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE,
+         COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_TREE),
+        (COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE,
+         COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_TREE),
+        (COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE,
+         COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_TREE),
+        (COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE,
+         COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE),
+        (COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF,
+         COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE),
+    )
+    require(all(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree
+                for commit, tree in identities),
+            'Component fast-path commit or tree identity changed')
+    require(git(root, 'show', '-s', '--format=%P', COMPONENT_FAST_PATH_SOURCE)
+            .decode().strip().split() == [COMPONENT_FAST_PATH_BASE],
+            'Component fast-path implementation ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_PREDECESSOR_PROOF)
+            .decode().strip().split() == [COMPONENT_FAST_PATH_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_CORRECTION_SOURCE)
+            .decode().strip().split() == [COMPONENT_FAST_PATH_PREDECESSOR_PROOF],
+            'Component fast-path review-correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_REJECTED_PROOF)
+            .decode().strip().split() == [COMPONENT_FAST_PATH_CORRECTION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_HANDOFF_SOURCE)
+            .decode().strip().split() == [COMPONENT_FAST_PATH_REJECTED_PROOF],
+            'Component fast-path handoff-correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF)
+            .decode().strip().split() == [COMPONENT_FAST_PATH_HANDOFF_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF],
+            'Component fast-path preflight-correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF],
+            'Component fast-path recovery-correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF],
+            'Component fast-path inventory-correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF],
+            'Component fast-path final-review correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P',
+                    COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF],
+            'Component fast-path self-hash correction ancestry changed')
+    require(git(root, 'show', '-s', '--format=%P',
+                COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF)
+            .decode().strip().split()
+            == [COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE],
+            'Component fast-path final-review-rejected proof ancestry changed')
+    git(root, 'merge-base', '--is-ancestor',
+        COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF, 'HEAD')
+    source_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_BASE, COMPONENT_FAST_PATH_SOURCE).decode().splitlines()
+    require(sorted(source_changes)
+            == ['M\t' + path for path in sorted(COMPONENT_FAST_PATH_SOURCE_PATHS)],
+            'Component fast-path implementation changed another path or status set')
+    predecessor_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_SOURCE,
+        COMPONENT_FAST_PATH_PREDECESSOR_PROOF).decode().splitlines()
+    require(sorted(predecessor_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_PREDECESSOR_PROOF_PATHS)],
+            'Component fast-path predecessor proof changed another path or status set')
+    correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_PREDECESSOR_PROOF,
+        COMPONENT_FAST_PATH_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(correction_changes) == sorted((
+                'A\t' + COMPONENT_FAST_PATH_HANDOFF,
+                'M\t' + REGRESSION,
+            )),
+            'Component fast-path review correction changed another path or status set')
+    rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_CORRECTION_SOURCE,
+        COMPONENT_FAST_PATH_REJECTED_PROOF).decode().splitlines()
+    require(sorted(rejected_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_REJECTED_PROOF_PATHS)],
+            'Component fast-path rejected proof changed another path or status set')
+    handoff_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_REJECTED_PROOF,
+        COMPONENT_FAST_PATH_HANDOFF_SOURCE).decode().splitlines()
+    require(handoff_changes == ['M\t' + COMPONENT_FAST_PATH_HANDOFF],
+            'Component fast-path handoff correction changed another path or status set')
+    preflight_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_HANDOFF_SOURCE,
+        COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF).decode().splitlines()
+    require(sorted(preflight_rejected_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_PATHS)],
+            'Component fast-path preflight-rejected proof changed another path or status set')
+    preflight_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF,
+        COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(preflight_correction_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_PATHS)],
+            'Component fast-path preflight correction changed another path or status set')
+    recovery_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE,
+        COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF).decode().splitlines()
+    require(sorted(recovery_rejected_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_PATHS)],
+            'Component fast-path recovery-rejected proof changed another path or status set')
+    recovery_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF,
+        COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(recovery_correction_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_RECOVERY_CORRECTION_PATHS)],
+            'Component fast-path recovery correction changed another path or status set')
+    inventory_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE,
+        COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF).decode().splitlines()
+    require(sorted(inventory_rejected_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_PATHS)],
+            'Component fast-path inventory-rejected proof changed another path or status set')
+    inventory_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF,
+        COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(inventory_correction_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_INVENTORY_CORRECTION_PATHS)],
+            'Component fast-path inventory correction changed another path or status set')
+    review_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE,
+        COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF).decode().splitlines()
+    require(sorted(review_rejected_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_PATHS)],
+            'Component fast-path review-rejected proof changed another path or status set')
+    review_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF,
+        COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(review_correction_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_REVIEW_CORRECTION_PATHS)],
+            'Component fast-path final-review correction changed another path or status set')
+    self_hash_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE,
+        COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF).decode().splitlines()
+    require(sorted(self_hash_rejected_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_PATHS)],
+            'Component fast-path self-hash-rejected proof changed another path or status set')
+    self_hash_correction_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF,
+        COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE).decode().splitlines()
+    require(sorted(self_hash_correction_changes)
+            == ['M\t' + path
+                for path in sorted(COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_PATHS)],
+            'Component fast-path self-hash correction changed another path or status set')
+    final_review_rejected_changes = git(
+        root, 'diff', '--name-status', '--no-renames',
+        COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE,
+        COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF).decode().splitlines()
+    require(sorted(final_review_rejected_changes)
+            == ['M\t' + path for path in sorted(
+                COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_PATHS)],
+            'Component fast-path final-review-rejected proof changed another path or status set')
+    checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    checkout_parents = git(root, 'show', '-s', '--format=%P',
+                           checkout_head).decode().strip().split()
+    checkout_tree = git(root, 'rev-parse', checkout_head + '^{tree}').decode().strip()
+    proof_head = (checkout_parents[1] if len(checkout_parents) == 2 else checkout_head)
+    proof_parents = git(root, 'show', '-s', '--format=%P',
+                        proof_head).decode().strip().split()
+    proof_tree = git(root, 'rev-parse', proof_head + '^{tree}').decode().strip()
+    proof_head = validate_component_fast_path_checkout_history(
+        checkout_head, checkout_parents, checkout_tree,
+        proof_head, proof_parents, proof_tree)
+    proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                        COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF,
+                        proof_head).decode().splitlines()
+    require(sorted(proof_changes)
+            == ['M\t' + path for path in sorted(COMPONENT_FAST_PATH_PROOF_PATHS)],
+            'Component fast-path proof changed application or nonproof source')
+    source_entries = entries(root, COMPONENT_FAST_PATH_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_SOURCE_PATHS):
+        source = git(root, 'cat-file', 'blob', COMPONENT_FAST_PATH_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_SOURCE_SHA256[path]
+                and source_entries[path][0] == '100644',
+                'Component fast-path implementation identity changed: ' + path)
+    predecessor_entries = entries(root, COMPONENT_FAST_PATH_PREDECESSOR_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_PREDECESSOR_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_PREDECESSOR_PROOF + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_PREDECESSOR_PROOF_SHA256[path]
+                and predecessor_entries[path][0] == '100644',
+                'Component fast-path predecessor proof identity changed: ' + path)
+    correction_entries = entries(root, COMPONENT_FAST_PATH_CORRECTION_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_CORRECTION_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_CORRECTION_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_CORRECTION_SHA256[path]
+                and correction_entries[path][0] == '100644',
+                'Component fast-path review correction identity changed: ' + path)
+    rejected_entries = entries(root, COMPONENT_FAST_PATH_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_REJECTED_PROOF + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_REJECTED_PROOF_SHA256[path]
+                and rejected_entries[path][0] == '100644',
+                'Component fast-path rejected proof identity changed: ' + path)
+    handoff_entries = entries(root, COMPONENT_FAST_PATH_HANDOFF_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_HANDOFF_SOURCE_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_HANDOFF_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_HANDOFF_SOURCE_SHA256[path]
+                and handoff_entries[path][0] == '100644',
+                'Component fast-path handoff correction identity changed: ' + path)
+    preflight_rejected_entries = entries(
+        root, COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_SHA256[path]
+                and preflight_rejected_entries[path][0] == '100644',
+                'Component fast-path preflight-rejected proof identity changed: ' + path)
+    preflight_correction_entries = entries(
+        root, COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SHA256[path]
+                and preflight_correction_entries[path][0] == '100644',
+                'Component fast-path preflight correction identity changed: ' + path)
+    recovery_rejected_entries = entries(
+        root, COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_SHA256[path]
+                and recovery_rejected_entries[path][0] == '100644',
+                'Component fast-path recovery-rejected proof identity changed: ' + path)
+    recovery_correction_entries = entries(
+        root, COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_RECOVERY_CORRECTION_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SHA256[path]
+                and recovery_correction_entries[path][0] == '100644',
+                'Component fast-path recovery correction identity changed: ' + path)
+    inventory_rejected_entries = entries(
+        root, COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_SHA256[path]
+                and inventory_rejected_entries[path][0] == '100644',
+                'Component fast-path inventory-rejected proof identity changed: ' + path)
+    inventory_correction_entries = entries(
+        root, COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_INVENTORY_CORRECTION_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SHA256[path]
+                and inventory_correction_entries[path][0] == '100644',
+                'Component fast-path inventory correction identity changed: ' + path)
+    review_rejected_entries = entries(
+        root, COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_SHA256[path]
+                and review_rejected_entries[path][0] == '100644',
+                'Component fast-path review-rejected proof identity changed: ' + path)
+    review_correction_entries = entries(
+        root, COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_REVIEW_CORRECTION_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE + ':' + path)
+        require(digest(source) == COMPONENT_FAST_PATH_REVIEW_CORRECTION_SHA256[path]
+                and review_correction_entries[path][0] == '100644',
+                'Component fast-path final-review correction identity changed: ' + path)
+    self_hash_rejected_entries = entries(
+        root, COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_SHA256[path]
+                and self_hash_rejected_entries[path][0] == '100644',
+                'Component fast-path self-hash-rejected proof identity changed: ' + path)
+    self_hash_correction_entries = entries(
+        root, COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE)
+    for path in sorted(COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SHA256[path]
+                and self_hash_correction_entries[path][0] == '100644',
+                'Component fast-path self-hash correction identity changed: ' + path)
+    final_review_rejected_entries = entries(
+        root, COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF)
+    for path in sorted(COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_PATHS):
+        source = git(root, 'cat-file', 'blob',
+                     COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF + ':' + path)
+        require(digest(source)
+                == COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_SHA256[path]
+                and final_review_rejected_entries[path][0] == '100644',
+                'Component fast-path final-review-rejected proof identity changed: ' + path)
+    verifier = actual_ordinary(root, VERIFIER)
+    regression = actual_ordinary(root, REGRESSION)
+    handoff = actual_ordinary(root, COMPONENT_FAST_PATH_HANDOFF)
+    require(verifier.count(b'def current_component_source_matches(') == 2
+            and verifier.count(b'def require_component_union_index_unchanged(') == 2
+            and verifier.count(b'union_index_entries = preflight_index_entries') == 2
+            and verifier.count(
+                b'require_component_union_index_unchanged(root, union_index_entries)') == 2
+            and verifier.count(
+                b'require_component_union_index_unchanged(root, preflight_index_entries)') == 3
+            and verifier.count(b'| COMPONENT_FAST_PATH_RECOVERY_PATHS') == 2
+            and verifier.count(b'def component_union_allowed_paths(') == 2
+            and verifier.count(b'| COMPONENT_FAST_PATH_ADDITIONS') == 2
+            and verifier.count(b'index_entry != (permission, oid)') == 2
+            and verifier.count(
+                b'path not in ONBOARDING_MODIFIED and path not in REPAIRS') == 2
+            and regression.count(
+                b'Exact component-blob fast path refuses a mutable-source race') == 1
+            and regression.count(
+                b'Component union refuses a same-mode staged-blob race') == 1
+            and regression.count(b'Component union refuses a staged-mode race') == 1
+            and regression.count(
+                b'Full verification refuses a staged mutation after authenticated preflight') == 1
+            and regression.count(
+                b'Recovery successor refuses missing component fast-path handoff admission') == 1
+            and regression.count(
+                b'Recovery successor refuses expanded component fast-path handoff admission') == 1
+            and regression.count(
+                b'Composition path inventory refuses missing fast-path handoff admission') == 1
+            and regression.count(
+                b'Composition path inventory refuses expanded fast-path handoff admission') == 1
+            and regression.count(
+                b'Actual current combined checkout brackets component traversal with the authenticated index') == 1
+            and digest(handoff) == COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256,
+            'Component fast-path implementation or race coverage changed')
+
+
+def notification_acceptance_checkout_head(root):
+    """Project only an authenticated component-proof successor to its exact base."""
+    checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    ancestry = subprocess.run(
+        ['git', '--no-replace-objects', 'merge-base', '--is-ancestor',
+         COMPONENT_FAST_PATH_SOURCE, checkout_head],
+        cwd=root, capture_output=True)
+    require(ancestry.returncode in {0, 1} and not ancestry.stdout
+            and not ancestry.stderr,
+            'Could not classify component fast-path checkout ancestry')
+    if ancestry.returncode == 0:
+        validate_component_fast_path_source(root)
+        return COMPONENT_FAST_PATH_BASE
+    return checkout_head
+
+
 def validate_notification_acceptance_checkout_history(
         checkout_head, checkout_parents, checkout_tree,
         proof_head, proof_parents, proof_tree):
@@ -12834,7 +13488,7 @@ def validate_notification_acceptance_source(root):
     require(sorted(changes)
             == ['M\t' + path for path in sorted(NOTIFICATION_ACCEPTANCE_MODIFIED)],
             'Notification acceptance source changed another path or status')
-    checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    checkout_head = notification_acceptance_checkout_head(root)
     checkout_parents = git(root, 'show', '-s', '--format=%P',
                            checkout_head).decode().strip().split()
     checkout_tree = git(root, 'rev-parse', checkout_head + '^{tree}').decode().strip()

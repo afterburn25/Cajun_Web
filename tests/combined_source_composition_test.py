@@ -340,8 +340,290 @@ def run(root=ROOT):
         refuses('Tracked-source preflight refuses ' + label,
                 lambda raw=raw: proof.parse_tracked_source_drift(raw))
     passed('Tracked-source preflight parses only canonical NUL-delimited paths')
-    proof.verify_current(root)
-    passed('Actual current combined checkout passes its complete byte/mode/path gate')
+    original_component_match = proof.current_component_source_matches
+    original_union_index_check = proof.require_component_union_index_unchanged
+    union_events = []
+
+    def observed_component_match(*args, **kwargs):
+        matched = original_component_match(*args, **kwargs)
+        if matched:
+            union_events.append('component')
+        return matched
+
+    def observed_union_index_check(*args, **kwargs):
+        union_events.append('index')
+        return original_union_index_check(*args, **kwargs)
+
+    proof.current_component_source_matches = observed_component_match
+    proof.require_component_union_index_unchanged = observed_union_index_check
+    try:
+        proof.verify_current(root)
+    finally:
+        proof.current_component_source_matches = original_component_match
+        proof.require_component_union_index_unchanged = original_union_index_check
+    assert (union_events.count('component') > 0
+            and union_events.count('index') == 3
+            and union_events[0] == 'index'
+            and union_events[-2:] == ['index', 'index'])
+    passed('Actual current combined checkout brackets component traversal with the authenticated index')
+    assert (proof.notification_acceptance_checkout_head(root)
+            == proof.COMPONENT_FAST_PATH_BASE)
+    passed('Authenticated component proof projects notification history to exact verified main')
+    assert (proof.git(root, 'rev-parse', proof.COMPONENT_FAST_PATH_BASE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.COMPONENT_FAST_PATH_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_PREDECESSOR_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_PREDECESSOR_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_HANDOFF_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_HANDOFF_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE)
+    for attribute, label in (
+        ('COMPONENT_FAST_PATH_BASE', 'base commit'),
+        ('COMPONENT_FAST_PATH_BASE_TREE', 'base tree'),
+        ('COMPONENT_FAST_PATH_SOURCE', 'implementation commit'),
+        ('COMPONENT_FAST_PATH_SOURCE_TREE', 'implementation tree'),
+        ('COMPONENT_FAST_PATH_PREDECESSOR_PROOF', 'predecessor proof commit'),
+        ('COMPONENT_FAST_PATH_PREDECESSOR_PROOF_TREE', 'predecessor proof tree'),
+        ('COMPONENT_FAST_PATH_CORRECTION_SOURCE', 'review correction commit'),
+        ('COMPONENT_FAST_PATH_CORRECTION_SOURCE_TREE', 'review correction tree'),
+        ('COMPONENT_FAST_PATH_REJECTED_PROOF', 'rejected proof commit'),
+        ('COMPONENT_FAST_PATH_REJECTED_PROOF_TREE', 'rejected proof tree'),
+        ('COMPONENT_FAST_PATH_HANDOFF_SOURCE', 'handoff correction commit'),
+        ('COMPONENT_FAST_PATH_HANDOFF_SOURCE_TREE', 'handoff correction tree'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF', 'preflight-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_TREE', 'preflight-rejected proof tree'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE', 'preflight correction commit'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SOURCE_TREE', 'preflight correction tree'),
+        ('COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF', 'recovery-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_TREE', 'recovery-rejected proof tree'),
+        ('COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE', 'recovery correction commit'),
+        ('COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SOURCE_TREE', 'recovery correction tree'),
+        ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF', 'inventory-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_TREE', 'inventory-rejected proof tree'),
+        ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE', 'inventory correction commit'),
+        ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SOURCE_TREE', 'inventory correction tree'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF', 'review-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_TREE', 'review-rejected proof tree'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE', 'final-review correction commit'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SOURCE_TREE', 'final-review correction tree'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF', 'self-hash-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_TREE', 'self-hash-rejected proof tree'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE', 'self-hash correction commit'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SOURCE_TREE', 'self-hash correction tree'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF',
+         'final-review-rejected proof commit'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE',
+         'final-review-rejected proof tree'),
+    ):
+        original = getattr(proof, attribute)
+        try:
+            setattr(proof, attribute, '0' * 40)
+            refuses('Refuses substituted component fast-path ' + label,
+                    lambda: proof.validate_component_fast_path_source(root))
+        finally:
+            setattr(proof, attribute, original)
+    original_paths = proof.COMPONENT_FAST_PATH_SOURCE_PATHS
+    try:
+        proof.COMPONENT_FAST_PATH_SOURCE_PATHS = frozenset(
+            set(original_paths) | {proof.RECEIPT})
+        refuses('Refuses expanded component fast-path implementation path set',
+                lambda: proof.validate_component_fast_path_source(root))
+    finally:
+        proof.COMPONENT_FAST_PATH_SOURCE_PATHS = original_paths
+    original_hashes = proof.COMPONENT_FAST_PATH_SOURCE_SHA256
+    try:
+        proof.COMPONENT_FAST_PATH_SOURCE_SHA256 = {
+            **original_hashes,
+            proof.REGRESSION: '0' * 64,
+        }
+        refuses('Refuses substituted component fast-path implementation digest',
+                lambda: proof.validate_component_fast_path_source(root))
+    finally:
+        proof.COMPONENT_FAST_PATH_SOURCE_SHA256 = original_hashes
+    for paths_attribute, label in (
+        ('COMPONENT_FAST_PATH_PREDECESSOR_PROOF_PATHS', 'predecessor proof'),
+        ('COMPONENT_FAST_PATH_CORRECTION_PATHS', 'review correction'),
+        ('COMPONENT_FAST_PATH_REJECTED_PROOF_PATHS', 'rejected proof'),
+        ('COMPONENT_FAST_PATH_HANDOFF_SOURCE_PATHS', 'handoff correction'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_PATHS',
+         'preflight-rejected proof'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_PATHS', 'preflight correction'),
+        ('COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_PATHS',
+         'recovery-rejected proof'),
+        ('COMPONENT_FAST_PATH_RECOVERY_CORRECTION_PATHS', 'recovery correction'),
+        ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_PATHS',
+         'inventory-rejected proof'),
+        ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_PATHS', 'inventory correction'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_PATHS', 'review-rejected proof'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_PATHS', 'final-review correction'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_PATHS', 'self-hash-rejected proof'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_PATHS', 'self-hash correction'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_PATHS',
+         'final-review-rejected proof'),
+        ('COMPONENT_FAST_PATH_PROOF_PATHS', 'final proof'),
+    ):
+        original_paths = getattr(proof, paths_attribute)
+        try:
+            setattr(proof, paths_attribute,
+                    frozenset(set(original_paths) | {'unexpected.txt'}))
+            refuses('Refuses expanded component fast-path ' + label + ' path set',
+                    lambda: proof.validate_component_fast_path_source(root))
+        finally:
+            setattr(proof, paths_attribute, original_paths)
+    for hashes_attribute, label in (
+        ('COMPONENT_FAST_PATH_PREDECESSOR_PROOF_SHA256', 'predecessor proof'),
+        ('COMPONENT_FAST_PATH_CORRECTION_SHA256', 'review correction'),
+        ('COMPONENT_FAST_PATH_REJECTED_PROOF_SHA256', 'rejected proof'),
+        ('COMPONENT_FAST_PATH_HANDOFF_SOURCE_SHA256', 'handoff correction'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_REJECTED_PROOF_SHA256',
+         'preflight-rejected proof'),
+        ('COMPONENT_FAST_PATH_PREFLIGHT_CORRECTION_SHA256', 'preflight correction'),
+        ('COMPONENT_FAST_PATH_RECOVERY_REJECTED_PROOF_SHA256',
+         'recovery-rejected proof'),
+        ('COMPONENT_FAST_PATH_RECOVERY_CORRECTION_SHA256', 'recovery correction'),
+        ('COMPONENT_FAST_PATH_INVENTORY_REJECTED_PROOF_SHA256',
+         'inventory-rejected proof'),
+        ('COMPONENT_FAST_PATH_INVENTORY_CORRECTION_SHA256', 'inventory correction'),
+        ('COMPONENT_FAST_PATH_REVIEW_REJECTED_PROOF_SHA256', 'review-rejected proof'),
+        ('COMPONENT_FAST_PATH_REVIEW_CORRECTION_SHA256', 'final-review correction'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_REJECTED_PROOF_SHA256', 'self-hash-rejected proof'),
+        ('COMPONENT_FAST_PATH_SELF_HASH_CORRECTION_SHA256', 'self-hash correction'),
+        ('COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_SHA256',
+         'final-review-rejected proof'),
+    ):
+        original_hashes = getattr(proof, hashes_attribute)
+        target = next(iter(original_hashes))
+        try:
+            setattr(proof, hashes_attribute,
+                    {**original_hashes, target: '0' * 64})
+            refuses('Refuses substituted component fast-path ' + label + ' digest',
+                    lambda: proof.validate_component_fast_path_source(root))
+        finally:
+            setattr(proof, hashes_attribute, original_hashes)
+    original_recovery_paths = proof.COMPONENT_FAST_PATH_RECOVERY_PATHS
+    try:
+        proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = frozenset()
+        refuses('Recovery successor refuses missing component fast-path handoff admission',
+                lambda: proof.validate_pr391_recovery_successor(root))
+        proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = (
+            original_recovery_paths | {'unexpected.txt'})
+        refuses('Recovery successor refuses expanded component fast-path handoff admission',
+                lambda: proof.validate_pr391_recovery_successor(root))
+    finally:
+        proof.COMPONENT_FAST_PATH_RECOVERY_PATHS = original_recovery_paths
+    original_additions = proof.COMPONENT_FAST_PATH_ADDITIONS
+    allowed_paths = proof.component_union_allowed_paths(root, {})
+    assert proof.COMPONENT_FAST_PATH_HANDOFF in allowed_paths
+    try:
+        proof.COMPONENT_FAST_PATH_ADDITIONS = frozenset()
+        refuses('Composition path inventory refuses missing fast-path handoff admission',
+                lambda: proof.require(
+                    proof.component_union_allowed_paths(root, {}) == allowed_paths,
+                    'Component fast-path handoff admission is missing'))
+        proof.COMPONENT_FAST_PATH_ADDITIONS = original_additions | {'unexpected.txt'}
+        refuses('Composition path inventory refuses expanded fast-path handoff admission',
+                lambda: proof.require(
+                    proof.component_union_allowed_paths(root, {}) == allowed_paths,
+                    'Component fast-path handoff admission expanded'))
+    finally:
+        proof.COMPONENT_FAST_PATH_ADDITIONS = original_additions
+    direct_head = 'a' * 40
+    direct_tree = 'b' * 40
+    assert proof.validate_component_fast_path_checkout_history(
+        direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree,
+        direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree
+    ) == direct_head
+    assert proof.validate_component_fast_path_checkout_history(
+        'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head], direct_tree,
+        direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree
+    ) == direct_head
+    passed('Component fast path admits direct proof and exact tree-identical merge')
+    refuses('Component fast-path proof refuses a non-direct parent',
+            lambda: proof.validate_component_fast_path_checkout_history(
+                direct_head, [proof.COMPONENT_FAST_PATH_BASE], direct_tree,
+                direct_head, [proof.COMPONENT_FAST_PATH_BASE], direct_tree))
+    refuses('Component fast-path proof refuses an extra merge parent',
+            lambda: proof.validate_component_fast_path_checkout_history(
+                'c' * 40,
+                [proof.COMPONENT_FAST_PATH_BASE, direct_head, 'd' * 40],
+                direct_tree, direct_head,
+                [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree))
+    refuses('Component fast-path proof refuses a changed merge base',
+            lambda: proof.validate_component_fast_path_checkout_history(
+                'c' * 40, ['d' * 40, direct_head], direct_tree,
+                direct_head, [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree))
+    refuses('Component fast-path proof refuses a non-direct branch head',
+            lambda: proof.validate_component_fast_path_checkout_history(
+                'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head],
+                direct_tree, direct_head,
+                [proof.COMPONENT_FAST_PATH_BASE], direct_tree))
+    refuses('Component fast-path proof refuses a changed merge tree',
+            lambda: proof.validate_component_fast_path_checkout_history(
+                'c' * 40, [proof.COMPONENT_FAST_PATH_BASE, direct_head],
+                'd' * 40, direct_head,
+                [proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF], direct_tree))
+    original_actual_ordinary = proof.actual_ordinary
+
+    def altered_component_fast_path_handoff(root_value, path):
+        value = original_actual_ordinary(root_value, path)
+        if path == proof.COMPONENT_FAST_PATH_HANDOFF:
+            return value + b'\nUNREVIEWED FINAL HANDOFF CONTENT\n'
+        return value
+
+    proof.actual_ordinary = altered_component_fast_path_handoff
+    try:
+        refuses('Refuses arbitrary final handoff content',
+                lambda: proof.validate_component_fast_path_source(root))
+    finally:
+        proof.actual_ordinary = original_actual_ordinary
+    original_final_handoff_hash = proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256
+    try:
+        proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = '0' * 64
+        refuses('Refuses substituted final handoff digest',
+                lambda: proof.validate_component_fast_path_source(root))
+    finally:
+        proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = original_final_handoff_hash
     assert (proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_BASE + '^{tree}')
             .decode().strip() == proof.NOTIFICATION_ACCEPTANCE_BASE_TREE
             and proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_SOURCE + '^{tree}')
@@ -576,6 +858,57 @@ def run(root=ROOT):
         'project_ux09',
     ]
     passed('Component union applies each terminal projection chain once in exact order')
+    with tempfile.TemporaryDirectory(prefix='cwp-component-fast-path-') as folder:
+        fixture = Path(folder)
+        target = fixture / 'exact.txt'
+        target.write_bytes(b'exact component bytes\n')
+        subprocess.run(['git', 'init', '--quiet'], cwd=fixture, check=True)
+        subprocess.run(['git', 'add', '--', 'exact.txt'], cwd=fixture, check=True)
+        current = proof.ordinary(fixture, 'exact.txt')
+        oid = hashlib.sha1(
+            b'blob ' + str(len(current)).encode('ascii') + b'\0' + current).hexdigest()
+        index_entries = proof.current_index_entries(fixture)
+        assert proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', oid, index_entries['exact.txt'])
+        assert not proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', '0' * 40,
+            index_entries['exact.txt'])
+        original_ordinary = proof.ordinary
+
+        def raced_component(root_value, path):
+            if Path(root_value) == fixture and path == 'exact.txt':
+                return b'raced component bytes\n'
+            return original_ordinary(root_value, path)
+
+        proof.ordinary = raced_component
+        try:
+            refuses('Exact component-blob fast path refuses a mutable-source race',
+                    lambda: proof.current_component_source_matches(
+                        fixture, 'exact.txt', current, '100644', oid,
+                        index_entries['exact.txt']))
+        finally:
+            proof.ordinary = original_ordinary
+        target.write_bytes(b'staged unrelated bytes\n')
+        subprocess.run(['git', 'add', '--', 'exact.txt'], cwd=fixture, check=True)
+        assert not proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', oid,
+            proof.current_index_entries(fixture)['exact.txt'])
+        refuses('Component union refuses a same-mode staged-blob race',
+                lambda: proof.require_component_union_index_unchanged(
+                    fixture, index_entries))
+        target.write_bytes(current)
+        subprocess.run(['git', 'add', '--', 'exact.txt'], cwd=fixture, check=True)
+        restored_index = proof.current_index_entries(fixture)
+        assert restored_index == index_entries
+        subprocess.run(['git', 'update-index', '--chmod=+x', '--', 'exact.txt'],
+                       cwd=fixture, check=True)
+        assert not proof.current_component_source_matches(
+            fixture, 'exact.txt', current, '100644', oid,
+            proof.current_index_entries(fixture)['exact.txt'])
+        refuses('Component union refuses a staged-mode race',
+                lambda: proof.require_component_union_index_unchanged(
+                    fixture, restored_index))
+    passed('Exact component-blob fast path brackets unchanged bytes and modes')
     mail_projection = next(node for node in verifier_ast.body
                            if isinstance(node, ast.FunctionDef)
                            and node.name == 'project_mail_reply_forward_source')
@@ -860,8 +1193,10 @@ def run(root=ROOT):
         fixture_proof_files = {
             path: proof.ordinary(fixture, path)
             for path in (proof.RECEIPT, proof.VERIFIER, proof.REGRESSION)}
-        assert set(proof.tracked_source_preflight(fixture, fixture_proof_files)) <= {
-            proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
+        preflight_paths, preflight_index = proof.tracked_source_preflight(
+            fixture, fixture_proof_files)
+        assert (set(preflight_paths) <= {proof.RECEIPT, proof.VERIFIER, proof.REGRESSION}
+                and preflight_index == proof.current_index_entries(fixture))
         passed('Tracked-source preflight permits only already-validated proof-file drift')
 
         original_actual_ordinary = proof.actual_ordinary
@@ -1340,6 +1675,26 @@ def run(root=ROOT):
             subprocess.run(['git', 'reset', '--quiet', 'HEAD', '--', early_path],
                            cwd=fixture, check=True)
             target.write_bytes(original)
+            target.chmod(permission)
+
+        original_preflight = proof.tracked_source_preflight
+
+        def stage_after_authenticated_preflight(root_value, proof_files):
+            result = original_preflight(root_value, proof_files)
+            if Path(root_value) == fixture:
+                target.write_bytes(original + b'\n# post-preflight staged mutation\n')
+                subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
+                target.write_bytes(original)
+            return result
+
+        proof.tracked_source_preflight = stage_after_authenticated_preflight
+        try:
+            refuses('Full verification refuses a staged mutation after authenticated preflight',
+                    lambda: proof.verify_current(fixture))
+        finally:
+            proof.tracked_source_preflight = original_preflight
+            target.write_bytes(original)
+            subprocess.run(['git', 'add', '--', early_path], cwd=fixture, check=True)
             target.chmod(permission)
 
         proof_target = fixture / proof.RECEIPT
