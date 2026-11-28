@@ -26,7 +26,7 @@ function activity_projection(array $actor): array {
     $parts=[];$args=[];$contact=$actor['type']==='contact';$client=$actor['type']==='client'||$contact;
     $can=static fn(string $permission):bool=>!$contact||in_array($permission,$actor['permissions'],true);
     $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id') use(&$parts,&$args,$actor,$client): void {
-        $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at,0 AS sort_sequence FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($client?' AND j.client_id=?':'');
+        $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS source_id,CAST(".$target." AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at,0 AS sort_sequence FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($client?' AND j.client_id=?':'');
         if($client)$args[]=$actor['client_id']??$actor['id'];
     };
     $add('studio_messages','message','s.created_at',"''","s.author_type".($client?"='admin'":" IN ('client','contact')"));
@@ -39,7 +39,7 @@ function activity_projection(array $actor): array {
     }else $add('studio_versions','decision','s.decided_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.decision,' · ',s.title)","s.decision IN ('approved','changes') AND s.decided_at IS NOT NULL AND s.decided_by=j.client_id");
     if(project_progress_ready()){
         $scope=$client?' AND s.client_id=?':' AND s.staff_id<>?';$args[]=$client?($actor['client_id']??$actor['id']):$actor['id'];
-        $parts[]="SELECT CAST(CONCAT('progress:',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'progress' AS kind,CAST(s.id AS CHAR) AS source_id,CAST(s.id AS CHAR) AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,'' AS item_title,s.created_at AS occurred_at,s.revision AS sort_sequence FROM ".table('studio_progress_events')." s JOIN ".table('studio_jobs')." j ON j.id=s.job_id JOIN ".table('studio_clients')." c ON c.id=j.client_id WHERE c.active=1 AND s.kind='updated'".$scope;
+        $parts[]="SELECT CAST(CONCAT('progress:',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'progress' AS kind,CAST(s.id AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS source_id,CAST(s.id AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,'' AS item_title,s.created_at AS occurred_at,s.revision AS sort_sequence FROM ".table('studio_progress_events')." s JOIN ".table('studio_jobs')." j ON j.id=s.job_id JOIN ".table('studio_clients')." c ON c.id=j.client_id WHERE c.active=1 AND s.kind='updated'".$scope;
     }
     return [implode(' UNION ALL ',$parts),$args];
 }
