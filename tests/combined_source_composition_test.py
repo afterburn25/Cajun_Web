@@ -366,8 +366,9 @@ def run(root=ROOT):
             and union_events[0] == 'index'
             and union_events[-2:] == ['index', 'index'])
     passed('Actual current combined checkout brackets component traversal with the authenticated index')
-    assert (proof.notification_acceptance_checkout_head(root)
-            == proof.COMPONENT_FAST_PATH_BASE)
+    with proof.mail_schema_count_fix_projection(root):
+        assert (proof.notification_acceptance_checkout_head(root)
+                == proof.COMPONENT_FAST_PATH_BASE)
     passed('Authenticated component proof projects notification history to exact verified main')
     assert (proof.git(root, 'rev-parse', proof.COMPONENT_FAST_PATH_BASE + '^{tree}')
             .decode().strip() == proof.COMPONENT_FAST_PATH_BASE_TREE
@@ -418,6 +419,11 @@ def run(root=ROOT):
             and proof.git(root, 'rev-parse',
                           proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF + '^{tree}')
             .decode().strip() == proof.COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_TREE)
+    def validate_component_fast_path_current():
+        with proof.mail_schema_count_fix_projection(root):
+            with proof.project_workflow_projection(root):
+                return proof.validate_component_fast_path_source(root)
+
     for attribute, label in (
         ('COMPONENT_FAST_PATH_BASE', 'base commit'),
         ('COMPONENT_FAST_PATH_BASE_TREE', 'base tree'),
@@ -460,7 +466,7 @@ def run(root=ROOT):
         try:
             setattr(proof, attribute, '0' * 40)
             refuses('Refuses substituted component fast-path ' + label,
-                    lambda: proof.validate_component_fast_path_source(root))
+                    validate_component_fast_path_current)
         finally:
             setattr(proof, attribute, original)
     original_paths = proof.COMPONENT_FAST_PATH_SOURCE_PATHS
@@ -468,7 +474,7 @@ def run(root=ROOT):
         proof.COMPONENT_FAST_PATH_SOURCE_PATHS = frozenset(
             set(original_paths) | {proof.RECEIPT})
         refuses('Refuses expanded component fast-path implementation path set',
-                lambda: proof.validate_component_fast_path_source(root))
+                validate_component_fast_path_current)
     finally:
         proof.COMPONENT_FAST_PATH_SOURCE_PATHS = original_paths
     original_hashes = proof.COMPONENT_FAST_PATH_SOURCE_SHA256
@@ -478,7 +484,7 @@ def run(root=ROOT):
             proof.REGRESSION: '0' * 64,
         }
         refuses('Refuses substituted component fast-path implementation digest',
-                lambda: proof.validate_component_fast_path_source(root))
+                validate_component_fast_path_current)
     finally:
         proof.COMPONENT_FAST_PATH_SOURCE_SHA256 = original_hashes
     for paths_attribute, label in (
@@ -508,7 +514,7 @@ def run(root=ROOT):
             setattr(proof, paths_attribute,
                     frozenset(set(original_paths) | {'unexpected.txt'}))
             refuses('Refuses expanded component fast-path ' + label + ' path set',
-                    lambda: proof.validate_component_fast_path_source(root))
+                    validate_component_fast_path_current)
         finally:
             setattr(proof, paths_attribute, original_paths)
     for hashes_attribute, label in (
@@ -538,7 +544,7 @@ def run(root=ROOT):
             setattr(proof, hashes_attribute,
                     {**original_hashes, target: '0' * 64})
             refuses('Refuses substituted component fast-path ' + label + ' digest',
-                    lambda: proof.validate_component_fast_path_source(root))
+                    validate_component_fast_path_current)
         finally:
             setattr(proof, hashes_attribute, original_hashes)
     original_recovery_paths = proof.COMPONENT_FAST_PATH_RECOVERY_PATHS
@@ -614,25 +620,32 @@ def run(root=ROOT):
     proof.actual_ordinary = altered_component_fast_path_handoff
     try:
         refuses('Refuses arbitrary final handoff content',
-                lambda: proof.validate_component_fast_path_source(root))
+                validate_component_fast_path_current)
     finally:
         proof.actual_ordinary = original_actual_ordinary
     original_final_handoff_hash = proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256
     try:
         proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = '0' * 64
         refuses('Refuses substituted final handoff digest',
-                lambda: proof.validate_component_fast_path_source(root))
+                validate_component_fast_path_current)
     finally:
         proof.COMPONENT_FAST_PATH_FINAL_HANDOFF_SHA256 = original_final_handoff_hash
     assert (proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_BASE + '^{tree}')
             .decode().strip() == proof.NOTIFICATION_ACCEPTANCE_BASE_TREE
             and proof.git(root, 'rev-parse', proof.NOTIFICATION_ACCEPTANCE_SOURCE + '^{tree}')
             .decode().strip() == proof.NOTIFICATION_ACCEPTANCE_SOURCE_TREE)
-    with proof.notification_acceptance_projection(root):
-        for path in proof.NOTIFICATION_ACCEPTANCE_MODIFIED:
-            assert (proof.ordinary(root, path)
-                    == proof.git(root, 'cat-file', 'blob',
-                                 proof.NOTIFICATION_ACCEPTANCE_BASE + ':' + path))
+    def validate_notification_acceptance_current():
+        with proof.mail_schema_count_fix_projection(root):
+            with proof.project_workflow_projection(root):
+                return proof.validate_notification_acceptance_source(root)
+
+    with proof.mail_schema_count_fix_projection(root):
+        with proof.project_workflow_projection(root):
+            with proof.notification_acceptance_projection(root):
+                for path in proof.NOTIFICATION_ACCEPTANCE_MODIFIED:
+                    assert (proof.ordinary(root, path)
+                            == proof.git(root, 'cat-file', 'blob',
+                                         proof.NOTIFICATION_ACCEPTANCE_BASE + ':' + path))
     passed('Notification acceptance projection restores both exact verified-main paths')
     for attribute, label in (
         ('NOTIFICATION_ACCEPTANCE_BASE_TREE', 'base tree'),
@@ -655,7 +668,7 @@ def run(root=ROOT):
         try:
             setattr(proof, attribute, '0' * len(original))
             refuses('Refuses substituted notification acceptance ' + label,
-                    lambda: proof.validate_notification_acceptance_source(root))
+                    validate_notification_acceptance_current)
         finally:
             setattr(proof, attribute, original)
     direct_head = 'f' * 40
@@ -701,12 +714,14 @@ def run(root=ROOT):
             .decode().strip() == proof.CLOUD_INIT_TERMINAL_BASE_TREE
             and proof.git(root, 'rev-parse', proof.CLOUD_INIT_TERMINAL_SOURCE + '^{tree}')
             .decode().strip() == proof.CLOUD_INIT_TERMINAL_SOURCE_TREE)
-    with proof.notification_acceptance_projection(root):
-        with proof.cloud_init_terminal_projection(root):
-            for path in proof.CLOUD_INIT_TERMINAL_MODIFIED:
-                assert (proof.ordinary(root, path)
-                        == proof.git(root, 'cat-file', 'blob',
-                                     proof.CLOUD_INIT_TERMINAL_BASE + ':' + path))
+    with proof.mail_schema_count_fix_projection(root):
+        with proof.project_workflow_projection(root):
+            with proof.notification_acceptance_projection(root):
+                with proof.cloud_init_terminal_projection(root):
+                    for path in proof.CLOUD_INIT_TERMINAL_MODIFIED:
+                        assert (proof.ordinary(root, path)
+                                == proof.git(root, 'cat-file', 'blob',
+                                             proof.CLOUD_INIT_TERMINAL_BASE + ':' + path))
     passed('Cloud-init terminal projection restores both exact predecessor paths')
     for attribute, label in (
         ('CLOUD_INIT_TERMINAL_BASE_TREE', 'base tree'),
@@ -729,8 +744,10 @@ def run(root=ROOT):
         try:
             setattr(proof, attribute, '0' * len(original))
             def validate_cloud_init_current():
-                with proof.notification_acceptance_projection(root):
-                    return proof.validate_cloud_init_terminal_source(root)
+                with proof.mail_schema_count_fix_projection(root):
+                    with proof.project_workflow_projection(root):
+                        with proof.notification_acceptance_projection(root):
+                            return proof.validate_cloud_init_terminal_source(root)
 
             refuses('Refuses substituted cloud-init terminal ' + label,
                     validate_cloud_init_current)
@@ -770,17 +787,77 @@ def run(root=ROOT):
     assert all(progress_workflow.count("      - '" + path + "'") == 2
                for path in progress_inputs)
     passed('Focused project-progress workflow admits every application, handoff, and proof input')
-    assert (proof.validate_project_workflow_source(root)
-            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_BASE + '^{tree}')
-            .decode().strip() == proof.PROJECT_WORKFLOW_BASE_TREE
-            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_INERT + '^{tree}')
-            .decode().strip() == proof.PROJECT_WORKFLOW_INERT_TREE
-            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_SOURCE + '^{tree}')
-            .decode().strip() == proof.PROJECT_WORKFLOW_SOURCE_TREE
-            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_DOCS + '^{tree}')
-            .decode().strip() == proof.PROJECT_WORKFLOW_DOCS_TREE)
+    assert (proof.git(root, 'rev-parse', proof.MAIL_SCHEMA_COUNT_FIX_BASE + '^{tree}')
+            .decode().strip() == proof.MAIL_SCHEMA_COUNT_FIX_BASE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.MAIL_SCHEMA_COUNT_FIX_SOURCE + '^{tree}')
+            .decode().strip() == proof.MAIL_SCHEMA_COUNT_FIX_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.ACTIVITY_COLLATION_SOURCE + '^{tree}')
+            .decode().strip() == proof.ACTIVITY_COLLATION_SOURCE_TREE)
     synthetic_proof = 'a' * 40
     synthetic_tree = 'b' * 40
+    assert proof.validate_mail_schema_count_fix_checkout_history(
+        synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE], synthetic_tree,
+        synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE], synthetic_tree
+    ) == synthetic_proof
+    assert proof.validate_mail_schema_count_fix_checkout_history(
+        'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], synthetic_tree,
+        synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE], synthetic_tree
+    ) == synthetic_proof
+    refuses('Mail schema-count proof refuses a changed direct parent',
+            lambda: proof.validate_mail_schema_count_fix_checkout_history(
+                synthetic_proof, ['d' * 40], synthetic_tree,
+                synthetic_proof, ['d' * 40], synthetic_tree))
+    refuses('Mail schema-count proof refuses a changed direct tree',
+            lambda: proof.validate_mail_schema_count_fix_checkout_history(
+                synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE], 'd' * 40,
+                synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE],
+                synthetic_tree))
+    refuses('Mail schema-count merge refuses a changed base',
+            lambda: proof.validate_mail_schema_count_fix_checkout_history(
+                'c' * 40, ['d' * 40, synthetic_proof], synthetic_tree,
+                synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE],
+                synthetic_tree))
+    refuses('Mail schema-count merge refuses an extra parent',
+            lambda: proof.validate_mail_schema_count_fix_checkout_history(
+                'c' * 40,
+                [proof.PROJECT_WORKFLOW_BASE, synthetic_proof, 'd' * 40],
+                synthetic_tree, synthetic_proof,
+                [proof.ACTIVITY_COLLATION_SOURCE], synthetic_tree))
+    refuses('Mail schema-count merge refuses reversed parents',
+            lambda: proof.validate_mail_schema_count_fix_checkout_history(
+                'c' * 40, [synthetic_proof, proof.PROJECT_WORKFLOW_BASE],
+                synthetic_tree, synthetic_proof,
+                [proof.ACTIVITY_COLLATION_SOURCE], synthetic_tree))
+    refuses('Mail schema-count merge refuses a changed tree',
+            lambda: proof.validate_mail_schema_count_fix_checkout_history(
+                'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], 'd' * 40,
+                synthetic_proof, [proof.ACTIVITY_COLLATION_SOURCE],
+                synthetic_tree))
+    passed('Mail schema-count history admits only direct proof and exact tree-identical merge')
+    with proof.mail_schema_count_fix_projection(root):
+        for path in proof.MAIL_SCHEMA_COUNT_FIX_PATHS:
+            predecessor = proof.git(
+                root, 'cat-file', 'blob', proof.MAIL_SCHEMA_COUNT_FIX_BASE + ':' + path)
+            assert proof.ordinary(root, path) == predecessor
+            assert proof.mail_schema_count_fix_projected_bytes(
+                root, path, predecessor) == predecessor
+        assert (proof.mail_schema_count_fix_project_workflow_head(root)
+                == proof.MAIL_SCHEMA_COUNT_FIX_BASE)
+        assert (proof.validate_project_workflow_source(root)
+                and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_BASE + '^{tree}')
+                .decode().strip() == proof.PROJECT_WORKFLOW_BASE_TREE
+                and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_INERT + '^{tree}')
+                .decode().strip() == proof.PROJECT_WORKFLOW_INERT_TREE
+                and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_SOURCE + '^{tree}')
+                .decode().strip() == proof.PROJECT_WORKFLOW_SOURCE_TREE
+                and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_DOCS + '^{tree}')
+                .decode().strip() == proof.PROJECT_WORKFLOW_DOCS_TREE)
+    passed('Current-source projection restores all nine failed-head blobs and authenticates the predecessor proof')
     assert proof.validate_project_workflow_checkout_history(
         synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree,
         synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree) == synthetic_proof
@@ -815,55 +892,61 @@ def run(root=ROOT):
                 'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], 'd' * 40,
                 synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree))
     passed('Project-workflow history admits only direct proof and exact tree-identical merge')
-    with proof.project_workflow_projection(root):
-        for path in proof.PROJECT_WORKFLOW_MODIFIED - proof.PROJECT_WORKFLOW_DOCS_MODIFIED:
-            assert (proof.ordinary(root, path)
-                    == proof.git(root, 'cat-file', 'blob',
-                                 proof.PROJECT_WORKFLOW_BASE + ':' + path))
-        for path in proof.PROJECT_WORKFLOW_DOCS_MODIFIED:
-            assert (proof.ordinary(root, path) == proof.actual_ordinary(root, path)
-                    and proof.digest(proof.ordinary(root, path))
-                    == proof.REL127_PROOF_SHA256[path])
-        assert (proof.canonical_inventory(root)
-                == proof.git(root, 'cat-file', 'blob',
-                             proof.PROJECT_WORKFLOW_BASE + ':' + proof.INVENTORY))
-        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-        assert proof.PROJECT_WORKFLOW_ADDITIONS.isdisjoint(
-            proof.actual_paths(root, tracked))
-        assert proof.project_workflow_component_checkout_head(root) == proof.PROJECT_WORKFLOW_BASE
-    passed('Project-workflow projection restores exact verified-main runtime and retains bound status documents')
-    with proof.project_workflow_projection(root):
-        with proof.project_progress_projection(root):
-            for path in proof.PROJECT_PROGRESS_MODIFIED:
+    with proof.mail_schema_count_fix_projection(root):
+        with proof.project_workflow_projection(root):
+            for path in proof.PROJECT_WORKFLOW_MODIFIED - proof.PROJECT_WORKFLOW_DOCS_MODIFIED:
                 assert (proof.ordinary(root, path)
                         == proof.git(root, 'cat-file', 'blob',
-                                     proof.PROJECT_PROGRESS_BASE + ':' + path))
-            tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-            assert proof.PROJECT_PROGRESS_ADDITIONS.isdisjoint(
-                proof.actual_paths(root, tracked))
+                                     proof.PROJECT_WORKFLOW_BASE + ':' + path))
+            for path in proof.PROJECT_WORKFLOW_DOCS_MODIFIED:
+                assert (proof.ordinary(root, path) == proof.actual_ordinary(root, path)
+                        and proof.digest(proof.ordinary(root, path))
+                        == proof.REL127_PROOF_SHA256[path])
             assert (proof.canonical_inventory(root)
                     == proof.git(root, 'cat-file', 'blob',
-                                 proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY))
+                                 proof.PROJECT_WORKFLOW_BASE + ':' + proof.INVENTORY))
+            tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+            assert proof.PROJECT_WORKFLOW_ADDITIONS.isdisjoint(
+                proof.actual_paths(root, tracked))
+            assert (proof.project_workflow_component_checkout_head(root)
+                    == proof.PROJECT_WORKFLOW_BASE)
+    passed('Project-workflow projection restores exact verified-main runtime and retains bound status documents')
+    with proof.mail_schema_count_fix_projection(root):
+        with proof.project_workflow_projection(root):
+            with proof.project_progress_projection(root):
+                for path in proof.PROJECT_PROGRESS_MODIFIED:
+                    assert (proof.ordinary(root, path)
+                            == proof.git(root, 'cat-file', 'blob',
+                                         proof.PROJECT_PROGRESS_BASE + ':' + path))
+                tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+                assert proof.PROJECT_PROGRESS_ADDITIONS.isdisjoint(
+                    proof.actual_paths(root, tracked))
+                assert (proof.canonical_inventory(root)
+                        == proof.git(root, 'cat-file', 'blob',
+                                     proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY))
     passed('Project-progress projection restores the exact qualified-main inventory and removes only its additions')
     assert (proof.git(root, 'rev-parse', proof.REL127_BASE + '^{tree}').decode().strip()
             == proof.REL127_BASE_TREE
             and proof.git(root, 'rev-parse', proof.REL127_SOURCE + '^{tree}').decode().strip()
             == proof.REL127_SOURCE_TREE)
-    with proof.project_workflow_projection(root):
-        with proof.project_progress_projection(root):
-            with proof.release_127_projection(root):
-                for path in proof.REL127_MODIFIED - proof.REL127_PROOF_PROJECTED:
-                    assert (proof.ordinary(root, path)
-                            == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
-                for path in proof.REL127_PROOF_PROJECTED:
-                    assert (proof.ordinary(root, path)
-                            == proof.git(root, 'cat-file', 'blob', proof.REL127_SOURCE + ':' + path))
-                tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-                assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
-                assert (proof.ordinary(root, proof.REGRESSION)
-                        == proof.actual_ordinary(root, proof.REGRESSION)
-                        and proof.digest(proof.ordinary(root, proof.REGRESSION))
-                        == proof.REGRESSION_SHA256)
+    with proof.mail_schema_count_fix_projection(root):
+        with proof.project_workflow_projection(root):
+            with proof.project_progress_projection(root):
+                with proof.release_127_projection(root):
+                    for path in proof.REL127_MODIFIED - proof.REL127_PROOF_PROJECTED:
+                        assert (proof.ordinary(root, path)
+                                == proof.git(root, 'cat-file', 'blob',
+                                             proof.REL127_BASE + ':' + path))
+                    for path in proof.REL127_PROOF_PROJECTED:
+                        assert (proof.ordinary(root, path)
+                                == proof.git(root, 'cat-file', 'blob',
+                                             proof.REL127_SOURCE + ':' + path))
+                    tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+                    assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
+                    assert (proof.ordinary(root, proof.REGRESSION)
+                            == proof.actual_ordinary(root, proof.REGRESSION)
+                            and proof.digest(proof.ordinary(root, proof.REGRESSION))
+                            == proof.REGRESSION_SHA256)
     passed('REL-01 projection binds every exact modified path, removes only its additions, and leaves self-bound proof bytes current')
 
     for attribute, label in (
@@ -875,9 +958,10 @@ def run(root=ROOT):
         try:
             setattr(proof, attribute, '0' * 40)
             def validate_release_current():
-                with proof.project_workflow_projection(root):
-                    with proof.project_progress_projection(root):
-                        return proof.validate_release_127_source(root)
+                with proof.mail_schema_count_fix_projection(root):
+                    with proof.project_workflow_projection(root):
+                        with proof.project_progress_projection(root):
+                            return proof.validate_release_127_source(root)
 
             refuses('Refuses substituted REL-01 ' + label,
                     validate_release_current)
@@ -900,8 +984,9 @@ def run(root=ROOT):
         try:
             setattr(proof, attribute, '0' * 40)
             def validate_progress_current():
-                with proof.project_workflow_projection(root):
-                    return proof.validate_project_progress_source(root)
+                with proof.mail_schema_count_fix_projection(root):
+                    with proof.project_workflow_projection(root):
+                        return proof.validate_project_progress_source(root)
 
             refuses('Refuses substituted project-progress ' + label,
                     validate_progress_current)
@@ -1018,13 +1103,20 @@ def run(root=ROOT):
         proof.verify_current(fixture)
         passed('Disposable actual-filesystem fixture begins with the same validated composition')
 
+        def validate_notification_acceptance_fixture():
+            with proof.mail_schema_count_fix_projection(fixture):
+                with proof.project_workflow_projection(fixture):
+                    return proof.validate_notification_acceptance_source(fixture)
+
         def cloud_init_terminal_tamper(path):
             target = fixture / path
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed cloud-init admission\n')
-                with proof.notification_acceptance_projection(fixture):
-                    proof.validate_cloud_init_terminal_source(fixture)
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        with proof.notification_acceptance_projection(fixture):
+                            proof.validate_cloud_init_terminal_source(fixture)
             finally:
                 target.write_bytes(original)
 
@@ -1038,8 +1130,10 @@ def run(root=ROOT):
         try:
             proof.CLOUD_INIT_TERMINAL_MODIFIED = original_cloud_paths | {'README.md'}
             def validate_cloud_init_paths():
-                with proof.notification_acceptance_projection(fixture):
-                    return proof.validate_cloud_init_terminal_source(fixture)
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        with proof.notification_acceptance_projection(fixture):
+                            return proof.validate_cloud_init_terminal_source(fixture)
 
             refuses('Cloud-init terminal binding refuses an altered source path set',
                     validate_cloud_init_paths)
@@ -1051,7 +1145,7 @@ def run(root=ROOT):
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed notification acceptance\n')
-                proof.validate_notification_acceptance_source(fixture)
+                validate_notification_acceptance_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -1066,16 +1160,203 @@ def run(root=ROOT):
             proof.NOTIFICATION_ACCEPTANCE_MODIFIED = (
                 original_notification_paths | {'README.md'})
             refuses('Notification acceptance binding refuses an altered source path set',
-                    lambda: proof.validate_notification_acceptance_source(fixture))
+                    validate_notification_acceptance_fixture)
         finally:
             proof.NOTIFICATION_ACCEPTANCE_MODIFIED = original_notification_paths
+
+        def mail_schema_count_source_tamper(path, suffix=b'\n# unreviewed count source\n'):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + suffix)
+                proof.validate_mail_schema_count_fix_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Mail schema-count binding refuses changed workflow bytes',
+                lambda: mail_schema_count_source_tamper(
+                    '.github/workflows/mail-flags-native.yml'))
+        refuses('Mail schema-count binding refuses changed contract bytes',
+                lambda: mail_schema_count_source_tamper(
+                    'tests/mail_flags_native_workflow_contract.py'))
+        refuses('Current-source binding refuses changed project loader bytes',
+                lambda: mail_schema_count_source_tamper(
+                    'tests/project_progress_schema_native.php'))
+        refuses('Current-source binding refuses changed activity projection bytes',
+                lambda: mail_schema_count_source_tamper(
+                    'site/app/activity/events.php'))
+        refuses('Current-source binding refuses changed activity regression bytes',
+                lambda: mail_schema_count_source_tamper(
+                    'tests/project_progress_screen_native_cases.php'))
+
+        def mail_schema_count_weaken_exact_assertion():
+            target = fixture / '.github/workflows/mail-flags-native.yml'
+            original = target.read_bytes()
+            exact = b"len(report['checks'])==count"
+            assert original.count(exact) == 1
+            try:
+                target.write_bytes(original.replace(exact, b"len(report['checks'])>=count"))
+                proof.validate_mail_schema_count_fix_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Mail schema-count binding refuses a weakened minimum-count assertion',
+                mail_schema_count_weaken_exact_assertion)
+
+        def mail_schema_count_line_ending_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            assert b'\n' in original and b'\r\n' not in original
+            try:
+                target.write_bytes(original.replace(b'\n', b'\r\n'))
+                proof.validate_mail_schema_count_fix_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Mail schema-count binding refuses normalized line-ending drift',
+                lambda: mail_schema_count_line_ending_tamper(
+                    '.github/workflows/mail-folder-native.yml'))
+        for attribute, label in (
+            ('MAIL_SCHEMA_COUNT_FIX_BASE', 'base commit'),
+            ('MAIL_SCHEMA_COUNT_FIX_BASE_TREE', 'base tree'),
+            ('MAIL_SCHEMA_COUNT_FIX_SOURCE', 'source commit'),
+            ('MAIL_SCHEMA_COUNT_FIX_SOURCE_TREE', 'source tree'),
+            ('PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE', 'loader-fix commit'),
+            ('PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE_TREE', 'loader-fix tree'),
+            ('ACTIVITY_COLLATION_SOURCE', 'activity-fix commit'),
+            ('ACTIVITY_COLLATION_SOURCE_TREE', 'activity-fix tree'),
+        ):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                refuses('Mail schema-count binding refuses substituted ' + label,
+                        lambda: proof.validate_mail_schema_count_fix_source(fixture))
+            finally:
+                setattr(proof, attribute, original)
+        original_mail_paths = proof.MAIL_SCHEMA_COUNT_FIX_MODIFIED
+        try:
+            proof.MAIL_SCHEMA_COUNT_FIX_MODIFIED = original_mail_paths | {'README.md'}
+            refuses('Mail schema-count binding refuses an expanded source path set',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+            proof.MAIL_SCHEMA_COUNT_FIX_MODIFIED = frozenset(
+                set(original_mail_paths)
+                - {'.github/workflows/mail-flags-native.yml'})
+            refuses('Mail schema-count binding refuses a missing source path',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.MAIL_SCHEMA_COUNT_FIX_MODIFIED = original_mail_paths
+        original_loader_paths = proof.PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED
+        try:
+            proof.PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED = (
+                original_loader_paths | {'README.md'})
+            refuses('Current-source binding refuses an expanded loader-fix path set',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+            proof.PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED = frozenset()
+            refuses('Current-source binding refuses a missing loader-fix path',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED = original_loader_paths
+        original_activity_paths = proof.ACTIVITY_COLLATION_MODIFIED
+        try:
+            proof.ACTIVITY_COLLATION_MODIFIED = original_activity_paths | {'README.md'}
+            refuses('Current-source binding refuses an expanded activity-fix path set',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+            proof.ACTIVITY_COLLATION_MODIFIED = frozenset(
+                set(original_activity_paths) - {'site/app/activity/events.php'})
+            refuses('Current-source binding refuses a missing activity-fix path',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.ACTIVITY_COLLATION_MODIFIED = original_activity_paths
+        fragment_path = '.github/workflows/mail-flags-native.yml'
+        original_fragment = proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[fragment_path]
+        try:
+            proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[fragment_path] = (
+                original_fragment[0], original_fragment[1].replace(b'410', b'409'))
+            refuses('Mail schema-count binding refuses a substituted expected count',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[fragment_path] = original_fragment
+        activity_marker_path = 'site/app/activity/events.php'
+        original_activity_markers = proof.ACTIVITY_COLLATION_SOURCE_MARKERS[
+            activity_marker_path]
+        try:
+            proof.ACTIVITY_COLLATION_SOURCE_MARKERS[activity_marker_path] = (
+                (original_activity_markers[0][0].replace(b'ascii_bin', b'ascii_general_ci'),
+                 original_activity_markers[0][1]),
+                *original_activity_markers[1:],
+            )
+            refuses('Current-source binding refuses a weakened activity collation marker',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.ACTIVITY_COLLATION_SOURCE_MARKERS[
+                activity_marker_path] = original_activity_markers
+        original_mail_proof_paths = proof.MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS
+        try:
+            proof.MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS = (
+                original_mail_proof_paths | {'README.md'})
+            refuses('Mail schema-count binding refuses an expanded proof path set',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS = original_mail_proof_paths
+
+        def mail_schema_count_projection_race(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                with proof.mail_schema_count_fix_projection(fixture):
+                    target.write_bytes(original + b'\n# concurrent mail count source\n')
+            finally:
+                target.write_bytes(original)
+
+        refuses('Mail schema-count projection exit refuses a concurrent file change',
+                lambda: mail_schema_count_projection_race(
+                    '.github/workflows/mail-copied-draft-native.yml'))
+
+        def mail_schema_count_projection_index_race(path, executable):
+            entry = proof.current_index_entries(fixture)[path]
+            try:
+                with proof.mail_schema_count_fix_projection(fixture):
+                    if executable:
+                        subprocess.run(
+                            ['git', 'update-index', '--chmod=+x', '--', path],
+                            cwd=fixture, check=True, capture_output=True)
+                    else:
+                        result = subprocess.run(
+                            ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                            input=b'unreviewed staged mail count source\n',
+                            capture_output=True, check=True)
+                        oid = result.stdout.decode().strip()
+                        assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                        subprocess.run(
+                            ['git', 'update-index', '--cacheinfo',
+                             entry[0] + ',' + oid + ',' + path],
+                            cwd=fixture, check=True, capture_output=True)
+            finally:
+                subprocess.run(
+                    ['git', 'update-index', '--add', '--cacheinfo',
+                     entry[0] + ',' + entry[1] + ',' + path],
+                    cwd=fixture, check=True, capture_output=True)
+
+        refuses('Mail schema-count projection exit refuses a staged-mode race',
+                lambda: mail_schema_count_projection_index_race(
+                    'tests/mail_folder_native_workflow_contract.py', True))
+        refuses('Mail schema-count projection exit refuses a staged-blob race',
+                lambda: mail_schema_count_projection_index_race(
+                    'tests/mail_folder_native_workflow_contract.py', False))
+        assert (proof._MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH == 0
+                and not proof._MAIL_SCHEMA_COUNT_FIX_WORKTREE_OIDS)
+        passed('Mail schema-count negatives preserve exact history, bytes, modes, index and proof topology')
+
+        def validate_project_workflow_fixture():
+            with proof.mail_schema_count_fix_projection(fixture):
+                return proof.validate_project_workflow_source(fixture)
 
         def project_workflow_source_tamper(path, suffix=b'\n# unreviewed project workflow\n'):
             target = fixture / path
             original = target.read_bytes()
             try:
                 target.write_bytes(original + suffix)
-                proof.validate_project_workflow_source(fixture)
+                validate_project_workflow_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -1094,7 +1375,7 @@ def run(root=ROOT):
             assert b'\n' in original and b'\r\n' not in original
             try:
                 target.write_bytes(original.replace(b'\n', b'\r\n'))
-                proof.validate_project_workflow_source(fixture)
+                validate_project_workflow_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -1115,7 +1396,7 @@ def run(root=ROOT):
             try:
                 setattr(proof, attribute, '0' * 40)
                 refuses('Project-workflow binding refuses substituted ' + label,
-                        lambda: proof.validate_project_workflow_source(fixture))
+                        validate_project_workflow_fixture)
             finally:
                 setattr(proof, attribute, original)
         for attribute, label in (
@@ -1129,14 +1410,14 @@ def run(root=ROOT):
             try:
                 setattr(proof, attribute, original | {'unexpected.txt'})
                 refuses('Project-workflow binding refuses expanded ' + label,
-                        lambda: proof.validate_project_workflow_source(fixture))
+                        validate_project_workflow_fixture)
             finally:
                 setattr(proof, attribute, original)
         original_doc_hash = proof.REL127_PROOF_SHA256['README.md']
         try:
             proof.REL127_PROOF_SHA256['README.md'] = '0' * 64
             refuses('Project-workflow binding refuses a substituted release-document hash',
-                    lambda: proof.validate_project_workflow_source(fixture))
+                    validate_project_workflow_fixture)
         finally:
             proof.REL127_PROOF_SHA256['README.md'] = original_doc_hash
 
@@ -1144,8 +1425,9 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.project_workflow_projection(fixture):
-                    target.write_bytes(original + b'\n# concurrent project workflow\n')
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        target.write_bytes(original + b'\n# concurrent project workflow\n')
             finally:
                 target.write_bytes(original)
 
@@ -1159,10 +1441,11 @@ def run(root=ROOT):
         def project_workflow_projection_mode_race(path):
             entry = proof.current_index_entries(fixture)[path]
             try:
-                with proof.project_workflow_projection(fixture):
-                    subprocess.run(
-                        ['git', 'update-index', '--chmod=+x', '--', path],
-                        cwd=fixture, check=True, capture_output=True)
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        subprocess.run(
+                            ['git', 'update-index', '--chmod=+x', '--', path],
+                            cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--add', '--cacheinfo',
@@ -1176,17 +1459,18 @@ def run(root=ROOT):
         def project_workflow_projection_blob_race(path):
             entry = proof.current_index_entries(fixture)[path]
             try:
-                with proof.project_workflow_projection(fixture):
-                    result = subprocess.run(
-                        ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
-                        input=b'unreviewed staged project-workflow source\n',
-                        capture_output=True, check=True)
-                    oid = result.stdout.decode().strip()
-                    assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
-                    subprocess.run(
-                        ['git', 'update-index', '--cacheinfo',
-                         entry[0] + ',' + oid + ',' + path],
-                        cwd=fixture, check=True, capture_output=True)
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        result = subprocess.run(
+                            ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                            input=b'unreviewed staged project-workflow source\n',
+                            capture_output=True, check=True)
+                        oid = result.stdout.decode().strip()
+                        assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                        subprocess.run(
+                            ['git', 'update-index', '--cacheinfo',
+                             entry[0] + ',' + oid + ',' + path],
+                            cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--add', '--cacheinfo',
@@ -1206,7 +1490,7 @@ def run(root=ROOT):
                     ['git', 'update-index', '--force-remove', '--', path],
                     cwd=fixture, check=True, capture_output=True)
                 target.unlink()
-                proof.validate_project_workflow_source(fixture)
+                validate_project_workflow_fixture()
             finally:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(original)
@@ -1220,13 +1504,17 @@ def run(root=ROOT):
                     'tests/project_progress_integration_policy.py'))
         passed('Project-workflow negative cases preserve exact history, paths, bytes, and hashes')
 
+        def validate_project_progress_fixture():
+            with proof.mail_schema_count_fix_projection(fixture):
+                with proof.project_workflow_projection(fixture):
+                    return proof.validate_project_progress_source(fixture)
+
         def project_progress_source_tamper(path):
             target = fixture / path
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed project-progress source\n')
-                with proof.project_workflow_projection(fixture):
-                    proof.validate_project_progress_source(fixture)
+                validate_project_progress_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -1245,8 +1533,7 @@ def run(root=ROOT):
             assert b'\n' in original and b'\r\n' not in original
             try:
                 target.write_bytes(original.replace(b'\n', b'\r\n'))
-                with proof.project_workflow_projection(fixture):
-                    proof.validate_project_progress_source(fixture)
+                validate_project_progress_fixture()
             finally:
                 target.write_bytes(original)
 
@@ -1258,9 +1545,11 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.project_workflow_projection(fixture):
-                    with proof.project_progress_projection(fixture):
-                        target.write_bytes(original + b'\n# concurrent project-progress source\n')
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        with proof.project_progress_projection(fixture):
+                            target.write_bytes(
+                                original + b'\n# concurrent project-progress source\n')
             finally:
                 target.write_bytes(original)
 
@@ -1274,8 +1563,7 @@ def run(root=ROOT):
         try:
             proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths | {'README.md'}
             def validate_progress_proof_paths():
-                with proof.project_workflow_projection(fixture):
-                    return proof.validate_project_progress_source(fixture)
+                return validate_project_progress_fixture()
 
             refuses('Project-progress binding refuses an altered proof-successor path set',
                     validate_progress_proof_paths)
@@ -1291,8 +1579,7 @@ def run(root=ROOT):
             try:
                 setattr(proof, attribute, original | {'README.md'})
                 def validate_progress_correction_paths():
-                    with proof.project_workflow_projection(fixture):
-                        return proof.validate_project_progress_source(fixture)
+                    return validate_project_progress_fixture()
 
                 refuses('Project-progress binding refuses an altered correction ' + label,
                         validate_progress_correction_paths)
@@ -1301,9 +1588,10 @@ def run(root=ROOT):
         passed('Project-progress negative cases restore exact source and proof bytes')
 
         def validate_release_fixture():
-            with proof.project_workflow_projection(fixture):
-                with proof.project_progress_projection(fixture):
-                    return proof.validate_release_127_source(fixture)
+            with proof.mail_schema_count_fix_projection(fixture):
+                with proof.project_workflow_projection(fixture):
+                    with proof.project_progress_projection(fixture):
+                        return proof.validate_release_127_source(fixture)
 
         def release_source_tamper(path):
             target = fixture / path
@@ -1360,10 +1648,13 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.project_workflow_projection(fixture):
-                    with proof.project_progress_projection(fixture):
-                        with proof.release_127_projection(fixture):
-                            target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        with proof.project_progress_projection(fixture):
+                            with proof.release_127_projection(fixture):
+                                target.write_bytes(
+                                    original
+                                    + b'\n# concurrent unreviewed REL-01 source\n')
             finally:
                 target.write_bytes(original)
 
@@ -1374,12 +1665,13 @@ def run(root=ROOT):
 
         def release_projection_mode_race(path):
             try:
-                with proof.project_workflow_projection(fixture):
-                    with proof.project_progress_projection(fixture):
-                        with proof.release_127_projection(fixture):
-                            subprocess.run(
-                                ['git', 'update-index', '--chmod=+x', '--', path],
-                                cwd=fixture, check=True, capture_output=True)
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        with proof.project_progress_projection(fixture):
+                            with proof.release_127_projection(fixture):
+                                subprocess.run(
+                                    ['git', 'update-index', '--chmod=+x', '--', path],
+                                    cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--chmod=-x', '--', path],
@@ -1391,19 +1683,21 @@ def run(root=ROOT):
         def release_projection_blob_race(path):
             source_entry = proof.entries(fixture, proof.REL127_SOURCE)[path]
             try:
-                with proof.project_workflow_projection(fixture):
-                    with proof.project_progress_projection(fixture):
-                        with proof.release_127_projection(fixture):
-                            result = subprocess.run(
-                                ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
-                                input=b'unreviewed staged REL-01 source\n', capture_output=True,
-                                check=True)
-                            oid = result.stdout.decode().strip()
-                            assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
-                            subprocess.run(
-                                ['git', 'update-index', '--cacheinfo',
-                                 source_entry[0] + ',' + oid + ',' + path],
-                                cwd=fixture, check=True, capture_output=True)
+                with proof.mail_schema_count_fix_projection(fixture):
+                    with proof.project_workflow_projection(fixture):
+                        with proof.project_progress_projection(fixture):
+                            with proof.release_127_projection(fixture):
+                                result = subprocess.run(
+                                    ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                                    input=b'unreviewed staged REL-01 source\n',
+                                    capture_output=True, check=True)
+                                oid = result.stdout.decode().strip()
+                                assert (not result.stderr
+                                        and re.fullmatch(r'[0-9a-f]{40}', oid))
+                                subprocess.run(
+                                    ['git', 'update-index', '--cacheinfo',
+                                     source_entry[0] + ',' + oid + ',' + path],
+                                    cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--cacheinfo',
