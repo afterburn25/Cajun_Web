@@ -770,33 +770,100 @@ def run(root=ROOT):
     assert all(progress_workflow.count("      - '" + path + "'") == 2
                for path in progress_inputs)
     passed('Focused project-progress workflow admits every application, handoff, and proof input')
-    with proof.project_progress_projection(root):
-        for path in proof.PROJECT_PROGRESS_MODIFIED:
+    assert (proof.validate_project_workflow_source(root)
+            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_BASE + '^{tree}')
+            .decode().strip() == proof.PROJECT_WORKFLOW_BASE_TREE
+            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_INERT + '^{tree}')
+            .decode().strip() == proof.PROJECT_WORKFLOW_INERT_TREE
+            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_SOURCE + '^{tree}')
+            .decode().strip() == proof.PROJECT_WORKFLOW_SOURCE_TREE
+            and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_DOCS + '^{tree}')
+            .decode().strip() == proof.PROJECT_WORKFLOW_DOCS_TREE)
+    synthetic_proof = 'a' * 40
+    synthetic_tree = 'b' * 40
+    assert proof.validate_project_workflow_checkout_history(
+        synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree,
+        synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree) == synthetic_proof
+    assert proof.validate_project_workflow_checkout_history(
+        'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], synthetic_tree,
+        synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree) == synthetic_proof
+    refuses('Project-workflow proof refuses a changed direct parent',
+            lambda: proof.validate_project_workflow_checkout_history(
+                synthetic_proof, ['d' * 40], synthetic_tree,
+                synthetic_proof, ['d' * 40], synthetic_tree))
+    refuses('Project-workflow proof refuses a changed direct tree',
+            lambda: proof.validate_project_workflow_checkout_history(
+                synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], 'd' * 40,
+                synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree))
+    refuses('Project-workflow merge refuses a changed base',
+            lambda: proof.validate_project_workflow_checkout_history(
+                'c' * 40, ['d' * 40, synthetic_proof], synthetic_tree,
+                synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree))
+    refuses('Project-workflow merge refuses an extra parent',
+            lambda: proof.validate_project_workflow_checkout_history(
+                'c' * 40,
+                [proof.PROJECT_WORKFLOW_BASE, synthetic_proof, 'd' * 40],
+                synthetic_tree, synthetic_proof,
+                [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree))
+    refuses('Project-workflow merge refuses reversed parents',
+            lambda: proof.validate_project_workflow_checkout_history(
+                'c' * 40, [synthetic_proof, proof.PROJECT_WORKFLOW_BASE],
+                synthetic_tree, synthetic_proof,
+                [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree))
+    refuses('Project-workflow merge refuses a changed tree',
+            lambda: proof.validate_project_workflow_checkout_history(
+                'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], 'd' * 40,
+                synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree))
+    passed('Project-workflow history admits only direct proof and exact tree-identical merge')
+    with proof.project_workflow_projection(root):
+        for path in proof.PROJECT_WORKFLOW_MODIFIED - proof.PROJECT_WORKFLOW_DOCS_MODIFIED:
             assert (proof.ordinary(root, path)
                     == proof.git(root, 'cat-file', 'blob',
-                                 proof.PROJECT_PROGRESS_BASE + ':' + path))
-        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-        assert proof.PROJECT_PROGRESS_ADDITIONS.isdisjoint(
-            proof.actual_paths(root, tracked))
+                                 proof.PROJECT_WORKFLOW_BASE + ':' + path))
+        for path in proof.PROJECT_WORKFLOW_DOCS_MODIFIED:
+            assert (proof.ordinary(root, path) == proof.actual_ordinary(root, path)
+                    and proof.digest(proof.ordinary(root, path))
+                    == proof.REL127_PROOF_SHA256[path])
         assert (proof.canonical_inventory(root)
                 == proof.git(root, 'cat-file', 'blob',
-                             proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY))
+                             proof.PROJECT_WORKFLOW_BASE + ':' + proof.INVENTORY))
+        tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+        assert proof.PROJECT_WORKFLOW_ADDITIONS.isdisjoint(
+            proof.actual_paths(root, tracked))
+        assert proof.project_workflow_component_checkout_head(root) == proof.PROJECT_WORKFLOW_BASE
+    passed('Project-workflow projection restores exact verified-main runtime and retains bound status documents')
+    with proof.project_workflow_projection(root):
+        with proof.project_progress_projection(root):
+            for path in proof.PROJECT_PROGRESS_MODIFIED:
+                assert (proof.ordinary(root, path)
+                        == proof.git(root, 'cat-file', 'blob',
+                                     proof.PROJECT_PROGRESS_BASE + ':' + path))
+            tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+            assert proof.PROJECT_PROGRESS_ADDITIONS.isdisjoint(
+                proof.actual_paths(root, tracked))
+            assert (proof.canonical_inventory(root)
+                    == proof.git(root, 'cat-file', 'blob',
+                                 proof.PROJECT_PROGRESS_BASE + ':' + proof.INVENTORY))
     passed('Project-progress projection restores the exact qualified-main inventory and removes only its additions')
     assert (proof.git(root, 'rev-parse', proof.REL127_BASE + '^{tree}').decode().strip()
             == proof.REL127_BASE_TREE
             and proof.git(root, 'rev-parse', proof.REL127_SOURCE + '^{tree}').decode().strip()
             == proof.REL127_SOURCE_TREE)
-    with proof.project_progress_projection(root):
-        with proof.release_127_projection(root):
-            for path in proof.REL127_MODIFIED:
-                assert (proof.ordinary(root, path)
-                        == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
-            tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
-            assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
-            assert (proof.ordinary(root, proof.REGRESSION)
-                    == proof.actual_ordinary(root, proof.REGRESSION)
-                    and proof.digest(proof.ordinary(root, proof.REGRESSION))
-                    == proof.REGRESSION_SHA256)
+    with proof.project_workflow_projection(root):
+        with proof.project_progress_projection(root):
+            with proof.release_127_projection(root):
+                for path in proof.REL127_MODIFIED - proof.REL127_PROOF_PROJECTED:
+                    assert (proof.ordinary(root, path)
+                            == proof.git(root, 'cat-file', 'blob', proof.REL127_BASE + ':' + path))
+                for path in proof.REL127_PROOF_PROJECTED:
+                    assert (proof.ordinary(root, path)
+                            == proof.git(root, 'cat-file', 'blob', proof.REL127_SOURCE + ':' + path))
+                tracked = set(proof.git(root, 'ls-files', '-z').decode().split('\0')) - {''}
+                assert proof.REL127_ADDITIONS.isdisjoint(proof.actual_paths(root, tracked))
+                assert (proof.ordinary(root, proof.REGRESSION)
+                        == proof.actual_ordinary(root, proof.REGRESSION)
+                        and proof.digest(proof.ordinary(root, proof.REGRESSION))
+                        == proof.REGRESSION_SHA256)
     passed('REL-01 projection binds every exact modified path, removes only its additions, and leaves self-bound proof bytes current')
 
     for attribute, label in (
@@ -807,8 +874,13 @@ def run(root=ROOT):
         original = getattr(proof, attribute)
         try:
             setattr(proof, attribute, '0' * 40)
+            def validate_release_current():
+                with proof.project_workflow_projection(root):
+                    with proof.project_progress_projection(root):
+                        return proof.validate_release_127_source(root)
+
             refuses('Refuses substituted REL-01 ' + label,
-                    lambda: proof.validate_release_127_source(root))
+                    validate_release_current)
         finally:
             setattr(proof, attribute, original)
     for attribute, label in (
@@ -827,8 +899,12 @@ def run(root=ROOT):
         original = getattr(proof, attribute)
         try:
             setattr(proof, attribute, '0' * 40)
+            def validate_progress_current():
+                with proof.project_workflow_projection(root):
+                    return proof.validate_project_progress_source(root)
+
             refuses('Refuses substituted project-progress ' + label,
-                    lambda: proof.validate_project_progress_source(root))
+                    validate_progress_current)
         finally:
             setattr(proof, attribute, original)
     assert (0 < proof._LAST_PROJECTION_CACHE_MAX
@@ -847,6 +923,7 @@ def run(root=ROOT):
                       if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
                       for node in [call]]
     assert terminal_calls == [
+        'project_project_workflow_source',
         'project_account_rate_boundary_source',
         'project_ux09_fixture_receipt',
         'project_ux09_identity_snapshot',
@@ -993,12 +1070,163 @@ def run(root=ROOT):
         finally:
             proof.NOTIFICATION_ACCEPTANCE_MODIFIED = original_notification_paths
 
+        def project_workflow_source_tamper(path, suffix=b'\n# unreviewed project workflow\n'):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                target.write_bytes(original + suffix)
+                proof.validate_project_workflow_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-workflow binding refuses changed modified bytes',
+                lambda: project_workflow_source_tamper(
+                    'site/admin/controllers/studio.php'))
+        refuses('Project-workflow binding refuses changed addition bytes',
+                lambda: project_workflow_source_tamper(
+                    'tests/project_progress_integration_policy.py'))
+        refuses('Project-workflow binding refuses changed release-status bytes',
+                lambda: project_workflow_source_tamper('README.md'))
+
+        def project_workflow_line_ending_tamper(path):
+            target = fixture / path
+            original = target.read_bytes()
+            assert b'\n' in original and b'\r\n' not in original
+            try:
+                target.write_bytes(original.replace(b'\n', b'\r\n'))
+                proof.validate_project_workflow_source(fixture)
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-workflow binding refuses normalized line-ending drift',
+                lambda: project_workflow_line_ending_tamper(
+                    'site/includes/foundation/projects/ProjectActionItems.php'))
+        for attribute, label in (
+            ('PROJECT_WORKFLOW_BASE', 'base commit'),
+            ('PROJECT_WORKFLOW_BASE_TREE', 'base tree'),
+            ('PROJECT_WORKFLOW_INERT', 'inert commit'),
+            ('PROJECT_WORKFLOW_INERT_TREE', 'inert tree'),
+            ('PROJECT_WORKFLOW_SOURCE', 'implementation commit'),
+            ('PROJECT_WORKFLOW_SOURCE_TREE', 'implementation tree'),
+            ('PROJECT_WORKFLOW_DOCS', 'documentation commit'),
+            ('PROJECT_WORKFLOW_DOCS_TREE', 'documentation tree'),
+        ):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, '0' * 40)
+                refuses('Project-workflow binding refuses substituted ' + label,
+                        lambda: proof.validate_project_workflow_source(fixture))
+            finally:
+                setattr(proof, attribute, original)
+        for attribute, label in (
+            ('PROJECT_WORKFLOW_INERT_ADDITIONS', 'inert additions'),
+            ('PROJECT_WORKFLOW_SOURCE_MODIFIED', 'implementation modifications'),
+            ('PROJECT_WORKFLOW_SOURCE_ADDITIONS', 'implementation additions'),
+            ('PROJECT_WORKFLOW_DOCS_MODIFIED', 'documentation modifications'),
+            ('PROJECT_WORKFLOW_PROOF_PATHS', 'proof paths'),
+        ):
+            original = getattr(proof, attribute)
+            try:
+                setattr(proof, attribute, original | {'unexpected.txt'})
+                refuses('Project-workflow binding refuses expanded ' + label,
+                        lambda: proof.validate_project_workflow_source(fixture))
+            finally:
+                setattr(proof, attribute, original)
+        original_doc_hash = proof.REL127_PROOF_SHA256['README.md']
+        try:
+            proof.REL127_PROOF_SHA256['README.md'] = '0' * 64
+            refuses('Project-workflow binding refuses a substituted release-document hash',
+                    lambda: proof.validate_project_workflow_source(fixture))
+        finally:
+            proof.REL127_PROOF_SHA256['README.md'] = original_doc_hash
+
+        def project_workflow_projection_race(path):
+            target = fixture / path
+            original = target.read_bytes()
+            try:
+                with proof.project_workflow_projection(fixture):
+                    target.write_bytes(original + b'\n# concurrent project workflow\n')
+            finally:
+                target.write_bytes(original)
+
+        refuses('Project-workflow projection exit refuses a concurrent modified-file change',
+                lambda: project_workflow_projection_race(
+                    'site/admin/controllers/studio.php'))
+        refuses('Project-workflow projection exit refuses a concurrent added-file change',
+                lambda: project_workflow_projection_race(
+                    'tests/project_progress_integration_policy.py'))
+
+        def project_workflow_projection_mode_race(path):
+            entry = proof.current_index_entries(fixture)[path]
+            try:
+                with proof.project_workflow_projection(fixture):
+                    subprocess.run(
+                        ['git', 'update-index', '--chmod=+x', '--', path],
+                        cwd=fixture, check=True, capture_output=True)
+            finally:
+                subprocess.run(
+                    ['git', 'update-index', '--add', '--cacheinfo',
+                     entry[0] + ',' + entry[1] + ',' + path],
+                    cwd=fixture, check=True, capture_output=True)
+
+        refuses('Project-workflow projection exit refuses a concurrent index-mode change',
+                lambda: project_workflow_projection_mode_race(
+                    'site/admin/controllers/studio.php'))
+
+        def project_workflow_projection_blob_race(path):
+            entry = proof.current_index_entries(fixture)[path]
+            try:
+                with proof.project_workflow_projection(fixture):
+                    result = subprocess.run(
+                        ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                        input=b'unreviewed staged project-workflow source\n',
+                        capture_output=True, check=True)
+                    oid = result.stdout.decode().strip()
+                    assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                    subprocess.run(
+                        ['git', 'update-index', '--cacheinfo',
+                         entry[0] + ',' + oid + ',' + path],
+                        cwd=fixture, check=True, capture_output=True)
+            finally:
+                subprocess.run(
+                    ['git', 'update-index', '--add', '--cacheinfo',
+                     entry[0] + ',' + entry[1] + ',' + path],
+                    cwd=fixture, check=True, capture_output=True)
+
+        refuses('Project-workflow projection exit refuses a concurrent staged-blob change',
+                lambda: project_workflow_projection_blob_race(
+                    'site/admin/controllers/studio.php'))
+
+        def project_workflow_missing_addition(path):
+            target = fixture / path
+            original = target.read_bytes()
+            entry = proof.current_index_entries(fixture)[path]
+            try:
+                subprocess.run(
+                    ['git', 'update-index', '--force-remove', '--', path],
+                    cwd=fixture, check=True, capture_output=True)
+                target.unlink()
+                proof.validate_project_workflow_source(fixture)
+            finally:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(original)
+                subprocess.run(
+                    ['git', 'update-index', '--add', '--cacheinfo',
+                     entry[0] + ',' + entry[1] + ',' + path],
+                    cwd=fixture, check=True, capture_output=True)
+
+        refuses('Project-workflow binding refuses a missing exact addition',
+                lambda: project_workflow_missing_addition(
+                    'tests/project_progress_integration_policy.py'))
+        passed('Project-workflow negative cases preserve exact history, paths, bytes, and hashes')
+
         def project_progress_source_tamper(path):
             target = fixture / path
             original = target.read_bytes()
             try:
                 target.write_bytes(original + b'\n# unreviewed project-progress source\n')
-                proof.validate_project_progress_source(fixture)
+                with proof.project_workflow_projection(fixture):
+                    proof.validate_project_progress_source(fixture)
             finally:
                 target.write_bytes(original)
 
@@ -1017,7 +1245,8 @@ def run(root=ROOT):
             assert b'\n' in original and b'\r\n' not in original
             try:
                 target.write_bytes(original.replace(b'\n', b'\r\n'))
-                proof.validate_project_progress_source(fixture)
+                with proof.project_workflow_projection(fixture):
+                    proof.validate_project_progress_source(fixture)
             finally:
                 target.write_bytes(original)
 
@@ -1029,8 +1258,9 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.project_progress_projection(fixture):
-                    target.write_bytes(original + b'\n# concurrent project-progress source\n')
+                with proof.project_workflow_projection(fixture):
+                    with proof.project_progress_projection(fixture):
+                        target.write_bytes(original + b'\n# concurrent project-progress source\n')
             finally:
                 target.write_bytes(original)
 
@@ -1043,8 +1273,12 @@ def run(root=ROOT):
         original_project_proof_paths = proof.PROJECT_PROGRESS_PROOF_PATHS
         try:
             proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths | {'README.md'}
+            def validate_progress_proof_paths():
+                with proof.project_workflow_projection(fixture):
+                    return proof.validate_project_progress_source(fixture)
+
             refuses('Project-progress binding refuses an altered proof-successor path set',
-                    lambda: proof.validate_project_progress_source(fixture))
+                    validate_progress_proof_paths)
         finally:
             proof.PROJECT_PROGRESS_PROOF_PATHS = original_project_proof_paths
         for attribute, label in (
@@ -1056,15 +1290,20 @@ def run(root=ROOT):
             original = getattr(proof, attribute)
             try:
                 setattr(proof, attribute, original | {'README.md'})
+                def validate_progress_correction_paths():
+                    with proof.project_workflow_projection(fixture):
+                        return proof.validate_project_progress_source(fixture)
+
                 refuses('Project-progress binding refuses an altered correction ' + label,
-                        lambda: proof.validate_project_progress_source(fixture))
+                        validate_progress_correction_paths)
             finally:
                 setattr(proof, attribute, original)
         passed('Project-progress negative cases restore exact source and proof bytes')
 
         def validate_release_fixture():
-            with proof.project_progress_projection(fixture):
-                return proof.validate_release_127_source(fixture)
+            with proof.project_workflow_projection(fixture):
+                with proof.project_progress_projection(fixture):
+                    return proof.validate_release_127_source(fixture)
 
         def release_source_tamper(path):
             target = fixture / path
@@ -1121,9 +1360,10 @@ def run(root=ROOT):
             target = fixture / path
             original = target.read_bytes()
             try:
-                with proof.project_progress_projection(fixture):
-                    with proof.release_127_projection(fixture):
-                        target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
+                with proof.project_workflow_projection(fixture):
+                    with proof.project_progress_projection(fixture):
+                        with proof.release_127_projection(fixture):
+                            target.write_bytes(original + b'\n# concurrent unreviewed REL-01 source\n')
             finally:
                 target.write_bytes(original)
 
@@ -1134,11 +1374,12 @@ def run(root=ROOT):
 
         def release_projection_mode_race(path):
             try:
-                with proof.project_progress_projection(fixture):
-                    with proof.release_127_projection(fixture):
-                        subprocess.run(
-                            ['git', 'update-index', '--chmod=+x', '--', path],
-                            cwd=fixture, check=True, capture_output=True)
+                with proof.project_workflow_projection(fixture):
+                    with proof.project_progress_projection(fixture):
+                        with proof.release_127_projection(fixture):
+                            subprocess.run(
+                                ['git', 'update-index', '--chmod=+x', '--', path],
+                                cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--chmod=-x', '--', path],
@@ -1150,18 +1391,19 @@ def run(root=ROOT):
         def release_projection_blob_race(path):
             source_entry = proof.entries(fixture, proof.REL127_SOURCE)[path]
             try:
-                with proof.project_progress_projection(fixture):
-                    with proof.release_127_projection(fixture):
-                        result = subprocess.run(
-                            ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
-                            input=b'unreviewed staged REL-01 source\n', capture_output=True,
-                            check=True)
-                        oid = result.stdout.decode().strip()
-                        assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
-                        subprocess.run(
-                            ['git', 'update-index', '--cacheinfo',
-                             source_entry[0] + ',' + oid + ',' + path],
-                            cwd=fixture, check=True, capture_output=True)
+                with proof.project_workflow_projection(fixture):
+                    with proof.project_progress_projection(fixture):
+                        with proof.release_127_projection(fixture):
+                            result = subprocess.run(
+                                ['git', 'hash-object', '-w', '--stdin'], cwd=fixture,
+                                input=b'unreviewed staged REL-01 source\n', capture_output=True,
+                                check=True)
+                            oid = result.stdout.decode().strip()
+                            assert not result.stderr and re.fullmatch(r'[0-9a-f]{40}', oid)
+                            subprocess.run(
+                                ['git', 'update-index', '--cacheinfo',
+                                 source_entry[0] + ',' + oid + ',' + path],
+                                cwd=fixture, check=True, capture_output=True)
             finally:
                 subprocess.run(
                     ['git', 'update-index', '--cacheinfo',

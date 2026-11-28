@@ -89,8 +89,28 @@ REL127_ADDITIONS = frozenset((
     'tools/requirements-release127.txt',
 ))
 REL127_PATHS = REL127_MODIFIED | REL127_ADDITIONS
-REL127_PROOF_PROJECTED = frozenset()
-REL127_PROOF_SHA256 = {}
+REL127_PROOF_PROJECTED = frozenset((
+    'CHANGELOG.md',
+    'PROJECT_STATUS.md',
+    'README.md',
+    'SESSION_HANDOFF.md',
+    'docs/RELEASES.md',
+    'docs/RELEASE_NOTES_1.27.0.md',
+    'docs/RELEASE_SCOPE_1.27.0.md',
+    'docs/SESSION_LOG.md',
+    'docs/TEST_REPORT_1.27.0.md',
+))
+REL127_PROOF_SHA256 = {
+    'CHANGELOG.md': 'ee9f716a33987cc75cdeb4face3259781d0867ead0ac55fbd9ae0b9d66bd396b',
+    'PROJECT_STATUS.md': '46c1f5467ae059e6adc28de722acb193cd18caecc54a4b5599338fa81c97bd42',
+    'README.md': '5a945ca312ac2108b54ce9ef0b6a82ee4e867e8fb62ba7f0013c7c0933eac365',
+    'SESSION_HANDOFF.md': '473d769e58ba0c21b7c026bb2ef3bf8fef9cf793a572cb371d8f358a220d8f5c',
+    'docs/RELEASES.md': 'd981365b20cb55378df0d51832d19626bd6cfbede71020bff16b4bc69a19d23a',
+    'docs/RELEASE_NOTES_1.27.0.md': '1a792a628087a053a527dc7f78c09c1133c302d1b6c6b6fba067bbb50dd33c92',
+    'docs/RELEASE_SCOPE_1.27.0.md': 'ad2bbeddd9a4d9c60da8c5dceae49be7dd5d5e5900e3b2f6069be187a348b917',
+    'docs/SESSION_LOG.md': 'c3438f30fb560767aa012c742ac268ea25360e00651819faeea5b0d1d2396618',
+    'docs/TEST_REPORT_1.27.0.md': '989329fa6430d3ad6ae8947ad7bc1cb1f076128afad0890c0bb8fd25d5de91ed',
+}
 REL127_PROOF_PATHS = frozenset((RECEIPT, VERIFIER, REGRESSION))
 PROJECT_PROGRESS_BASE = REL127_RESULTING_MAIN
 PROJECT_PROGRESS_BASE_TREE = REL127_RESULTING_MAIN_TREE
@@ -124,6 +144,78 @@ PROJECT_PROGRESS_CORRECTION_ADDITIONS = frozenset((PROJECT_PROGRESS_HANDOFF,))
 PROJECT_PROGRESS_CORRECTION_PATHS = (PROJECT_PROGRESS_CORRECTION_MODIFIED
                                      | PROJECT_PROGRESS_CORRECTION_ADDITIONS)
 PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED = frozenset((PROJECT_PROGRESS_HANDOFF,))
+PROJECT_WORKFLOW_BASE = '7889783b6bc9f58c2ac0a8c8a4c7a334155a390e'
+PROJECT_WORKFLOW_BASE_TREE = 'b099603c62d852269a9f7ba4ef357960eb2d82bb'
+PROJECT_WORKFLOW_INERT = '770e7bb076366eadf540546219295dcd9d51ad4e'
+PROJECT_WORKFLOW_INERT_TREE = '9860b8d5a88fd23d734b9fda1cca548d74725f86'
+PROJECT_WORKFLOW_SOURCE = '93bbeff3e1ba936bf87473a68d9e81950fb5bde6'
+PROJECT_WORKFLOW_SOURCE_TREE = 'ba102bc992cb0a112c185d33da5a8221f8d76b78'
+PROJECT_WORKFLOW_DOCS = 'cb36c44591d13241e41c8c60db61282844ff35db'
+PROJECT_WORKFLOW_DOCS_TREE = '6099d61d8616bc04f5a9231cfd3e3a63741f542d'
+PROJECT_WORKFLOW_INERT_ADDITIONS = frozenset((
+    'foundation/projects/ProjectActionItems.php',
+    'site/app/projects/progress.php',
+    'site/app/projects/progress_forms.php',
+    'site/database/migrations/project_progress_migrate.php',
+    'site/database/schema/project_progress_schema.php',
+    'site/database/schema/project_progress_validate_schema.php',
+    'site/includes/foundation/projects/ProjectActionItems.php',
+    'site/includes/layout/project_progress.php',
+    'tests/project-actions/records.php',
+    'tests/project-progress/forms.php',
+    'tests/project_progress_native.php',
+    'tests/project_progress_native_integrity.php',
+    'tests/project_progress_native_limits.php',
+    'tests/project_progress_runtime_policy.py',
+    'tests/project_progress_schema_native.php',
+    'tests/project_progress_schema_policy.py',
+))
+PROJECT_WORKFLOW_SOURCE_MODIFIED = frozenset((
+    '.github/workflows/project-progress.yml',
+    'site/admin/controllers/studio.php',
+    'site/admin/views/studio/clients.php',
+    'site/admin/views/studio/job.php',
+    'site/app/activity/events.php',
+    'site/app/settings/database_schemas.php',
+    'site/assets/css/growth.css',
+    'site/includes/layout/activity.php',
+    'site/includes/layout/project_progress.php',
+    'site/install/inventory.generated.php',
+    'site/portal/controllers/router.php',
+    'site/portal/views/workspace.php',
+    'tests/browser_acceptance.py',
+    'tests/database_schema_registry_policy.php',
+    'tests/database_schema_view_policy.php',
+    'tests/organized_update_cases.py',
+    'tests/organized_update_fixture.php',
+    'tests/project_progress_native.php',
+))
+PROJECT_WORKFLOW_SOURCE_ADDITIONS = frozenset((
+    'docs/agent-handoffs/2026-11-27-codex-project-workflow-consolidation.md',
+    'site/app/projects/action_items.php',
+    'site/app/projects/progress_activity.php',
+    'tests/project_progress_cases.py',
+    'tests/project_progress_integration_policy.py',
+    'tests/project_progress_screen_native_cases.php',
+    'tests/project_progress_upgrade_cases.py',
+))
+PROJECT_WORKFLOW_DOCS_MODIFIED = frozenset((
+    'CHANGELOG.md',
+    'PROJECT_STATUS.md',
+    'README.md',
+    'SESSION_HANDOFF.md',
+    'docs/RELEASES.md',
+    'docs/RELEASE_NOTES_1.27.0.md',
+    'docs/RELEASE_SCOPE_1.27.0.md',
+    'docs/SESSION_LOG.md',
+    'docs/TEST_REPORT_1.27.0.md',
+))
+PROJECT_WORKFLOW_MODIFIED = ((PROJECT_WORKFLOW_SOURCE_MODIFIED
+                             - PROJECT_WORKFLOW_INERT_ADDITIONS)
+                            | PROJECT_WORKFLOW_DOCS_MODIFIED)
+PROJECT_WORKFLOW_ADDITIONS = PROJECT_WORKFLOW_INERT_ADDITIONS | PROJECT_WORKFLOW_SOURCE_ADDITIONS
+PROJECT_WORKFLOW_PATHS = PROJECT_WORKFLOW_MODIFIED | PROJECT_WORKFLOW_ADDITIONS
+PROJECT_WORKFLOW_PROOF_PATHS = REL127_PROOF_PATHS
 CLOUD_INIT_TERMINAL_BASE = 'c94c31c0aee475d950bc73d15b17bf30c05a518c'
 CLOUD_INIT_TERMINAL_BASE_TREE = 'd6fa10f831207a5d7099c7a07d6ea9b0f61d6768'
 CLOUD_INIT_TERMINAL_SOURCE = '2cf3d58209822b8e1144fcd61d4216e59bdafe9d'
@@ -2421,7 +2513,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'ed116cbd2ea66ba844abe259e738c36f7722f7ea3efd28540f9758f794b8fb0d'
+REGRESSION_SHA256 = 'cec3682e74c4623387d97caa06260a31b2fdf359624c10bc53477d09de0f3813'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -2528,6 +2620,8 @@ _REL127_PROJECTION_DEPTH = 0
 _REL127_WORKTREE_OIDS = {}
 _PROJECT_PROGRESS_PROJECTION_DEPTH = 0
 _PROJECT_PROGRESS_WORKTREE_OIDS = {}
+_PROJECT_WORKFLOW_PROJECTION_DEPTH = 0
+_PROJECT_WORKFLOW_WORKTREE_OIDS = {}
 _CLOUD_INIT_TERMINAL_PROJECTION_DEPTH = 0
 _CLOUD_INIT_TERMINAL_WORKTREE_OIDS = {}
 _NOTIFICATION_ACCEPTANCE_PROJECTION_DEPTH = 0
@@ -2876,6 +2970,7 @@ def worktree_blob_oids(root, paths):
 
 def ordinary(root, path):
     current = actual_ordinary(root, path)
+    current = workflow_projected_bytes(root, path, current)
     current = notification_acceptance_projected_bytes(root, path, current)
     if _CLOUD_INIT_TERMINAL_PROJECTION_DEPTH and path in CLOUD_INIT_TERMINAL_MODIFIED:
         require(_CLOUD_INIT_TERMINAL_WORKTREE_OIDS.get(path)
@@ -2890,14 +2985,41 @@ def ordinary(root, path):
                 + path)
         current = git(root, 'cat-file', 'blob', PROJECT_PROGRESS_BASE + ':' + path)
     if _REL127_PROJECTION_DEPTH and path in REL127_PROOF_PROJECTED:
-        require(digest(current) == REL127_PROOF_SHA256[path],
-                'Current 1.27 proof source changed before historical projection: ' + path)
-        return git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+        return release_127_proof_projected_bytes(root, path, current)
     if _REL127_PROJECTION_DEPTH and path in REL127_MODIFIED:
         require(_REL127_WORKTREE_OIDS.get(path) == entries(root, REL127_SOURCE)[path][1],
                 'Current 1.27 release source changed before historical projection: ' + path)
         return git(root, 'cat-file', 'blob', REL127_BASE + ':' + path)
     return current
+
+
+def workflow_projected_bytes(root, path, current):
+    """Restore exact verified-main bytes without invoking nested projections."""
+    if (not _PROJECT_WORKFLOW_PROJECTION_DEPTH
+            or path not in PROJECT_WORKFLOW_MODIFIED
+            or path in PROJECT_WORKFLOW_DOCS_MODIFIED):
+        return current
+    require(_PROJECT_WORKFLOW_WORKTREE_OIDS.get(path)
+            == entries(root, PROJECT_WORKFLOW_DOCS)[path][1],
+            'Current project-workflow source changed before main projection: ' + path)
+    source = git(root, 'cat-file', 'blob', PROJECT_WORKFLOW_DOCS + ':' + path)
+    require(current == source,
+            'Current project-workflow raw bytes changed before main projection: ' + path)
+    return git(root, 'cat-file', 'blob', PROJECT_WORKFLOW_BASE + ':' + path)
+
+
+def release_127_proof_projected_bytes(root, path, current):
+    """Restore immutable 1.27 document bytes from the exact published-status successor."""
+    if path not in REL127_PROOF_PROJECTED:
+        return current
+    source = git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+    if current == source:
+        return source
+    if current != actual_ordinary(root, path):
+        return current
+    require(digest(current) == REL127_PROOF_SHA256[path],
+            'Current 1.27 document source changed before historical projection: ' + path)
+    return source
 
 
 def filesystem_mode(root, path):
@@ -3010,6 +3132,14 @@ def hydration_origin(root, head):
         (REL127_RESULTING_MAIN, REL127_RESULTING_MAIN_TREE, '1.27 resulting main'),
         (PROJECT_PROGRESS_SOURCE, PROJECT_PROGRESS_SOURCE_TREE,
          'project-progress foundation source'),
+        (PROJECT_WORKFLOW_BASE, PROJECT_WORKFLOW_BASE_TREE,
+         'project-workflow verified main'),
+        (PROJECT_WORKFLOW_INERT, PROJECT_WORKFLOW_INERT_TREE,
+         'project-workflow inert source'),
+        (PROJECT_WORKFLOW_SOURCE, PROJECT_WORKFLOW_SOURCE_TREE,
+         'project-workflow implementation'),
+        (PROJECT_WORKFLOW_DOCS, PROJECT_WORKFLOW_DOCS_TREE,
+         'project-workflow release-status source'),
         (ADDITION_SOURCE, ADDITION_SOURCE_TREE, 'contact addition'),
         (TICKET_ADDITION_SOURCE, TICKET_ADDITION_SOURCE_TREE, 'ticket addition'),
         (DIAGNOSTIC_ADDITION_SOURCE, DIAGNOSTIC_ADDITION_SOURCE_TREE, 'diagnostic addition'),
@@ -7902,14 +8032,17 @@ def project_project_progress_source(root, path, current):
     """Restore exact qualified-main bytes for direct historical consumers."""
     if path not in PROJECT_PROGRESS_MODIFIED:
         return current
+    if not _PROJECT_WORKFLOW_PROJECTION_DEPTH:
+        current = project_project_workflow_source(root, path, current)
     source = git(root, 'cat-file', 'blob', PROJECT_PROGRESS_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', PROJECT_PROGRESS_BASE + ':' + path)
+    actual = project_project_workflow_source(root, path, actual_ordinary(root, path))
     if current == source:
-        require(actual_ordinary(root, path) == source,
+        require(actual == source,
                 'Current project-progress source changed before predecessor projection: '
                 + path)
         return base
-    if current == base or current != actual_ordinary(root, path):
+    if current == base or current != actual:
         return current
     require(current == source,
             'Current project-progress source changed before predecessor projection: '
@@ -7919,8 +8052,13 @@ def project_project_progress_source(root, path, current):
 
 def project_release_127_source(root, path, current):
     """Restore exact pre-release bytes for direct historical consumers."""
-    actual = project_project_progress_source(root, path, actual_ordinary(root, path))
+    actual = project_project_workflow_source(root, path, actual_ordinary(root, path))
+    actual = project_project_progress_source(root, path, actual)
+    actual = release_127_proof_projected_bytes(root, path, actual)
+    if not _PROJECT_WORKFLOW_PROJECTION_DEPTH:
+        current = project_project_workflow_source(root, path, current)
     current = project_project_progress_source(root, path, current)
+    current = release_127_proof_projected_bytes(root, path, current)
     if path not in REL127_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
@@ -10429,6 +10567,7 @@ def validate_pr391_recovery_successor(root):
                 | REL127_PATHS
                 | PROJECT_PROGRESS_PATHS
                 | PROJECT_PROGRESS_CORRECTION_PATHS
+                | PROJECT_WORKFLOW_PATHS
                 | COMPONENT_FAST_PATH_RECOVERY_PATHS),
             'Current recovery successor contains an unbound path')
 
@@ -11630,6 +11769,9 @@ def canonical_inventory(root):
         require(not target.is_symlink(), 'Symlink in current shipping tree')
         if target.is_file():
             path = target.relative_to(root / 'site').as_posix()
+            if (_PROJECT_WORKFLOW_PROJECTION_DEPTH
+                    and 'site/' + path in PROJECT_WORKFLOW_ADDITIONS):
+                continue
             if (_PROJECT_PROGRESS_PROJECTION_DEPTH
                     and 'site/' + path in PROJECT_PROGRESS_ADDITIONS):
                 continue
@@ -11659,6 +11801,8 @@ def generated_bytecode(root, path, source_paths):
         reviewed_sources.update(REL127_ADDITIONS)
     if _PROJECT_PROGRESS_PROJECTION_DEPTH:
         reviewed_sources.update(PROJECT_PROGRESS_ADDITIONS)
+    if _PROJECT_WORKFLOW_PROJECTION_DEPTH:
+        reviewed_sources.update(PROJECT_WORKFLOW_ADDITIONS)
     require(source_path in reviewed_sources, 'Bytecode has no reviewed source: ' + path)
     ordinary(root, path)
     require(filesystem_mode(root, path) == '100644', 'Executable generated cache: ' + path)
@@ -11682,6 +11826,8 @@ def actual_paths(root, source_paths):
                     paths.add(target.relative_to(root).as_posix())
     admitted = {path for path in paths - NARRATIVES
                 if path in tracked or not generated_bytecode(root, path, source_paths)}
+    if _PROJECT_WORKFLOW_PROJECTION_DEPTH:
+        admitted -= PROJECT_WORKFLOW_ADDITIONS
     if _PROJECT_PROGRESS_PROJECTION_DEPTH:
         admitted -= PROJECT_PROGRESS_ADDITIONS
     if _REL127_PROJECTION_DEPTH:
@@ -12183,8 +12329,24 @@ def project_signed_ppa_label_source(root, path, current):
     return base
 
 
+def project_project_workflow_source(root, path, current):
+    """Restore verified-main bytes before the inherited component-union chain."""
+    if path not in PROJECT_WORKFLOW_MODIFIED or path in PROJECT_WORKFLOW_DOCS_MODIFIED:
+        return current
+    source = git(root, 'cat-file', 'blob', PROJECT_WORKFLOW_DOCS + ':' + path)
+    base = git(root, 'cat-file', 'blob', PROJECT_WORKFLOW_BASE + ':' + path)
+    if current == source:
+        return base
+    if current == base or current != ordinary(root, path):
+        return current
+    require(current == source,
+            'Current project-workflow source changed before component projection: ' + path)
+    return base
+
+
 def project_component_union_source(root, ux09, path, current):
     """Apply each terminal successor chain once for the component-union check."""
+    current = project_project_workflow_source(root, path, current)
     current = project_account_rate_boundary_source(root, path, current)
     current = project_ux09_fixture_receipt(root, path, current)
     current = project_ux09_identity_snapshot(root, path, current)
@@ -12272,6 +12434,8 @@ def _verify_current(root):
     require(all(mode(root, path) == '100644' and actual_ordinary(root, path) == value
                 for path, value in proof_files.items()),
             'Composition proof file changed during tracked-source preflight')
+    require(validate_project_workflow_source(root) == _PROJECT_WORKFLOW_WORKTREE_OIDS,
+            'Project-workflow source changed after tracked-source preflight')
     validate_component_fast_path_source(root)
     validate_application_reply_folder_route(root)
     validate_application_sent_copy_fixture_mode(root)
@@ -12934,6 +13098,7 @@ def validate_release_127_source(root):
     base_entries = entries(root, REL127_BASE)
     source_entries = entries(root, REL127_SOURCE)
     project_entries = entries(root, PROJECT_PROGRESS_SOURCE)
+    project_workflow_entries = entries(root, PROJECT_WORKFLOW_DOCS)
     worktree_oids = {}
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
@@ -12941,17 +13106,23 @@ def validate_release_127_source(root):
             and REL127_ADDITIONS <= set(source_entries),
             '1.27 additions did not originate in the exact implementation source')
     for path in sorted(REL127_MODIFIED):
-        expected_index = (project_entries[path]
+        expected_index = (project_workflow_entries[path]
+                          if path in PROJECT_WORKFLOW_PATHS else
+                          project_entries[path]
                           if path in PROJECT_PROGRESS_MODIFIED else source_entries[path])
-        require(ordinary(root, path) == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+        current = release_127_proof_projected_bytes(root, path, ordinary(root, path))
+        require(current == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
                 and live_index_entries.get(path) == expected_index
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == source_entries[path][0] == '100644',
                 'Current 1.27 modified source identity changed: ' + path)
         worktree_oids[path] = source_entries[path][1]
     for path in sorted(REL127_ADDITIONS):
-        require(ordinary(root, path) == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
-                and live_index_entries.get(path) == source_entries[path]
+        current = release_127_proof_projected_bytes(root, path, ordinary(root, path))
+        expected_index = (project_workflow_entries[path]
+                          if path in PROJECT_WORKFLOW_PATHS else source_entries[path])
+        require(current == git(root, 'cat-file', 'blob', REL127_SOURCE + ':' + path)
+                and live_index_entries.get(path) == expected_index
                 and mode(root, path, live_index_modes) == source_entries[path][0] == '100644',
                 'Current 1.27 addition identity changed: ' + path)
         worktree_oids[path] = source_entries[path][1]
@@ -13215,7 +13386,9 @@ def validate_component_fast_path_source(root):
             == ['M\t' + path for path in sorted(
                 COMPONENT_FAST_PATH_FINAL_REVIEW_REJECTED_PROOF_PATHS)],
             'Component fast-path final-review-rejected proof changed another path or status set')
-    checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    checkout_head = (project_workflow_component_checkout_head(root)
+                     if _PROJECT_WORKFLOW_PROJECTION_DEPTH
+                     else git(root, 'rev-parse', 'HEAD').decode().strip())
     checkout_parents = git(root, 'show', '-s', '--format=%P',
                            checkout_head).decode().strip().split()
     checkout_tree = git(root, 'rev-parse', checkout_head + '^{tree}').decode().strip()
@@ -13401,6 +13574,16 @@ def validate_component_fast_path_source(root):
 def notification_acceptance_checkout_head(root):
     """Project only an authenticated component-proof successor to its exact base."""
     checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    project_ancestry = subprocess.run(
+        ['git', '--no-replace-objects', 'merge-base', '--is-ancestor',
+         PROJECT_WORKFLOW_SOURCE, checkout_head],
+        cwd=root, capture_output=True)
+    require(project_ancestry.returncode in {0, 1} and not project_ancestry.stdout
+            and not project_ancestry.stderr,
+            'Could not classify project-workflow checkout ancestry')
+    if project_ancestry.returncode == 0:
+        validate_project_workflow_source(root)
+        return COMPONENT_FAST_PATH_BASE
     ancestry = subprocess.run(
         ['git', '--no-replace-objects', 'merge-base', '--is-ancestor',
          COMPONENT_FAST_PATH_SOURCE, checkout_head],
@@ -13726,6 +13909,147 @@ def validate_cloud_init_terminal_source(root):
     return worktree_oids
 
 
+def validate_project_workflow_checkout_history(
+        checkout_head, checkout_parents, checkout_tree,
+        proof_head, proof_parents, proof_tree):
+    """Admit local proof preparation, its direct commit, or one tree-identical merge."""
+    values = (checkout_head, checkout_tree, proof_head, proof_tree)
+    require(all(re.fullmatch(r'[0-9a-f]{40}', value) is not None for value in values)
+            and all(isinstance(parents, list)
+                    and all(re.fullmatch(r'[0-9a-f]{40}', parent) is not None
+                            for parent in parents)
+                    for parents in (checkout_parents, proof_parents)),
+            'Malformed project-workflow checkout history')
+    if checkout_head == PROJECT_WORKFLOW_DOCS:
+        require(checkout_parents == [PROJECT_WORKFLOW_SOURCE]
+                and proof_head == checkout_head
+                and proof_parents == checkout_parents
+                and proof_tree == checkout_tree == PROJECT_WORKFLOW_DOCS_TREE,
+                'Project-workflow local proof preparation changed source history')
+    elif len(checkout_parents) == 1:
+        require(checkout_parents == [PROJECT_WORKFLOW_DOCS]
+                and proof_head == checkout_head
+                and proof_parents == checkout_parents
+                and proof_tree == checkout_tree,
+                'Project-workflow proof is not the exact direct successor')
+    else:
+        require(checkout_parents == [PROJECT_WORKFLOW_BASE, proof_head]
+                and proof_parents == [PROJECT_WORKFLOW_DOCS]
+                and checkout_tree == proof_tree,
+                'Project-workflow merge is not exact and tree-identical')
+    return proof_head
+
+
+def validate_project_workflow_source(root):
+    """Bind the inert, implementation, release-status, and proof-only successor chain."""
+    identities = (
+        (PROJECT_WORKFLOW_BASE, PROJECT_WORKFLOW_BASE_TREE),
+        (PROJECT_WORKFLOW_INERT, PROJECT_WORKFLOW_INERT_TREE),
+        (PROJECT_WORKFLOW_SOURCE, PROJECT_WORKFLOW_SOURCE_TREE),
+        (PROJECT_WORKFLOW_DOCS, PROJECT_WORKFLOW_DOCS_TREE),
+    )
+    require(all(git(root, 'rev-parse', commit + '^{tree}').decode().strip() == tree
+                for commit, tree in identities),
+            'Project-workflow commit or tree identity changed')
+    require(git(root, 'show', '-s', '--format=%P', PROJECT_WORKFLOW_INERT)
+            .decode().strip().split() == [PROJECT_WORKFLOW_BASE]
+            and git(root, 'show', '-s', '--format=%P', PROJECT_WORKFLOW_SOURCE)
+            .decode().strip().split() == [PROJECT_WORKFLOW_INERT]
+            and git(root, 'show', '-s', '--format=%P', PROJECT_WORKFLOW_DOCS)
+            .decode().strip().split() == [PROJECT_WORKFLOW_SOURCE],
+            'Project-workflow fixed parent chain changed')
+    inert_changes = git(root, 'diff', '--name-status', '--no-renames',
+                        PROJECT_WORKFLOW_BASE,
+                        PROJECT_WORKFLOW_INERT).decode().splitlines()
+    require(sorted(inert_changes)
+            == ['A\t' + path for path in sorted(PROJECT_WORKFLOW_INERT_ADDITIONS)],
+            'Project-workflow inert source changed another path or status set')
+    source_changes = git(root, 'diff', '--name-status', '--no-renames',
+                         PROJECT_WORKFLOW_INERT,
+                         PROJECT_WORKFLOW_SOURCE).decode().splitlines()
+    expected_source = (
+        ['A\t' + path for path in sorted(PROJECT_WORKFLOW_SOURCE_ADDITIONS)]
+        + ['M\t' + path for path in sorted(PROJECT_WORKFLOW_SOURCE_MODIFIED)])
+    require(sorted(source_changes) == sorted(expected_source),
+            'Project-workflow implementation changed another path or status set')
+    docs_changes = git(root, 'diff', '--name-status', '--no-renames',
+                       PROJECT_WORKFLOW_SOURCE,
+                       PROJECT_WORKFLOW_DOCS).decode().splitlines()
+    require(sorted(docs_changes)
+            == ['M\t' + path for path in sorted(PROJECT_WORKFLOW_DOCS_MODIFIED)],
+            'Published-release status correction changed another path or status set')
+    complete_changes = git(root, 'diff', '--name-status', '--no-renames',
+                           PROJECT_WORKFLOW_BASE,
+                           PROJECT_WORKFLOW_DOCS).decode().splitlines()
+    expected_complete = (
+        ['A\t' + path for path in sorted(PROJECT_WORKFLOW_ADDITIONS)]
+        + ['M\t' + path for path in sorted(PROJECT_WORKFLOW_MODIFIED)])
+    require(sorted(complete_changes) == sorted(expected_complete)
+            and not PROJECT_WORKFLOW_ADDITIONS & PROJECT_WORKFLOW_MODIFIED
+            and not PROJECT_WORKFLOW_PATHS & PROJECT_WORKFLOW_PROOF_PATHS,
+            'Project-workflow complete range or proof separation changed')
+    checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
+    checkout_parents = git(root, 'show', '-s', '--format=%P',
+                           checkout_head).decode().strip().split()
+    checkout_tree = git(root, 'rev-parse', checkout_head + '^{tree}').decode().strip()
+    proof_head = (checkout_parents[1] if len(checkout_parents) == 2 else checkout_head)
+    proof_parents = git(root, 'show', '-s', '--format=%P',
+                        proof_head).decode().strip().split()
+    proof_tree = git(root, 'rev-parse', proof_head + '^{tree}').decode().strip()
+    proof_head = validate_project_workflow_checkout_history(
+        checkout_head, checkout_parents, checkout_tree,
+        proof_head, proof_parents, proof_tree)
+    if proof_head == PROJECT_WORKFLOW_DOCS:
+        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                            PROJECT_WORKFLOW_DOCS, '--').decode().splitlines()
+    else:
+        proof_changes = git(root, 'diff', '--name-status', '--no-renames',
+                            PROJECT_WORKFLOW_DOCS, proof_head).decode().splitlines()
+    require(sorted(proof_changes)
+            == ['M\t' + path for path in sorted(PROJECT_WORKFLOW_PROOF_PATHS)],
+            'Project-workflow proof successor changed application or documentation source')
+    base_entries = entries(root, PROJECT_WORKFLOW_BASE)
+    source_entries = entries(root, PROJECT_WORKFLOW_DOCS)
+    live_index_entries = current_index_entries(root)
+    live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
+    require(not PROJECT_WORKFLOW_ADDITIONS & set(base_entries)
+            and PROJECT_WORKFLOW_ADDITIONS <= set(source_entries),
+            'Project-workflow additions did not originate in the exact source range')
+    worktree_oids = {}
+    for path in sorted(PROJECT_WORKFLOW_MODIFIED):
+        current = actual_ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob',
+                               PROJECT_WORKFLOW_DOCS + ':' + path)
+                and live_index_entries.get(path) == source_entries[path]
+                and mode(root, path, live_index_modes) == base_entries[path][0]
+                == source_entries[path][0] == '100644',
+                'Current project-workflow modified source identity changed: ' + path)
+        worktree_oids[path] = source_entries[path][1]
+    for path in sorted(PROJECT_WORKFLOW_ADDITIONS):
+        current = actual_ordinary(root, path)
+        require(current == git(root, 'cat-file', 'blob',
+                               PROJECT_WORKFLOW_DOCS + ':' + path)
+                and live_index_entries.get(path) == source_entries[path]
+                and mode(root, path, live_index_modes)
+                == source_entries[path][0] == '100644',
+                'Current project-workflow addition identity changed: ' + path)
+        worktree_oids[path] = source_entries[path][1]
+    require(set(REL127_PROOF_PROJECTED) == PROJECT_WORKFLOW_DOCS_MODIFIED
+            and set(REL127_PROOF_SHA256) == PROJECT_WORKFLOW_DOCS_MODIFIED
+            and all(digest(actual_ordinary(root, path)) == REL127_PROOF_SHA256[path]
+                    for path in PROJECT_WORKFLOW_DOCS_MODIFIED),
+            'Published-release status projection identity changed')
+    return worktree_oids
+
+
+def project_workflow_component_checkout_head(root):
+    """Project HEAD only for the nested component fast-path checkout-history gate."""
+    require(_PROJECT_WORKFLOW_PROJECTION_DEPTH == 1
+            and set(_PROJECT_WORKFLOW_WORKTREE_OIDS) == PROJECT_WORKFLOW_PATHS,
+            'Project-workflow component checkout projection is not authenticated')
+    return PROJECT_WORKFLOW_BASE
+
+
 def validate_project_progress_source(root):
     """Bind the project-progress source, reviewed corrections, and proof successors."""
     require(git(root, 'rev-parse', PROJECT_PROGRESS_BASE + '^{tree}').decode().strip()
@@ -13806,6 +14130,7 @@ def validate_project_progress_source(root):
     correction_entries = entries(root, PROJECT_PROGRESS_CORRECTION_SOURCE)
     handoff_correction_entries = entries(
         root, PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE)
+    project_workflow_entries = entries(root, PROJECT_WORKFLOW_DOCS)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not PROJECT_PROGRESS_ADDITIONS & set(base_entries)
@@ -13821,10 +14146,13 @@ def validate_project_progress_source(root):
         target_commit = (PROJECT_PROGRESS_CORRECTION_SOURCE
                          if path in PROJECT_PROGRESS_CORRECTION_MODIFIED
                          else PROJECT_PROGRESS_SOURCE)
-        require(actual_ordinary(root, path)
+        require(workflow_projected_bytes(
+                    root, path, actual_ordinary(root, path))
                 == git(root, 'cat-file', 'blob', target_commit + ':' + path),
                 'Current project-progress modified raw bytes changed: ' + path)
-        require(live_index_entries.get(path) == target
+        expected_live = (project_workflow_entries[path]
+                         if path in PROJECT_WORKFLOW_PATHS else target)
+        require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes) == base_entries[path][0]
                 == target[0] == '100644',
                 'Current project-progress modified source identity changed: ' + path)
@@ -13835,10 +14163,13 @@ def validate_project_progress_source(root):
         target_commit = (PROJECT_PROGRESS_CORRECTION_SOURCE
                          if path in PROJECT_PROGRESS_CORRECTION_MODIFIED
                          else PROJECT_PROGRESS_SOURCE)
-        require(actual_ordinary(root, path)
+        require(workflow_projected_bytes(
+                    root, path, actual_ordinary(root, path))
                 == git(root, 'cat-file', 'blob', target_commit + ':' + path),
                 'Current project-progress addition raw bytes changed: ' + path)
-        require(live_index_entries.get(path) == target
+        expected_live = (project_workflow_entries[path]
+                         if path in PROJECT_WORKFLOW_PATHS else target)
+        require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes) == target[0] == '100644',
                 'Current project-progress addition identity changed: ' + path)
         worktree_oids[path] = target[1]
@@ -13849,14 +14180,44 @@ def validate_project_progress_source(root):
         target_commit = (PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE
                          if path in PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED
                          else PROJECT_PROGRESS_CORRECTION_SOURCE)
-        require(actual_ordinary(root, path) == git(root, 'cat-file', 'blob',
-                                                       target_commit + ':' + path),
+        require(workflow_projected_bytes(
+                    root, path, actual_ordinary(root, path))
+                == git(root, 'cat-file', 'blob', target_commit + ':' + path),
                 'Current project-progress correction addition raw bytes changed: ' + path)
-        require(live_index_entries.get(path) == target
+        expected_live = (project_workflow_entries[path]
+                         if path in PROJECT_WORKFLOW_PATHS else target)
+        require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes)
                 == target[0] == '100644',
                 'Current project-progress correction addition identity changed: ' + path)
     return worktree_oids
+
+
+@contextmanager
+def project_workflow_projection(root):
+    """Project only the exact consolidated project source to verified main."""
+    global _PROJECT_WORKFLOW_PROJECTION_DEPTH, _PROJECT_WORKFLOW_WORKTREE_OIDS
+    global _CURRENT_INDEX_MODES
+    root = Path(root)
+    require(_PROJECT_WORKFLOW_PROJECTION_DEPTH == 0
+            and not _PROJECT_WORKFLOW_WORKTREE_OIDS,
+            'Nested project-workflow projection refused')
+    ensure_history(root)
+    pin_head(root)
+    previous_modes = _CURRENT_INDEX_MODES
+    _CURRENT_INDEX_MODES = current_index_modes(root)
+    try:
+        _PROJECT_WORKFLOW_WORKTREE_OIDS = validate_project_workflow_source(root)
+        _PROJECT_WORKFLOW_PROJECTION_DEPTH = 1
+        yield
+        pin_head(root)
+        require(validate_project_workflow_source(root)
+                == _PROJECT_WORKFLOW_WORKTREE_OIDS,
+                'Current project-workflow source changed during historical projection')
+    finally:
+        _PROJECT_WORKFLOW_PROJECTION_DEPTH = 0
+        _PROJECT_WORKFLOW_WORKTREE_OIDS = {}
+        _CURRENT_INDEX_MODES = previous_modes
 
 
 @contextmanager
@@ -13965,15 +14326,22 @@ def release_127_projection(root):
 def verify_current(root):
     with verification_projection_cache(root):
         with immutable_blob_batch(root):
-            with notification_acceptance_projection(root):
-                with cloud_init_terminal_projection(root):
-                    with project_progress_projection(root):
-                        with release_127_projection(root):
-                            checks = _verify_current(root)
+            with project_workflow_projection(root):
+                with notification_acceptance_projection(root):
+                    with cloud_init_terminal_projection(root):
+                        with project_progress_projection(root):
+                            with release_127_projection(root):
+                                checks = _verify_current(root)
     return [
         {'name': 'Exact notification-health acceptance successor projects two reviewed files',
          'passed': True},
         {'name': 'Notification-health acceptance proof changes only the exact three proof files',
+         'passed': True},
+        {'name': 'Exact project-workflow range binds 25 modified paths and 23 additions',
+         'passed': True},
+        {'name': 'Project-workflow proof successor changes only the exact three proof files',
+         'passed': True},
+        {'name': 'Published 1.27 status documents reconstruct their immutable release source',
          'passed': True},
         {'name': 'Notification-health proof correction is one direct child of its preserved rejected proof',
          'passed': True},
