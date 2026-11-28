@@ -803,16 +803,22 @@ def run(root=ROOT):
             .decode().strip() == proof.CURRENT_SOURCE_REJECTED_PROOF_TREE
             and proof.git(root, 'rev-parse',
                           proof.ACTIVITY_COUNT_SOURCE + '^{tree}')
-            .decode().strip() == proof.ACTIVITY_COUNT_SOURCE_TREE)
+            .decode().strip() == proof.ACTIVITY_COUNT_SOURCE_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.CURRENT_SOURCE_PACKAGING_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == proof.CURRENT_SOURCE_PACKAGING_REJECTED_PROOF_TREE
+            and proof.git(root, 'rev-parse',
+                          proof.ACTIVITY_INVENTORY_SOURCE + '^{tree}')
+            .decode().strip() == proof.ACTIVITY_INVENTORY_SOURCE_TREE)
     synthetic_proof = 'a' * 40
     synthetic_tree = 'b' * 40
     assert proof.validate_mail_schema_count_fix_checkout_history(
-        synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE], synthetic_tree,
-        synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE], synthetic_tree
+        synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE], synthetic_tree,
+        synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE], synthetic_tree
     ) == synthetic_proof
     assert proof.validate_mail_schema_count_fix_checkout_history(
         'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], synthetic_tree,
-        synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE], synthetic_tree
+        synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE], synthetic_tree
     ) == synthetic_proof
     refuses('Mail schema-count proof refuses a changed direct parent',
             lambda: proof.validate_mail_schema_count_fix_checkout_history(
@@ -820,31 +826,31 @@ def run(root=ROOT):
                 synthetic_proof, ['d' * 40], synthetic_tree))
     refuses('Mail schema-count proof refuses a changed direct tree',
             lambda: proof.validate_mail_schema_count_fix_checkout_history(
-                synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE], 'd' * 40,
-                synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE],
+                synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE], 'd' * 40,
+                synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE],
                 synthetic_tree))
     refuses('Mail schema-count merge refuses a changed base',
             lambda: proof.validate_mail_schema_count_fix_checkout_history(
                 'c' * 40, ['d' * 40, synthetic_proof], synthetic_tree,
-                synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE],
+                synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE],
                 synthetic_tree))
     refuses('Mail schema-count merge refuses an extra parent',
             lambda: proof.validate_mail_schema_count_fix_checkout_history(
                 'c' * 40,
                 [proof.PROJECT_WORKFLOW_BASE, synthetic_proof, 'd' * 40],
                 synthetic_tree, synthetic_proof,
-                [proof.ACTIVITY_COUNT_SOURCE], synthetic_tree))
+                [proof.ACTIVITY_INVENTORY_SOURCE], synthetic_tree))
     refuses('Mail schema-count merge refuses reversed parents',
             lambda: proof.validate_mail_schema_count_fix_checkout_history(
                 'c' * 40, [synthetic_proof, proof.PROJECT_WORKFLOW_BASE],
                 synthetic_tree, synthetic_proof,
-                [proof.ACTIVITY_COUNT_SOURCE], synthetic_tree))
+                [proof.ACTIVITY_INVENTORY_SOURCE], synthetic_tree))
     refuses('Mail schema-count merge refuses a changed tree',
             lambda: proof.validate_mail_schema_count_fix_checkout_history(
                 'c' * 40, [proof.PROJECT_WORKFLOW_BASE, synthetic_proof], 'd' * 40,
-                synthetic_proof, [proof.ACTIVITY_COUNT_SOURCE],
+                synthetic_proof, [proof.ACTIVITY_INVENTORY_SOURCE],
                 synthetic_tree))
-    passed('Current-source history admits only a proof directly after the reviewed exact-count correction and its exact tree-identical merge')
+    passed('Current-source history admits only a proof directly after the reviewed inventory correction and its exact tree-identical merge')
     with proof.mail_schema_count_fix_projection(root):
         for path in proof.MAIL_SCHEMA_COUNT_FIX_PATHS:
             predecessor = proof.git(
@@ -863,7 +869,7 @@ def run(root=ROOT):
                 .decode().strip() == proof.PROJECT_WORKFLOW_SOURCE_TREE
                 and proof.git(root, 'rev-parse', proof.PROJECT_WORKFLOW_DOCS + '^{tree}')
                 .decode().strip() == proof.PROJECT_WORKFLOW_DOCS_TREE)
-    passed('Current-source projection restores all nine failed-head blobs and authenticates the predecessor proof')
+    passed('Current-source projection restores all ten failed-head blobs and authenticates both preserved predecessor proofs')
     assert proof.validate_project_workflow_checkout_history(
         synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree,
         synthetic_proof, [proof.PROJECT_WORKFLOW_DOCS], synthetic_tree) == synthetic_proof
@@ -1235,6 +1241,10 @@ def run(root=ROOT):
             ('CURRENT_SOURCE_REJECTED_PROOF_TREE', 'preserved review-rejected proof tree'),
             ('ACTIVITY_COUNT_SOURCE', 'exact-count correction commit'),
             ('ACTIVITY_COUNT_SOURCE_TREE', 'exact-count correction tree'),
+            ('CURRENT_SOURCE_PACKAGING_REJECTED_PROOF', 'preserved packaging-rejected proof commit'),
+            ('CURRENT_SOURCE_PACKAGING_REJECTED_PROOF_TREE', 'preserved packaging-rejected proof tree'),
+            ('ACTIVITY_INVENTORY_SOURCE', 'activity-inventory correction commit'),
+            ('ACTIVITY_INVENTORY_SOURCE_TREE', 'activity-inventory correction tree'),
         ):
             original = getattr(proof, attribute)
             try:
@@ -1287,6 +1297,16 @@ def run(root=ROOT):
                     lambda: proof.validate_mail_schema_count_fix_source(fixture))
         finally:
             proof.ACTIVITY_COUNT_MODIFIED = original_count_paths
+        original_inventory_paths = proof.ACTIVITY_INVENTORY_MODIFIED
+        try:
+            proof.ACTIVITY_INVENTORY_MODIFIED = original_inventory_paths | {'README.md'}
+            refuses('Current-source binding refuses an expanded inventory path set',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+            proof.ACTIVITY_INVENTORY_MODIFIED = frozenset()
+            refuses('Current-source binding refuses a missing inventory path',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.ACTIVITY_INVENTORY_MODIFIED = original_inventory_paths
         fragment_path = '.github/workflows/mail-flags-native.yml'
         original_fragment = proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[fragment_path]
         try:
@@ -1296,6 +1316,18 @@ def run(root=ROOT):
                     lambda: proof.validate_mail_schema_count_fix_source(fixture))
         finally:
             proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[fragment_path] = original_fragment
+        inventory_fragment_path = 'site/install/inventory.generated.php'
+        original_inventory_fragment = proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[
+            inventory_fragment_path]
+        try:
+            proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[inventory_fragment_path] = (
+                original_inventory_fragment[0],
+                original_inventory_fragment[1].replace(b'c9cc1e4d', b'c9cc1e4e'))
+            refuses('Current-source binding refuses a substituted activity inventory hash',
+                    lambda: proof.validate_mail_schema_count_fix_source(fixture))
+        finally:
+            proof.MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[
+                inventory_fragment_path] = original_inventory_fragment
         activity_marker_path = 'site/app/activity/events.php'
         original_activity_markers = proof.ACTIVITY_COLLATION_SOURCE_MARKERS[
             activity_marker_path]

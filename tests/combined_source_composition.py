@@ -228,6 +228,10 @@ CURRENT_SOURCE_REJECTED_PROOF = 'f0842b1fa777ef31165dfd6164430141b7433fbc'
 CURRENT_SOURCE_REJECTED_PROOF_TREE = 'd7e33099e43c1f6dc785ffc97603204adf12d9c4'
 ACTIVITY_COUNT_SOURCE = '1d292b71cf7d825016b79fe8d2aa32d651f3d159'
 ACTIVITY_COUNT_SOURCE_TREE = 'b77b7527a8c81c7abd134aa9d55732ec4c716059'
+CURRENT_SOURCE_PACKAGING_REJECTED_PROOF = 'd6480271c4330f49d2103fcecce81eee34f51b31'
+CURRENT_SOURCE_PACKAGING_REJECTED_PROOF_TREE = '1a3a545e121f3bc69da9ad4c00d5169f037e769e'
+ACTIVITY_INVENTORY_SOURCE = '1e9f1c75e95c3f94371bf387f1517f981fea93ba'
+ACTIVITY_INVENTORY_SOURCE_TREE = 'ced3f076fcd54ca5d1ef6a5ff876dd33e7a185ab'
 MAIL_SCHEMA_COUNT_FIX_MODIFIED = frozenset((
     '.github/workflows/mail-copied-draft-native.yml',
     '.github/workflows/mail-flags-native.yml',
@@ -246,9 +250,13 @@ ACTIVITY_COLLATION_MODIFIED = frozenset((
 ACTIVITY_COUNT_MODIFIED = frozenset((
     'tests/project_progress_screen_native_cases.php',
 ))
+ACTIVITY_INVENTORY_MODIFIED = frozenset((
+    'site/install/inventory.generated.php',
+))
 MAIL_SCHEMA_COUNT_FIX_PATHS = (MAIL_SCHEMA_COUNT_FIX_MODIFIED
                                | PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED
-                               | ACTIVITY_COLLATION_MODIFIED)
+                               | ACTIVITY_COLLATION_MODIFIED
+                               | ACTIVITY_INVENTORY_MODIFIED)
 MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS = REL127_PROOF_PATHS
 MAIL_SCHEMA_COUNT_FIX_FRAGMENTS = {
     '.github/workflows/mail-copied-draft-native.yml': (
@@ -268,6 +276,9 @@ MAIL_SCHEMA_COUNT_FIX_FRAGMENTS = {
     'tests/project_progress_schema_native.php': (
         b"require CWP_CODE_ROOT.'/database/migrations/project_progress_migrate.php';",
         b"require_once CWP_CODE_ROOT.'/database/migrations/project_progress_migrate.php';"),
+    'site/install/inventory.generated.php': (
+        b"'app/activity/events.php'=>'0721b9ffff32cb0b92946503a813981c6bc91d58276a2e996cfb4304759d85b8',",
+        b"'app/activity/events.php'=>'c9cc1e4d73f89054f5380cce72ddbfadf700218926282a3cfe288e4b11711c14',"),
 }
 ACTIVITY_COLLATION_BASE_MARKERS = {
     'site/app/activity/events.php': (
@@ -2604,7 +2615,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = '11bd52625495367708d570f39659e52d39e7d43a5571c6587998f31f506c172c'
+REGRESSION_SHA256 = '45dba2e6dcb51e83c95fd429b43e9c1ab65a0ef39b9234949752a3466148d49d'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -3092,13 +3103,13 @@ def mail_schema_count_fix_projected_bytes(root, path, current):
     if (not _MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH
             or path not in MAIL_SCHEMA_COUNT_FIX_PATHS):
         return current
-    source_entries = entries(root, ACTIVITY_COUNT_SOURCE)
+    source_entries = entries(root, ACTIVITY_INVENTORY_SOURCE)
     require(_MAIL_SCHEMA_COUNT_FIX_WORKTREE_OIDS.get(path)
             == source_entries[path][1],
             'Current mail schema-count source changed before predecessor projection: '
             + path)
     source = git(
-        root, 'cat-file', 'blob', ACTIVITY_COUNT_SOURCE + ':' + path)
+        root, 'cat-file', 'blob', ACTIVITY_INVENTORY_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_SCHEMA_COUNT_FIX_BASE + ':' + path)
     if current == source:
         require(actual_ordinary(root, path) == source,
@@ -3109,6 +3120,24 @@ def mail_schema_count_fix_projected_bytes(root, path, current):
     require(current == source,
             'Current mail schema-count source changed before predecessor projection: '
             + path)
+    return base
+
+
+def project_mail_schema_count_fix_source(root, path, current):
+    """Restore the failed exact-head bytes for direct historical consumers."""
+    if path not in MAIL_SCHEMA_COUNT_FIX_PATHS:
+        return current
+    source = git(root, 'cat-file', 'blob', ACTIVITY_INVENTORY_SOURCE + ':' + path)
+    base = git(root, 'cat-file', 'blob', MAIL_SCHEMA_COUNT_FIX_BASE + ':' + path)
+    if current == source:
+        require(actual_ordinary(root, path) == source,
+                'Current mail schema-count raw bytes changed before direct projection: '
+                + path)
+        return base
+    if current == base or current != actual_ordinary(root, path):
+        return current
+    require(current == source,
+            'Current mail schema-count source changed before direct projection: ' + path)
     return base
 
 
@@ -12450,6 +12479,7 @@ def project_signed_ppa_label_source(root, path, current):
 
 def project_project_workflow_source(root, path, current):
     """Restore verified-main bytes before the inherited component-union chain."""
+    current = project_mail_schema_count_fix_source(root, path, current)
     if path not in PROJECT_WORKFLOW_MODIFIED or path in PROJECT_WORKFLOW_DOCS_MODIFIED:
         return current
     source = git(root, 'cat-file', 'blob', PROJECT_WORKFLOW_DOCS + ':' + path)
@@ -13221,7 +13251,7 @@ def validate_release_127_source(root):
     source_entries = entries(root, REL127_SOURCE)
     project_entries = entries(root, PROJECT_PROGRESS_SOURCE)
     project_workflow_entries = entries(root, PROJECT_WORKFLOW_DOCS)
-    mail_schema_count_entries = entries(root, ACTIVITY_COUNT_SOURCE)
+    mail_schema_count_entries = entries(root, ACTIVITY_INVENTORY_SOURCE)
     worktree_oids = {}
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
@@ -13231,7 +13261,7 @@ def validate_release_127_source(root):
     for path in sorted(REL127_MODIFIED):
         expected_index = (mail_schema_count_entries[path]
                           if (_MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH
-                              and path in MAIL_SCHEMA_COUNT_FIX_MODIFIED) else
+                              and path in MAIL_SCHEMA_COUNT_FIX_PATHS) else
                           project_workflow_entries[path]
                           if path in PROJECT_WORKFLOW_PATHS else
                           project_entries[path]
@@ -14077,22 +14107,22 @@ def validate_mail_schema_count_fix_checkout_history(
                             for parent in parents)
                     for parents in (checkout_parents, proof_parents)),
             'Malformed mail schema-count checkout history')
-    if checkout_head == ACTIVITY_COUNT_SOURCE:
-        require(checkout_parents == [CURRENT_SOURCE_REJECTED_PROOF]
+    if checkout_head == ACTIVITY_INVENTORY_SOURCE:
+        require(checkout_parents == [CURRENT_SOURCE_PACKAGING_REJECTED_PROOF]
                 and proof_head == checkout_head
                 and proof_parents == checkout_parents
                 and proof_tree == checkout_tree
-                == ACTIVITY_COUNT_SOURCE_TREE,
+                == ACTIVITY_INVENTORY_SOURCE_TREE,
                 'Current-source correction local proof preparation changed history')
     elif len(checkout_parents) == 1:
-        require(checkout_parents == [ACTIVITY_COUNT_SOURCE]
+        require(checkout_parents == [ACTIVITY_INVENTORY_SOURCE]
                 and proof_head == checkout_head
                 and proof_parents == checkout_parents
                 and proof_tree == checkout_tree,
                 'Current-source correction proof is not the exact direct successor')
     else:
         require(checkout_parents == [PROJECT_WORKFLOW_BASE, proof_head]
-                and proof_parents == [ACTIVITY_COUNT_SOURCE]
+                and proof_parents == [ACTIVITY_INVENTORY_SOURCE]
                 and checkout_tree == proof_tree,
                 'Current-source correction merge is not exact and tree-identical')
     return proof_head
@@ -14111,7 +14141,11 @@ def validate_mail_schema_count_fix_source(root):
             and git(root, 'rev-parse', CURRENT_SOURCE_REJECTED_PROOF + '^{tree}')
             .decode().strip() == CURRENT_SOURCE_REJECTED_PROOF_TREE
             and git(root, 'rev-parse', ACTIVITY_COUNT_SOURCE + '^{tree}')
-            .decode().strip() == ACTIVITY_COUNT_SOURCE_TREE,
+            .decode().strip() == ACTIVITY_COUNT_SOURCE_TREE
+            and git(root, 'rev-parse', CURRENT_SOURCE_PACKAGING_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == CURRENT_SOURCE_PACKAGING_REJECTED_PROOF_TREE
+            and git(root, 'rev-parse', ACTIVITY_INVENTORY_SOURCE + '^{tree}')
+            .decode().strip() == ACTIVITY_INVENTORY_SOURCE_TREE,
             'Current-source correction base or source identity changed')
     require(git(root, 'show', '-s', '--format=%P', MAIL_SCHEMA_COUNT_FIX_BASE)
             .decode().strip().split() == [PROJECT_WORKFLOW_DOCS]
@@ -14125,7 +14159,12 @@ def validate_mail_schema_count_fix_source(root):
             and git(root, 'show', '-s', '--format=%P', CURRENT_SOURCE_REJECTED_PROOF)
             .decode().strip().split() == [ACTIVITY_COLLATION_SOURCE]
             and git(root, 'show', '-s', '--format=%P', ACTIVITY_COUNT_SOURCE)
-            .decode().strip().split() == [CURRENT_SOURCE_REJECTED_PROOF],
+            .decode().strip().split() == [CURRENT_SOURCE_REJECTED_PROOF]
+            and git(root, 'show', '-s', '--format=%P',
+                    CURRENT_SOURCE_PACKAGING_REJECTED_PROOF)
+            .decode().strip().split() == [ACTIVITY_COUNT_SOURCE]
+            and git(root, 'show', '-s', '--format=%P', ACTIVITY_INVENTORY_SOURCE)
+            .decode().strip().split() == [CURRENT_SOURCE_PACKAGING_REJECTED_PROOF],
             'Current-source correction fixed parent chain changed')
     base_proof_changes = git(
         root, 'diff', '--name-status', '--no-renames',
@@ -14148,7 +14187,9 @@ def validate_mail_schema_count_fix_source(root):
             == ['M\t' + path
                 for path in sorted(PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED)]
             and set(MAIL_SCHEMA_COUNT_FIX_FRAGMENTS)
-            == MAIL_SCHEMA_COUNT_FIX_MODIFIED | PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED,
+            == (MAIL_SCHEMA_COUNT_FIX_MODIFIED
+                | PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED
+                | ACTIVITY_INVENTORY_MODIFIED),
             'Project-progress loader correction changed another path or status set')
     require(git(root, 'diff', '--name-status', '--no-renames',
                 PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE,
@@ -14170,6 +14211,17 @@ def validate_mail_schema_count_fix_source(root):
             and set(ACTIVITY_COUNT_SOURCE_MARKERS) == ACTIVITY_COUNT_MODIFIED
             and not ACTIVITY_COUNT_MODIFIED & MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS,
             'Exact activity-count review correction changed another path or marker set')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                ACTIVITY_COUNT_SOURCE,
+                CURRENT_SOURCE_PACKAGING_REJECTED_PROOF).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS)],
+            'Preserved packaging-rejected proof changed application source')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                CURRENT_SOURCE_PACKAGING_REJECTED_PROOF,
+                ACTIVITY_INVENTORY_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(ACTIVITY_INVENTORY_MODIFIED)]
+            and not ACTIVITY_INVENTORY_MODIFIED & MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS,
+            'Activity inventory correction changed another path or status set')
     checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
     checkout_parents = git(root, 'show', '-s', '--format=%P',
                            checkout_head).decode().strip().split()
@@ -14181,19 +14233,19 @@ def validate_mail_schema_count_fix_source(root):
     proof_head = validate_mail_schema_count_fix_checkout_history(
         checkout_head, checkout_parents, checkout_tree,
         proof_head, proof_parents, proof_tree)
-    if proof_head == ACTIVITY_COUNT_SOURCE:
+    if proof_head == ACTIVITY_INVENTORY_SOURCE:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            ACTIVITY_COUNT_SOURCE,
+                            ACTIVITY_INVENTORY_SOURCE,
                             '--').decode().splitlines()
     else:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            ACTIVITY_COUNT_SOURCE,
+                            ACTIVITY_INVENTORY_SOURCE,
                             proof_head).decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS)],
             'Mail schema-count proof successor changed application source')
     base_entries = entries(root, MAIL_SCHEMA_COUNT_FIX_BASE)
-    source_entries = entries(root, ACTIVITY_COUNT_SOURCE)
+    source_entries = entries(root, ACTIVITY_INVENTORY_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     worktree_oids = {}
@@ -14202,7 +14254,7 @@ def validate_mail_schema_count_fix_source(root):
         intermediate = git(
             root, 'cat-file', 'blob', ACTIVITY_COLLATION_SOURCE + ':' + path)
         source = git(
-            root, 'cat-file', 'blob', ACTIVITY_COUNT_SOURCE + ':' + path)
+            root, 'cat-file', 'blob', ACTIVITY_INVENTORY_SOURCE + ':' + path)
         if path in MAIL_SCHEMA_COUNT_FIX_FRAGMENTS:
             old, new = MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[path]
             semantic = (base.count(old) == 1 and new not in base
@@ -14316,7 +14368,7 @@ def validate_project_workflow_source(root):
             'Project-workflow proof successor changed application or documentation source')
     base_entries = entries(root, PROJECT_WORKFLOW_BASE)
     source_entries = entries(root, PROJECT_WORKFLOW_DOCS)
-    current_source_entries = entries(root, ACTIVITY_COUNT_SOURCE)
+    current_source_entries = entries(root, ACTIVITY_INVENTORY_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not PROJECT_WORKFLOW_ADDITIONS & set(base_entries)
@@ -14448,6 +14500,7 @@ def validate_project_progress_source(root):
     handoff_correction_entries = entries(
         root, PROJECT_PROGRESS_HANDOFF_CORRECTION_SOURCE)
     project_workflow_entries = entries(root, PROJECT_WORKFLOW_DOCS)
+    current_source_entries = entries(root, ACTIVITY_INVENTORY_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not PROJECT_PROGRESS_ADDITIONS & set(base_entries)
@@ -14464,10 +14517,14 @@ def validate_project_progress_source(root):
                          if path in PROJECT_PROGRESS_CORRECTION_MODIFIED
                          else PROJECT_PROGRESS_SOURCE)
         require(workflow_projected_bytes(
-                    root, path, actual_ordinary(root, path))
+                    root, path, mail_schema_count_fix_projected_bytes(
+                        root, path, actual_ordinary(root, path)))
                 == git(root, 'cat-file', 'blob', target_commit + ':' + path),
                 'Current project-progress modified raw bytes changed: ' + path)
-        expected_live = (project_workflow_entries[path]
+        expected_live = (current_source_entries[path]
+                         if (_MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH
+                             and path in MAIL_SCHEMA_COUNT_FIX_PATHS) else
+                         project_workflow_entries[path]
                          if path in PROJECT_WORKFLOW_PATHS else target)
         require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes) == base_entries[path][0]
@@ -14481,10 +14538,14 @@ def validate_project_progress_source(root):
                          if path in PROJECT_PROGRESS_CORRECTION_MODIFIED
                          else PROJECT_PROGRESS_SOURCE)
         require(workflow_projected_bytes(
-                    root, path, actual_ordinary(root, path))
+                    root, path, mail_schema_count_fix_projected_bytes(
+                        root, path, actual_ordinary(root, path)))
                 == git(root, 'cat-file', 'blob', target_commit + ':' + path),
                 'Current project-progress addition raw bytes changed: ' + path)
-        expected_live = (project_workflow_entries[path]
+        expected_live = (current_source_entries[path]
+                         if (_MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH
+                             and path in MAIL_SCHEMA_COUNT_FIX_PATHS) else
+                         project_workflow_entries[path]
                          if path in PROJECT_WORKFLOW_PATHS else target)
         require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes) == target[0] == '100644',
@@ -14498,10 +14559,14 @@ def validate_project_progress_source(root):
                          if path in PROJECT_PROGRESS_HANDOFF_CORRECTION_MODIFIED
                          else PROJECT_PROGRESS_CORRECTION_SOURCE)
         require(workflow_projected_bytes(
-                    root, path, actual_ordinary(root, path))
+                    root, path, mail_schema_count_fix_projected_bytes(
+                        root, path, actual_ordinary(root, path)))
                 == git(root, 'cat-file', 'blob', target_commit + ':' + path),
                 'Current project-progress correction addition raw bytes changed: ' + path)
-        expected_live = (project_workflow_entries[path]
+        expected_live = (current_source_entries[path]
+                         if (_MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH
+                             and path in MAIL_SCHEMA_COUNT_FIX_PATHS) else
+                         project_workflow_entries[path]
                          if path in PROJECT_WORKFLOW_PATHS else target)
         require(live_index_entries.get(path) == expected_live
                 and mode(root, path, live_index_modes)
@@ -14678,7 +14743,7 @@ def verify_current(root):
                                 with release_127_projection(root):
                                     checks = _verify_current(root)
     return [
-        {'name': 'Exact current-source chain binds six mail counts, one loader, two activity paths, and the reviewed exact-count correction',
+        {'name': 'Exact current-source chain binds six mail counts, one loader, two activity paths, the exact-count review correction, and the regenerated activity inventory',
          'passed': True},
         {'name': 'Current-source correction proof changes only the exact three proof files',
          'passed': True},
