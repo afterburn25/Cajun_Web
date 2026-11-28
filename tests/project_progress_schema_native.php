@@ -9,7 +9,7 @@ if($foreignDatabase!=='cwp_progress_foreign')exit(2);
 define('CWP_BOOT',true);define('CWP_CODE_ROOT',realpath(__DIR__.'/../site'));
 require CWP_CODE_ROOT.'/includes/bootstrap.php';
 require CWP_CODE_ROOT.'/database/schema/base.php';
-require CWP_CODE_ROOT.'/database/migrations/project_progress_migrate.php';
+require_once CWP_CODE_ROOT.'/database/migrations/project_progress_migrate.php';
 
 $ddlWorker=getenv('CWP_PROJECT_PROGRESS_DDL_WORKER')==='1';
 $staleWorker=getenv('CWP_PROJECT_PROGRESS_STALE_WORKER')==='1';
