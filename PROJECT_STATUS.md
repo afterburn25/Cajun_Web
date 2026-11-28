@@ -1,4 +1,17 @@
-# Current status — 2026-11-23 — REL-01 / 1.27.0 qualification
+# Current status — 2026-11-28 — published 1.27.0 / project workflow consolidation
+
+- Authoritative queue: issue #157. Coordinator record: PR #340. Codex remains the integration lead for all 20i and non-20i work; older ownership text is retained as history.
+- Published release: v1.27.0, release `459005437`, published `2026-11-26T05:43:44Z` from source `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`.
+- Publication verification: all 18 assets were downloaded and hash-verified. Principal SHA-256 values are COMPLETE `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`, FULL `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`, UPDATE `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`, and TEST-EVIDENCE `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`.
+- REL-01 qualification: PR #402 merged normally; its exact resulting-main cohort passed 29/29 workflows on attempt 1, including Application, all four PHP/database checkout/payment and upgrade lanes, browser, package, provenance, and security/privacy gates.
+- Verified development main: `7889783b6bc9f58c2ac0a8c8a4c7a334155a390e`, tree `b099603c62d852269a9f7ba4ef357960eb2d82bb`, after qualified PRs #405, #406, and #407. Those post-release project-foundation, notification-health acceptance, and proof-performance changes expose no new user-facing runtime requiring a release by themselves.
+- Current bounded work: consolidate the retained project workflow on `codex/project-workflow-consolidated-main788-20261128`, then perform exact source-composition proof, independent implementation/security review, first-attempt hosted acceptance, normal integration, and resulting-main verification.
+- Next-version decision: deferred until the held project and administration bundle is accepted; do not assign, tag, build, publish, or deploy a successor release yet.
+- Boundaries: no production deployment, live payment/refund, paid provisioning, provider write, customer message, SSH/support access, or destructive live operation without separate explicit authorization.
+
+Historical status follows. Its ownership, checkpoint, and pending-work claims do not supersede this prefix.
+
+# Historical status — 2026-11-23 — REL-01 / 1.27.0 qualification
 
 - Authoritative queue: issue #157. Coordinator record: PR #340. Codex is the integration lead for all 20i and non-20i work; older ownership text below is history.
 - Verified main: `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`, after normal PR #401 merge.

@@ -1,11 +1,12 @@
-## 1.27.0 — qualification candidate (unpublished)
+## 1.27.0 — published and download-verified
 
-- Starting main: `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`.
-- Upgrade baseline: immutable published v1.26.1 source `f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391`.
+- Release: [v1.27.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.27.0), ID `459005437`, published `2026-11-26T05:43:44Z`; not a prerelease or draft.
+- Immutable source: normal PR #402 merge `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`; upgrade baseline remains published v1.26.1 source `f2d98579b7e18c3dbadf2ad2f2f5a63f757f3391`.
+- Qualification: 20/20 exact PR-head workflows and 29/29 resulting-main workflows passed on attempt 1, including Application, all four PHP/database checkout/payment and upgrade lanes, installed browser, package/inventory, source-provenance, and security/privacy gates.
+- Public verification: all 18 assets were fetched back and matched their uploaded sizes and SHA-256 digests. COMPLETE `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`; FULL `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`; UPDATE `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`; TEST-EVIDENCE `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`.
 - Scope: public identity; Shared storefront, checkout/payment evidence and fulfillment; catalog/licensing; notification health; private project notes; consolidated mail; diagnostic/package reliability.
-- Candidate requirements: deterministic FULL-PROJECT, COMPLETE-UPLOAD, and UPDATE archives; exact manifests/inventories/checksums; fresh-install and v1.26.1 upgrade/recovery gates; complete Application and checkout/payment matrix; independent reviews; normal merge and resulting-main verification.
-- Publication status: not authorized. No v1.27.0 tag or public asset exists.
-- Details: [scope](RELEASE_SCOPE_1.27.0.md), [notes](RELEASE_NOTES_1.27.0.md), [migration](MIGRATION-INSTRUCTIONS-1.27.0.md), [test matrix](TEST_REPORT_1.27.0.md).
+- Details: [scope and preserved qualification history](RELEASE_SCOPE_1.27.0.md), [notes](RELEASE_NOTES_1.27.0.md), [migration](MIGRATION-INSTRUCTIONS-1.27.0.md), [test matrix](TEST_REPORT_1.27.0.md).
+- Publication is not production deployment. Live payments, provider writes/provisioning, customer messaging, SSH/support access, and production deployment remain separately authorized operations.
 
 ## 2026-11-04 17:16 UTC — 1.26.1 remains unpublished during blocker qualification
 

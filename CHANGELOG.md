@@ -1,3 +1,9 @@
+## 2026-11-26 — CajunWebPro 1.27.0 published and verified
+
+- Published immutable v1.27.0 release `459005437` from normal PR #402 merge `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`, after exact-head and 29/29 attempt-1 resulting-main qualification.
+- Fetched all 18 public assets back and verified their uploaded sizes and SHA-256 digests. Principal package hashes: COMPLETE `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`; FULL `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`; UPDATE `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`; TEST-EVIDENCE `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`.
+- Publication did not perform or authorize production deployment, live payment/refund, provider provisioning/write, customer messaging, or SSH/support access.
+
 ## 2026-11-23 — 1.27.0 qualification successor
 
 - Advance the reviewed post-PR401 source from development 1.26.1 to the compatible 1.27.0 minor candidate; no tag, publication, deployment, or live operation is authorized.

@@ -1,6 +1,6 @@
 # CajunWebPro 1.27.0 release notes
 
-CajunWebPro 1.27.0 is the compatible minor successor to published 1.26.1. These notes describe the qualification candidate; no tag or public release has been created.
+CajunWebPro 1.27.0 is the published compatible minor successor to 1.26.1. The accepted source is normal PR #402 merge `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`; all 18 public release assets were downloaded and hash-verified after publication.
 
 ## Customer identity and hosting
 
@@ -24,7 +24,7 @@ FULL-PROJECT, COMPLETE-UPLOAD, and UPDATE packages are produced from one clean r
 
 Package and upgrade acceptance uses the exact immutable published 1.26.1 asset and manifest. The verified archive bytes are snapshotted once and those same bytes are extracted, closing the predecessor time-of-check/time-of-use gap. ZIP traversal, case collisions, reserved Windows names, symlinks, encryption, nonregular members, unexpected hosts, unsafe redirects, ambient proxies, and overwrite attempts are rejected.
 
-No live charge, refund, provisioning, provider write, customer message, SSH/support session, production deployment, tag, or publication is part of qualification.
+Tagging and publication were separately authorized and completed after qualification. No live charge, refund, provisioning, provider write, customer message, SSH/support session, or production deployment was part of qualification or publication.
 
 ## Known limitations
 

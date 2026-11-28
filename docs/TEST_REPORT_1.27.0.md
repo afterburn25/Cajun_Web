@@ -1,4 +1,10 @@
-# CajunWebPro 1.27.0 qualification report
+# CajunWebPro 1.27.0 publication disposition
+
+Status: qualified, published, and public-download-verified. PR #402 merged normally as `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`; its resulting-main cohort passed 29/29 workflows on attempt 1. Release `459005437` was published at `2026-11-26T05:43:44Z`, and all 18 public assets were fetched back and hash-verified. Principal SHA-256 values: COMPLETE `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`; FULL `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`; UPDATE `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`; TEST-EVIDENCE `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`.
+
+The report below is the preserved pre-publication local candidate record. Its pending states document what had not yet run at that checkpoint; they do not supersede the successful exact-head, resulting-main, and publication disposition above. Publication is not production deployment and does not authorize live payments, provider operations, customer messages, SSH/support access, or deployment.
+
+# Historical CajunWebPro 1.27.0 qualification report
 
 Status: local candidate qualification in progress; hosted exact-source acceptance and independent review remain required. No release tag, publication, deployment, or live operation has occurred.
 

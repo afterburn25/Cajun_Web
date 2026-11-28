@@ -1,4 +1,12 @@
-## Current qualification — 2026-11-23
+## Current source and release — 2026-11-28
+
+[CajunWebPro 1.27.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.27.0) is published from immutable merge `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`. All 18 public assets were fetched back and hash-verified; the COMPLETE-UPLOAD, FULL-PROJECT, UPDATE, and TEST-EVIDENCE SHA-256 values are `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`, `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`, `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`, and `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`.
+
+Current development main is `7889783b6bc9f58c2ac0a8c8a4c7a334155a390e`, tree `b099603c62d852269a9f7ba4ef357960eb2d82bb`, after the normally merged and resulting-main-qualified project foundation, notification-health acceptance, and source-proof performance PRs #405, #406, and #407. These post-release changes do not by themselves require a new release. Issue #157 remains the master queue and PR #340 the coordinator record; the next bounded work is the held project-workflow consolidation on a separate branch.
+
+Publication is not production deployment. Live payment/refund, provider write or paid provisioning, customer messaging, SSH/support access, destructive live changes, and production deployment retain their separate explicit authorization boundaries.
+
+## Historical qualification checkpoint — 2026-11-23
 
 PR #401 is merged at exact main `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`. All 16 naturally triggered resulting-main workflows passed on attempt 1. The only current integration priority is REL-01: prepare and qualify CajunWebPro 1.27.0 from that verified source. Older provider/P2 backlog remains held.
 

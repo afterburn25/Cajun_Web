@@ -1,3 +1,9 @@
+## 2026-11-28 — published 1.27.0 baseline and current main reconciled
+
+Confirmed immutable release v1.27.0, ID `459005437`, published `2026-11-26T05:43:44Z` from normal PR #402 merge `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`. All 18 public assets were fetched back and hash-verified; principal SHA-256 values are COMPLETE `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`, FULL `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`, UPDATE `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`, and TEST-EVIDENCE `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`. Publication remains distinct from deployment and live-operation authority.
+
+Current verified development main is `7889783b6bc9f58c2ac0a8c8a4c7a334155a390e`, tree `b099603c62d852269a9f7ba4ef357960eb2d82bb`, after resulting-main-qualified PRs #405, #406, and #407. Their project-foundation, notification-health acceptance, and proof-performance deltas do not alone warrant another release. Continued the held project-workflow consolidation on a separate branch; no version assignment, tag, package publication, deployment, or live operation occurred.
+
 ## 2026-11-23 — PR #401 resulting-main complete; REL-01 successor started
 
 Merged PR #401 normally as `f73515c681cafc0d46fb117f0999b597fa05eed5` after exact-head attempt-1 qualification. All 16 naturally triggered resulting-main workflows passed attempt 1, including full Application and all four checkout/payment Combined lanes. Exact evidence was recorded on PR #401, issue #157, and coordinator PR #340. No older backlog PR was integrated.

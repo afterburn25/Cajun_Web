@@ -1,4 +1,14 @@
-# Active handoff — 2026-11-23 — REL-01 / CajunWebPro 1.27.0
+# Active handoff — 2026-11-28 — published 1.27.0 / project workflow consolidation
+
+CajunWebPro 1.27.0 is immutably published as release `459005437` from source `7d9c8aa7d934117a494b19a32c58c071c190d56f`, tree `4cdc3b85ee0efb6ab5dfb3dde99f2bedaad2254b`. All 18 public assets were downloaded and hash-verified; principal SHA-256 values are COMPLETE `928956f0e9fff29b616c5ceccaac425880a78c3dc80c3a2c55e2511c92f53f5f`, FULL `bd5745eceaace5bf9abf54250f278f6bbb914686f6f7ae768799743c34211597`, UPDATE `4e31fdd7e8af27dea537c8437a8f506b8192b5f3f345e62f135fccd8884a4c35`, and TEST-EVIDENCE `dc039c5a96845b6ccf0ed0c9048e85d9451903b10c602386dab54b126af39183`. Do not rebuild, retag, replace, or republish those bytes.
+
+Verified development main is `7889783b6bc9f58c2ac0a8c8a4c7a334155a390e`, tree `b099603c62d852269a9f7ba4ef357960eb2d82bb`, after resulting-main-qualified PRs #405, #406, and #407. Issue #157 remains the master queue and PR #340 the coordinator record. The active bounded continuation is `codex/project-workflow-consolidated-main788-20261128`: preserve its inert predecessor and reviewed implementation history, add the exact finite source-composition successor only after a clean implementation/docs commit, obtain independent implementation and security/privacy/provenance reviews, then require fresh first-attempt hosted acceptance before normal merge and resulting-main verification.
+
+The current post-release changes alone do not warrant another release. Do not assign a next version, create a tag, generate a final release candidate, publish assets, or deploy. Live payment/refund, provider writes, paid provisioning, customer messages, SSH/support access, destructive live changes, and production deployment retain separate explicit authorization boundaries.
+
+Historical handoffs follow and remain evidence only.
+
+# Historical handoff — 2026-11-23 — REL-01 / CajunWebPro 1.27.0
 
 PR #401 and resulting-main qualification are complete. Exact main is `f73515c681cafc0d46fb117f0999b597fa05eed5`, tree `92c64a1c204ecda4befd8e255af271390d28f6b5`; every one of the 16 natural workflows passed attempt 1. Issue #157 remains the authoritative queue and PR #340 the coordinator record.
 
@@ -8,7 +18,7 @@ The stale release candidates `f7be9cd2`, `c05c0a8f`, and `926929e2` are history 
 
 Remaining gates: local lint/refusal/package checks; independent implementation and security review; one exact candidate commit/tree; fresh attempt-1 Application, four PHP/database upgrade and checkout/payment lanes, package/provenance/security/privacy review; normal PR merge; complete resulting-main verification. Record exact run/artifact hashes. Do not tag, publish, deploy, enable live operations, or consume the banked usage reset unless its explicit 0% policy is satisfied.
 
-Historical handoffs follow and remain evidence only.
+The historical REL-01 handoff below predates qualification and publication; retain its failures and planning detail as evidence.
 
 ## 2026-11-06 12:50 UTC — managed-image serving proof pending publication
 
