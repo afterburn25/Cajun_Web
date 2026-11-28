@@ -6,7 +6,7 @@ require_once CWP_CODE_ROOT.'/app/projects/progress_forms.php';
 /** A missing/unknown marker cannot silently bypass retained history. */
 function project_progress_mode():bool {
     $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['project_progress_schema_version'])['value']??'';
-    if($version==='1')return true;if($version!=='')throw new RuntimeException('Project history storage needs review. Existing records were preserved.');
+    if($version==='1'){project_progress_require_ready();return true;}if($version!=='')throw new RuntimeException('Project history storage needs review. Existing records were preserved.');
     foreach(['studio_progress_events','studio_progress_requests','studio_progress_heads'] as $name){
         if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])&&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()>0)throw new RuntimeException('Retained project history is not activated. An owner must review storage before editing.');
     }

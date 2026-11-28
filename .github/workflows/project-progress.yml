@@ -5,28 +5,100 @@ on:
     paths:
       - '.github/workflows/project-progress.yml'
       - 'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md'
+      - 'docs/agent-handoffs/2026-11-27-codex-project-workflow-consolidation.md'
       - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
       - 'foundation/projects/ProjectProgressEvent.php'
       - 'foundation/projects/ProjectSnapshot.php'
+      - 'foundation/projects/ProjectActionItems.php'
       - 'site/includes/foundation/projects/ProjectProgressEvent.php'
       - 'site/includes/foundation/projects/ProjectSnapshot.php'
+      - 'site/includes/foundation/projects/ProjectActionItems.php'
+      - 'site/admin/controllers/studio.php'
+      - 'site/admin/views/studio/clients.php'
+      - 'site/admin/views/studio/job.php'
+      - 'site/app/activity/events.php'
+      - 'site/app/projects/action_items.php'
+      - 'site/app/projects/progress.php'
+      - 'site/app/projects/progress_activity.php'
+      - 'site/app/projects/progress_forms.php'
+      - 'site/assets/css/growth.css'
+      - 'site/includes/layout/activity.php'
+      - 'site/includes/layout/project_progress.php'
+      - 'site/portal/controllers/router.php'
+      - 'site/portal/views/workspace.php'
       - 'site/install/inventory.generated.php'
+      - 'site/app/settings/database_schemas.php'
+      - 'site/database/migrations/project_progress_migrate.php'
+      - 'site/database/schema/project_progress_schema.php'
+      - 'site/database/schema/project_progress_validate_schema.php'
       - 'tests/combined_source_composition.py'
       - 'tests/combined_source_composition_test.py'
+      - 'tests/project_progress_schema_native.php'
+      - 'tests/project_progress_schema_policy.py'
+      - 'tests/project_progress_native.php'
+      - 'tests/project_progress_native_integrity.php'
+      - 'tests/project_progress_native_limits.php'
+      - 'tests/project_progress_screen_native_cases.php'
+      - 'tests/project_progress_runtime_policy.py'
+      - 'tests/project_progress_integration_policy.py'
+      - 'tests/project_progress_cases.py'
+      - 'tests/project_progress_upgrade_cases.py'
+      - 'tests/organized_update_cases.py'
+      - 'tests/organized_update_fixture.php'
+      - 'tests/browser_acceptance.py'
+      - 'tests/database_schema_registry_policy.php'
+      - 'tests/database_schema_view_policy.php'
+      - 'tests/project-actions/**'
       - 'tests/project-progress/**'
   push:
     branches: [main, 'codex/project-progress-*']
     paths:
       - '.github/workflows/project-progress.yml'
       - 'docs/agent-handoffs/2026-11-26-codex-project-progress-foundation.md'
+      - 'docs/agent-handoffs/2026-11-27-codex-project-workflow-consolidation.md'
       - 'docs/COMBINED_SOURCE_COMPOSITION_20261102.json'
       - 'foundation/projects/ProjectProgressEvent.php'
       - 'foundation/projects/ProjectSnapshot.php'
+      - 'foundation/projects/ProjectActionItems.php'
       - 'site/includes/foundation/projects/ProjectProgressEvent.php'
       - 'site/includes/foundation/projects/ProjectSnapshot.php'
+      - 'site/includes/foundation/projects/ProjectActionItems.php'
+      - 'site/admin/controllers/studio.php'
+      - 'site/admin/views/studio/clients.php'
+      - 'site/admin/views/studio/job.php'
+      - 'site/app/activity/events.php'
+      - 'site/app/projects/action_items.php'
+      - 'site/app/projects/progress.php'
+      - 'site/app/projects/progress_activity.php'
+      - 'site/app/projects/progress_forms.php'
+      - 'site/assets/css/growth.css'
+      - 'site/includes/layout/activity.php'
+      - 'site/includes/layout/project_progress.php'
+      - 'site/portal/controllers/router.php'
+      - 'site/portal/views/workspace.php'
       - 'site/install/inventory.generated.php'
+      - 'site/app/settings/database_schemas.php'
+      - 'site/database/migrations/project_progress_migrate.php'
+      - 'site/database/schema/project_progress_schema.php'
+      - 'site/database/schema/project_progress_validate_schema.php'
       - 'tests/combined_source_composition.py'
       - 'tests/combined_source_composition_test.py'
+      - 'tests/project_progress_schema_native.php'
+      - 'tests/project_progress_schema_policy.py'
+      - 'tests/project_progress_native.php'
+      - 'tests/project_progress_native_integrity.php'
+      - 'tests/project_progress_native_limits.php'
+      - 'tests/project_progress_screen_native_cases.php'
+      - 'tests/project_progress_runtime_policy.py'
+      - 'tests/project_progress_integration_policy.py'
+      - 'tests/project_progress_cases.py'
+      - 'tests/project_progress_upgrade_cases.py'
+      - 'tests/organized_update_cases.py'
+      - 'tests/organized_update_fixture.php'
+      - 'tests/browser_acceptance.py'
+      - 'tests/database_schema_registry_policy.php'
+      - 'tests/database_schema_view_policy.php'
+      - 'tests/project-actions/**'
       - 'tests/project-progress/**'
   workflow_dispatch:
 
@@ -59,22 +131,120 @@ jobs:
         run: |
           mkdir -p qa
           docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "${{ matrix.image }}" sh -ec '
-            for source in foundation/projects/ProjectProgressEvent.php foundation/projects/ProjectSnapshot.php site/includes/foundation/projects/ProjectProgressEvent.php site/includes/foundation/projects/ProjectSnapshot.php tests/project-progress/records.php; do php -l "$source"; done
+            for source in foundation/projects/ProjectProgressEvent.php foundation/projects/ProjectSnapshot.php foundation/projects/ProjectActionItems.php site/includes/foundation/projects/ProjectProgressEvent.php site/includes/foundation/projects/ProjectSnapshot.php site/includes/foundation/projects/ProjectActionItems.php site/app/projects/progress.php site/app/projects/progress_forms.php site/includes/layout/project_progress.php tests/project-progress/records.php tests/project-progress/forms.php tests/project-actions/records.php; do php -l "$source"; done
             cmp foundation/projects/ProjectProgressEvent.php site/includes/foundation/projects/ProjectProgressEvent.php
             cmp foundation/projects/ProjectSnapshot.php site/includes/foundation/projects/ProjectSnapshot.php
+            cmp foundation/projects/ProjectActionItems.php site/includes/foundation/projects/ProjectActionItems.php
             php tests/project-progress/records.php > qa/project-progress-canonical-default.json
             php -n tests/project-progress/records.php > qa/project-progress-canonical-no-ini.json
             php tests/project-progress/records.php --deployment > qa/project-progress-deployed-default.json
             php -n tests/project-progress/records.php --deployment > qa/project-progress-deployed-no-ini.json
+            php tests/project-progress/forms.php > qa/project-progress-forms-default.json
+            php -n tests/project-progress/forms.php > qa/project-progress-forms-no-ini.json
+            php tests/project-actions/records.php > qa/project-actions-default.json
+            php -n tests/project-actions/records.php > qa/project-actions-no-ini.json
           '
       - name: Preserve named evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: project-progress-${{ matrix.php }}-${{ github.sha }}
-          path: qa/project-progress-*.json
+          path: |
+            qa/project-progress-*.json
+            qa/project-actions-*.json
           if-no-files-found: error
           retention-days: 14
       - name: Record bounded scope
         if: always()
-        run: echo 'Pure immutable project-progress records and byte-identical deployed mirrors only. No current authority, database, routing, UI, activity, payment, provider or live-operation acceptance.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Pure immutable project-progress records, byte-identical deployed mirrors, bounded review actions, and form/rendering behavior. No current-authority, database, routing, browser, activity, payment, provider or live-operation acceptance.' >> "$GITHUB_STEP_SUMMARY"
+
+  storage:
+    name: Project progress storage/runtime PHP ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_TEST_PROJECT_PROGRESS_FOREIGN_DATABASE: cwp_progress_foreign
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-project-progress -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Prepare isolated foreign-schema refusal fixture
+        run: >-
+          docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e
+          "CREATE DATABASE cwp_progress_foreign; GRANT ALL PRIVILEGES ON cwp_progress_foreign.* TO 'cwp_test'@'%'; FLUSH PRIVILEGES;"
+      - name: Verify exact policy and native storage/runtime behavior
+        run: |
+          python3 -m py_compile tests/project_progress_cases.py tests/project_progress_upgrade_cases.py tests/organized_update_cases.py
+          python3 tests/project_progress_schema_policy.py
+          python3 tests/project_progress_runtime_policy.py
+          python3 tests/project_progress_integration_policy.py
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD -e CWP_TEST_PROJECT_PROGRESS_FOREIGN_DATABASE \
+            cwp-project-progress sh -ec '
+              php -l site/database/schema/project_progress_schema.php
+              php -l site/database/schema/project_progress_validate_schema.php
+              php -l site/database/migrations/project_progress_migrate.php
+              php -l tests/project_progress_schema_native.php
+              php -l site/app/projects/progress.php
+              php -l site/app/projects/action_items.php
+              php -l site/app/projects/progress_activity.php
+              php -l site/app/projects/progress_forms.php
+              php -l site/admin/controllers/studio.php
+              php -l site/app/activity/events.php
+              php -l tests/project_progress_native.php
+              php -l tests/project_progress_native_integrity.php
+              php -l tests/project_progress_native_limits.php
+              php -l tests/project_progress_screen_native_cases.php
+              php tests/database_schema_registry_policy.php
+              php tests/database_schema_view_policy.php
+              php tests/project_progress_schema_native.php
+              php tests/project_progress_native.php
+            '
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: project-progress-storage-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/project-progress-schema-native-results.json
+            qa/project-progress-native-results.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record bounded scope
+        if: always()
+        run: echo 'Synthetic loopback database only; no customer messages, payments, provider calls, deployment or live operation.' >> "$GITHUB_STEP_SUMMARY"
