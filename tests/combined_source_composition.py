@@ -224,6 +224,10 @@ PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE = '367c19c080df82cb552201536275c85e13b82910
 PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE_TREE = 'fc0573ee002450efad6f7b5207b412b88bc4d989'
 ACTIVITY_COLLATION_SOURCE = 'ea3bf240dc7c47f5490acd6f642004832ed86573'
 ACTIVITY_COLLATION_SOURCE_TREE = '2f58b10aaef69c667bcd32b03a9b4300e1e672da'
+CURRENT_SOURCE_REJECTED_PROOF = 'f0842b1fa777ef31165dfd6164430141b7433fbc'
+CURRENT_SOURCE_REJECTED_PROOF_TREE = 'd7e33099e43c1f6dc785ffc97603204adf12d9c4'
+ACTIVITY_COUNT_SOURCE = '1d292b71cf7d825016b79fe8d2aa32d651f3d159'
+ACTIVITY_COUNT_SOURCE_TREE = 'b77b7527a8c81c7abd134aa9d55732ec4c716059'
 MAIL_SCHEMA_COUNT_FIX_MODIFIED = frozenset((
     '.github/workflows/mail-copied-draft-native.yml',
     '.github/workflows/mail-flags-native.yml',
@@ -237,6 +241,9 @@ PROJECT_PROGRESS_REQUIRE_ONCE_MODIFIED = frozenset((
 ))
 ACTIVITY_COLLATION_MODIFIED = frozenset((
     'site/app/activity/events.php',
+    'tests/project_progress_screen_native_cases.php',
+))
+ACTIVITY_COUNT_MODIFIED = frozenset((
     'tests/project_progress_screen_native_cases.php',
 ))
 MAIL_SCHEMA_COUNT_FIX_PATHS = (MAIL_SCHEMA_COUNT_FIX_MODIFIED
@@ -288,6 +295,16 @@ ACTIVITY_COLLATION_SOURCE_MARKERS = {
         (b'Progress cursor preserves same-second non-progress activity', 1),
         (b"activity_count('client')===35+$nonProgress", 1),
         (b'$count===35+$nonProgress', 1),
+    ),
+}
+ACTIVITY_COUNT_SOURCE_MARKERS = {
+    'tests/project_progress_screen_native_cases.php': (
+        (b'$nonProgressKeys=array_values(array_filter([...$feedKeys,...$olderKeys]', 1),
+        (b'Progress cursor preserves exactly the expected same-second non-progress activity', 1),
+        (b"activity_count('client')===39&&", 1),
+        (b'$count===39&&', 1),
+        (b"activity_count('client')===38", 2),
+        (b"activity_count('client')===40", 2),
     ),
 }
 CLOUD_INIT_TERMINAL_BASE = 'c94c31c0aee475d950bc73d15b17bf30c05a518c'
@@ -2587,7 +2604,7 @@ ADAPTERS = frozenset((
 ))
 # BEGIN GENERATED COMPOSITION IDENTITIES
 ADAPTER_SHA256 = {'tests/tickets_integration_contract.py': '2e17ee99dc98038e68fc00b7fcb532f5c42ad4933c0a4e018a88a81afab93fcd', 'tests/account_notification_contract.py': 'f4153275f34e3370f269c21e257501e537c4bd2f8f62fb72b9037ac645a2fef2', 'tests/account_notification_fixture_provenance.py': '1ce3822b9963ff83de10bafbd33759211a08a14b65a7d0587a4d6518523e9828', 'tests/provider_browser_fixture_provenance.py': 'ed680a7fd31ff677ebc173b119c13f43a736f9fefaae0089699572a659da9386'}
-REGRESSION_SHA256 = 'b09eec27ed96ff28665f0e033f8f1aef524cce83b3f492f67dddac4cb986e955'
+REGRESSION_SHA256 = '11bd52625495367708d570f39659e52d39e7d43a5571c6587998f31f506c172c'
 RECEIPT_CONTENT_SHA256 = 'c98b6138afa9a3f9753a5c62b14eea0d83380a4cd60e198fd979e09ae896df75'
 # END GENERATED COMPOSITION IDENTITIES
 
@@ -3075,13 +3092,13 @@ def mail_schema_count_fix_projected_bytes(root, path, current):
     if (not _MAIL_SCHEMA_COUNT_FIX_PROJECTION_DEPTH
             or path not in MAIL_SCHEMA_COUNT_FIX_PATHS):
         return current
-    source_entries = entries(root, ACTIVITY_COLLATION_SOURCE)
+    source_entries = entries(root, ACTIVITY_COUNT_SOURCE)
     require(_MAIL_SCHEMA_COUNT_FIX_WORKTREE_OIDS.get(path)
             == source_entries[path][1],
             'Current mail schema-count source changed before predecessor projection: '
             + path)
     source = git(
-        root, 'cat-file', 'blob', ACTIVITY_COLLATION_SOURCE + ':' + path)
+        root, 'cat-file', 'blob', ACTIVITY_COUNT_SOURCE + ':' + path)
     base = git(root, 'cat-file', 'blob', MAIL_SCHEMA_COUNT_FIX_BASE + ':' + path)
     if current == source:
         require(actual_ordinary(root, path) == source,
@@ -13204,7 +13221,7 @@ def validate_release_127_source(root):
     source_entries = entries(root, REL127_SOURCE)
     project_entries = entries(root, PROJECT_PROGRESS_SOURCE)
     project_workflow_entries = entries(root, PROJECT_WORKFLOW_DOCS)
-    mail_schema_count_entries = entries(root, ACTIVITY_COLLATION_SOURCE)
+    mail_schema_count_entries = entries(root, ACTIVITY_COUNT_SOURCE)
     worktree_oids = {}
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
@@ -14060,29 +14077,29 @@ def validate_mail_schema_count_fix_checkout_history(
                             for parent in parents)
                     for parents in (checkout_parents, proof_parents)),
             'Malformed mail schema-count checkout history')
-    if checkout_head == ACTIVITY_COLLATION_SOURCE:
-        require(checkout_parents == [PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE]
+    if checkout_head == ACTIVITY_COUNT_SOURCE:
+        require(checkout_parents == [CURRENT_SOURCE_REJECTED_PROOF]
                 and proof_head == checkout_head
                 and proof_parents == checkout_parents
                 and proof_tree == checkout_tree
-                == ACTIVITY_COLLATION_SOURCE_TREE,
+                == ACTIVITY_COUNT_SOURCE_TREE,
                 'Current-source correction local proof preparation changed history')
     elif len(checkout_parents) == 1:
-        require(checkout_parents == [ACTIVITY_COLLATION_SOURCE]
+        require(checkout_parents == [ACTIVITY_COUNT_SOURCE]
                 and proof_head == checkout_head
                 and proof_parents == checkout_parents
                 and proof_tree == checkout_tree,
                 'Current-source correction proof is not the exact direct successor')
     else:
         require(checkout_parents == [PROJECT_WORKFLOW_BASE, proof_head]
-                and proof_parents == [ACTIVITY_COLLATION_SOURCE]
+                and proof_parents == [ACTIVITY_COUNT_SOURCE]
                 and checkout_tree == proof_tree,
                 'Current-source correction merge is not exact and tree-identical')
     return proof_head
 
 
 def validate_mail_schema_count_fix_source(root):
-    """Bind the failed proof, count fixes, loader fix, and proof-only head."""
+    """Bind every preserved failure, correction, review fix, and proof-only head."""
     require(git(root, 'rev-parse', MAIL_SCHEMA_COUNT_FIX_BASE + '^{tree}')
             .decode().strip() == MAIL_SCHEMA_COUNT_FIX_BASE_TREE
             and git(root, 'rev-parse', MAIL_SCHEMA_COUNT_FIX_SOURCE + '^{tree}')
@@ -14090,7 +14107,11 @@ def validate_mail_schema_count_fix_source(root):
             and git(root, 'rev-parse', PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE + '^{tree}')
             .decode().strip() == PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE_TREE
             and git(root, 'rev-parse', ACTIVITY_COLLATION_SOURCE + '^{tree}')
-            .decode().strip() == ACTIVITY_COLLATION_SOURCE_TREE,
+            .decode().strip() == ACTIVITY_COLLATION_SOURCE_TREE
+            and git(root, 'rev-parse', CURRENT_SOURCE_REJECTED_PROOF + '^{tree}')
+            .decode().strip() == CURRENT_SOURCE_REJECTED_PROOF_TREE
+            and git(root, 'rev-parse', ACTIVITY_COUNT_SOURCE + '^{tree}')
+            .decode().strip() == ACTIVITY_COUNT_SOURCE_TREE,
             'Current-source correction base or source identity changed')
     require(git(root, 'show', '-s', '--format=%P', MAIL_SCHEMA_COUNT_FIX_BASE)
             .decode().strip().split() == [PROJECT_WORKFLOW_DOCS]
@@ -14100,7 +14121,11 @@ def validate_mail_schema_count_fix_source(root):
                     PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE)
             .decode().strip().split() == [MAIL_SCHEMA_COUNT_FIX_SOURCE]
             and git(root, 'show', '-s', '--format=%P', ACTIVITY_COLLATION_SOURCE)
-            .decode().strip().split() == [PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE],
+            .decode().strip().split() == [PROJECT_PROGRESS_REQUIRE_ONCE_SOURCE]
+            and git(root, 'show', '-s', '--format=%P', CURRENT_SOURCE_REJECTED_PROOF)
+            .decode().strip().split() == [ACTIVITY_COLLATION_SOURCE]
+            and git(root, 'show', '-s', '--format=%P', ACTIVITY_COUNT_SOURCE)
+            .decode().strip().split() == [CURRENT_SOURCE_REJECTED_PROOF],
             'Current-source correction fixed parent chain changed')
     base_proof_changes = git(
         root, 'diff', '--name-status', '--no-renames',
@@ -14133,6 +14158,18 @@ def validate_mail_schema_count_fix_source(root):
             == set(ACTIVITY_COLLATION_SOURCE_MARKERS)
             == ACTIVITY_COLLATION_MODIFIED,
             'Activity collation correction changed another path or marker set')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                ACTIVITY_COLLATION_SOURCE,
+                CURRENT_SOURCE_REJECTED_PROOF).decode().splitlines()
+            == ['M\t' + path for path in sorted(MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS)],
+            'Preserved current-source proof changed application source')
+    require(git(root, 'diff', '--name-status', '--no-renames',
+                CURRENT_SOURCE_REJECTED_PROOF,
+                ACTIVITY_COUNT_SOURCE).decode().splitlines()
+            == ['M\t' + path for path in sorted(ACTIVITY_COUNT_MODIFIED)]
+            and set(ACTIVITY_COUNT_SOURCE_MARKERS) == ACTIVITY_COUNT_MODIFIED
+            and not ACTIVITY_COUNT_MODIFIED & MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS,
+            'Exact activity-count review correction changed another path or marker set')
     checkout_head = git(root, 'rev-parse', 'HEAD').decode().strip()
     checkout_parents = git(root, 'show', '-s', '--format=%P',
                            checkout_head).decode().strip().split()
@@ -14144,34 +14181,47 @@ def validate_mail_schema_count_fix_source(root):
     proof_head = validate_mail_schema_count_fix_checkout_history(
         checkout_head, checkout_parents, checkout_tree,
         proof_head, proof_parents, proof_tree)
-    if proof_head == ACTIVITY_COLLATION_SOURCE:
+    if proof_head == ACTIVITY_COUNT_SOURCE:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            ACTIVITY_COLLATION_SOURCE,
+                            ACTIVITY_COUNT_SOURCE,
                             '--').decode().splitlines()
     else:
         proof_changes = git(root, 'diff', '--name-status', '--no-renames',
-                            ACTIVITY_COLLATION_SOURCE,
+                            ACTIVITY_COUNT_SOURCE,
                             proof_head).decode().splitlines()
     require(sorted(proof_changes)
             == ['M\t' + path for path in sorted(MAIL_SCHEMA_COUNT_FIX_PROOF_PATHS)],
             'Mail schema-count proof successor changed application source')
     base_entries = entries(root, MAIL_SCHEMA_COUNT_FIX_BASE)
-    source_entries = entries(root, ACTIVITY_COLLATION_SOURCE)
+    source_entries = entries(root, ACTIVITY_COUNT_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     worktree_oids = {}
     for path in sorted(MAIL_SCHEMA_COUNT_FIX_PATHS):
         base = git(root, 'cat-file', 'blob', MAIL_SCHEMA_COUNT_FIX_BASE + ':' + path)
-        source = git(
+        intermediate = git(
             root, 'cat-file', 'blob', ACTIVITY_COLLATION_SOURCE + ':' + path)
+        source = git(
+            root, 'cat-file', 'blob', ACTIVITY_COUNT_SOURCE + ':' + path)
         if path in MAIL_SCHEMA_COUNT_FIX_FRAGMENTS:
             old, new = MAIL_SCHEMA_COUNT_FIX_FRAGMENTS[path]
             semantic = (base.count(old) == 1 and new not in base
                         and source == base.replace(old, new, 1)
                         and source.count(new) == 1 and old not in source)
-        else:
-            semantic = (all(base.count(marker) == count and marker not in source
+        elif path in ACTIVITY_COUNT_MODIFIED:
+            semantic = (all(base.count(marker) == count and marker not in intermediate
                             for marker, count in ACTIVITY_COLLATION_BASE_MARKERS[path])
+                        and all(intermediate.count(marker) == count and marker not in base
+                                for marker, count
+                                in ACTIVITY_COLLATION_SOURCE_MARKERS[path])
+                        and all(source.count(marker) == count and marker not in intermediate
+                                for marker, count in ACTIVITY_COUNT_SOURCE_MARKERS[path])
+                        and all(marker not in source for marker, _
+                                in ACTIVITY_COLLATION_SOURCE_MARKERS[path]))
+        else:
+            semantic = (source == intermediate
+                        and all(base.count(marker) == count and marker not in source
+                                for marker, count in ACTIVITY_COLLATION_BASE_MARKERS[path])
                         and all(source.count(marker) == count and marker not in base
                                 for marker, count
                                 in ACTIVITY_COLLATION_SOURCE_MARKERS[path]))
@@ -14266,7 +14316,7 @@ def validate_project_workflow_source(root):
             'Project-workflow proof successor changed application or documentation source')
     base_entries = entries(root, PROJECT_WORKFLOW_BASE)
     source_entries = entries(root, PROJECT_WORKFLOW_DOCS)
-    current_source_entries = entries(root, ACTIVITY_COLLATION_SOURCE)
+    current_source_entries = entries(root, ACTIVITY_COUNT_SOURCE)
     live_index_entries = current_index_entries(root)
     live_index_modes = {path: row[0] for path, row in live_index_entries.items()}
     require(not PROJECT_WORKFLOW_ADDITIONS & set(base_entries)
@@ -14628,7 +14678,7 @@ def verify_current(root):
                                 with release_127_projection(root):
                                     checks = _verify_current(root)
     return [
-        {'name': 'Exact current-source correction binds six mail counts, one loader, and two activity paths',
+        {'name': 'Exact current-source chain binds six mail counts, one loader, two activity paths, and the reviewed exact-count correction',
          'passed': True},
         {'name': 'Current-source correction proof changes only the exact three proof files',
          'passed': True},
